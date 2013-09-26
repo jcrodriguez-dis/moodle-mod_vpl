@@ -1,0 +1,9 @@
+Development: Juan Carlos Rodriguez-del-Pino, jcrodriguez@dis.ulpgc.es
+Online help:  Margarita Díaz-Roca, José Daniel González-Domínguez, Zenón Hernández-Figueroa
+Translations:
+	Catalan: Antonio Piedras Morente
+	Japanese: Imaizumi Takashi
+	Polish: Marcin Kolodziej, Michal Kedzia
+	German: Lang Michael: michael.lang.ima10@fh-joanneum.at,
+			Lückl Bernd: bernd.lueckl.ima10@fh-joanneum.at and
+			Lang Johannes: johannes.lang.ima10@fh-joanneum.at

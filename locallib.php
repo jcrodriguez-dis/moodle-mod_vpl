@@ -1,0 +1,508 @@
+<?php
+/**
+ * @version		$Id: locallib.php,v 1.17 2013-06-10 11:05:16 juanca Exp $
+ * @package		VPL. Common functions of VPL
+ * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
+defined('MOODLE_INTERNAL') || die();
+
+define('VPL','vpl');
+define('VPL_SUBMISSIONS','vpl_submissions');
+define('VPL_VARIATIONS','vpl_variations');
+define('VPL_ASSIGNED_VARIATIONS','vpl_assigned_variations');
+define('VPL_GRADE_CAPABILITY','mod/vpl:grade');
+define('VPL_VIEW_CAPABILITY','mod/vpl:view');
+define('VPL_SUBMIT_CAPABILITY','mod/vpl:submit');
+define('VPL_SIMILARITY_CAPABILITY','mod/vpl:similarity');
+define('VPL_ADDINSTANCE_CAPABILITY','mod/vpl:addinstance');
+define('VPL_SETJAILS_CAPABILITY','mod/vpl:setjails');
+define('VPL_MANAGE_CAPABILITY','mod/vpl:manage');
+
+require_once dirname(__FILE__).'/vpl.class.php';
+
+/**
+ * Set get vpl session var
+ *
+ * @param string $varname name of the session var without 'vpl_'
+ * @param string $default default value
+ * @param string $parname optional parameter name 
+ * @return $varname/param value
+ **/
+function vpl_get_set_session_var($varname,$default,$parname=null){
+	global $SESSION;
+	if($parname==null){
+		$parname=$varname;
+	}
+	$res=$default;
+	$fullname='vpl_'.$varname;
+	if(isset($SESSION->$fullname)){ // exists var?
+		$res = $SESSION->$fullname;
+	}
+	$res = optional_param($parname,$res, PARAM_ALPHA);
+	$SESSION->$fullname = $res;
+	return $res;
+}
+
+/**
+ * Open/create a file and its dir
+ *
+ * @param $filename path to file
+ * @return file descriptor
+ **/
+function vpl_fopen($filename){
+	if(!file_exists($filename)){ // exists file?
+		$dir = dirname($filename);
+		if(!file_exists($dir)){ // create dir?
+			mkdir($dir, 0700,true);
+		}
+	}
+	$fp= fopen($filename,'wb+');
+	return $fp;
+}
+
+/**
+ * Recursively delete a directory
+ *
+ * @return bool All delete
+ **/
+function vpl_delete_dir($dirname){
+	$ret = false;
+	if(file_exists($dirname)){
+		$ret = true;
+		if(is_dir($dirname)){
+			$dd = opendir($dirname);
+			if(!$dd){
+				return false;
+			}
+			$list = array();
+			while($name=readdir($dd)){
+				if($name != '.' && $name != '..'){
+					$list[]=$name;
+				}
+			}
+			closedir($dd);
+			$ret = true;
+			foreach ($list as $name) {
+				$ret = vpl_delete_dir($dirname.'/'.$name) and $ret;
+			}
+			$ret = rmdir($dirname)and $ret;
+		}
+		else{
+			$ret = unlink($dirname);
+		}
+	}
+	return $ret;
+}
+
+/**
+ * get parsed lines of a file
+ *
+ * @param $filename string
+ * @return array of lines of the file
+ **/
+function vpl_read_list_from_file($filename){
+	$ret = array();
+	if(file_exists($filename)){
+		$data = file_get_contents($filename);
+		if($data>''){
+			$nl = vpl_detect_newline($data);
+			$ret = explode($nl,$data);
+		}
+	}
+	return $ret;
+}
+
+/**
+ * Save an array in a file
+ * @param $filename string
+ **/
+function vpl_write_list_to_file($filename, $list){
+	$data='';
+	foreach ($list as $info) {
+		if($info > ''){
+			if($data > ''){
+				$data .= "\n";
+			}
+			$data .= $info;
+		}
+	}
+	$fp = vpl_fopen($filename);
+	fwrite($fp,$data);
+	fclose($fp);
+}
+
+/**
+ * Get lang code
+ * @parm $bash_adapt true adapt lang to bash LANG (default false)
+ * @return string
+ */
+function vpl_get_lang($bash_adapt=false){
+	global $SESSION,$USER,$CFG;
+	if(isset($SESSION->lang)){
+		$lang=$SESSION->lang;
+	}elseif(isset($USER->lang)){
+		$lang=$USER->lang;
+	}elseif(isset($CFG->lang)){
+		$lang=$CFG->lang;
+	}else{
+		$lang='en';
+	}
+	if($bash_adapt){
+		$parts=explode('_',$lang);
+		if(count($parts) == 2){
+			$lang=$parts[0].'_'.strtoupper($parts[1]);
+		}
+		$lang.='.utf8';
+	}
+	return $lang;
+}
+
+/**
+ * generate URL to page with params
+ * @param $page string page from wwwroot
+ * @param $var1 string var1 name optional
+ * @param $value1 string value of var1 optional
+ * @param $var2 string var2 name optional
+ * @param $value2 string value of var2 optional
+ * @param ...
+ **/
+function vpl_abs_href(){
+	global $CFG;
+	$parms = func_get_args();
+	$l=count($parms);
+	$href = $CFG->wwwroot.$parms[0];
+	for( $p=1;$p<$l-1; $p+=2 ) {
+		$href .= ($p>1?'&amp;':'?')
+		.urlencode($parms[$p]).'='
+		.urlencode($parms[$p+1]);
+	}
+	return $href;
+}
+
+/**
+ * generate URL to page with params
+ * @param $page string page from wwwroot/mod/vpl/
+ * @param $var1 string var1 name optional
+ * @param $value1 string value of var1 optional
+ * @param $var2 string var2 name optional
+ * @param $value2 string value of var2 optional
+ * @param ...
+ **/
+function vpl_mod_href(){
+	global $CFG;
+	$parms = func_get_args();
+	$l=count($parms);
+	$href = $CFG->wwwroot.'/mod/vpl/'.$parms[0];
+	for( $p=1;$p<$l-1; $p+=2 ) {
+		$href .= ($p>1?'&amp;':'?')
+		.urlencode($parms[$p]).'='
+		.urlencode($parms[$p+1]);
+	}
+	return $href;
+}
+
+/**
+ * generate URL relative page with params
+ * @param $page string page relative
+ * @param $var1 string var1 name optional
+ * @param $value1 string value of var1 optional
+ * @param $var2 string var2 name optional
+ * @param $value2 string value of var2 optional
+ * @param ...
+ **/
+function vpl_rel_url(){
+	$parms = func_get_args();
+	$l=count($parms);
+	$url = $parms[0];
+	for( $p=1;$p<$l-1; $p+=2 ) {
+		$url .= ($p>1?'&amp;':'?')
+		.urlencode($parms[$p]).'='
+		.urlencode($parms[$p+1]);
+	}
+	return $url;
+}
+/**
+ * Add a parm to a url
+ * @param $url string
+ * @param $parm string name
+ * @param $value string value of parm
+ **/
+function vpl_url_add_param($url,$parm,$value){
+	if(strpos($url,'?')){
+		return $url . '&amp;'.urlencode($parm).'='.urlencode($value);
+	}else{
+		return $url . '?'.urlencode($parm).'='.urlencode($value);
+	}
+}
+
+/**
+ * Print a message and redirect
+ * @param $message string to be print
+ * @param $link URL to redirect to
+ * @param $wait int time to wait in seconds
+ * @return void
+ */
+function vpl_redirect($link,$message,$wait=4){
+	global $OUTPUT;
+	if(!headers_sent()){
+		echo $OUTPUT->header();
+	}
+	static $idcount=0;
+	$idcount++;
+	$text='<div class="redirectmessage">'.s($message).'<br/></div>';
+	$text.='<div class="continuebutton"><a id="vpl_red'.$idcount.'" href="'.$link.'">'.get_string('continue').'</a></div>';
+	$deco = urldecode($link);
+	$deco = html_entity_decode($deco);
+	if($wait == 0){
+		echo vpl_include_js('window.location.replace("'.$deco.'");');
+	}else{
+		$js = 'var vpl_jump=function (){window.location.replace("'.$deco.'");};';
+		echo vpl_include_js($js."setTimeout('vpl_jump()',$wait*1000);");
+	}
+	echo $text;
+	echo $OUTPUT->footer();
+	die;
+}
+
+
+/**
+ * Inmediate redirect
+ * @param $link URL to redirect to
+ * @return void
+ */
+function vpl_inmediate_redirect($url){
+	vpl_redirect($url,'',0);
+}
+
+function vpl_include_jsfile($file,$defer=false){
+	global $PAGE;
+	$PAGE->requires->js(new moodle_url('/mod/vpl/jscript/'.$file));
+	return '';
+}
+
+function vpl_include_js($jscript,$defer=false){
+	if($jscript==''){
+		return '';
+	}
+	$ret='<script type="text/javascript"';
+	if($defer){
+		$ret.=' defer="defer">';
+	}else{
+		$ret.='>';
+	}
+	$ret .="\n//<![CDATA[\n";
+	$ret .= $jscript;
+	$ret .="\n//]]>\n</script>\n";
+	return $ret;
+}
+
+/**
+ * Popup message box to show text
+ * @param $text text to show. It use s() to sanitize text
+ * @param $print
+ * @return void
+ */
+function vpl_js_alert($text,$print=true){
+	$aux = addslashes($text); //Sanitize text
+	$aux = str_replace("\n","\\n",$aux); //Add \n to show multiline text
+	$aux = str_replace("\r","",$aux); //Remove \r
+	$ret=vpl_include_js('alert("'.$aux.'");');
+	if($print){
+		echo $ret;
+		@ob_flush();
+		flush();
+	}else{
+		return $ret;
+	}
+}
+
+function vpl_get_select_time($maximum=null){
+	$minute=60;
+	if($maximum === null){ //Default value
+		$maximum = 35*$minute;
+	}
+	$ret = array(0 => get_string('select'));
+	if($maximum <= 0){
+		return $ret;
+	}
+	$value=4;
+	if($maximum < $value){
+		$value=$maximum;
+	}
+	while($value <= $maximum){
+		if($value < $minute){
+			$ret[$value] = get_string('numseconds','',$value);
+		}else{
+			$num = (int)($value / $minute);
+			$ret[$num*$minute] = get_string('numminutes','',$num);
+			$value = $num*$minute;
+		}
+		$value *=2;
+	}
+	return $ret;
+}
+
+/**
+ * Return the post_max_size PHP config option in bytes
+ * @return int max size in bytes
+ */
+function vpl_get_max_post_size(){
+	$maxs = trim(ini_get('post_max_size'));
+	$len = strlen($maxs);
+	$last = strtolower($maxs[$len-1]);
+	$max = (int) substr($maxs,0,$len-1);
+	if($last == 'k'){
+		$max *= 1024;
+	}elseif ($last == 'm'){
+		$max *= 1024*1024;
+	}elseif ($last == 'g'){
+		$max *= 1024*1024*1000;
+	}
+	return $max;
+}
+
+/**
+ * Convert a size in byte to string in Kb, Mb, Gb and Tb
+ * Following IEC "Prefixes for binary multiples"
+ * @param $size int size in bytes
+ * @return string
+ */
+function vpl_conv_size_to_string($size){
+	static $measure = array(1024,1048576,1073741824,1099511627776,PHP_INT_MAX);
+	static $measure_name = array('KiB','MiB','GiB','TiB');
+	for($i=0; $i<count($measure); $i++){
+		if($measure[$i]<=0){ //Check for int overflow
+			$num = $size / $measure[$i-1];
+			return sprintf('%.2f %s',$num,$measure_name[$i-1]);
+		}
+		if($size < $measure[$i+1]){
+			$num = $size / $measure[$i];
+			if($num >= 3 || $size % $measure[$i] == 0){
+				return sprintf('%4d %s',$num,$measure_name[$i]);
+			}else{
+				return sprintf('%.2f %s',$num,$measure_name[$i]);
+			}
+		}
+	}
+}
+
+/**
+ * Return the array key after or equal to value
+ * @param $array
+ * @param $value of key to search
+ * @return key found
+ */
+function vpl_get_array_key($array,$value){
+	foreach($array as $key => $nothing){
+		if($key >= $value){
+			return $key;
+		}
+	}
+	return $key;
+}
+
+/**
+ * Return un array with the format [size in bytes]=> size in text
+ * The first element is [0] => select
+ * @param $minimum the initial value
+ * @param $maximum the limit of values generates
+ * @return array
+ */
+function vpl_get_select_sizes($minimum=0,$maximum=PHP_INT_MAX){
+	$maximum = (int) $maximum;
+	if($maximum < 0){
+		$maximum = PHP_INT_MAX;
+	}
+	$ret = array(0 => get_string('select'));
+	if($minimum>0){
+		$value=$minimum;
+	}else{
+		$value=256*1024;
+	}
+	$increment = $value/2;
+	while($value <= $maximum && $value >0){ //Avoid int overflow
+		$ret[$value] = vpl_conv_size_to_string($value);
+		$pre=$value;
+		$value +=$increment;
+		$value = (int) $value;
+		if($pre >= $value){ //Check for loop end
+			break;
+		}
+		if($value>= 4*$increment){
+			$increment=$value/2;
+		}
+	}
+	if($value>0 && $maximum > ($value*0.75)){ //Show limit value
+		$ret[$maximum] = vpl_conv_size_to_string($maximum);
+	}
+	return $ret;
+}
+
+/**
+ * @param string $data
+ * @return string newline separator "\r\n", "\n", "\r"
+ */
+function vpl_detect_newline(&$data){
+	//Detect text newline chars
+	if(strrpos($data,"\r\n") !== false){
+		return "\r\n"; //Windows
+	}else if(strrpos($data,"\n") !== false){
+		return "\n"; //UNIX
+	}else if(strrpos($data,"\r") !== false){
+		return "\r"; //Mac
+	}else{
+		return "\n"; //Default Unix
+	}
+}
+
+function vpl_notice($text,$classes='generalbox'){
+	global $OUTPUT;
+	echo $OUTPUT->box($text,$classes,'vpl.hide');
+}
+
+function vpl_error($text,$classes=''){
+	vpl_notice($text,'errorbox');
+}
+
+/**
+ * Remove trailing zeros from a float as string
+ * @param $value
+ * @return string 
+ */
+function vpl_rtzeros($value){
+	if(strpos($value,'.') || strpos($value,',')){
+		return rtrim(rtrim($value,'0'),'.,');
+	}
+	return $value;
+}
+
+/**
+ * Generate an array with index an values $url.index
+ * @param $url url base
+ * @param $array array of index
+ * @return array with index as key and url as value 
+ */
+function vpl_select_index($url,$array){
+	$ret =array();
+	foreach( $array as $value){
+		$ret[$value]= $url.$value;
+	}
+	return $ret;
+}
+
+/**
+ * Generate an array ready to be use in $OUTPUT->select_url
+ * @param $url url base
+ * @param $array array of values
+ * @return array with url as key and text as value
+ */
+function vpl_select_array($url,$array){
+	$ret =array();
+	foreach($array as $value){
+		$ret[$url.$value]= get_string($value, VPL);
+	}
+	return $ret;
+}
+?>

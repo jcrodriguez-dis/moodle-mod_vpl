@@ -1,0 +1,25 @@
+.vpl_f {font-style: italic; color:blue}
+.vpl_v {font-style: italic;}
+.vpl_s {color:blue}
+.vpl_s:HOVER {background-color: #FFB0FF }
+.vpl_c {color:#78B078}
+.vpl_c:HOVER {background-color: #B0FFFF;}
+.vpl_m {color:#800000}
+.vpl_m:HOVER {background-color: silver;}
+.vpl_r {color:#0000B0; font-style: oblique;}
+.vpl_r:HOVER {background-color: silver;color:white;}
+.vpl_g {font-size: 12px; line-height: normal;}
+.vpl_ln{background-color:#FFFFFF;color:gray;}
+
+.vpl_h0:HOVER {background-color:#D6F5D6;}
+.vpl_h1:HOVER {background-color:#ADEBAD;}
+.vpl_h2:HOVER {background-color:#85E085;}
+.vpl_h3:HOVER {background-color:#5CD65C;}
+.vpl_h4:HOVER {background-color:#33CC33;}
+.vpl_h5:HOVER {background-color:#29A329;}
+.vpl_h6:HOVER {background-color:#D6E0FF;}
+.vpl_h7:HOVER {background-color:#ADC2FF;}
+.vpl_h8:HOVER {background-color:#85A3FF;}
+.vpl_h9:HOVER {background-color:#5C85FF;}
+.vpl_h10:HOVER {background-color:#3366FF;}
+.vpl_h11:HOVER {background-color:#2952CC;}

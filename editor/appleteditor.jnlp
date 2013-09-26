@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" >
+    <information>
+        <title>ACodeEditor</title>
+        <vendor>JCRP</vendor>
+    </information>
+    <homepage href="http://vpl.dis.ulpgc.es" />
+        <description>Applet Code Editor</description>
+    <resources>
+        <!-- Application Resources -->
+        <j2se version="1.6+" />
+        <jar href="appleteditor.jar" codebase="." main="true" version="1.3" />
+        <property name="jnlp.versionEnabled" value="true"/>
+    </resources>
+	<applet-desc 
+         name="A Code Editor Applet"
+         main-class="org.acodeeditor.gui.Main"
+         width="300"
+         height="300"
+         >
+     </applet-desc>
+     <update check="background"/>
+</jnlp>
