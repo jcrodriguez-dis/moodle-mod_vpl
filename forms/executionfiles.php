@@ -20,15 +20,15 @@ $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/executionfiles.php', array('id' => $id));
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+$fgp = $vpl->get_execution_fgm();
+$mform = new mod_vpl_filegroup_form('executionfiles.php',$fgp,get_string('execution',VPL));
+$mform->preheader_process($vpl->get_printable_name());
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 //Display page
 $course = $vpl->get_course();
-$fgp = $vpl->get_execution_fgm();
 $vpl->print_header(get_string('execution',VPL));
 $vpl->print_heading_with_help('executionfiles');
 $vpl->print_configure_tabs(basename(__FILE__));
-$mform = new mod_vpl_filegroup_form('executionfiles.php',$fgp,get_string('execution',VPL));
-$mform->preheader_process($vpl->get_printable_name());
 $mform->process();
 $vpl->add_to_log('execution form', vpl_rel_url('forms/executionfiles.php','id',$id));
 $mform->display();

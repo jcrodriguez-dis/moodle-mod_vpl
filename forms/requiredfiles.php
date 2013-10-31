@@ -17,15 +17,14 @@ $id = required_param('id',PARAM_INT);
 
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/requiredfiles.php', array('id' => $id));
-
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 $fgp = $vpl->get_required_fgm();
+$mform = new mod_vpl_filegroup_form('requiredfiles.php',$fgp,get_string('requestedfiles',VPL));
+$mform->preheader_process($vpl->get_printable_name());
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header(get_string('requestedfiles',VPL));
 $vpl->print_heading_with_help('requestedfiles');
 $vpl->print_configure_tabs(basename(__FILE__));
-$mform = new mod_vpl_filegroup_form('requiredfiles.php',$fgp,get_string('requestedfiles',VPL));
-$mform->preheader_process($vpl->get_printable_name());
 $mform->process();
 //Display page
 
