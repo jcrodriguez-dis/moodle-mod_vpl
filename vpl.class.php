@@ -626,11 +626,13 @@ class mod_vpl {
 		//Get last submissions records for this vpl module
 		global $DB;
 		$id=$this->get_instance()->id;
-		$query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s, ";
-		$query .= '(SELECT max(id) as maxid, vpl, userid FROM {vpl_submissions} ';
-		$query .= ' WHERE {vpl_submissions}.vpl=? GROUP BY {vpl_submissions}.userid) as ls';
-		$query .= ' WHERE s.vpl=? AND s.id = ls.maxid';
-		$parms = array($id,$id);
+		$query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s";
+		$query .= ' inner join ';
+		$query .= ' (SELECT max(id) as maxid FROM {vpl_submissions} ';
+		$query .= '  WHERE {vpl_submissions}.vpl=? ';
+		$query .= '  GROUP BY {vpl_submissions}.userid) as ls';
+		$query .= ' on s.id = ls.maxid';
+		$parms = array($id);
 		return $DB->get_records_sql($query,$parms);
 	}
 
