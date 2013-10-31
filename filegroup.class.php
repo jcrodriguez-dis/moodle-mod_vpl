@@ -300,6 +300,7 @@ class file_group_process{
 			@header('Pragma: no-cache');
 			@header('Accept-Ranges: none');
 			echo $data;
+			die;
 		}
 	}
 }
