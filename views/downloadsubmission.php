@@ -2,9 +2,9 @@
 /**
  * @version		$Id: downloadsubmission.php,v 1.15 2012-06-05 23:22:09 juanca Exp $
  * @package		VPL. Download submission in zip file
- * @copyright	2012 Juan Carlos RodrÃ­guez-del-Pino
+ * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos RodrÃ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 require_once dirname(__FILE__).'/../similarity/watermark.php';
@@ -20,6 +20,10 @@ $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
 $userid = optional_param('userid',FALSE,PARAM_INT);
 $submissionid =  optional_param('submissionid',FALSE,PARAM_INT);
+if(!$vpl->has_capability(VPL_GRADE_CAPABILITY)){
+    $userid = FALSE;
+    $submissionid = FALSE;
+}
 //Read record
 if($userid && $userid != $USER->id){
 	//Grader
@@ -32,7 +36,7 @@ if($userid && $userid != $USER->id){
 	}
 }
 else{
-	//view own submission
+	//Download own submission
 	$vpl->require_capability(VPL_VIEW_CAPABILITY);
 	$userid = $USER->id;
 	$grader = FALSE;
