@@ -140,6 +140,49 @@ function vpl_write_list_to_file($filename, $list){
  */
 function vpl_get_lang($bash_adapt=false){
 	global $SESSION,$USER,$CFG;
+	$common_langs = array (
+			'aa' => 'DJ',
+			'af' => 'ZA',
+			'am' => 'ET',
+			'an' => 'ES',
+			'az' => 'AZ',
+			'ber' => 'DZ',
+			'bg' => 'BG',
+			'ca' => 'ES',
+			'cs' => 'CZ',
+			'da' => 'DK',
+			'de' => 'DE',
+			'dz' => 'BT',
+			'en' => 'US',
+			'es' => 'ES',
+			'et' => 'EE',
+			'fa' => 'IR',
+			'fi' => 'FI',
+			'fr' => 'FR',
+			'hu' => 'HU',
+			'ig' => 'NG',
+			'it' => 'IT',
+			'is' => 'IS',
+			'ja' => 'JP',
+			'km' => 'KH',
+			'ko' => 'KR',
+			'lo' => 'LA',
+			'lv' => 'LV',
+			'pt' => 'PT',
+			'ro' => 'RO',
+			'ru' => 'RU',
+			'se' => 'NO',
+			'sk' => 'sk',
+			'so' => 'SO',
+			'sv' => 'SE',
+			'or' => 'IN',
+			'th' => 'th',
+			'ti' => 'ET',
+			'tk' => 'TM',
+			'tr' => 'TR',
+			'uk' => 'UA',
+			'yo' => 'NG' 
+	);
 	if(isset($SESSION->lang)){
 		$lang=$SESSION->lang;
 	}elseif(isset($USER->lang)){
@@ -152,9 +195,12 @@ function vpl_get_lang($bash_adapt=false){
 	if($bash_adapt){
 		$parts=explode('_',$lang);
 		if(count($parts) == 2){
-			$lang=$parts[0].'_'.strtoupper($parts[1]);
+			$lang=$parts[0];
 		}
-		$lang.='.utf8';
+		if(isset($common_langs[$lang])){
+			$lang=$lang.'_'.$common_langs[$lang];
+		}
+		$lang.='.UTF-8';
 	}
 	return $lang;
 }
@@ -421,7 +467,8 @@ function vpl_get_select_sizes($minimum=0,$maximum=PHP_INT_MAX){
 	}else{
 		$value=256*1024;
 	}
-	$increment = $value/2;
+	$pre=0;
+	$increment = $value/4;
 	while($value <= $maximum && $value >0){ //Avoid int overflow
 		$ret[$value] = vpl_conv_size_to_string($value);
 		$pre=$value;
@@ -430,11 +477,11 @@ function vpl_get_select_sizes($minimum=0,$maximum=PHP_INT_MAX){
 		if($pre >= $value){ //Check for loop end
 			break;
 		}
-		if($value>= 4*$increment){
-			$increment=$value/2;
+		if($value>= 8*$increment){
+			$increment=$value/4;
 		}
 	}
-	if($value>0 && $maximum > ($value*0.75)){ //Show limit value
+	if($pre < $maximum){ //Show limit value
 		$ret[$maximum] = vpl_conv_size_to_string($maximum);
 	}
 	return $ret;
@@ -505,4 +552,21 @@ function vpl_select_array($url,$array){
 	}
 	return $ret;
 }
-?>
+
+function vpl_is_valid_path_name($path) {
+	if (strlen($path) > 256)
+		return false;
+	$dirs = explode('/',$path);
+	for ($i = 0; $i < count($dirs); $i++){
+		if (!vpl_is_valid_file_name($dirs[$i]))
+			return false;
+	}
+	return true;
+}
+
+function vpl_is_valid_file_name($fileName){
+	$regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./';
+	if (strlen($fileName) < 1) return false;
+	if (strlen($fileName) > 128) return false;
+	return preg_match($regexp,$fileName) === 0;
+}

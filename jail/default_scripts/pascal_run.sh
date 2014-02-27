@@ -13,12 +13,12 @@ PROPATH=$(command -v fpc 2>/dev/null)
 if [ "$PROPATH" == "" ] ; then
 	PROPATH=$(command -v gpc 2>/dev/null)
 	if [ "$PROPATH" == "" ] ; then
-		echo "The jail need to install "GNU Pascal" or "Fre PAscal" to run this type of program"
+		echo "The jail need to install "GNU Pascal" or "Free Pascal" to run this type of program"
 		exit 0;
 	else
-		gpc --automake -lm -ovpl_execution $SOURCE_FILES
+		gpc --automake -o vpl_execution $SOURCE_FILES -lm 
 	fi
 else
-	fpc -ovpl_execution $VPL_SUBFILE0
+	fpc -ovpl_execution $SOURCE_FILES
 fi
 

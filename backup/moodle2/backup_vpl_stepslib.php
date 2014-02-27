@@ -132,11 +132,13 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
 					array('vpl' => backup::VAR_ACTIVITYID,'variation'  => backup::VAR_ACTIVITYID));
 			//$submission->set_source_table('vpl_submissions', array('vpl' => backup::VAR_ACTIVITYID));
 			//Uncomment previous line and comment next to backup all student's submissions nothe last one
-			$query = 'SELECT s.* FROM {vpl_submissions} AS s,';
-			$query .= '(SELECT max(id) as maxid, userid, vpl FROM {vpl_submissions}';
-			$query .= ' WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) AS ls';
-			$query .= ' WHERE s.vpl = ? and ls.maxid = s.id';
-			$submission->set_source_sql($query, array(backup::VAR_ACTIVITYID,backup::VAR_ACTIVITYID));
+//no the last one
+			$query = 'SELECT s.* FROM {vpl_submissions} AS s';
+			$query .= ' inner join';
+			$query .= ' (SELECT max(id) as maxid FROM {vpl_submissions}';
+			$query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) AS ls';
+			$query .= ' on ls.maxid = s.id';
+			$submission->set_source_sql($query, array(backup::VAR_ACTIVITYID));
 		}
 
 		// Define id annotations

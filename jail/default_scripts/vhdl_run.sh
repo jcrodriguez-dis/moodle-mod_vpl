@@ -8,11 +8,15 @@
 #load common script and check programs
 . common_script.sh
 check_program ghdl
+get_source_files vhdl vhd
 #compile
-ghdl -a *.vhd*
-echo "The first file/class must have the Main method"
+ghdl -a $SOURCE_FILES
 NAME=${VPL_SUBFILE0%.*}
 ghdl -e $NAME
 if [ -f $NAME ] ; then
 	mv $NAME vpl_execution
+else
+	echo "============================================"
+	echo "The first file name is the entity name"
+	echo "Use lowercase in file names"
 fi

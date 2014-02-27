@@ -116,32 +116,21 @@ class mod_vpl_submission {
 	 **/
 	function get_submitted_files(){
 		//TODO refactor to file_group_process
+		$fg=$this->get_submitted_fgm();
 		$ret = array();
-		$filelist = vpl_read_list_from_file($this->get_submissionfilelistname());
-		$basedir = $this->get_submission_directory();
-		foreach ($filelist as $filename) {
-			if($filename > ''){
-				$data = file_get_contents($basedir.$filename);
-				$ret[] = array('name' => $filename, 'data' => $data);
-			}
+		foreach ($fg->getFileList() as $filename) {
+			$data = $fg->getFileData($filename);
+			$ret[] = array('name' => $filename, 'data' => $data);
 		}
 		return $ret;
 	}
 
 	function set_submitted_file($files){
-		//TODO refactor to file_group_process
-		$filelist=array();
-		$basepath = $this->get_submission_directory();
+		//TODO Add new operation in file_group_process
+		$fg=$this->get_submitted_fgm();
 		foreach($files as $file){
-			$filename = basename($file['name']);
-			if($filename>''){
-				$filelist[] = $filename;
-				$fp = vpl_fopen($basepath.$filename);
-				fwrite($fp,$file['data']);
-				fclose($fp);
-			}
+			$fg->addFile($file['name'],$file['data']);
 		}
-		vpl_write_list_to_file($this->get_submissionfilelistname(),$filelist);
 	}
 
 	function is_equal_to(&$files, $comment = ''){
@@ -396,7 +385,7 @@ class mod_vpl_submission {
 			return false;
 		}
 		$instance = $this->instance;
-		$ret = $this->vpl->has_capability(VPL_GRADE_CAPABILITY);;
+		$ret = $this->vpl->has_capability(VPL_GRADE_CAPABILITY);
 		//new grade or update if grader
 		$ret = $ret && ($instance->dategraded || $USER->id == $instance->grader);
 		$ret = $ret || $this->vpl->has_capability(VPL_MANAGE_CAPABILITY);
@@ -560,7 +549,6 @@ class mod_vpl_submission {
 		//Show evaluation link
 		$ce =$this->getCE();
 		if($this->vpl->get_instance()->evaluate
-			&& $ce['compilation'] !== 0
 			&& !$this->is_graded()){
 			$url=vpl_mod_href('forms/evaluation.php','id',$id,
 							'userid',$userid);
@@ -677,7 +665,7 @@ class mod_vpl_submission {
 		//Prepare reg expressions
 		$regexps = array();
 		foreach ($list as $filename){
-			$escapefilename=preg_quote($filename);
+			$escapefilename=preg_quote($filename,"/");
 			$regexps[] = '/(.*?)('.$escapefilename.')\:( *)([0-9]+)(.*)/';
 		}
 		//process lines
@@ -942,34 +930,38 @@ class mod_vpl_submission {
 		}
 	}
 
-	/**
-	 * Send Compilation execution result to applet with transferResult JS function
-	 * @param $response array with result from server
-	 * @param $window DOM object where the applet is
-	 * @param $defer true/false defer JScript execution 
-	 * @return void
-	 */
-	function send_CE_to_editor($response,$window='window.parent'){
-		$this->get_CE_HTML($response,$compilation,$execution,$grade,false);
-		echo '<div style="display:none">';
-		if(strlen($compilation)){
-			echo '<div id="compilation">'.URLencode($compilation).'</div>';
-			echo "\n";
+    
+	function get_CE_for_editor($response=null){
+		$CE = new stdClass();
+		$CE->compilation='';
+		$CE->evaluation='';
+		$CE->execution='';
+		$CE->grade='';
+		if($response==null){
+		    $response=$this->getCE();
 		}
-		if(strlen($execution)){
-			echo '<div id="execution">'.URLencode($execution).'</div>';
-			echo "\n";
+		if($response['compilation']){
+			$CE->compilation=$response['compilation'];
 		}
-		if(strlen($grade)){
-			echo '<div id="grade">'.URLencode($grade).'</div>';
-			echo "\n";
+		if($response['executed']>0){
+			$raw_execution = $response['execution'];
+			$evaluation = $this->proposedComment($raw_execution);
+			$proposed_grade = $this->proposedGrade($raw_execution);
+			$CE->evaluation = $evaluation;
+			//FIXME
+			//TODO Important what to show to students about grade
+			if(strlen($proposed_grade) && $this->vpl->get_instance()->grade){
+				$sgrade = $this->print_grade_core($proposed_grade);
+				$CE->grade =get_string('proposedgrade',VPL,$sgrade);
+			}
+			//Show raw ejecution if no grade or comments
+			$manager = $this->vpl->has_capability(VPL_MANAGE_CAPABILITY);
+			if((strlen($raw_execution)>0 &&
+					(strlen($evaluation)+strlen($proposed_grade)==0)) || $manager){
+				$CE->execution = $raw_execution;
+			}
 		}
-		echo '</div>';
-		echo "\n";
-		echo vpl_include_js('VPL.transferResult('.$window.');');
-		echo "\n";
-		@ob_flush();
-		flush();
+		return $CE;
 	}
 	
 	function get_detail(){

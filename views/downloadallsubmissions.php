@@ -101,7 +101,8 @@ if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
 		$zipdirname .= '/';	
 		$sourcedir=$data->submission->get_submission_directory().'/';
 		foreach ($fgm->getFileList() as $filename) {
-			$zip->addFile($sourcedir.$filename,$zipdirname.$filename);
+			$source= file_group_process::encodeFileName($filename);
+			$zip->addFile($sourcedir.$source,$zipdirname.$filename);
 		}
 	}
 	$zip->close();

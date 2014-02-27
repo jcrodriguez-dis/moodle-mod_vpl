@@ -76,6 +76,15 @@ class file_group_process{
 	}
 
 	/**
+	 * encode file path to be a file name
+	 * @parm path file path
+	 * @return string
+	 */
+	static function encodeFileName($path){
+		return str_replace('/','=',$path);
+	}
+	
+	/**
 	 * Add a new file to the group/Modify the data file
 	 *
 	 * @param string $filename
@@ -83,7 +92,7 @@ class file_group_process{
 	 * @return bool (added==true)
 	 */
 	function addFile($filename,$data=null){
-		if($filename==''){
+		if(!vpl_is_valid_path_name($filename)){
 			return false;
 		}
 		ignore_user_abort (true);
@@ -91,7 +100,8 @@ class file_group_process{
 		foreach($filelist as $f){
 			if($filename == $f){
 				if($data !== null){
-					$fd = vpl_fopen($this->dir.$filename);
+					$path=$this->dir.self::encodeFileName($filename);
+					$fd = vpl_fopen($path);
 					fwrite($fd,$data);
 					fclose($fd);
 				}
@@ -104,7 +114,8 @@ class file_group_process{
 		$filelist[] = $filename;
 		$this->setFileList($filelist);
 		if($data){
-			$fd = vpl_fopen($this->dir.$filename);
+			$path=$this->dir.self::encodeFileName($filename);
+			$fd = vpl_fopen($path);
 			fwrite($fd,$data);
 			fclose($fd);
 		}
@@ -128,7 +139,7 @@ class file_group_process{
 		$filelistmod = array();
 		for($i = 0 ;$i <$l; $i++){
 			if($num== $i){
-				$fullname = $this->dir.$filelist[$num];
+				$fullname = $this->dir.self::encodeFileName($filelist[$num]);
 				$ret = true;
 				if(file_exists($fullname)){
 					unlink($fullname);
@@ -152,7 +163,7 @@ class file_group_process{
 	 * @return bool (renamed==true)
 	 */
 	function renameFile($num,$filename){
-		if($num<$this->numstaticfiles || $filename == ''){
+		if($num<$this->numstaticfiles || !vpl_is_valid_path_name($filename)){
 			return false;
 		}
 		ignore_user_abort (true);
@@ -161,15 +172,16 @@ class file_group_process{
 			return false;
 		}
 		if($num >= 0 && $num<count($filelist)){
-			if(file_exists($this->dir.$filelist[$num])){
-				rename($this->dir.$filelist[$num],$this->dir.$filename);
+			$path1=$this->dir.self::encodeFileName($filelist[$num]);
+			$path2=$this->dir.self::encodeFileName($filename);				
+			if(file_exists($path1)){
+				rename($path1,$path2);
+				$filelist[$num] =$filename;
+				$this->setFileList($filelist);
+				return true;
 			}
-			$filelist[$num] =$filename;
-			$this->setFileList($filelist);
-			return true;
-		}else{
-			return false;
 		}
+		return false;
 	}
 
 	/**
@@ -211,7 +223,7 @@ class file_group_process{
 			$num=$mix;
 			$filelist = $this->getFileList();
 			if($num>=0 && $num<count($filelist)){
-				$filename =$this->dir.$filelist[$num];
+				$filename =$this->dir.self::encodeFileName($filelist[$num]);
 				if(file_exists($filename)){
 					return file_get_contents($filename);
 				}else{
@@ -220,10 +232,9 @@ class file_group_process{
 			}
 		}
 		elseif(is_string($mix)){
-			$filename=basename($mix);
 			$filelist = $this->getFileList();
-			if(array_search($filename,$filelist)!== false){
-				$fullfilename =$this->dir.$filename;
+			if(array_search($mix,$filelist)!== false){
+				$fullfilename =$this->dir.self::encodeFileName($mix);
 				if(file_exists($fullfilename)){
 					return file_get_contents($fullfilename);
 				}else{
@@ -242,7 +253,7 @@ class file_group_process{
 	function is_populated(){
 		$filelist = $this->getFileList();
 		foreach($filelist as $filename){
-			$fullname = $this->dir.$filename;
+			$fullname = $this->dir.self::encodeFileName($filename);
 			if(file_exists($fullname)){
 				$info = stat($fullname);
 			 	if($info['size']>0){
@@ -261,7 +272,7 @@ class file_group_process{
 		global $OUTPUT;
 		$filenames = $this->getFileList();
 		foreach ($filenames as $name) {
-			if(file_exists($this->dir.$name)){
+			if(file_exists($this->dir.self::encodeFileName($name))){
 				echo '<h3>'.s($name).'</h3>';
 				$printer= vpl_sh_factory::get_sh($name);
 				echo $OUTPUT->box_start();
@@ -279,6 +290,7 @@ class file_group_process{
 	 * @parm $name name of zip file generated
 	 **/
 	function download_files($name){
+		$cname = rawurlencode($name.'.zip');
 		global $CFG;
 		$zip = new ZipArchive();
 		$zipfilename=tempnam($CFG->dataroot . '/temp/'  , 'vpl_zipdownload' );
@@ -293,13 +305,15 @@ class file_group_process{
 			unlink($zipfilename);
 			//Send zipdata
 			@header('Content-Length: '.strlen($data));
-			@header('Content-Type: application/octet-stream; charset=utf-8');
-			@header('Content-Disposition: attachment; filename="'.$name.'.zip"');
+			@header('Content-Type: application/zip; charset=utf-8');
+			@header('Content-Disposition: attachment; filename="'.$name.'.zip"; filename*=utf-8\'\''.$cname);
 			@header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0');
-			@header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
+			@header('Content-Transfer-Encoding: binary');
+			@header('Expires: 0');
 			@header('Pragma: no-cache');
 			@header('Accept-Ranges: none');
 			echo $data;
+			die;
 		}
 	}
 }

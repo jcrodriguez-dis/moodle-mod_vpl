@@ -11,8 +11,9 @@ require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../vpl_submission_CE.class.php';
-
+require_once dirname(__FILE__).'/../editor/editor_utility.php';
 require_login();
+vpl_editor_util::generate_requires_evaluation();
 
 $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
@@ -36,25 +37,18 @@ flush();
 $course = $vpl->get_course();
 $instance = $vpl->get_instance();
 $vpl->add_to_log('evaluate', vpl_rel_url('forms/evaluation.php','id',$id,'userid',$userid));
-$submission_instance=$vpl->last_user_submission($userid);
-if($submission_instance === false){
-	print_error('vpl_submission not found');
-}else{
-	$submission=new mod_vpl_submission_CE($vpl,$submission_instance);
-	try{
-		$submission->evaluate(false);
-	}catch(Exception $e){
-		global $OUTPUT;
-		echo $OUTPUT->box($e->getMessage());
-		flush();
-		usleep(5000000);
-	}
-}
+echo '<h2>'.s(get_string('evaluating',VPL)).'</h2>';
+$userinfo=$DB->get_record('user',array('id' => $userid));
+$text = ' '.$vpl->user_picture($userinfo);
+$text .= ' '.fullname($userinfo);
+echo $OUTPUT->box($text);
+$ajaxurl="edit.json.php?id={$id}&userid={$userid}&action=";
 if(optional_param('grading',0,PARAM_INT)){
 	$inpopup = optional_param('inpopup',0,PARAM_INT);
-	vpl_inmediate_redirect(vpl_mod_href('forms/gradesubmission.php','id',$id,'userid',$userid,'inpopup',$inpopup));
+	$nexturl="../forms/gradesubmission.php?id={$id}&userid={$userid}&inpopup={$inpopup}";
 }else{
-	vpl_redirect(vpl_mod_href('forms/submissionview.php','id',$id,'userid',$userid),'',2);	
+	$nexturl="../forms/submissionview.php?id={$id}&userid={$userid}";	
 }
+vpl_editor_util::generateEvaluateScript($ajaxurl,$nexturl);
 $vpl->print_footer();
 ?>

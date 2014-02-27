@@ -23,7 +23,7 @@ if($userid){
 }else{
 	$vpl->prepare_page('forms/submission.php', array('id' => $id));
 }
-if(!$vpl->is_visible()){
+if(!$vpl->is_submit_able()){
 	notice(get_string('notavailable'));
 }
 if(!$userid || $userid == $USER->id){//Make own submission

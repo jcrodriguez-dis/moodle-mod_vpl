@@ -39,7 +39,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE{
 	/**
 	 * Evaluate, removed.
 	 */
-	function evaluate(){
+	function evaluate($transfer=true){
 	}
 }
 ?>

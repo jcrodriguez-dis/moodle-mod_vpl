@@ -249,7 +249,6 @@ $string['page_unaccessible']= 'Unerreichbare Seite';
 $string['about']= 'Über';
 $string['help_about']= 'Hilfe über';
 $string['figure']='Abbildung';
-$string['applet_code_editor_about']= 'Über Applet Code Editor';
 $string['line_number']= 'Zeilennummer';
 $string['toggle_show_line_number']= 'Zeilennummern anzeigen';
 $string['next']= 'Weiter';

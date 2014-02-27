@@ -231,7 +231,6 @@ $string['page_unaccessible']= 'Strona niedostępna';
 $string['about']= 'O';
 $string['help_about']= 'Pomoc na temat';
 $string['figure']='Image';
-$string['applet_code_editor_about']= 'O Edytorze Apletów';
 $string['line_number']= 'Numer linii';
 $string['toggle_show_line_number']= 'Włącz numerowanie linii';
 $string['next']= 'Następny';

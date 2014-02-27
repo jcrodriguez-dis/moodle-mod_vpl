@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
-require_once dirname(__FILE__).'/../jail/HTTP_request.class.php';
 require_once dirname(__FILE__).'/../jail/jailserver_manager.class.php';
 
 require_login();
@@ -36,19 +35,12 @@ $table->head  = array ('#',
 $table->align = array ('right','left', 'left', 'left', 'left', 'right');
 $table->data =array();
 $num=0;
-$clean_url = !$vpl->has_capability(VPL_SETJAILS_CAPABILITY);
+$clean_url = !$vpl->has_capability(VPL_SETJAILS_CAPABILITY) || 
+             !$vpl->has_capability(VPL_MANAGE_CAPABILITY);
 foreach($servers as $server){
 	$serverurl=$server->server;
 	if($clean_url){
-		$serverurl=str_replace('http://','',$serverurl);
-		$pos=strrpos($serverurl,':');
-		if($pos !== false){
-			$serverurl = substr($serverurl,0,$pos);
-		}
-		$pos=strpos($serverurl,'/',2);
-		if($pos !== false){
-			$serverurl = substr($serverurl,0,$pos);
-		}
+		$serverurl=parse_url($serverurl,PHP_URL_HOST);
 	}
 	$num++;
 	if($server->offline){

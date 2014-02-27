@@ -11,26 +11,47 @@ require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/filegroup_form.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
-require_once dirname(__FILE__).'/../views/sh_factory.class.php';
-require_once $CFG->libdir.'/formslib.php';
+require_once dirname(__FILE__).'/../editor/editor_utility.php';
+vpl_editor_util::generate_requires();
 
 require_login();
-
 $id = required_param('id',PARAM_INT);
+
 $vpl = new mod_vpl($id);
+$instance = $vpl->get_instance();
 $vpl->prepare_page('forms/executionfiles.php', array('id' => $id));
+
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-//Display page
-$course = $vpl->get_course();
-$fgp = $vpl->get_execution_fgm();
-$vpl->print_header(get_string('execution',VPL));
+$fgp = $vpl->get_required_fgm();
+$vpl->print_header(get_string('executionfiles',VPL));
 $vpl->print_heading_with_help('executionfiles');
 $vpl->print_configure_tabs(basename(__FILE__));
-$mform = new mod_vpl_filegroup_form('executionfiles.php',$fgp,get_string('execution',VPL));
-$mform->preheader_process($vpl->get_printable_name());
-$mform->process();
-$vpl->add_to_log('execution form', vpl_rel_url('forms/executionfiles.php','id',$id));
-$mform->display();
+//TODO download in zip file
+
+$options = Array();
+$options['restrictededitor']=false;
+$options['save']=true;
+$options['run']=false;
+$options['debug']=false;
+$options['evaluate']=false;
+$options['ajaxurl']="executionfiles.json.php?id={$id}&action=";
+$options['download']="../views/downloadexecutionfiles.php?id={$id}";
+$options['resetfiles']=false;
+$options['minfiles']=0;
+$options['maxfiles']=100;
+//Get files
+$fgp = $vpl->get_execution_fgm();
+$options['minfiles']=$fgp->get_numstaticfiles();
+$filelist =$fgp->getFileList();
+$nf = count($filelist);
+$files = Array();
+for( $i = 0; $i < $nf; $i++){
+	$filename=$filelist[$i];
+	$filedata=$fgp->getFileData($filelist[$i]);
+	$files[$filename]=$filedata;
+}
+session_write_close();
+echo $OUTPUT->box_start();
+vpl_editor_util::print_tag($options,$files);
+echo $OUTPUT->box_end();
 $vpl->print_footer_simple();
-?>

@@ -7,12 +7,16 @@
 
 #load common script and check programs
 . common_script.sh
+export MONO_ENV_OPTIONS=--gc=sgen
+export MONO_GC_PARAMS=max-heap-size=64m
 check_program gmcs
 check_program mdb
 #compile
 gmcs -out:output.exe *.cs
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
+	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
+	echo "export MONO_GC_PARAMS=max-heap-size=64m" >> vpl_execution
 	echo "mdb output.exe" >> vpl_execution
 	chmod +x vpl_execution
 fi

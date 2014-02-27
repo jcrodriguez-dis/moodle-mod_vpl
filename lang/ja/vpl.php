@@ -26,7 +26,6 @@ $string['addfile'] = 'ファイルの追加';
 $string['allfiles'] = 'すべてのファイル';
 $string['allsubmissions'] = 'すべての提出物';
 $string['anyfile'] = '任意のファイル';
-$string['applet_code_editor_about'] = 'アプレットコードエディタについて';
 $string['attemptnumber'] = '試行番号{$a}';
 $string['automaticevaluation'] = '自動実行';
 $string['automaticgrading'] = '自動評価';

@@ -10,4 +10,4 @@
 check_program gcc
 get_source_files c
 #compile
-gcc -o vpl_execution -std=c99 -lm -lutil $SOURCE_FILES
+eval gcc -o vpl_execution $SOURCE_FILES -std=c99 -lm -lutil 

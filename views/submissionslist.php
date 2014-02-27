@@ -93,7 +93,7 @@ class vpl_submissionlist_order{
 		}
 	}
 }
-function vpl_evaluate($vpl,$submission,$all_data,$userinfo,$nevaluation,$groups_url){
+function vpl_evaluate($vpl,$all_data,$userinfo,$nevaluation,$groups_url){
 	global $OUTPUT;
    	$nevaluation++;
 	try{
@@ -103,16 +103,18 @@ function vpl_evaluate($vpl,$submission,$all_data,$userinfo,$nevaluation,$groups_
 		$text .= ' '.fullname($userinfo);
 		$text .= ' <a href="'.$groups_url.'">'.get_string('cancel').'</a>';
 		echo $OUTPUT->box($text);
-		$submission->evaluate(false);
+		$id=$vpl->get_course_module()->id;
+		$userid=$userinfo->id;
+		$ajaxurl="../forms/edit.json.php?id={$id}&userid={$userinfo->id}&action=";
+		$url=vpl_url_add_param($groups_url,'evaluate',optional_param('evaluate', 0, PARAM_INT));
+		$url=vpl_url_add_param($url,'nevaluation',$nevaluation);
+		$nexturl=str_replace('&amp;','&',urldecode($url));
+		vpl_editor_util::generateEvaluateScript($ajaxurl,$nexturl);
 	}catch(Exception $e){
 		echo $OUTPUT->box($e->getMessage());
-		$vpl->print_footer();
-		die;
 	}
-	$url=vpl_url_add_param($groups_url,'evaluate',optional_param('evaluate', 0, PARAM_INT));
-	$url=vpl_url_add_param($url,'nevaluation',$nevaluation);
-	vpl_inmediate_redirect($url);				
-
+	$vpl->print_footer();
+	die;
 }
 
 function vpl_submissionlist_arrow($burl, $sort, $selsort, $seldir){
@@ -147,6 +149,10 @@ $nevaluation = optional_param('nevaluation', 0, PARAM_INT);
 $sort = vpl_get_set_session_var('subsort','lastname', 'sort');
 $sortdir = vpl_get_set_session_var('subsortdir','move', 'sortdir');
 $subselection = vpl_get_set_session_var('subselection','allsubmissions','selection');
+if($evaluate>0){
+	require_once $CFG->dirroot.'/mod/vpl/editor/editor_utility.php';
+	vpl_editor_util::generate_requires_evaluation();
+}
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('views/submissionslist.php',array('id' => $id));
 
@@ -275,7 +281,7 @@ if($gradeable){
 	$table->head  = array ('','',$namesortselect, $strsubtime,$strsubmisions);
 	$table->aling = array ('right','left','left', 'right', 'right');
 }
-$table->size = array ('','','60','');
+$table->size = array ('','','60px','');
 //Sort by sort field
 usort($all_data,vpl_submissionlist_order::set_order($sort,$sortdir != 'up'));
 $show_photo = count($all_data)<100;
@@ -319,7 +325,7 @@ foreach ($all_data as $data) {
 		}
 		$subid=$subinstance->id;
 		if($evaluate == 4 && $nevaluation <= $usernumber){ //Need evaluation
-		   	vpl_evaluate($vpl,$submission,$all_data,$userinfo,$usernumber,$groups_url);
+		   	vpl_evaluate($vpl,$all_data,$userinfo,$usernumber,$groups_url);
 		}
 		if($subinstance->dategraded>0){
 			$text = $submission->print_grade_core();
@@ -360,7 +366,7 @@ foreach ($all_data as $data) {
 			if(($evaluate == 1 && $result['compilation'] === 0)||
 			   ($evaluate == 2 && $result['executed'] === 0 && $nevaluation <= $usernumber) ||
 			   ($evaluate == 3 && $nevaluation <= $usernumber)){ //Need evaluation
-			   	vpl_evaluate($vpl,$submission,$all_data,$userinfo,$usernumber,$groups_url);
+			   	vpl_evaluate($vpl,$all_data,$userinfo,$usernumber,$groups_url);
 			}
 			if($result['executed']!==0){
 				$prograde=$submission->proposedGrade($result['execution']);

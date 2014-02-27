@@ -9,9 +9,9 @@
 . vpl_environment.sh
 #Use current lang
 export LC_ALL=$VPL_LANG 1>/dev/null 2>vpl_set_locale_error
-#If current lang not available use en_US.utf8
+#If current lang not available use en_US.UTF-8
 if [ -s vpl_set_locale_error ] ; then
-	export LC_ALL=en_US.utf8  1>/dev/null 2>/dev/null
+	export LC_ALL=en_US.UTF-8  1>/dev/null 2>/dev/null
 fi
 rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 stty erase ^H 1>/dev/null 2>/dev/null
@@ -20,18 +20,15 @@ function get_source_files {
 	SOURCE_FILES=""
 	for ext in "$@"
 	do
-		ls *.$ext >ext_exist 2>/dev/null
-		if [ -s ext_exist ] ; then
-			SOURCE_FILES="$SOURCE_FILES *.$ext"
-		fi
+	    source_files_ext=$(find . -name "*.$ext" | sed 's/^.\///g' |xargs)
+	    SOURCE_FILES="$SOURCE_FILES $source_files_ext"
 	done
-	rm ext_exist 1>/dev/null 2>/dev/null
 }
 
 function check_program {
 	PROPATH=$(command -v $1)
 	if [ "$PROPATH" == "" ] ; then
-		echo "The jail need to install \"$1\" to run this type of program"
+		echo "The execution server needs to install \"$1\" to run this type of program"
 		exit 0;
 	fi
 }

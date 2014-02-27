@@ -218,7 +218,6 @@ $string['page_unaccessible']= 'No es pot accedir a la pàgina';
 $string['about']= 'Quant a';
 $string['help_about']= 'Ajuda quant a';
 $string['figure']='Figura';
-$string['applet_code_editor_about']= 'Sobre Applet Code Editor';
 $string['line_number']= 'Número de línia';
 $string['toggle_show_line_number']= 'Mostra número de línia';
 $string['next']= 'Següent';

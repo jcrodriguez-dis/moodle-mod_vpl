@@ -255,7 +255,6 @@ $string['page_unaccessible']= 'Kättesaamatu lehekülg';
 // $string['about']= 'About'; // ??
 $string['help_about']= 'Help about'; // TODO
 $string['figure']='Figure'; // TODO
-$string['applet_code_editor_about']= 'Applet Code Editor About'; // TODO
 $string['line_number']= 'Reanumber';
 $string['toggle_show_line_number']= 'Lülita reanumbrite näitamine';
 $string['next']= 'Järgmine';

@@ -9,13 +9,56 @@
 
 /**
  * vpl_jailserver_manager is a utility class to manage
- * the jail servers. get_Server if the key function
+ * the jail servers. get_Server is the main feature
  *
  */
 class vpl_jailserver_manager{
 	const recheck=300; //300 sec = 5 min ¿optional setable?
 	const table='vpl_jailservers';
 
+	static public function get_curl($server,$request,$fresh=false){
+		global $CFG;
+		if(!function_exists('curl_init')){
+			throw new Exception('PHP cURL requiered');
+		}
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $server);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/xml;charset=UTF-8', 'User-Agent: VPL 3.0'));
+		curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+		IF($fresh)
+			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+		if( @$CFG->vpl_acceptcertificates )
+			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+		return $ch;
+	}
+
+	static public function get_response($server,$request, &$error=null,$fresh=false){
+		$ch = vpl_jailserver_manager::get_curl($server,$request,$fresh);
+		$raw_response=curl_exec($ch);
+		if($raw_response === false){
+			$error='request failed: '.s(curl_error($ch));
+			curl_close($ch);
+			return false;
+		}else{
+			curl_close($ch);
+			$error='';
+			$response = xmlrpc_decode($raw_response, "UTF-8");
+			if(is_array($response)){
+				if(xmlrpc_is_fault ($response)){
+					$error = 'xmlrpc is fault: '.s($response["faultString"]);
+				}else{
+					return $response;
+				}
+			}else{
+				$error = 'http error '.s(strip_tags($raw_response));
+				$fail = true;
+			}
+			return false;				
+		}
+	}
 	/**
 	 * Check if the server is tagged as down
 	 * @param url $server
@@ -100,45 +143,37 @@ class vpl_jailserver_manager{
 		shuffle($serverlist);
 		$data = new stdClass();
 		$data->maxmemory=$maxmemory;
-		$requestReady = xmlrpc_encode_request('status',$data);
+		$requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
 		$feedback = '';
-		foreach (array(0=>false,1=>true) as $checkall){
-			foreach ($serverlist as $server) {
-				if($checkall || vpl_jailserver_manager::is_checkable($server)){
-					$cause='';
-					$fail = false;
-					$http = new vpl_HTTP_request($requestReady);
-					if($http->try_server($server,4)){
-						$raw_response=$http->get_response();
-						$response = xmlrpc_decode($raw_response);
-						if(is_array($response)){
-							if(xmlrpc_is_fault ($response)){
-								$cause = 'xmlrpc is fault: '.s($response["faultString"]);
-								$fail = true;
-							}else{
-								$status=$response['status'];
-								if($status == 'ready'){
-									return $server;
-								}else if($status!='busy'){
-									$cause = 'busy or without resources to acept the request';
-								}else{
-									$fail = true;
-									$cause = 'status: '.s($status);
-								}
-							}
-						}else{
-							$cause = 'http error '.s($raw_response);
-							$fail = true;
-						}
-					}else{
-						$cause =  'request failed: '.s($http->get_error());
-						$fail = true;
-					}
-					if($fail){
-						vpl_jailserver_manager::server_fail($server,$cause);
-					}
-					$feedback .= $server.' '.$cause."\n";
+		$plan_b = array();
+		foreach ($serverlist as $server) {
+			if(vpl_jailserver_manager::is_checkable($server)){
+				$response=self::get_response($server,$requestReady,$error);
+				if($response === false){
+					vpl_jailserver_manager::server_fail($server,$error);
+			    	$feedback .= parse_url($server,PHP_URL_HOST).' '.$error."\n";
+				}elseif(!isset($response['status'])){
+					vpl_jailserver_manager::server_fail($server,$error);
+					$feedback .= parse_url($server,PHP_URL_HOST)." protocol error (No status)\n";
+				}else{
+					if($response['status']=='ready')
+						return $server;
 				}
+			}else{
+				$plan_b[]=$server;
+			}
+		}
+		foreach ($plan_b as $server) {
+			$response=self::get_response($server,$requestReady,$error,true);
+			if($response === false){
+				vpl_jailserver_manager::server_fail($server,$error);
+			    $feedback .= parse_url($server,PHP_URL_HOST).' '.$error."\n";
+			}elseif(!isset($response['status'])){
+				vpl_jailserver_manager::server_fail($server,$error);
+				$feedback .= parse_url($server,PHP_URL_HOST)." protocol error (No status)\n";
+			}else{
+				if($response['status']=='ready')
+					return $server;
 			}
 		}
 		return false;
@@ -155,42 +190,17 @@ class vpl_jailserver_manager{
 			throw new Exception('PHP XMLRPC requiered');
 		}
 		$data = new stdClass();
-		$data->maxmemory=(int)$CFG->vpl_maxexememory;
-		$requestReady = xmlrpc_encode_request('status',$data);
+		$data->maxmemory=(int)1024*10;
+		$requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
 		$serverlist = array_unique(vpl_jailserver_manager::get_server_list($localserverlisttext));
 		$feedback = array();
 		foreach ($serverlist as $server) {
-			$cause='';
-			$fail = false;
-			$http = new vpl_HTTP_request($requestReady);
-			if($http->try_server($server,4)){
-				$raw_response=$http->get_response();
-				if($http->is_connected() && $raw_response==null){
-					$http->close_handles();
-					$cause =  'timeout';
-					$fail = true;
-				}else{
-					$response = xmlrpc_decode($raw_response);
-					if(is_array($response)){
-						if(xmlrpc_is_fault ($response)){
-							$cause = 'xmlrpc is fault: '.s($response["faultString"]);
-							$fail = true;
-						}else{
-							$status=$response['status'];
-							$cause = s($status);
-						}
-					}else{
-						$cause = 'http error '.s($raw_response);
-						$fail = true;
-					}
-				}
-			}else{
-				$cause =  'request failed: '.s($http->get_error());
-				$fail = true;
-			}
+			$response=self::get_response($server,$requestReady,$status);
 			$info= $DB->get_record(self::table,array('server' => $server));
-			if($fail){
-				vpl_jailserver_manager::server_fail($server,$cause);
+			if($response === false){
+				vpl_jailserver_manager::server_fail($server,$status);
+			}else{
+				$status=s($response['status']);
 			}
 			if($info == null){
 				$info = new stdClass();
@@ -199,12 +209,44 @@ class vpl_jailserver_manager{
 				$info->laststrerror='';
 				$info->nfails=0;
 			}
-			$info->current_status=$cause;
-			$info->offline = $fail;
+			$info->current_status=$status;
+			$info->offline = $response === false;
 			$feedback[]=$info;
 		}
 		return $feedback;
 	}
-}
 
-?>
+	/**
+	 * Return the https URL servers list
+	 * @param string $localserverlisttext='' List of local server in text
+	 * @return array of URLs
+	 */
+	static function get_https_server_list($localserverlisttext=''){
+		global $CFG;
+		global $DB;
+		if(!function_exists('xmlrpc_encode_request')){
+			throw new Exception('PHP XMLRPC requiered');
+		}
+		$data = new stdClass();
+		$data->maxmemory=(int)1024*10;
+		$requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
+		$serverlist = array_unique(vpl_jailserver_manager::get_server_list($localserverlisttext));
+		$list = array();
+		foreach ($serverlist as $server) {
+			if(vpl_jailserver_manager::is_checkable($server)){
+				$response=self::get_response($server,$requestReady,$error);
+				if($response === false){
+					vpl_jailserver_manager::server_fail($server,$error);
+				}elseif(!isset($response['status'])){
+					vpl_jailserver_manager::server_fail($server,$error);
+				}else{
+					if($response['status']=='ready'){
+						$parsed = parse_url($server);
+						$list[] = 'https://'.$parsed['host'].':'.$response['secureport'].'/OK';
+					}
+				}
+			}
+		}
+		return $list;
+	}
+}

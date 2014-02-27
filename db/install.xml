@@ -89,7 +89,7 @@
         <INDEX NAME="vpl_id" UNIQUE="true" FIELDS="vpl, id"/>
       </INDEXES>
     </TABLE>
-    <TABLE NAME="vpl_assigned_variations" COMMENT="Variations asigned to users" PREVIOUS="vpl_variations">
+    <TABLE NAME="vpl_assigned_variations" COMMENT="Variations asigned to users" PREVIOUS="vpl_variations" NEXT="vpl_running_processes">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id" PREVIOUS="id" NEXT="vpl"/>
@@ -101,6 +101,22 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="user_vpl" UNIQUE="true" FIELDS="userid, vpl" COMMENT="Index for userid vpl"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="vpl_running_processes" COMMENT="Running processes in jail servers" PREVIOUS="vpl_assigned_variations">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true" NEXT="userid"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id" PREVIOUS="id" NEXT="vpl"/>
+        <FIELD NAME="vpl" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="VPL id" PREVIOUS="userid" NEXT="server"/>
+        <FIELD NAME="server" TYPE="char" LENGTH="256" NOTNULL="true" SEQUENCE="false" COMMENT="URL jail server" PREVIOUS="vpl" NEXT="start_time"/>
+        <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Start time of process" PREVIOUS="server" NEXT="adminticket"/>
+        <FIELD NAME="adminticket" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Admin ticket to control process" PREVIOUS="start_time"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid_id" UNIQUE="true" FIELDS="userid, id" COMMENT="Index for userid id"/>
       </INDEXES>
     </TABLE>
   </TABLES>

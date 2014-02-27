@@ -438,19 +438,19 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm){
 			//Ver entrega
 			//Calificar
 			//Lista de entregas previas
-	$cmid=$cm->id;
-	$context = context_module::instance($cmid);
-	$viewer = has_capability(VPL_VIEW_CAPABILITY,$context);
-	$submiter = has_capability(VPL_SUBMIT_CAPABILITY,$context);
-	$similarity = has_capability(VPL_SIMILARITY_CAPABILITY,$context);
-	$grader = has_capability(VPL_GRADE_CAPABILITY,$context);
-	$manager = has_capability(VPL_MANAGE_CAPABILITY,$context);
+	$vpl = new mod_vpl($cm->id);
+	$viewer = $vpl->has_capability(VPL_VIEW_CAPABILITY);
+	$submiter = $vpl->has_capability(VPL_SUBMIT_CAPABILITY);
+	$similarity = $vpl->has_capability(VPL_SIMILARITY_CAPABILITY);
+	$grader = $vpl->has_capability(VPL_GRADE_CAPABILITY);
+	$manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
 	$userid = optional_param('userid',false,PARAM_INT);
-	if(!$userid || ($userid && !$grader)){
-		$userid = $USER->id;
+	if(!$userid && $USER->id != $userid){
+		$parm = array('id' => $cm->id,'userid' => $userid);
+	}else{
+		$userid=$USER->id;
+		$parm = array('id' => $cm->id);
 	}
-	$parm = array('id' => $cmid);
-	$parm_user = array('id' => $cmid,'userid' => $userid);
 	$strdescription = get_string('description',VPL);
 	$strsubmission = get_string('submission',VPL);
 	$stredit = get_string('edit',VPL);
@@ -460,13 +460,29 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm){
 	if($viewer){
 		$vplnode->add($strdescription,new moodle_url('/mod/vpl/view.php', $parm), navigation_node::TYPE_SETTING);
 	}
-	if(!$grader){
+	$example = $vpl->get_instance()->example;
+	$submit_able = $manager || ($grader && $USER->id != $userid)
+				 || (!$grader && $submiter && $vpl->is_submit_able());
+	if($submit_able	&& !$example && !$vpl->get_instance()->restrictededitor){
 		$vplnode->add($strsubmission,new moodle_url('/mod/vpl/forms/submission.php', $parm), navigation_node::TYPE_SETTING);
+	}
+	if($submit_able){
 		$vplnode->add($stredit,new moodle_url('/mod/vpl/forms/edit.php', $parm), navigation_node::TYPE_SETTING);
+	}
+	if(!$example){
+		if($grader && $USER->id != $userid){
+			$text=get_string('grade');
+			$vplnode->add($text,new moodle_url('/mod/vpl/forms/gradesubmission.php', $parm), navigation_node::TYPE_SETTING);
+		}
 		$vplnode->add($strsubmissionview,new moodle_url('/mod/vpl/forms/submissionview.php', $parm), navigation_node::TYPE_SETTING);
-	}else{
-		$strsubmissionslist = get_string('submissionslist',VPL);
-		$vplnode->add($strsubmissionslist, new moodle_url('/mod/vpl/views/submissionslist.php', $parm), navigation_node::TYPE_SETTING);
+		if($grader || $similarity){
+			$strlistprevoiussubmissions = get_string('previoussubmissionslist',VPL);
+			$vplnode->add($strlistprevoiussubmissions, new moodle_url('/mod/vpl/views/previoussubmissionslist.php', $parm), navigation_node::TYPE_SETTING);
+		}
+		if($grader || $manager){
+			$strsubmissionslist = get_string('submissionslist',VPL);
+			$vplnode->add($strsubmissionslist, new moodle_url('/mod/vpl/views/submissionslist.php', $parm), navigation_node::TYPE_SETTING);
+		}
 		if($similarity){
 			$strssimilarity = get_string('similarity',VPL);
 			$vplnode->add($strssimilarity, new moodle_url('/mod/vpl/similarity/similarity_form.php', $parm), navigation_node::TYPE_SETTING);

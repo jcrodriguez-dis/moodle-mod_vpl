@@ -806,10 +806,11 @@ public:
 		const char *INPUT_TAG = "input=";
 		const char *INPUT_END_TAG = "inputend=";
 		const char *OUTPUT_TAG = "output=";
+		const char *OUTPUTREGEX_TAG = "outputregex=";
 		const char *OUTPUT_END_TAG = "outputend=";
 		const char *GRADEREDUCTION_TAG = "gradereduction=";
 		enum {
-			regular, ininput, inoutput
+			regular, ininput, inoutput,inoutputregex
 		} state, newstate;
 		bool inCase = false;
 		vector<string> lines = Tools::splitLines(Tools::readFile(fname));
@@ -821,6 +822,8 @@ public:
 		string tag, value;
 
 		float gradeReduction = std::numeric_limits<float>::min();
+		/*must be changed from String
+		 * to pair type (regexp o no) and string*/
 		vector<string> outputs;
 		state = regular;
 		int nlines = lines.size();
@@ -853,7 +856,7 @@ public:
 					continue; //Next line
 				}
 			} else if (state == inoutput) {
-				if (outputEnd.size()) { //Check for end of input
+				if (outputEnd.size()) { //Check for end of output
 					size_t pos = line.find(outputEnd);
 					if (pos == string::npos) {
 						output += line + "\n";
@@ -875,7 +878,30 @@ public:
 					output += line + "\n";
 					continue; //Next line
 				}
-			}
+			} else if (state == inoutputregex) {
+							if (outputEnd.size()) { //Check for end of output
+								size_t pos = line.find(outputEnd);
+								if (pos == string::npos) {
+									output += line + "\n";
+								} else {
+									cutToEndTag(line, outputEnd);
+									output += line;
+									outputs.push_back(output);
+									output = "";
+									state = regular;
+									continue; //Next line
+								}
+							} else if (tag.size() && (tag == INPUT_TAG || tag == OUTPUT_TAG
+									|| tag == GRADEREDUCTION_TAG || tag == CASE_TAG)) {//New valid tag
+								removeLastNL(output);
+								outputs.push_back(output);
+								output = "";
+								state = regular;
+							} else {
+								output += line + "\n";
+								continue; //Next line
+							}
+						}
 			if (state == regular && tag.size()) {
 				if (tag == INPUT_TAG) {
 					inCase = true;
@@ -891,6 +917,14 @@ public:
 						outputs.push_back(value);
 					else {
 						state = inoutput;
+						output = value + '\n';
+					}
+				} else if (tag == OUTPUTREGEX_TAG) {
+					inCase = true;
+					if (cutToEndTag(value, outputEnd))
+						outputs.push_back(value);
+					else {
+						state = inoutputregex;
 						output = value + '\n';
 					}
 				} else if (tag == GRADEREDUCTION_TAG) {
@@ -917,7 +951,8 @@ public:
 				}
 			}
 		}
-		if (state == inoutput) {
+		//TODO review
+		if (state == inoutput || state == inoutputregex) {
 			removeLastNL(output);
 			outputs.push_back(output);
 		}

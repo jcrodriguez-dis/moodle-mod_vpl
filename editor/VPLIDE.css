@@ -1,0 +1,166 @@
+.vpl_ide_root {
+	width: 100%;
+}
+.vpl_body_fullscreen{
+	overflow: hidden;
+}
+.vpl_ide_root_fullscreen {
+	width: 100%;
+	height: 100%;
+	position: fixed;
+	background-color:white;
+	top:0;
+	left:0;
+	z-index:90;
+}
+.vpl_ide_dialog{
+	z-index:999;
+}
+.vpl_ide_menu {
+	min-width: 320px;
+}
+.vpl_ide_tr {
+	position:relative;
+	min-width: 330px;
+	width: 100%;
+}
+
+.vpl_ide_tabs {
+	min-width: 200px;
+	position:absolute;
+    left:0px;
+}
+.vpl_ide_charicon{
+	color:rgb(200,200,200);
+	font-family:monospace;
+	vertical-align:0.15em;
+	text-shadow: -1px 0 gray, 0 1px gray,
+	  1px 0 gray, 0 -1px gray;
+}
+
+.vpl_ide_delicon{
+}
+.ui-tabs-active .vpl_ide_delicon:hover{
+	color:red;
+	cursor: pointer;
+}
+
+.vpl_ide_file {
+	margin: 2px;
+	padding: 0;
+}
+.vpl_ide_dropzone {
+	width: 200px;
+	height: 200px;
+}
+.vpl_ide_results {
+	min-width: 100px;
+    position:absolute;
+    right:0;
+    padding-left:3px;
+    padding-bottom:3px
+}
+.vpl_ide_results a {
+    padding: 1px 2px;
+    border-bottom: solid 1px;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
+}
+.vpl_ide_results pre {
+   line-height: 100%;
+}
+
+.vpl_ide_progressbar{
+	background-color: #ccc;
+	position: relative;
+	width: 200px;
+}
+.vpl_ide_progressbarlabel{
+	position:absolute;
+    width:100%;
+    text-align:center;
+    top: 4px;
+    font-weight: bold;
+    text-shadow: 1px -1px 0 white, -1px 1px 0 white, 2px -2px 1px white, -2px 2px 1px white;
+    /*color: white;*/
+}
+.vpl_ide {
+	font-size: 80%;
+}
+/* horizontal menu css Taken from "Jaime Peña Tresancos" en 
+   "En el presente artículo hablaremos de qué es y
+    qué proporciona el jQuery User Interface Menu"
+*/
+
+.vpl_ide .ui-menu {
+	overflow: hidden;
+	z-index: 10;
+}
+
+.vpl_ide .ui-menu>li {
+	float: left;
+	display: block;
+	width: auto !important;
+}
+
+.vpl_ide .ui-menu ul li {
+	display: block;
+	float: none;
+}
+
+.vpl_ide .ui-menu ul li ul {
+	left: 120px !important;
+	width: 100%;
+}
+
+.vpl_ide .ui-menu ul li ul li {
+	width: auto;
+}
+
+.vpl_ide .ui-menu ul li ul li a {
+	float: left;
+}
+
+.vpl_ide .ui-menu>li {
+	margin: 5px 5px !important;
+	padding: 0 0 !important;
+}
+
+.vpl_ide .ui-menu>li>a {
+	float: left;
+	display: block;
+	clear: both;
+	overflow: hidden;
+}
+
+.vpl_ide .ui-menu .ui-menu .ui-menu li {
+	float: left;
+	display: block;
+}
+
+.vpl_menu_option_separator{
+	width: 10em;
+	text-align: left;
+}
+.vpl_vnc{
+    position:fixed;
+    width: auto;
+    z-index: 1000;
+}
+
+.vpl_terminal{
+    padding: 0;
+    margin:0;
+    border:0;
+    z-index: 1000;
+}
+pre.vpl_terminal{
+	font:1em/1.2 monospace;
+	font-size:12px;
+    display: inline-block;
+}
+
+.vpl_vnc canvas{ 
+    width:800px;
+    height:600px;
+    background-color: black;
+}

@@ -12,10 +12,13 @@ require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 
 require_login();
-
 $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
 $vpl->password_check();
+$vpl->network_check();
+if(!$vpl->is_visible()){
+	notice(get_string('notavailable'));
+}
 $filegroup=$vpl->get_required_fgm();
 $filegroup->download_files($vpl->get_printable_name());
 die;

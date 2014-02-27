@@ -5,36 +5,47 @@
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
 
+function getClassName {
+    #replace / for .
+	local CLASSNAME=$(echo "$1" |sed 's/\//\./g')
+	#remove file extension .java
+	CLASSNAME=$(basename "$CLASSNAME" .java)
+	echo $CLASSNAME
+}
+
 #load common script and check programs
 . common_script.sh
+
 check_program javac
 check_program java
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
 	export CLASSPATH=$CLASSPATH:$JUNIT4
 fi
+get_source_files java
 #compile all .java files
-MAINCLASS=
-javac -J-Xmx16m -Xlint:deprecation *.java
+
+javac -J-Xmx16m -Xlint:deprecation $SOURCE_FILES
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
 #Search main procedure class
+MAINCLASS=
 for FILENAME in $VPL_SUBFILES
 do
-	grep "void[ \n\t]*main[ \n\t]*(" $FILENAME 2>&1 >/dev/null
-	if [ "$?" -eq "0" -a "$MAINCLASS" = "" ]	; then
-		MAINCLASS=$(basename $FILENAME .java)
+	egrep "void[ \t]+main[ \t]*\(" $FILENAME 2>&1 >/dev/null
+	if [ "$?" -eq "0" ]	; then
+		MAINCLASS=$(getClassName "$FILENAME")
 		break
 	fi
 done
 if [ "$MAINCLASS" = "" ] ; then
-	for FILENAME in *.java
+	for FILENAME in $SOURCE_FILES
 	do
-		grep "void[ \n\t]*main[ \n\t]*(" $FILENAME 2>&1 >/dev/null
-		if [ "$?" -eq "0" -a "$MAINCLASS" = "" ]	; then
-			MAINCLASS=$(basename $FILENAME .java)
+		egrep "void[ \t]+main[ \t]*\(" $FILENAME 2>&1 >/dev/null
+		if [ "$?" -eq "0" ]	; then
+			MAINCLASS=$(getClassName "$FILENAME")
 			break
 		fi
 	done
@@ -42,11 +53,11 @@ fi
 if [ "$MAINCLASS" = "" ] ; then
 #Search for junit4 test classes
 	TESTCLASS=
-	for FILENAME in *.java
+	for FILENAME in $SOURCE_FILES
 	do
 		grep "org\.junit\." $FILENAME 2>&1 >/dev/null
 		if [ "$?" -eq "0" ]	; then
-			TESTCLASS="$TESTCLASS $(basename $FILENAME .java)"
+			TESTCLASS=$(getClassName "$FILENAME")
 			break
 		fi
 	done
@@ -56,12 +67,19 @@ if [ "$MAINCLASS" = "" ] ; then
 	fi
 fi
 cat common_script.sh > vpl_execution
-if [ -f $JUNIT4 ] ; then
-	echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
-fi
+echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
 if [ ! "$MAINCLASS" = "" ] ; then
 	echo "java -Xmx16M -enableassertions $MAINCLASS" >> vpl_execution
 else
 	echo "java -Xmx16M org.junit.runner.JUnitCore $TESTCLASS" >> vpl_execution
 fi
 chmod +x vpl_execution
+for FILENAME in $SOURCE_FILES
+do
+	grep -E "JFrame|JDialog" $FILENAME 2>&1 >/dev/null
+	if [ "$?" -eq "0" ]	; then
+		mv vpl_execution vpl_wexecution
+		break
+	fi
+done
+

@@ -291,7 +291,7 @@ class vpl_diff{
 		$type = required_param('type'.$f, PARAM_INT);
 		if($type==1){
 			$subid = required_param('subid'.$f, PARAM_INT);
-			$filename = required_param('filename'.$f, PARAM_CLEANFILE);
+			$filename = required_param('filename'.$f, PARAM_TEXT);
 			$subinstance = $DB->get_record('vpl_submissions',array('id' => $subid));
 			if($subinstance !== false){
 				$vpl = new mod_vpl(false,$subinstance->vpl);

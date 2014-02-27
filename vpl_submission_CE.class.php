@@ -9,14 +9,17 @@
 defined('MOODLE_INTERNAL') || die();
 require_once dirname(__FILE__).'/../../lib/gradelib.php';
 require_once dirname(__FILE__).'/vpl_submission.class.php';
-require_once dirname(__FILE__).'/jail/HTTP_request.class.php';
 require_once dirname(__FILE__).'/jail/jailserver_manager.class.php';
-require_once dirname(__FILE__).'/jail/proxy.class.php';
+require_once dirname(__FILE__).'/jail/running_processes.class.php';
 class mod_vpl_submission_CE extends mod_vpl_submission{
-	private static $language_ext  = array('c' => 'c',
-							'cpp' => 'cpp', 'C' => 'cpp',
-							'java' => 'java',
+	private static $language_ext  = array(
 							'ada' => 'ada', 'adb' => 'ada', 'ads' => 'ada',
+							'asm' => 'asm',
+							'c' => 'c',
+							'cpp' => 'cpp', 'C' => 'cpp',
+							//'clj' => 'clojure',
+						    'cs' => 'csharp',
+							'java' => 'java',
 							'scala' => 'scala',
 							'sql' => 'sql',
 							'scm' => 'scheme','s' => 'scheme',
@@ -24,13 +27,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 							'pas' => 'pascal','p' => 'pascal',
 							'f77' => 'fortran', 'f' => 'fortran',
 							'pl' => 'prolog', 'pro' => 'prolog',
+							'htm' => 'html', 'html' => 'html',
 							'hs' => 'haskell',
-							'cs' => 'csharp',
 							'm' => 'matlab',
 							'perl' => 'perl', 'prl' => 'perl',
 							'php' => 'php',
 							'py' => 'python',
 							'vhd' => 'vhdl', 'vhdl' => 'vhdl',
+							'r' => 'r',
 							'rb' => 'ruby', 'ruby' => 'ruby');
 	private static $script_name=array('vpl_run.sh'=>'run','vpl_debug.sh'=>'debug','vpl_evaluate.sh'=>'evaluate');
 	
@@ -157,15 +161,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		if($vpl_instance->maxexeprocesses){
 			$data->maxprocesses=(int)$vpl_instance->maxexeprocesses;
 		}
+		//Add jailserver list
+		if($vpl->get_instance()->jailservers>''){
+			$data->jailservers .= "\n".$vpl->get_instance()->jailservers;
+		}
+		
 		if($call >0 ){ //Stop if at recursive call
 			return $data;
 		}
-		//Limit resource to maximum
-		$data->maxtime = min($data->maxtime,(int)$CFG->vpl_maxexetime);
-		$data->maxfilesize = min($data->maxfilesize,(int)$CFG->vpl_maxexefilesize);
-		$data->maxmemory = min($data->maxmemory,(int)$CFG->vpl_maxexememory);
-		$data->maxprocesses = min($data->maxprocesses,(int)$CFG->vpl_maxexeprocesses);
-				
 		//Submitted files
 		$sfg = $this->get_submitted_fgm();
 		$list = $sfg->getFileList();
@@ -177,6 +180,22 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 				$submittedlist[] = $filename;
 			}
 		}
+		//Get programming language
+		$pln = $this->get_pln($list);
+		//Adapt Java and HTML memory limit
+		if($pln == 'java' || $pln == 'html'){
+			$java_offset = 128*1024*1024; //Checked at Ubuntu 12.04 64 and CentOS 6.5 64
+			if($data->maxmemory + $java_offset > $data->maxmemory){
+				$data->maxmemory += $java_offset;
+			}else{
+				$data->maxmemory = (int)PHP_INT_MAX;
+			}
+		}
+		//Limit resource to maximum
+		$data->maxtime = min($data->maxtime,(int)$CFG->vpl_maxexetime);
+		$data->maxfilesize = min($data->maxfilesize,(int)$CFG->vpl_maxexefilesize);
+		$data->maxmemory = min($data->maxmemory,(int)$CFG->vpl_maxexememory);
+		$data->maxprocesses = min($data->maxprocesses,(int)$CFG->vpl_maxexeprocesses);
 		//Info send with script
 		$info ="#!/bin/bash\n";
 		$info .='export VPL_LANG='.vpl_get_lang(true)."\n";
@@ -185,7 +204,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 			$info .='export VPL_MAXMEMORY='.$data->maxmemory."\n";
 			$info .='export VPL_MAXFILESIZE='.$data->maxfilesize."\n";
 			$info .='export VPL_MAXPROCESSES='.$data->maxprocesses."\n";
-			$info .='export VPL_FILEBASEURL='.$CFG->wwwroot.'file.php/'.$vpl->get_course_module()->id."/\n";
 			$grade_setting=$vpl->get_grade_info();
 			if($grade_setting !== false){
 			   $info .='export VPL_GRADEMIN='.$grade_setting->grademin."\n";
@@ -196,17 +214,16 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		$filenames = '';
 		$num=0;
 		foreach ($submittedlist as $filename){
-			$filenames .= str_replace(' ','\\ ',$filename).' ';
-			$info .='export VPL_SUBFILE'.$num.'='.$filename."\n";
+			$filenames .= $filename.' ';
+			$info .='export VPL_SUBFILE'.$num.'="'.$filename."\"\n";
 			$num++;
 		}
-		$info .='export VPL_SUBFILES=\''.$filenames."'\n";
+		$info .='export VPL_SUBFILES="'.$filenames."\"\n";
 		//Add identifications of variations if exist
 		$varids=$vpl->get_variation_identification($this->instance->userid);
 		foreach ($varids as $id => $varid){
 			$info .='export VPL_VARIATION'.$id.'='.$varid."\n";
 		}
-		$pln = $this->get_pln($list);
 		for($i=0; $i<=$type; $i++){
 			$script = mod_vpl_submission_CE::$script_list[$i];
 			if(isset($data->files[$script]) && trim($data->files[$script])>''){
@@ -228,331 +245,152 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		$data->files['vpl_environment.sh']=$info;
 		$data->files['common_script.sh'] = file_get_contents(dirname(__FILE__).'/jail/default_scripts/common_script.sh');
 		
-		//Add jailserver list
-		if($vpl->get_instance()->jailservers>''){
-			$data->jailservers .= "\n".$vpl->get_instance()->jailservers;
-		}
 		//TODO change jail server to avoid this patch
 		if(count($data->filestodelete)==0){ //If keeping all files => add dummy
 			$data->filestodelete['__vpl_to_delete__']=1;
 		}
 		return $data;
 	}
-	
-	static private $send_alive_count=0;
-	
-	/**
-	 * Send text to browser and update the applet editor status bar
-	 * @param $to_editor if true update applet status bar process
-	 * @return void
-	 */
-	static function send_alive($to_editor=true){
-		if($to_editor){
-			echo vpl_include_js('VPL.updateStatusBarProcess(window.parent);');
-		}
-		echo str_pad('', 4100); //4K+4
-		echo "+\n";
-		self::$send_alive_count++;
-		@ob_flush();
-		flush();
-	}
 
-	/**
-	 * Send startStatusBarProcess to the applet editor status bar
-	 * @param $text the action to show
-	 * @param $window default window.parent
-	 * @return void
-	 */
-	static function send_start_process($text,$window='window.parent'){
-		echo vpl_include_js('VPL.startStatusBarProcess('.$window.',\''.addslashes($text).'\');');
-		@ob_flush();
-		flush();
-	}
-	
-	/**
-	 * Send endStatusBarProcess to the applet editor status bar
-	 * @param $text message to show, default nothing
-	 * @param $window
-	 * @return void
-	 */
-	static function send_end_process($text='', $window='window.parent'){
-		if($text==''){
-			echo vpl_include_js('VPL.endStatusBarProcess('.$window.');');
-		}else{
-			echo vpl_include_js('VPL.endStatusBarProcess('.$window.',"'.$text.'");');
+	function jailAction($server,$action,$data){
+		if(!function_exists('xmlrpc_encode_request')){
+			throw new Exception('Inernal server error: PHP XMLRPC requiered');
 		}
-		@ob_flush();
-		flush();
+		$request = xmlrpc_encode_request($action,$data,array('encoding'=>'UTF-8'));
+		$response = vpl_jailserver_manager::get_response($server,$request,$error);
+		if($response === false){
+			$manager = $this->vpl->has_capability(VPL_MANAGE_CAPABILITY);
+			if($manager){
+				throw new Exception(get_string('serverexecutionerror',VPL)."\n".$error);
+			}
+			throw new Exception(get_string('serverexecutionerror',VPL));
+		}
+		return $response;
+	}
+	
+	function jailRequestAction($data,$maxmemory,$localservers,&$server){
+		$error='';
+		$server = vpl_jailserver_manager::get_server($maxmemory, $localservers,$error);
+		if($server == ''){
+			$manager = $this->vpl->has_capability(VPL_MANAGE_CAPABILITY);
+			$men=get_string('nojailavailable',VPL);
+			if($manager){
+				$men .=": ".$error;
+			}
+			throw new Exception($men);
+		}
+		return $this->jailAction($server,'request',$data);
+	}
+	
+	function jailReaction($action, $process_info=false){
+		if($process_info === false){
+	    	$process_info=vpl_running_processes::get($this->get_instance()->userid);
+		}
+	    if($process_info === false){
+	    	throw new Exception('Process not found');
+	    }
+	    $server = $process_info->server;
+		$data = new stdClass();
+   		$data->adminticket=$process_info->adminticket;
+		return $this->jailAction($server,$action,$data);
 	}
 	
 	/**
-	 * Run, debug
-	 * @param int $type (0=run, 1=debug)
+	 * Run, debug, evaluate
+	 * @param int $type (0=run, 1=debug, evaluate=2)
 	 */
 	function run($type){
-		//Caller Check security (who and config)
-		global $CFG;
+		//Stop current task if one
+		$this->cancelProcess();
 		$execute_scripts= array(0=>'vpl_run.sh',1=>'vpl_debug.sh',2=>'vpl_evaluate.sh');
 		$data = $this->prepare_execution($type);
 		$data->execute =$execute_scripts[$type];
-		$this->send_alive();
-		@ob_flush();
-		$proxy = new vpl_doubleproxy($CFG->vpl_proxy_port_from,$CFG->vpl_proxy_port_to);
-		$proxy->get_jail_info($jport,$jpass,$cport,$cpass);
-		$data->interactive=1;
-		$data->ip = $_SERVER['SERVER_ADDR'];
-		$data->port=(int)$jport;
-		$data->password=$jpass;
-		$this->send_alive();
-		$limitTime = $data->maxtime; // save maxtime before manipulate $data
-		set_time_limit(2*$limitTime);
-		//Select server
-		$feedback = '';
-		$server = vpl_jailserver_manager::get_server($data->maxmemory, $data->jailservers,$feedback);
-		if($server == ''){
-			$this->send_end_process();
-			$men=get_string('nojailavailable',VPL);
-			if($this->vpl->has_capability(VPL_MANAGE_CAPABILITY)){
-				$men .="\n".$feedback;
-			}
-			throw new Exception($men);
-		}
+		$data->interactive=$type<2?1:0;
+		$data->lang = vpl_get_lang(true);
+		$localservers=$data->jailservers;
+		$maxmemory=$data->maxmemory;
 		//Remove jailservers field
 		unset($data->jailservers);
-		if(!function_exists('xmlrpc_encode_request')){
-			$this->send_end_process();
-			throw new Exception('PHP XMLRPC requiered');
-		}
-		$request = xmlrpc_encode_request('execute',$data,array('encoding'=>'UTF-8'));
-		$http=new vpl_HTTP_request($request);
-		$this->send_alive();
-		if(!$http->try_server($server)){
-			$this->send_end_process();
-			throw new Exception(get_string('serverexecutionerror',VPL)."\n".$http->get_error());
-		}
-		$go_on=true;
-		$timeUpdateBar=time();
-		$limitTime = 2*$limitTime + time(); //Limit time is 2(compilation+execution) * $data->maxtime
-		set_time_limit(2*$limitTime+1);
-		while($http->is_connected() && time()<$limitTime){
-			usleep(50000);
-			if($timeUpdateBar!=time()){ //Every second
-				$timeUpdateBar=time();
-				$this->send_alive();
-			}
-			$http->advance();
-			$proxy->advance();
-			if(!$http->is_connected()){
-				if($http->get_state() == vpl_HTTP_request::error){
-					$this->send_end_process();
-					debugging('http error '.$http->get_error());
-					$proxy->close();
-					throw new Exception('http error '.$http->get_error());
-				} 
-				$xml_response=$http->get_response();
-				//Debug write XML to file
-				//file_put_contents('/tmp/reponse_xmlrpc.txt',$xml_response);
-				$response=xmlrpc_decode($xml_response,'UTF-8');
-				if($response == null){
-					$this->send_end_process();
-					debugging('xmlrpc_decode error');
-					$proxy->close();
-					throw new Exception('xmlrpc_decode error');
-				}elseif(xmlrpc_is_fault($response)){
-					$this->send_end_process();
-					debugging('xmlrpc error: '.$response['faultString']);
-					$proxy->close();
-					throw new Exception('xmlrpc error: '.$response['faultString']);
-				}
-				//debug
-				//p($xml_response);
-				//p(print_r($response));
-			}
-		}
-		if($http->is_connected()){
-			$this->send_end_process();
-			$http->close_handles();
-			$proxy->close();
-			throw new Exception('Http with jail timeout');
-		}
-		$this->send_CE_to_editor($response);
-		@ob_flush();
-		flush();
-		if(! $response['executed']){
-			$proxy->close();
-			$this->send_end_process();
-			$proxy->close();
-			return;
-		}
-		//All OK then
-		//Open console
-		$script="window.parent.document.getElementById('appleteditorid').initConsole($cport,'$cpass');";
-		echo vpl_include_js($script);
-		@ob_flush();
-		flush();
-		$jailConnectTimeOut = time()+10; //After 10 seg. without connection timeout
-		while($proxy->is_running() && time()<$limitTime){
-			usleep(50000);
-			if($timeUpdateBar!=time()){ //Every second
-				$timeUpdateBar=time();
-				$this->send_alive();
-			}
-			$proxy->advance();
-			//Check for jail and console conection timeout
-			if( (!$proxy->was_jailconected() || !$proxy->was_clientconected())
-				&& $jailConnectTimeOut< time()){
-				$this->send_end_process();
-				$men = '';
-				if(!$proxy->was_jailconected()){
-					$men .= "Jail connection timeout\n";
-				}
-				if(!$proxy->was_clientconected()){
-					$text ='Console connection timeout';
-					$jpending = $proxy->get_clientpending();
-					if($jpending>''){
-						$text .= "\n-----------------------\n";
-						$text .= "Console output pending:\n";
-						//Clean joending
-						$parts = explode("\17",$jpending);
-						for($i=0;$i < count($parts); $i++)
-							if($i % 2 == 0)
-								$text .= $parts[$i];
-					}
-					if(strlen($text)>500){
-						$text=substr($text,0,500);
-					}
-					$men .= $text;
-				}
-				$proxy->close();
-				throw new Exception($men);
-			}
-			if( $proxy->was_clientconected() && !$proxy->is_clientconected()){
-				$this->send_end_process();
-				$proxy->close();
-				return;
-			}
-			if($proxy->was_jailconected() && !$proxy->is_jailconected() 
-			    && !$proxy->is_jailpending() && !$proxy->is_clientpending()){
-				$this->send_end_process();
-				$proxy->close();
-				return;
-			}		
-		}
-		if($proxy->is_running()){
-			$this->send_end_process();
-			$proxy->close();
-			if(time()>=$limitTime){
-				throw new Exception('Proxy global timeout');
-			}
-		}
+		$server='';
+		$jailResponse = $this->jailRequestAction($data,$maxmemory,$localservers,$server);
+		$isHTTPS = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on";
+		$parsed = parse_url($server);
+		if($isHTTPS)
+			$baseURL = 'wss://';
+		else
+			$baseURL = 'ws://';
+		$baseURL.=$parsed['host'];
+		if($isHTTPS)
+			$baseURL.=':'.$jailResponse['secureport'];
+		elseif(isset($parsed['port']))
+			$baseURL.=':'.$parsed['port'];
+		$baseURL.='/';
+		$response = new stdClass();
+		$response->monitorURL=$baseURL.$jailResponse['monitorticket'].'/monitor';
+		$response->executionURL=$baseURL.$jailResponse['executionticket'].'/execute';
+		$response->VNChost = $parsed['host'];
+		$response->VNCpath = $jailResponse['executionticket'].'/execute';
+		$response->VNCsecure = $isHTTPS;
+		if($isHTTPS)
+		   $response->port = $jailResponse['secureport'];
+		elseif(isset($parsed['port']))
+		   $response->port = $parsed['port'];
+		else
+		   $response->port = 80;
+		$response->VNCpassword = substr($jailResponse['executionticket'],0,8);
+		$certsURL= new moodle_url('/mod/vpl/views/getjailcertificates.php',
+				array('id' => $this->vpl->get_course_module()->id));
+		$response->certificatesURL = $certsURL->out(false);
+		$instance = $this->get_instance();
+		vpl_running_processes::set($instance->userid,
+		                          $server,
+		                          $instance->vpl,
+		                          $jailResponse['adminticket']);
+		return $response;
 	}
-	
-	/**
-	 * Evaluate submission.
-	 * @parm $transfer if true send result to applet (default value)
-	 * Save evaluation result and send information to the applet editor.
-	 * If configured send grade and comments to the gradebook.
-	 */
-	function evaluate($transfer=true){
-		//Caller Check security (who and config)
-		global $CFG;
-		$data = $this->prepare_execution(self::tevaluate);
-		$data->execute ='vpl_evaluate.sh';
-		$data->interactive=0;
-		$data->port=0;
-		$data->password=0;
-		$this->send_alive($transfer);
-		@ob_flush();
-		$limitTime = $data->maxtime; // save maxtime before manipulate $data
-		//Select server
-		$feedback='';
-		$server = vpl_jailserver_manager::get_server($data->maxmemory,$data->jailservers,$feedback);
-		if($server == ''){
-			if($transfer){
-				$this->send_end_process();
-			}
-			$men=get_string('nojailavailable',VPL);
-			if($this->vpl->has_capability(VPL_MANAGE_CAPABILITY)){
-				$men .="\n".$feedback;
-			}
-			throw new Exception($men);
-		}
-		$request = xmlrpc_encode_request('execute',$data,array('encoding'=>'UTF-8'));
-		$http=new vpl_HTTP_request($request);
-		$this->send_alive($transfer);
-		if(!$http->try_server($server)){
-			if($transfer){
-				$this->send_end_process();
-			}
-			throw new Exception(get_string('serverexecutionerror',VPL)."\n".$http->get_error());
-		}
-		$timeUpdateBar=time();
-		$limitTime = 2*$limitTime + time(); //Limit time is 2(compilation+execution) * $data->maxtime
-		set_time_limit(2*$limitTime+1);
-		while(time()<$limitTime){
-			usleep(50000);
-			if($timeUpdateBar!=time()){
-				$timeUpdateBar=time();
-				$this->send_alive($transfer);
-			}
-			$http->advance();
-			if(!$http->is_connected()){
-				if($http->get_state() == vpl_HTTP_request::error){
-					if($transfer){
-						$this->send_end_process();
-					}
-					debugging('http error '.$http->get_error());
-					throw new Exception('http error:'.$http->get_error());
-				} 
-				$xml_response=$http->get_response();
-				//Debug write XML to file
-				//file_put_contents('/tmp/reponse_xmlrpc.txt',$xml_response);
-				$response=xmlrpc_decode($xml_response,'UTF-8');
-				if($response == null){
-					if($transfer){
-						$this->send_end_process();
-					}
-					//p($xml_response);
-					debugging('xmlrpc_decode error');
-					throw new Exception('xmlrpc_decode error');
-				}elseif(xmlrpc_is_fault($response)){
-					if($transfer){
-						$this->send_end_process();
-					}
-					debugging('xmlrpc error: '.$response['faultString']);
-					throw new Exception('xmlrpc error: '.$response['faultString']);
+
+    function retrieveResult(){
+		//FIXME Caller Check security (who and config)
+    	$response = $this->jailReaction('getresult');
+    	if($response === false){
+    		throw new Exception(get_string('serverexecutionerror',VPL));
+    	}
+    	if($response['interactive']==0){
+			$this->saveCE($response);
+			if($response['executed']>0){
+				//If automatic grading
+				if($this->vpl->get_instance()->automaticgrading){
+					$data = new StdClass();
+					$data->grade = $this->proposedGrade($response['execution']);
+					$data->comments = $this->proposedComment($response['execution']);;
+					$this->set_grade($data,true);
 				}
-				//debug
-				//p($xml_response);
-				//p(print_r($response));
-				if($transfer){
-					$this->send_CE_to_editor($response);
-				}
-				$this->saveCE($response);
-				
-				if($response['executed']>0){
-					//If automatic grading
-					if($this->vpl->get_instance()->automaticgrading){
-						$data = new StdClass();
-						$data->grade = $this->proposedGrade($response['execution']);
-						$data->comments = $this->proposedComment($response['execution']);;
-						$this->set_grade($data,true);
-					}
-				}else{
-					if($transfer){
-						$this->send_end_process();
-					}
-				}
-				break;
 			}
-		}
-		if($http->is_connected()){
-			if($transfer){
-				$this->send_end_process();
-			}
-			$http->close_handles();
-			throw new Exception(get_string('httptimeout',VPL));
-		}
+    	}
+		return $this->get_CE_for_editor($response);
+	}
+
+    function isRunning(){
+    	//FIXME check security
+    	try{
+    		$response = $this->jailReaction('running');
+    	}catch(Exception $e){
+    		return false;
+    	}
+		return $response['running']>0;
+   	}
+
+    function cancelProcess(){
+    	//FIXME check security
+    	$process_info=vpl_running_processes::get($this->get_instance()->userid);
+    	if($process_info == null) //No process to cancel
+    		return;
+    	try{
+    		$this->jailReaction('stop',$process_info);
+    	}catch(Exception $e){
+    		//No matter, consider that the process stopped
+    	}
+    	vpl_running_processes::delete($this->get_instance()->userid);
 	}
 }
 ?>

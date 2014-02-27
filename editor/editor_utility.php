@@ -1,193 +1,251 @@
 <?php
 /**
  * @version		$Id: editor_utility.php,v 1.8 2013-04-16 17:40:10 juanca Exp $
- * @package		VPL. editor internationalization
+ * @package		VPL. editor utility functions
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/../locallib.php';
-function vpl_param_tag($name,$rawdata='',$plain=false){
-	global $CFG;
-	if($plain){
-		$data = $rawdata;
-	}else{
-		$data = urlencode($rawdata);
-	}
-	if(isset($CFG->vpl_direct_applet) && $CFG->vpl_direct_applet){
-		return '<param name="'.$name.'" value="'.$data.'" />'."\n";
-	}else{
-		return 'applet_parms.'.$name."='".$data."';\n";
-	}
-}
-
-function vpl_get_editor_tag($param_tags=''){
-	global $CFG;
-	$user_agent = strtolower($_SERVER['HTTP_USER_AGENT']);
-	$msie = false;
-	$firefox = false;
-	if(strpos($user_agent, 'msie')!== false){
-		$msie = true;
-	}
-	if(strpos($user_agent, 'firefox')!== false){
-		$firefox = true;
-	}
-	$object_tag = ($msie || $firefox);
-	$main='org.acodeeditor.gui.Main.class';
-	$archive = vpl_mod_href('editor/appleteditor.jar');
-	$applet ='<div id="appletdivid" style="height:100%;width:100%">';
-	if(isset($CFG->vpl_direct_applet) && $CFG->vpl_direct_applet){
-/*		if($object_tag){ //Use object or applet
-			$common_atr =' type="application/x-java-applet"';
-			$common_atr .=' id="appleteditorid"';
-			$common_atr .=' height="100%" width="100%"';
-			$common_atr .= ' codebase="'.vpl_mod_href('editor').'"';
-			$common_atr .= ' codetype="application/java-archive"';
-			$common_atr .= ' archive="'.$archive.'"';
-			$common_atr .=' jnlp_href="'.vpl_mod_href('editor/appleteditor.jnlp').'"';
-			$applet .='<object';
-			$applet .=' classid="java:org.acodeeditor.gui.Main"';
-			$applet .=$common_atr.' >';
-			$applet .= vpl_param_tag('codebase',vpl_mod_href('editor'),true);
-			$applet .= vpl_param_tag('codetype','application/java-archive',true);
-			$applet .= vpl_param_tag('archive',$archive,true);
-			$applet .= vpl_param_tag('code',$main,true);
-			$applet.=$param_tags;
-			$applet.='<object>Please, <a href="http://www.java.com/">download Java</a> or/and update your browser</object>';
-			$applet.='</object>';
+/**
+ * Class with auxiliar functions for the editor
+ **/
+class vpl_editor_util{
+	static function generate_jquery(){
+		global $PAGE;
+		//REMOVE this comment to use Moodle jquery version
+		//Auto selection dont work in 2.3
+		/*if(method_exists($PAGE->requires,'jquery_plugin')){
+			$PAGE->requires->jquery();
+			$PAGE->requires->jquery_plugin('ui');
+			$PAGE->requires->jquery_plugin('ui-css');
 		}else*/{
-			$common_atr =' id="appleteditorid"';
-			$common_atr .=' height="100%" width="100%"';
-			$common_atr .=' archive="'.$archive.'"';
-			$common_atr .=' code="'.$main.'"';
-			$common_atr .=' codebase="'.vpl_mod_href('editor').'"';
-			$common_atr .=' jnlp_href="'.vpl_mod_href('editor/appleteditor.jnlp').'"';
-			$applet .='<applet';
-			$applet .=$common_atr.">\n";
-			$applet.=$param_tags;
-			$applet.=vpl_param_tag('jnlp_href',vpl_mod_href('editor/appleteditor.jnlp'),true);
-			$applet.='<a href="http://www.java.com/">Download Java</a> or/and update your browser';
-			$applet.="\n</applet>\n";
+			$PAGE->requires->css(new moodle_url('/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css'));
+			$PAGE->requires->js(new moodle_url('/mod/vpl/editor/jquery/jquery-1.9.1.js'),true);
+			$PAGE->requires->js(new moodle_url('/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js'),true);
 		}
 	}
-	else{
-		$http= (strpos($CFG->wwwroot,'https')== 0)?'https':'http';
-		$applet .='<script type="text/javascript" src="'.$http.'://www.java.com/js/deployJava.js"></script>'."\n";
-		$js = "var applet_parms=new Object;\nvar applet_atr=new Object;\n";
-		$js .="applet_atr.id='appleteditorid';\n";
-		$js .="applet_atr.height='100%';\n";
-		$js .="applet_atr.width='100%';\n";
-		$js .="applet_atr.archive='".$archive."';\n";
-		$js .="applet_atr.code='".$main."';\n";
-		$js .="applet_atr.codebase='".vpl_mod_href('editor/')."';\n";
-		$js .=vpl_param_tag('jnlp_href',vpl_mod_href('editor/appleteditor.jnlp'),true);
-		$js .=$param_tags;
-		$js .="deployJava.runApplet( applet_atr, applet_parms, '1.6' );\n";
-		$applet .=vpl_include_js($js);
+	static function generate_requires_evaluation(){
+		global $PAGE;
+		self::generate_jquery();
+		$PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/evaluationMonitor.js'),true);
 	}
-	
-	$applet.='</div>';
-	return $applet;
-}
-
-class vpl_editor_i18n{
-	/**
-	 * Return editor i18n string list
-	 * @return  string of lines with format "word=i18nword"
-	 **/
-	protected static function editor_i18n_strings(){
-		$list=array(
-			'previous_page',
-			'return_to_previous_page',
-			'next_page',
-			'go_next_page',
-			'help',
-			'contextual_help',
-			'general_help',
-			'edit',
-			'file',
-			'options',
-			'new',
-			'create_new_file',
-			'file_name',
-			'incorrect_file_name',
-			'rename',
-			'renameFile',
-			'new_file_name',
-			'delete',
-			'delete_file',
-			'delete_file_q',
-			'save',
-			'undo',
-			'undo_change',
-			'redo',
-			'redo_undone',
-			'cut',
-			'cut_text',
-			'copy',
-			'copy_text',
-			'paste',
-			'paste_text',
-			'select_all',
-			'select_all_text',
-			'find_replace',
-			'find_find_replace',
-			'program_help',
-			'page_unaccessible',
-			'about',
-			'help_about',
-			'figure',
-			'applet_code_editor_about',
-			'line_number',
-			'toggle_show_line_number',
-			'next',
-			'find_next_search_string',
-			'replace',
-			'replace_selection_if_match',
-			'replace_find',
-			'replace_find_next',
-			'replace_all',
-			'replace_all_next',
-			'language_help',
-			'console',
-			'find',
-			'case_sensitive',
-			'replace_find',
-			'font_size',
-			'connecting',
-			'connection_fail',
-			'connected',
-		    'connection_closed',
-			'saving',
-			'running',
-			'evaluating',
-			'debugging'
-			);
-			$ret ='';
-			foreach($list as $word){
-				$ret .=$word.'='.get_string($word,VPL)."\n";
-			}
-			return $ret;
+	static function generate_requires(){
+		global $PAGE;
+		self::generate_jquery();
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/ace9/ace.js'));
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/term.js'));
+		$PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/VPLTerminal.js'));
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/VPLIDE.js'));
+		$PAGE->requires->js(new moodle_url('/mod/vpl/editor/noVNC/include/util.js'),true);
 	}
-
-	public static function add_editori18n_field(& $mform){
-		$mform->addElement('hidden','editori18n');
-		$mform->setType('editori18n', PARAM_RAW);
-		$mform->setDefault('editori18n', self::editor_i18n_strings());
+static function print_tag($options,$files_to_send,$saved=true){
+	global $CFG;
+	$tag_id = 'vplide';
+	$files = Array();
+	foreach($files_to_send as $name => $data){
+		$file = new stdClass();
+		$file->name=$name;
+		$file->data=$data;
+		$files[] = $file;
 	}
-
-	public static function add_jseditori18n($return=false){
-		$lang = vpl_get_lang();
-		if($return){
-			return vpl_include_js('setI18n(\''.$lang.'\');',true);
-		}else{
-			echo vpl_include_js('setI18n(\''.$lang.'\');',true);
-		}
-	}
-	public static function get_params_tag(){
-		return	vpl_param_tag('lang',vpl_get_lang()).
-		vpl_param_tag('i18n',self::editor_i18n_strings());
-	}
-}
+	$options['files']=$files;
+	$options['i18n']=self::i18n();
+	$options['saved']=($saved)?1:0;
+	$joptions=json_encode($options);
 ?>
+<div id="<?=$tag_id?>" class="vpl_ide vpl_ide_root ui-widget">
+	<ul id="vpl_menu" class="vpl_ide_menu"></ul>
+	<div id="vpl_tr" class="vpl_ide_tr">
+		<div id="vpl_tabs" class="vpl_ide_tabs">
+			<ul id="vpl_tabs_lu"></ul>
+		</div>
+		<div id="vpl_results" class="vpl_ide_results"></div>
+	</div>
+	<div id="vpl_ide_dialog_progress" class="vpl_ide_dialog"
+		style="display: none;">
+		<div class="vpl_ide_progressbar">
+			<div class="vpl_ide_progressbarlabel"></div>
+		</div>
+	</div>
+	<div id="vpl_ide_dialog_new" class="vpl_ide_dialog"
+		style="display: none;">
+		<fieldset>
+			<label for="vpl_ide_input_newfilename">
+				<?php p(get_string('new_file_name',VPL))?></label> <input
+				type="text" id="vpl_ide_input_newfilename"
+				name="vpl_ide_input_newfilename" value=""
+				class="ui-widget-content ui-corner-all" /><br />
+		</fieldset>
+	</div>
+	<div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
+		style="display: none;">
+		<fieldset>
+			<label for="vpl_ide_input_renamefilename">
+				<?php p(get_string('rename'))?></label> <input type="text"
+				id="vpl_ide_input_renamefilename"
+				name="vpl_ide_input_renamefilename" value=""
+				class="ui-widget-content ui-corner-all" /><br />
+		</fieldset>
+	</div>
+	<div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
+		style="display: none;">
+		<fieldset>
+			<label for="vpl_ide_input_deletefilename">
+				<?php p(get_string('delete'))?></label> <input type="text"
+				id="vpl_ide_input_deletefilename"
+				name="vpl_ide_input_deletefilename" value=""
+				class="ui-widget-content ui-corner-all" /><br />
+		</fieldset>
+	</div>
+	<div id="vpl_ide_dialog_about" class="vpl_ide_dialog"
+		style="display: none;">
+		<h3>IDE for VPL</h3>
+		This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es" target="_blank">Virtual
+			Programming Lab for Moodel</a><br /> Author: Juan Carlos Rodríguez
+		del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br /> Licence: <a
+			href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GNU GPL v3</a><br /> This
+		software uses/distributes the following software under the
+		corresponding licence:
+		<ul>
+			<li><a href="http://http://ace.c9.io" target="_blank">ACE</a>: an embeddable code
+				editor written in JavaScript. Copyright (c) 2010, Ajax.org B.V. (<a
+				href="../editor/ace9/LICENSE" target="_blank">licence</a>)</li>
+			<li><a href="https://github.com/chjj/term.js/" target="_blank">term.js</a>: A full
+				xterm clone written in javascript. Copyright (c) 2012-2013,
+				Christopher Jeffrey (MIT License)</li>
+			<li><a href="http://kanaka.github.io/noVNC/" target="_blank">noVNC</a>: VNC client
+				using HTML5 (WebSockets, Canvas). noVNC is Copyright (C) 2011 Joel
+				Martin &lt;github@martintribe.org&gt; (<a href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
+			<li><a href="http://http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>: jQuery is a fast, small, and feature-rich JavaScript library. Copyright The jQuery Foundation. (<a href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+				</ul>
+	</div>
+	<div style="display: none;">
+		<input type="file" multiple="multiple" id="vpl_ide_input_file" />
+	</div>
+	<div id="vpl_dialog_terminal">
+		<pre id="vpl_terminal" class="vpl_terminal"></pre>
+	</div>
+	<div id="vpl_dialog_vnc">
+		<canvas class="noVNC_canvas">
+                Canvas not supported.
+            </canvas>
+	</div>
+</div>
+<script>
+	INCLUDE_URI="../editor/noVNC/include/";
+    Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
+                       "keysymdef.js", "keyboard.js", "input.js", "display.js",
+                       "jsunzip.js", "rfb.js"]);
+	$(document).ready(function(){
+		$("#page-footer").hide();
+		vpl_ide = new VPL_IDE('<?=$tag_id?>',<?=$joptions?>);
+	});
+	</script>
+<?php
+}
+static function send_CE($CE) {
+		$jCE = json_encode ( $CE );
+		$js = "vpl_ide.setResult({$jCE},true);";
+		$js = '$(document).ready(function(){' . $js . '});';
+		return '<script>' . $js . '</script>';
+	}
+/**
+	 * get list of i18n translations for the editor
+	 **/
+	static function i18n() {
+		global $PAGE;
+		$vpl_words = array (
+'about',
+'acceptcertificates',
+'acceptcertificatesnote',
+'browserupdate',
+'changesNotSaved',
+'comments',
+'compilation',
+'connected',
+'connecting',
+'connection_closed',
+'connection_fail',
+'console',
+'copy',
+'create_new_file',
+'cut',
+'debug',
+'debugging',
+'delete',
+'delete_file_fq',
+'delete_file_q',
+'download',
+'edit',
+'evaluate',
+'evaluating',
+'execution',
+'file',
+'filenotadded',
+'filenotdeleted',
+'filenotrenamed',
+'find_replace',
+'fullscreen',
+'incorrect_file_name',
+'maxfilesexceeded',
+'new',
+'next',
+'options',
+'outofmemory',
+'paste',
+'redo',
+'regularscreen',
+'rename',
+'rename_file',
+'resetfiles',
+'retrieve',
+'run',
+'running',
+'save',
+'saving',
+'select_all',
+'sureresetfiles',
+'undo',
+		);
+		$words = array (
+'cancel',
+'error',
+'import',
+'modified',
+'notice',
+'ok',
+'required',
+'warning'
+		);
+		$list = Array ();
+		foreach ( $vpl_words as $word ) {
+			$list [$word] = get_string ( $word, VPL );
+		}
+		foreach ( $words as $word ) {
+			$list [$word] = get_string ( $word );
+		}
+		return $list;
+	}
+
+	static function generateEvaluateScript($ajaxurl,$nexturl){
+		$options = Array();
+		$options['i18n']=self::i18n();
+		$options['ajaxurl']=$ajaxurl;
+		$options['nexturl']=$nexturl;
+		$joptions=json_encode($options);
+		?>
+		<div id="vpl_ide_dialog_progress" class="vpl_ide_dialog"
+			style="display: none;">
+			<div class="vpl_ide_progressbar">
+				<div class="vpl_ide_progressbarlabel"></div>
+			</div>
+		</div>
+		<script>
+			var evaluation = new VPL_Evaluation(<?=$joptions?>);
+	    </script>
+		<?php
+	}		
+}

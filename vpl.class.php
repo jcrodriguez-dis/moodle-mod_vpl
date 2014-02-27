@@ -287,7 +287,7 @@ class mod_vpl {
 		}
 		return $this->execution_fgm;
 	}
-
+    //FIXME check and remove function
 	function set_initial_file($name, $files){
 		$filelist='';
 		$basepath = $this->get_submission_directory();
@@ -522,7 +522,10 @@ class mod_vpl {
 			$name = $alldata[$i]['name'];
 			$data = $alldata[$i]['data'];
 			if(strlen($data)>$max){
-				$error .= '"'.$name.'" '.get_string('maxfilesizeexceeded',VPL)."<br />";
+				$error .= '"'.s($name).'" '.get_string('maxfilesizeexceeded',VPL)."<br />";
+			}
+			if(!vpl_is_valid_path_name($name)){
+				$error .= '"'.s($name).'" '.get_string('incorrect_file_name',VPL)."<br />";
 			}
 			if($i<$lr && $list[$i] != $name){
 				$a = new stdClass();
@@ -570,8 +573,9 @@ class mod_vpl {
 		if(($last_sub_ins=$this->last_user_submission($userid)) !== false){
 			$last_sub =new mod_vpl_submission($this,$last_sub_ins);
 			if($last_sub->is_equal_to($files,$submittedby.$comments)){
-				$error=get_string('notsaved',VPL)."\n".get_string('fileNotChanged',VPL);
-				return false;
+				//TODO check for concistence: NOT SAVE but say nothing
+				//$error=get_string('notsaved',VPL)."\n".get_string('fileNotChanged',VPL);
+				return true;
 			} 
 		}
 		ignore_user_abort (true);
@@ -625,12 +629,13 @@ class mod_vpl {
 	function all_last_user_submission($fields='s.*'){
 		//Get last submissions records for this vpl module
 		global $DB;
-		$id=$this->get_instance()->id;
-		$query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s, ";
-		$query .= '(SELECT max(id) as maxid, vpl, userid FROM {vpl_submissions} ';
-		$query .= ' WHERE {vpl_submissions}.vpl=? GROUP BY {vpl_submissions}.userid) as ls';
-		$query .= ' WHERE s.vpl=? AND s.id = ls.maxid';
-		$parms = array($id,$id);
+		$query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s";
+		$query .= ' inner join ';
+		$query .= ' (SELECT max(id) as maxid FROM {vpl_submissions} ';
+		$query .= '  WHERE {vpl_submissions}.vpl=? ';
+		$query .= '  GROUP BY {vpl_submissions}.userid) as ls';
+		$query .= ' on s.id = ls.maxid';
+		$parms = array($id);
 		return $DB->get_records_sql($query,$parms);
 	}
 
@@ -1032,10 +1037,11 @@ class mod_vpl {
 	 */
 	function get_visiblegrade(){
 		global $USER;
-		if($this->get_grade()){
-			$gi = $this->get_grade_info();
-			if($usergi = reset($gi->grades)){
-				return !($gi->hidden || $usergi->hidden);
+		if($gi = $this->get_grade_info()){
+			if(is_array($gi->grades)){
+				$usergi = reset($gi->grades);
+				return !($gi->hidden
+						|| (is_object($usergi) && $usergi->hidden));
 			}else{
 				return !($gi->hidden);
 			}
@@ -1075,8 +1081,8 @@ class mod_vpl {
 		global $OUTPUT;
 		$style="float:right; right:10px; padding:8px; background-color: white;text-align:center;";
 		echo '<div style="'.$style.'">';
-		echo '<a href="http://vpl.dis.ulpgc.es/index.php/version-203">';
-		echo 'VPL 2.0.3';
+		echo '<a href="http://vpl.dis.ulpgc.es/index.php/version-300">';
+		echo 'VPL 3.0';
 		echo '</a>';
 		echo '</div>';
 		echo $OUTPUT->footer();
@@ -1211,14 +1217,14 @@ class mod_vpl {
 		$active = basename($active);
 		$cmid=$this->cm->id;
 		$userid = optional_param('userid',NULL,PARAM_INT);
-
+		$copy = optional_param('copy',false,PARAM_INT);
 		$viewer = $this->has_capability(VPL_VIEW_CAPABILITY);
 		$submiter = $this->has_capability(VPL_SUBMIT_CAPABILITY);
 		$similarity = $this->has_capability(VPL_SIMILARITY_CAPABILITY);
 		$grader = $this->has_capability(VPL_GRADE_CAPABILITY);
 		$manager = $this->has_capability(VPL_MANAGE_CAPABILITY);
 		$example = $this->instance->example;
-		if(!$userid || ($userid && !$grader)){
+		if(!$userid || !$grader || $copy){
 			$userid = $USER->id;
 		}
 		$level2=$grader||$manager||$similarity;
