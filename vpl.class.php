@@ -629,6 +629,7 @@ class mod_vpl {
 	function all_last_user_submission($fields='s.*'){
 		//Get last submissions records for this vpl module
 		global $DB;
+		$id=$this->get_instance()->id;
 		$query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s";
 		$query .= ' inner join ';
 		$query .= ' (SELECT max(id) as maxid FROM {vpl_submissions} ';
