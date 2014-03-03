@@ -418,7 +418,7 @@ function vpl_get_max_post_size(){
 function vpl_conv_size_to_string($size){
 	static $measure = array(1024,1048576,1073741824,1099511627776,PHP_INT_MAX);
 	static $measure_name = array('KiB','MiB','GiB','TiB');
-	for($i=0; $i<count($measure); $i++){
+	for($i=0; $i<count($measure)-1; $i++){
 		if($measure[$i]<=0){ //Check for int overflow
 			$num = $size / $measure[$i-1];
 			return sprintf('%.2f %s',$num,$measure_name[$i-1]);
@@ -460,6 +460,9 @@ function vpl_get_select_sizes($minimum=0,$maximum=PHP_INT_MAX){
 	$maximum = (int) $maximum;
 	if($maximum < 0){
 		$maximum = PHP_INT_MAX;
+	}
+	if($maximum > 17.0e9){
+		$maximum = 16*1073741824;
 	}
 	$ret = array(0 => get_string('select'));
 	if($minimum>0){
