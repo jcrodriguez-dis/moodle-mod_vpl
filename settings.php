@@ -22,7 +22,7 @@ $list_maxexememory = vpl_get_select_sizes(16*$megabyte); //Start value
 $default_maxfilesize = vpl_get_array_key($list_maxfilesize,$megabyte);
 $default_maxtime = vpl_get_array_key($list_maxtime,16*$minute);
 $default_maxexefilesize = vpl_get_array_key($list_maxexefilesize,128*$megabyte);
-$default_maxexememory = vpl_get_array_key($list_maxexememory,512*$gigabyte);
+$default_maxexememory = vpl_get_array_key($list_maxexememory,512*$megabyte);
 $default_maxexeprocesses = 200;
 
 $default_defaultfilesize = vpl_get_array_key($list_maxfilesize,64*$kbyte);
