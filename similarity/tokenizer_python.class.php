@@ -27,7 +27,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base{
 		if(strlen($text)==0){
 			return false;
 		}
-		$first=$text{0};
+		$first=$text[0];
 		return ($first >= 'a' && $first <= 'z') ||
 					($first >= 'A' && $first <= 'Z') ||
 					$first=='_';
@@ -36,14 +36,14 @@ class vpl_tokenizer_python extends vpl_tokenizer_base{
 		if(strlen($text)==0){
 			return false;
 		}
-		$first=$text{0};
+		$first=$text[0];
 		return $first >= '0' && $first <= '9';
 	}
 	protected function is_text($text){
 		if(strlen($text)==0){
 			return false;
 		}
-		$first=$text{0};
+		$first=$text[0];
 		return $first == '"' || $first == "'";
 	}
 	
