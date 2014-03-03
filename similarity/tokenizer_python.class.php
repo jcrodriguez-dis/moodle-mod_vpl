@@ -39,7 +39,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base{
 		$first=$text{0};
 		return $first >= '0' && $first <= '9';
 	}
-	protected funtion is_text($text){
+	protected function is_text($text){
 		if(strlen($text)==0){
 			return false;
 		}
