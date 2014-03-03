@@ -56,7 +56,7 @@ class mod_vpl_mod_form extends moodleform_mod {
 			$max = $CFG->vpl_maxfilesize;
 		}
         $mform->addElement('select', 'maxfilesize', get_string('maxfilesize',VPL),
-        					vpl_get_select_sizes($max));
+        					vpl_get_select_sizes(16*1024,$max));
         $mform->setType('maxfilesize', PARAM_INT);
         $mform->setDefault('maxfilesize', 0);
         $mform->setAdvanced('maxfilesize');
