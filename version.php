@@ -2,7 +2,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2013111512;	//Current module version 3.0
+$module->version = 201403031200;	//Current module version 3.0
 $module->cron    = 300; 		//cron check this module every 5 minutes
 $module->requires = 2012062500;
 $module->maturity = MATURITY_STABLE;
