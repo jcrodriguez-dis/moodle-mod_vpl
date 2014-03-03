@@ -392,7 +392,7 @@
 				}
 				var ret = new VPL_File(name, value);
 				files.push(ret);
-				if (files.length >= minNumberOfFiles) {
+				if (files.length > minNumberOfFiles) {
 					tabname = $(ret.getTabNameId());
 					tabname.on('click', 'span.vpl_ide_delicon',
 							menuActions['delete']);
