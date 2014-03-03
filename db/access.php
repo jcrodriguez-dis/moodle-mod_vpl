@@ -12,6 +12,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
     'mod/vpl:view' => array( //Allow to view complete vpl description
+    	'riskbitmask' => 0,
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -25,7 +26,8 @@ $capabilities = array(
     ),
 
     'mod/vpl:submit' => array( //Allow to submit a vpl assingment
-        'captype' => 'write',
+    	'riskbitmask' => 0,
+    	'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
            'guest' => CAP_PROHIBIT,
@@ -38,6 +40,7 @@ $capabilities = array(
     ),
 
     'mod/vpl:grade' => array( //Allow to grade a vpl submission
+    	'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -50,6 +53,7 @@ $capabilities = array(
         	)
         ),
     'mod/vpl:similarity' => array( //Allow to show submissions similarity
+    	'riskbitmask' => RISK_PERSONAL,
         'captype' => 'read',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -62,6 +66,7 @@ $capabilities = array(
         	)
         ),
     'mod/vpl:addinstance' => array( //Allow to add new vpl instance
+    	'riskbitmask' => RISK_SPAM|RISK_XSS,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -74,6 +79,7 @@ $capabilities = array(
         	)
         ),
 	'mod/vpl:manage' => array( //Allow to manage a vpl instance
+		'riskbitmask' => RISK_SPAM|RISK_XSS|RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
@@ -86,14 +92,15 @@ $capabilities = array(
         	)
         ),
     'mod/vpl:setjails' => array( //Allow to set the jails for a vpl instance
+    	'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_MODULE,
         'archetypes' => array(
            'guest' => CAP_PROHIBIT,
            'student' => CAP_PROHIBIT,
            'teacher' => CAP_PROHIBIT,
-           'editingteacher' => CAP_PREVENT,
-           'coursecreator' => CAP_PREVENT,
+           'editingteacher' => CAP_ALLOW,
+           'coursecreator' => CAP_ALLOW,
            'manager' => CAP_ALLOW
         	)
         )
