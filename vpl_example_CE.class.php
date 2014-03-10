@@ -14,7 +14,11 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE{
 	 * @param $vpl. vpl object instance
 	 **/
 	function __construct($vpl) {
-		parent::__construct($vpl, new stdClass());
+		global $USER;
+		$fake = new stdClass();
+		$fake->userid = $USER->id;
+		$fake->vpl = $vpl->get_instance()->id;
+		parent::__construct($vpl, $fake);
 	}
 
 	/**
@@ -34,12 +38,6 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE{
 	 */
 	function saveCE($result){
 		//Paranoic removed
-	}	
-
-	/**
-	 * Evaluate, removed.
-	 */
-	function evaluate($transfer=true){
 	}
 }
 ?>
