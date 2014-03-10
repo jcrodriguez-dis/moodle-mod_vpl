@@ -461,7 +461,6 @@
 						args.shift();
 						return fun.apply(file, args);
 					}
-					;
 				}
 				return false;
 			}
@@ -1056,7 +1055,7 @@
 			
 			progressbar.setLabel=function(t){
 				progressbar_pbl.text(t);
-			}
+			};
 			var aboutDialog = $('#vpl_ide_dialog_about');
 			var OKButtons={};
 			OKButtons[str('ok')]=function(){
@@ -1157,13 +1156,11 @@
 				window.location = options['download'];
 			};
 			function requestAction(action, title, data, ok) {
-				if(title==''){
-					progressbar.dialog('option','title',str(action));
-					progressbar.setLabel(str('connecting'));
-				}else{
-					progressbar.dialog('option','title',str(action));
-					progressbar.setLabel(str(title));					
-				}
+				//console.log('Open request '+action);
+				if(title=='')
+					title='connecting';
+				progressbar.dialog('option','title',str(action));
+				progressbar.setLabel(str(title));					
 				progressbar.dialog('open');
 				var request=$.ajax({
 					async : true,
@@ -1184,7 +1181,8 @@
 					if(errorThrown != 'abort')
 						showErrorMessage(textStatus);
 				});
-				progressbar.on("dialogclose",function(){
+				progressbar.one("dialogclose",function(){
+					//console.log('Close request '+action);
 					if(request.readyState != 4)
 						request.abort();
 				});
@@ -1227,9 +1225,11 @@
 					showErrorMessage(e.message);
 					return;
 				}
+				ws.closeProgressBar = true;
 				progressbar.dialog('option','title',str(title));
 				progressbar.setLabel(str('connecting'));
 				progressbar.dialog('open');
+				//console.log('Open ws '+response.monitorURL);
 				ws.onopen = function(event) {
 					progressbar.setLabel(str('connected'));
 				};
@@ -1278,18 +1278,19 @@
 									}else
 										showErrorMessage(str('connection_fail'));
 								});
+						ws.closeProgressBar = false;
 					}
 					else
 						showErrorMessage(str('connection_fail'));
 				};
 				ws.onclose = function(event) {
+					//console.log('Close ws '+response.monitorURL);
 					if (typeof lastConsole != 'undefined')
 						lastConsole.disconnect();
-					if(progressbar.dialog('isOpen') 
-							&& !(response.monitorURL.search('wss:') == 0 &&
-									event.code != 1000))
+					if(ws.closeProgressBar)
 						progressbar.dialog('close');
 				};
+				
 				ws.onmessage = function(event) {
 					//console.log("Monitor receive: " + event.data);
 					var message = /^([^:]+):/i.exec(event.data);
@@ -1349,7 +1350,7 @@
 						progressbar.setLabel(str('error')+': '+event.data);
 					}
 				};
-				progressbar.on( "dialogclose",function(){ws.close();});
+				progressbar.one( "dialogclose",function(){ws.close();});
 			}
 			menuActions['run'] = function() {
 				if (!terminal.isConnected() && supportWebSocket())

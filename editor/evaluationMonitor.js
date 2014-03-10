@@ -108,7 +108,7 @@
 				if(errorThrown != 'abort')
 					showErrorMessage(textStatus);
 			});
-			progressbar.on("dialogclose",function(){
+			progressbar.one("dialogclose",function(){
 				if(request.readyState != 4){
 					request.abort();
 				}
@@ -129,6 +129,7 @@
 			progressbar.dialog('option','title',str(title));
 			progressbar.setLabel(str('connecting'));
 			progressbar.dialog('open');
+			ws.closeProgressBar = true;
 			ws.onopen = function(event) {
 				progressbar.setLabel(str('connected'));
 			};
@@ -174,14 +175,15 @@
 								}else
 									showErrorMessage(str('connection_fail'));
 							});
+					ws.closeProgressBar = false;
 				}
 				else
 					showErrorMessage(str('connection_fail'));
 			};
 			ws.onclose = function(event) {
-				if(progressbar.dialog('isOpen') && !(event.code != 1000 && URL.search('wss:') == 0))
+				if(ws.closeProgressBar)
 					progressbar.dialog('close');
-				console.log('Console monitor websocket close');
+				//console.log('Console monitor websocket close');
 				if(next != ''){
 					setTimeout(function(){
 						window.location=next;
@@ -189,7 +191,7 @@
 				}
 			};
 			ws.onmessage = function(event) {
-				console.log("Monitor receive: " + event.data);
+				//console.log("Monitor receive: " + event.data);
 				var message = /^([^:]+):/i.exec(event.data);
 				if (message !== null) {
 					var action = message[1];
