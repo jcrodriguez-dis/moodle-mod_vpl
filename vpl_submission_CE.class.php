@@ -338,9 +338,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		else
 		   $response->port = 80;
 		$response->VNCpassword = substr($jailResponse['executionticket'],0,8);
-		$certsURL= new moodle_url('/mod/vpl/views/getjailcertificates.php',
-				array('id' => $this->vpl->get_course_module()->id));
-		$response->certificatesURL = $certsURL->out(false);
 		$instance = $this->get_instance();
 		vpl_running_processes::set($instance->userid,
 		                          $server,
