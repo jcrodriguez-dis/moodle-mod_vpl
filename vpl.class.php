@@ -1083,7 +1083,7 @@ class mod_vpl {
 		$style="float:right; right:10px; padding:8px; background-color: white;text-align:center;";
 		echo '<div style="'.$style.'">';
 		echo '<a href="http://vpl.dis.ulpgc.es/index.php/version-300">';
-		echo 'VPL 3.0';
+		echo 'VPL 3.0.1';
 		echo '</a>';
 		echo '</div>';
 		echo $OUTPUT->footer();
