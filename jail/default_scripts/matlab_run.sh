@@ -1,8 +1,8 @@
 #!/bin/bash
 # $Id: matlab_run.sh,v 1.10 2013-07-09 13:28:31 juanca Exp $
 # Default Matlab/Octave language run script for VPL
-# Copyright (C) 2011 Juan Carlos Rodríguez-del-Pino. All rights reserved.
-# License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
+# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
+# License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
 #load common script and check programs
@@ -10,14 +10,16 @@
 exec 2>&1
 get_source_files m
 X11=
-for FILENAME in $SOURCE_FILES
-do
-	grep -E "image|imagesc|plot|contour|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero" $FILENAME 2>&1 >/dev/null
-	if [ "$?" -eq "0" ] ; then
-		X11=y
-		break
-	fi
-done
+if [ ! -f vpl_evaluate.sh ] ; then
+	for FILENAME in $SOURCE_FILES
+	do
+		grep -E "(^|[^A-Za-z0-9])(image|imagesc|plot|contour|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero)($|[ |(])" $FILENAME 2>&1 >/dev/null
+		if [ "$?" -eq "0" ] ; then
+			X11=y
+			break
+		fi
+	done
+fi
 MAIN=
 for FILENAME in $SOURCE_FILES
 do
