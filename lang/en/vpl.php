@@ -82,6 +82,7 @@ $string['fileupdated'] = "The '{\$a}' file has been updated";
 $string['find_replace']= 'Find/Replace';
 $string['fulldescription'] = 'Full description';
 $string['fullscreen'] = 'Fullscreen';
+$string['getjails'] = 'Get execution servers';
 $string['gradeandnext'] = 'Grade & next';
 $string['graded'] = 'Graded';
 $string['gradedbyuser'] = 'Graded by user';
