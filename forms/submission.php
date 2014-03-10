@@ -81,7 +81,8 @@ if ($fromform=$mform->get_data()){
 			notice(get_string('saved',VPL),
 				vpl_mod_href('forms/evaluation.php','id',$id,'userid',$userid));
 		}
-		vpl_redirect(vpl_mod_href('forms/submissionview.php','id',$id,'userid',$userid),get_string('saved',VPL),2);
+		notice(get_string('saved',VPL),
+			vpl_mod_href('forms/submissionview.php','id',$id,'userid',$userid));
 	}else{	
 		echo $OUTPUT->box(get_string('notsaved',VPL));
 		notice($error_message,vpl_mod_href('forms/submission.php','id',$id,'userid',$userid),$vpl->get_course());
