@@ -1,7 +1,7 @@
 #!/bin/bash
 # $Id: default_evaluate.sh,v 1.5 2012-07-25 19:02:21 juanca Exp $
 # Default evaluate script for VPL
-# Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
@@ -44,6 +44,10 @@ else
 		echo "echo 'Comment :=>>-$VPL_COMPILATIONFAILED'" >> vpl_execution
 		echo "echo '<|--'" >> vpl_execution
 		echo "cat vpl_compilation_error.txt" >> vpl_execution
+		if [ -f vpl_wexecution ] ; then
+			echo "echo '======================'" >> vpl_execution
+			echo "echo 'It seems you are trying to test a program with a graphic user interface'" >> vpl_execution
+		fi
 		echo "echo '--|>'" >> vpl_execution		
 		echo "echo 'Grade :=>>$VPL_GRADEMIN'" >> vpl_execution
 		chmod +x vpl_execution
