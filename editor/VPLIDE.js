@@ -1173,7 +1173,6 @@
 					contentType : "application/json; charset=utf-8",
 					dataType : "json"
 				}).done(function(response) {
-					progressbar.off("dialogclose");
 					progressbar.dialog('close');
 					if (!response.success) {
 						showErrorMessage(response.error);
@@ -1181,12 +1180,14 @@
 						ok(response.response);
 					}
 				}).fail(function(jqXHR, textStatus, errorThrown) {
-					progressbar.off("dialogclose");
 					progressbar.dialog('close');
 					if(errorThrown != 'abort')
 						showErrorMessage(textStatus);
 				});
-				progressbar.on("dialogclose",function(){request.abort();});
+				progressbar.on("dialogclose",function(){
+					if(request.readyState != 4)
+						request.abort();
+				});
 			}
 			function resetFiles() {
 				requestAction('resetfiles', '',{},
@@ -1284,10 +1285,10 @@
 				ws.onclose = function(event) {
 					if (typeof lastConsole != 'undefined')
 						lastConsole.disconnect();
-					progressbar.off("dialogclose");
-					if(progressbar.dialog('isOpen'))
+					if(progressbar.dialog('isOpen') 
+							&& !(response.monitorURL.search('wss:') == 0 &&
+									event.code != 1000))
 						progressbar.dialog('close');
-					//console.log('Console monitor websocket close');
 				};
 				ws.onmessage = function(event) {
 					//console.log("Monitor receive: " + event.data);
@@ -1302,10 +1303,13 @@
 							var detail = parsed[2];
 							if(state == 'running')
 								state = running;
+							var text = str(state);
 							if(detail >'')
-								progressbar.setLabel(str(state)+': '+detail);
+								text += ': '+detail;
+							if(lastConsole.isOpen())
+								lastConsole.setMessage(text);
 							else
-								progressbar.setLabel(str(state));
+								progressbar.setLabel(text);
 							break;
 						case 'compilation':
 							self.setResult({
@@ -1324,7 +1328,6 @@
 						case 'run':
 							progressbar.off( "dialogclose");
 							progressbar.dialog('close');
-							//currentFile('blur');
 							if (content == 'terminal') {
 								lastConsole = terminal;
 								terminal.connect(response.executionURL,
@@ -1382,11 +1385,13 @@
 
 			// VPL_IDE resize view control
 			$(window).on('resize', autoResizeTab);
-			$(window).on('beforeunload', function() {
-				if (global_modified) {
-					return str('changesNotSaved');
-				}
-			});
+			if(!options['example']){
+				$(window).on('beforeunload', function() {
+					if (global_modified) {
+						return str('changesNotSaved');
+					}
+				});
+			}
 			$(window).resize(autoResizeTab);
 			var initFiles = options.files;
 			for (var i = 0; i < initFiles.length; i++) {
@@ -1397,7 +1402,7 @@
 			}
 			tabs.tabs('option', 'active', 0);
 			autoResizeTab();
-			if(files.length == 0){
+			if(files.length == 0 && maxNumberOfFiles > 0){
 				menuActions['new']();
 			}else if(typeof options['saved'] != 'undefined' && !options['saved']){
 				activateGlobalModified();
