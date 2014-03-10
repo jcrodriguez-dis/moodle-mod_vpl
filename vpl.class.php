@@ -1115,7 +1115,7 @@ class mod_vpl {
 	 * @param $info title and last nav option
 	 **/
 	function print_header($info=''){
-		global $COURSE,$PAGE,$OUTPUT;
+		global $COURSE,$PAGE,$OUTPUT, $VPL_OUTPUTHEADER;
 		$tittle = $this->get_printable_name();
 		if($info){
 			$tittle.=' '.$info;
@@ -1124,10 +1124,11 @@ class mod_vpl {
     	$PAGE->set_pagelayout('incourse');
 		$PAGE->set_heading($this->get_course()->fullname);
 		echo $OUTPUT->header();
+		$VPL_OUTPUTHEADER=true;
 	}
 	
 	function print_header_simple($info=''){
-		global $OUTPUT,$PAGE;
+		global $OUTPUT,$PAGE, $VPL_OUTPUTHEADER;
 		$tittle = $this->get_printable_name();
 		if($info){
 			$tittle.=' '.$info;
@@ -1135,6 +1136,7 @@ class mod_vpl {
 		$PAGE->set_title($this->get_course()->fullname.' '.$tittle);
 		$PAGE->set_pagelayout('popup');
     	echo $OUTPUT->header();
+    	$VPL_OUTPUTHEADER=true;
 	}
 	
 	/**
@@ -1143,9 +1145,10 @@ class mod_vpl {
 	 * @param $action string base text and help
 	 **/
 	function print_heading_with_help($action){
-		global $OUTPUT;
+		global $OUTPUT, $VPL_OUTPUTHEADER;
 		$title = get_string($action,VPL).': '.$this->get_printable_name();
     	echo $OUTPUT->heading_with_help($title,$action,'vpl');
+    	$VPL_OUTPUTHEADER=true;
 	}
 
 	
