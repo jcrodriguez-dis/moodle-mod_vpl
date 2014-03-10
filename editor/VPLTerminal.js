@@ -11,6 +11,8 @@
 VPL_Terminal = function(dialog_id,terminal_id,str) {
 	var self = this;
 	var ws = undefined;
+	var title ='';
+	var message ='';
 	var tdialog = $('#'+dialog_id);
 	var terminal = new Terminal({
 		cols : 80,
@@ -23,27 +25,41 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 			ws.send(data);
 	});
 	var terminal_tag = $('#' + terminal_id);
+	this.updateTitle = function(){
+		var text = title;
+		if(message != '')
+			text += ' ('+message+')';
+		tdialog.dialog("option", "title", str('console') + ": "+ text);
+	};
+	this.setTitle = function(t){
+		title=t;
+		this.updateTitle();
+	};
+	this.setMessage = function(t){
+		message=t;
+		this.updateTitle();
+	};
+	
 	this.connect = function(server, onClose) {
 		self.show();
 		if ("WebSocket" in window) {
 			terminal.reset();
 			if (typeof ws != 'undefined')
 				ws.close();
-			tdialog.dialog("option", "title",
-					str('console') + ": " + str('connecting'));
+			self.setMessage('');
+			self.setTitle(str('connecting'));
 			ws = new WebSocket(server);
 			ws.onmessage = function(event) {
 				terminal.write(event.data);
 			};
 			ws.onopen = function(event) {
-				tdialog.dialog("option", "title",
-						str('console') + ": " + str('connected'));
+				self.setMessage('');
+				self.setTitle(str('connected'));
 				terminal.focus();
 			};
 
 			ws.onclose = function(event) {
-				tdialog.dialog("option", "title",
-						str('console') + ": " + str('connection_closed'));
+				self.setTitle(str('connection_closed'));
 				terminal.blur();
 				onClose();
 			};
@@ -51,6 +67,9 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 			terminal
 					.write('WebSocket not available: Upgrade your browser');
 		};
+	};
+	this.isOpen = function(){
+		return tdialog.dialog( "isOpen" )===true;
 	};
 	this.isConnected = function() {
 		return ws && ws.readyState != ws.CLOSED;
@@ -83,6 +102,8 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 VPL_VNC_Client = function(vnc_dialog_id, str) {
 	var self=this;
 	var rfb = undefined;
+	var title ='';
+	var message ='';
 	var lastState ='';
 	var VNCDialog = $('#'+vnc_dialog_id);
 	VNCDialog.dialog({
@@ -97,26 +118,38 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 			self.disconnect();
 		}
 	});
+	this.updateTitle = function(){
+		var text = title;
+		if(message != '')
+			text += ' ('+message+')';
+		VNCDialog.dialog("option", "title", str('console') + ": "+ text);
+	};
+	this.setTitle = function(t){
+		title=t;
+		this.updateTitle();
+	};
+	this.setMessage = function(t){
+		message=t;
+		this.updateTitle();
+	};
 	function updateState(rfb, state, oldstate, msg) {
 		lastState=state;
 		switch(state){
 		case "normal":
-			VNCDialog.dialog("option", "title",
-					str('console') + ": " + str('connected'));
+			self.setMessage('');
+			self.setTitle(str('connected'));
 			break;
 		case "disconnect":
 		case "disconnected":
-			VNCDialog.dialog("option", "title",
-					str('console') + ": " + str('connection_closed'));
+			self.setTitle(str('connection_closed'));
 			break;
 		case "failed":
-			VNCDialog.dialog("option", "title",
-				str('console') + ": " + str('connection_fail'));			
+			self.setTitle(str('connection_fail'));
 			console.log("VNC client: "+msg);
 			break;
 		default:
-			VNCDialog.dialog("option", "title",
-				str('console') + ": " + str('connecting'));
+			self.setMessage('');
+			self.setTitle(str('connecting'));
 		}
 	}
 
@@ -140,6 +173,9 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 			port = secure?443:80;
 		}
 		rfb.connect(host, port, password, path);
+	};
+	this.isOpen = function(){
+		return VNCDialog.dialog( "isOpen" )===true;
 	};
 	this.isConnected = function() {
 		return typeof rfb != 'undefined' && lastState != 'disconnected';
