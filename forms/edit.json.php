@@ -55,6 +55,7 @@ try{
 	} else { // Make other user submission
 		$vpl->require_capability ( VPL_MANAGE_CAPABILITY );
 	}
+	$example = $vpl->get_instance()->example;
     switch ($action) {
 	case 'save':
 		$postfiles=(array)$data;
@@ -83,27 +84,35 @@ try{
 	case 'debug':
 	case 'evaluate':
 		$lastsub = $vpl->last_user_submission($userid);
-		if(!$lastsub){
-			throw new Exception(get_string('nosubmmision'));
+		if(!$lastsub && !$example){
+			throw new Exception(get_string('nosubmission'));
 		}
-		$submission = new mod_vpl_submission_CE($vpl, $lastsub);
+		if($example){
+			$submission = new mod_vpl_example_CE($vpl);
+		}else{
+			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
+		}
 		$translate = array('run'=>0,'debug'=>1,'evaluate'=>2);
 		$outcome->response=$submission->run($translate[$action]);
 	break;
 	case 'retrieve':
 		$lastsub = $vpl->last_user_submission($userid);
 		if(!$lastsub){
-			throw new Exception(get_string('nosubmmision'));
+			throw new Exception(get_string('nosubmission'));
 		}
 		$submission = new mod_vpl_submission_CE($vpl, $lastsub);
 		$outcome->response=$submission->retrieveResult();
 		break;
 	case 'cancel':
 		$lastsub = $vpl->last_user_submission($userid);
-		if(!$lastsub){
-			throw new Exception(get_string('nosubmmision'));
+		if(!$lastsub && !$example){
+			throw new Exception(get_string('nosubmission'));
 		}
-		$submission = new mod_vpl_submission_CE($vpl, $lastsub);
+    	if($example){
+			$submission = new mod_vpl_example_CE($vpl);
+		}else{
+			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
+		}
 		$outcome->response=$submission->cancelProcess();
 		break;
 	case 'getjails':
