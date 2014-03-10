@@ -62,6 +62,7 @@ $options['save']=!$instance->example;
 $options['run']=($instance->run || $manager);
 $options['debug']=($instance->debug || $manager);
 $options['evaluate']=($instance->evaluate || $manager);
+$options['example']=$instance->example;
 $linkuserid = $copy?$USER->id:$userid;
 $options['ajaxurl']="edit.json.php?id={$id}&userid={$linkuserid}&action=";
 $options['download']="../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
