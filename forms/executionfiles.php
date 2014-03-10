@@ -9,7 +9,6 @@
 
 require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../locallib.php';
-require_once dirname(__FILE__).'/filegroup_form.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../editor/editor_utility.php';
 vpl_editor_util::generate_requires();
