@@ -10,4 +10,4 @@
 check_program g++
 get_source_files cpp C
 #compile
-g++ -o vpl_execution -lm -lutil $SOURCE_FILES
+g++ -o vpl_execution $SOURCE_FILES -lm -lutil

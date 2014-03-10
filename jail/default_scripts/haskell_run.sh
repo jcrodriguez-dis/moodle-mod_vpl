@@ -1,8 +1,8 @@
 #!/bin/bash
 # $Id: haskell_run.sh,v 1.4 2012-09-24 15:13:22 juanca Exp $
 # Default Haskell language run script for VPL
-# Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino. All rights reserved.
-# License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
+# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
+# License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
 #load common script and check programs
