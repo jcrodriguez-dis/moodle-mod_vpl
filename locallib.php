@@ -291,8 +291,8 @@ function vpl_url_add_param($url,$parm,$value){
  * @return void
  */
 function vpl_redirect($link,$message,$wait=4){
-	global $OUTPUT;
-	if(!headers_sent()){
+	global $OUTPUT, $VPL_OUTPUTHEADER;
+	if(!(isset($VPL_OUTPUTHEADER) && $VPL_OUTPUTHEADER===true)){
 		echo $OUTPUT->header();
 	}
 	static $idcount=0;
@@ -324,20 +324,15 @@ function vpl_inmediate_redirect($url){
 
 function vpl_include_jsfile($file,$defer=false){
 	global $PAGE;
-	$PAGE->requires->js(new moodle_url('/mod/vpl/jscript/'.$file));
+	$PAGE->requires->js(new moodle_url('/mod/vpl/jscript/'.$file),!$defer);
 	return '';
 }
 
-function vpl_include_js($jscript,$defer=false){
+function vpl_include_js($jscript){
 	if($jscript==''){
 		return '';
 	}
-	$ret='<script type="text/javascript"';
-	if($defer){
-		$ret.=' defer="defer">';
-	}else{
-		$ret.='>';
-	}
+	$ret='<script type="text/javascript">';
 	$ret .="\n//<![CDATA[\n";
 	$ret .= $jscript;
 	$ret .="\n//]]>\n</script>\n";
