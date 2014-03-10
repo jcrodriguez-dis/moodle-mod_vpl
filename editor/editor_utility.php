@@ -56,7 +56,7 @@ static function print_tag($options,$files_to_send,$saved=true){
 	$options['saved']=($saved)?1:0;
 	$joptions=json_encode($options);
 ?>
-<div id="<?=$tag_id?>" class="vpl_ide vpl_ide_root ui-widget">
+<div id="<?php echo $tag_id;?>" class="vpl_ide vpl_ide_root ui-widget">
 	<ul id="vpl_menu" class="vpl_ide_menu"></ul>
 	<div id="vpl_tr" class="vpl_ide_tr">
 		<div id="vpl_tabs" class="vpl_ide_tabs">
@@ -141,7 +141,7 @@ static function print_tag($options,$files_to_send,$saved=true){
                        "jsunzip.js", "rfb.js"]);
 	$(document).ready(function(){
 		$("#page-footer").hide();
-		vpl_ide = new VPL_IDE('<?=$tag_id?>',<?=$joptions?>);
+		vpl_ide = new VPL_IDE('<?php echo $tag_id;?>',<?php echo $joptions;?>);
 	});
 	</script>
 <?php
@@ -183,6 +183,7 @@ static function send_CE($CE) {
 'evaluate',
 'evaluating',
 'execution',
+'getjails',
 'file',
 'filenotadded',
 'filenotdeleted',
@@ -237,14 +238,16 @@ static function send_CE($CE) {
 		$options['nexturl']=$nexturl;
 		$joptions=json_encode($options);
 		?>
+		<div id="vpl_root" class="vpl_ide vpl_ide_root ui-widget">
 		<div id="vpl_ide_dialog_progress" class="vpl_ide_dialog"
 			style="display: none;">
 			<div class="vpl_ide_progressbar">
 				<div class="vpl_ide_progressbarlabel"></div>
 			</div>
 		</div>
+		</div>
 		<script>
-			var evaluation = new VPL_Evaluation(<?=$joptions?>);
+			var evaluation = new VPL_Evaluation(<?php echo $joptions;?>);
 	    </script>
 		<?php
 	}		
