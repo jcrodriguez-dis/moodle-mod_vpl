@@ -19,19 +19,19 @@
 		if(text){
 			if(text.innerHTML == '[+]'){
 				div.style.display='';
-				text.innerHTML = '[-]'
+				text.innerHTML = '[-]';
 			}else{
 				div.style.display='none';
-				text.innerHTML = '[+]'
+				text.innerHTML = '[+]';
 			}
 		}
-	}
+	};
 	VPL.hide_later = function (){
 		var div=window.document.getElementById('vpl.hide');
 		if(div){
 			div.style.transition='display 2s';
 			div.style.display='none';
 		}
-	}
+	};
 	setTimeout('VPL.hide_later()',5000);
-})()
+})();
