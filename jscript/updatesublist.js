@@ -33,7 +33,7 @@
 			divgradeon.style.backgroundColor='yellow';
 			divgradeon.style.color='black';
 		}
-	}
+	};
 	
 	/**
 	 * Unhighlight row
@@ -59,7 +59,7 @@
 			divgradeon.style.backgroundColor='';
 			divgradeon.style.color='';
 		}
-	}
+	};
 	
 	/**
 	 * Update submission list grade
@@ -88,7 +88,7 @@
 			divgradeon.style.backgroundColor='';
 			divgradeon.style.color='';
 		}
-	}
+	};
 	
 	/**
 	 * Go to next submission
@@ -106,5 +106,5 @@
 		}else{
 			window.close();
 		}
-	}
+	};
 })();
