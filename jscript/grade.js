@@ -18,7 +18,7 @@
 			obj=obj.offsetParent;
 		}
 		return offset;
-	}
+	};
 	/**
 	* resize the submission view div to greatest visible size 
 	*/
@@ -28,20 +28,20 @@
 		var cview=window.document.getElementById('vpl_grade_comments');
 		var fview=window.document.getElementById('vpl_grade_form');
 		var sview=window.document.getElementById('vpl_submission_view');
-		gview.style.height=fview.scrollHeight+'px';
-		cview.style.height=fview.scrollHeight+'px';
-		cview.style.width=(gview.scrollWidth-fview.scrollWidth-8)+'px';
-		var newHeight;
-		if(window.innerHeight)
-			newHeight = window.innerHeight
-					-VPL.getOffsetY(sview)-35;
-		else
-			newHeight = document.documentElement.clientHeight
-			-VPL.getOffsetY(sview)-35;
-		sview.style.height = newHeight+'px';
-
-		console.log(sview.style.height);
-	}
+		if(gview && cview && fview && sview){
+			gview.style.height=fview.scrollHeight+'px';
+			cview.style.height=fview.scrollHeight+'px';
+			cview.style.width=(gview.scrollWidth-fview.scrollWidth-8)+'px';
+			var newHeight;
+			if(window.innerHeight)
+				newHeight = window.innerHeight
+						-VPL.getOffsetY(sview)-35;
+			else
+				newHeight = document.documentElement.clientHeight
+				-VPL.getOffsetY(sview)-35;
+			sview.style.height = newHeight+'px';
+		}
+	};
 
 	/* Set the resize controler */
 
@@ -121,4 +121,4 @@
 			field.value += comment;
 		}
 	};
-})()
+})();
