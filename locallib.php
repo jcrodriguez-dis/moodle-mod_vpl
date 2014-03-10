@@ -322,10 +322,9 @@ function vpl_inmediate_redirect($url){
 	vpl_redirect($url,'',0);
 }
 
-function vpl_include_jsfile($file,$defer=false){
+function vpl_include_jsfile($file,$defer=true){
 	global $PAGE;
 	$PAGE->requires->js(new moodle_url('/mod/vpl/jscript/'.$file),!$defer);
-	return '';
 }
 
 function vpl_include_js($jscript){

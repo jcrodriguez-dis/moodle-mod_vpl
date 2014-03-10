@@ -24,9 +24,9 @@ function vpl_grade_header($vpl,$inpopup){
 }
 require_login();
 
-vpl_include_jsfile('grade.js');
-vpl_include_jsfile('hide_footer.js');
-vpl_include_jsfile('updatesublist.js');
+vpl_include_jsfile('grade.js',false);
+vpl_include_jsfile('hide_footer.js',false);
+vpl_include_jsfile('updatesublist.js',false);
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 
 $id = required_param('id',PARAM_INT);
