@@ -209,6 +209,7 @@ static function send_CE($CE) {
 'saving',
 'select_all',
 'sureresetfiles',
+'timeout',
 'undo',
 		);
 		$words = array (
