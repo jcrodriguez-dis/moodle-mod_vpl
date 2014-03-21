@@ -23,6 +23,7 @@ class vpl_editor_util{
 			$PAGE->requires->css(new moodle_url('/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css'));
 			$PAGE->requires->js(new moodle_url('/mod/vpl/editor/jquery/jquery-1.9.1.js'),true);
 			$PAGE->requires->js(new moodle_url('/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js'),true);
+			$PAGE->requires->js(new moodle_url('/mod/vpl/editor/VPL_jquery_no_conflict.js'),true);
 		}
 	}
 	static function generate_requires_evaluation(){
@@ -139,8 +140,8 @@ static function print_tag($options,$files_to_send,$saved=true){
     Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
                        "keysymdef.js", "keyboard.js", "input.js", "display.js",
                        "jsunzip.js", "rfb.js"]);
-	$(document).ready(function(){
-		$("#page-footer").hide();
+	$JQVPL(document).ready(function(){
+		$JQVPL("#page-footer").hide();
 		vpl_ide = new VPL_IDE('<?php echo $tag_id;?>',<?php echo $joptions;?>);
 	});
 	</script>
@@ -149,7 +150,7 @@ static function print_tag($options,$files_to_send,$saved=true){
 static function send_CE($CE) {
 		$jCE = json_encode ( $CE );
 		$js = "vpl_ide.setResult({$jCE},true);";
-		$js = '$(document).ready(function(){' . $js . '});';
+		$js = '$JQVPL(document).ready(function(){' . $js . '});';
 		return '<script>' . $js . '</script>';
 	}
 /**

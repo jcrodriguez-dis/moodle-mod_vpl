@@ -14,8 +14,8 @@
 			}
 			return i18n[key];
 		};
-		var root_obj=$('#vpl_root');
-		var progressbar=$('#vpl_ide_dialog_progress');
+		var root_obj=$JQVPL('#vpl_root');
+		var progressbar=$JQVPL('#vpl_ide_dialog_progress');
 		var progressbar_pb=progressbar.find('.vpl_ide_progressbar');
 		progressbar_pb.progressbar({value : false});
 		var progressbar_pbl=progressbar_pb.find('.vpl_ide_progressbarlabel');
@@ -32,7 +32,7 @@
 			progressbar_pbl.text(t);
 		};
 		function showMessage(message, options) {
-			var message_dialog = $('<div id="vpl_ide_message_dig" class="vpl_ide_dialog"></div>');
+			var message_dialog = $JQVPL('<div id="vpl_ide_message_dig" class="vpl_ide_dialog"></div>');
 			if (typeof options == 'undefined') {
 				options = {};
 			}
@@ -51,15 +51,15 @@
 			var message_buttons = {};
 			if (typeof options.ok == 'undefined') {
 				message_buttons[str('ok')] = function() {
-					$(this).dialog('close');
+					$JQVPL(this).dialog('close');
 				};
 			} else {
 				message_buttons[str('ok')] = function() {
-					$(this).dialog('close');
+					$JQVPL(this).dialog('close');
 					options.ok();
 				};
 				message_buttons[str('cancel')] = function() {
-					$(this).dialog('close');
+					$JQVPL(this).dialog('close');
 				};
 			}
 			message_dialog.dialog({
@@ -67,12 +67,12 @@
 				buttons : message_buttons,
 				dialogClass : 'vpl_ide vpl_ide_dialog',
 				close : function() {
-					$(this).remove();
+					$JQVPL(this).remove();
 				}
 			});
 			message_dialog.dialog('open');
 			message_dialog.setMessage = function(men) {
-				$(message_dialog).find('.dmessage').html(men);
+				$JQVPL(message_dialog).find('.dmessage').html(men);
 			};
 			return message_dialog;
 		}
@@ -89,7 +89,7 @@
 			progressbar.dialog('option','title',str(action));
 			progressbar.setLabel(str(title));					
 			progressbar.dialog('open');
-			var request=$.ajax({
+			var request=$JQVPL.ajax({
 				async : true,
 				type : "POST",
 				url : options['ajaxurl'] + action,
@@ -152,14 +152,14 @@
 										icon: 'unlocked',
 										title: str('acceptcertificates')
 									});
-									$(m).find('a').on('click keypress',
+									$JQVPL(m).find('a').on('click keypress',
 											function(e){
 										var w=550;
 										var h=450;
 										var left = (screen.width/2)-(w/2);
 										var top = (screen.height/2)-(h/2);
 										try{
-											var win=window.open($(this).attr('href'),'_blank'
+											var win=window.open($JQVPL(this).attr('href'),'_blank'
 												,'toolbar=no, location=no, directories=no, status=no'
 												+', menubar=no, resizable=yes, scrollbars=yes, copyhistory=no'
 												+', width='+w+', height='+h+', top='+top+', left='+left);
@@ -168,7 +168,7 @@
 											return true;
 										}
 										e.preventDefault();
-										$(this).parent().hide();
+										$JQVPL(this).parent().hide();
 										return false;
 									}
 									);

@@ -13,7 +13,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 	var ws = undefined;
 	var title ='';
 	var message ='';
-	var tdialog = $('#'+dialog_id);
+	var tdialog = $JQVPL('#'+dialog_id);
 	var terminal = new Terminal({
 		cols : 80,
 		rows : 24,
@@ -24,7 +24,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 		if (typeof ws != 'undefined' && ws.readyState == ws.OPEN)
 			ws.send(data);
 	});
-	var terminal_tag = $('#' + terminal_id);
+	var terminal_tag = $JQVPL('#' + terminal_id);
 	this.updateTitle = function(){
 		var text = title;
 		if(message != '')
@@ -105,7 +105,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 	var title ='';
 	var message ='';
 	var lastState ='';
-	var VNCDialog = $('#'+vnc_dialog_id);
+	var VNCDialog = $JQVPL('#'+vnc_dialog_id);
 	VNCDialog.dialog({
 		title : str('console'),
 		closeOnEscape : false,
@@ -155,7 +155,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 
 	this.connect = function(secure,host, port, password, path) {
 		self.show();
-		var target = $('#' + vnc_dialog_id+ " .noVNC_canvas")[0];
+		var target = $JQVPL('#' + vnc_dialog_id+ " .noVNC_canvas")[0];
 		if (typeof rfb == 'undefined')
 			rfb = new RFB(
 					{
