@@ -51,8 +51,7 @@ else
 		echo "matlab -nosplash" >> vpl_execution
 	else
 		check_program xterm
-		echo "xterm -e matlab -nosplash" >> vpl_wexecution
+		echo "xterm -e matlab -nosplash" >> vpl_execution
 		mv vpl_execution vpl_wexecution
 	fi
 fi
-
