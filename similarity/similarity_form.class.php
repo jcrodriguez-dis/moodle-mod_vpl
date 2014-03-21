@@ -12,6 +12,7 @@ require_once dirname(__FILE__).'/../../../config.php';
 require_once $CFG->libdir.'/formslib.php';
 class vpl_similarity_form extends moodleform {
 	private $vpl;
+	
 	function __construct($page,$vpl){
 		$this->vpl = $vpl;
 		parent::__construct($page);
@@ -19,8 +20,21 @@ class vpl_similarity_form extends moodleform {
 	function list_activities($vplid){
 		global $DB;
 		$list=array(''=>'');
+		$cn = $this->vpl->get_course()->shortname;
 		//Low privilegies
-		$courses=get_user_capability_course(VPL_VIEW_CAPABILITY);
+		$courses=get_user_capability_course(VPL_VIEW_CAPABILITY,null,true,'shortname');
+		//Reorder courses by name similar to current
+		usort($courses, function ($a, $b) use ($cn){
+			$na = $a->shortname;
+			$nb = $b->shortname;
+			$da= levenshtein($na,$cn);
+			$db= levenshtein($nb,$cn);
+			if($da != $db) return ($da < $db)?-1:1;
+			if($na == $cn) return -1;
+			if($nb == $cn) return 1;
+			if($na != $nb) return ($na < $nb)?-1:1;
+			return 0;
+		});
 		foreach($courses as $course){
 			$vpls = $DB->get_records(VPL,array('course' => $course->id));
 			foreach($vpls as $vplinstace){
@@ -35,11 +49,10 @@ class vpl_similarity_form extends moodleform {
 					$list[$othervpl->get_course_module()->id]=$othervpl->get_course()->shortname.' '.$othervpl->get_printable_name();
 				}
 			}
-			if(count($list)>400){
+			if(count($list)>1000){
 				break; //Stop loading instances
 			}
 		}
-		asort($list);
 		$list['']=get_string('select');
 		return $list;
 	}
