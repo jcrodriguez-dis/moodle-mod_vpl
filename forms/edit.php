@@ -13,6 +13,7 @@ require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../vpl_submission.class.php';
 require_once dirname(__FILE__).'/../editor/editor_utility.php';
+header("Pragma: no-cache"); //Browser must reload page
 vpl_editor_util::generate_requires();
 require_login();
 $id = required_param('id',PARAM_INT);
