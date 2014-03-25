@@ -472,21 +472,27 @@
 				'cases':'cases',
 				'cbl': 'cobol',
 				'cob': 'cobol',
+				'coffee' : 'coffee',
 				'cpp' : 'c_cpp','hxx' : 'c_cpp', 'h' : 'c_cpp',
 				'clj':'clojure',
 				'cs' : 'csharp',
 				'css' : 'css',
 				'd' : 'd',
+				'erl':'erlang','hrl':'erlang',
 				'f' : 'fortran',
 				'f77' : 'fortran',
+				'go' :'go',
 				'hs' : 'haskell',
 				'htm' : 'html', 'html' : 'html',
+				'hx' : 'haxe',
 				'java' : 'java',
 				'js' : 'javascript',
 				'json' : 'json',
 				'scm' : 'scheme',
 				's' : 'scheme',
 				'm' : 'matlab',
+				'lisp': 'lisp',
+				'lua':'lua',
 				'pas' : 'pascal',
 				'p' : 'pascal',
 				'perl' : 'perl',
@@ -501,6 +507,7 @@
 				'scala' : 'scala',
 				'sh' : 'sh',
 				'sql' : 'sql',
+				'tcl' : 'tcl',
 				'xml' : 'xml',
 				'yaml':'yaml'
 			};
@@ -942,7 +949,7 @@
 				dialogClass : 'vpl_ide vpl_ide_dialog'
 			};
 			function showMessage(message, options) {
-				var message_dialog = $JQVPL('<div id="vpl_ide_message_dig" class="vpl_ide_dialog"></div>');
+				var message_dialog = $JQVPL('<div class="vpl_ide_dialog"></div>');
 				if (typeof options == 'undefined') {
 					options = {};
 				}
@@ -1043,22 +1050,40 @@
 				title : str('rename_file'),
 				buttons : dialogButtons
 			}));
-			var progressbar=$JQVPL('#vpl_ide_dialog_progress');
-			var progressbar_pb=progressbar.find('.vpl_ide_progressbar');
-			progressbar_pb.progressbar({value : false});
-			var progressbar_pbl=progressbar_pb.find('.vpl_ide_progressbarlabel');
-			progressbar.dialog({
-				resizable: false,
-				autoOpen : false,
-				height : 70,
-				width : 'auto',
-				modal : true,
-				dialogClass : 'vpl_ide vpl_ide_dialog'
-			});
-			
-			progressbar.setLabel=function(t){
-				progressbar_pbl.text(t);
-			};
+			function progressBar(title, message, onClose) {
+				var labelHTML='<div class="vpl_ide_progressbarlabel"></div>';
+				var pbHTML='<div class="vpl_ide_progressbar">'+labelHTML+'</div>';
+				var HTML='<div class="vpl_ide_dialog" style="display: none;">'+pbHTML+'</div>';
+				var dialog = $JQVPL(HTML);
+				root_obj.append(dialog);
+				var progressbar=dialog.find('.vpl_ide_progressbar');
+				progressbar.progressbar({value : false});
+				var label=progressbar.find('.vpl_ide_progressbarlabel');
+				dialog.dialog({
+					'title' : title,
+					resizable: false,
+					autoOpen : false,
+					height : 70,
+					width : 'auto',
+					modal : true,
+					dialogClass : 'vpl_ide vpl_ide_dialog',
+					close : function() {
+						$JQVPL(this).remove();
+						if(onClose)
+							onClose();
+						dialog=false;
+					}
+				});			
+				label.text(message);
+				this.setLabel=function(t){
+					if(dialog) label.text(t);
+				};
+				this.close=function(){
+					onClose=false;
+					if(dialog) dialog.dialog('close');
+				};
+				dialog.dialog('open');
+			}
 			var aboutDialog = $JQVPL('#vpl_ide_dialog_about');
 			var OKButtons={};
 			OKButtons[str('ok')]=function(){
@@ -1160,12 +1185,16 @@
 			};
 			function requestAction(action, title, data, ok) {
 				//console.log('Open request '+action);
+				var request;
 				if(title=='')
 					title='connecting';
-				progressbar.dialog('option','title',str(action));
-				progressbar.setLabel(str(title));					
-				progressbar.dialog('open');
-				var request=$JQVPL.ajax({
+				var pb = new progressBar(str(action),str(title),
+					function(){
+						//console.log('Close request '+action);
+						if(request.readyState != 4)
+							request.abort();
+				});
+				request=$JQVPL.ajax({
 					async : true,
 					type : "POST",
 					url : options['ajaxurl'] + action,
@@ -1173,21 +1202,16 @@
 					contentType : "application/json; charset=utf-8",
 					dataType : "json"
 				}).done(function(response) {
-					progressbar.dialog('close');
+					pb.close();
 					if (!response.success) {
 						showErrorMessage(response.error);
 					} else {
 						ok(response.response);
 					}
 				}).fail(function(jqXHR, textStatus, errorThrown) {
-					progressbar.dialog('close');
+					pb.close();
 					if(errorThrown != 'abort')
 						showErrorMessage(textStatus);
-				});
-				progressbar.one("dialogclose",function(){
-					//console.log('Close request '+action);
-					if(request.readyState != 4)
-						request.abort();
 				});
 			}
 			function resetFiles() {
@@ -1228,13 +1252,12 @@
 					showErrorMessage(e.message);
 					return;
 				}
-				ws.closeProgressBar = true;
-				progressbar.dialog('option','title',str(title));
-				progressbar.setLabel(str('connecting'));
-				progressbar.dialog('open');
+				var pb = new progressBar(str(title),str('connecting'),
+					function(){ws.close();}
+				);
 				//console.log('Open ws '+response.monitorURL);
 				ws.onopen = function(event) {
-					progressbar.setLabel(str('connected'));
+					pb.setLabel(str('connected'));
 				};
 				ws.onerror = function(event) {
 					if(response.monitorURL.search('wss:') == 0){
@@ -1281,7 +1304,6 @@
 									}else
 										showErrorMessage(str('connection_fail'));
 								});
-						ws.closeProgressBar = false;
 					}
 					else
 						showErrorMessage(str('connection_fail'));
@@ -1290,8 +1312,7 @@
 					//console.log('Close ws '+response.monitorURL);
 					if (typeof lastConsole != 'undefined')
 						lastConsole.disconnect();
-					if(ws.closeProgressBar)
-						progressbar.dialog('close');
+					pb.close();
 				};
 				
 				ws.onmessage = function(event) {
@@ -1313,7 +1334,7 @@
 							if(lastConsole.isOpen())
 								lastConsole.setMessage(text);
 							else
-								progressbar.setLabel(text);
+								pb.setLabel(text);
 							break;
 						case 'compilation':
 							self.setResult({
@@ -1324,14 +1345,14 @@
 							},false);
 							break;
 						case 'retrieve':
+							pb.close();
 							requestAction('retrieve', '', '',
 									function(response) {
 										self.setResult(response,true);
 									});
 							break;
 						case 'run':
-							progressbar.off( "dialogclose");
-							progressbar.dialog('close');
+							pb.close();
 							if (content == 'terminal') {
 								lastConsole = terminal;
 								terminal.connect(response.executionURL,
@@ -1350,10 +1371,9 @@
 							break;
 						}
 					}else{
-						progressbar.setLabel(str('error')+': '+event.data);
+						pb.setLabel(str('error')+': '+event.data);
 					}
 				};
-				progressbar.one( "dialogclose",function(){ws.close();});
 			}
 			menuActions['run'] = function() {
 				if (!terminal.isConnected() && supportWebSocket())

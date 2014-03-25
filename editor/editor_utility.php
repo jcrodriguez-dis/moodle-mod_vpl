@@ -65,12 +65,6 @@ static function print_tag($options,$files_to_send,$saved=true){
 		</div>
 		<div id="vpl_results" class="vpl_ide_results"></div>
 	</div>
-	<div id="vpl_ide_dialog_progress" class="vpl_ide_dialog"
-		style="display: none;">
-		<div class="vpl_ide_progressbar">
-			<div class="vpl_ide_progressbarlabel"></div>
-		</div>
-	</div>
 	<div id="vpl_ide_dialog_new" class="vpl_ide_dialog"
 		style="display: none;">
 		<fieldset>
@@ -108,7 +102,7 @@ static function print_tag($options,$files_to_send,$saved=true){
 			Programming Lab for Moodel</a><br /> Author: Juan Carlos Rodríguez
 		del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br /> Licence: <a
 			href="http://www.gnu.org/copyleft/gpl.html" target="_blank">GNU GPL v3</a><br /> This
-		software uses/distributes the following software under the
+		software uses/includes the following software under the
 		corresponding licence:
 		<ul>
 			<li><a href="http://http://ace.c9.io" target="_blank">ACE</a>: an embeddable code

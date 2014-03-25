@@ -15,22 +15,40 @@
 			return i18n[key];
 		};
 		var root_obj=$JQVPL('#vpl_root');
-		var progressbar=$JQVPL('#vpl_ide_dialog_progress');
-		var progressbar_pb=progressbar.find('.vpl_ide_progressbar');
-		progressbar_pb.progressbar({value : false});
-		var progressbar_pbl=progressbar_pb.find('.vpl_ide_progressbarlabel');
-		progressbar.dialog({
-			resizable: false,
-			autoOpen : false,
-			height : 70,
-			width : 'auto',
-			modal : true,
-			dialogClass : 'vpl_ide vpl_ide_dialog'
-		});
-		
-		progressbar.setLabel=function(t){
-			progressbar_pbl.text(t);
-		};
+		function progressBar(title, message, onClose) {
+			var labelHTML='<div class="vpl_ide_progressbarlabel"></div>';
+			var pbHTML='<div class="vpl_ide_progressbar">'+labelHTML+'</div>';
+			var HTML='<div class="vpl_ide_dialog" style="display: none;">'+pbHTML+'</div>';
+			var dialog = $JQVPL(HTML);
+			root_obj.append(dialog);
+			var progressbar=dialog.find('.vpl_ide_progressbar');
+			progressbar.progressbar({value : false});
+			var label=progressbar.find('.vpl_ide_progressbarlabel');
+			dialog.dialog({
+				'title' : title,
+				resizable: false,
+				autoOpen : false,
+				height : 70,
+				width : 'auto',
+				modal : true,
+				dialogClass : 'vpl_ide vpl_ide_dialog',
+				close : function() {
+					$JQVPL(this).remove();
+					if(onClose)
+						onClose();
+					dialog=false;
+				}
+			});			
+			label.text(message);
+			this.setLabel=function(t){
+				if(dialog) label.text(t);
+			};
+			this.close=function(){
+				onClose=false;
+				if(dialog) dialog.dialog('close');
+			};
+			dialog.dialog('open');
+		}
 		function showMessage(message, options) {
 			var message_dialog = $JQVPL('<div id="vpl_ide_message_dig" class="vpl_ide_dialog"></div>');
 			if (typeof options == 'undefined') {
@@ -84,12 +102,17 @@
 
 		}
 		function requestAction(action, title, data, ok) {
+			var request;
 			if(title=='')
 				title = 'connecting';
-			progressbar.dialog('option','title',str(action));
-			progressbar.setLabel(str(title));					
-			progressbar.dialog('open');
-			var request=$JQVPL.ajax({
+			var pb= new progressBar(str(action),str(title),
+				function(){
+					if(request.readyState != 4){
+						request.abort();
+					}
+				}
+			);					
+			request=$JQVPL.ajax({
 				async : true,
 				type : "POST",
 				url : options['ajaxurl'] + action,
@@ -97,21 +120,16 @@
 				contentType : "application/json; charset=utf-8",
 				dataType : "json"
 			}).done(function(response) {
-				progressbar.dialog('close');
+				pb.close();
 				if (!response.success) {
 					showErrorMessage(response.error);
 				} else {
 					ok(response.response);
 				}
 			}).fail(function(jqXHR, textStatus, errorThrown) {
-				progressbar.dialog('close');
+				pb.close();
 				if(errorThrown != 'abort')
 					showErrorMessage(textStatus);
-			});
-			progressbar.one("dialogclose",function(){
-				if(request.readyState != 4){
-					request.abort();
-				}
 			});
 		}
 		
@@ -126,12 +144,15 @@
 		function evaluationMonitor(URL, title,running) {
 			var ws = new WebSocket(URL);
 			var next='';
-			progressbar.dialog('option','title',str(title));
-			progressbar.setLabel(str('connecting'));
-			progressbar.dialog('open');
-			ws.closeProgressBar = true;
+			var pb= new progressBar(str(title),str('connecting'),
+					function(){
+						if(request.readyState != 4){
+							request.abort();
+						}
+					}
+				);
 			ws.onopen = function(event) {
-				progressbar.setLabel(str('connected'));
+				pb.setLabel(str('connected'));
 			};
 			ws.onerror = function(event) {
 				if(URL.search('wss:') == 0){
@@ -175,14 +196,12 @@
 								}else
 									showErrorMessage(str('connection_fail'));
 							});
-					ws.closeProgressBar = false;
 				}
 				else
 					showErrorMessage(str('connection_fail'));
 			};
 			ws.onclose = function(event) {
-				if(ws.closeProgressBar)
-					progressbar.dialog('close');
+				pb.close();
 				//console.log('Console monitor websocket close');
 				if(next != ''){
 					setTimeout(function(){
@@ -206,9 +225,10 @@
 						var text=str(state);
 						if(detail >'')
 							text += ': '+detail;
-						progressbar.setLabel(text);
+						pb.setLabel(text);
 						break;
 					case 'retrieve':
+						pb.close();
 						requestAction('retrieve', 'evaluating', '',function() {
 							next=options['nexturl'];
 							ws.close();
