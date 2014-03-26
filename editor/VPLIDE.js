@@ -1068,10 +1068,13 @@
 					modal : true,
 					dialogClass : 'vpl_ide vpl_ide_dialog',
 					close : function() {
-						$JQVPL(this).remove();
-						if(onClose)
-							onClose();
-						dialog=false;
+						if(dialog){
+							$JQVPL(dialog).remove();
+							dialog=false;
+							if(onClose)
+								onClose();
+							onClose=false;
+						}
 					}
 				});			
 				label.text(message);
@@ -1260,6 +1263,7 @@
 					pb.setLabel(str('connected'));
 				};
 				ws.onerror = function(event) {
+					pb.close();
 					if(response.monitorURL.search('wss:') == 0){
 						requestAction('getjails', 'retrieve',{},
 								function(response) {
