@@ -33,10 +33,13 @@
 				modal : true,
 				dialogClass : 'vpl_ide vpl_ide_dialog',
 				close : function() {
-					$JQVPL(this).remove();
-					if(onClose)
-						onClose();
-					dialog=false;
+					if(dialog){
+						$JQVPL(dialog).remove();
+						dialog=false;
+						if(onClose)
+							onClose();
+						onClose=false;
+					}
 				}
 			});			
 			label.text(message);
@@ -145,16 +148,13 @@
 			var ws = new WebSocket(URL);
 			var next='';
 			var pb= new progressBar(str(title),str('connecting'),
-					function(){
-						if(request.readyState != 4){
-							request.abort();
-						}
-					}
+					function(){ws.close();}
 				);
 			ws.onopen = function(event) {
 				pb.setLabel(str('connected'));
 			};
 			ws.onerror = function(event) {
+				pb.close();
 				if(URL.search('wss:') == 0){
 					requestAction('getjails', 'retrieve',{},
 							function(response) {
@@ -235,6 +235,7 @@
 						});
 						break;
 					case 'run':
+						pb.close();
 						showErrorMessage('unexpected error');
 					case 'close':
 						next=options['nexturl'];
