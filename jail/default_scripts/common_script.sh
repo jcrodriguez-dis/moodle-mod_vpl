@@ -33,15 +33,17 @@ function check_program {
 	fi
 }
 #Decode BASE64 files
-for FILENAME in *.b64
+get_source_files b64
+for FILENAME in $SOURCE_FILES
 do
 	if [ -f "$FILENAME" ] ; then
-		BINARY=$(basename "$FILENAME" .b64)
+		BINARY=$(echo "$FILENAME" | sed -r "s/\.b64$//")
 		if [ ! -f  "$BINARY" ] ; then
 			base64 -d "$FILENAME" > "$BINARY"
 		fi
 	fi
 done
+SOURCE_FILES=""
 #Security Check: pre_vpl_run.sh was submitted by a student?
 VPL_NS=true
 for FILENAME in $VPL_SUBFILES
