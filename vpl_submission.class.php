@@ -751,12 +751,7 @@ class mod_vpl_submission {
 			}elseif(strlen($clean)>0 && $clean[0]=='>') { //Case
 				$pos=strpos($line,'>');
 				$rest=substr($line,$pos+1);
-				//TODO CODE WORK AAROUND FOR PROBLEM IN 1.9 RESOLVED in 2.0
-				if($rest != '0'){ //s output 0 is string empty or "0.0"
-					$caseToShow .= $rest."\n";
-				}else{
-					$caseToShow .= $rest."\n";
-				}
+				$caseToShow .= $rest."\n";
 			} elseif(strlen($clean)>8 && 
 			         (substr($clean,0,5)=="http:" || substr($clean,0,6)=="https:")) {
 				//Is url
@@ -785,9 +780,9 @@ class mod_vpl_submission {
 			}
 		}
 		if(strlen($caseToShow)>0){
-			$html .='<pre><i>';
-			$html .= s($caseToShow);
-			$html .= '</i></pre>';
+			$comment .='<pre><i>';
+			$comment .= s($caseToShow);
+			$comment .= '</i></pre>';
 		}
 		$html .= $this->get_last_comment($title, $comment,$dropdown);
 		return $html;
