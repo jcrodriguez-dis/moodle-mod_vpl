@@ -39,7 +39,7 @@ do
 	if [ -f "$FILENAME" ] ; then
 		BINARY=$(echo "$FILENAME" | sed -r "s/\.b64$//")
 		if [ ! -f  "$BINARY" ] ; then
-			base64 -d "$FILENAME" > "$BINARY"
+			base64 -i -d "$FILENAME" > "$BINARY"
 		fi
 	fi
 done
