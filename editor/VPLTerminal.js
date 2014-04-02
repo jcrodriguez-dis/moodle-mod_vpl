@@ -49,8 +49,18 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 			self.setMessage('');
 			self.setTitle(str('connecting'));
 			ws = new WebSocket(server);
+			ws.writeBuffer='';
+			ws.writeIt=function(){
+				terminal.write(ws.writeBuffer);
+				ws.writeBuffer='';
+			};
 			ws.onmessage = function(event) {
-				terminal.write(event.data);
+				if(ws.writeBuffer.length>0){
+					ws.writeBuffer+=event.data;
+				}else{
+					ws.writeBuffer=event.data;
+					setTimeout(ws.writeIt,0);
+				}
 			};
 			ws.onopen = function(event) {
 				self.setMessage('');
@@ -62,6 +72,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 				self.setTitle(str('connection_closed'));
 				terminal.blur();
 				onClose();
+				ws.stopOutput=true;
 			};
 		} else {
 			terminal
