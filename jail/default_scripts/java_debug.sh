@@ -1,6 +1,5 @@
 #!/bin/bash
-# $Id: java_run.sh,v 1.6 2012-09-24 15:13:22 juanca Exp $
-# Default Java language run script for VPL
+# Default Java language debug script for VPL
 # Copyright (C) 2011 Juan Carlos Rodríguez-del-Pino. All rights reserved.
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
@@ -69,9 +68,15 @@ if [ "$MAINCLASS" = "" ] ; then
 	MAINCLASS=$TESTCLASS
 fi
 cat common_script.sh > vpl_execution
-echo "export CLASSPATH=$CLASSPATH:." >> vpl_execution
+echo "export CLASSPATH=$CLASSPATH:$HOME" >> vpl_execution
 chmod +x vpl_execution
-if [ "$(command -v ddd)" == "" ] ; then
+# is JSwat installed ?
+if [ -f /usr/local/JSwat/bin/JSwat ] ; then
+	echo "export SOURCEPATH=$HOME" >> vpl_execution
+	echo "get_source_files java" >> vpl_execution
+	echo "/usr/local/JSwat/bin/JSwat --laf javax.swing.plaf.nimbus.NimbusLookAndFeel \$SOURCE_FILES" >> vpl_execution
+	mv vpl_execution vpl_wexecution
+elif [ "$(command -v ddd)" == "" ] ; then
 	echo "jdb -Xmx16m -J-Xmx16M $MAINCLASS" >> vpl_execution
 	for FILENAME in $SOURCE_FILES
 	do
