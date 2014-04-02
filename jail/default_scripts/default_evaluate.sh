@@ -17,7 +17,7 @@ else
 	./vpl_run.sh >>vpl_compilation_error.txt 2>&1 
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution vpl_test
-		if [ -s vpl_evaluate.cases ] ; then
+		if [ -f vpl_evaluate.cases ] ; then
 			mv vpl_evaluate.cases evaluate.cases
 		else
 			echo "Error need file 'vpl_evaluate.cases' to make an evaluation"
