@@ -183,6 +183,7 @@ static function send_CE($CE) {
 'filenotadded',
 'filenotdeleted',
 'filenotrenamed',
+'find',
 'find_replace',
 'fullscreen',
 'incorrect_file_name',
