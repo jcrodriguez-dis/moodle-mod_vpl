@@ -132,7 +132,7 @@
 			}).fail(function(jqXHR, textStatus, errorThrown) {
 				pb.close();
 				if(errorThrown != 'abort')
-					showErrorMessage(textStatus);
+					showErrorMessage(str('connection_fail')+': '+textStatus);
 			});
 		}
 		
@@ -150,12 +150,14 @@
 			var pb= new progressBar(str(title),str('connecting'),
 					function(){ws.close();}
 				);
+			ws.notOpen = true;
 			ws.onopen = function(event) {
+				ws.notOpen = false;
 				pb.setLabel(str('connected'));
 			};
 			ws.onerror = function(event) {
 				pb.close();
-				if(URL.search('wss:') == 0){
+				if(URL.search('wss:') == 0 && ws.notOpen){
 					requestAction('getjails', 'retrieve',{},
 							function(response) {
 								var servers = response.servers;
