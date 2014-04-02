@@ -201,6 +201,9 @@
 				this.find = function(s) {
 					editor.execCommand('find');
 				};
+				this.replace = function(s) {
+					editor.execCommand('replace');
+				};
 				this.next = function(s) {
 					editor.execCommand('findnext');
 				};
@@ -248,11 +251,14 @@
 				session.setUndoManager(new ace.UndoManager());
 				// =================================================
 				// Code to control Paste and drop under restricted editing
-				editor.execCommand('find');
+				editor.execCommand('replace');
 				function addEventDrop() {
-					if ($JQVPL(tid + ' div.ace_search').length) {
-						$JQVPL(tid + ' div.ace_search').on('drop', noDrop);
-						$JQVPL('button.ace_searchbtn_close').trigger('click');
+					var tag=$JQVPL(tid + ' div.ace_search');
+					if (tag.length) {
+						tag.on('drop', noDrop);
+						var button=$JQVPL('button.ace_searchbtn_close');
+						button.css({ marginLeft : "1em", marginRight : "1em" });
+						button.trigger('click');
 					} else {
 						setTimeout(addEventDrop, 50);
 					}
@@ -265,9 +271,9 @@
 					}
 				}
 				editor.on('change', changed);
-				// Try to grant noDrop instalation
+				// Try to grant noDrop installation
 				setTimeout(addEventDrop, 5);
-				// Save previous onPaste and chage for a new one
+				// Save previous onPaste and change for a new one
 				var prevOnPaste = editor.onPaste;
 				editor.onPaste = function(s) {
 					if (restrictedEdit) {
@@ -284,13 +290,8 @@
 				function noDrop(e) {
 					if (restrictedEdit) {
 						e.stopImmediatePropagation();
-					} else {
-						e.preventDefault();
-						e.stopImmediatePropagation();
-						showMessage(JSON
-								.stringify(e.originalEvent.dataTransfer));
+						return false;
 					}
-					return false;
 				}
 				function restrictedPaste(e) {
 					if (restrictedEdit) {
@@ -547,6 +548,8 @@
 				var case_ = '';
 				var lines = text.split(/\r\n|\n|\r/);
 				var regFiles = new Array();
+				var lastAnotation = false;
+				var lastAnotationFile = false;
 				function escReg(t) {
 					return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
 				}
@@ -555,7 +558,8 @@
 					var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)[:\,]?(\\d+)?\\)?";// ($|[^\\d])
 					regFiles[i] = new RegExp(reg, '');
 				}
-				function genFileLinks(line) {
+				function genFileLinks(line,rawline) {
+					var used=false;
 					for (var i = 0; i < regFiles.length; i++) {
 						var reg = regFiles[i];
 						var match;
@@ -563,15 +567,17 @@
 							var anot = files[i].getAnnotations();
 							// annotations[]
 							// {row:,column:,raw:,type:error,warning,info;text}
+							lastAnotationFile = i;
+							used =true;
 							type = line.search(regWarning) == -1 ? 'error'
 									: 'warning';
-							anot.push({
-								row : (match[2] - 1),
-								column : match[3],
-								raw : line,
-								type : type,
-								text : line
-							});
+							lastAnotation = {
+									row : (match[2] - 1),
+									column : match[3],
+									type : type,
+									text : rawline
+								};
+							anot.push(lastAnotation);
 							var lt = sanitizeText(files[i].getFileName());
 							var cl = 'vpl_l_' + files[i].getId() + '_'
 									+ match[2];
@@ -580,9 +586,18 @@
 							files[i].setAnnotations(anot);
 						}
 					}
+					if(! used && lastAnotation){
+						if(rawline!=''){
+							lastAnotation.text +="\n"+rawline;
+							files[lastAnotationFile].setAnnotations(files[lastAnotationFile].getAnnotations());
+						}
+						else
+							lastAnotation=false;
+					}
 					return line;
 				}
 				function getTitle(line) {
+					lastAnotation=false;
 					line = line.substr(1);
 					var end = regtitgra.exec(line);
 					if (end !== null)
@@ -591,18 +606,21 @@
 							+ sanitizeText(line) + '</div>';
 				}
 				function getComment() {
+					lastAnotation=false;
 					var ret = comment;
 					comment = '';
 					return ret;
 				}
-				function addComment(line) {
-					line = sanitizeText(line);
-					comment += genFileLinks(line) + '<br />';
+				function addComment(rawline) {
+					var line = sanitizeText(rawline);
+					comment += genFileLinks(line,rawline) + '<br />';
 				}
-				function addCase(line) {
-					case_ += genFileLinks(line) + "\n";
+				function addCase(rawline) {
+					var line = sanitizeText(rawline);
+					case_ += genFileLinks(line,rawline) + "\n";
 				}
 				function getCase() {
+					lastAnotation=false;
 					var ret = case_;
 					case_ = '';
 					return '<pre>' + ret + '</pre>';
@@ -772,6 +790,7 @@
 			menu_html += menu_option('paste');*/
 			menu_html += submenu_separator;
 			menu_html += menu_option('select_all');
+			menu_html += menu_option('find');
 			menu_html += menu_option('find_replace');
 			menu_html += menu_option('next');
 			menu_html += '</ul></li>';
@@ -824,7 +843,7 @@
 				setActiveMenuOption('run', !modified);
 				setActiveMenuOption('debug', !modified);
 				setActiveMenuOption('evaluate', !modified);
-
+				setActiveMenuOption('download', !modified);
 				if (!(id in files)) {
 					return;
 				}
@@ -1159,8 +1178,11 @@
 			menuActions['select_all'] = function() {
 				currentFile('selectAll');
 			};
-			menuActions['find_replace'] = function() {
+			menuActions['find'] = function() {
 				currentFile('find');
+			};
+			menuActions['find_replace'] = function() {
+				currentFile('replace');
 			};
 			menuActions['next'] = function() {
 				currentFile('next');
@@ -1214,7 +1236,7 @@
 				}).fail(function(jqXHR, textStatus, errorThrown) {
 					pb.close();
 					if(errorThrown != 'abort')
-						showErrorMessage(textStatus);
+						showErrorMessage(str('connection_fail')+': '+textStatus);
 				});
 			}
 			function resetFiles() {
@@ -1259,12 +1281,14 @@
 					function(){ws.close();}
 				);
 				//console.log('Open ws '+response.monitorURL);
+				ws.notOpen = true;
 				ws.onopen = function(event) {
+					ws.notOpen = false;
 					pb.setLabel(str('connected'));
 				};
 				ws.onerror = function(event) {
 					pb.close();
-					if(response.monitorURL.search('wss:') == 0){
+					if(response.monitorURL.search('wss:') == 0 && ws.notOpen){
 						requestAction('getjails', 'retrieve',{},
 								function(response) {
 									var servers = response.servers;
