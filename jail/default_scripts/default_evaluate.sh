@@ -39,16 +39,17 @@ else
 			echo "Error compiling evaluation program"
 		fi
 	else
+		cat vpl_compilation_error.txt
 		echo "#!/bin/bash" >> vpl_execution
 		echo "echo" >> vpl_execution
-		echo "echo 'Comment :=>>-$VPL_COMPILATIONFAILED'" >> vpl_execution
 		echo "echo '<|--'" >> vpl_execution
-		echo "cat vpl_compilation_error.txt" >> vpl_execution
+		echo "echo '-$VPL_COMPILATIONFAILED'" >> vpl_execution
 		if [ -f vpl_wexecution ] ; then
 			echo "echo '======================'" >> vpl_execution
 			echo "echo 'It seems you are trying to test a program with a graphic user interface'" >> vpl_execution
 		fi
 		echo "echo '--|>'" >> vpl_execution		
+		echo "echo" >> vpl_execution		
 		echo "echo 'Grade :=>>$VPL_GRADEMIN'" >> vpl_execution
 		chmod +x vpl_execution
 	fi
