@@ -86,6 +86,14 @@
 .vpl_ide {
 	font-size: 80%;
 }
+.ace_gutter-tooltip{
+	white-space: pre-wrap !important;
+}
+.vpl_ide_result_compilation, .vpl_ide_result_compilation {
+	font-family: 'Monaco', 'Consolas', monospace;
+	font-size: 12pt;
+	white-space: pre;
+}
 /* horizontal menu css Taken from "Jaime Peña Tresancos" en 
    "En el presente artículo hablaremos de qué es y
     qué proporciona el jQuery User Interface Menu"

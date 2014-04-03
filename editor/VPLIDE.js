@@ -527,8 +527,8 @@
 				return $JQVPL('<div>' + t + '</div>').html();
 			}
 			function sanitizeText(s) {
-				return $JQVPL.trim(s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
-						.replace(/>/g, "&gt;"));
+				return s.replace(/&/g, "&amp;").replace(/</g, "&lt;")
+						.replace(/>/g, "&gt;");
 			}
 			function getFilePosById(id) {
 				for (var i = 0; i < files.length; i++)
@@ -701,7 +701,7 @@
 					}
 					if (compilation > '') {
 						html += '<h3>' + str('compilation')
-								+ '</h3><div class="ui-widget">'
+								+ '</h3><div class="ui-widget vpl_ide_result_compilation">'
 								+ resultToHTML(compilation) + '</div>';
 					}
 					if (evaluation > '') {
@@ -711,8 +711,8 @@
 					}
 					if (execution > '') {
 						html += '<h3>' + str('execution')
-								+'</h3><div class="ui-widget"><pre>'
-								+sanitizeText(execution)+'</pre></div>';
+								+'</h3><div class="ui-widget vpl_ide_result_execution">'
+								+sanitizeText(execution)+'</div>';
 					}
 					result.html(html);
 					if (!result.vpl_visible) {
