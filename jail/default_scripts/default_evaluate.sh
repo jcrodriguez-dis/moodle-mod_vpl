@@ -14,7 +14,8 @@ else
 	#avoid conflict with C++ compilation
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
 	#Prepare run
-	./vpl_run.sh >>vpl_compilation_error.txt 2>&1 
+	./vpl_run.sh >>vpl_compilation_error.txt 2>&1
+	cat vpl_compilation_error.txt
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution vpl_test
 		if [ -f vpl_evaluate.cases ] ; then
@@ -39,7 +40,6 @@ else
 			echo "Error compiling evaluation program"
 		fi
 	else
-		cat vpl_compilation_error.txt
 		echo "#!/bin/bash" >> vpl_execution
 		echo "echo" >> vpl_execution
 		echo "echo '<|--'" >> vpl_execution
