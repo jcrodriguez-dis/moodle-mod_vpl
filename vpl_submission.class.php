@@ -583,11 +583,11 @@ class mod_vpl_submission {
 			if(strlen($grade) >0){
 				echo '<b>'.$grade.'</b><br />';
 			}
-			if(strlen($execution)>0){
-				echo $execution;
-			}
 			if(strlen($compilation) >0){
 				echo $compilation;
+			}
+			if(strlen($execution)>0){
+				echo $execution;
 			}
 			echo $OUTPUT->box_end();
 			$div->end_div();
