@@ -66,7 +66,7 @@ class vpl_sh_base{
 		$this->showln=$showln;
 		$this->file_name = $filename;
 		$this->line_number=1;
-		echo '<pre class="'.self::c_general.'">';
+		echo '<pre class="vpl_sh '.self::c_general.'">';
 	}
 	protected function end(){
 		while($this->hover_level>0){

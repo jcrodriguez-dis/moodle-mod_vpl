@@ -1,4 +1,6 @@
 .vpl_ide_root {
+	text-align:left;
+	direction:ltr;
 	width: 100%;
 }
 .vpl_body_fullscreen{
@@ -92,7 +94,7 @@
 .vpl_ide_result_compilation, .vpl_ide_result_execution {
 	font-family: 'Monaco', 'Consolas', monospace;
 	font-size: 12pt;
-	white-space: pre;
+	white-space: pre-wrap;
 }
 /* horizontal menu css Taken from "Jaime Peña Tresancos" en 
    "En el presente artículo hablaremos de qué es y
