@@ -28,6 +28,8 @@ vpl_include_jsfile('grade.js',false);
 vpl_include_jsfile('hide_footer.js',false);
 vpl_include_jsfile('updatesublist.js',false);
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
+$PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
+
 
 $id = required_param('id',PARAM_INT);
 $userid = required_param('userid',PARAM_INT);

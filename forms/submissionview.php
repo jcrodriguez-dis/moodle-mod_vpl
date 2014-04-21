@@ -64,6 +64,7 @@ if($USER->id == $userid){
 }
 //Print header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
+$PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
 $vpl->print_header(get_string('submissionview',VPL));
 $vpl->print_view_tabs(basename(__FILE__));
 //Display submission
