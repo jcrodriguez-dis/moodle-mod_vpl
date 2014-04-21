@@ -28,6 +28,7 @@ $strdatesubmitted		= get_string('datesubmitted',VPL);
 $strdescription			= get_string('description',VPL);
 if($detailed){
 	$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
+	$PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
 }
 //Print header
 $vpl->print_header(get_string('previoussubmissionslist',VPL));
