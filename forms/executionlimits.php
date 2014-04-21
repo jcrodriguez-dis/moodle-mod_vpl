@@ -33,7 +33,7 @@ class mod_vpl_executionlimits_form extends moodleform{
 		if($instance->maxexetime)
 			$mform->setDefault('maxexetime',$instance->maxexetime);
 		$mform->addElement('select','maxexememory',get_string('maxexememory',VPL),
-											vpl_get_select_sizes(64*1024*1024,(int)$CFG->vpl_maxexememory));
+											vpl_get_select_sizes(16*1024*1024,(int)$CFG->vpl_maxexememory));
 		$mform->setType('maxexememory', PARAM_INT);
 		if($instance->maxexememory)
 			$mform->setDefault('maxexememory',$instance->maxexememory);
