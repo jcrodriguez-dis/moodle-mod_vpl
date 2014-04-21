@@ -583,11 +583,11 @@ class mod_vpl_submission {
 			if(strlen($grade) >0){
 				echo '<b>'.$grade.'</b><br />';
 			}
-			if(strlen($execution)>0){
-				echo $execution;
-			}
 			if(strlen($compilation) >0){
 				echo $compilation;
+			}
+			if(strlen($execution)>0){
+				echo $execution;
 			}
 			echo $OUTPUT->box_end();
 			$div->end_div();
@@ -891,7 +891,9 @@ class mod_vpl_submission {
 		if($response['compilation']){
 			$compilation=$this->result_to_HTML($response['compilation'],$dropdown);
 			if(strlen($compilation)){
-				$compilation ='<b>'.get_string('compilation',VPL).'</b><br />'.$compilation;
+				$div = new vpl_hide_show_div();
+				$compilation ='<b>'.get_string('compilation',VPL).$div->generate(true).'</b><br />'
+						.$div->begin_div(true).'<div class="vpl_ide_result_compilation">'.$compilation.'</div>'.$div->end_div(true);
 			}
 		}
 		if($response['executed']>0){
@@ -911,7 +913,7 @@ class mod_vpl_submission {
 			 	(strlen($execution)+strlen($proposed_grade)==0) ){
 					$execution .="<br />\n";
 					$execution .='<b>'.get_string('execution',VPL)."</b><br />\n";
-					$execution .= '<pre>'.s($raw_execution).'</pre>';
+					$execution .= '<div class="vpl_ide_result_execution">'.s($raw_execution).'</div>';
 			} //Show raw ejecution if manager and $returnrawexecution
 			elseif($returnrawexecution && strlen($raw_execution)>0 &&
 			 	($this->vpl->has_capability(VPL_MANAGE_CAPABILITY))){
@@ -919,7 +921,7 @@ class mod_vpl_submission {
 					$execution .="<br />\n";
 					$execution .='<b>'.get_string('execution',VPL).$div->generate(true)."</b><br />\n";
 					$execution .=$div->begin_div(true);
-					$execution .= '<pre>'.s($raw_execution).'</pre>';
+					$execution .= '<div class="vpl_ide_result_execution">'.s($raw_execution).'</div>';
 					$execution .=$div->end_div(true);
 			 }
 		}
