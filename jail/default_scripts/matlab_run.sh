@@ -1,5 +1,4 @@
 #!/bin/bash
-# $Id: matlab_run.sh,v 1.10 2013-07-09 13:28:31 juanca Exp $
 # Default Matlab/Octave language run script for VPL
 # Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -13,19 +12,15 @@ X11=
 if [ ! -f vpl_evaluate.sh ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
-		grep -E "(^|[^A-Za-z0-9])(image|imagesc|plot|contour|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero)($|[ |(])" $FILENAME 2>&1 >/dev/null
+		grep -E "(^|[^A-Za-z0-9])(image|imagesc|figure|plot|contour|contourf|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero)( *)($|[(|;])" $FILENAME 2>&1 >/dev/null
 		if [ "$?" -eq "0" ] ; then
 			X11=y
 			break
 		fi
 	done
 fi
-MAIN=
-for FILENAME in $SOURCE_FILES
-do
-	MAIN=$FILENAME
-	break
-done
+MAIN=$VPL_SUBFILE0
+
 if [ "$(command -v matlab)" == "" ] ; then
 	if [ "$(command -v octave)" == "" ] ; then
 		echo "The jail-server need to install "Octave" or "Matlab" to run this type of program"
