@@ -342,7 +342,7 @@
 			VPL_File.prototype.iconDelete = ' <span title="' + str('delete')
 					+ '" class="vpl_ide_charicon vpl_ide_delicon">x</span>';
 			VPL_File.prototype.iconRequired = ' <span title="'
-					+ str('requiered') + '" class="vpl_ide_charicon">▼</span>';
+					+ str('required') + '" class="vpl_ide_charicon">▼</span>';
 			function fileNameExists(name) {
 				var checkName = name.toLowerCase();
 				for (var i = 0; i < files.length; i++) {
