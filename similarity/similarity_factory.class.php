@@ -13,6 +13,7 @@ class vpl_filetype{
 						'h'=>'cpp',
 						'hxx'=>'cpp',
 						'c'=>'c',
+						'js' => 'c', //JavaScript as C
 						'C'=>'cpp',
 						'cpp'=>'cpp',
 						'ads'=>'ada',
