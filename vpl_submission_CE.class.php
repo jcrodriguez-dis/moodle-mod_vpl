@@ -177,8 +177,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		foreach ($list as $filename){
 			if(!isset($data->files[$filename])){
 				$data->files[$filename] = $sfg->getFileData($filename);
-				$submittedlist[] = $filename;
 			}
+			$submittedlist[] = $filename;
 		}
 		//Get programming language
 		$pln = $this->get_pln($list);
@@ -347,7 +347,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 	}
 
     function retrieveResult(){
-		//FIXME Caller Check security (who and config)
     	$response = $this->jailReaction('getresult');
     	if($response === false){
     		throw new Exception(get_string('serverexecutionerror',VPL));
@@ -368,7 +367,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 	}
 
     function isRunning(){
-    	//FIXME check security
     	try{
     		$response = $this->jailReaction('running');
     	}catch(Exception $e){
@@ -378,7 +376,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
    	}
 
     function cancelProcess(){
-    	//FIXME check security
     	$process_info=vpl_running_processes::get($this->get_instance()->userid);
     	if($process_info == null) //No process to cancel
     		return;
