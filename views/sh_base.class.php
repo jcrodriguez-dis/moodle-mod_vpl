@@ -86,11 +86,11 @@ class vpl_sh_base{
 
 	}
 	function print_file($filename, $filedata, $showln=true){
-		$this->begin($filename);
+		$this->begin($filename,$showln);
 		$pending='';
 		$l = strlen($filedata);
 		if($l){
-			$this->show_line_number($showln);
+			$this->show_line_number();
 		}
 		for($i=0;$i<$l;$i++){
 			$current=$filedata[$i];
@@ -109,7 +109,7 @@ class vpl_sh_base{
 			$pending .= $current;
 			if($current == self::LF){
 				$this->show_pending($pending);
-				$this->show_line_number($showln);
+				$this->show_line_number();
 			}
 		}
 		$this->show_pending($pending);
