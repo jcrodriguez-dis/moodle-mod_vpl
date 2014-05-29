@@ -13,6 +13,7 @@
 
 // Load supporting scripts
 window.onscriptsload = function () { UI.load(); };
+window.onload = function () { UI.keyboardinputReset(); };
 Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
                    "keysymdef.js", "keyboard.js", "input.js", "display.js",
                    "jsunzip.js", "rfb.js", "keysym.js"]);
@@ -26,6 +27,8 @@ popupStatusOpen : false,
 clipboardOpen: false,
 keyboardVisible: false,
 hideKeyboardTimeout: null,
+lastKeyboardinput: null,
+defaultKeyboardinputLen: 100,
 extraKeysVisible: false,
 ctrlOn: false,
 altOn: false,
@@ -86,12 +89,12 @@ start: function(callback) {
     UI.initSetting('cursor', !UI.isTouchDevice);
     UI.initSetting('shared', true);
     UI.initSetting('view_only', false);
-    UI.initSetting('connectTimeout', 2);
     UI.initSetting('path', 'websockify');
     UI.initSetting('repeaterID', '');
 
     UI.rfb = RFB({'target': $D('noVNC_canvas'),
                   'onUpdateState': UI.updateState,
+                  'onXvpInit': UI.updateXvpVisualState,
                   'onClipboard': UI.clipReceive,
                   'onDesktopName': UI.updateDocumentTitle});
 
@@ -185,8 +188,12 @@ addMouseHandlers: function() {
     $D("sendEscButton").onclick = UI.sendEsc;
 
     $D("sendCtrlAltDelButton").onclick = UI.sendCtrlAltDel;
+    $D("xvpShutdownButton").onclick = UI.xvpShutdown;
+    $D("xvpRebootButton").onclick = UI.xvpReboot;
+    $D("xvpResetButton").onclick = UI.xvpReset;
     $D("noVNC_status").onclick = UI.togglePopupStatusPanel;
     $D("noVNC_popup_status_panel").onclick = UI.togglePopupStatusPanel;
+    $D("xvpButton").onclick = UI.toggleXvpPanel;
     $D("clipboardButton").onclick = UI.toggleClipboardPanel;
     $D("settingsButton").onclick = UI.toggleSettingsPanel;
     $D("connectButton").onclick = UI.toggleConnectPanel;
@@ -303,6 +310,39 @@ togglePopupStatusPanel: function() {
     }
 },
 
+// Show the XVP panel
+toggleXvpPanel: function() {
+    // Close the description panel
+    $D('noVNC_description').style.display = "none";
+    // Close settings if open
+    if (UI.settingsOpen === true) {
+        UI.settingsApply();
+        UI.closeSettingsMenu();
+    }
+    // Close connection settings if open
+    if (UI.connSettingsOpen === true) {
+        UI.toggleConnectPanel();
+    }
+    // Close popup status panel if open
+    if (UI.popupStatusOpen === true) {
+        UI.togglePopupStatusPanel();
+    }
+    // Close clipboard panel if open
+    if (UI.clipboardOpen === true) {
+        UI.toggleClipboardPanel();
+    }
+    // Toggle XVP panel
+    if (UI.xvpOpen === true) {
+        $D('noVNC_xvp').style.display = "none";
+        $D('xvpButton').className = "noVNC_status_button";
+        UI.xvpOpen = false;
+    } else {
+        $D('noVNC_xvp').style.display = "block";
+        $D('xvpButton').className = "noVNC_status_button_selected";
+        UI.xvpOpen = true;
+    }
+},
+
 // Show the clipboard panel
 toggleClipboardPanel: function() {
     // Close the description panel
@@ -319,6 +359,10 @@ toggleClipboardPanel: function() {
     // Close popup status panel if open
     if (UI.popupStatusOpen === true) {
         UI.togglePopupStatusPanel();
+    }
+    // Close XVP panel if open
+    if (UI.xvpOpen === true) {
+        UI.toggleXvpPanel();
     }
     // Toggle Clipboard Panel
     if (UI.clipboardOpen === true) {
@@ -349,6 +393,10 @@ toggleConnectPanel: function() {
     // Close popup status panel if open
     if (UI.popupStatusOpen === true) {
         UI.togglePopupStatusPanel();
+    }
+    // Close XVP panel if open
+    if (UI.xvpOpen === true) {
+        UI.toggleXvpPanel();
     }
 
     // Toggle Connection Panel
@@ -388,7 +436,6 @@ toggleSettingsPanel: function() {
         UI.updateSetting('clip');
         UI.updateSetting('shared');
         UI.updateSetting('view_only');
-        UI.updateSetting('connectTimeout');
         UI.updateSetting('path');
         UI.updateSetting('repeaterID');
         UI.updateSetting('stylesheet');
@@ -414,6 +461,10 @@ openSettingsMenu: function() {
     if (UI.popupStatusOpen === true) {
         UI.togglePopupStatusPanel();
     }
+    // Close XVP panel if open
+    if (UI.xvpOpen === true) {
+        UI.toggleXvpPanel();
+    }
     $D('noVNC_settings').style.display = "block";
     $D('settingsButton').className = "noVNC_status_button_selected";
     UI.settingsOpen = true;
@@ -437,7 +488,6 @@ settingsApply: function() {
     UI.saveSetting('clip');
     UI.saveSetting('shared');
     UI.saveSetting('view_only');
-    UI.saveSetting('connectTimeout');
     UI.saveSetting('path');
     UI.saveSetting('repeaterID');
     UI.saveSetting('stylesheet');
@@ -465,6 +515,18 @@ setPassword: function() {
 
 sendCtrlAltDel: function() {
     UI.rfb.sendCtrlAltDel();
+},
+
+xvpShutdown: function() {
+    UI.rfb.xvpShutdown();
+},
+
+xvpReboot: function() {
+    UI.rfb.xvpReboot();
+},
+
+xvpReset: function() {
+    UI.rfb.xvpReset();
 },
 
 setMouseButton: function(num) {
@@ -549,7 +611,6 @@ updateVisualState: function() {
     }
     $D('noVNC_shared').disabled = connected;
     $D('noVNC_view_only').disabled = connected;
-    $D('noVNC_connectTimeout').disabled = connected;
     $D('noVNC_path').disabled = connected;
     $D('noVNC_repeaterID').disabled = connected;
 
@@ -566,6 +627,7 @@ updateVisualState: function() {
         $D('showKeyboard').style.display = "none";
         $D('noVNC_extra_keys').style.display = "none";
         $D('sendCtrlAltDelButton').style.display = "none";
+        UI.updateXvpVisualState(0);
     }
     
     // State change disables viewport dragging.
@@ -587,6 +649,19 @@ updateVisualState: function() {
     }
 
     //Util.Debug("<< updateVisualState");
+},
+
+// Disable/enable XVP button
+updateXvpVisualState: function(ver) {
+    if (ver >= 1) {
+        $D('xvpButton').style.display = 'inline';
+    } else {
+        $D('xvpButton').style.display = 'none';
+        // Close XVP panel if open
+        if (UI.xvpOpen === true) {
+            UI.toggleXvpPanel();
+        }
+    }
 },
 
 
@@ -622,7 +697,6 @@ connect: function() {
     UI.rfb.set_local_cursor(UI.getSetting('cursor'));
     UI.rfb.set_shared(UI.getSetting('shared'));
     UI.rfb.set_view_only(UI.getSetting('view_only'));
-    UI.rfb.set_connectTimeout(UI.getSetting('connectTimeout'));
     UI.rfb.set_repeaterID(UI.getSetting('repeaterID'));
 
     UI.rfb.connect(host, port, password, path);
@@ -736,7 +810,8 @@ showKeyboard: function() {
     l = kbi.value.length;
     if(UI.keyboardVisible === false) {
         kbi.focus();
-        kbi.setSelectionRange(l, l); // Move the caret to the end
+        try { kbi.setSelectionRange(l, l); } // Move the caret to the end
+        catch (err) {} // setSelectionRange is undefined in Google Chrome
         UI.keyboardVisible = true;
         skb.className = "noVNC_status_button_selected";
     } else if(UI.keyboardVisible === true) {
@@ -757,33 +832,71 @@ keepKeyboard: function() {
     }
 },
 
-// When keypress events are left uncought, catch the input events from
-// the keyboardinput element instead and send the corresponding key events.
-keyInput: function(event) {
-    var elem, input, len;
-    elem = $D('keyboardinput');
-    input = event.target.value;
-    len = (elem.selectionStart > input.length) ? elem.selectionStart : input.length;
+keyboardinputReset: function() {
+    var kbi = $D('keyboardinput');
+    kbi.value = Array(UI.defaultKeyboardinputLen).join("_");
+    UI.lastKeyboardinput = kbi.value;
+},
 
-    if (len < 1) { // something removed?
-        UI.rfb.sendKey(0xff08); // send BACKSPACE
-    } else if (len > 1) { // new input?
-        for (var i = len-1; i > 0; i -= 1) {
-            // HTML does not consider trailing whitespaces as a part of the string
-            // and they are therefore undefined.
-            if (input[len-i] !== undefined) {
-                UI.rfb.sendKey(input.charCodeAt(len-i)); // send charCode
-            } else {
-                UI.rfb.sendKey(0x0020); // send SPACE
-            }
+// When normal keyboard events are left uncought, use the input events from
+// the keyboardinput element instead and generate the corresponding key events.
+// This code is required since some browsers on Android are inconsistent in
+// sending keyCodes in the normal keyboard events when using on screen keyboards.
+keyInput: function(event) {
+    var newValue, oldValue, newLen, oldLen;
+    newValue = event.target.value;
+    oldValue = UI.lastKeyboardinput;
+
+    try {
+        // Try to check caret position since whitespace at the end
+        // will not be considered by value.length in some browsers
+        newLen = Math.max(event.target.selectionStart, newValue.length);
+    } catch (err) {
+        // selectionStart is undefined in Google Chrome
+        newLen = newValue.length;
+    }
+    oldLen = oldValue.length;
+
+    var backspaces;
+    var inputs = newLen - oldLen;
+    if (inputs < 0)
+        backspaces = -inputs;
+    else
+        backspaces = 0;
+
+    // Compare the old string with the new to account for
+    // text-corrections or other input that modify existing text
+    for (var i = 0; i < Math.min(oldLen, newLen); i++) {
+        if (newValue.charAt(i) != oldValue.charAt(i)) {
+            inputs = newLen - i;
+            backspaces = oldLen - i;
+            break;
         }
     }
 
-    // In order to be able to delete text which has been written in
-    // another session there has to always be text in the
-    // keyboardinput element with which backspace can interact.
-    // We also need to reset the input field text to avoid overflow.
-    elem.value = "x";
+    // Send the key events
+    for (var i = 0; i < backspaces; i++)
+        UI.rfb.sendKey(XK_BackSpace);
+    for (var i = newLen - inputs; i < newLen; i++)
+        UI.rfb.sendKey(newValue.charCodeAt(i));
+
+    // Control the text content length in the keyboardinput element
+    if (newLen > 2 * UI.defaultKeyboardinputLen) {
+        UI.keyboardinputReset();
+    } else if (newLen < 1) {
+        // There always have to be some text in the keyboardinput
+        // element with which backspace can interact.
+        UI.keyboardinputReset();
+        // This sometimes causes the keyboard to disappear for a second
+        // but it is required for the android keyboard to recognize that
+        // text has been added to the field
+        event.target.blur();
+        // This has to be ran outside of the input handler in order to work
+        setTimeout(function() { UI.keepKeyboard(); }, 0);
+
+    } else {
+        UI.lastKeyboardinput = newValue;
+    }
 },
 
 keyInputBlur: function() {
