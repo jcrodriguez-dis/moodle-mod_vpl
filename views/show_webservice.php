@@ -9,26 +9,53 @@
 
 require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
+require_once dirname(__FILE__).'/../jail/jailserver_manager.class.php';
 
 require_login();
 
 $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('views/show_webservice.php', array('id' => $id));
-$vpl->require_capability(VPL_VIEW_CAPABILITY);
-$log_url=vpl_rel_url('views/show_webservice.php','id',$id);
-if(!$vpl->is_visible()){
-	$vpl->add_to_log('show_webservice', $log_url, "available");
-	notice(get_string('notavailable'));
+$vpl->prepare_page('views/checkjailservers.php', array('id' => $id));
+
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
+//Display page
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/checkjailservers.css'));
+$course = $vpl->get_course();
+$vpl->print_header(get_string('check_jail_servers',VPL));
+$vpl->print_heading_with_help('check_jail_servers');
+$vpl->print_configure_tabs(basename(__FILE__));
+$servers = vpl_jailserver_manager::check_servers($vpl->get_instance()->jailservers);
+$table = new html_table();
+$table->head  = array ('#', 
+						get_string('server',VPL),
+						get_string('currentstatus',VPL),
+						get_string('lasterror',VPL),
+						get_string('lasterrordate',VPL),
+						get_string('totalnumberoferrors',VPL));
+$table->align = array ('right','left', 'left', 'left', 'left', 'right');
+$table->data =array();
+$num=0;
+$clean_url = !$vpl->has_capability(VPL_SETJAILS_CAPABILITY) || 
+             !$vpl->has_capability(VPL_MANAGE_CAPABILITY);
+foreach($servers as $server){
+	$serverurl=$server->server;
+	if($clean_url){
+		$serverurl=parse_url($serverurl,PHP_URL_HOST);
+	}
+	$num++;
+	if($server->offline){
+		$status='<div class="vpl_server_failed">'.$server->current_status.'</div>';
+	}else{
+		$status=$server->current_status;
+	}
+	$table->data[] = array(	$num,
+							$serverurl,
+							$status,
+							$server->laststrerror,
+							$server->lastfail>0?userdate($server->lastfail):'',
+							$server->nfails);
 }
-$vpl->print_header(get_string('createtokenforuser','core_webservice'));
-$vpl->print_view_tabs('view.php');
-echo '<h1>'.get_string('webservice','core_webservice').'</h1>';
-echo '<h3>'.get_string('createtokenforuserdescription','core_webservice').'</h3>';
-$service_url = vpl_get_webservice_urlbase($vpl);
-$rows = (int) (strlen($service_url)/80+2);
-$html = "<textarea cols='80' rows='$rows' readonly='yes'>$service_url</textarea>";
-echo $html;
-notice('',vpl_mod_href('view.php','id',$id));
+echo html_writer::table($table);
 $vpl->print_footer();
+
 ?>
