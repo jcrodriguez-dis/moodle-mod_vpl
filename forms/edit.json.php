@@ -14,10 +14,7 @@ $outcome->response = new stdClass();
 $outcome->error = '';
 try{
 	require_once dirname(__FILE__).'/../../../config.php';
-	require_once dirname(__FILE__).'/../locallib.php';
-	require_once dirname(__FILE__).'/../vpl.class.php';
-	require_once dirname(__FILE__).'/../vpl_submission_CE.class.php';
-	require_once dirname(__FILE__).'/../vpl_example_CE.class.php';
+	require_once dirname(__FILE__).'/edit.class.php';
 	if(!isloggedin()){
 		throw new Exception(get_string('loggedinnot'));
 	}
@@ -55,7 +52,6 @@ try{
 	} else { // Make other user submission
 		$vpl->require_capability ( VPL_MANAGE_CAPABILITY );
 	}
-	$example = $vpl->get_instance()->example;
     switch ($action) {
 	case 'save':
 		$postfiles=(array)$data;
@@ -63,57 +59,21 @@ try{
 		foreach($postfiles as $name => $data){
 			$files[]=array('name' => $name, 'data' => $data);
 		}
-		if($vpl->add_submission($userid,$files,'',$error_message)){
-			$vpl->add_to_log('submit files',vpl_rel_url('forms/submissionview.php','id',$id,'userid',$userid));
-		}else{
-			throw new Exception(get_string('notsaved',VPL).': '.$error_message);
-		}		
+		mod_vpl_edit::save($vpl,$userid,$files);
 	break;
 	case 'resetfiles':
-	    $req_fgm = $vpl->get_required_fgm();
-		$req_filelist =$req_fgm->getFileList();
-		$nf = count($req_filelist);
-		for( $i = 0; $i < $nf; $i++){
-			$filename=$req_filelist[$i];
-			$filedata=$req_fgm->getFileData($req_filelist[$i]);
-			$files[$filename]=$filedata;
-		}
-		$outcome->response->files = $files;
+		$outcome->response->files = mod_vpl_edit::get_requested_files($vpl);
 	break;
 	case 'run':
 	case 'debug':
 	case 'evaluate':
-		$lastsub = $vpl->last_user_submission($userid);
-		if(!$lastsub && !$example){
-			throw new Exception(get_string('nosubmission'));
-		}
-		if($example){
-			$submission = new mod_vpl_example_CE($vpl);
-		}else{
-			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
-		}
-		$translate = array('run'=>0,'debug'=>1,'evaluate'=>2);
-		$outcome->response=$submission->run($translate[$action]);
+		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
 	break;
 	case 'retrieve':
-		$lastsub = $vpl->last_user_submission($userid);
-		if(!$lastsub){
-			throw new Exception(get_string('nosubmission'));
-		}
-		$submission = new mod_vpl_submission_CE($vpl, $lastsub);
-		$outcome->response=$submission->retrieveResult();
+		$outcome->response=mod_vpl_edit::retrieve_result($vpl,$userid);
 		break;
 	case 'cancel':
-		$lastsub = $vpl->last_user_submission($userid);
-		if(!$lastsub && !$example){
-			throw new Exception(get_string('nosubmission'));
-		}
-    	if($example){
-			$submission = new mod_vpl_example_CE($vpl);
-		}else{
-			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
-		}
-		$outcome->response=$submission->cancelProcess();
+		$outcome->response=mod_vpl_edit::cancel($vpl,$userid);
 		break;
 	case 'getjails':
 		$outcome->response->servers=vpl_jailserver_manager::get_https_server_list($vpl->get_instance()->jailservers);
