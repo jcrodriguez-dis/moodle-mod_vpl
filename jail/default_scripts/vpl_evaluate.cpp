@@ -1,9 +1,8 @@
 /**
- * $Id: vpl_evaluate.cpp,v 1.13 2013-04-18 17:55:41 juanca Exp $
  * VPL builtin program for submissions evaluation
- * @Copyright (C) 2012 Juan Carlos RodrÃ­guez-del-Pino
+ * @Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
  * @License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @Author Juan Carlos RodrÃ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 #include <cstdlib>
