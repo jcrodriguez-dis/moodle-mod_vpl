@@ -13,8 +13,8 @@ require_once dirname(__FILE__).'/vpl_submission.class.php';
 class mod_vpl_webservice extends external_api {
 	static function initial_checks($id,$password){
 		$vpl = new mod_vpl($id);
-		//Validate context
-		self::validate_context($vpl->get_context());
+		//No context validation (session is OK) 
+		//self::validate_context($vpl->get_context());
 		if (! $vpl->pass_network_check()) {
 			throw new Exception(get_string ('opnotallowfromclient', VPL ) . ' ' . getremoteaddr());
 		}
@@ -143,6 +143,8 @@ class mod_vpl_webservice extends external_api {
 				array('id'=>$id,'password'=>$password));
 		$vpl = self::initial_checks($id,$password);
 		$vpl->require_capability ( VPL_VIEW_CAPABILITY );
+		if(!$vpl->is_visible())
+			throw new Exception(get_string('notavailable'));
 		$files = mod_vpl_edit::get_submitted_files($vpl,$USER->id,$CE);
 		//Adapt array[name]=content to array[]=array(name,data)
 		$files = mod_vpl_edit::files2object($files);
@@ -198,6 +200,8 @@ class mod_vpl_webservice extends external_api {
 		$vpl = self::initial_checks($id,$password);
 		$vpl->require_capability ( VPL_SUBMIT_CAPABILITY );
 		$instance=$vpl->get_instance();
+		if(!$vpl->is_submit_able())
+			throw new Exception(get_string('notavailable'));
 		if($instance->example or $instance->restrictededitor or !$instance->evaluate)
 			throw new Exception(get_string('notavailable'));
 		$ret = mod_vpl_edit::execute($vpl,$USER->id,'evaluate');
@@ -244,6 +248,8 @@ END_OF_DESC;
 		$vpl = self::initial_checks($id,$password);
 		$vpl->require_capability ( VPL_SUBMIT_CAPABILITY );
 		$instance=$vpl->get_instance();
+		if(!$vpl->is_submit_able())
+			throw new Exception(get_string('notavailable'));
 		if($instance->example or $instance->restrictededitor or !$instance->evaluate)
 			throw new Exception(get_string('notavailable'));
 		$CE = mod_vpl_edit::retrieve_result($vpl,$USER->id);
