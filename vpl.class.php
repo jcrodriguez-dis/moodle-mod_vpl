@@ -429,7 +429,7 @@ class mod_vpl {
 	/**
 	 * Check if pass password restriction
 	 **/
-	function pass_password_check(){
+	function pass_password_check($pass_set=''){
 		$password = $this->get_password();
 		if($password >''){
 			global $SESSION;
@@ -438,7 +438,9 @@ class mod_vpl {
 			if(isset($SESSION->$pasvar) && $SESSION->$pasvar == $password_md5){
 				return true;
 			}
-			$pass_set=optional_param('password','',PARAM_TEXT);
+			if($pass_set == ''){
+				$pass_set=optional_param('password','',PARAM_TEXT);
+			}
 			if($pass_set>''){
 				if($pass_set == $password){
 					$SESSION->$pasvar=$password_md5;
