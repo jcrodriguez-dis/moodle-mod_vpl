@@ -32,11 +32,6 @@ const int MAXCOMMENTS = 20;
 const int MAXCOMMENTSLENGTH = 100*1024;
 const int MAXCOMMENTSTITLELENGTH = 1024;
 const int MAXOUTPUT = 256* 1024 ;//256Kb
-const int VPL_GRADEMIN=0;
-const int VPL_GRADEMAX=10;
-const int VPL_MAXTIME=60;;
-
-
 
 /**
  * Class Tools Declaration
