@@ -567,3 +567,79 @@ function vpl_is_valid_file_name($fileName){
 	if (strlen($fileName) > 128) return false;
 	return preg_match($regexp,$fileName) === 0;
 }
+
+function vpl_get_webservice_available(){
+	global $DB,$USER,$CFG;
+	if($USER->id<=2)
+		return false;
+	if(! $CFG->enablewebservices)
+		return false;
+	$service = $DB->get_record('external_services', array('shortname' => 'mod_vpl_edit', 'enabled' => 1));
+	return !empty($service);
+}
+
+function vpl_get_webservice_token($vpl){
+	global $DB,$SESSION,$USER,$CFG;
+	$now = time();
+	if($USER->id<=2)
+		return '';
+	if(! $CFG->enablewebservices)
+		return '';
+	$service = $DB->get_record('external_services',
+			array(
+					'shortname' => 'mod_vpl_edit',
+					'enabled' => 1
+			)
+	);
+	if(empty($service))
+		return '';
+	$token_record = $DB->get_record('external_tokens',
+			array(
+					'sid' => session_id(),
+					'userid' => $USER->id,
+					'externalserviceid' => $service->id
+			)
+	);
+	if(!empty($token_record) and $token_record->validuntil < $now){
+		unset($token_record); //Will be delete before creating a new one
+	}
+	if(empty($token_record)){
+		//Remove old tokens from DB
+		$select = 'validuntil > 0 AND  validuntil < ?';
+		$DB->delete_records_select('external_tokens',$select,array($now));
+		//Select unique token
+		for($i=0 ; $i<100; $i++){
+			$token = md5(uniqid(mt_rand(), true));
+			$token_record = $DB->get_record('external_tokens',
+					array('token' => $token)
+			);
+			if(empty($token_record)) break;
+		}
+		if($i >= 100) return '';
+		$token_record = new stdClass;
+		$token_record->token = $token;
+		$token_record->sid = session_id();
+		$token_record->userid = $USER->id;
+		$token_record->creatorid = $USER->id;
+		$token_record->tokentype = EXTERNAL_TOKEN_EMBEDDED;
+		$token_record->timecreated = $now;
+		$token_record->validuntil = $now+DAYSECS;
+		$token_record->iprestriction = getremoteaddr();
+		$token_record->contextid = $vpl->get_context()->id;
+		$token_record->externalserviceid = $service->id;
+		$DB->insert_record('external_tokens', $token_record);
+	}
+	return $token_record->token;
+}
+
+
+function vpl_get_webservice_urlbase($vpl){
+	global $CFG;
+	$token = vpl_get_webservice_token($vpl);
+	if($token=='') return '';
+	return $CFG->wwwroot
+	.'/mod/vpl/webservice.php?moodlewsrestformat=json'
+			.'&wstoken='.$token
+			.'&id='.$vpl->get_course_module()->id
+			.'&wsfunction=';
+}
