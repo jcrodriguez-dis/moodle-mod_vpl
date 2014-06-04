@@ -2,11 +2,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$module->version = 2014032712;	//Current module version 3.0.1
+$module->version = 2014052812;	//Current module version 3.1
 $module->cron    = 300; 		//cron check this module every 5 minutes
 $module->requires = 2012062500;
 $module->maturity = MATURITY_STABLE;
-$module->release = '3.0.1';
+$module->release = '3.1';
 $module->component = 'mod_vpl';
-
-?>
