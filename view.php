@@ -32,8 +32,8 @@ $id = optional_param('id', null	, PARAM_INT); // Course Module ID, or
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('view.php', array('id' => $id));
 $vpl->require_capability(VPL_VIEW_CAPABILITY);
-$cm = $vpl->get_course_module();
-$log_url=vpl_rel_url('view.php','id',$cm->id);
+$id = $vpl->get_course_module()->id;
+$log_url=vpl_rel_url('view.php','id',$id);
 if(!$vpl->is_visible()){
 	$vpl->add_to_log('view', $log_url, "not show");
 	notice(get_string('notavailable'));
@@ -73,5 +73,9 @@ if($vpl->has_capability(VPL_GRADE_CAPABILITY)){
 	}
 }
 /// Finish the page
+if(vpl_get_webservice_available()){
+	echo "<a href='views/show_webservice.php?id=$id'>";
+	echo get_string('webservice','core_webservice').'</a><br>';
+}
 $vpl->print_footer();
 ?>
