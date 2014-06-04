@@ -7,6 +7,14 @@
 
 #load VPL environment vars
 . common_script.sh
+if [ "$SECONDS" = "" ] ; then
+	export SECONDS=20
+fi
+if [ "$VPL_GRADEMIN" = "" ] ; then
+	export VPL_GRADEMIN=0
+	export VPL_GRADEMAX=10
+fi
+
 #exist run script?
 if [ ! -s vpl_run.sh ] ; then
 	echo "I'm sorry, but I haven't a default action to evaluate the type of submitted files"
@@ -25,10 +33,6 @@ else
 			exit 1
 		fi
 		#Add constants to vpl_evaluate.cpp
-		if [ "$VPL_GRADEMIN" = "" ] ; then
-			export VPL_GRADEMIN=10
-			export VPL_GRADEMAX=0
-		fi
 		echo "const float VPL_GRADEMIN=$VPL_GRADEMIN;" >vpl_evaluate.cpp
 		echo "const float VPL_GRADEMAX=$VPL_GRADEMAX;" >>vpl_evaluate.cpp
 		let VPL_MAXTIME=VPL_MAXTIME-$SECONDS-1;
