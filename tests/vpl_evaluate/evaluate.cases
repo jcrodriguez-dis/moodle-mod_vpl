@@ -1,0 +1,51 @@
+case=NumbersOne-F
+input=1
+output= 785
+
+case=TextOne-F
+input=4
+output=Text no exactext
+
+case=ExacTextOne-F
+input=7
+output= "This Text"
+
+
+case=TwoInputs-F
+input=11
+12
+output="2 inputs"
+
+case=RegularExpressionOne-F
+input=10
+output= /^A*A*C/
+
+case=RegularExpressionFlagI-F
+input=13
+output= /^A*A*C/i
+
+case=RegularExpressionOne-F
+input=10
+output= /^A*A*C/
+
+case=RegularExpressionFlagM-F
+input=12
+output= /^A*A*C/m
+
+case=RegularExpressionFlagMI-F
+input=12
+output= /^A*A*C/im
+
+case=OUTPUTEND-F
+inputend=END_IN
+input=16
+END_IN
+outputend=END_CASE
+output=this is a output 
+END_CASE
+
+
+
+case=noString-F
+input=
+output=
