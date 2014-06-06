@@ -28,7 +28,7 @@
 				'title' : title,
 				resizable: false,
 				autoOpen : false,
-				height : 70,
+				minHeight : 20,
 				width : 'auto',
 				modal : true,
 				dialogClass : 'vpl_ide vpl_ide_dialog',

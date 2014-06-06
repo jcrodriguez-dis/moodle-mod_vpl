@@ -1082,7 +1082,7 @@
 					'title' : title,
 					resizable: false,
 					autoOpen : false,
-					height : 70,
+					minHeight: 20,
 					width : 'auto',
 					modal : true,
 					dialogClass : 'vpl_ide vpl_ide_dialog',
@@ -1095,7 +1095,7 @@
 							onClose=false;
 						}
 					}
-				});			
+				});		
 				label.text(message);
 				this.setLabel=function(t){
 					if(dialog) label.text(t);
@@ -1192,11 +1192,11 @@
 					root_obj.removeClass('vpl_ide_root_fullscreen');
 					$JQVPL('body').removeClass('vpl_body_fullscreen');
 					setMenuOptionText('fullscreen', str('fullscreen'));
-					$JQVPL('#page-header, div.navbar, div.tabtree, #dock').show();
+					$JQVPL('header, footer, aside, #page-header, fdiv.navbar, div.tabtree, #dock').show();
 					fullScreen = false;
 				} else {
 					$JQVPL('body').addClass('vpl_body_fullscreen').scrollTop(0);
-					$JQVPL('#page-header, div.navbar, div.tabtree, #dock').hide();
+					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock').hide();
 					root_obj.addClass('vpl_ide_root_fullscreen');
 					setMenuOptionText('fullscreen', str('regularscreen'));
 					fullScreen = true;
