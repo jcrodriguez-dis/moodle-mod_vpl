@@ -91,24 +91,24 @@ class mod_vpl_webservice extends external_api {
 	public static function save_parameters(){
 		return new external_function_parameters(
 			array('id'=>new external_value(PARAM_INT,'Activity id (course_module)',VALUE_REQUIRED),
-				  'password'=>new external_value(PARAM_RAW,'Activity password',VALUE_DEFAULT,''),
 				  'files' => new external_multiple_structure(
 							new external_single_structure(
-									array('name' => new external_value(PARAM_TEXT,'File name'),
+									array('name' => new external_value(PARAM_RAW,'File name'),
 										  'data' => new external_value(PARAM_RAW,'File content')
 									)
 							)
-					)
-				)
+					),
+				  'password'=>new external_value(PARAM_RAW,'Activity password',VALUE_DEFAULT,''),
+				  )
 		);
 	}
 	
-	public static function save($id,$password,$files){
+	public static function save($id,$files=array(),$password=''){
 		global $USER;
 		//Parameters validation
 		$params=self::validate_parameters(
 					self::save_parameters(),
-					array('id'=>$id,'password'=>$password,'files'=>$files));
+					array('id'=>$id,'files'=>$files,'password'=>$password));
 		$vpl = self::initial_checks($id,$password);
 		$vpl->require_capability ( VPL_SUBMIT_CAPABILITY );
 		if(!$vpl->is_submit_able())
