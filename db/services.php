@@ -54,6 +54,6 @@ $services=array(
 				'functions'=>array('mod_vpl_info' ,'mod_vpl_save','mod_vpl_open','mod_vpl_evaluate','mod_vpl_get_result'),
 				'shortname' => 'mod_vpl_edit',
 				'restrictedusers'=>0,
-				'enabled'=>1,
+				'enabled'=>0,
 		)
 );
