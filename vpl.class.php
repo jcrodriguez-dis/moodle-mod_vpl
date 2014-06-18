@@ -1085,7 +1085,7 @@ class mod_vpl {
 		$style="float:right; right:10px; padding:8px; background-color: white;text-align:center;";
 		echo '<div style="'.$style.'">';
 		echo '<a href="http://vpl.dis.ulpgc.es/">';
-		echo 'VPL 3.1b';
+		echo 'VPL 3.1';
 		echo '</a>';
 		echo '</div>';
 		echo $OUTPUT->footer();
@@ -1223,7 +1223,7 @@ class mod_vpl {
 		$active = basename($active);
 		$cmid=$this->cm->id;
 		$userid = optional_param('userid',NULL,PARAM_INT);
-		$copy = optional_param('copy',false,PARAM_INT);
+		$copy = optional_param('privatecopy',false,PARAM_INT);
 		$viewer = $this->has_capability(VPL_VIEW_CAPABILITY);
 		$submiter = $this->has_capability(VPL_SUBMIT_CAPABILITY);
 		$similarity = $this->has_capability(VPL_SIMILARITY_CAPABILITY);

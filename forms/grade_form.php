@@ -73,10 +73,10 @@ class mod_vpl_grade_form extends vpl_form {
 		$this->addSubmitButton('removegrade',get_string('removegrade',VPL));
 		//tranfer files to teacher's work area
 		$url=vpl_mod_href('forms/edit.php','id',
-				$id,'userid',$userid,'copy',1);
+				$id,'userid',$userid,'privatecopy',1);
 		$options = array('height' => 550, 'width' => 780, 'directories' =>0, 'location' =>0, 'menubar'=>0,
 			'personalbar'=>0,'status'=>0,'toolbar'=>0);
-		$action = new popup_action('click', $url,'copy'.($vpl_instance->id),$options);
+		$action = new popup_action('click', $url,'privatecopy'.($vpl_instance->id),$options);
 		$this->addHTML($OUTPUT->action_link($url, get_string('copy',VPL),$action));
 		
 		if($vpl_instance->evaluate){

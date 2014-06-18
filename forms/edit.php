@@ -18,14 +18,14 @@ vpl_editor_util::generate_requires();
 require_login();
 $id = required_param('id',PARAM_INT);
 $userid = optional_param('userid',FALSE,PARAM_INT);
-$copy = optional_param('copy',false,PARAM_INT);
+$copy = optional_param('privatecopy',false,PARAM_INT);
 $vpl = new mod_vpl($id);
 $page_parms = array('id' => $id);
 if($userid && !$copy){
 	$page_parms['userid']= $userid;
 }
 if($copy){
-	$page_parms['copy']= 1;
+	$page_parms['privatecopy']= 1;
 }
 $vpl->prepare_page('forms/edit.php', $page_parms);
 if(!$vpl->is_visible()){
@@ -39,7 +39,7 @@ if($userid){
 	$url_log = vpl_url_add_param($url_log,'userid',$userid);
 }
 if($copy != 0){
-	$url_log = vpl_url_add_param($url_log,'copy',1);
+	$url_log = vpl_url_add_param($url_log,'privatecopy',1);
 }
 $vpl->add_to_log('edit submission', $url_log);
 if(!$userid || $userid == $USER->id){//Edit own submission
