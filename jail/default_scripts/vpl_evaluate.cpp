@@ -1456,11 +1456,13 @@ void Evaluation::outputEvaluation() {
 			printf("--|>\n");
 		}
 		if (nruns > 0) {
+			int passed=nruns-nerrors;
 			printf("\n<|--\n");
 			printf("-Summary of tests\n");
 			printf(">+------------------------------+\n");
-			printf(">| %2d %s run/%2d %s failed |\n",
-					nruns, nruns==1?stest[0]:stest[1], nerrors, nerrors==1?stest[0]:stest[1]);
+			printf(">| %2d %s run/%2d %s passed |\n",
+					nruns, nruns==1?stest[0]:stest[1],
+					passed, passed==1?stest[0]:stest[1]); //Taken from Dominique Thiebaut
 			printf(">+------------------------------+\n");
 			printf("\n--|>\n");
 		}
