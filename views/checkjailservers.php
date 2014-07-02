@@ -57,5 +57,3 @@ foreach($servers as $server){
 }
 echo html_writer::table($table);
 $vpl->print_footer();
-
-?>
