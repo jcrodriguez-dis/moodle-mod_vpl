@@ -85,6 +85,7 @@ function vpl_create_event($instance,$id){
 function vpl_add_instance($instance) {
 	global $CFG, $DB;
 	require_once($CFG->dirroot.'/calendar/lib.php');
+	vpl_truncate_VPL($instance);
 	$id = $DB->insert_record(VPL, $instance);
 	//Add event
 	if ($instance->duedate) {
@@ -106,6 +107,7 @@ function vpl_add_instance($instance) {
 function vpl_update_instance($instance) {
 	global $CFG, $DB;
 	require_once($CFG->dirroot.'/calendar/lib.php');
+	vpl_truncate_VPL($instance);
 	$instance->id = $instance->instance;
 	//Update event
 	$event = vpl_create_event($instance,$instance->id);
