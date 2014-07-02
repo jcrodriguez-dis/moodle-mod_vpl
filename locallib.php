@@ -568,6 +568,31 @@ function vpl_is_valid_file_name($fileName){
 	return preg_match($regexp,$fileName) === 0;
 }
 
+function vpl_truncate_string(&$string, $limit){
+	$limit -= 3; //Add space for ...
+	if(strlen($string) > $limit )
+		$string = substr($string,0,$limit).'...';
+}
+
+function vpl_truncate_VPL($instance){
+	vpl_truncate_string($instance->name,255);
+	vpl_truncate_string($instance->requirednet,255);
+	vpl_truncate_string($instance->password,255);
+	vpl_truncate_string($instance->variationtitle,255);
+}
+
+function vpl_truncate_VARIATIONS($instance){
+	vpl_truncate_string($instance->identification,40);
+}
+
+function vpl_truncate_RUNNING_PROCESSES($instance){
+	vpl_truncate_string($instance->server,255);
+}
+
+function vpl_truncate_JAILSERVERS($instance){
+	vpl_truncate_string($instance->server,255);
+}
+
 function vpl_get_webservice_available(){
 	global $DB,$USER,$CFG;
 	if($USER->id<=2)
