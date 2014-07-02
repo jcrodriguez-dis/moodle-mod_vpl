@@ -84,6 +84,7 @@ if(optional_param('varid',-13,PARAM_INT)==-13){ //No variation saved
 		vpl_inmediate_redirect($href); //Reload page
 	}elseif ($fromform=$oform->get_data()){
 		$fromform->id = $vplid;
+		vpl_truncate_string($fromform->variationtitle,255);
 		$DB->update_record(VPL,$fromform);
 		vpl_inmediate_redirect($href);
 	}
@@ -104,11 +105,13 @@ if ($mform->is_cancelled()){
 		if($fromform->varid == -1){ //New record
 				$fromform->vpl = $vplid;
 				unset($fromform->id);
+				vpl_truncate_VARIATIONS($fromform);
 				$DB->insert_record(VPL_VARIATIONS,$fromform);
 		}else{ //update record
 			if($DB->get_record(VPL_VARIATIONS,array('id' => $fromform->varid,'vpl' => $vplid))){//Check consistence
 				$fromform->vpl = $vplid;
 				$fromform->id = $fromform->varid;
+				vpl_truncate_VARIATIONS($fromform);
 				$DB->update_record(VPL_VARIATIONS,$fromform);
 			}else{
 				$vpl->print_header(get_string('variations',VPL));
