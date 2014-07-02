@@ -920,16 +920,16 @@
 				return resultAir;
 			}
 			function resizeTabs() {
+				// console.log('resizeTabs result.width '+result.width());
+				var newWidth = menu.outerWidth(true);
+				tr.width(newWidth);
+				newWidth -= tabs.outerWidth(true) + 2;
+				var newHeight = $JQVPL(window).outerHeight();
+				newHeight -= tabs.offset().top
+						+ (fullScreen ? getTabsAir() : 35);
+				tr.height(newHeight);
 				if (result.vpl_visible) {
-					// console.log('resizeTabs result.width '+result.width());
-					var newWidth = menu.outerWidth(true);
-					tr.width(newWidth);
-					newWidth -= tabs.outerWidth(true) + 2;
-					var newHeight = $JQVPL(window).height();
-					newHeight -= tabs.offset().top
-							+ (fullScreen ? getTabsAir() : 35);
 					result.width(newWidth - getResultAir());
-					tr.height(newHeight);
 					result.height(newHeight);
 					result.accordion('refresh');
 				}
@@ -941,8 +941,9 @@
 				 //console.log('autoResizeTab tabs.width '+tabs.width());
 				var newWidth = menu.outerWidth(true);
 				if (result.vpl_visible) {
-					newWidth -= result.outerWidth(true) + 2;
+					newWidth -= result.outerWidth(true);
 				}
+				newWidth -= 2;  //for resize zone
 				var newHeight = $JQVPL(window).outerHeight();
 				newHeight -= tabs.offset().top
 						+ (fullScreen ? getTabsAir() : 35);
