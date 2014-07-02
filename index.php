@@ -15,9 +15,8 @@
 // along with VPL.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @version		$Id: index.php,v 1.36 2013-06-13 17:28:34 juanca Exp $
  * @package		vpl. List all instances in a course
- * @copyright	Copyright (C) 2009 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+ * @copyright	Copyright (C) 2009-2014 Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino
  **/
@@ -28,7 +27,6 @@ require_once dirname(__FILE__).'/list_util.class.php';
 require_once dirname(__FILE__).'/vpl_submission.class.php';
 
 $id = required_param('id', PARAM_INT);   // course
-require_login($id); //Check login state
 
 $sort=vpl_get_set_session_var('sort','');
 $sortdir = vpl_get_set_session_var('sortdir','down');
@@ -38,6 +36,7 @@ $instanceselection = vpl_get_set_session_var('selection','all');
 if (! $course = $DB->get_record("course", array('id' => $id))) {
 	print_error('invalidcourseid','',$id);
 }
+require_course_login($course);
 
 add_to_log($course->id, VPL, 'view all', "index.php?id=$course->id", '');
 //Load strings
@@ -48,13 +47,12 @@ $strshortdescription 	= get_string('shortdescription', VPL).' '.vpl_list_util::v
 $strstartdate		= get_string('startdate', VPL).' '.vpl_list_util::vpl_list_arrow($burl,'startdate',$instanceselection,$sort,$sortdir);
 $strduedate				= get_string('duedate', VPL).' '.vpl_list_util::vpl_list_arrow($burl,'duedate',$instanceselection,$sort,$sortdir);
 $strnopls 				= get_string('novpls', VPL);
-$PAGE->set_context(context_course::instance($id));
-$PAGE->set_pagelayout('incourse');
-$PAGE->set_url(new moodle_url('/mod/vpl/index.php',array('id' => $id)));
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/index.css'));
+
+$PAGE->set_url('/mod/vpl/index.php',array('id' => $id));
 $PAGE->navbar->add($strvpls);
-$PAGE->set_heading($course->fullname);
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/index.css'));
 $PAGE->set_title($strvpls);
+$PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strvpls);
 
@@ -74,8 +72,6 @@ foreach(array('open','closed','timelimited','timeunlimited',
 	$urlindex[$sel] = $url_base->out(false);
 }
 echo $OUTPUT->url_select($urls,$urlindex[$instanceselection],array());
-@ob_flush();
-flush();
 
 if (!$cms = get_coursemodules_in_course(VPL, $course->id,"m.shortdescription, m.startdate, m.duedate")) {
 	notice($strnopls, vpl_abs_href('/course/view.php','id',$course->id));
@@ -170,6 +166,7 @@ if($sort>''){
 }
 //Generate table
 $table = new html_table();
+$table->attributes['class'] = 'generaltable mod_index';
 $table->head  = array ('#',$strname, $strshortdescription);
 $table->align = array ('left','left', 'left');
 if($startdate){
@@ -286,5 +283,5 @@ if($totalsubs>0){
 }
 echo "<br />";
 echo html_writer::table($table);
+
 echo $OUTPUT->footer();
-?>
