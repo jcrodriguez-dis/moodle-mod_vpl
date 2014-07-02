@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: jailserver_manager.class.php,v 1.14 2012-06-05 23:22:13 juanca Exp $
  * @copyright	2013 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -27,6 +26,7 @@
 		$info->vpl = $vplid;
 		$info->start_time=time();
 		$info->adminticket = $adminticket;
+		vpl_truncate_RUNNING_PROCESSES($info);
 		return $DB->insert_record(self::table,$info);
 	}
 
