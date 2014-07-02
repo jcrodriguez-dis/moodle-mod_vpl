@@ -1343,7 +1343,7 @@ class mod_vpl {
 					$user = $DB->get_record('user',array('id'=>$userid));
 				}
 				if(isset($user)){
-					echo '<div style="position:absolute; z-index:50;">';
+					echo '<div style="position:absolute; right:50px; z-index:50;">';
 					echo $this->user_picture($user);
 					echo '</div>';
 				}
