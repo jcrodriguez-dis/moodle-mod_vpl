@@ -118,6 +118,7 @@ function vpl_evaluate($vpl,$all_data,$userinfo,$nevaluation,$groups_url){
 }
 
 function vpl_submissionlist_arrow($burl, $sort, $selsort, $seldir){
+	global $OUTPUT;
 	$newdir = 'down';
 	$url = vpl_url_add_param($burl,'sort',$sort);
 	if($sort == $selsort){
@@ -131,11 +132,10 @@ function vpl_submissionlist_arrow($burl, $sort, $selsort, $seldir){
 		$sortdir = 'move';
 	}
 	$url = vpl_url_add_param($url,'sortdir',$newdir);
-	return ' <a href="'.$url.'">'.trim(print_arrow($sortdir,'',true)).'</a>';
+	return ' <a href="'.$url.'">'.($OUTPUT->pix_icon('t/'.$sortdir,get_string($sortdir))).'</a>';
 }
 
 require_once dirname(__FILE__).'/../../../config.php';
-require_once $CFG->dirroot.'/lib/textlib.class.php';
 require_once $CFG->dirroot.'/mod/vpl/locallib.php';
 require_once $CFG->dirroot.'/mod/vpl/vpl.class.php';
 require_once $CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php';
@@ -244,10 +244,6 @@ foreach ($list as $userinfo) {
 $groups_url =vpl_mod_href('views/submissionslist.php','id',$id,'sort',$sort,'sortdir',$sortdir,'selection',$subselection);
 //Unblock user session
 session_write_close();
-//Load images
-$up_img = print_arrow('up', '', true);
-$down_img = print_arrow('down', '', true);
-$move_img = print_arrow('move', '', true);
 
 $base_url = vpl_mod_href('views/submissionslist.php','id',$id,'group',$group);
 
