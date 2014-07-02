@@ -52,6 +52,7 @@ class vpl_list_util{
 		}
 	}
 	static public function vpl_list_arrow($burl,$sort,$instanceselection,$selsort, $seldir){
+		global $OUTPUT;
 		$newdir = 'down'; //Dir to go if click
 		$url = vpl_url_add_param($burl,'sort',$sort);
 		$url = vpl_url_add_param($url,'selection',$instanceselection);
@@ -68,7 +69,7 @@ class vpl_list_util{
 		}else{
 			$sortdir = 'move';
 		}
-		return '<a href="'.$url.'">'.print_arrow($sortdir,'',true).'</a>';
+		return '<a href="'.$url.'">'.($OUTPUT->pix_icon('t/'.$sortdir,get_string($sortdir))).'</a>';
 	}
 	static public function count_graded($vpl){ //Count submissions graded
 		$numsubs = 0;
