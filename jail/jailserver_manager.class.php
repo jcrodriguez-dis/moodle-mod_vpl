@@ -91,6 +91,7 @@ class vpl_jailserver_manager{
 			$info->lastfail=time();
 			$info->laststrerror=$strerror;
 			$info->nfails++;
+			vpl_truncate_JAILSERVERS($info);
 			$DB->update_record(self::table,$info);
 		}else{
 			$info = new stdClass();
@@ -98,6 +99,7 @@ class vpl_jailserver_manager{
 			$info->lastfail=time();
 			$info->laststrerror=$strerror;
 			$info->nfails=1;
+			vpl_truncate_JAILSERVERS($info);
 			$DB->insert_record(self::table,$info);
 		}
 	}
@@ -180,6 +182,26 @@ class vpl_jailserver_manager{
 	}
 
 	/**
+	 * Check if a server is located in a private network 
+	 * @return true == private
+	 */
+	static function is_private_host($URL){
+		$host_name=parse_url($URL,PHP_URL_HOST);
+		if($host_name===false) return true;
+		$private = '10., 127., 172.16.0.0/12, 192.168., 169.254.';
+		$name = $host_name.'.';
+		$IP = gethostbyname($name);
+		if($IP != $name){
+			return address_in_subnet($IP,$private);
+			// IPv6 not implemented
+			// fc00::/7
+			// fe80::/10
+		}
+		return true;
+	}
+	
+	
+	/**
 	 * Clear servers table and check for every one again
 	 * @return array of server object with info about server status
 	 */
@@ -211,6 +233,10 @@ class vpl_jailserver_manager{
 			}
 			$info->current_status=$status;
 			$info->offline = $response === false;
+			if(self::is_private_host($server)){
+				//TODO implement other way to warning 
+				$info->server = '[private] '.$info->server;
+			}
 			$feedback[]=$info;
 		}
 		return $feedback;
