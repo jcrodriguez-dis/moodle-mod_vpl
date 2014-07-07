@@ -52,6 +52,7 @@ try{
 	} else { // Make other user submission
 		$vpl->require_capability ( VPL_MANAGE_CAPABILITY );
 	}
+	$instance = $vpl->get_instance();
     switch ($action) {
 	case 'save':
 		$postfiles=(array)$data;
@@ -65,8 +66,18 @@ try{
 		$outcome->response->files = mod_vpl_edit::get_requested_files($vpl);
 	break;
 	case 'run':
+		if(!$instance->run and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
+			throw new Exception(get_string('notavailable'));
+		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
+	break;
 	case 'debug':
+		if(!$instance->debug and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
+			throw new Exception(get_string('notavailable'));
+		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
+	break;
 	case 'evaluate':
+		if(!$instance->evaluate and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
+			throw new Exception(get_string('notavailable'));
 		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
 	break;
 	case 'retrieve':
