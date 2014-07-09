@@ -2,9 +2,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 //TODO Change module to plugin NOT changed for incompatibility with previous versions
-$module->version = 2014052912;	//Current module version 3.1
-$module->cron    = 300; 		//cron check this module every 5 minutes
-$module->requires = 2012062500;
-$module->maturity = MATURITY_STABLE;
-$module->release = '3.1';
-$module->component = 'mod_vpl';
+$plugin->version = 2014052912;	//Current module version 3.1
+$plugin->cron    = 300; 		//cron check this module every 5 minutes
+$plugin->requires = 2012062500;
+$plugin->maturity = MATURITY_STABLE;
+$plugin->release = '3.1';
+$plugin->component = 'mod_vpl';
