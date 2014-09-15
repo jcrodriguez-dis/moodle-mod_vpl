@@ -14,7 +14,6 @@ if [ -s vpl_set_locale_error ] ; then
 	export LC_ALL=en_US.UTF-8  1>/dev/null 2>/dev/null
 fi
 rm vpl_set_locale_error 1>/dev/null 2>/dev/null
-stty erase ^H 1>/dev/null 2>/dev/null
 #functions
 function get_source_files {
 	SOURCE_FILES=""
