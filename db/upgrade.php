@@ -124,7 +124,7 @@ function xmldb_vpl_upgrade($oldversion=0) {
 			upgrade_set_timeout(300+count($subs)/10);
 			$oldbasepath = $CFG->dataroot.'/vpl_data_old/'.$vpl->course.'/'.$id.'/usersdata';
 			$newbasepath = $CFG->dataroot.'/vpl_data/'.$id.'/usersdata';
-			@mkdir($newbasepath,0700,true);
+			@mkdir($newbasepath,$CFG->directorypermissions,true);
 			foreach($subs as $sub){
 				/*if($vplsubbarpos%10 == 0 || $vplsubbarpos == $vplsubbartotal){
 					$vplsubbar->update($vplsubbarpos, $vplsubbartotal, "Migrating VPL submissions $vplsubbarpos/$vplsubbartotal");
@@ -132,7 +132,7 @@ function xmldb_vpl_upgrade($oldversion=0) {
 				$vplsubbarpos++;*/
 				$oldpath = $oldbasepath.'/'.$sub->userid.'/'.$sub->id;
 				$newpath = $newbasepath.'/'.$sub->userid;
-				@mkdir($newpath,0700,true);
+				@mkdir($newpath,$CFG->directorypermissions,true);
 				$newpath .= '/'.$sub->id;
 				if(file_exists($oldpath)){
 					rename($oldpath,$newpath);

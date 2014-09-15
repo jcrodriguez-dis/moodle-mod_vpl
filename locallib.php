@@ -52,10 +52,12 @@ function vpl_get_set_session_var($varname,$default,$parname=null){
  * @return file descriptor
  **/
 function vpl_fopen($filename){
+	global $CFG;
+
 	if(!file_exists($filename)){ // exists file?
 		$dir = dirname($filename);
 		if(!file_exists($dir)){ // create dir?
-			mkdir($dir, 0700,true);
+			mkdir($dir,$CFG->directorypermissions,true);
 		}
 	}
 	$fp= fopen($filename,'wb+');
