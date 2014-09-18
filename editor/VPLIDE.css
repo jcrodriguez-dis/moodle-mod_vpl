@@ -50,6 +50,7 @@
 .vpl_ide_file {
 	margin: 2px;
 	padding: 0;
+	z-index:0;
 }
 .vpl_ide_dropzone {
 	width: 200px;
