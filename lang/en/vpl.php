@@ -240,6 +240,11 @@ $string['vpl_evaluate.sh'] = 'This script prepares the evaluation';
 $string['vpl_run.sh'] = 'This script prepares the execution';
 $string['workingperiods'] = 'Working periods';
 $string['worktype']='Type of work';
+$string['websocket_protocol'] = 'WebSocket protocol';
+$string['websocket_protocol_description'] = 'Type of WebSocket protocol (ws:// or wss://) used by the browser to connect to execution servers.';
+$string['always_use_wss'] = 'Always use secure (wss) websocket protocol';
+$string['always_use_ws'] = 'Always use unsecure (ws) websocket protocol';
+$string['depends_on_https'] = 'Use wss or ws depending on https header';
 
 $string['check_jail_servers_help'] = <<<'END_OF_HELP'
 <p>This page check and show the status of execution servers used

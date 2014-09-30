@@ -319,10 +319,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		$jailResponse = $this->jailRequestAction($data,$maxmemory,$localservers,$server);
 		$isHTTPS = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on";
 		$parsed = parse_url($server);
-		if($isHTTPS)
-			$baseURL = 'wss://';
-		else
-			$baseURL = 'ws://';
+        	switch($CFG->vpl_websocket_protocol) {
+	            case 'always_use_wss': $baseURL = 'wss://'; break;
+        	    case 'always_use_ws': $baseURL = 'ws://'; break;
+	            default: $baseURL = $isHTTPS ? 'wss://' : 'ws://';
+        	}
 		$baseURL.=$parsed['host'];
 		if($isHTTPS)
 			$baseURL.=':'.$jailResponse['secureport'];
