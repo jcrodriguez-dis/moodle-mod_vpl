@@ -8,59 +8,53 @@
  */
 
 class vpl_sh_factory{
-	static $base =null;
-	static $c = null;
-	static $cpp = null;
-	static $java = null;
-	static $scheme = null;
-	static $ada = null;
-	static $sql = null;
-	static $sh = null;
-	static $pascal = null;
-	static $fortran77 = null;
-	static $prolog = null;
-	static $matlab = null;
-	static $python = null;
-	static $scala = null;
-	static function get_object(&$ref, $type){
-		if($ref == null){
+	static $cache = array();
+	static function get_object($type){
+		if(!isset(self::$cache[$type])){
 			require_once dirname(__FILE__).'/sh_'.$type.'.class.php';
 			$class = 'vpl_sh_'.$type;
-			$ref = new $class();
+			self::$cache[$type] = new $class();
 		}
-		return $ref;
+		return self::$cache[$type];
 	}
 
 	static function get_sh($filename){
-		$ext = pathinfo($filename,PATHINFO_EXTENSION);
+		$ext = vpl_fileExtension($filename);
+		if(vpl_is_binary($filename)){
+			if(vpl_is_image($filename)){
+				return self::get_object('image');
+			}else{
+				return self::get_object('binary');
+			}
+		}
 		if($ext == 'c'){
-			return self::get_object(self::$c,'c');
+			return self::get_object('c');
 		}elseif($ext == 'cpp' || $ext == 'h'){
-			return self::get_object(self::$cpp,'cpp');
+			return self::get_object('cpp');
 		}elseif($ext == 'java'){
-			return self::get_object(self::$java,'java');
+			return self::get_object('java');
 		}elseif($ext == 'ada' || $ext == 'adb' || $ext == 'ads'){
-			return self::get_object(self::$ada,'ada');
+			return self::get_object('ada');
 		}elseif($ext == 'sql'){
-			return self::get_object(self::$sql,'sql');
+			return self::get_object('sql');
 		}elseif($ext == 'scm'){
-			return self::get_object(self::$scheme,'scheme');
+			return self::get_object('scheme');
 		}elseif($ext == 'sh'){
-			return self::get_object(self::$sh,'sh');
+			return self::get_object('sh');
 		}elseif($ext == 'pas'){
-			return self::get_object(self::$sh,'pascal');
+			return self::get_object('pascal');
 		}elseif($ext == 'f77' || $ext == 'f' ){
-			return self::get_object(self::$fortran77,'fortran77');
+			return self::get_object('fortran77');
 		}elseif($ext == 'pl' ){
-			return self::get_object(self::$prolog,'prolog');
+			return self::get_object('prolog');
 		}elseif($ext == 'm' ){
-			return self::get_object(self::$matlab,'matlab');
+			return self::get_object('matlab');
 		}elseif($ext == 'py' ){
-			return self::get_object(self::$python,'python');
+			return self::get_object('python');
 		}elseif($ext == 'scala' ){
-			return self::get_object(self::$scala,'scala');
+			return self::get_object('scala');
 		}else{
-			return self::get_object(self::$base,'base');
+			return self::get_object('geshi');
 		}
 	}
 }
