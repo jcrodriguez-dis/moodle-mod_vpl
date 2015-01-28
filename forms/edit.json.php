@@ -57,28 +57,25 @@ try{
 	case 'save':
 		$postfiles=(array)$data;
 		$files = Array();
-		foreach($postfiles as $name => $data){
-			$files[]=array('name' => $name, 'data' => $data);
+		foreach($postfiles as $name => $contens){
+			$files[]=array('name' => $name,
+						   'data' => vpl_decode_binary($name,$contens));
 		}
 		mod_vpl_edit::save($vpl,$userid,$files);
 	break;
 	case 'resetfiles':
-		$outcome->response->files = mod_vpl_edit::get_requested_files($vpl);
+		$files=mod_vpl_edit::get_requested_files($vpl);
+		foreach($files as $name => $contents){
+			$files[$name]=vpl_encode_binary($name,$contents);
+		}		
+		$outcome->response->files = $files;
 	break;
 	case 'run':
-		if(!$instance->run and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
-			throw new Exception(get_string('notavailable'));
-		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
-	break;
 	case 'debug':
-		if(!$instance->debug and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
-			throw new Exception(get_string('notavailable'));
-		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
-	break;
 	case 'evaluate':
-		if(!$instance->evaluate and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
+		if(!$instance->$action and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
 			throw new Exception(get_string('notavailable'));
-		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
+		$outcome->response = mod_vpl_edit::execute($vpl,$userid,$action,$data);
 	break;
 	case 'retrieve':
 		$outcome->response=mod_vpl_edit::retrieve_result($vpl,$userid);
