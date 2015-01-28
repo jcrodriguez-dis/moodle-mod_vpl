@@ -49,6 +49,7 @@ for FILENAME in $VPL_SUBFILES
 do
 	if [ "$FILENAME" == "pre_vpl_run.sh" ] ; then
 		VPL_NS=false
+		break
 	fi
 done
 if $VPL_NS ; then
