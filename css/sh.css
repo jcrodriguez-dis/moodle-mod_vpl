@@ -1,4 +1,14 @@
 .vpl_sh {text-align:left;direction:ltr;}
+.vpl_sh img {
+	max-width:100%;
+	width: auto;
+    height: auto;
+	padding: 2px;
+}
+.vpl_sh div {
+	display:inline;
+}
+
 .vpl_f {font-style: italic; color:blue}
 .vpl_v {font-style: italic;}
 .vpl_s {color:blue}
@@ -10,7 +20,7 @@
 .vpl_r {color:#0000B0; font-style: oblique;}
 .vpl_r:HOVER {background-color: silver;color:white;}
 .vpl_g {font-size: 12px; line-height: normal;}
-.vpl_ln{background-color:#FFFFFF;color:gray;}
+.vpl_ln{background-color:#FFFFFF;color:gray;white-space:pre}
 
 .vpl_h0:HOVER {background-color:#D6F5D6;}
 .vpl_h1:HOVER {background-color:#ADEBAD;}
