@@ -7,9 +7,9 @@
  * @author		Juan Carlos Rodriguez-del-Pino
  **/
 
-require_once dirname(__FILE__).'/sh_base.class.php';
+require_once dirname(__FILE__).'/sh_text.class.php';
 
-class vpl_sh_sh extends vpl_sh_base{
+class vpl_sh_sh extends vpl_sh_text{
 	protected $predefined_vars;
 	protected function is_identifier_char($c){
 		return ($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z')

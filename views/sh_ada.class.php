@@ -7,9 +7,9 @@
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/sh_base.class.php';
+require_once dirname(__FILE__).'/sh_text.class.php';
 
-class vpl_sh_ada extends vpl_sh_base{
+class vpl_sh_ada extends vpl_sh_text{
 	var $previous_pending;
 	protected function show_pending(&$rest){
 		//TODO FIX hover highlight

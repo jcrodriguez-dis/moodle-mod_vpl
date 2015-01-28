@@ -7,9 +7,9 @@
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/sh_base.class.php';
+require_once dirname(__FILE__).'/sh_text.class.php';
 
-class vpl_sh_prolog extends vpl_sh_base{
+class vpl_sh_prolog extends vpl_sh_text{
 	protected function isNextOpenParenthesis(& $s, $ini){
 		$l = strlen($s);
 		for($i=$ini;$i< $l; $i++){

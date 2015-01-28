@@ -9,9 +9,9 @@
  * @author		Lang Johannes <johannes.lang.ima10@fh-joanneum.at>
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-require_once dirname(__FILE__).'/sh_base.class.php';
+require_once dirname(__FILE__).'/sh_text.class.php';
 
-class vpl_sh_scala extends vpl_sh_base{
+class vpl_sh_scala extends vpl_sh_text{
 	protected function show_pending(&$rest){
 		if(array_key_exists($rest  , $this->reserved)){
 			$this->initTag(self::c_reserved);

@@ -7,9 +7,9 @@
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/sh_base.class.php';
+require_once dirname(__FILE__).'/sh_text.class.php';
 
-class vpl_sh_scheme extends vpl_sh_base{
+class vpl_sh_scheme extends vpl_sh_text{
 
 	function __construct(){
 		parent::__construct();
