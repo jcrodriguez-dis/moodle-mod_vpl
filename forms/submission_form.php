@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: submission_form.php,v 1.15 2013-06-10 08:14:31 juanca Exp $
  * @package		VPL. Submission form definition
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
