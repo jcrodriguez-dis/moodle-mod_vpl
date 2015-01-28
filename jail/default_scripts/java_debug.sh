@@ -1,6 +1,6 @@
 #!/bin/bash
 # Default Java language debug script for VPL
-# Copyright (C) 2011 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+# Copyright (C) 2011 onward Juan Carlos Rodríguez-del-Pino. All rights reserved.
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
 
@@ -77,7 +77,7 @@ if [ -f /usr/local/JSwat/bin/JSwat ] ; then
 	echo "/usr/local/JSwat/bin/JSwat --laf javax.swing.plaf.nimbus.NimbusLookAndFeel \$SOURCE_FILES" >> vpl_execution
 	mv vpl_execution vpl_wexecution
 elif [ "$(command -v ddd)" == "" ] ; then
-	echo "jdb -Xmx16m -J-Xmx16M $MAINCLASS" >> vpl_execution
+	echo "jdb $MAINCLASS" >> vpl_execution
 	for FILENAME in $SOURCE_FILES
 	do
 		grep -E "JFrame|JDialog" $FILENAME 2>&1 >/dev/null
@@ -91,7 +91,7 @@ elif [ "$(command -v ddd)" == "" ] ; then
 		fi
 	done
 else
-	echo "ddd -geometry 800x600 --jdb --debugger \"jdb -J-Xmx16M -Xmx16M \" $MAINCLASS" >> vpl_execution
+	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
 	mkdir .ddd
 	mkdir .ddd/sessions
 	mkdir .ddd/themes

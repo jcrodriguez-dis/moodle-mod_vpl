@@ -1,7 +1,6 @@
 #!/bin/bash
-# $Id: java_run.sh,v 1.6 2012-09-24 15:13:22 juanca Exp $
 # Default Java language run script for VPL
-# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2014 onward Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
@@ -25,7 +24,7 @@ fi
 get_source_files java
 #compile all .java files
 
-javac -J-Xmx16m -Xlint:deprecation $SOURCE_FILES
+javac -Xlint:deprecation $SOURCE_FILES
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
@@ -69,9 +68,9 @@ fi
 cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
 if [ ! "$MAINCLASS" = "" ] ; then
-	echo "java -Xmx16M -enableassertions $MAINCLASS" >> vpl_execution
+	echo "java -enableassertions $MAINCLASS" >> vpl_execution
 else
-	echo "java -Xmx16M org.junit.runner.JUnitCore $TESTCLASS" >> vpl_execution
+	echo "java org.junit.runner.JUnitCore $TESTCLASS" >> vpl_execution
 fi
 chmod +x vpl_execution
 for FILENAME in $SOURCE_FILES

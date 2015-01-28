@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ada_run.sh,v 1.3 2012-07-25 19:02:20 juanca Exp $
+# Copyright (C) 2011 onward Juan Carlos Rodríguez-del-Pino
 # Java language hello source code
 
 cat >vpl_hello.java <<END_OF_FILE
