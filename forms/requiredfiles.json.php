@@ -33,9 +33,6 @@ try{
     switch ($action) {
 	case 'save':
 		$postfiles=(array)$data;
-		foreach($postfiles as $name => $data){
-			$files[]=array('name' => $name, 'data' => $data);
-		}
 		$req_fgm = $vpl->get_required_fgm();
 		$req_filelist =$req_fgm->getFileList();
 		//TODO Make new file_group operation to do it better
@@ -43,7 +40,7 @@ try{
 			$req_fgm->deleteFile($i);
 		}
     	foreach($postfiles as $name => $data){
-			$req_fgm->addFile($name, $data);
+			$req_fgm->addFile($name, vpl_decode_binary($name,$data));
 		}
 	break;
     default:
