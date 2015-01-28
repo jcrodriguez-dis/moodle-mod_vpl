@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: sh_factory.class.php,v 1.12 2013-04-22 14:13:38 juanca Exp $
  * @package		VPL. Syntaxhighlighters object factory class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
