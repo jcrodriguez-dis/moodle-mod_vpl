@@ -40,18 +40,18 @@
 			return modified;
 		};
 		this.setFileName = function(name) {
-			if (!VPL_Util.validPath(fileName))
+			if (!VPL_Util.validPath(name))
 				return false;
 			if (name != fileName) {
 				fileName = name;
-				modified = true;
+				this.changed();
 			}
 			if(!opened){
 				return true;
 			}
-			var fn = name;
+			var fn = VPL_Util.getFileName(name);
 			if (fn.length > 20) {
-				fn = '...' + fn.substr(-16);
+				fn = fn.substring(0,16)+'...';
 			}
 			var html = (modified ? VPL_Util.iconModified() : '') + fn;
 			if (this.getTabPos() < file_manager.minNumberOfFiles) {
@@ -62,6 +62,9 @@
 			$JQVPL(tabnameid + ' a').html(html);
 			if (fn != name)
 				$JQVPL(tabnameid + ' a').attr('title', name);
+			if(modified){
+				file_manager.adjustTabsTitles(false);
+			}
 			this.langSelection();
 			return true;
 		};
@@ -77,9 +80,10 @@
 			$JQVPL(tid).remove();
 		};
 
-		this.ajustSize = function(){
+		this.adjustSize = function(){
 			if(!opened) return false;
 			var editTag = $JQVPL(tid);
+			var tabs=editTag.parent();
 			if (editTag.length === 0)
 				return;
 			var editorHeight = editTag.height();
@@ -87,8 +91,8 @@
 			var newHeight = tabs.height();
 			newHeight -= editTag.position().top + 8;
 			var newWidth = tabs.width();
-			newWidth -= 2 * scrollBarWidth;
-			newHeight -= scrollBarWidth;
+			newWidth -= 2 * file_manager.scrollBarWidth;
+			newHeight -= file_manager.scrollBarWidth;
 			if (newHeight != editorHeight || newWidth != editorWidth) {
 				$JQVPL(editTag).height(newHeight);
 				$JQVPL(editTag).width(newWidth);
@@ -131,9 +135,9 @@
 				if(opened) editor.destroy();
 				this.oldDestroy();
 			};
-			this.oldAjustSize=this.ajustSize;
-			this.ajustSize = function() {
-				if(this.oldAjustSize()){
+			this.oldAdjustSize=this.adjustSize;
+			this.adjustSize = function() {
+				if(this.oldAdjustSize()){
 					editor.resize(true);
 					return true;
 				}
@@ -152,7 +156,7 @@
 			};
 			this.focus = function() {
 				if(!opened)	return;
-				this.ajustSize();
+				this.adjustSize();
 				editor.focus();
 			};
 			this.blur = function() {
@@ -172,11 +176,11 @@
 				editor.selectAll();
 			};
 			this.hasUndo = function() {
-				if(!opened)	return;
+				if(!opened)	return false;
 				return session.getUndoManager().hasUndo();
 			};
 			this.hasRedo = function() {
-				if(!opened)	return;
+				if(!opened)	return false;
 				return session.getUndoManager().hasRedo();
 			};
 			this.find = function(s) {
@@ -192,7 +196,7 @@
 				editor.execCommand('findnext');
 			};
 			this.getAnnotations = function() {
-				if(!opened)	return;
+				if(!opened)	return [];
 				return session.getAnnotations();
 			};
 			this.setAnnotations = function(a) {
@@ -224,7 +228,7 @@
 				this.setFileName(fileName);
 				editor.setValue(value);
 				editor.gotoLine(0, 0);
-				editor.setReadOnly(readOnly);
+				editor.setReadOnly(file_manager.readOnly);
 				session.setUseSoftTabs(true);
 				session.setTabSize(4);
 				// Avoid undo of editor initial content
@@ -236,7 +240,7 @@
 				function addEventDrop() {
 					var tag=$JQVPL(tid + ' div.ace_search');
 					if (tag.length) {
-						tag.on('drop', dropHandler);
+						tag.on('drop', file_manager.dropHandler);
 						var button=$JQVPL('button.ace_searchbtn_close');
 						button.css({ marginLeft : "1em", marginRight : "1em"});
 						button.trigger('click');
@@ -248,9 +252,9 @@
 					if (!modified) {
 						modified = true;
 						self.setFileName(fileName);
-						file_manager.setModified();
+						file_manager.generateFileList();
 					}
-					setTimeout(updateMenu,10);
+					VPL_Util.longDelay(file_manager.setModified);
 				}
 				editor.on('change', changed);
 				// Try to grant dropHandler installation
@@ -258,7 +262,7 @@
 				// Save previous onPaste and change for a new one
 				var prevOnPaste = editor.onPaste;
 				editor.onPaste = function(s) {
-					if (restrictedEdit) {
+					if (file_manager.restrictedEdit) {
 						editor.insert(file_manager.getClipboard());
 					} else {
 						prevOnPaste.call(editor, s);
@@ -272,7 +276,7 @@
 				$JQVPL(tid + ' div.ace_content').on('drop', file_manager.dropHandler);
 				$JQVPL(tid + ' div.ace_content').on('dragover', file_manager.dragoverHandler);
 				// size adjust
-				this.ajustSize();
+				this.adjustSize();
 			};
 			this.close= function(){
 				opened=false;
@@ -305,14 +309,15 @@
 				};
 				fr.readAsDataURL(blob);
 			};
-			this.ajustSize = function(){
+			this.adjustSize = function(){
 				if(!opened) return false;
 				var editTag = $JQVPL(tid);
 				if (editTag.length === 0)
 					return;
+				var tabs=editTag.parent();
 				var newHeight = tabs.height();
 				newHeight -= editTag.position().top + 8;
-				newHeight -= scrollBarWidth;
+				newHeight -= file_manager.scrollBarWidth;
 				if (newHeight != editTag.height()) {
 					editTag.height(newHeight);
 					return true;
