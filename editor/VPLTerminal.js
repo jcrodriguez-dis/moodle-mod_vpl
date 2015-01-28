@@ -1,5 +1,5 @@
 /**
- * @package VPL. HTML/JavaScript Code Editor
+ * @package VPL. Terminal control
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -9,7 +9,8 @@
 
 VPL_Terminal = function(dialog_id,terminal_id,str) {
 	var self = this;
-	var ws = undefined;
+	var ws;
+	var onCloseAction=function(){};
 	var title ='';
 	var message ='';
 	var tdialog = $JQVPL('#'+dialog_id);
@@ -20,7 +21,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 		screenKeys : true
 	});
 	terminal.on('data', function(data) {
-		if (typeof ws != 'undefined' && ws.readyState == ws.OPEN)
+		if (ws && ws.readyState == ws.OPEN)
 			ws.send(data);
 	});
 	var terminal_tag = $JQVPL('#' + terminal_id);
@@ -40,10 +41,11 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 	};
 	
 	this.connect = function(server, onClose) {
-		self.show();
+		onCloseAction=onClose;
 		if ("WebSocket" in window) {
 			terminal.reset();
-			if (typeof ws != 'undefined')
+			self.show();
+			if (ws)
 				ws.close();
 			self.setMessage('');
 			self.setTitle(str('connecting'));
@@ -64,9 +66,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 			ws.onopen = function(event) {
 				self.setMessage('');
 				self.setTitle(str('connected'));
-				terminal.focus();
 			};
-
 			ws.onclose = function(event) {
 				self.setTitle(str('connection_closed'));
 				terminal.blur();
@@ -85,8 +85,10 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 		return ws && ws.readyState != ws.CLOSED;
 	};
 	this.disconnect = function() {
-		if (typeof ws != 'undefined' && ws.readyState == ws.OPEN)
+		if (ws && ws.readyState == ws.OPEN){
 			ws.close();
+		}
+		onCloseAction();
 	};
 	
 	tdialog.dialog({
@@ -104,18 +106,25 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 	});
 	this.show= function(){
 		tdialog.dialog('open');
+		terminal.focus();
 	};
-	// End constructor
 	terminal.open(terminal_tag[0]);
+	// End constructor
 };
 // VNC client constructor
 VPL_VNC_Client = function(vnc_dialog_id, str) {
 	var self=this;
-	var rfb = undefined;
+	var rfb;
 	var title ='';
 	var message ='';
 	var lastState ='';
 	var VNCDialog = $JQVPL('#'+vnc_dialog_id);
+	var canvas = $JQVPL('#' + vnc_dialog_id+ " canvas");
+	var onCloseAction=function(){};
+	var firstStart=true;
+	var widthDiff=0;
+	var heightDiff=0;
+	
 	VNCDialog.dialog({
 		title : str('console'),
 		closeOnEscape : false,
@@ -124,6 +133,11 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 		width : 'auto',
 		height : 'auto',
 		dialogClass : 'vpl_ide vpl_vnc',
+		beforeClose: function() {
+			var w=VNCDialog.width()-widthDiff;
+			var h=VNCDialog.height()-heightDiff;
+			self.setCanvasSize(w,h);
+		},
 		close : function() {
 			self.disconnect();
 		}
@@ -163,10 +177,14 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 		}
 	}
 
-	this.connect = function(secure,host, port, password, path) {
+	this.connect = function(secure,host, port, password, path, onClose) {
+		onCloseAction = onClose;
+		if(firstStart){
+			self.setCanvasSize($JQVPL(window).width()-150, $JQVPL(window).height()-150);
+		}
 		self.show();
-		var target = $JQVPL('#' + vnc_dialog_id+ " .noVNC_canvas")[0];
-		if (typeof rfb == 'undefined')
+		var target = $JQVPL('#' + vnc_dialog_id+ " canvas")[0];
+		if (! rfb){
 			rfb = new RFB(
 					{
 						'target' : target,
@@ -176,26 +194,58 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
 						'local_cursor' : true,
 						'shared' : false,
 						'view_only' : false,
-						'updateState' : updateState,
+						'onUpdateState' : updateState,
 						'onPasswordRequired' : null
 					});
-		if(typeof port == 'undefined'){
+			//Clipboard
+			//Cambio de tamaño
+			//Teclado en tabletas
+			//rfb.clipboardPasteFrom
+			//rfb.get_display
+			//display
+		}
+		if(!port){
 			port = secure?443:80;
 		}
 		rfb.connect(host, port, password, path);
 	};
 	this.isOpen = function(){
-		return VNCDialog.dialog( "isOpen" )===true;
+		return VNCDialog.dialog( "isOpen" );
 	};
 	this.isConnected = function() {
-		return typeof rfb != 'undefined' && lastState != 'disconnected';
+		return rfb && lastState != 'disconnected';
 	};
 	this.disconnect = function() {
-		if (typeof rfb != 'undefined' && lastState == 'normal' )
+		if (rfb && lastState == 'normal' )
 			rfb.disconnect();
+		onCloseAction();
 	};
+	function round(v){
+		if(v<100) v=100;
+		return Math.floor(v/20)*20;
+	}
+	this.getCanvasSize = function() {
+		if(firstStart){
+			return ($JQVPL(window).width()-150)+'x'+($JQVPL(window).height()-150);
+		}
+		return canvas.width()+"x"+canvas.height();
+	};
+	
+	this.setCanvasSize = function(w,h) {
+		canvas.width(round(w));
+		canvas.height(round(h));
+	};
+	function getFirstDiff(){
+		if(firstStart){
+			firstStart=false;
+			widthDiff=VNCDialog.width()-canvas.width();
+			heightDiff=VNCDialog.height()-canvas.height();
+		}		
+	}
 	this.show = function() {
 		VNCDialog.dialog('open');
+		VNCDialog.width('auto');
+		VNCDialog.height('auto');
+		VPL_Util.delay(getFirstDiff);
 	};
-
 };
