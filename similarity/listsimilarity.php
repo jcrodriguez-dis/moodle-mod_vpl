@@ -120,11 +120,6 @@ if(count($selected)){
 	$table->align = array ('right','left', 'center', 'left','right');
 	$table->size = array ('','60','60');
 	$clusters = new vpl_clusters($selected);
-	foreach($selected as $case){
-		//Cluster assigning
-		$clusters->process($case);
-	}
-	$clusters->assign_number();
 	$usernumber=0;
 	foreach($selected as $case){
 		$table->data[] = array (++$usernumber,
