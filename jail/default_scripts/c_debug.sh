@@ -18,7 +18,7 @@ if [ -f vpl_program ] ; then
 		check_program gdb
 		echo "gdb vpl_program" >> vpl_execution
 	else
-		echo "ddd --quiet --gdb -geometry 800x600 vpl_program &>/dev/null" >> vpl_execution
+		echo "ddd --quiet vpl_program &>/dev/null" >> vpl_execution
 		mkdir .ddd
 		mkdir .ddd/sessions
 		mkdir .ddd/themes
