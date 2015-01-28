@@ -18,32 +18,69 @@
 .vpl_ide_dialog{
 	z-index:999;
 }
+#vpl_menu .ui-button-text-only .ui-button-text{
+	padding:0.4em;
+}
 .vpl_ide_menu {
-	min-width: 320px;
+	font-size: 110%;
+	min-width: 340px;
+	padding: 0.2em;
 }
 .vpl_ide_tr {
+	margin:0;
+	padding:0;
+	border:0;
 	position:relative;
 	min-width: 330px;
 	width: 100%;
 }
+#vpl_filelist {
+	position:absolute !important;
+	top:0px;
+    left:0px;
+    display: none;
+}
+#vpl_filelist_header{
+	padding-left: 0.5em;
+}
+#vpl_filelist_content{
+	padding-left: 0.5em;
+	white-space: pre;
+	overflow:auto;
+}
+
+.vpl_ide_dirindent {
+	display:inline-block;
+	width: 1.5em;
+}
 
 .vpl_ide_tabs {
-	min-width: 200px;
-	position:absolute;
-    left:0px;
-}
-.vpl_ide_charicon{
-	color:rgb(200,200,200);
-	font-family:monospace;
-	vertical-align:0.15em;
-	text-shadow: -1px 0 gray, 0 1px gray,
-	  1px 0 gray, 0 -1px gray;
+	top:0;
+	position:absolute !important;
 }
 
-.vpl_ide_delicon{
+#vpl_tabs_scroll{
+	overflow:auto;
 }
-.ui-tabs-active .vpl_ide_delicon:hover{
-	color:red;
+
+#vpl_tabs_ul{
+}
+.vpl_ide_tabs li{
+	line-height: 1ex;
+}
+
+.vpl_ide_charicon{
+	color:gray;
+}
+
+.vpl_ide_closeicon{
+	color:white;
+	text-shadow: 1px 0px 1px gray, 0px 1px 1px gray, 0px -1px 1px gray, -1px 0px 1px gray;
+}
+
+.vpl_ide_closeicon:hover{
+	color:gray;
+	text-shadow: none;
 	cursor: pointer;
 }
 
@@ -52,39 +89,67 @@
 	padding: 0;
 	z-index:0;
 }
-.vpl_ide_dropzone {
-	width: 200px;
-	height: 200px;
+
+.vpl_ide_binary {
+	margin: auto;
+	font-size:300%;
+	text-align: center;
+	z-index:0;
 }
+.vpl_ide_img{
+    overflow:auto;
+}
+img.vpl_ide_file {
+	display:block;
+	width: auto;
+    height: auto;
+	padding: 2px;
+	z-index:0;
+}
+
 .vpl_ide_results {
+	top: 0;
 	min-width: 100px;
-    position:absolute;
+    position:absolute !important;
     right:0;
-    padding-left:3px;
-    padding-bottom:3px
+    height: 100%;
 }
 .vpl_ide_results a {
     padding: 1px 2px;
     border-bottom: solid 1px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
 }
+
 .vpl_ide_results pre {
    line-height: 100%;
+   white-space: pre;
+   word-break: normal;
+   word-wrap: normal;
 }
 
 .vpl_ide_progressbar{
-	background-color: #ccc;
-	position: relative;
-	width: 200px;
+	position:relative;
+	min-width: 100px;
+}
+.vpl_ide_progressbaricon{
+	position: absolute;
+	witdh:2em;
+	display:block;
+	padding:0;
+	margin: 0;
 }
 .vpl_ide_progressbarlabel{
-	position:absolute;
-    width:100%;
-    text-align:center;
-    top: 4px;
+	margin:0;
+	witdh:100%;
+	display:block;
+	border:0;
+	padding:0 1em 0 1em;
+    text-align: center;
     font-weight: bold;
-    text-shadow: 1px -1px 0 white, -1px 1px 0 white, 2px -2px 1px white, -2px 2px 1px white;
-    /*color: white;*/
+}
+.vpl_icon_repeat{
+	position: absolute;
+	left:-0.7em;
 }
 .vpl_ide {
 	font-size: 80%;
@@ -95,63 +160,10 @@
 .vpl_ide_result_compilation, .vpl_ide_result_execution {
 	font-family: 'Monaco', 'Consolas', monospace;
 	font-size: 12pt;
-	white-space: pre-wrap;
-}
-/* horizontal menu css Taken from "Jaime Peña Tresancos" en 
-   "En el presente artículo hablaremos de qué es y
-    qué proporciona el jQuery User Interface Menu"
-*/
-
-.vpl_ide .ui-menu {
-	overflow: hidden;
-	z-index: 10;
+	max-width: 120em;
+	white-space: pre;
 }
 
-.vpl_ide .ui-menu>li {
-	float: left;
-	display: block;
-	width: auto !important;
-}
-
-.vpl_ide .ui-menu ul li {
-	display: block;
-	float: none;
-}
-
-.vpl_ide .ui-menu ul li ul {
-	left: 120px !important;
-	width: 100%;
-}
-
-.vpl_ide .ui-menu ul li ul li {
-	width: auto;
-}
-
-.vpl_ide .ui-menu ul li ul li a {
-	float: left;
-}
-
-.vpl_ide .ui-menu>li {
-	margin: 5px 5px !important;
-	padding: 0 0 !important;
-}
-
-.vpl_ide .ui-menu>li>a {
-	float: left;
-	display: block;
-	clear: both;
-	overflow: hidden;
-}
-
-.vpl_ide .ui-menu .ui-menu .ui-menu li {
-	float: left;
-	display: block;
-}
-
-.vpl_menu_option_separator{
-	width: 10em;
-	text-align: left;
-}
 .vpl_vnc{
     position:fixed;
     width: auto;
@@ -170,8 +182,8 @@ pre.vpl_terminal{
     display: inline-block;
 }
 
-.vpl_vnc canvas{ 
+.vpl_noVNC_canvas{ 
     width:800px;
     height:600px;
-    background-color: black;
+    cursor:none;
 }
