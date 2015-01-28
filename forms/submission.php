@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: submission.php,v 1.34 2013-06-10 08:15:42 juanca Exp $
  * @package		VPL. Process submission form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -61,10 +60,12 @@ if ($fromform=$mform->get_data()){
 		$name = $mform->get_new_filename($attribute);
 		$data = $mform->get_file_content($attribute);
 		if($data !== false && $name !== false ){
-		//autodetect data file encode
-			$encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1',true);
-			if($encode > ''){ //If code detected
-				$data = iconv($encode,'UTF-8',$data);
+			//autodetect text file encode if not binary
+			if(!vpl_is_binary($name)){
+				$encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1',true);
+				if($encode > ''){ //If code detected
+					$data = iconv($encode,'UTF-8',$data);
+				}
 			}
 			$files[] = array('name' => $name, 'data' => $data);
 		}else{
