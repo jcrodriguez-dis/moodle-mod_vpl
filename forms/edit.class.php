@@ -62,7 +62,7 @@ class mod_vpl_edit{
 		return $files;
 	}
 	
-	public static function execute($vpl,$userid,$action){
+	public static function execute($vpl,$userid,$action,$options=array()){
 		$example = $vpl->get_instance()->example;
 		$lastsub = $vpl->last_user_submission($userid);
 		if(!$lastsub && !$example){
@@ -74,7 +74,7 @@ class mod_vpl_edit{
 			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
 		}
 		$translate = array('run'=>0,'debug'=>1,'evaluate'=>2);
-		return $submission->run($translate[$action]);
+		return $submission->run($translate[$action],$options);
 	}
 	
 	public static function retrieve_result($vpl,$userid){
