@@ -734,7 +734,7 @@ class mod_vpl_submission {
 			//Is title line
 			if(strlen($line)>2 && $line[0]=='-') { //Title
 				$html .= $this->get_last_comment($title, $comment,$dropdown);
-				$line = substr($line,1);
+				$line = trim(substr($line,1));
 				if($line[strlen($line)-1]==')') { //Has grade?
 					$posOpen = strrpos($line,'(');
 					if($posOpen !== false) {
