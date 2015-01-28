@@ -103,14 +103,17 @@
 				return false;
 		return true;
 	};
-
-	VPL_Util.readZipFile = function(data, done) {
+	VPL_Util.getFileName = function(path) {
+		var dirs = path.split("/");
+		return dirs[dirs.length-1];
+	};
+	VPL_Util.readZipFile = function(data, save, progressBar) {
 		var ab = VPL_Util.ArrayBuffer2String(data);
 		var unzipper = new JUnzip(ab);
 		if (unzipper.isZipFile()) {
 			unzipper.readEntries();
 			function process(i){
-			    if(i >= unzipper.entries.length) return; 
+			    if(i >= unzipper.entries.length || progressBar.isClosed()) return; 
 				var entry = unzipper.entries[i];
 				var fileName = entry.fileName;
 				var data;
@@ -118,6 +121,7 @@
 				if (fileName.match(/\/$/)){
 					process(i+1);
 				}else{
+					progressBar.processFile(fileName);
 					var uncompressed = '';
 					if (entry.compressionMethod === 0) {
 						// plain
@@ -128,40 +132,55 @@
 					data = VPL_Util.String2ArrayBuffer(uncompressed);
 					if (VPL_Util.isBinary(fileName)) {
 						//If binary use as arrayBuffer
-						done(fileName, data);
-						process(i+1);
+						save(fileName, data);
+						progressBar.endFile();
 					}else{
 						blob = new Blob([data],{type:'text/plain'});
 						fr = new FileReader();
 						fr.onload=function(e){
-							done(fileName, e.target.result);
-							process(i+1);
+							save(fileName, e.target.result);
+							progressBar.endFile();
 						};
 						fr.readAsText(blob);
 					}
-					
+					process(i+1);					
 				}
 			};
 			process(0);
 		}
 	};
 
-	VPL_Util.readSelectedFiles = function(filesToRead, done) {
+	VPL_Util.readSelectedFiles = function(filesToRead, save) {
 		// process all File objects
+		var pb=new VPL_Util.progressBar('import','import');
+		var filePending=0;
+		pb.processFile=function(name){
+			pb.setLabel(name);
+			filePending++;
+		};
+		pb.endFile=function(){
+			filePending--;
+			if(filePending==0){
+				pb.close();
+			}
+		};
 		function readSecuencial(sec) {
-			if (sec >= filesToRead.length)
+			if (sec >= filesToRead.length || pb.isClosed()){
 				return;
+			}
 			var f = filesToRead[sec];
+			pb.processFile(f.name);
 			var reader = new FileReader();
 			var ext = VPL_Util.fileExtension(f.name).toLowerCase();
 			reader.onload = function(e) {
 				if (ext == 'zip') {
-					VPL_Util.readZipFile(e.target.result,done);
+					VPL_Util.readZipFile(e.target.result,save, pb);
 				} else {
-					done(f.name, e.target.result);
+					save(f.name, e.target.result);
 				}
 				// Load next file
 				readSecuencial(sec + 1);
+				pb.endFile();
 			};
 			if (VPL_Util.isBinary(f.name))
 				reader.readAsArrayBuffer(f);
@@ -264,6 +283,35 @@
 				i18n[key] = newi18n[key];
 		};
 	})();
+	(function() {
+		var delayedActions = {};
+		var reg=/function ([^\(]*)/;
+		function functionName(func){
+			var fs=func.toString();
+			var fn=reg.exec(fs)[1];
+		    return fn==""?fs:fn;			
+		}
+		VPL_Util.delay = function(func,arg1,arg2) {
+			var fn=functionName(func);
+			if(delayedActions[fn]){
+				clearTimeout(delayedActions[fn]);
+			}
+			delayedActions[fn]=setTimeout(function(){
+				func(arg1,arg2);
+				delayedActions[fn]=false;
+			},100);
+		};
+		VPL_Util.longDelay = function(func,arg1,arg2) {
+			var fn=functionName(func);
+			if(delayedActions[fn]){
+				clearTimeout(delayedActions[fn]);
+			}
+			delayedActions[fn]=setTimeout(function(){
+				func(arg1,arg2);
+				delayedActions[fn]=false;
+			},1000);
+		};
+	})();
 	VPL_Util.iconModified = function() {
 		return '<span title="' + VPL_Util.str('modified')
 				+ '" class="vpl_ide_charicon">' + '<i class="fa fa-star"></i>'
@@ -289,6 +337,8 @@
 	};
 	(function() {
 		var menu_icons = {
+			'filelist': 'folder',
+			'filelistclose': 'folder-open',
 			'new' : 'file',
 			'rename' : 'pencil',
 			'delete' : 'trash',
@@ -307,6 +357,7 @@
 			'fullscreen' : 'expand',
 			'regularscreen' : 'compress',
 			'save' : 'save',
+			'sort' : 'sort-amount-asc',
 			'run' : 'caret-square-o-right',
 			'debug' : 'bug',
 			'evaluate' : 'check-square-o',
@@ -316,21 +367,25 @@
 			'alert' : 'warning',
 			'trash' : 'trash',
 			'retrieve' : 'download',
-			'spinner' : 'refresh fa-spin'
+			'spinner' : 'refresh fa-spin',
 		};
 		VPL_Util.gen_icon = function(icon, size) {
 			if (! menu_icons[icon] )
 				return '';
+			var classes='fa fa-';
 			if (! size)
-				size = 'lg';
-			return "<i class='fa fa-" + size + " fa-" + menu_icons[icon]
-					+ "'></i>";
+				classes+='lg';
+			else
+				classes+=size;
+			classes +=' fa-'+menu_icons[icon];
+			return ret="<i class='"+classes+ "'></i>";
 		};
 	})();
 	//UI operations
 	VPL_Util.progressBar= function(title, message, onUserClose) {
 		var labelHTML='<span class="vpl_ide_progressbarlabel"></span>';
-		var pbHTML=' <div class="vpl_ide_progressbar">'+VPL_Util.gen_icon('spinner')+labelHTML+'</div>';
+		var sppiner='<div class="vpl_ide_progressbaricon">'+VPL_Util.gen_icon('spinner')+'</div>';
+		var pbHTML=' <div class="vpl_ide_progressbar">'+sppiner+labelHTML+'</div>';
 		var HTML='<div class="vpl_ide_dialog" style="display: none;">'+pbHTML+'</div>';
 		var dialog = $JQVPL(HTML);
 		$JQVPL('body').append(dialog);
@@ -341,8 +396,9 @@
 			'title' : VPL_Util.str(title),
 			resizable: false,
 			autoOpen : false,
-			minHeight: 20,
-			width : 'auto',
+			width: 250,
+			minHeight : 20,
+			height : 20,
 			modal : true,
 			dialogClass : 'vpl_ide vpl_ide_dialog',
 			close : function() {
@@ -355,7 +411,6 @@
 				}
 			}
 		});		
-		label.text(VPL_Util.str(message));
 		this.setLabel=function(t,icon){
 			if(dialog){
 				label.text(t);
@@ -368,9 +423,14 @@
 			onUserClose=false;
 			if(dialog) dialog.dialog('close');
 		};
+		this.isClosed=function(){
+			return dialog==false;
+		};
 		var titleTag=dialog.siblings().find('.ui-dialog-title');
 		titleTag.html(VPL_Util.gen_icon(title)+' '+titleTag.html());
+		this.setLabel(VPL_Util.str(message));
 		dialog.dialog('open');
+		dialog.dialog('option','height','auto');
 	};
 	VPL_Util.dialogbase_options = {
 			autoOpen : false,
