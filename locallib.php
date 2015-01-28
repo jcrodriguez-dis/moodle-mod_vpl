@@ -421,7 +421,7 @@ function vpl_conv_size_to_string($size){
 		}
 		if($size < $measure[$i+1]){
 			$num = $size / $measure[$i];
-			if($num >= 3 || $size % $measure[$i] == 0){
+			if($num>=1 && ($size % $measure[$i] <= $measure[$i]/10)){
 				return sprintf('%4d %s',$num,$measure_name[$i]);
 			}else{
 				return sprintf('%.2f %s',$num,$measure_name[$i]);
@@ -551,6 +551,34 @@ function vpl_select_array($url,$array){
 	}
 	return $ret;
 }
+
+function vpl_fileExtension($fileName) {
+	return pathinfo($fileName,PATHINFO_EXTENSION);
+}
+
+function vpl_is_image($fileName){
+	return preg_match('/^(gif|jpg|jpeg|png|ico)$/i',vpl_fileExtension($fileName))==1;
+}
+
+function vpl_is_binary($fileName){
+	return vpl_is_image($fileName)
+	       || preg_match('/^(zip|jar|pdf)$/i',vpl_fileExtension($fileName))==1;
+};
+
+function vpl_encode_binary($fileName,$data){
+	if(vpl_is_binary($fileName)){
+		return base64_encode($data);
+	}
+	return $data;
+};
+
+function vpl_decode_binary($fileName,$data){
+	if(vpl_is_binary($fileName)){
+		return base64_decode($data);
+	}
+	return $data;
+};
+
 
 function vpl_is_valid_path_name($path) {
 	if (strlen($path) > 256)
