@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: vpl_submission_CE.class.php,v 1.35 2013-07-09 13:32:41 juanca Exp $
  * @package		VPL. submission Compilation Execution class definition
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -22,6 +21,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 							'd' => 'd',
 							'go' => 'go',
 							'java' => 'java',
+							'js' => 'javascript',
 							'scala' => 'scala',
 							'sql' => 'sql',
 							'scm' => 'scheme','s' => 'scheme',
@@ -213,7 +213,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 			   $info .='export VPL_GRADEMIN='.$grade_setting->grademin."\n";
 			   $info .='export VPL_GRADEMAX='.$grade_setting->grademax."\n";
 			}
-			$info .='export VPL_COMPILATIONFAILED=\''.get_string('VPL_COMPILATIONFAILED',VPL)."'\n";
+			$info .='export VPL_COMPILATIONFAILED=\''.addslashes(get_string('VPL_COMPILATIONFAILED',VPL))."'\n";
 		}
 		$filenames = '';
 		$num=0;
@@ -253,6 +253,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		if(count($data->filestodelete)==0){ //If keeping all files => add dummy
 			$data->filestodelete['__vpl_to_delete__']=1;
 		}
+		//Info to log who/what
+		$data->userid=$this->instance->userid;
+		$data->activityid=$this->vpl->get_instance()->id;
 		return $data;
 	}
 
@@ -303,48 +306,54 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 	 * Run, debug, evaluate
 	 * @param int $type (0=run, 1=debug, evaluate=2)
 	 */
-	function run($type){
+	function run($type,$options=array()){
 		//Stop current task if one
+		$options = (array) $options;
 		$this->cancelProcess();
 		$execute_scripts= array(0=>'vpl_run.sh',1=>'vpl_debug.sh',2=>'vpl_evaluate.sh');
 		$data = $this->prepare_execution($type);
 		$data->execute =$execute_scripts[$type];
 		$data->interactive=$type<2?1:0;
 		$data->lang = vpl_get_lang(true);
+		if(isset($options['XGEOMETRY'])){ //TODO refactor to a better solution
+			$data->files['vpl_environment.sh'].="\nexport VPL_XGEOMETRY=".$options['XGEOMETRY']."\n";
+		}
 		$localservers=$data->jailservers;
 		$maxmemory=$data->maxmemory;
 		//Remove jailservers field
 		unset($data->jailservers);
-		$server='';
-		$jailResponse = $this->jailRequestAction($data,$maxmemory,$localservers,$server);
-		$isHTTPS = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on";
-		$parsed = parse_url($server);
-		if($isHTTPS)
-			$baseURL = 'wss://';
-		else
-			$baseURL = 'ws://';
-		$baseURL.=$parsed['host'];
-		if($isHTTPS)
-			$baseURL.=':'.$jailResponse['secureport'];
-		elseif(isset($parsed['port']))
-			$baseURL.=':'.$parsed['port'];
-		$baseURL.='/';
+		//Adapt files to send binary as base64
+		$encodeFiles = array();
+		foreach($data->files as $filename => $filedata){
+			if(vpl_is_binary($filename)){
+				$encodeFiles[$filename.'.b64'] = base64_encode($filedata);
+				$data->filestodelete[$filename.'.b64']=1;
+			}else{
+				$encodeFiles[$filename] = $filedata;
+			}
+			$data->files[$filename]='';
+		}
+		$data->files=$encodeFiles;
+		$jail_server='';
+		$jailResponse = $this->jailRequestAction($data,$maxmemory,$localservers,$jail_server);
+		$parsed = parse_url($jail_server);
+		//Fix jail server port
+		if(!isset($parsed['port']) && $parsed['scheme'] == 'http'){
+			$parsed['port']=80;
+		}
+		if(!isset($jailResponse['port'])){ //Try to fix old jail servers that don't return port
+			$jailResponse['port']=$parsed['port'];
+		}
 		$response = new stdClass();
-		$response->monitorURL=$baseURL.$jailResponse['monitorticket'].'/monitor';
-		$response->executionURL=$baseURL.$jailResponse['executionticket'].'/execute';
-		$response->VNChost = $parsed['host'];
-		$response->VNCpath = $jailResponse['executionticket'].'/execute';
-		$response->VNCsecure = $isHTTPS;
-		if($isHTTPS)
-		   $response->port = $jailResponse['secureport'];
-		elseif(isset($parsed['port']))
-		   $response->port = $parsed['port'];
-		else
-		   $response->port = 80;
+		$response->server = $parsed['host'];
+		$response->monitorPath=$jailResponse['monitorticket'].'/monitor';
+		$response->executionPath=$jailResponse['executionticket'].'/execute';
+		$response->port = $jailResponse['port'];
+		$response->securePort = $jailResponse['secureport'];
 		$response->VNCpassword = substr($jailResponse['executionticket'],0,8);
 		$instance = $this->get_instance();
 		vpl_running_processes::set($instance->userid,
-		                          $server,
+		                          $jail_server,
 		                          $instance->vpl,
 		                          $jailResponse['adminticket']);
 		return $response;
