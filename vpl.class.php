@@ -778,11 +778,10 @@ class mod_vpl {
 	 */
 	function is_visible(){
 		$cm = $this->get_course_module();
+		$modinfo = get_fast_modinfo($cm->course);
 		$ret = true;
-		$ret = $ret && coursemodule_visible_for_user($cm);
+		$ret = $ret && $modinfo->get_cm($cm->id)->uservisible;
 		$ret = $ret && $this->has_capability(VPL_VIEW_CAPABILITY);
-		//Check grouping and members only
-		$ret = $ret && groups_course_module_visible($cm);
 		//grader and manager always view
 		$ret = $ret || $this->has_capability(VPL_GRADE_CAPABILITY);
 		$ret = $ret || $this->has_capability(VPL_MANAGE_CAPABILITY);
@@ -795,11 +794,12 @@ class mod_vpl {
 	 */
 	function is_submit_able(){
 		$cm = $this->get_course_module();
+		$modinfo = get_fast_modinfo($cm->course);
 		$instance = $this->get_instance();
 		$ret = true;
 		$ret = $ret && $this->has_capability(VPL_SUBMIT_CAPABILITY);
 		$ret = $ret && $this->is_submission_period();
-		$ret = $ret && coursemodule_visible_for_user($cm);
+		$ret = $ret && $modinfo->get_cm($cm->id)->uservisible;
 		//manager can always submit
 		$ret = $ret || $this->has_capability(VPL_MANAGE_CAPABILITY);
 		return $ret;
