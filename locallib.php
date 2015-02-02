@@ -10,6 +10,8 @@ defined('MOODLE_INTERNAL') || die();
 
 define('VPL','vpl');
 define('VPL_SUBMISSIONS','vpl_submissions');
+define('VPL_JAILSERVERS','vpl_jailservers');
+define('VPL_RUNNING_PROCESSES','vpl_running_processes');
 define('VPL_VARIATIONS','vpl_variations');
 define('VPL_ASSIGNED_VARIATIONS','vpl_assigned_variations');
 define('VPL_GRADE_CAPABILITY','mod/vpl:grade');
