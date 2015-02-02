@@ -245,7 +245,7 @@ class vpl_diff{
 				$datal2.=$emptyline;
 			}
 		}
-		echo '<div style="width: 900px">';
+		echo '<div style="width: 100%;min-width: 950px; overflow: auto">';
 		//Header
 		echo '<div style="float:left; width: 445px">';
 		echo $HTMLheader1;
@@ -255,7 +255,7 @@ class vpl_diff{
 		echo '</div>';
 		echo '<div style="clear:both;"></div>';
 		//Files
-		echo '<div style="float:left; text-align: right; width: 40px">';
+		echo '<div style="float:left; text-align: right">';
 		echo '<pre class="'.vpl_sh_base::c_general.'">';
 		echo $datal1;
 		echo '</pre>';
@@ -264,12 +264,12 @@ class vpl_diff{
 		$shower= vpl_sh_factory::get_sh($filename1);
 		$shower->print_file($filename1,$data1,false);
 		echo '</div>';
-		echo '<div style="float:left; width: 40px">';
+		echo '<div style="float:left">';
 		echo '<pre class="'.vpl_sh_base::c_general.'">';
 		echo $diffl;
 		echo '</pre>';
 		echo '</div>';
-		echo '<div style="float:left; text-align: right; width: 40px">';
+		echo '<div style="float:left; text-align: right;">';
 		echo '<pre class="'.vpl_sh_base::c_general.'">';
 		echo $datal2;
 		echo '</pre>';
