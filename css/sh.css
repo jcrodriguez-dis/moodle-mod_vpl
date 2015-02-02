@@ -9,7 +9,7 @@
 .vpl_m:HOVER {background-color: silver;}
 .vpl_r {color:#0000B0; font-style: oblique;}
 .vpl_r:HOVER {background-color: silver;color:white;}
-.vpl_g {font-size: 12px; line-height: normal;}
+.vpl_g {font-size: 12px; line-height: normal;word-wrap:normal;white-space: pre}
 .vpl_ln{background-color:#FFFFFF;color:gray;}
 
 .vpl_h0:HOVER {background-color:#D6F5D6;}
