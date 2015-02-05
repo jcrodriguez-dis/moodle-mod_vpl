@@ -21,7 +21,7 @@ $vpl->prepare_page('similarity/listwatermark.php', array('id' => $id));
 
 $course = $vpl->get_course();
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('view watermarks', vpl_rel_url('similarity/listwatermark.php','id',$id));
+\mod_vpl\event\vpl_watermark_report_viewed::log($vpl);
 //Print header
 $vpl->print_header(get_string('listwatermarks',VPL));
 $vpl->print_view_tabs(basename(__FILE__));

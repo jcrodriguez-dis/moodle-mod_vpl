@@ -26,7 +26,7 @@ $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/listsimilarity.php', array('id' => $id));
 
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('view similarity', vpl_rel_url('similarity/similarity_form.php','id',$id));
+\mod_vpl\event\vpl_similarity_report_viewed::log($vpl);
 //Print header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
 $vpl->print_header(get_string('listsimilarity',VPL));

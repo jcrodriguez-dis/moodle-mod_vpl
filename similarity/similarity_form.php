@@ -20,7 +20,7 @@ $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/similarity_form.php', array('id' => $id));
 
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('similarity form', vpl_rel_url('similarity/similarity_form.php','id',$id));
+\mod_vpl\event\vpl_similarity_form_viewed::log($vpl);
 //Print header
 $vpl->print_header(get_string('similarity',VPL));
 $vpl->print_view_tabs(basename(__FILE__));

@@ -17,7 +17,6 @@ require_login();
 $id = required_param('id', PARAM_INT);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/diff.php', array('id' => $id));
-$vpl->add_to_log('Diff', vpl_rel_url('similarity/diff.php','id',$id));
 //Print header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header_simple(get_string('diff',VPL));

@@ -309,6 +309,7 @@ class vpl_diff{
 				}
 				$fg = $submission->get_submitted_fgm();
 				$data = $fg->getFileData($filename);
+				\mod_vpl\event\vpl_diff_viewed::log($submission);
 			}
 		}elseif($type == 2){
 			//FIXME adapt to moodle 2.x
