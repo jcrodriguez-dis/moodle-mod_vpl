@@ -55,7 +55,7 @@ $subselection = vpl_get_set_session_var('subselection','allsubmissions','selecti
 $vpl = new mod_vpl($id);
 $cm = $vpl->get_course_module();
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('Download all submissions', vpl_rel_url('views/downloadallsubmissions.php','id',$id), $vpl->get_printable_name());
+\mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);
 //get students
 $currentgroup = groups_get_activity_group($cm);
 if(!$currentgroup){

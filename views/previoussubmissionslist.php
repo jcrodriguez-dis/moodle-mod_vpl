@@ -22,7 +22,11 @@ $vpl->prepare_page('views/previoussubmissionslist.php', array('id' => $id, 'user
 
 $course = $vpl->get_course();
 $vpl->require_capability(VPL_GRADE_CAPABILITY);
-$vpl->add_to_log('view previous', vpl_rel_url('previoussubmissionslist.php','id',$id,'userid',$userid));
+\mod_vpl\event\submission_previous_upload_viewed::log(array(
+		'objectid' => $vpl->get_instance()->id,
+		'context' => context_module::instance($id),
+		'relateduserid' => $userid
+));
 //Load strings
 $strdatesubmitted		= get_string('datesubmitted',VPL);
 $strdescription			= get_string('description',VPL);
