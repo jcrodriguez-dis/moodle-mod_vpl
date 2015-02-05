@@ -9,7 +9,7 @@ namespace mod_vpl\event;
 require_once dirname(__FILE__).'/../../locallib.php';
 defined('MOODLE_INTERNAL') || die();
 
-class vpl_variation extends vpl {
+class vpl_variation_updated extends vpl {
 	protected function init() {
 		parent::init();
 		$this->legacy_action='variations form';
