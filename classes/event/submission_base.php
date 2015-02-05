@@ -9,7 +9,7 @@ namespace mod_vpl\event;
 require_once dirname(__FILE__).'/../../locallib.php';
 defined('MOODLE_INTERNAL') || die();
 
-class submission extends base {
+class submission_base extends base {
 	protected function init() {
 		$this->data['crud'] = 'c';
 		$this->data['edulevel'] = self::LEVEL_PARTICIPATING;

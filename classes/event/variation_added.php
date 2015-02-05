@@ -9,7 +9,7 @@ namespace mod_vpl\event;
 require_once dirname(__FILE__).'/../../locallib.php';
 defined('MOODLE_INTERNAL') || die();
 
-class variation_added extends vpl_variation {
+class variation_added extends variation_base {
 	protected function init() {
 		parent::init();
 		$this->data['crud'] = 'c';

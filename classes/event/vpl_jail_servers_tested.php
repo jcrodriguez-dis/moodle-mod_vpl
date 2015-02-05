@@ -1,6 +1,6 @@
 <?php
 /**
- * @package		VPL. Class for logging of variation deleted events
+ * @package		VPL. Class for logging of execution options view events
  * @copyright	2014 onward Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -9,9 +9,13 @@ namespace mod_vpl\event;
 require_once dirname(__FILE__).'/../../locallib.php';
 defined('MOODLE_INTERNAL') || die();
 
-class vpl_variation_deleted extends vpl_variation {
+class vpl_jail_servers_tested extends vpl_base {
 	protected function init() {
 		parent::init();
-		$this->data['crud'] = 'd';
+		$this->data['crud'] = 'r';
+		$this->legacy_action='jail servers tested';
 	}
+	public function get_description() {
+		return $this->get_description_mod('jail servers');
+	}	
 }

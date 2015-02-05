@@ -9,7 +9,7 @@ namespace mod_vpl\event;
 require_once dirname(__FILE__).'/../../locallib.php';
 defined('MOODLE_INTERNAL') || die();
 
-class submission_viewed extends submission {
+class submission_viewed extends submission_base {
 	protected function init() {
 		parent::init();
 		$this->data['crud'] = 'r';
