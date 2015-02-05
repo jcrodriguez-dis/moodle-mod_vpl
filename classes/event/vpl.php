@@ -15,9 +15,9 @@ class vpl extends base {
 		$this->data['edulevel'] = self::LEVEL_TEACHING;
 		$this->data['objecttable'] = VPL;
 	}
-	public function log($vpl) {
+	public static function log($vpl) {
 		if(is_array($vpl)){
-			parent::log($submission);
+			parent::log($vpl);
 		}else{
 			$einfo =array(
 					'objectid' => $vpl->get_instance()->id,
