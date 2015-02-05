@@ -88,7 +88,7 @@ if($subinstance->dategraded== 0 || $subinstance->grader == $USER->id || $subinst
 		if(isset($fromform->removegrade)){
 			vpl_grade_header($vpl,$inpopup);
 			if($submission->remove_grade()){
-				$vpl->add_to_log('remove grade',$linkrel);
+				\mod_vpl\event\submission_grade_deleted::log($submission);
 				if($inpopup){
 					//FIXME don't work
 					//Change grade info at parent window
@@ -121,10 +121,15 @@ if($subinstance->dategraded== 0 || $subinstance->grader == $USER->id || $subinst
 				$log_info .= ' o'.$on.' '.$value;
 			}
 		}
-		$vpl->add_to_log($action,$linkrel,$log_info);
 		if(!$submission->set_grade($fromform)){
 			vpl_redirect($link,get_string('gradenotsaved',VPL),5);
 		}
+		if($action == 'grade'){
+			\mod_vpl\event\submission_graded::log($submission);
+		}else{
+			\mod_vpl\event\submission_grade_updated::log($submission);
+		}
+		
 		if($inpopup){
 			//Change grade info at parent window
 			$text = $submission->print_grade_core();
@@ -150,7 +155,8 @@ if($subinstance->dategraded== 0 || $subinstance->grader == $USER->id || $subinst
 	} else {
 		//Show grade form
 		vpl_grade_header($vpl,$inpopup);
-		$vpl->add_to_log('view grade',$linkrel,'grade: '.$subinstance->grade);
+		
+		\mod_vpl\event\submission_grade_viewed::log($submission);
 		$data = new stdClass();
 		$data->id = $vpl->get_course_module()->id;
 		$data->userid = $subinstance->userid;

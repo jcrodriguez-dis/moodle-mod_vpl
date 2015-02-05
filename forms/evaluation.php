@@ -36,7 +36,6 @@ $vpl->print_header(get_string('evaluation',VPL));
 flush();
 $course = $vpl->get_course();
 $instance = $vpl->get_instance();
-$vpl->add_to_log('evaluate', vpl_rel_url('forms/evaluation.php','id',$id,'userid',$userid));
 echo '<h2>'.s(get_string('evaluating',VPL)).'</h2>';
 $userinfo=$DB->get_record('user',array('id' => $userid));
 $text = ' '.$vpl->user_picture($userinfo);

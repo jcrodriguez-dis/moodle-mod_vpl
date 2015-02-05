@@ -48,8 +48,6 @@ $vpl->print_heading_with_help('keepfiles');
 $vpl->print_configure_tabs(basename(__FILE__));
 $course = $vpl->get_course();
 $fgp = $vpl->get_execution_fgm();
-$link = vpl_mod_href('forms/executionkeepfiles.php','id',$id);
-$linkrel = vpl_rel_url('forms/executionkeepfiles.php','id',$id);
 $mform = new mod_vpl_executionkeepfiles_form('executionkeepfiles.php',$fgp);
 if ($fromform=$mform->get_data()){
 	if(isset($fromform->savekeepfiles)){
@@ -63,11 +61,11 @@ if ($fromform=$mform->get_data()){
 			}
 		}
 		$fgp->setFileKeepList($keeplist);
-		$vpl->add_to_log('execution save keeplist', $linkrel);
+		\mod_vpl\event\vpl_execution_keeplist_updated::log($vpl);
 		vpl_notice(get_string('optionssaved',VPL));
 	}
 }
-$vpl->add_to_log('execution keep file form', $linkrel);
+\mod_vpl\event\vpl_execution_keeplist_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();
 ?>

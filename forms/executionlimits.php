@@ -64,12 +64,10 @@ $vpl->print_configure_tabs(basename(__FILE__));
 $course = $vpl->get_course();
 $fgp = $vpl->get_execution_fgm();
 $mform = new mod_vpl_executionlimits_form('executionlimits.php',$vpl);
-$link = vpl_mod_href('forms/executionlimits.php','id',$id);
-$linkrel = vpl_rel_url('forms/executionlimits.php','id',$id);
 if ($fromform=$mform->get_data()){
 	if(isset($fromform->savelimitoptions)){
 		$instance = $vpl->get_instance();
-		$vpl->add_to_log('execution save limits', $linkrel);
+		\mod_vpl\event\vpl_execution_limits_updated::log($vpl);
 		$instance->maxexetime = $fromform->maxexetime;
 		$instance->maxexememory = $fromform->maxexememory;
 		$instance->maxexefilesize = $fromform->maxexefilesize;
@@ -82,7 +80,7 @@ if ($fromform=$mform->get_data()){
 		}
 	}
 }
-$vpl->add_to_log('execution limits form', $linkrel);
+\mod_vpl\event\vpl_execution_limits_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();
 ?>

@@ -71,13 +71,12 @@ $vpl->print_heading_with_help('executionoptions');
 $vpl->print_configure_tabs(basename(__FILE__));
 $course = $vpl->get_course();
 $fgp = $vpl->get_execution_fgm();
+
 $mform = new mod_vpl_executionoptions_form('executionoptions.php',$vpl);
-$link = vpl_mod_href('forms/executionoptions.php','id',$id);
-$linkrel = vpl_rel_url('forms/executionoptions.php','id',$id);
 if ($fromform=$mform->get_data()){
 	if(isset($fromform->saveoptions)){
 		$instance = $vpl->get_instance();
-		$vpl->add_to_log('execution save options', $linkrel);
+		\mod_vpl\event\vpl_execution_options_updated::log($vpl);
 		$instance->basedon = $fromform->basedon;
 		$instance->run = $fromform->run;
 		$instance->debug = $fromform->debug;
@@ -92,7 +91,7 @@ if ($fromform=$mform->get_data()){
 		}
 	}
 }
-$vpl->add_to_log('execution options form', $linkrel);
+\mod_vpl\event\vpl_execution_options_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();
 ?>

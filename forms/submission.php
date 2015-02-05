@@ -74,8 +74,13 @@ if ($fromform=$mform->get_data()){
 		}
 	}
 	$error_message='';
-	if($vpl->add_submission($userid,$files,$fromform->comments,$error_message)){
-		$vpl->add_to_log('submit files',vpl_rel_url('forms/submissionview.php','id',$id,'userid',$userid));
+	if($subid=$vpl->add_submission($userid,$files,$fromform->comments,$error_message)){
+		\mod_vpl\event\submission_uploaded::log(array(
+				'objectid' => $subid,
+				'context' => $vpl->get_context(),
+				'relateduserid' => ($USER->id != $userid?$userid:null)
+		));
+		
 		//if evaluate on submission
 		if($instance->evaluate && $instance->evaluateonsubmission){
 			notice(get_string('saved',VPL),
