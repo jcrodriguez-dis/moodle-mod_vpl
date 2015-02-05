@@ -68,6 +68,13 @@ class mod_vpl_submission {
 	}
 
 	/**
+	 * get vpl object related
+	 * @return object vpl
+	 **/
+	function get_vpl(){
+		return $this->vpl;
+	}
+	/**
 	 * get path to data submission directory
 	 * @return string submission data directory
 	 **/
@@ -158,6 +165,7 @@ class mod_vpl_submission {
 	 **/
 	function delete(){
 		global $DB;
+		\mod_vpl\event\submission_deleted::log($this);
 		vpl_delete_dir($this->get_data_directory());
 		$DB->delete_records('vpl_submissions', array('id' => $this->instance->id));
 	}
