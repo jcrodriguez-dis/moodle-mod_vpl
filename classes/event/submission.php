@@ -25,7 +25,7 @@ class submission extends base {
 		}
 		return $desc;
 	}
-	public function log($submission) {
+	public static function log($submission) {
 		if(is_array($submission)){
 			parent::log($submission);
 		}else{
