@@ -544,7 +544,7 @@ class mod_vpl {
 	 * @param $userid
 	 * @param $data Object with submitted data
 	 * @param & $error string
-	 * @return bool (true if no error
+	 * @return false or submission id
 	 **/
 	function add_submission($userid, & $files, $comments, & $error){
 		global $USER,$DB;
@@ -577,7 +577,7 @@ class mod_vpl {
 			if($last_sub->is_equal_to($files,$submittedby.$comments)){
 				//TODO check for concistence: NOT SAVE but say nothing
 				//$error=get_string('notsaved',VPL)."\n".get_string('fileNotChanged',VPL);
-				return true;
+				return $last_sub_ins->id;
 			} 
 		}
 		ignore_user_abort (true);
@@ -601,7 +601,7 @@ class mod_vpl {
 		if($submittedby == ''){
 			$this->delete_overflow_submissions($userid);
 		}
-		return true;
+		return $submissionid;
 	}
 	
 	/**
@@ -1059,22 +1059,6 @@ class mod_vpl {
 	 */
 	function get_grade(){
 		return $this->instance->grade;
-	}
-
-	/**
-	 * Add log to the log system
-	 *
-	 * @param $action string (view, add, new, update, etc.)
-	 * @param $url relative to module
-	 * @param $info (optional) extra description
-	 **/
-	function add_to_log($action,$url,$info=''){
-		$info = "{$this->get_printable_name()} ".$info;
-		if(strlen($info)>255){
-			$info = substr($info,0,255);
-		}
-		add_to_log($this->get_course()->id,VPL,$action,$url,$info,
-						$this->get_course_module()->id);
 	}
 
 	/**
