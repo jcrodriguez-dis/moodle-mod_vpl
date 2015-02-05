@@ -21,9 +21,14 @@ class mod_vpl_edit{
 	}
 	
 	public static function save($vpl,$userid,$files){
-		if($vpl->add_submission($userid,$files,'',$error_message)){
+		global $USER;
+		if($subid=$vpl->add_submission($userid,$files,'',$error_message)){
 			$id = $vpl->get_course_module()->id;
-			$vpl->add_to_log('submit files',vpl_rel_url('forms/submissionview.php','id',$id,'userid',$userid));
+			\mod_vpl\event\submission_uploaded::log(array(
+    			'objectid' => $subid,
+    			'context' => $vpl->get_context(),
+				'relateduserid' => ($USER->id != $userid?$userid:null)
+			));
 		}else{
 			throw new Exception(get_string('notsaved',VPL).': '.$error_message);
 		}
@@ -63,6 +68,7 @@ class mod_vpl_edit{
 	}
 	
 	public static function execute($vpl,$userid,$action){
+		global $USER;
 		$example = $vpl->get_instance()->example;
 		$lastsub = $vpl->last_user_submission($userid);
 		if(!$lastsub && !$example){
@@ -73,8 +79,12 @@ class mod_vpl_edit{
 		}else{
 			$submission = new mod_vpl_submission_CE($vpl, $lastsub);
 		}
-		$translate = array('run'=>0,'debug'=>1,'evaluate'=>2);
-		return $submission->run($translate[$action]);
+		$code = array('run'=>0,'debug'=>1,'evaluate'=>2);
+		$traslate = array('run'=>'run','debug'=>'debugged','evaluate'=>'evaluated');
+		$eventclass = '\mod_vpl\event\submission_'.$traslate[$action];
+		$acode= $code[$action];
+		$eventclass::log($submission);
+		return $submission->run($acode);
 	}
 	
 	public static function retrieve_result($vpl,$userid){
