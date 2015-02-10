@@ -27,7 +27,14 @@ if [ "$(command -v matlab)" == "" ] ; then
 		exit 0;
 	else
 		cat common_script.sh > vpl_execution
-		cp $MAIN .octaverc
+		cat > .octaverc << "END_SCRIPT"
+can_use_graphics_toolkit =exist("graphics_toolkit","file") | exist("graphics_toolkit","builtin");
+if can_use_graphics_toolkit
+	graphics_toolkit("gnuplot");
+endif
+
+END_SCRIPT
+		cat $MAIN >> .octaverc
 		chmod +x vpl_execution
 		if [ "$X11" == "" ] ; then
 			echo "octave --no-window-system -q" >> vpl_execution
