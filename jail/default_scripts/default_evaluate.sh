@@ -39,9 +39,12 @@ else
 		echo "const int VPL_MAXTIME=$VPL_MAXTIME;" >>vpl_evaluate.cpp
 		cat vpl_evaluate.cpp.save >> vpl_evaluate.cpp
 		check_program g++
-		g++ vpl_evaluate.cpp -g -lm -lutil -o vpl_execution
-		if [ ! -f vpl_execution ] ; then
+		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
+		if [ ! -f .vpl_tester ] ; then
 			echo "Error compiling evaluation program"
+		else
+			echo "#!/bin/bash" >> vpl_execution
+			echo "./.vpl_tester" >> vpl_execution
 		fi
 	else
 		echo "#!/bin/bash" >> vpl_execution
@@ -55,7 +58,7 @@ else
 		echo "echo '--|>'" >> vpl_execution		
 		echo "echo" >> vpl_execution		
 		echo "echo 'Grade :=>>$VPL_GRADEMIN'" >> vpl_execution
-		chmod +x vpl_execution
 	fi
+	chmod +x vpl_execution
 fi
 
