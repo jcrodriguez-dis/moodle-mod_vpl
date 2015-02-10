@@ -428,6 +428,12 @@ class mod_vpl_submission {
     	}else{
     		if($id <= 0){ //Automatic grading
     			$graderuser = new StdClass();
+    			if(function_exists('get_all_user_name_fields')){
+    				$fields=get_all_user_name_fields();
+    				foreach($fields as $name => $value){
+    					$graderuser->$name ='';
+    				}
+    			}
     			$graderuser->firstname = '';
     			$graderuser->lastname = get_string('automaticgrading',VPL);
     		}else{
