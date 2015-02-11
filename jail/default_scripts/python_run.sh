@@ -1,6 +1,6 @@
 #!/bin/bash
 # Default Python language run script for VPL
-# Copyright (C) 2014 onward Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
