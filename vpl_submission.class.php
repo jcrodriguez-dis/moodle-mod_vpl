@@ -2,7 +2,7 @@
 /**
  * @version		$Id: vpl_submission.class.php,v 1.116 2013-06-10 11:13:57 juanca Exp $
  * @package		VPL. Submission class definition
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -67,6 +67,13 @@ class mod_vpl_submission {
 		return $this->instance;
 	}
 
+	/**
+	 * get vpl object related
+	 * @return object vpl
+	 **/
+	function get_vpl(){
+		return $this->vpl;
+	}
 	/**
 	 * get path to data submission directory
 	 * @return string submission data directory
@@ -158,6 +165,7 @@ class mod_vpl_submission {
 	 **/
 	function delete(){
 		global $DB;
+		\mod_vpl\event\submission_deleted::log($this);
 		vpl_delete_dir($this->get_data_directory());
 		$DB->delete_records('vpl_submissions', array('id' => $this->instance->id));
 	}
@@ -420,6 +428,12 @@ class mod_vpl_submission {
     	}else{
     		if($id <= 0){ //Automatic grading
     			$graderuser = new StdClass();
+    			if(function_exists('get_all_user_name_fields')){
+    				$fields=get_all_user_name_fields();
+    				foreach($fields as $name => $value){
+    					$graderuser->$name ='';
+    				}
+    			}
     			$graderuser->firstname = '';
     			$graderuser->lastname = get_string('automaticgrading',VPL);
     		}else{
