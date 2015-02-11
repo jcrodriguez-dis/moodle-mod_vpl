@@ -1,7 +1,6 @@
 #!/bin/bash
-# $Id: default_evaluate.sh,v 1.5 2012-07-25 19:02:21 juanca Exp $
 # Default evaluate script for VPL
-# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
@@ -39,9 +38,12 @@ else
 		echo "const int VPL_MAXTIME=$VPL_MAXTIME;" >>vpl_evaluate.cpp
 		cat vpl_evaluate.cpp.save >> vpl_evaluate.cpp
 		check_program g++
-		g++ vpl_evaluate.cpp -g -lm -lutil -o vpl_execution
-		if [ ! -f vpl_execution ] ; then
+		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
+		if [ ! -f .vpl_tester ] ; then
 			echo "Error compiling evaluation program"
+		else
+			echo "#!/bin/bash" >> vpl_execution
+			echo "./.vpl_tester" >> vpl_execution
 		fi
 	else
 		echo "#!/bin/bash" >> vpl_execution
@@ -55,7 +57,7 @@ else
 		echo "echo '--|>'" >> vpl_execution		
 		echo "echo" >> vpl_execution		
 		echo "echo 'Grade :=>>$VPL_GRADEMIN'" >> vpl_execution
-		chmod +x vpl_execution
 	fi
+	chmod +x vpl_execution
 fi
 
