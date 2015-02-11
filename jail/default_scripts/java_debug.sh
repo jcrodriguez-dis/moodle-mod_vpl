@@ -1,6 +1,6 @@
 #!/bin/bash
 # Default Java language debug script for VPL
-# Copyright (C) 2011 onward Juan Carlos Rodríguez-del-Pino. All rights reserved.
+# Copyright (C) 2011 onwards Juan Carlos Rodríguez-del-Pino. All rights reserved.
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
 

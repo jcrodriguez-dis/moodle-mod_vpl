@@ -1,5 +1,5 @@
 #!/bin/bash
-# Copyright (C) 2011 onward Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2011 onwards Juan Carlos Rodríguez-del-Pino
 # Java language hello source code
 
 cat >vpl_hello.java <<END_OF_FILE
