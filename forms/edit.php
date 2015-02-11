@@ -34,14 +34,6 @@ if(!$vpl->is_visible()){
 if(!$vpl->is_submit_able()){
 	print_error('notavailable');
 }
-$url_log = vpl_rel_url('forms/edit.php','id',$id);
-if($userid){
-	$url_log = vpl_url_add_param($url_log,'userid',$userid);
-}
-if($copy != 0){
-	$url_log = vpl_url_add_param($url_log,'privatecopy',1);
-}
-$vpl->add_to_log('edit submission', $url_log);
 if(!$userid || $userid == $USER->id){//Edit own submission
 	$userid = $USER->id;
 	$vpl->require_capability(VPL_SUBMIT_CAPABILITY);
@@ -92,6 +84,7 @@ if($lastsub){
 	   $files[$filename]=$filedata;
     }
     $CE=$submission->get_CE_for_editor();
+    \mod_vpl\event\submission_edited::log($submission);
 }
 session_write_close();
 if($copy && $grader){
