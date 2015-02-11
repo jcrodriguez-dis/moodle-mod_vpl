@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: diff.php,v 1.9 2012-06-05 23:22:10 juanca Exp $
  * @package		VPL. Show two files diff
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -17,7 +16,6 @@ require_login();
 $id = required_param('id', PARAM_INT);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/diff.php', array('id' => $id));
-$vpl->add_to_log('Diff', vpl_rel_url('similarity/diff.php','id',$id));
 //Print header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header_simple(get_string('diff',VPL));

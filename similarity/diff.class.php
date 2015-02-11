@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: diff.class.php,v 1.4 2013-03-12 16:31:04 juanca Exp $
  * @package		VPL. Class to show two files diff
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -309,6 +308,7 @@ class vpl_diff{
 				}
 				$fg = $submission->get_submitted_fgm();
 				$data = $fg->getFileData($filename);
+				\mod_vpl\event\vpl_diff_viewed::log($submission);
 			}
 		}elseif($type == 2){
 			//FIXME adapt to moodle 2.x

@@ -1,6 +1,5 @@
 <?php
 /**
- * @version		$Id: user_similarity.php,v 1.2 2012-06-05 23:22:10 juanca Exp $
  * @package		VPL. List most similar submission files 
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -25,7 +24,11 @@ $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/user_similarity.php', array('id' => $id,'userid' => $userid));
 
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('view user similarity', vpl_rel_url('css/user_similarity.php','id',$id,'userid',$userid));
+\mod_vpl\event\vpl_user_similarity_report_viewed::log(array(
+		'objectid' => $vpl->get_instance()->id,
+		'context' => context_module::instance($id),
+		'relateduserid' => $userid
+));
 //Print header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
 $vpl->print_header(get_string('listsimilarity',VPL));
