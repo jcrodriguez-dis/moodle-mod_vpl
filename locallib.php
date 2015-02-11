@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: locallib.php,v 1.17 2013-06-10 11:05:16 juanca Exp $
  * @package		VPL. Common functions of VPL
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -423,7 +422,7 @@ function vpl_conv_size_to_string($size){
 		}
 		if($size < $measure[$i+1]){
 			$num = $size / $measure[$i];
-			if($num>=1 && ($size % $measure[$i] <= $measure[$i]/10)){
+			if($num >= 3 || $size % $measure[$i] == 0){
 				return sprintf('%4d %s',$num,$measure_name[$i]);
 			}else{
 				return sprintf('%.2f %s',$num,$measure_name[$i]);
