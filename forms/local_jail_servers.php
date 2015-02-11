@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: local_jail_servers.php,v 1.4 2013-06-10 08:12:32 juanca Exp $
  * @package		VPL. Setjails form
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -40,10 +39,10 @@ $vpl->print_configure_tabs(basename(__FILE__));
 $mform = new mod_vpl_setjails_form('local_jail_servers.php');
 //Display page
 $course = $vpl->get_course();
-$link = vpl_rel_url('local_jail_servers.php','id',$id);
+
 if (!$mform->is_cancelled() && $fromform=$mform->get_data()){
 	if(isset($fromform->jailservers)){
-		$vpl->add_to_log('set jails',vpl_rel_url('forms/local_jail_servers.php','id',$id));
+		\mod_vpl\event\vpl_execution_localjails_updated::log($vpl);
 		$instance = $vpl->get_instance();
 		$instance->jailservers=s($fromform->jailservers);
 		if($DB->update_record(VPL,$instance)){
@@ -61,7 +60,7 @@ $data = new stdClass();
 $data->id = $id;
 $data->jailservers = $vpl->get_instance()->jailservers;
 $mform->set_data($data);
-$vpl->add_to_log('edit jails',$link);
+\mod_vpl\event\vpl_execution_localjails_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();
 

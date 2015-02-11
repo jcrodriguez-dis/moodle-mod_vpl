@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		VPL. Process submission form
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -75,8 +75,13 @@ if ($fromform=$mform->get_data()){
 		}
 	}
 	$error_message='';
-	if($vpl->add_submission($userid,$files,$fromform->comments,$error_message)){
-		$vpl->add_to_log('submit files',vpl_rel_url('forms/submissionview.php','id',$id,'userid',$userid));
+	if($subid=$vpl->add_submission($userid,$files,$fromform->comments,$error_message)){
+		\mod_vpl\event\submission_uploaded::log(array(
+				'objectid' => $subid,
+				'context' => $vpl->get_context(),
+				'relateduserid' => ($USER->id != $userid?$userid:null)
+		));
+		
 		//if evaluate on submission
 		if($instance->evaluate && $instance->evaluateonsubmission){
 			notice(get_string('saved',VPL),

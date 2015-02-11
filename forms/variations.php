@@ -1,7 +1,6 @@
 <?php
 /**
- * @version		$Id: variations.php,v 1.7 2013-06-10 08:16:08 juanca Exp $
- * @package		VPL. Variation definitions form
+ * @package		VPL. onwards Variation definitions form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -74,7 +73,6 @@ vpl_include_jsfile('hideshow.js');
 $vplid= $vpl->get_instance()->id;
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 $href= vpl_mod_href('forms/variations.php','id',$id);
-$vpl->add_to_log('variations form', vpl_rel_url('forms/variations.php','id',$id));
 $vpl->print_header(get_string('variations',VPL));
 $vpl->print_heading_with_help('variations');
 //Generate default form and check for action
@@ -85,6 +83,7 @@ if(optional_param('varid',-13,PARAM_INT)==-13){ //No variation saved
 	}elseif ($fromform=$oform->get_data()){
 		$fromform->id = $vplid;
 		vpl_truncate_string($fromform->variationtitle,255);
+		\mod_vpl\event\vpl_variation_updated::log($vpl);
 		$DB->update_record(VPL,$fromform);
 		vpl_inmediate_redirect($href);
 	}
@@ -99,6 +98,10 @@ if ($mform->is_cancelled()){
 } else if ($fromform=$mform->get_data()){
 	if(isset($fromform->delete)){ //delete variation and its assignned variations to users
 		if($DB->delete_records(VPL_VARIATIONS,array('id' => $fromform->varid,'vpl' => $vplid))){
+			\mod_vpl\event\variation_deleted::log(array(
+					'objectid' => $fromform->varid,
+					'context' => $vpl->get_context(),
+			));
 			$DB->delete_records(VPL_ASSIGNED_VARIATIONS,array('id' => $fromform->varid)); 
 		}
 	}else{
@@ -106,13 +109,22 @@ if ($mform->is_cancelled()){
 				$fromform->vpl = $vplid;
 				unset($fromform->id);
 				vpl_truncate_VARIATIONS($fromform);
-				$DB->insert_record(VPL_VARIATIONS,$fromform);
+				if($vid=$DB->insert_record(VPL_VARIATIONS,$fromform)){
+					\mod_vpl\event\variation_added::log(array(
+							'objectid' => $vid,
+							'context' => $vpl->get_context(),
+					));
+				}
 		}else{ //update record
 			if($DB->get_record(VPL_VARIATIONS,array('id' => $fromform->varid,'vpl' => $vplid))){//Check consistence
 				$fromform->vpl = $vplid;
 				$fromform->id = $fromform->varid;
 				vpl_truncate_VARIATIONS($fromform);
 				$DB->update_record(VPL_VARIATIONS,$fromform);
+				\mod_vpl\event\variation_updated::log(array(
+						'objectid' => $fromform->varid,
+						'context' => $vpl->get_context(),
+				));
 			}else{
 				$vpl->print_header(get_string('variations',VPL));
 				$vpl->print_heading_with_help('variations');

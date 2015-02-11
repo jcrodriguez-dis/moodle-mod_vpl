@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: gradesubmission.php,v 1.25 2013-04-23 11:50:35 juanca Exp $
  * @package		VPL. Grade submission
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -88,7 +87,7 @@ if($subinstance->dategraded== 0 || $subinstance->grader == $USER->id || $subinst
 		if(isset($fromform->removegrade)){
 			vpl_grade_header($vpl,$inpopup);
 			if($submission->remove_grade()){
-				$vpl->add_to_log('remove grade',$linkrel);
+				\mod_vpl\event\submission_grade_deleted::log($submission);
 				if($inpopup){
 					//FIXME don't work
 					//Change grade info at parent window
