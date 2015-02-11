@@ -16,7 +16,7 @@
 
 /**
  * @package		vpl. List all instances in a course
- * @copyright	Copyright (C) 2009-2014 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+ * @copyright	Copyright (C) 2009 onwards Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino
  **/
@@ -37,8 +37,6 @@ if (! $course = $DB->get_record("course", array('id' => $id))) {
 	print_error('invalidcourseid','',$id);
 }
 require_course_login($course);
-
-add_to_log($course->id, VPL, 'view all', "index.php?id=$course->id", '');
 //Load strings
 $burl = vpl_rel_url(basename(__FILE__),'id',$id);
 $strname  				= get_string('name').' '.vpl_list_util::vpl_list_arrow($burl,'name',$instanceselection,$sort,$sortdir);
@@ -55,6 +53,10 @@ $PAGE->set_title($strvpls);
 $PAGE->set_heading($course->fullname);
 echo $OUTPUT->header();
 echo $OUTPUT->heading($strvpls);
+
+$einfo = array('context' => \context_course::instance($course->id));
+$event = \mod_vpl\event\course_module_instance_list_viewed::create($einfo);
+$event->trigger();
 
 //Print selection by instance state
 

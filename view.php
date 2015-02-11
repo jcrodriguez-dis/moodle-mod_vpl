@@ -15,9 +15,8 @@
 // along with VPL.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @version		$Id: view.php,v 1.33 2013-06-10 11:11:25 juanca Exp $
  * @package		VPL. Show a VPL instance
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -35,7 +34,6 @@ $vpl->require_capability(VPL_VIEW_CAPABILITY);
 $id = $vpl->get_course_module()->id;
 $log_url=vpl_rel_url('view.php','id',$id);
 if(!$vpl->is_visible()){
-	$vpl->add_to_log('view', $log_url, "not show");
 	notice(get_string('notavailable'));
 }
 if(!$vpl->has_capability(VPL_MANAGE_CAPABILITY) &&
@@ -46,7 +44,8 @@ if(!$vpl->has_capability(VPL_MANAGE_CAPABILITY) &&
 }else{
 	$userid=optional_param('userid', $USER->id, PARAM_INT);
 }
-$vpl->add_to_log('view', $log_url);
+
+\mod_vpl\event\vpl_description_viewed::log($vpl);
 // Print the page header
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header(get_string('description',VPL));
