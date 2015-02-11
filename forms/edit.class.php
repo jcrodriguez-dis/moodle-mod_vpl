@@ -1,7 +1,7 @@
 <?php
 /**
  * @package		VPL. edit/execute submission class
- * @copyright	2014 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2014 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -21,9 +21,14 @@ class mod_vpl_edit{
 	}
 	
 	public static function save($vpl,$userid,$files){
-		if($vpl->add_submission($userid,$files,'',$error_message)){
+		global $USER;
+		if($subid=$vpl->add_submission($userid,$files,'',$error_message)){
 			$id = $vpl->get_course_module()->id;
-			$vpl->add_to_log('submit files',vpl_rel_url('forms/submissionview.php','id',$id,'userid',$userid));
+			\mod_vpl\event\submission_uploaded::log(array(
+    			'objectid' => $subid,
+    			'context' => $vpl->get_context(),
+				'relateduserid' => ($USER->id != $userid?$userid:null)
+			));
 		}else{
 			throw new Exception(get_string('notsaved',VPL).': '.$error_message);
 		}
