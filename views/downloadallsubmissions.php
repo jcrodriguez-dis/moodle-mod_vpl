@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: downloadallsubmissions.php,v 1.2 2013-06-13 17:31:46 juanca Exp $
  * @package		VPL. Download all submissions of an activity in zip file
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -55,7 +54,7 @@ $subselection = vpl_get_set_session_var('subselection','allsubmissions','selecti
 $vpl = new mod_vpl($id);
 $cm = $vpl->get_course_module();
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-$vpl->add_to_log('Download all submissions', vpl_rel_url('views/downloadallsubmissions.php','id',$id), $vpl->get_printable_name());
+\mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);
 //get students
 $currentgroup = groups_get_activity_group($cm);
 if(!$currentgroup){
