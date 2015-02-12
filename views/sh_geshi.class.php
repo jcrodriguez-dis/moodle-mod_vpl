@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: sh_text.class.php,v 1.18 2013-04-22 14:12:38 juanca Exp $
- * @package		vpl. vpl Syntaxhighlighters base class
- * @copyright	Copyright (C) 2009 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+ * @package		VPL. Syntaxhighlighters adapter for Geshi
+ * @copyright	2014 onwards Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino
  **/
@@ -82,7 +81,7 @@ class vpl_sh_geshi extends vpl_sh_base{
 			$ret .= '<a name="'.$name.'"></a>';
 			$ret .= sprintf('%5d',$line);
 			$ret .= ' </span>';
-			return $ret.'<span '.$found[0];
+			return $ret.'<span ';
 		};
 		$code='<pre class="vpl_sh vpl_g">';
 		$code .='<span syntax="'.$lang.'"';
