@@ -270,14 +270,19 @@ class file_group_process{
 	 **/
 	function print_files($if_no_exist=true){
 		global $OUTPUT;
+		$timeout = time() + 10; 
 		$filenames = $this->getFileList();
 		foreach ($filenames as $name) {
 			if(file_exists($this->dir.self::encodeFileName($name))){
 				echo '<h3>'.s($name).'</h3>';
-				$printer= vpl_sh_factory::get_sh($name);
 				echo $OUTPUT->box_start();
-				$data = $this->getFileData($name);
-				$printer->print_file($name,$data);
+				if(time()<$timeout){
+					$printer= vpl_sh_factory::get_sh($name);
+					$data = $this->getFileData($name);
+					$printer->print_file($name,$data);
+				}else{
+					echo "[...]";
+				}
 				echo $OUTPUT->box_end();
 			}elseif($if_no_exist){
 				echo '<h3>'.s($name).'</h3>';
