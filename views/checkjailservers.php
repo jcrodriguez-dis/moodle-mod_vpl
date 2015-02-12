@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: checkjailservers.php,v 1.3 2012-06-05 23:22:09 juanca Exp $
  * @package		VPL. Check jail servers
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -24,6 +23,7 @@ $course = $vpl->get_course();
 $vpl->print_header(get_string('check_jail_servers',VPL));
 $vpl->print_heading_with_help('check_jail_servers');
 $vpl->print_configure_tabs(basename(__FILE__));
+\mod_vpl\event\vpl_jail_servers_tested::log($vpl);
 $servers = vpl_jailserver_manager::check_servers($vpl->get_instance()->jailservers);
 $table = new html_table();
 $table->head  = array ('#', 
