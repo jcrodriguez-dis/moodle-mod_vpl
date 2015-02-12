@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: sh_matlab.class.php,v 1.3 2013-04-22 14:16:13 juanca Exp $
  * @package		VPL. Syntaxhighlighter for MATLab language
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */

@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: sh_sh.class.php,v 1.6 2012-06-05 23:22:08 juanca Exp $
- * @package		vpl. vpl Syntaxhighlighter for sh scripts
- * @copyright	Copyright (C) 2009 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+ * @package		VPL. Syntaxhighlighter for sh scripts
+ * @copyright	2009 onwards Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino
  **/
