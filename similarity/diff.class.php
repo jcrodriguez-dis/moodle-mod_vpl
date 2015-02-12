@@ -10,7 +10,7 @@ require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../vpl_submission.class.php';
-require_once dirname(__FILE__).'/../views/sh_base.class.php';
+require_once dirname(__FILE__).'/../views/sh_text.class.php';
 require_once dirname(__FILE__).'/similarity_factory.class.php';
 require_once dirname(__FILE__).'/similarity_base.class.php';
 class vpl_diff{
@@ -255,7 +255,7 @@ class vpl_diff{
 		echo '<div style="clear:both;"></div>';
 		//Files
 		echo '<div style="float:left; text-align: right">';
-		echo '<pre class="'.vpl_sh_base::c_general.'">';
+		echo '<pre class="'.vpl_sh_text::c_general.'">';
 		echo $datal1;
 		echo '</pre>';
 		echo '</div>';
@@ -264,12 +264,12 @@ class vpl_diff{
 		$shower->print_file($filename1,$data1,false);
 		echo '</div>';
 		echo '<div style="float:left">';
-		echo '<pre class="'.vpl_sh_base::c_general.'">';
+		echo '<pre class="'.vpl_sh_text::c_general.'">';
 		echo $diffl;
 		echo '</pre>';
 		echo '</div>';
 		echo '<div style="float:left; text-align: right;">';
-		echo '<pre class="'.vpl_sh_base::c_general.'">';
+		echo '<pre class="'.vpl_sh_text::c_general.'">';
 		echo $datal2;
 		echo '</pre>';
 		echo '</div>';
