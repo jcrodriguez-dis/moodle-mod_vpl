@@ -1,8 +1,7 @@
 <?php
 /**
- * @version		$Id: submissionslist.php,v 1.24 2013-06-11 18:32:46 juanca Exp $
  * @package		VPL. List student submissions of a VPL instances
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -160,7 +159,7 @@ $course = $vpl->get_course();
 $cm = $vpl->get_course_module();
 $context_module = $vpl->get_context();
 $vpl->require_capability(VPL_GRADE_CAPABILITY);
-$vpl->add_to_log('view all submissions'.($evaluate>0?'(evaluate)':''), vpl_rel_url('views/submissionslist.php','id',$id), $vpl->get_printable_name());
+\mod_vpl\event\vpl_all_submissions_viewed::log($vpl);
 //Print header
 $vpl->print_header(get_string('submissionslist',VPL));
 $vpl->print_view_tabs(basename(__FILE__));
