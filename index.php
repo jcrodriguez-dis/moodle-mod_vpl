@@ -15,7 +15,7 @@
 // along with VPL.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package		vpl. List all instances in a course
+ * @package mod_vpl. List all instances in a course
  * @copyright	Copyright (C) 2009-2014 Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino

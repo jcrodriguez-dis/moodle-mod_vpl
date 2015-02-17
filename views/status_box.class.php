@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: status_box.class.php,v 1.5 2012-07-26 18:38:27 juanca Exp $
- * @package		VPL. class to show a process status in a box
+ * @package mod_vpl. class to show a process status in a box
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

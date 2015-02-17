@@ -1,6 +1,6 @@
 <?php
 /**
- * @package		VPL. Class for logging of variation added events
+ * @package mod_vpl. Class for logging of variation added events
  * @copyright	2014 onwards Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

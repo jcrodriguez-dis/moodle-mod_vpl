@@ -11,4 +11,3 @@ VPL - Virtual Programming Lab for Moodle 2
    This software is provided "AS IS" without a warranty of any kind.
 
    For more detail access the web site http://vpl.dis.ulpgc.es
-   

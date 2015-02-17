@@ -1,7 +1,7 @@
 <?php 
 /**
  * @version		$Id: previoussubmissionslist.php,v 1.8 2012-06-05 23:22:08 juanca Exp $
- * @package		VPL. List previous submissions for a vpl and user
+ * @package mod_vpl. List previous submissions for a vpl and user
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

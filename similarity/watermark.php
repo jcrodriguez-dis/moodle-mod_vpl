@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: watermark.php,v 1.3 2012-06-05 23:22:11 juanca Exp $
- * @package		VPL. class to process watermark
+ * @package mod_vpl. class to process watermark
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

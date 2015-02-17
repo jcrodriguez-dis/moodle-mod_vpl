@@ -1,6 +1,6 @@
 <?php
 /**
- * @package		VPL. Show URL to web service with token
+ * @package mod_vpl. Show URL to web service with token
  * @copyright	2014 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

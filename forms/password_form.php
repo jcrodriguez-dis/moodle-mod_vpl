@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: password_form.php,v 1.8 2013-06-10 08:13:15 juanca Exp $
- * @package		VPL. Get password to access form
+ * @package mod_vpl. Get password to access form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

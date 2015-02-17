@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: locallib.php,v 1.17 2013-06-10 11:05:16 juanca Exp $
- * @package		VPL. Common functions of VPL
+ * @package mod_vpl. Common functions of VPL
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

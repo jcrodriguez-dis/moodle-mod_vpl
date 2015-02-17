@@ -1,7 +1,7 @@
 <?php 
 /**
  * @version		$Id: submissionsgraph.php,v 1.3 2012-07-25 19:03:46 juanca Exp $
- * @package		VPL. Graph submissions statistics for a vpl instance and a user
+ * @package mod_vpl. Graph submissions statistics for a vpl instance and a user
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

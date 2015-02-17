@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: testcasesfile.php,v 1.3 2013-06-10 08:15:42 juanca Exp $
- * @package		VPL. Edit test cases' file
+ * @package mod_vpl. Edit test cases' file
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: sh_java.class.php,v 1.7 2012-06-05 23:22:09 juanca Exp $
- * @package		VPL. Syntaxhighlighter for Java language
+ * @package mod_vpl. Syntaxhighlighter for Java language
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -12,7 +12,7 @@
  *
  * @author  Juan Carlos Rodriguez del Pino
  * @version $Id: sh_java.class.php,v 1.7 2012-06-05 23:22:09 juanca Exp $
- * @package vpl
+ * @package mod_vpl
  **/
 
 require_once dirname(__FILE__).'/sh_c.class.php';

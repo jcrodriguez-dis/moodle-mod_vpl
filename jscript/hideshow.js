@@ -1,6 +1,6 @@
 /**
  * @version		$Id: hideshow.js,v 1.3 2012-06-19 10:47:01 juanca Exp $
- * @package		vpl. JavaScript function to show hide div
+ * @package mod_vpl. JavaScript function to show hide div
  * @copyright	Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino

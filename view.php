@@ -15,7 +15,7 @@
 // along with VPL.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package		VPL. Show a VPL instance
+ * @package mod_vpl. Show a VPL instance
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

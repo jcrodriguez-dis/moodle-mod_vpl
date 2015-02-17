@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: mod_form.php,v 1.30 2013-06-10 11:06:25 juanca Exp $
- * @package		VPL. vpl instance form
+ * @package mod_vpl. vpl instance form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

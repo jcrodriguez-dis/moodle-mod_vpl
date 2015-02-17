@@ -1,7 +1,7 @@
 <?php 
 /**
  * @version		$Id: show_hide_div.class.php,v 1.4 2012-06-05 23:22:09 juanca Exp $
- * @package		VPL. Show/hide HTML div
+ * @package mod_vpl. Show/hide HTML div
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

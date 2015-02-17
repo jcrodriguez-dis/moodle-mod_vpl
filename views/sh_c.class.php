@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: sh_c.class.php,v 1.14 2012-06-05 23:22:09 juanca Exp $
- * @package		VPL. Syntaxhighlighter for C language
+ * @package mod_vpl. Syntaxhighlighter for C language
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

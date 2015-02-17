@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: edit_process.php,v 1.8 2013-04-16 17:45:40 juanca Exp $
- * @package		VPL. process submission edit
+ * @package mod_vpl. process submission edit
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

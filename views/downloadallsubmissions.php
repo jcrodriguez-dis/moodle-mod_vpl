@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: downloadallsubmissions.php,v 1.2 2013-06-13 17:31:46 juanca Exp $
- * @package		VPL. Download all submissions of an activity in zip file
+ * @package mod_vpl. Download all submissions of an activity in zip file
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: tokenizer_scala.class.php,v 1.2 2013-06-11 18:31:10 juanca Exp $
- * @package		VPL. Scala programing language tokenizer class
+ * @package mod_vpl. Scala programing language tokenizer class
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Lang Michael <michael.lang.ima10@fh-joanneum.at>
  * @author		Lückl Bernd <bernd.lueckl.ima10@fh-joanneum.at>

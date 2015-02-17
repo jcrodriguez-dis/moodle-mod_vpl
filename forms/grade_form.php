@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: grade_form.php,v 1.27 2013-07-09 13:30:03 juanca Exp $
- * @package		VPL. Grade form definition
+ * @package mod_vpl. Grade form definition
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

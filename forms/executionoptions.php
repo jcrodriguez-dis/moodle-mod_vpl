@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: executionoptions.php,v 1.10 2013-06-10 08:11:31 juanca Exp $
- * @package		VPL. Execution options form
+ * @package mod_vpl. Execution options form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

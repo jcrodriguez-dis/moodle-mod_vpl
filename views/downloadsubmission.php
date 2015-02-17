@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: downloadsubmission.php,v 1.15 2012-06-05 23:22:09 juanca Exp $
- * @package		VPL. Download submission in zip file
+ * @package mod_vpl. Download submission in zip file
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

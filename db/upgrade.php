@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: upgrade.php,v 1.13 2012-10-04 11:01:36 juanca Exp $
- * @package		VPL
+ * @package mod_vpl
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

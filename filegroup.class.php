@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: filegroup.class.php,v 1.19 2013-04-17 10:18:53 juanca Exp $
- * @package		VPL. class to edit a group of files
+ * @package mod_vpl. class to edit a group of files
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

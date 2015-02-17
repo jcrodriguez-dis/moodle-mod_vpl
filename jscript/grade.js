@@ -1,6 +1,6 @@
 /**
  * @version		$Id: grade.js,v 1.6 2012-06-19 10:47:01 juanca Exp $
- * @package		VPL. JavaScript functions to help grade form
+ * @package mod_vpl. JavaScript functions to help grade form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

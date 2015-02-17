@@ -1,7 +1,7 @@
 <?php 
 /**
  * @version		$Id: workinggraph.php,v 1.3 2013-06-11 18:33:27 juanca Exp $
- * @package		VPL. Graph working time for a vpl instance and/or a user
+ * @package mod_vpl. Graph working time for a vpl instance and/or a user
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

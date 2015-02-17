@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: similarity_form.class.php,v 1.15 2013-06-10 08:30:21 juanca Exp $
- * @package		VPL. Similarity form class
+ * @package mod_vpl. Similarity form class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

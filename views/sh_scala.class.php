@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: sh_scala.class.php,v 1.2 2013-06-21 16:06:26 juanca Exp $
- * @package		VPL. Syntaxhighlighter for Scala language
+ * @package mod_vpl. Syntaxhighlighter for Scala language
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Lang Michael <michael.lang.ima10@fh-joanneum.at>

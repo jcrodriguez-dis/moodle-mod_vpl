@@ -1,7 +1,7 @@
 <?php 
 /**
  * @version		$Id: settings.php,v 1.26 2012-09-24 15:16:36 juanca Exp $
- * @package		VPL. Module common settings
+ * @package mod_vpl. Module common settings
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

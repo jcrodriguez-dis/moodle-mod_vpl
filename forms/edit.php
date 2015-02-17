@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: edit.php,v 1.9 2013-06-07 15:59:14 juanca Exp $
- * @package		VPL. submission edit
+ * @package mod_vpl. submission edit
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

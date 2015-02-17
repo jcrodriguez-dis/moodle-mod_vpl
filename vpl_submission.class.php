@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: vpl_submission.class.php,v 1.116 2013-06-10 11:13:57 juanca Exp $
- * @package		VPL. Submission class definition
+ * @package mod_vpl. Submission class definition
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

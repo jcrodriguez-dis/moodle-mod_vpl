@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: similarity_base.class.php,v 1.26 2013-06-13 17:33:22 juanca Exp $
- * @package		VPL. Similarity base and utility class
+ * @package mod_vpl. Similarity base and utility class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

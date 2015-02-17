@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: variations.php,v 1.7 2013-06-10 08:16:08 juanca Exp $
- * @package		VPL. Variation definitions form
+ * @package mod_vpl. Variation definitions form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

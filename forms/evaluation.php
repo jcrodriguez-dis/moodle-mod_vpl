@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: evaluation.php,v 1.15 2013-04-18 16:14:43 juanca Exp $
- * @package		VPL. submission evaluation
+ * @package mod_vpl. submission evaluation
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

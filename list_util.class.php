@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: list_util.class.php,v 1.5 2013-06-11 18:35:23 juanca Exp $
- * @package		VPL. List utility class
+ * @package mod_vpl. List utility class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

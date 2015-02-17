@@ -1,6 +1,6 @@
 <?php
 /**
- * @package		vpl. vpl Syntaxhighlighters for binary files
+ * @package mod_vpl. vpl Syntaxhighlighters for binary files
  * @copyright	Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license		GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
  * @author		Juan Carlos Rodriguez-del-Pino

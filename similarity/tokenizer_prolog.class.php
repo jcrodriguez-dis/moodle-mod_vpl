@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: tokenizer_prolog.class.php,v 1.3 2013-04-22 14:09:26 juanca Exp $
- * @package		VPL. Prolog programing language tokenizer class
+ * @package mod_vpl. Prolog programing language tokenizer class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

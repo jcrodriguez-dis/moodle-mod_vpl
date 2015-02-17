@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: tokenizer_scheme.class.php,v 1.2 2012-06-05 23:22:10 juanca Exp $
- * @package		VPL. Scheme programing language tokenizer class
+ * @package mod_vpl. Scheme programing language tokenizer class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

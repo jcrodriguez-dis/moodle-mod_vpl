@@ -3,7 +3,7 @@
  * Execute post-uninstall custom actions for VPL
  * 
  * @version		$Id: uninstall.php,v 1.1 2012-06-05 23:22:05 juanca Exp $
- * @package		VPL
+ * @package mod_vpl
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

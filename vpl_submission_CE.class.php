@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: vpl_submission_CE.class.php,v 1.35 2013-07-09 13:32:41 juanca Exp $
- * @package		VPL. submission Compilation Execution class definition
+ * @package mod_vpl. submission Compilation Execution class definition
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

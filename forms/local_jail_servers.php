@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: local_jail_servers.php,v 1.4 2013-06-10 08:12:32 juanca Exp $
- * @package		VPL. Setjails form
+ * @package mod_vpl. Setjails form
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

@@ -1,6 +1,6 @@
 <?php
 /**
- * @package		VPL. web service definition
+ * @package mod_vpl. web service definition
  * @copyright	2014 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

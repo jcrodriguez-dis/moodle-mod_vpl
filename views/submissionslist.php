@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: submissionslist.php,v 1.24 2013-06-11 18:32:46 juanca Exp $
- * @package		VPL. List student submissions of a VPL instances
+ * @package mod_vpl. List student submissions of a VPL instances
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

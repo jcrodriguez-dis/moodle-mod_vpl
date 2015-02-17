@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: grade.php,v 1.9 2013-06-10 10:48:54 juanca Exp $
- * @package		VPL. Redirect grade.php
+ * @package mod_vpl. Redirect grade.php
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

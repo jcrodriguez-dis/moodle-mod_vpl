@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: sh_prolog.class.php,v 1.4 2013-06-10 10:46:10 juanca Exp $
- * @package		VPL. Syntaxhighlighter for Prolog language
+ * @package mod_vpl. Syntaxhighlighter for Prolog language
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

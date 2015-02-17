@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: tokenizer_base.class.php,v 1.9 2013-04-22 14:07:36 juanca Exp $
- * @package		VPL. Programing language tokenizer base class
+ * @package mod_vpl. Programing language tokenizer base class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: executionfiles.php,v 1.13 2013-06-10 08:08:21 juanca Exp $
- * @package		VPL. set executions files
+ * @package mod_vpl. set executions files
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

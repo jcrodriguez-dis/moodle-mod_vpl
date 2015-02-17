@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: submissionview.php,v 1.11 2013-06-10 08:18:06 juanca Exp $
- * @package		VPL. View a submission
+ * @package mod_vpl. View a submission
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

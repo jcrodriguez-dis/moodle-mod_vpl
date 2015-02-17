@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: sh_ada.class.php,v 1.11 2012-06-05 23:22:08 juanca Exp $
- * @package		VPL. Syntaxhighlighter for ADA95 language
+ * @package mod_vpl. Syntaxhighlighter for ADA95 language
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

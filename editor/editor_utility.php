@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: editor_utility.php,v 1.8 2013-04-16 17:40:10 juanca Exp $
- * @package		VPL. editor utility functions
+ * @package mod_vpl. editor utility functions
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

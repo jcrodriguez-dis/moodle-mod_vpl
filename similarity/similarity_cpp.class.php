@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: similarity_cpp.class.php,v 1.7 2013-06-11 18:28:29 juanca Exp $
- * @package		VPL. C++ language similarity class
+ * @package mod_vpl. C++ language similarity class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

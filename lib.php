@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: lib.php,v 1.77 2013-06-13 17:29:35 juanca Exp $
- * @package		VPL. Functions to coordinate with moodle
+ * @package mod_vpl. Functions to coordinate with moodle
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

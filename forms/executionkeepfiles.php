@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: executionkeepfiles.php,v 1.7 2013-06-10 08:10:14 juanca Exp $
- * @package		VPL. form to set files to keep while execution
+ * @package mod_vpl. form to set files to keep while execution
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

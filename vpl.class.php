@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: vpl.class.php,v 1.94 2013-07-11 10:28:28 juanca Exp $
- * @package		VPL. vpl class definition
+ * @package mod_vpl. vpl class definition
  * @copyright	2013 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

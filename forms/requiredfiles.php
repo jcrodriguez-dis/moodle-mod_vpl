@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: requiredfiles.php,v 1.2 2013-06-10 08:15:42 juanca Exp $
- * @package		VPL
+ * @package mod_vpl
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

@@ -1,7 +1,7 @@
 <?php
 /**
  * @version		$Id: similarity_python.class.php,v 1.2 2013-06-11 18:31:10 juanca Exp $
- * @package		VPL. Python language similarity class
+ * @package mod_vpl. Python language similarity class
  * @copyright	2012 Juan Carlos Rodríguez-del-Pino
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Lang Michael <michael.lang.ima10@fh-joanneum.at>
