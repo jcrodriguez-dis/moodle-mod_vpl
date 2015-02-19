@@ -98,7 +98,7 @@ class vpl_sh_geshi extends vpl_sh_base{
             $ret .= '<a name="'.$name.'"></a>';
             $ret .= sprintf('%5d',$line);
             $ret .= ' </span>';
-            return $ret.'<span '.$found[0];
+            return $ret.'<span ';
         };
         $code='<pre class="vpl_sh vpl_g">';
         $code .='<span syntax="'.$lang.'"';
