@@ -18,8 +18,8 @@
  * List all VPL instances in a course
  *
  * @package mod_vpl
- * @copyright Copyright (C) 2009-2014 Juan Carlos Rodríguez-del-Pino. All rights reserved.
- * @license GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
+ * @copyright 2009 onwards Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodriguez-del-Pino
  **/
 
