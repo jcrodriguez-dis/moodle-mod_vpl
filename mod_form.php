@@ -14,6 +14,7 @@ require_once dirname(__FILE__).'/vpl.class.php';
 class mod_vpl_mod_form extends moodleform_mod {
 	function definition(){
 		global $CFG;
+		$plugincfg = get_config('mod_vpl');
 		$mform = & $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // name
@@ -52,8 +53,8 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault('example', false);
         $mform->setAdvanced('example');
         $max = vpl_get_max_post_size();
-		if($CFG->vpl_maxfilesize > 0 && $CFG->vpl_maxfilesize < $max){
-			$max = $CFG->vpl_maxfilesize;
+		if($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max){
+			$max = $plugincfg->maxfilesize;
 		}
         $mform->addElement('select', 'maxfilesize', get_string('maxfilesize',VPL),
         					vpl_get_select_sizes(16*1024,$max));

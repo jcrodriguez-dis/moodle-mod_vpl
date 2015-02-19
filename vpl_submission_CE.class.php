@@ -41,14 +41,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 							'r' => 'r',
 							'rb' => 'ruby', 'ruby' => 'ruby');
 	private static $script_name=array('vpl_run.sh'=>'run','vpl_debug.sh'=>'debug','vpl_evaluate.sh'=>'evaluate');
-	
+
 	private static $script_type=array('vpl_run.sh'=>0,'vpl_debug.sh'=>1,'vpl_evaluate.sh'=>2,'vpl_evaluate.cases'=>2);
 	private static $script_list=array(0=>'vpl_run.sh',1=>'vpl_debug.sh',2=>'vpl_evaluate.sh');
-	
+
 	const trun=0;
 	const tdebug=1;
 	const tevaluate=2;
-	
+
 	/**
 	 * Constructor
 	 * @param $vpl object vpl instance
@@ -57,15 +57,15 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 	function __construct($vpl, $mix) {
 		parent::__construct($vpl, $mix);
 	}
-	
+
 	/**
 	 * Return the programming language name based on submitted files extensions
 	 * @param $filelist array of files submitted to check type
-	 * @return programming language name 
+	 * @return programming language name
 	 */
 	function get_pln($filelist){
 		foreach($filelist as $checkfilename){
-			$ext = pathinfo($checkfilename,PATHINFO_EXTENSION); 
+			$ext = pathinfo($checkfilename,PATHINFO_EXTENSION);
 			if(isset(mod_vpl_submission_CE::$language_ext[$ext])){
 				return mod_vpl_submission_CE::$language_ext[$ext];
 			}
@@ -74,10 +74,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 	}
 
 	/**
-	 * Return the default script to manage the action and detected language 
+	 * Return the default script to manage the action and detected language
 	 * @param $script 'vpl_run.sh','vpl_debug.sh' o 'vpl_evaluate.sh'
 	 * @param $pln Programming Language Name
-	 * @return array key=>filename value =>filedata 
+	 * @return array key=>filename value =>filedata
 	 */
 	function get_default_script($script,$pln){
 		$ret = array();
@@ -117,6 +117,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		}
 		$call = count($already);
 		$already[$vpl_instance->id]=true;
+		$plugincfg = get_config('mod_vpl');
 		//Load basedon files if needed
 		if($vpl_instance->basedon){
 			$basedon = new mod_vpl(null,$vpl_instance->basedon);
@@ -125,17 +126,17 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 			$data=new stdClass();
 			$data->files = array();
 			$data->filestodelete = array();
-			$data->maxtime = (int)$CFG->vpl_defaultexetime;
-			$data->maxfilesize = (int)$CFG->vpl_defaultexefilesize;
-			$data->maxmemory = (int)$CFG->vpl_defaultexememory;
-			$data->maxprocesses = (int)$CFG->vpl_defaultexeprocesses;
+			$data->maxtime = (int)$plugincfg->defaultexetime;
+			$data->maxfilesize = (int)$plugincfg->defaultexefilesize;
+			$data->maxmemory = (int)$plugincfg->defaultexememory;
+			$data->maxprocesses = (int)$plugincfg->defaultexeprocesses;
 			$data->jailservers = '';
 		}
 		//Execution files
 		$sfg = $vpl->get_execution_fgm();
 		$list = $sfg->getFileList();
 		foreach ($list as $filename){
-			//Skip unneeded script 
+			//Skip unneeded script
 			if(isset(self::$script_type[$filename]) &&
 				self::$script_type[$filename]> $type){
 				continue;
@@ -152,7 +153,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		foreach ($deletelist as $filename){
 			unset($data->filestodelete[$filename]);
 		}
-	
+
 		if($vpl_instance->maxexetime){
 			$data->maxtime=(int)$vpl_instance->maxexetime;
 		}
@@ -169,7 +170,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		if($vpl->get_instance()->jailservers>''){
 			$data->jailservers .= "\n".$vpl->get_instance()->jailservers;
 		}
-		
+
 		if($call >0 ){ //Stop if at recursive call
 			return $data;
 		}
@@ -196,10 +197,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 			}
 		}
 		//Limit resource to maximum
-		$data->maxtime = min($data->maxtime,(int)$CFG->vpl_maxexetime);
-		$data->maxfilesize = min($data->maxfilesize,(int)$CFG->vpl_maxexefilesize);
-		$data->maxmemory = min($data->maxmemory,(int)$CFG->vpl_maxexememory);
-		$data->maxprocesses = min($data->maxprocesses,(int)$CFG->vpl_maxexeprocesses);
+		$data->maxtime = min($data->maxtime,(int)$plugincfg->maxexetime);
+		$data->maxfilesize = min($data->maxfilesize,(int)$plugincfg->maxexefilesize);
+		$data->maxmemory = min($data->maxmemory,(int)$plugincfg->maxexememory);
+		$data->maxprocesses = min($data->maxprocesses,(int)$plugincfg->maxexeprocesses);
 		//Info send with script
 		$info ="#!/bin/bash\n";
 		$info .='export VPL_LANG='.vpl_get_lang(true)."\n";
@@ -232,7 +233,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 			$script = mod_vpl_submission_CE::$script_list[$i];
 			if(isset($data->files[$script]) && trim($data->files[$script])>''){
 				if(substr($data->files[$script], 0, 2) != '#!'){
-					//No shebang => add bash 
+					//No shebang => add bash
 					$data->files[$script]="#!/bin/bash\n".$data->files[$script];
 				}
 			}else{
@@ -248,7 +249,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		//Add script file with VPL environment information
 		$data->files['vpl_environment.sh']=$info;
 		$data->files['common_script.sh'] = file_get_contents(dirname(__FILE__).'/jail/default_scripts/common_script.sh');
-		
+
 		//TODO change jail server to avoid this patch
 		if(count($data->filestodelete)==0){ //If keeping all files => add dummy
 			$data->filestodelete['__vpl_to_delete__']=1;
@@ -271,7 +272,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		}
 		return $response;
 	}
-	
+
 	function jailRequestAction($data,$maxmemory,$localservers,&$server){
 		$error='';
 		$server = vpl_jailserver_manager::get_server($maxmemory, $localservers,$error);
@@ -285,7 +286,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
 		}
 		return $this->jailAction($server,'request',$data);
 	}
-	
+
 	function jailReaction($action, $process_info=false){
 		if($process_info === false){
 	    	$process_info=vpl_running_processes::get($this->get_instance()->userid);
@@ -298,7 +299,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
    		$data->adminticket=$process_info->adminticket;
 		return $this->jailAction($server,$action,$data);
 	}
-	
+
 	/**
 	 * Run, debug, evaluate
 	 * @param int $type (0=run, 1=debug, evaluate=2)

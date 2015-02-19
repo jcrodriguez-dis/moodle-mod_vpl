@@ -6,7 +6,7 @@
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/*********** DOCUMENTATION ************ 
+/*********** DOCUMENTATION ************
 * WARNING *
   You need to add manually to the URL of this script
 the id of one VPL activity to be tested
@@ -26,7 +26,7 @@ To be available in a Moodle server, need be enabled:
 will appear a  link to "Web service". Clicking this link will be
 shown a page that gives us a URL to the VPL web service. This
 URL must be copy and paste into the client by the user. This URL
-content the token and the id of the VPL activity to be accessed. 
+content the token and the id of the VPL activity to be accessed.
 
 * DEVELOPMENT OF WEB SERVICE CLIENTS *
   The service has been developed using the web service API of Moodle.
@@ -63,6 +63,7 @@ function vpl_call_service($url,$fun,$request=''){
 	if(!function_exists('curl_init')){
 		throw new Exception('PHP cURL requiered');
 	}
+	$plugincfg = get_config('mod_vpl');
 	$ch = curl_init();
 	curl_setopt($ch, CURLOPT_URL, $url.$fun);
 	curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -70,7 +71,7 @@ function vpl_call_service($url,$fun,$request=''){
 	//curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
 	curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
 	curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-	if( @$CFG->vpl_acceptcertificates )
+	if( @$plugincfg->acceptcertificates )
 		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 	$raw_response=curl_exec($ch);
 	if($raw_response === false){

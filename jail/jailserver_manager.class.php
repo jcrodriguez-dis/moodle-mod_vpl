@@ -21,6 +21,7 @@ class vpl_jailserver_manager{
 		if(!function_exists('curl_init')){
 			throw new Exception('PHP cURL requiered');
 		}
+		$plugincfg = get_config('mod_vpl');
 		$ch = curl_init();
 		curl_setopt($ch, CURLOPT_URL, $server);
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
@@ -30,7 +31,7 @@ class vpl_jailserver_manager{
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
 		IF($fresh)
 			curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-		if( @$CFG->vpl_acceptcertificates )
+		if( @$plugincfg->acceptcertificates )
 			curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 		return $ch;
 	}
@@ -56,7 +57,7 @@ class vpl_jailserver_manager{
 				$error = 'http error '.s(strip_tags($raw_response));
 				$fail = true;
 			}
-			return false;				
+			return false;
 		}
 	}
 	/**
@@ -103,7 +104,7 @@ class vpl_jailserver_manager{
 			$DB->insert_record(self::table,$info);
 		}
 	}
-	
+
 	/**
 	 * Return the defined server list
 	 * @param string $localserverlisttext='' List of local server in text
@@ -111,10 +112,11 @@ class vpl_jailserver_manager{
 	 */
 	static function get_server_list($localserverlisttext){
 		global $CFG;
+		$plugincfg = get_config('mod_vpl');
 		$nl_local = vpl_detect_newline($localserverlisttext);
-		$nl_global = vpl_detect_newline($CFG->vpl_jail_servers);
+		$nl_global = vpl_detect_newline($plugincfg->jail_servers);
 		$tempserverlist = array_merge(explode($nl_local,$localserverlisttext),
-									explode($nl_global,$CFG->vpl_jail_servers));
+									explode($nl_global,$plugincfg->jail_servers));
 		$serverlist = array();
 		//Clean temp server list and search for 'end_of_jails'
 		foreach ($tempserverlist as $server) {
@@ -182,7 +184,7 @@ class vpl_jailserver_manager{
 	}
 
 	/**
-	 * Check if a server is located in a private network 
+	 * Check if a server is located in a private network
 	 * @return true == private
 	 */
 	static function is_private_host($URL){
@@ -199,8 +201,8 @@ class vpl_jailserver_manager{
 		}
 		return true;
 	}
-	
-	
+
+
 	/**
 	 * Clear servers table and check for every one again
 	 * @return array of server object with info about server status
@@ -234,7 +236,7 @@ class vpl_jailserver_manager{
 			$info->current_status=$status;
 			$info->offline = $response === false;
 			if(self::is_private_host($server)){
-				//TODO implement other way to warning 
+				//TODO implement other way to warning
 				$info->server = '[private] '.$info->server;
 			}
 			$feedback[]=$info;

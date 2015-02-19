@@ -358,10 +358,10 @@ class mod_vpl {
 	 * @return int
 	 **/
 	function get_maxfilesize(){
-		global $CFG;
+		$plugincfg = get_config('mod_vpl');
 		$max = vpl_get_max_post_size();
-		if($CFG->vpl_maxfilesize > 0 && $CFG->vpl_maxfilesize < $max){
-			$max = $CFG->vpl_maxfilesize;
+		if($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max){
+			$max = $plugincfg->maxfilesize;
 		}
 		if($this->instance->maxfilesize>0
 		   && $this->instance->maxfilesize<$max){
@@ -369,7 +369,7 @@ class mod_vpl {
 		}
 		return $max;
 	}
-	
+
 	/**
 	 * Get grading information help
 	 * @return string grade comments summary in html format
@@ -472,7 +472,7 @@ class mod_vpl {
 			die;
 		}
 	}
-	
+
 	/**
 	 * Check netword restriction and return true o false
 	 * Network field may be a combination of ip, netmask and domain
@@ -554,7 +554,7 @@ class mod_vpl {
 		if($this->is_group_activity()){
 			$liderid=$this->get_group_leaderid($userid);
 			if($liderid==0){ //No group or inconsistence
-			    if($this->has_capability(VPL_MANAGE_CAPABILITY) || 
+			    if($this->has_capability(VPL_MANAGE_CAPABILITY) ||
 			       ($this->has_capability(VPL_GRADE_CAPABILITY) && ($userid == $USER->id)))
 			    { //Is manager or grader own submission
 			    	$liderid = $userid;
@@ -578,7 +578,7 @@ class mod_vpl {
 				//TODO check for concistence: NOT SAVE but say nothing
 				//$error=get_string('notsaved',VPL)."\n".get_string('fileNotChanged',VPL);
 				return $last_sub_ins->id;
-			} 
+			}
 		}
 		ignore_user_abort (true);
 		//Create submission record
@@ -603,7 +603,7 @@ class mod_vpl {
 		}
 		return $submissionid;
 	}
-	
+
 	/**
 	 * Get user submissions, order reverse submission id
 	 * @param $id user id
@@ -688,12 +688,12 @@ class mod_vpl {
 		}
 		return self::$context[$this->cm->id];
 	}
-	
+
 	/**
 	 * Requiere the current user has the capability of performing
 	 * $capability in this module instance
 	 * @param string $capability capability name
-	 * @param bool $alert if true show a JavaScript alert message 
+	 * @param bool $alert if true show a JavaScript alert message
 	 * @return void
 	 */
 	function require_capability($capability, $alert=false){
@@ -704,7 +704,7 @@ class mod_vpl {
 		}
 		require_capability($capability,$this->get_context());
 	}
-	
+
 	/**
 	 * Check if the user has the capability of performing
 	 * $capability in this module instance
@@ -715,23 +715,24 @@ class mod_vpl {
 	function has_capability($capability,$userid=NULL){
 		return has_capability($capability,$this->get_context(),$userid);
 	}
-	
+
 	/**
 	 * Delete overflow submissions.
 	 * If three submissions within the period central is delete
-	 * @param $userid 
+	 * @param $userid
 	 * @return void
 	 **/
 	function delete_overflow_submissions($userid){
 		global $CFG, $DB;
-		if(!isset($CFG->vpl_discard_submission_period)){
+		$plugincfg = get_config('mod_vpl');
+		if(!isset($plugincfg->discard_submission_period)){
 			return;
 		}
-		if($CFG->vpl_discard_submission_period == 0){
+		if($plugincfg->discard_submission_period == 0){
 			//Keep all submissions
 			return;
 		}
-		if($CFG->vpl_discard_submission_period > 0){
+		if($plugincfg->discard_submission_period > 0){
 			$select = "(userid = ?) AND (vpl = ?)";
 			$params = array($userid, $this->instance->id);
 			$res = $DB->get_records_select(VPL_SUBMISSIONS, $select,$params,'id DESC','*',0,3);
@@ -753,7 +754,7 @@ class mod_vpl {
 				 $second->datesubmitted > $first->datesubmitted)){
 					return;
 				}
-				if(($last->datesubmitted - $first->datesubmitted)<$CFG->vpl_discard_submission_period){
+				if(($last->datesubmitted - $first->datesubmitted)<$plugincfg->discard_submission_period){
 					//Remove second submission
 					$submission = new mod_vpl_submission($this,$second);
 					$submission->delete();
@@ -761,7 +762,7 @@ class mod_vpl {
 			}
 		}
 	}
-	
+
 	/**
 	 * Check if it is submission period
 	 * @return bool
@@ -771,7 +772,7 @@ class mod_vpl {
 		$ret = $this->instance->startdate <= $now;
 		return $ret && ($this->instance->duedate == 0 || $this->instance->duedate >= $now);
 	}
-	
+
 	/**
 	 * is visible this vpl instance
 	 * @return bool
@@ -805,7 +806,7 @@ class mod_vpl {
 		return $ret;
 	}
 
-	
+
 	/**
 	 * is group activity
 	 * @return bool
@@ -868,10 +869,10 @@ class mod_vpl {
 			return fullname($user);
 		}
 	}
-	
+
 	/**
-	 * Get array of graders for this activity and group (optional) 
-	 * @param $group optional parm with group to search for 
+	 * Get array of graders for this activity and group (optional)
+	 * @param $group optional parm with group to search for
 	 * @return array
 	 */
 	function get_graders($group=''){
@@ -883,7 +884,7 @@ class mod_vpl {
 		}
 		return $this->graders;
 	}
-	
+
 	/**
 	 * Get array of students for this activity and group (optional)
 	 * if is group activity return only group liders
@@ -909,7 +910,7 @@ class mod_vpl {
 					if(isset($nostudens[$user->id])){
 						continue;
 					}
-					$group = $this->get_usergroup_members($user->id);					
+					$group = $this->get_usergroup_members($user->id);
 					$leaderid = $this->get_group_leaderid($user->id);
 					foreach($group as $gm){
 						if($gm->id != $leaderid){
@@ -942,7 +943,7 @@ class mod_vpl {
 			return $current != $real;
 		}
 	}
-	
+
 	/**
 	 * If is a group activity search for a group leader
 	 * for the group of the userid (0 is not found)
@@ -960,7 +961,7 @@ class mod_vpl {
 
 
 	/**
-	 * If is a group activity 
+	 * If is a group activity
 	 * return the group of the userid
 	 * @return group object or false
 	 */
@@ -976,10 +977,10 @@ class mod_vpl {
 		}
 		return false;
 	}
-	
+
 	static $user_groups_cache=array();
 	/**
-	 * If is a group activity 
+	 * If is a group activity
 	 * return group members for the group of the userid
 	 * @return Array of user objects
 	 */
@@ -993,9 +994,9 @@ class mod_vpl {
 		}
 		return array();
 	}
-	
+
 	/**
-	 * Return scale record if grade < 0 
+	 * Return scale record if grade < 0
 	 * @return Object or false
 	 */
 	function get_scale(){
@@ -1012,18 +1013,18 @@ class mod_vpl {
 	}
 
 	/**
-	 * Return grade info take from gradebook 
+	 * Return grade info take from gradebook
 	 * @return Object or false
 	 */
 	function get_grade_info(){
-		global $DB, $CFG, $USER;	
+		global $DB, $CFG, $USER;
 		if(!isset($this->grade_info)){
 			$this->grade_info = false;
 			if($this->get_instance()->grade !=0){ //If 0 then NO GRADE
 				$userid = ($this->has_capability(VPL_GRADE_CAPABILITY)
 					  || $this->has_capability(VPL_MANAGE_CAPABILITY))
 					  ? null : $USER->id;
-			    require_once $CFG->libdir.'/gradelib.php';    
+			    require_once $CFG->libdir.'/gradelib.php';
         		$grading_info = grade_get_grades($this->get_course()->id, 'mod', 'vpl',
         					$this->get_instance()->id,$userid);
         		foreach($grading_info->items as $gi){
@@ -1052,9 +1053,9 @@ class mod_vpl {
 			return false;
 		}
 	}
-	
+
 	/**
-	 * Return grade (=0 => no grade, >0 max grade, <0 scaleid) 
+	 * Return grade (=0 => no grade, >0 max grade, <0 scaleid)
 	 * @return int
 	 */
 	function get_grade(){
@@ -1082,7 +1083,7 @@ class mod_vpl {
 		global $OUTPUT;
 		echo $OUTPUT->footer();
 	}
-	
+
 	/**
 	 * prepare_page initialy
 	 **/
@@ -1095,7 +1096,7 @@ class mod_vpl {
 			$PAGE->set_url('/mod/vpl/'.$url,$parms);
 		}
 	}
-	
+
 	/**
 	 * print header
 	 * @param $info title and last nav option
@@ -1112,7 +1113,7 @@ class mod_vpl {
 		echo $OUTPUT->header();
 		$VPL_OUTPUTHEADER=true;
 	}
-	
+
 	function print_header_simple($info=''){
 		global $OUTPUT,$PAGE, $VPL_OUTPUTHEADER;
 		$tittle = $this->get_printable_name();
@@ -1124,7 +1125,7 @@ class mod_vpl {
     	echo $OUTPUT->header();
     	$VPL_OUTPUTHEADER=true;
 	}
-	
+
 	/**
 	 * Print heading action with help
 	 *
@@ -1137,7 +1138,7 @@ class mod_vpl {
     	$VPL_OUTPUTHEADER=true;
 	}
 
-	
+
 	/**
 	 * Create tabs to configure a vpl instance
 	 *
@@ -1160,7 +1161,7 @@ class mod_vpl {
 		$tabs[]= new tabobject('testcasesfile.php',vpl_mod_href('forms/testcasesfile.php','id',$this->cm->id,'edit',3),$strtestcases,$strtestcases);
 		$tabs[]= new tabobject('executionoptions.php',vpl_mod_href('forms/executionoptions.php','id',$this->cm->id),$menustrexecutionoptions,$strexecutionoptions);
 		$tabs[]= new tabobject('requiredfiles.php',vpl_mod_href('forms/requestedfiles.php','id',$this->cm->id),$strrequestedfiles,$strrequestedfiles);
-		if($active=='executionfiles.php' 
+		if($active=='executionfiles.php'
 		    || $active=='executionlimits.php'
 			||	$active=='executionkeepfiles.php'
 			|| $active=='variations.php'
@@ -1292,10 +1293,10 @@ class mod_vpl {
 					$submission = new mod_vpl_submission($this,$subinstance);
 				}
 				if($viewer && ! $level2){
-					$tabs[] = $viewtab; 
+					$tabs[] = $viewtab;
 				}
 				if($manager || ($grader && $USER->id == $userid)
-				 || (!$grader && $submiter && $this->is_submit_able() 
+				 || (!$grader && $submiter && $this->is_submit_able()
 				 	&& !$this->instance->restrictededitor && !$example)){
 					$href = vpl_mod_href('forms/submission.php','id',$cmid,'userid',$userid);
 					$tabs[]= new tabobject('submission.php',$href,$strsubmission,$strsubmission);
@@ -1322,7 +1323,7 @@ class mod_vpl {
 						$tabs[]= new tabobject('previoussubmissionslist.php',$href,$strlistprevoiussubmissions,$strlistprevoiussubmissions);
 					}
 				}
-				//Show user picture if this activity require password 
+				//Show user picture if this activity require password
 				if(!isset($user) && $this->instance->password >''){
 					$user = $DB->get_record('user',array('id'=>$userid));
 				}
@@ -1339,7 +1340,7 @@ class mod_vpl {
 					print_tabs(array($tabs),$active);
 					return;
 				}
-				
+
 			break;
 			case 'submissionslist.php':
 				print_tabs(array($maintabs),$active);
@@ -1390,12 +1391,12 @@ class mod_vpl {
 		echo $value;
 		echo $newline?'<br />':' ';
 	}
-	
+
 	/**
 	 * Show vpl submission period
 	 **/
 	function print_submission_period(){
-		if($this->instance->startdate==0 
+		if($this->instance->startdate==0
 				&& $this->instance->duedate == 0){
 			return;
 		}
@@ -1441,7 +1442,7 @@ class mod_vpl {
 		}
 		$worktype = $this->instance->worktype;
 		$values = array(0 => get_string('individualwork',VPL),1 => get_string('groupwork',VPL));
-		if($worktype)	{	
+		if($worktype)	{
 			$this->print_restriction('worktype',$values[$worktype].' '.$this->fullname($USER));
 		}else{
 			$this->print_restriction('worktype',$values[$worktype]);
@@ -1473,7 +1474,7 @@ class mod_vpl {
 			}
 			if($this->instance->example){
 	            $this->print_restriction('isexample',$str_yes);
-			}	
+			}
 			if(! $this->get_course_module()->visible){
 				$this->print_restriction(get_string('visible'),$str_no,true);
 			}
@@ -1566,7 +1567,7 @@ class mod_vpl {
 			$div->end_div();
 		}
 	}
-	
+
 	/**
 	 * Get user variation. Assign one if needed
 	 **/
@@ -1603,7 +1604,7 @@ class mod_vpl {
 		}
 		return $variation;
 	}
-	
+
 	/**
 	 * Show variations if actived and defined
 	 **/
@@ -1654,7 +1655,7 @@ class mod_vpl {
 		}
 		return $ret;
 	}
-	
+
 }
 
 ?>
