@@ -28,7 +28,7 @@ class vpl_sh_python extends vpl_sh_base{
 	const in_string=2;
 	const in_decorator=3;
 	const in_comment=4;
-	const in_linecomment=5;	
+	const in_linecomment=5;
 	function __construct(){
 		$this->reserved= array("False" => true, "class" => true, "finally" => true, "is" => true, "return" => true,
 					"None" => true, "continue" => true, "for" => true, "lambda" => true, "try" => true,
@@ -43,12 +43,12 @@ class vpl_sh_python extends vpl_sh_base{
 		echo "\n";
 		parent::show_line_number();
 	}
-	
+
 	protected function isIdentifierChar($c) {
 		return ($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z')
 				|| ($c >= '0' && $c <= '9') || ($c == '_') || ($c >= 128);
 	}
-	
+
 	function print_file($filename, $filedata, $showln=true){
 		$this->begin($filename,$showln);
 		$state = self::regular;
@@ -169,7 +169,7 @@ class vpl_sh_python extends vpl_sh_base{
 					continue 2;
 				}
 				break;
-			case self::in_string:				
+			case self::in_string:
 				if (substr($filedata,$i,strlen($stringLimit)) == $stringLimit){
 					if( $rawString || $previous != '\\') {
 						$state= self::regular;
@@ -225,5 +225,3 @@ class vpl_sh_python extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

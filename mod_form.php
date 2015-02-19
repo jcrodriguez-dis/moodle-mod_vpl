@@ -1,10 +1,26 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @version		$Id: mod_form.php,v 1.30 2013-06-10 11:06:25 juanca Exp $
- * @package mod_vpl. vpl instance form
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * VPL instance form
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined('MOODLE_INTERNAL') || die();
 require_once $CFG->dirroot.'/course/moodleform_mod.php';
@@ -12,10 +28,10 @@ require_once dirname(__FILE__).'/lib.php';
 require_once dirname(__FILE__).'/vpl.class.php';
 
 class mod_vpl_mod_form extends moodleform_mod {
-	function definition(){
-		global $CFG;
-		$plugincfg = get_config('mod_vpl');
-		$mform = & $this->_form;
+    function definition(){
+        global $CFG;
+        $plugincfg = get_config('mod_vpl');
+        $mform = & $this->_form;
         $mform->addElement('header', 'general', get_string('general', 'form'));
         // name
         $modname= 'vpl';
@@ -34,7 +50,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         $endtime = $inittime + (8*$secondsday) - 5*60;
         // startdate
         $mform->addElement('date_time_selector', 'startdate', get_string('startdate', VPL), array('optional'=>true));
-		$mform->setDefault('startdate', 0);
+        $mform->setDefault('startdate', 0);
         $mform->setAdvanced('startdate');
         // duedate
         $mform->addElement('date_time_selector', 'duedate', get_string('duedate', VPL), array('optional'=>true));
@@ -45,7 +61,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setType('maxfiles', PARAM_INT);
         $mform->setDefault('maxfiles', 1);
         $mform->addElement('select', 'worktype', get_string('worktype',VPL),
-        					array(0 => get_string('individualwork',VPL),1 => get_string('groupwork',VPL)));
+                            array(0 => get_string('individualwork',VPL),1 => get_string('groupwork',VPL)));
         $mform->addElement('selectyesno', 'restrictededitor', get_string('restrictededitor',VPL));
         $mform->setDefault('restrictededitor', false);
         $mform->setAdvanced('restrictededitor');
@@ -53,11 +69,11 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault('example', false);
         $mform->setAdvanced('example');
         $max = vpl_get_max_post_size();
-		if($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max){
-			$max = $plugincfg->maxfilesize;
-		}
+        if($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max){
+            $max = $plugincfg->maxfilesize;
+        }
         $mform->addElement('select', 'maxfilesize', get_string('maxfilesize',VPL),
-        					vpl_get_select_sizes(16*1024,$max));
+                            vpl_get_select_sizes(16*1024,$max));
         $mform->setType('maxfilesize', PARAM_INT);
         $mform->setDefault('maxfilesize', 0);
         $mform->setAdvanced('maxfilesize');
@@ -76,20 +92,20 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
         // end form
         $this->add_action_buttons();
-	}
-	function display(){
-		$id = optional_param('update',FALSE,PARAM_INT);
-		if($id){
-			$vpl = new mod_vpl($id);
-			$vpl->print_configure_tabs('edit');
-			if($vpl->get_grade_info() !== false){
-				$vpl->get_instance()->visiblegrade = ($vpl->get_grade_info()->hidden)?0:1;
-			}else{
-				$vpl->get_instance()->visiblegrade = false;
-			}
-			$this->set_data($vpl->get_instance());
-		}
-		parent::display();
-	}
+    }
+    function display(){
+        $id = optional_param('update',FALSE,PARAM_INT);
+        if($id){
+            $vpl = new mod_vpl($id);
+            $vpl->print_configure_tabs('edit');
+            if($vpl->get_grade_info() !== false){
+                $vpl->get_instance()->visiblegrade = ($vpl->get_grade_info()->hidden)?0:1;
+            }else{
+                $vpl->get_instance()->visiblegrade = false;
+            }
+            $this->set_data($vpl->get_instance());
+        }
+        parent::display();
+    }
 }
-?>
+

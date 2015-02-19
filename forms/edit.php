@@ -1,10 +1,25 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @version		$Id: edit.php,v 1.9 2013-06-07 15:59:14 juanca Exp $
- * @package mod_vpl. submission edit
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * Launches IDE
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 global $CFG;
@@ -22,24 +37,24 @@ $copy = optional_param('privatecopy',false,PARAM_INT);
 $vpl = new mod_vpl($id);
 $page_parms = array('id' => $id);
 if($userid && !$copy){
-	$page_parms['userid']= $userid;
+    $page_parms['userid']= $userid;
 }
 if($copy){
-	$page_parms['privatecopy']= 1;
+    $page_parms['privatecopy']= 1;
 }
 $vpl->prepare_page('forms/edit.php', $page_parms);
 if(!$vpl->is_visible()){
-	notice(get_string('notavailable'));
+    notice(get_string('notavailable'));
 }
 if(!$vpl->is_submit_able()){
-	print_error('notavailable');
+    print_error('notavailable');
 }
 if(!$userid || $userid == $USER->id){//Edit own submission
-	$userid = $USER->id;
-	$vpl->require_capability(VPL_SUBMIT_CAPABILITY);
+    $userid = $USER->id;
+    $vpl->require_capability(VPL_SUBMIT_CAPABILITY);
 }
 else { //Edit other user submission
-	$vpl->require_capability(VPL_MANAGE_CAPABILITY);
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 }
 $vpl->network_check();
 $vpl->password_check();
@@ -69,26 +84,26 @@ $min = count($req_filelist);
 $options['minfiles']=$min;
 $nf = count($req_filelist);
 for( $i = 0; $i < $nf; $i++){
-	$filename=$req_filelist[$i];
-	$filedata=$req_fgm->getFileData($req_filelist[$i]);
-	$files[$filename]=$filedata;
+    $filename=$req_filelist[$i];
+    $filedata=$req_fgm->getFileData($req_filelist[$i]);
+    $files[$filename]=$filedata;
 }
 if($lastsub){
-	$submission = new mod_vpl_submission($vpl, $lastsub);
-	$fgp =  $submission->get_submitted_fgm();
-	$filelist = $fgp->getFileList();
-	$nf=count($filelist);
+    $submission = new mod_vpl_submission($vpl, $lastsub);
+    $fgp =  $submission->get_submitted_fgm();
+    $filelist = $fgp->getFileList();
+    $nf=count($filelist);
     for( $i = 0; $i < $nf; $i++){
-	   $filename=$filelist[$i];
-	   $filedata=$fgp->getFileData($filelist[$i]);
-	   $files[$filename]=$filedata;
+       $filename=$filelist[$i];
+       $filedata=$fgp->getFileData($filelist[$i]);
+       $files[$filename]=$filedata;
     }
     $CE=$submission->get_CE_for_editor();
     \mod_vpl\event\submission_edited::log($submission);
 }
 session_write_close();
 if($copy && $grader){
-	$userid=$USER->id;
+    $userid=$USER->id;
 }
 $vpl->print_header(get_string('edit',VPL));
 $vpl->print_view_tabs(basename(__FILE__));

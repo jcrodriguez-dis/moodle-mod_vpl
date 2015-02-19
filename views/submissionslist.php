@@ -207,14 +207,14 @@ foreach ($list as $userinfo) {
 			if($subselection == 'gradedbyuser' && $subinstance->grader != $USER->id){
 				continue;
 			}
-			//TODO REUSE showing 
+			//TODO REUSE showing
 			$subinstance->gradesortable = $subinstance->grade;
 		}else{
 			$subinstance->grade = null;
 			if($subselection == 'graded' ||$subselection == 'gradedbyuser'){
 				continue;
 			}
-			//TODO REUSE showing 
+			//TODO REUSE showing
 			$result=$submission->getCE();
 			if($result['executed']!==0){
 				$prograde=$submission->proposedGrade($result['execution']);
@@ -223,18 +223,18 @@ foreach ($list as $userinfo) {
 				}
 			}
 		}
-		//I know that subinstance isn't the correct place to put nsubmissions but is the easy 
+		//I know that subinstance isn't the correct place to put nsubmissions but is the easy
 		if(isset($submissions_number[$userinfo->id])){
 			$subinstance->nsubmissions = $submissions_number[$userinfo->id]->submissions;
 		}else{
 			$subinstance->nsubmissions = ' ';
 		}
-		
+
 	}
 	$data = new stdClass();
 	$data->userinfo = $userinfo;
 	$data->submission = $submission;
-	//When group activity => change leader object lastname to groupname for order porpouse 
+	//When group activity => change leader object lastname to groupname for order porpouse
 	if($vpl->is_group_activity()){
 		$data->userinfo->firstname = '';
 		$data->userinfo->lastname = $vpl->fullname($userinfo);
@@ -345,7 +345,7 @@ foreach ($all_data as $data) {
 			}else{
 				$grade = $text;
 			}
-			
+
 			$graderid=$subinstance->grader;
 			$graderuser = $submission->get_grader($graderid);
 			//Count evaluator marks
@@ -388,7 +388,7 @@ foreach ($all_data as $data) {
 		$grader ='<div id="m'.$subid.'">'.$grader.'</div>';
 		$gradedon ='<div id="o'.$subid.'">'.$gradedon.'</div>';
 	}
-	
+
 	$usernumber++;
 	if($gradeable){
 		$table->data[] = array ($usernumber,
@@ -444,7 +444,7 @@ $url_sel->set_label(get_string('submissionselection',VPL));
 echo $OUTPUT->render($url_sel);
 if(($gradeable || $vpl->get_instance()->evaluate) && $subselection != 'notgraded' ){
 	$url_base=$CFG->wwwroot."/mod/vpl/views/submissionslist.php?id=$id&sort=$sort&sortdir=$sortdir&selection=$subselection&evaluate=";
-	$urls=array(0 => null, 2 => $url_base.'2', '3' => $url_base.'3', 4 => $url_base.'4');	
+	$urls=array(0 => null, 2 => $url_base.'2', '3' => $url_base.'3', 4 => $url_base.'4');
 	$url_sel = new url_select(array($urls[2] => get_string('notexecuted',VPL),
 						$urls[3] => get_string('notgraded',VPL),
 						$urls[4] => get_string('all')),$urls[$evaluate]);
@@ -469,4 +469,3 @@ if(count($next_ids)){
 	echo '</div>';
 }
 $vpl->print_footer();
-?>

@@ -242,5 +242,3 @@ class vpl_sh_java extends vpl_sh_c{
 		$this->end();
 	}
 }
-
-?>

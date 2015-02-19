@@ -31,7 +31,7 @@ function vpl_selzipdirname($name){
 	for($i=0; $i < strlen($name); $i++){
 		$c = $name[$i];
 		if($c != ' ' && !$word){
-			$ret .= strtoupper($c); 
+			$ret .= strtoupper($c);
 		}
 		if($c != ' '){
 			$word = true;
@@ -80,7 +80,7 @@ foreach ($list as $userinfo) {
 	$data = new stdClass();
 	$data->userinfo = $userinfo;
 	$data->submission = $submission;
-	//When group activity => change leader object lastname to groupname for order porpouse 
+	//When group activity => change leader object lastname to groupname for order porpouse
 	if($vpl->is_group_activity()){
 		$data->userinfo->firstname = '';
 		$data->userinfo->lastname = $vpl->fullname($userinfo);
@@ -98,7 +98,7 @@ if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
 		$zipdirname = vpl_selzipdirname($user->lastname.' '.$user->firstname);
 		//Create directory
 		$zip->addEmptyDir($zipdirname);
-		$zipdirname .= '/';	
+		$zipdirname .= '/';
 		$sourcedir=$data->submission->get_submission_directory().'/';
 		foreach ($fgm->getFileList() as $filename) {
 			$source= file_group_process::encodeFileName($filename);
@@ -120,4 +120,3 @@ if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
 	@header('Accept-Ranges: none');
 	echo $data;
 }
-?>

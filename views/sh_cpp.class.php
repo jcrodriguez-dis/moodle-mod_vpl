@@ -24,5 +24,3 @@ class vpl_sh_cpp extends vpl_sh_c{
 		$this->reserved= array_merge($this->reserved, $added);
 	}
 }
-
-?>

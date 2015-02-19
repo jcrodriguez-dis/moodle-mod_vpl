@@ -2,12 +2,10 @@
 $string['about']= 'Sobre';
 $string['acceptcertificates']='Aceptar certificados auto firmados';
 $string['acceptcertificates_description']='Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';
-$string['acceptcertificatesnote']= <<<'END_STRING'
-<p>Usted está usando una conexión segura.<p/>
+$string['acceptcertificatesnote']='<p>Usted está usando una conexión segura.<p/>
 <p>Para usar una conexión segura con los servidores de ejecución usted debe aceptar sus certificados de seguridad.</p>
 <p>Si no quiere aceptar los certificados, podría usar una conexión insegura http.</p>
-<p>Por favor, pulse sobre los siguientes enlaces y acepte los certificados ofrecidos.</p>
-END_STRING;
+<p>Por favor, pulse sobre los siguientes enlaces y acepte los certificados ofrecidos.</p>';
 $string['addfile'] = 'Añadir fichero';
 $string['advanced']='Avanzado';
 $string['allfiles']='Todos los ficheros';
@@ -63,7 +61,7 @@ $string['evaluate'] = 'Evaluar';
 $string['evaluateonsubmission'] = 'Evaluar al entregar';
 $string['evaluating'] = "evaluando";
 $string['evaluation'] = 'Evaluación';
-$string['examples'] = 'Ejemplos';  
+$string['examples'] = 'Ejemplos';
 $string['execution'] = 'Ejecución';
 $string['executionfiles'] = 'Ficheros para la ejecución';
 $string['executionoptions'] = 'Opciones de ejecución';
@@ -101,7 +99,7 @@ $string['inconsistentgroup']='Usted no es miembro de un único grupo (0 o >1)';
 $string['incorrect_file_name']= 'Nombre de fichero incorrecto';
 $string['individualwork']='Individual';
 $string['instanceselection'] = 'Selección de VPL';
-$string['isexample'] = 'Esta actividad actúa como ejemplo';  
+$string['isexample'] = 'Esta actividad actúa como ejemplo';
 $string['jail_servers'] = "Lista de servidores de ejecución";
 $string['jail_servers_config'] = "Configuración de servidores de ejecución";
 $string['jail_servers_description'] = "Escriba un servidor en cada línea";
@@ -242,11 +240,8 @@ $string['vpl_run.sh'] = "Prepara la ejecución del programa";
 $string['workingperiods'] = 'Periodos de trabajo';
 $string['worktype']='Tipo de trabajo';
 //Added without order
-$string['check_jail_servers_help'] = <<<'END_OF_HELP'
-<p>Esta página comprueba y muestra el estado de los servidores de ejecución usados por esta actividad.</p>
-END_OF_HELP;
-$string['executionfiles_help'] = <<<'END_OF_HELP'
-<h2>Introducción</h2>
+$string['check_jail_servers_help'] = '<p>Esta página comprueba y muestra el estado de los servidores de ejecución usados por esta actividad.</p>';
+$string['executionfiles_help'] = '<h2>Introducción</h2>
 <p>Aquí se establecen los ficheros necesarios para la ejecución, depurado o evaluación de una entrega.
 Esto incluye ficheros script, programas de prueba y ficheros de datos.</p>
 <h2>Script por omisión para ejecutar o depurar</h2>
@@ -363,14 +358,12 @@ Si la acción solicitada es &quot;evaluación&quot; se añaden las siguientes va
 </ul>
 
 <h2>Códigos de resultado de evaluación</h2>
-<p>La salida de la evaluación es procesada para extraer, si es posible, comentarios sobre la evaluación y la nota propuesta. 
-Los comentarios se pueden establecer de dos formas: con un comentario de línea definido con una línea que comienza por 'Comment :=&gt;&gt;' o
-con comentarios de bloques que comienza con una línea que contiene únicamente '&lt;|--' y termina en una línea que contiene únicamente '--|&gt;'.
-La calificación se toma de la última línea que comienze por 'Grade :=&gt;&gt;'.
-</p>
-END_OF_HELP;
-$string['executionoptions_help'] = <<<'END_OF_HELP'
-<p>En esta página se establecen diferentes opciones de ejecución</p>
+<p>La salida de la evaluación es procesada para extraer, si es posible, comentarios sobre la evaluación y la nota propuesta.
+Los comentarios se pueden establecer de dos formas: con un comentario de línea definido con una línea que comienza por \'Comment :=&gt;&gt;\' o
+con comentarios de bloques que comienza con una línea que contiene únicamente \'&lt;|--\' y termina en una línea que contiene únicamente \'--|&gt;\'.
+La calificación se toma de la última línea que comienze por \'Grade :=&gt;&gt;\'.
+</p>';
+$string['executionoptions_help'] = '<p>En esta página se establecen diferentes opciones de ejecución</p>
 <ul>
 <li><b>Basado en</b>: permite establecer otra instanción VPL de la que se toman diversas caracteristicas:
 <ul><li>Ficheros de ejecución (los guiones predefinidos se concatenan)</li>
@@ -382,17 +375,11 @@ $string['executionoptions_help'] = <<<'END_OF_HELP'
 <li><b>Ejecutar, Depurar y Evaluar</b>: establecen si se puede usar la opción correspondiente durante la edición de la entrega. Esto sólo afecta a los estudiantes, los usuarios con capacidad de calificación pueden usar estas opciones en cualquier caso.</li>
 <li><b>Evaluar al entregar</b>: al subir los ficheros se produce el proceso de evaluación automáticamente.</li>
 <li><b>Calificación automática</b>: si el resultado de la evaluación contiene códigos de nota automática estos se toman como nota definitiva.</li>
-</ul>
-
-END_OF_HELP;
-$string['fulldescription_help'] = <<<'END_OF_HELP'
-<p>Escriba aquí la descripción completa de la tarea a realizar en el laboratorio de programación.</p>
+</ul>';
+$string['fulldescription_help'] = '<p>Escriba aquí la descripción completa de la tarea a realizar en el laboratorio de programación.</p>
 <p>En caso de que no escriba nada se mostrará en su lugar la descripción corta.</p>
-<p>Si desea realizar una evaluación automática, es aconsejable que la especificación de las interfaces sea lo más detallada posible y que no tenga ambigüedad.</p>
-
-END_OF_HELP;
-$string['index_help'] = <<<'END_OF_HELP'
-<ul>
+<p>Si desea realizar una evaluación automática, es aconsejable que la especificación de las interfaces sea lo más detallada posible y que no tenga ambigüedad.</p>';
+$string['index_help'] = '<ul>
   <li><a href="help.php?module=vpl&amp;file=mods.html">Básico</a></li>
   <li><a href="help.php?module=vpl&amp;file=fulldescription.html">Descripción completa</a></li>
   <li><a href="help.php?module=vpl&amp;file=variations.html">Variaciones</a></li>
@@ -404,24 +391,16 @@ $string['index_help'] = <<<'END_OF_HELP'
   <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">Límite de recursos de ejecución</a></li>
   <li><a href="help.php?module=vpl&amp;file=keepfiles.html">Ficheros a mantener mientras se ejecuta</a></li>
   </ul></li>
-</ul>
-END_OF_HELP;
-$string['keepfiles_help'] = <<<'END_OF_HELP'
-<p>Por razones de seguridad, los ficheros añadidos en "Ficheros de ejecución", se borran  antes de ejecutar el fichero vpl_execution.</p>
+</ul>';
+$string['keepfiles_help'] = '<p>Por razones de seguridad, los ficheros añadidos en "Ficheros de ejecución", se borran  antes de ejecutar el fichero vpl_execution.</p>
 <p>Si es necesario que alguno de estos ficheros permanezca en la fase de ejecución,
-por ejemplo, para usarlo como datos de entrada de las pruebas, márquelos en esta página</p>
-
-END_OF_HELP;
-$string['local_jail_servers_help'] = <<<'END_OF_HELP'
-<p>Aquí se establecen los servidores de ejecución locales para esta actividad y las que se basen en ella.</p>
+por ejemplo, para usarlo como datos de entrada de las pruebas, márquelos en esta página</p>';
+$string['local_jail_servers_help'] = '<p>Aquí se establecen los servidores de ejecución locales para esta actividad y las que se basen en ella.</p>
 <p>Escriba una la URL completa de servidor en cada línea. Se pueden introducir líneas en blanco y comentarios comenzando la línea por "#".</p>
-<p>Si se quiere impedir que esta actividad y las que se basen en ella no use los servidores especificados en las actividades derivadas ni 
-los especificados globalmente, añada al final una línea que contenga "end_of_jails".  
-</p>
-
-END_OF_HELP;
-$string['modulename_help'] = <<<'END_OF_HELP'
-<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:
+<p>Si se quiere impedir que esta actividad y las que se basen en ella no use los servidores especificados en las actividades derivadas ni
+los especificados globalmente, añada al final una línea que contenga "end_of_jails".
+</p>';
+$string['modulename_help'] = '<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:
 <ul>
 <li>Posibilidad de editar el código fuente en el navegador.</li>
 <li>Posibilidad de ejecutar las prácticas de forma interactiva desde el navegador.</li>
@@ -441,21 +420,15 @@ En el panel <b></b><b>Restricciones de entrega</b> se pueden establecer diversas
 <li>Red o redes desde los es posible acceder y entregar</li>
 </ul>
 <p>En esta página también se pueden establecer las opciones comunes a toda actividad
-como es la escala de calificación y las opciones de grupos.</p>
-END_OF_HELP;
+como es la escala de calificación y las opciones de grupos.</p>';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = <<<'END_OF_HELP'
-<p>Aquí se fijan nombres para los ficheros requeridos.</p>
+$string['requestedfiles_help'] = '<p>Aquí se fijan nombres para los ficheros requeridos.</p>
 <p>Si no se fijan nombres para el número máximo de ficheros establecido en la definición básica de la actividad, los ficheros para los que no se han establecido nombres son opcionales y pueden tener cualquier nombre.</p>
-<p>Además, se pueden establecer contenidos para los ficheros requeridos, de forma que dichos contenidos estarán disponibles la primera vez que el fichero se abra usando el editor, si no se ha realizado una entrega previa.</p>
-END_OF_HELP;
-$string['resourcelimits_help'] = <<<'END_OF_HELP'
-<p>Se pueden establecer límites máximos para el tiempo de ejecución, la memoria usada, el tamaño de los ficheros generados durante la ejecución y el número de procesos simultáneos.</p>
+<p>Además, se pueden establecer contenidos para los ficheros requeridos, de forma que dichos contenidos estarán disponibles la primera vez que el fichero se abra usando el editor, si no se ha realizado una entrega previa.</p>';
+$string['resourcelimits_help'] = '<p>Se pueden establecer límites máximos para el tiempo de ejecución, la memoria usada, el tamaño de los ficheros generados durante la ejecución y el número de procesos simultáneos.</p>
 <p>Estos límites se aplican al ejecutar los ficheros de script  vpl_run.sh, vpl_debug.sh y vpl_evaluate.sh, y el fichero the file vpl_execution generado por ellos.</p>
-<p>Si la actividad está basada en otra, los límites establecidos se pueden ver restringidos por los establecidos en aquella y otras en la que la misma se base, además de por los establecidos en la configuración global del módulo.</p>
-END_OF_HELP;
-$string['testcases_help'] = <<<'END_OF_HELP'
-<p>Para usar las caracteristicas de evaluación automática de programas de VPL debe rellenar el fichero "vpl_evaluate.cases".
+<p>Si la actividad está basada en otra, los límites establecidos se pueden ver restringidos por los establecidos en aquella y otras en la que la misma se base, además de por los establecidos en la configuración global del módulo.</p>';
+$string['testcases_help'] = '<p>Para usar las caracteristicas de evaluación automática de programas de VPL debe rellenar el fichero "vpl_evaluate.cases".
 Este fichero tiene el siguiente formato:
 <ul>
 <li>"<b>case</b> = Descripción del caso": Optional. Establece el inicio de un caso de prueba.</li>
@@ -470,12 +443,9 @@ Este fichero tiene el siguiente formato:
 <li>"<b>grade reduction</b> = [valor|porcentaje%]" : Por defecto cuando se produce un error se descuenta de la nota máxima  (rango_nota/número de casos)
  pero con esta instrucción se puede cambiar el descuento por otro valor o porcentaje.
 </li>
- </ul>
-END_OF_HELP;
-$string['variations_help'] = <<<'END_OF_HELP'
-<p>Se pueden definir variaciones para las actividades. Las variaciones se asignan de forma aleatoria a los estudiantes.</p>
+</ul>';
+$string['variations_help'] = '<p>Se pueden definir variaciones para las actividades. Las variaciones se asignan de forma aleatoria a los estudiantes.</p>
 <p>En esta página se puede indicar si la actividad tiene variaciones, dar un título al conjunto de variaciones, y añadir las variaciones deseadas.</p>
-<p>Cada variación tiene un código de identificación y una descripción. El identificador se usa en el fichero <b>vpl_enviroment.sh</b> para pasar la variación asignada al estudiante a los scripts. La descripción, con formato HTML, se muestra a los estudiantes a los que ha sido asignada la variación correspondiente.</p>
-END_OF_HELP;
-
-?>
+<p>Cada variación tiene un código de identificación y una descripción. El identificador se usa en el fichero <b>vpl_enviroment.sh</b> para pasar la
+variación asignada al estudiante a los scripts. La descripción, con formato HTML, se muestra a los estudiantes a los que ha sido asignada la variación
+correspondiente.</p>';

@@ -102,5 +102,3 @@ class vpl_sh_geshi extends vpl_sh_base{
 		}
 	}
 }
-
-?>

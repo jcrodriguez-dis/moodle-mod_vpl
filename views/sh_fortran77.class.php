@@ -6,7 +6,7 @@
  * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
- 
+
 require_once dirname(__FILE__).'/sh_base.class.php';
 
 class vpl_sh_fortran77 extends vpl_sh_base{
@@ -174,5 +174,3 @@ class vpl_sh_fortran77 extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

@@ -25,7 +25,7 @@ class vpl_sh_scala extends vpl_sh_base{
 	const in_string=1;
 	const in_char=2;
 	const in_comment=3;
-	const in_linecomment=4;	
+	const in_linecomment=4;
 
 	function __construct(){
 		$this->reserved= array( 	'abstract' => true,
@@ -66,8 +66,8 @@ class vpl_sh_scala extends vpl_sh_base{
 									'var' => true,
 									'while' => true,
 									'with' => true,
-									'yield' => true,			
-									
+									'yield' => true,
+
 									'Byte' => true,
 									'Short' => true,
 									'Char' => true,
@@ -77,10 +77,10 @@ class vpl_sh_scala extends vpl_sh_base{
 									'Double' => true,
 									'Boolean' => true,
 									'Unit' => true,
-									'String' => true);									
+									'String' => true);
 		parent::__construct();
 	}
-	
+
 	function show_line_number(){
 		echo "\n";
 		parent::show_line_number();
@@ -274,5 +274,3 @@ class vpl_sh_scala extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

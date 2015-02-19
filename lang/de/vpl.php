@@ -10,7 +10,7 @@ $string['shortdescription'] = 'Kurzbeschreibung';
 $string['fulldescription'] = 'Beschreibung';
 $string['submissionperiod'] = 'Abgabezeitraum';
 $string['startdate'] = 'Verfügbar von';
-$string['duedate'] = 'Abgabetermin'; 
+$string['duedate'] = 'Abgabetermin';
 $string['averageperiods'] = 'Durchschn. Überarbeitungen {$a}';
 $string['averagetime'] = 'Durchschnittszeit {$a}';
 $string['maximumperiod'] = 'Max. Überarbeitungen {$a}';
@@ -87,9 +87,9 @@ $string['sureresetfiles'] = 'Wollen Sie Ihre Änderungen wirklich verwerfen?';
 $string['test'] = 'Testaktivität';
 $string['testcases'] = 'Testfälle';
 $string['datesubmitted'] = 'Abgabedatum';
-$string['restrictededitor'] = 'Abgabe durch eingeschränkten Code Editor';  
-$string['isexample'] = 'Dies ist eine Beispielaktivität'; 
-$string['examples'] = 'Beispiele';  
+$string['restrictededitor'] = 'Abgabe durch eingeschränkten Code Editor';
+$string['isexample'] = 'Dies ist eine Beispielaktivität';
+$string['examples'] = 'Beispiele';
 $string['gradedonby'] = 'Bewertet am {$a->date} von {$a->gradername}';
 $string['grader'] = "Bewerter";
 $string['gradedon'] = "Bewertet am";
@@ -276,11 +276,9 @@ $string['saving']='Speichert';
 $string['running']='Läuft';
 $string['evaluating']='Evaluiert';
 $string['debugging']='Debuggt';
-$string['check_jail_servers_help'] = <<<'END_OF_HELP'
-<p>Diese Seite überprüft und zeigt den Status der Jail-Server, die für diese Aktivität verwendet werden.</p>
-END_OF_HELP;
-$string['executionfiles_help'] = <<<'END_OF_HELP'
-<h2>Einleitung</h2>
+$string['check_jail_servers_help'] = '<p>Diese Seite überprüft und zeigt den Status der Jail-Server,
+        die für diese Aktivität verwendet werden.</p>';
+$string['executionfiles_help'] = '<h2>Einleitung</h2>
 <p>Hier definiert man die Dateien, die für die Vorbereitung der Ausführung, des Debuggens oder der Bewertung einer Abgabe benötigt werden. Dazu zählen unter anderem Skripts, Test-Dateien oder Daten.</p>
 <h2>Standard Skript zum Ausführen oder Debuggen</h2>
 <p>Wenn kein Skript zum Ausführen oder Debuggen von Abgaben angegeben wird, verwendet das System automatisch ein Standardskript für die verwendete Sprache (abhängig von der angegebenen Dateiendung). Die folgende Tabelle zeigt die unterstützten Programmiersprachen mit den zugehörigen Dateiendungen und den verwendeten compiler/interpreter/debugger, der im Skript verwendet wird.</p>
@@ -393,10 +391,8 @@ Wenn die Aktion Evaluierung ausgeführt wird, werden die folgenden Variablen auc
 	<li>VPL_GRADEMAX: Maximale Bewertung für diese Aktivität</li>
 </ul>
 <h2>Bewertungsergebnis</h2>
-<p>Die Evaluierungsausgabe wird verarbeitet, um Kommentare und eine vorgeschlagene Bewertung für die Aufgabe zu erhalten. Kommentare können über zwei Arten hinzugefügt werden: mit einem Zeilenkommentar, das mit 'Comment :=&gt;&gt;' beginnt oder mit einem Blockkommentar, das mit der Zeile '&lt;|--' beginnt und mit der Zeile '--|&gt;' endet. Die Bewertung wird von der letzten Zeile die mit 'Grade :=&gt;&gt;' beginnt genommen.</p>
-END_OF_HELP;
-$string['executionoptions_help'] = <<<'END_OF_HELP'
-<p>Auf dieser Seite können verschiedene Ausführungsoptionen konfiguriert werden.</p>
+<p>Die Evaluierungsausgabe wird verarbeitet, um Kommentare und eine vorgeschlagene Bewertung für die Aufgabe zu erhalten. Kommentare können über zwei Arten hinzugefügt werden: mit einem Zeilenkommentar, das mit \'Comment :=&gt;&gt;\' beginnt oder mit einem Blockkommentar, das mit der Zeile \'&lt;|--\' beginnt und mit der Zeile \'--|&gt;\' endet. Die Bewertung wird von der letzten Zeile die mit \'Grade :=&gt;&gt;\' beginnt genommen.</p>';
+$string['executionoptions_help'] = '<p>Auf dieser Seite können verschiedene Ausführungsoptionen konfiguriert werden.</p>
 <ul>
 <li><b>Basiert auf</b>: selektiert eine andere VPL Instanz, von der einige Eigenschaften importiert werden:
 <ul><li>Ausführungsdateien (Vordefinierte Skripts werden zusammengefügt)</li>
@@ -408,42 +404,19 @@ $string['executionoptions_help'] = <<<'END_OF_HELP'
 <li><b>Ausführen</b>, <b>Debuggen</b> and <b>Evalauieren</b>: Muss auf &quot;Ja&quot; gesetzt werden wenn die jeweilige Aktion beim bearbeiten der Abgabe für Studenten auswählbar sein soll.</li>
 <li><b>Nur bei Abgabe evaluieren</b>: Die Abgabe wird automatisch evaluiert, sobald sie hochgeladen wird.</li>
 <li><b>Automatische Bewertung</b>: Wenn das Evaluierungsergebnis Bewertungen enthält, werden diese automatisch als Bewertung für die Abgabe angewandt.</li>
-</ul>
-END_OF_HELP;
-$string['fulldescription_help'] = <<<'END_OF_HELP'
-<p>Hier wird die komplette Beschreibung für diese Aktivität eingetragen.</p>
+</ul>';
+$string['fulldescription_help'] = '<p>Hier wird die komplette Beschreibung für diese Aktivität eingetragen.</p>
 <p>Wenn hier nichts angegeben wird, wird stattdessen die Kurzbeschreibung angezeigt.</p>
-<p>Wenn automatisch evaluiert werden soll, müssen die Interfacebeschreibungen für die Aufgabenstellungen detailliert und eindeutig sein.</p>
-END_OF_HELP;
-$string['index_help'] = <<<'END_OF_HELP'
-<ul>
-  <li><a href="help.php?module=vpl&amp;file=mods.html">Einfach</a></li>
-  <li><a href="help.php?module=vpl&amp;file=fulldescription.html">Komplettbeschreibung</a></li>
-  <li><a href="help.php?module=vpl&amp;file=variations.html">Variationen</a></li>
-  <li><a href="help.php?module=vpl&amp;file=requestedfiles.html">Erforderliche Dateien</a></li>
-  <li>Ausführung
-  <ul>
-  <li><a href="help.php?module=vpl&amp;file=executionfiles.html">Ausführungsdateien</a></li>
-  <li><a href="help.php?module=vpl&amp;file=executionoptions.html">Ausführungsoptionen</a></li>
-  <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">Ressourcenverbrauch Grenzen</a></li>
-  <li><a href="help.php?module=vpl&amp;file=keepfiles.html">Dateien, die beim Ausführen behalten werden.</a></li>
-  </ul>
-  </li>
-</ul>
-END_OF_HELP;
-$string['keepfiles_help'] = <<<'END_OF_HELP'
-<p>Aufgrund von Sicherheitsrisiken werden Dateien, die als &quot;Ausführungsdateien&quot; hinzugefügt wurden, gelöscht bevor das Skript vpl_execution ausgeführt wird.</p>
-Falls einige dieser Dateien während der Ausführung benötigt werden (zum Beispiel als Testdaten) müssen sie hier markiert werden.
-END_OF_HELP;
-$string['local_jail_servers_help'] = <<<'END_OF_HELP'
-<p>Hier können die lokalen Jail-Server für diese Aktivität definiert werden.</p>
+<p>Wenn automatisch evaluiert werden soll, müssen die Interfacebeschreibungen für die Aufgabenstellungen detailliert und eindeutig sein.</p>';
+$string['keepfiles_help'] = '<p>Aufgrund von Sicherheitsrisiken werden Dateien, die als &quot;Ausführungsdateien&quot; hinzugefügt wurden,
+gelöscht bevor das Skript vpl_execution ausgeführt wird.</p>
+Falls einige dieser Dateien während der Ausführung benötigt werden (zum Beispiel als Testdaten) müssen sie hier markiert werden.';
+$string['local_jail_servers_help'] = '<p>Hier können die lokalen Jail-Server für diese Aktivität definiert werden.</p>
 <p>Jede Zeile beinhaltet die komplette URL eines Servers. Leere Zeilen und Kommentare die mit &quot;#&quot; starten können verwendet werden.</p>
-<p>Diese Aktivität wird als Jail-Server Liste verwenden: die Server, die hier gesetzt werden plus die Server der Aktivität auf der diese Aktivität basiert plus die allgemeinen Jail-Server. Wenn diese Aktivität und jene, die auf dieser Aktivität basieren, keine anderen Jail-Server benutzen sollen, kann man am Ende die Zeile &quot;end_of_jails&quot; anfügen.</p>
-END_OF_HELP;
-$string['modulename_help'] = <<<'END_OF_HELP'
-<p>VPL ist ein Aktivitätsmodul für Moodle, das Programmieraufgaben verwaltet und folgende Eigenschaften aufweist:
+<p>Diese Aktivität wird als Jail-Server Liste verwenden: die Server, die hier gesetzt werden plus die Server der Aktivität auf der diese Aktivität
+basiert plus die allgemeinen Jail-Server. Wenn diese Aktivität und jene, die auf dieser Aktivität basieren, keine anderen Jail-Server benutzen sollen, kann man am Ende die Zeile &quot;end_of_jails&quot; anfügen.</p>';
+$string['modulename_help'] = '<p>VPL ist ein Aktivitätsmodul für Moodle, das Programmieraufgaben verwaltet und folgende Eigenschaften aufweist:
 </p>
-
 <ul>
 <li>Möglichkeit, den Programmcode im Browser über ein Java Applet zu verändern</li>
 <li>Studenten können Programme interaktiv im Browser ausführen</li>
@@ -462,22 +435,15 @@ $string['modulename_help'] = <<<'END_OF_HELP'
 Wenn ein Passwort gesetzt wird, wird das System nach dem Passwort fragen.</li>
 <li>Netzwerke aus denen die Abgabe erlaubt wird.</li>
 </ul>
-<p>Auch häufige Optionen wie die Bewertungsskala und Gruppen können auf dieser Seite konfiguriert werden.</p>
-
-END_OF_HELP;
+<p>Auch häufige Optionen wie die Bewertungsskala und Gruppen können auf dieser Seite konfiguriert werden.</p>';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = <<<'END_OF_HELP'
-<p>Hier können Namen für die erforderlichen Dateien gesetzt werden.</p>
+$string['requestedfiles_help'] = '<p>Hier können Namen für die erforderlichen Dateien gesetzt werden.</p>
 <p>Wenn nicht für alle erforderlichen Dateien Namen gesetzt werden sind die unbenannten Dateien optionen und können beliebige Namen erhalten.</p>
-<p>Man kann zusätzlich bereits Inhalte für die erforderlichen Dateien erzeugen, die beim ersten Öffnen mit dem Editor sichtbar werden, wenn noch keine andere Abgabe vorhanden ist.</p>
-END_OF_HELP;
-$string['resourcelimits_help'] = <<<'END_OF_HELP'
-<p>Grenzen für das Maximum können für die Ausführungszeit, den benutzten Arbeitsspeicher, die Ausführungsdateigrößen und die Anzahl der gleichzeitigen Prozesse gesetzt werden.</p>
+<p>Man kann zusätzlich bereits Inhalte für die erforderlichen Dateien erzeugen, die beim ersten Öffnen mit dem Editor sichtbar werden, wenn noch keine andere Abgabe vorhanden ist.</p>';
+$string['resourcelimits_help'] = '<p>Grenzen für das Maximum können für die Ausführungszeit, den benutzten Arbeitsspeicher, die Ausführungsdateigrößen und die Anzahl der gleichzeitigen Prozesse gesetzt werden.</p>
 <p>Diese Grenzen werden verwendet, wenn die Skripts vpl_run.sh, vpl_debug.sh, vpl_evaluate.sh und vpl_execution ausgeführt werden.</p>
-<p>Wenn diese Aktivität auf einer anderen Aktivität basiert können diese Grenzen von denen der Basisaktivität und der globalen Konfiguration beeinflusst werden.</p>
-END_OF_HELP;
-$string['testcases_help'] = <<<'END_OF_HELP'
-<p>Dieses Feature erlaubt es, Studentenprogramme auszuführen und die Ausgabe für eine gegebene Eingabe zu überprüfen. Um die Testfälle zu konfigurieren, muss die Datei &quot;vpl_evaluate.cases&quot; befüllt werden.</p>
+<p>Wenn diese Aktivität auf einer anderen Aktivität basiert können diese Grenzen von denen der Basisaktivität und der globalen Konfiguration beeinflusst werden.</p>';
+$string['testcases_help'] = '<p>Dieses Feature erlaubt es, Studentenprogramme auszuführen und die Ausgabe für eine gegebene Eingabe zu überprüfen. Um die Testfälle zu konfigurieren, muss die Datei &quot;vpl_evaluate.cases&quot; befüllt werden.</p>
 <p>Die Datei &quot;vpl_evaluate.cases&quot; ist folgendermaßen aufgebaut:
 <ul>
 <li> &quot;<strong>case </strong>= Beschreibung des Testfalls&quot;: Optional. Definiert den Start eines Anwendungsfalls.</li>
@@ -491,12 +457,8 @@ $string['testcases_help'] = <<<'END_OF_HELP'
 </li>
 <li> &quot;<strong>grade reduction</strong> = [Wert|Prozentsatz%]&quot; : Standardmäßig reduziert ein fehlgeschlagener Testfall die Punkte der Abgabe anteilsmäßig (Gesamtpunkte/Anzahl der Testfälle). Diese Anweisung ändert jedoch den Punkteabzug.</li>
 </ul>
-</p>
-END_OF_HELP;
-$string['variations_help'] = <<<'END_OF_HELP'
-<p>Eine Menge von Variationen können für eine Aktivität definiert werden, die dann zufällig Studenten zugewiesen werden.</p>
+</p>';
+$string['variations_help'] = '<p>Eine Menge von Variationen können für eine Aktivität definiert werden, die dann zufällig Studenten zugewiesen werden.</p>
 <p>Hier kann festgelegt werden, ob diese Aktivität Variationen hat und welche Bezeichnung die Menge trägt und es können die Variationen selbst hinzugefügt werden.</p>
-<p>Jede Variation hat eine Identifizierungsnummer und eine Beschreibung. Die Identifizierungsnummer wird von der Datei <b>vpl_enviroment.sh</b> benutzt, um die Variation jedes Studenten an die Skriptdatei weiterzugeben. Die Beschreibung, in HTML formatiert, wird für die jeweiligen Studenten angezeigt.</p>
-END_OF_HELP;
-
-?>
+<p>Jede Variation hat eine Identifizierungsnummer und eine Beschreibung. Die Identifizierungsnummer wird von der Datei <b>vpl_enviroment.sh</b> benutzt, um die Variation
+jedes Studenten an die Skriptdatei weiterzugeben. Die Beschreibung, in HTML formatiert, wird für die jeweiligen Studenten angezeigt.</p>'';

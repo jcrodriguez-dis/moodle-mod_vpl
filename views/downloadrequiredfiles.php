@@ -22,4 +22,3 @@ if(!$vpl->is_visible()){
 $filegroup=$vpl->get_required_fgm();
 $filegroup->download_files($vpl->get_printable_name());
 die;
-?>

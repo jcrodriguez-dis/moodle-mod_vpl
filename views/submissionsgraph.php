@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @version		$Id: submissionsgraph.php,v 1.3 2012-07-25 19:03:46 juanca Exp $
  * @package mod_vpl. Graph submissions statistics for a vpl instance and a user
@@ -88,4 +88,3 @@ vpl_graph::draw($vpl->get_printable_name().' - '.$vpl->fullname($user,false),
 							$subsn,
 							$series,
 							$names);
-?>

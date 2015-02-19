@@ -24,7 +24,7 @@ class vpl_sh_c extends vpl_sh_base{
 	const in_char=2;
 	const in_macro=3;
 	const in_comment=4;
-	const in_linecomment=5;	
+	const in_linecomment=5;
 	function __construct(){
 		$this->reserved= array("auto" => true,"break"=> true,"case"=> true,"char"=> true,
 		                       "const"=> true,"continue"=> true,"default"=> true,"do"=> true,
@@ -42,7 +42,7 @@ class vpl_sh_c extends vpl_sh_base{
 		echo "\n";
 		parent::show_line_number();
 	}
-	
+
 
 	function print_file($filename, $filedata, $showln=true){
 		$this->begin($filename,$showln);
@@ -258,5 +258,3 @@ class vpl_sh_c extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

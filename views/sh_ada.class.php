@@ -163,5 +163,3 @@ class vpl_sh_ada extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

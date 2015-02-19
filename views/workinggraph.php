@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @version		$Id: workinggraph.php,v 1.3 2013-06-11 18:33:27 juanca Exp $
  * @package mod_vpl. Graph working time for a vpl instance and/or a user
@@ -129,7 +129,7 @@ if($userid<0){
 	$y_title=get_string('defaultcoursestudents');
 	vpl_graph::draw($title,$x_title,$y_title,
 			$x_data,$y_data,null,true);
-	
+
 }else{
 	$y_data=vpl_get_working_periods($vpl, $userid);
 	session_write_close();
@@ -140,11 +140,10 @@ if($userid<0){
 		$hours+=$y_data[$i];
 	}
 	$user = $DB->get_record('user',array('id' => $userid));
-	$title =sprintf("%s - %s",			
+	$title =sprintf("%s - %s",
 			$vpl->fullname($user,false),
 			get_string('numhours','',sprintf('%3.2f',$hours)));
 	$title_x = get_string('workingperiods',VPL).' - '.$vpl->get_printable_name();
 	vpl_graph::draw($title,$title_x,get_string('hours'),
 					$x_data,$y_data,null,true);
 }
-?>

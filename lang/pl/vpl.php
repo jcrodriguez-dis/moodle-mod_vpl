@@ -5,7 +5,7 @@
  * @author Michal Kedzia
  */
 
-$string['vpl'] = 'Wirtualne Laboratorium Programowania'; 
+$string['vpl'] = 'Wirtualne Laboratorium Programowania';
 $string['novpls'] = 'Brak zdefiniowanego laboratorium';
 $string['moduleconfigtitle'] = 'Moduł konfiguracji VPL';
 $string['modulename'] = 'Wirtualne Laboratorium Programowania';
@@ -15,7 +15,7 @@ $string['shortdescription'] = 'Krótki opis';
 $string['fulldescription'] = 'Pełny opis';
 $string['submissionperiod'] = 'Okres składania';
 $string['startdate'] = 'Dostępny od';
-$string['duedate'] = 'Do'; 
+$string['duedate'] = 'Do';
 $string['submissionrestrictions'] = 'Ograniczenia składania';
 $string['maxfiles'] = 'Maksymalna liczba plików';
 $string['maxfilesexceeded'] ='Maksymalna liczba plików przekroczona';
@@ -87,9 +87,9 @@ $string['sureresetfiles'] = 'Czy chcesz utracić całą pracę i zresetować pli
 $string['test'] = 'Składnik testu';
 $string['testcases'] = 'Przypadków testowych';
 $string['datesubmitted'] = 'Data dodana';
-$string['restrictededitor'] = 'Składanie tylko w zastrzeżonym edytorze';  
-$string['isexample'] = 'Ćwiczenie przykładowe'; 
-$string['examples'] = 'Przykłady';  
+$string['restrictededitor'] = 'Składanie tylko w zastrzeżonym edytorze';
+$string['isexample'] = 'Ćwiczenie przykładowe';
+$string['examples'] = 'Przykłady';
 $string['gradedonby'] = "Przeglądane dnia {\$a->date} przez {\$a->gradername}";
 $string['grader'] = "Oceniający";
 $string['gradedon'] = "Oceniony";
@@ -256,21 +256,21 @@ $string['connection_closed']='zamknięto połączenie';
 $string['notsaved']='Nie zapisano';
 $string['saving']='Zapisywanie';
 $string['running']='Wykonywanie';
-$string['evaluating']='Sprawdzanie'; 
+$string['evaluating']='Sprawdzanie';
 $string['debugging']='Debugowanie';
 
-$string['executionfiles_help'] = <<<'END_OF_HELP'
+$string['executionfiles_help'] = '
 <h1>Pliki wykonywalne</h1>
 <h1>VPL wersji 1.3</h1>
 <p>Tutaj ustawia się pliki, które są niezbędne do przygotowania wykonania, debugowania lub oceny składni. Dotyczy to również skryptów, plików testowych programu i plików danych.</p><p>
 Nowy plik może być dodany poprzez podanie jego nazwy w polu tekstowym  &quot;<b>Dodaj plik</b>&quot; a następnie kliknięcie przycisku &quot;<b>Dodaj plik</b>&quot;.
 <p>Istniejący plik może być zaimportowany poprzez kliknięcie przycisku &quot;<b>Importuj plik</b>&quot;.<p>Wszystkie dodane lub przesłane pliki mogą być edytowane, a wszystkie z nich, z wyjątkiem trzech plików skryptów wymienionych poniżej, mogą zostać zmienione lub usunięte.
-</p> 
+</p>
 Do przygotowania każdej akcji muszą być ustawione trzy pliki skryptów. Pliki te mają predefiniowane nazwy:
  <b>vpl_run.sh</b> (wykonanie), <b>vpl_debug.sh</b>  (debugowanie) and <b>vpl_evaluate.sh</b> (ocena).
 <p>Wykonanie każdego z tych skryptów powinno generować plik o nazwie<b>vpl_execution</b>. Ten plik musi być wykonywalnym plikiem binarnym lub skryptem zaczynającym się od &quot;#!/ bin / sh &quot;. Nie wygenerowanie tego pliku utrudnia wykonanie wybranej akcji.</p>
 
-<p>Jeśli konfigurowana akcja jest oparta na innej akcji, pliki bazowej akcji są dodawane automatycznie. 
+<p>Jeśli konfigurowana akcja jest oparta na innej akcji, pliki bazowej akcji są dodawane automatycznie.
 Zawartość plików vpl_run.sh, vpl_debug.sh and vpl_evaluate.sh jest łączona w kolejności od bazowego do obecnego.</P>
 <p>Ostatecznie plik <b>vpl_environment.sh</b> jest dodawany automatycznie. Ten plik skryptowy zawiera informacje o składni. Informacja zawarta jest w zmiennych środowiskowych: </p>
 <ul> <li> LANG:  używany język. </li>
@@ -283,13 +283,13 @@ Zawartość plików vpl_run.sh, vpl_debug.sh and vpl_evaluate.sh jest łączona 
 </ul>
 <h2>Wyniki</h2>
 <p>Wyjściowa ocena jest przetwarzana, jeśli to możliwe, dodawane są komentarze oraz proponowana ocena. Komentarze mogą być dodawane
-na dwa sposoby: poprzez linię komentarzy zaczynającą się od 'Comment :=&gt;&gt;' lub
-lub jako bloki komentarzy zaczynające się linią zawierającą jedynie '&lt;|--' i kończące się linią zawierającą tylko '--|&gt;'.
-Ocena znajduje się w ostatniej linii zawierającej 'Grade :=&gt;&gt;'.
+na dwa sposoby: poprzez linię komentarzy zaczynającą się od \'Comment :=&gt;&gt;\' lub
+lub jako bloki komentarzy zaczynające się linią zawierającą jedynie \'&lt;|--\' i kończące się linią zawierającą tylko \'--|&gt;\'.
+Ocena znajduje się w ostatniej linii zawierającej \'Grade :=&gt;&gt;\'.
 </p>
-END_OF_HELP;
-$string['executionoptions_help'] = <<<'END_OF_HELP'
-<h1>Opcje wykonania</h1> 
+';
+$string['executionoptions_help'] = '
+<h1>Opcje wykonania</h1>
 <p>Na tej stronie ustawiane są róne opcje wykonania.</p>
 <ul>
 <li><b>W oparciu o</b>: ustawienie innej instancji VPL z której zaimportowane są następujące cechy:
@@ -303,15 +303,15 @@ $string['executionoptions_help'] = <<<'END_OF_HELP'
 <li><b>Sprawdzenie samej składni</b>: składnia jest sprawdzana automatycznie po zaimportowaniu.</li>
 <li><b>Automatyczna ocena</b>: jeżli rezultat sprawdzenia zawiera kody oceny, używane są one do automatycznego oceniania.</li>
 </ul>
-END_OF_HELP;
-$string['fulldescription_help'] = <<<'END_OF_HELP'
-<h1>Pełny opis</h1> 
+';
+$string['fulldescription_help'] = '
+<h1>Pełny opis</h1>
 <p>Musisz tutaj napisać pełny opis czynności.</p>
 <p>Jeśli nic tutaj nie napiszesz, w zamian pokaże się krótki opis.</p>
 <p>Jeśli chcesz sprawdzić automatycznie, interfejsy dla przypisań muszą być dokładne i jednoznaczne.</p>
-END_OF_HELP;
-$string['index_help'] = <<<'END_OF_HELP'
-<h1>Wirtualne laboratorium programowania</h1> 
+';
+$string['index_help'] = '
+<h1>Wirtualne laboratorium programowania</h1>
 <ul>
   <li><a href="help.php?module=vpl&amp;file=mods.html">Podstawy</a></li>
   <li><a href="help.php?module=vpl&amp;file=fulldescription.html">Pełny opis</a></li>
@@ -324,25 +324,25 @@ $string['index_help'] = <<<'END_OF_HELP'
   <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">Limity zasobów wykonania</a></li>
   <li><a href="help.php?module=vpl&amp;file=keepfiles.html">Pliki używane podczas wykonania</a></li>
   </ul>
-  </li> 
+  </li>
 </ul>
-END_OF_HELP;
-$string['keepfiles_help'] = <<<'END_OF_HELP'
+';
+$string['keepfiles_help'] = '
 <h1>Pliki używane podczas wykonania</h1>
 <p>W związku z kwestią bezpieczeństwa, wszystkie pliki dodane jako &quot;Pliki wykonywalne&quot;  vpl_execution.</p>
 Jeżeli któryś z plików jest wymagany podczas wykonania (na przykład jako dane testowe), musi być to tutaj zaznaczone.
-END_OF_HELP;
-$string['local_jail_servers_help'] = <<<'END_OF_HELP'
-<h1>Lokalne jail serwery</h1> 
+';
+$string['local_jail_servers_help'] = '
+<h1>Lokalne jail serwery</h1>
 <p>Dla tej czynności możesz tutaj ustawić lokalny jail serwer i te, które są na nim oparte.</p>
 <p>W każdej linii wpisz pełny URL serwera. Możesz używać pustych linii i komentarzy zaczynających się od "#".</p>
 <p>Jeśli nie chcesz używać większej ilości jail serwerów oraz serwerów pochodnych, na końcu listy serwerów dodaj linię "end_of_jails".
 </p>
-END_OF_HELP;
-$string['modulename_help'] = <<<'END_OF_HELP'
+';
+$string['modulename_help'] = '
 <p><img alt="VPL" src="<?php echo $CFG->wwwroot?>/mod/vpl/icon.gif" />&nbsp;
 <b>VPL. Wirtualnego Laboratorium Programowania</b></p>
-<p><b>Podstawowy opis obsługi</b></p> 
+<p><b>Podstawowy opis obsługi</b></p>
 <p>Aby uzyskać dostęp do innych opcji, muszą być ustawione opcje podstawowe.</p>
 <p>Ograniczenia dla wysyłania mogą być ustawione w panelu <b>Ograniczenia wysyłania</b>:</p>
 <ul>
@@ -353,29 +353,27 @@ $string['modulename_help'] = <<<'END_OF_HELP'
 <li>Sieci, z których wysyłanie jest dozwolone.</li>
 </ul>
 <p>Inne użyteczne opcje, takie jak skala ocen i grupy, mogą być ustawione na tej stronie.</p>
-
-END_OF_HELP;
+';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = <<<'END_OF_HELP'
+$string['requestedfiles_help'] = '
 <h1>Żądane pliki</h1>
 <p>Tutaj ustawia się nazwy żądanych plików do maksymalnego numeru pliku, który został określony w podstawowych wymaganiach ćwiczenia.</p>
 <p>Jeśli nie ustawisz nazw dla wszystkich plików, nienazwane pliki opcjonalnie mogą mieć jakąś nazwę.</p>
 <p>Możesz także dodać zawartość żądanych plików, zawartość ta będzie dostępna za pierwszym razem, gdy zostaną one otwarte w edytorze, jeśli
-nie istnieją poprzednie wpisy.</p> 
-END_OF_HELP;
-$string['resourcelimits_help'] = <<<'END_OF_HELP'
-<h1>Limity zasobów wykonania</h1> 
+nie istnieją poprzednie wpisy.</p>
+';
+$string['resourcelimits_help'] = '
+<h1>Limity zasobów wykonania</h1>
 <p>Maksymalny limit może być ustawiony dla czasu wykonania, użytej pamięci, rozmiaru wykonywalnych plików i liczby procesów wykonywanych równocześnie.</p>
 <p>Limity te są używane podczas uruchomienia plików skryptowych vpl_run.sh, vpl_debug.sh i vpl_evaluate.sh oraz wbudowanego w nie pliku vpl_execution.</p>
 <p>Jeśli dana czynność jest oparta na innej czynności, limity mogą wpływać na bazowe pliki oraz ich potomków lub na globalną konfigurację tego modułu.</p>
-END_OF_HELP;
-$string['testcases_help'] = <<<'END_OF_HELP'
+';
+$string['testcases_help'] = '
 <b>Przykro nam, patrz wersja angielska</b>
-END_OF_HELP;
-$string['variations_help'] = <<<'END_OF_HELP'
-<h1>Wariacje</h1> 
+';
+$string['variations_help'] = '
+<h1>Wariacje</h1>
 <p>Zestaw wariacji może być zdefiniowany dla każdej czynności. Wariacje te są losowo przypisywane do studentów.</p>
 <p>Możesz tutaj wskazać czy czynność zawiera wariacje, ustawić tytuł zestawowi wariacji i dodać pożądane wariacje.</p>
 <p>Każda wariacja ma kod identyfikacyjny oraz opis. Kod identyfikacyjny jest używany przez plik <b>vpl_enviroment.sh</b> aby przekazać wariację przypisaną do każdego studenta plikowi skryptowemu. Opis w formacie HTML jest pokazywany studentom, którzy przypisali odpowiednie zmiany.</p>
-END_OF_HELP;
-?>
+';'

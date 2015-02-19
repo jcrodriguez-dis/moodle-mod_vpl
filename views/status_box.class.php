@@ -95,4 +95,3 @@ class vpl_progress_bar extends vpl_status_box{
 		$this->max = $max;
 	}
 }
-?>

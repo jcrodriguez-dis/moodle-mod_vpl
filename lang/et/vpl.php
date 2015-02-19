@@ -283,4 +283,3 @@ $string['running']='Käivitamine';
 $string['evaluating']='Kontrollimine';
 $string['debugging']='Silumine';
 
-?>

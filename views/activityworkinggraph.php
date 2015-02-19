@@ -26,4 +26,3 @@ echo '<div style="text-align: center">';
 echo '<img src="'.vpl_rel_url('workinggraph.php','id',$id,'userid',-1).'" alt="Working periods" />';
 echo '</div>';
 $vpl->print_footer_simple();
-?>

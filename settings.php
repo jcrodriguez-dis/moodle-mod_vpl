@@ -18,9 +18,9 @@
  * Module common settings
  *
  * @package mod_vpl
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 defined('MOODLE_INTERNAL') || die;
@@ -49,37 +49,37 @@ $default_defaultexeprocesses = 100;
 $prefix = 'mod_vpl/';
 $settings->add(new admin_setting_heading('heading1','',get_string('maxresourcelimits',VPL)));
 $settings->add(new admin_setting_configselect($prefix.'maxfilesize', get_string('maxfilesize', VPL)
-	,get_string('maxfilesize', VPL), $default_maxfilesize, $list_maxfilesize));
+    ,get_string('maxfilesize', VPL), $default_maxfilesize, $list_maxfilesize));
 $settings->add(new admin_setting_configselect($prefix.'maxexetime', get_string('maxexetime', VPL)
-	,get_string('maxexetime', VPL), $default_maxtime, $list_maxtime));
+    ,get_string('maxexetime', VPL), $default_maxtime, $list_maxtime));
 $settings->add(new admin_setting_configselect($prefix.'maxexefilesize', get_string('maxexefilesize', VPL)
-	,get_string('maxexefilesize', VPL), $default_maxexefilesize, $list_maxexefilesize));
+    ,get_string('maxexefilesize', VPL), $default_maxexefilesize, $list_maxexefilesize));
 $settings->add(new admin_setting_configselect($prefix.'maxexememory', get_string('maxexememory', VPL)
-	,get_string('maxexememory', VPL), $default_maxexememory, $list_maxexememory));
+    ,get_string('maxexememory', VPL), $default_maxexememory, $list_maxexememory));
 $settings->add(new admin_setting_configtext($prefix.'maxexeprocesses', get_string('maxexeprocesses', VPL)
-	,get_string('maxexeprocesses', VPL),$default_maxexeprocesses, PARAM_INT ,4));
+    ,get_string('maxexeprocesses', VPL),$default_maxexeprocesses, PARAM_INT ,4));
 
 $settings->add(new admin_setting_heading('headingd','',get_string('defaultresourcelimits',VPL)));
 $name='defaultfilesize';
 $settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-	,get_string($name, VPL), $default_defaultfilesize, $list_maxfilesize));
+    ,get_string($name, VPL), $default_defaultfilesize, $list_maxfilesize));
 $name='defaultexetime';
 $settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-	,get_string($name, VPL), $default_defaulttime, $list_maxtime));
+    ,get_string($name, VPL), $default_defaulttime, $list_maxtime));
 $name='defaultexefilesize';
 $settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-	,get_string($name, VPL), $default_defaultexefilesize, $list_maxexefilesize));
+    ,get_string($name, VPL), $default_defaultexefilesize, $list_maxexefilesize));
 $name='defaultexememory';
 $settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-	,get_string($name, VPL), $default_defaultexememory, $list_maxexememory));
+    ,get_string($name, VPL), $default_defaultexememory, $list_maxexememory));
 $name='defaultexeprocesses';
 $settings->add(new admin_setting_configtext($prefix.$name, get_string($name, VPL)
-	,get_string($name, VPL),$default_defaultexeprocesses, PARAM_INT ,4));
+    ,get_string($name, VPL),$default_defaultexeprocesses, PARAM_INT ,4));
 
 $settings->add(new admin_setting_heading('heading2','',get_string('jail_servers_config',VPL)));
 $default = "#This server is only for test use. "
-			."Install your own Jail server and remove the following line as soon as possible\n".
-			'http://demojail.dis.ulpgc.es';
+            ."Install your own Jail server and remove the following line as soon as possible\n".
+            'http://demojail.dis.ulpgc.es';
 $settings->add(new admin_setting_configtextarea($prefix.'jail_servers',
                get_string('jail_servers', VPL),get_string('jail_servers_description', VPL),$default));
 $settings->add(new admin_setting_configcheckbox($prefix.'acceptcertificates', get_string('acceptcertificates', VPL),
@@ -91,4 +91,3 @@ $settings->add(new admin_setting_configselect($prefix.'discard_submission_period
                get_string('discard_submission_period', VPL),
                get_string('discard_submission_period_description', VPL),$default,$list));
 
-?>

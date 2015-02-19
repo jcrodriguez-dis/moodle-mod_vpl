@@ -262,12 +262,9 @@ $string['vpl_debug.sh'] = 'このスクリプトは提出されたプログラ�
 $string['vpl_evaluate.cases'] = '提出されたプログラムを評価するための実行時ケースをここに記述します';
 $string['vpl_evaluate.sh'] = 'このスクリプトは提出されたプログラムを評価します';
 $string['vpl_run.sh'] = 'このスクリプトは提出されたプログラムを実行のために準備します';
-$string['check_jail_servers_help'] = <<<'END_OF_HELP'
-<h1>jailサーバのチェック</h1>
-<p>このページでは、この活動で利用するjailサーバの状態を検査して表示する。</p>
-END_OF_HELP;
-$string['executionfiles_help'] = <<<'END_OF_HELP'
-<h1>実行ファイル</h1>
+$string['check_jail_servers_help'] = '<h1>jailサーバのチェック</h1>
+<p>このページでは、この活動で利用するjailサーバの状態を検査して表示する。</p>';
+$string['executionfiles_help'] = '<h1>実行ファイル</h1>
 <h2>イントロダクション</h2>
 <p>ここでは、実行準備、デバッグ、提出物の評価などに必要なファイルを設定する。
 これには、スクリプトファイル、プログラムのテストファイル、データファイルなどがある。</p>
@@ -403,14 +400,12 @@ vpl_run.sh、vpl_debug.sh、vpl_evaluate.shファイルの内容は、
 <h2>評価結果</h2>
 <p>評価の出力が取り出され、可能であればコメントとして、提案された評価とともに表示される。
 コメントは2つの方法で設定できる。
-'Comment :=&gt;&gt;'で始まる行は、1行コメントとして取り扱われる。
-'&lt;|--'だけの行から'--|&gt;'だけの行までの間は、
+\'Comment :=&gt;&gt;\'で始まる行は、1行コメントとして取り扱われる。
+\'&lt;|--\'だけの行から\'--|&gt;\'だけの行までの間は、
 ブロックコメントとして扱われる。
-評価は'Grade :=&gt;&gt;'で始まる最後の行から取り出される。
-</p>
-END_OF_HELP;
-$string['executionoptions_help'] = <<<'END_OF_HELP'
-<h1>実行オプション</h1>
+評価は\'Grade :=&gt;&gt;\'で始まる最後の行から取り出される。
+</p>';
+$string['executionoptions_help'] = '<h1>実行オプション</h1>
 <p>このページでは、各種実行時オプションを設定する。</p>
 <ul>
 <li><b>オプションのコピー</b>: 他のVPL活動から設定などを取り込む
@@ -423,52 +418,23 @@ $string['executionoptions_help'] = <<<'END_OF_HELP'
 <li><b>実行</b>、<b>デバッグ</b>、<b>評価</b>: 提出物の編集中にそれぞれのアクションを可能にするのであれば"Yes"に設定する。これは学生にのみ影響する。評価が可能なユーザに対しては、これらの機能は常に利用可能である。</li>
 <li><b>提出時に評価</b>: 提出物は、アップロードされたときに自動的に評価される。</li>
 <li><b>自動評価</b>: 評価結果に評価コードが含まれる場合、自動的に評価の値として設定される。</li>
-</ul>
-END_OF_HELP;
-$string['fulldescription_help'] = <<<'END_OF_HELP'
-<h1>詳細説明</h1>
+</ul>';
+$string['fulldescription_help'] = '<h1>詳細説明</h1>
 <p>ここには、活動の詳細な説明を書かなければならない。</p>
 <p>ここに何も書かなければ、簡単な説明が代わりに表示される。</p>
-<p>自動的に評価するつもりならば、課題のインタフェースは詳細に曖昧でない形で示さなければならない。</p>
-END_OF_HELP;
-$string['index_help'] = <<<'END_OF_HELP'
-<h1>Virtual Programming Lab</h1>
-<ul>
-  <li><a href="help.php?module=vpl&amp;file=mods.html">基本</a></li>
-  <li><a href="help.php?module=vpl&amp;file=fulldescription.html">詳細説明</a></li>
-  <li><a href="help.php?module=vpl&amp;file=variations.html">バリエーション</a></li>
-  <li><a href="help.php?module=vpl&amp;file=requestedfiles.html">要求されたファイル</a></li>
-  <li>実行
-  <ul>
-  <li><a href="help.php?module=vpl&amp;file=executionfiles.html">ファイル</a></li>
-  <li><a href="help.php?module=vpl&amp;file=executionoptions.html">オプション</a></li>
-  <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">リソース制限</a></li>
-  <li><a href="help.php?module=vpl&amp;file=keepfiles.html">保存するファイル</a></li>
-  <li><a href="help.php?module=vpl&amp;file=check_jail_servers.html">jailサーバのチェック</a></li>
-  <li><a href="help.php?module=vpl&amp;file=local_jail_servers.html">ローカルjailサーバ</a></li>
-  </ul>
-  </li>
-</ul>
-END_OF_HELP;
-$string['keepfiles_help'] = <<<'END_OF_HELP'
-<h1>実行時に保持するファイル</h1>
+<p>自動的に評価するつもりならば、課題のインタフェースは詳細に曖昧でない形で示さなければならない。</p>';
+$string['keepfiles_help'] = '<h1>実行時に保持するファイル</h1>
 <p>セキュリティ上の問題により、&quot;実行ファイル&quot;により追加されたファイルはvpl_executionファイルの実行前に削除される。</p>
-<p>これらのファイルを（例えば、テストデータとして用いるなど）実行時に残しておく必要がある場合、ここで指定する。</p>
-END_OF_HELP;
-$string['local_jail_servers_help'] = <<<'END_OF_HELP'
-<h1>ローカルjailサーバ</h1>
+<p>これらのファイルを（例えば、テストデータとして用いるなど）実行時に残しておく必要がある場合、ここで指定する。</p>';
+$string['local_jail_servers_help'] = '<h1>ローカルjailサーバ</h1>
 <p>ここでは、この活動で利用するローカルjailサーバを追加し設定できる。</p>
 <p>サーバのURLを1台につき1行で入力する。このとき、空行や"#"で始まるコメント行も利用できる。</p>
 <p>この活動は、jailサーバリストを利用します。
 このサーバリストは、ここで設定されたサーバに加え、コピー元の活動のリスト、
 さらには共通のリストから構成される。
 もしこの活動やここからコピーされる活動が他のサーバを利用しないようにするには、
-サーバリストの最後に"end_of_jails"を含む行を記述する。</p>
-END_OF_HELP;
-$string['modulename_help'] = <<<'END_OF_HELP'
-
-<p>VPLは、プログラミング課題の管理をするためのMoodleの活動モジュールであり、次のような特徴を持っている。</p>
-
+サーバリストの最後に"end_of_jails"を含む行を記述する。</p>';
+$string['modulename_help'] = '<p>VPLは、プログラミング課題の管理をするためのMoodleの活動モジュールであり、次のような特徴を持っている。</p>
 <ul>
 <li>アプレットを用い、プログラムのソースコードをブラウザ内で編集することが可能</li>
 <li>学生はブラウザ内でプログラムを対話的に実行可能（ここの環境では不可）</li>
@@ -486,29 +452,20 @@ $string['modulename_help'] = <<<'END_OF_HELP'
 パスワードを設定した場合、活動にアクセスするときにシステムがパスワードを問い合わせる。</li>
 <li>提出することができるネットワーク。</li>
 </ul>
-<p>また、評価のスケールやグループなど、標準的なオプションもこのページで設定できる。</p>
-END_OF_HELP;
+<p>また、評価のスケールやグループなど、標準的なオプションもこのページで設定できる。</p>';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = <<<'END_OF_HELP'
-<h1>要求されたファイル</h1>
+$string['requestedfiles_help'] = '<h1>要求されたファイル</h1>
 <p>ここでは、活動の基本部で指定されたファイル数まで、要求されたファイルの名前を指定する。</p>
 <p>もしファイル名が指定されていない物があれば、それらは提出しないことも可能であり、どんな名前を付けても良い。</p>
-<p>要求されたファイルの内容を登録することも可能で、その場合、まだファイルが提出されていない間は、最初にエディタでファイルを開いたときにその内容が用いられる。</p>
-END_OF_HELP;
-$string['resourcelimits_help'] = <<<'END_OF_HELP'
-<h1>実行時リソース制限</h1>
+<p>要求されたファイルの内容を登録することも可能で、その場合、まだファイルが提出されていない間は、最初にエディタでファイルを開いたときにその内容が用いられる。</p>';
+$string['resourcelimits_help'] = '<h1>実行時リソース制限</h1>
 <p>実行時間、使用メモリ、実行ファイルの大きさ、同時に実行するプロセス数の制限を指定できる。</p>
 <p>これらの制限は、スクリプトファイルvpl_run.sh、vpl_debug.sh、vpl_evaluate.shを実行する際や、
 その実行により作られるvpl_executionファイルに適用される。</p>
-<p>この活動がオプションを別の活動からコピーするようにしている場合、コピー元やその祖先の活動で設定されている制限、さらにはモジュール全体に対する制限に影響される。</p>
-END_OF_HELP;
-$string['variations_help'] = <<<'END_OF_HELP'
-<h1>バリエーション</h1>
+<p>この活動がオプションを別の活動からコピーするようにしている場合、コピー元やその祖先の活動で設定されている制限、さらにはモジュール全体に対する制限に影響される。</p>';
+$string['variations_help'] = '<h1>バリエーション</h1>
 <p>活動には、いくつかのバリエーションを定義できる。このバリエーションは、ランダムに学生に割り当てられる。</p>
 <p>活動にバリエーションがあるなら、それを示して、バリエーションに名前を指定する。</p>
 <p>バリエーションには識別コードと説明がある。識別コードは、<b>vpl_environment.sh</b>ファイルによって、
 それぞれの学生に割り当てられたバリエーションをスクリプトファイルに受け渡すために用いられる。
-HTMLで書かれた説明は、対応するバリエーションが割り当てられた学生に提示される。</p>
-END_OF_HELP;
-
-?>
+HTMLで書かれた説明は、対応するバリエーションが割り当てられた学生に提示される。</p>'';

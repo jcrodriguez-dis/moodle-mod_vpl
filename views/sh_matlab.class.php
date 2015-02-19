@@ -28,11 +28,11 @@ class vpl_sh_matlab extends vpl_sh_base{
 	const in_macro=3;
 	const in_comment=4;
 	const in_linecomment=5;
-	var $string_delimiter;	
+	var $string_delimiter;
 	var $functions;
 	function __construct(){
 		$this->reserved= array(//Source MATLAB Quick Reference Author: Jialong He
-				//﻿Managing Commands and Functions 	 
+				//﻿Managing Commands and Functions
 				"addpath" => true, "doc" => true, "docopt" => true, "genpath" => true, "help" => true, "helpbrowser" => true,
 				"helpdesk" => true, "helpwin" => true, "lasterr" => true, "lastwarn" => true, "license" => true,
 				"lookfor" => true, "partialpath" => true, "path" => true, "pathtool" => true, "profile" => true,
@@ -42,7 +42,7 @@ class vpl_sh_matlab extends vpl_sh_base{
 				"clear" => true, "disp" => true, "length" => true, "load" => true, "memory" => true, "mlock" => true,
 				"munlock" => true, "openvar" => true, "Open" => true, "pack" => true, "save" => true, "saveas" => true,
 				"size" => true, "who" => true, "whos" => true, "workspace" => true,
-				//﻿Starting and Quitting MATLAB 	 
+				//﻿Starting and Quitting MATLAB
 				"finish" => true, "exit" => true, "matlab" => true, "matlabrc" => true, "quit" => true, "startup" => true,
 				//  as a Programming Language
 				"builtin" => true, "eval" => true, "evalc" => true, "evalin" => true, "feval" => true,
@@ -53,13 +53,13 @@ class vpl_sh_matlab extends vpl_sh_base{
 				"switch" => true, "try" => true, "warning" => true, "while" => true,
 				//Interactive Input
 				"input" => true, "keyboard" => true, "menu" => true, "pause" => true,
-				//﻿Object-Oriented Programming 	 
+				//﻿Object-Oriented Programming
 				"class" => true, "double" => true, "inferiorto" => true, "inline" => true,
 				"int8" => true, "int16" => true, "int32" => true, "isa" => true, "loadobj" => true,
 				"saveobj" => true, "single" => true, "superiorto" => true, "uint8" => true,
 				"uint16" => true, "uint32" => true,
 				//Operator
-				"kron" => true, "xor" => true, "and" => true		
+				"kron" => true, "xor" => true, "and" => true
 		);
 		$this->functions= array(
 				"kron" => true, "xor" => true, "all" => true, "any" => true, "exist" => true, "find" => true,
@@ -131,7 +131,7 @@ class vpl_sh_matlab extends vpl_sh_base{
 				"camdolly" => true, "camlookat" => true, "camorbit" => true, "campan" => true, "campos" => true, "camproj" => true, "camroll" => true,
 				"camtarget" => true, "camup" => true, "camva" => true, "camzoom" => true, "daspect" => true, "pbaspect" => true, "view" => true,
 				"viewmtx" => true, "xlim" => true, "ylim" => true, "zlim" => true, "camlight" => true, "diffuse" => true, "lighting" => true,
-				"lightingangle" => true, "material" => true, "specular" => true, "brighten" => true, "bwcontr" => true, "caxis" => true,				
+				"lightingangle" => true, "material" => true, "specular" => true, "brighten" => true, "bwcontr" => true, "caxis" => true,
 				"colorbar" => true, "colorcube" => true, "colordef" => true, "colormap" => true, "graymon" => true, "hsv2rgb" => true,
 				"rgb2hsv" => true, "rgbplot" => true, "shading" => true, "spinmap" => true, "surfnorm" => true, "whitebg" => true, "autumn" => true,
 				"bone" => true, "contrast" => true, "cool" => true, "copper" => true, "flag" => true, "gray" => true, "hot" => true, "hsv" => true, "jet" => true,
@@ -181,7 +181,7 @@ class vpl_sh_matlab extends vpl_sh_base{
 		echo "\n";
 		parent::show_line_number();
 	}
-	
+
 
 	function print_file($filename, $filedata, $showln=true){
 		$this->begin($filename,$showln);
@@ -286,7 +286,7 @@ class vpl_sh_matlab extends vpl_sh_base{
 						$this->initTag(self::c_string);
 						$this->show_text('"');
 						break;
-					}elseif($current == "'" && 
+					}elseif($current == "'" &&
 							($last_no_space == self::LF || strpos("[,;'(=",$last_no_space) !== false) )	{
 						$state = self::in_string;
 						$this->string_delimiter = "'";
@@ -301,7 +301,7 @@ class vpl_sh_matlab extends vpl_sh_base{
 					$current=='_' || ord($current) > 127){
 						$pending .= $current;
 					} else {
-						//TODO check level without { } 
+						//TODO check level without { }
 						$this->show_pending($pending);
 						if($current == self::LF){
 							$this->show_line_number();
@@ -320,5 +320,3 @@ class vpl_sh_matlab extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

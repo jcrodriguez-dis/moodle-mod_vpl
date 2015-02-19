@@ -110,8 +110,8 @@ class vpl_sh_scheme extends vpl_sh_base{
 					break;
 				}
 				case self::in_regular:{
-					
-					if(($current != ' ') && ($current != '(')&& ($current!=')') 
+
+					if(($current != ' ') && ($current != '(')&& ($current!=')')
 					&& ($current != ';')&& ($current != '"') && ($current!=self::LF) && ($current!=self::TAB)) {
 						if($pending == ''){
 							$pospendig=$i;
@@ -173,4 +173,3 @@ class vpl_sh_scheme extends vpl_sh_base{
 	}
 }
 
-?>

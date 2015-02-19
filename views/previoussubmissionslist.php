@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @version		$Id: previoussubmissionslist.php,v 1.8 2012-06-05 23:22:08 juanca Exp $
  * @package mod_vpl. List previous submissions for a vpl and user
@@ -79,11 +79,9 @@ if($detailed){
 	$nsub = count($submissionslist);
 	foreach ($submissions as $index => $sub) {
 		echo '<hr><h2><a name="f'.$nsub.'"># '.$nsub.'</a></h2>';
-		
+
 		$nsub--;
 		$sub->print_submission();
 	}
 }
 $vpl->print_footer();
-
-?>

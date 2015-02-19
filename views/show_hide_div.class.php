@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @version		$Id: show_hide_div.class.php,v 1.4 2012-06-05 23:22:09 juanca Exp $
  * @package mod_vpl. Show/hide HTML div
@@ -59,4 +59,3 @@ class vpl_hide_show_div{
 		}
 	}
 }
-?>

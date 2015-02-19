@@ -64,4 +64,3 @@ class vpl_sh_factory{
 		}
 	}
 }
-?>

@@ -116,5 +116,3 @@ class vpl_sh_text extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

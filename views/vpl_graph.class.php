@@ -1,4 +1,4 @@
-<?php 
+<?php
 /**
  * @version		$Id: vpl_graph.class.php,v 1.2 2012-06-05 23:22:09 juanca Exp $
  * @package mod_vpl. Graph submissions statistics for a vpl instance and a user
@@ -24,7 +24,7 @@ class vpl_graph{
 	 */
 	static public function draw($title,$x_label, $y_label,$x_data,$y_data,$legends=null,$type_bar=false){
 		$graph = new graph(750, 400);
-		$graph->parameter['title'] = $title;	
+		$graph->parameter['title'] = $title;
 		$graph->parameter['x_label'] = $x_label;
 		$graph->parameter['y_label_left'] = $y_label;
 		$graph->x_data= $x_data;
@@ -105,6 +105,5 @@ class vpl_graph{
 }
 
 require_once dirname(__FILE__).'/../../../config.php';
-global $CFG; 
+global $CFG;
 require_once("$CFG->libdir/graphlib.php");
-?>

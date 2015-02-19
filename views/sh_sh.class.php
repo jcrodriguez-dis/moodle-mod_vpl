@@ -33,13 +33,13 @@ class vpl_sh_sh extends vpl_sh_base{
 		$list =array('exec', 'eval', 'cd',
 					'exit', 'export', 'getopts',
 					'hash', 'pwd', 'readonly', 'return',
-					'shift', 'test', 'times', 'trap', 
+					'shift', 'test', 'times', 'trap',
 					'unset', 'umask', 'alias', 'bind',
 					'builtin','command', 'declare', 'echo',
 					'enable', 'help', 'let', 'local', 'logout',
 					'printf', 'read', 'shopt', 'source', 'type',
 					'typeset', 'ulimit', 'unalias',
-					'set', 
+					'set',
 					'until', 'do','done',
 					'while', 'for', 'break', 'continue',
 					'if', 'then', 'elif', 'else', 'fi',
@@ -231,5 +231,3 @@ class vpl_sh_sh extends vpl_sh_base{
 		$this->end();
 	}
 }
-
-?>

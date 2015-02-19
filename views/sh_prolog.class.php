@@ -23,19 +23,19 @@ class vpl_sh_prolog extends vpl_sh_base{
 		}
 		return false;
 	}
-	
+
 	protected function isIdentifierChar($c) {
 		return ($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z')
 				|| ($c >= '0' && $c <= '9') || ($c == '_');
 	}
-	
+
 	protected function show_pending(&$rest, &$s = null, $i=null){
 		if(strlen($rest) == 0){
 			return;
 		}
 		$c = $rest[0];
 		if($this->isIdentifierChar($c)){
-			$needEnd = true; 
+			$needEnd = true;
 			if(($c >= 'A' && $c <= 'Z') || $c == '_'){
 				$this->initTag(self::c_variable);
 			}elseif(($c >= 'a' && $c <= 'z') ){
@@ -60,14 +60,14 @@ class vpl_sh_prolog extends vpl_sh_base{
 	const in_char=2;
 	const in_macro=3;
 	const in_comment=4;
-	const in_linecomment=5;	
+	const in_linecomment=5;
 	const in_identifier=6;
 
 	function show_line_number(){
 		echo "\n";
 		parent::show_line_number();
 	}
-	
+
 
 	function print_file($filename, $filedata, $showln=true){
 		$this->begin($filename,$showln);
@@ -217,4 +217,3 @@ class vpl_sh_prolog extends vpl_sh_base{
 	}
 }
 
-?>
