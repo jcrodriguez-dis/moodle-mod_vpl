@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined ( 'MOODLE_INTERNAL' ) || die ();
-require_once(dirname(( __FILE__ ) . '/restore_vpl_stepslib.php'));
+require_once(dirname( __FILE__ ) . '/restore_vpl_stepslib.php');
 class restore_vpl_activity_task extends restore_activity_task {
     private $structurestep;
     /**
