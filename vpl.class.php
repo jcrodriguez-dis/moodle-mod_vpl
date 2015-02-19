@@ -1566,7 +1566,7 @@ class mod_vpl {
         $variations = $DB->get_records(VPL_VARIATIONS,array('vpl' => $this->instance->id));
         if(count($variations) >0){
             $div = new vpl_hide_show_div();
-            echo '<b>'.get_string('variations',VPL).$div->generate(true).'</b><br />';
+            echo '<br /><b>'.get_string('variations',VPL).$div->generate(true).'</b><br />';
             $div->begin_div();
             if(!$this->instance->usevariations){
                 echo '<b>'.get_string('variations_unused',VPL).'</b><br />';
