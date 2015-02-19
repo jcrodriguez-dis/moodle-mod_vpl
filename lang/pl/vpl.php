@@ -376,4 +376,4 @@ $string['variations_help'] = '
 <p>Zestaw wariacji może być zdefiniowany dla każdej czynności. Wariacje te są losowo przypisywane do studentów.</p>
 <p>Możesz tutaj wskazać czy czynność zawiera wariacje, ustawić tytuł zestawowi wariacji i dodać pożądane wariacje.</p>
 <p>Każda wariacja ma kod identyfikacyjny oraz opis. Kod identyfikacyjny jest używany przez plik <b>vpl_enviroment.sh</b> aby przekazać wariację przypisaną do każdego studenta plikowi skryptowemu. Opis w formacie HTML jest pokazywany studentom, którzy przypisali odpowiednie zmiany.</p>
-';'
+';

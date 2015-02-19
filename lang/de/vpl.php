@@ -461,4 +461,4 @@ $string['testcases_help'] = '<p>Dieses Feature erlaubt es, Studentenprogramme au
 $string['variations_help'] = '<p>Eine Menge von Variationen können für eine Aktivität definiert werden, die dann zufällig Studenten zugewiesen werden.</p>
 <p>Hier kann festgelegt werden, ob diese Aktivität Variationen hat und welche Bezeichnung die Menge trägt und es können die Variationen selbst hinzugefügt werden.</p>
 <p>Jede Variation hat eine Identifizierungsnummer und eine Beschreibung. Die Identifizierungsnummer wird von der Datei <b>vpl_enviroment.sh</b> benutzt, um die Variation
-jedes Studenten an die Skriptdatei weiterzugeben. Die Beschreibung, in HTML formatiert, wird für die jeweiligen Studenten angezeigt.</p>'';
+jedes Studenten an die Skriptdatei weiterzugeben. Die Beschreibung, in HTML formatiert, wird für die jeweiligen Studenten angezeigt.</p>';
