@@ -41,7 +41,9 @@ class vpl_filetype{
                         'pl' =>'prolog',
                         'scala' => 'scala',
                         'py' => 'python',
-                        'm' => 'matlab'
+                        'm' => 'matlab',
+                        'html' => 'html',
+                        'htm' => 'html'
     );
     static public function str($ext){
         if(isset(self::$sstr[$ext])){
