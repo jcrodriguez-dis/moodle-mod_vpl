@@ -159,15 +159,15 @@ class vpl_file_from_activity extends vpl_file_from_base{
     var $filename;
     var $subid;
     var $userid;
-    function __construct(&$filename,&$vpl,$submistance){
+    function __construct(&$filename,&$vpl,$subinstance){
         $id = $vpl->get_instance()->id;
         if(!isset(self::$vpls[$id])){
             self::$vpls[$id]=$vpl;
         }
         $this->vplid = $id;
         $this->filename=$filename;
-        $this->userid=$submistance->userid;
-        $this->subid=$submistance->id;
+        $this->userid=$subinstance->userid;
+        $this->subid=$subinstance->id;
     }
     public function show_info(){
         global $DB;
@@ -190,6 +190,9 @@ class vpl_file_from_activity extends vpl_file_from_base{
             $ret .= $vpl->user_fullname_picture($user);
         }
         return $ret;
+    }
+    function get_userid(){
+        return $this->userid;
     }
     public function can_access(){
         return true;
@@ -686,7 +689,7 @@ class vpl_similarity{
                 $other=$files[$j];
                 //If not the same language then skip
                 if($current_type != $other->get_type() ||
-                (strlen($userid)>0 && $userid == $other->get_userid())){
+                ($userid!='' && $userid == $other->get_userid())){
                     continue;
                 }
                 //Calculate metrics
