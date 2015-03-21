@@ -34,6 +34,7 @@ require_login();
 $id = required_param('id',PARAM_INT);
 $userid = optional_param('userid',FALSE,PARAM_INT);
 $copy = optional_param('privatecopy',false,PARAM_INT);
+$subid = optional_param('submissionid',false,PARAM_INT);
 $vpl = new mod_vpl($id);
 $page_parms = array('id' => $id);
 if($userid && !$copy){
@@ -58,11 +59,21 @@ else { //Edit other user submission
 }
 $vpl->network_check();
 $vpl->password_check();
-
-$lastsub = $vpl->last_user_submission($userid);
 $instance= $vpl->get_instance();
 $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
 $grader = $vpl->has_capability(VPL_GRADE_CAPABILITY);
+//This code allow to edit previous versions (only managers)
+if($subid && $vpl->has_capability(VPL_MANAGE_CAPABILITY)){
+    $parms = array('id'=> $subid, 'vpl'=> $instance->id ,'userid' =>$userid);
+    $res = $DB->get_records('vpl_submissions', $parms);
+    if(count($res)==1){
+        $lastsub = $res[$subid];
+    }else{
+        $lastsub = false;
+    }
+}else{
+    $lastsub = $vpl->last_user_submission($userid);
+}
 $options = Array();
 $options['id']=$id;
 $options['restrictededitor']=$instance->restrictededitor && !$grader;
