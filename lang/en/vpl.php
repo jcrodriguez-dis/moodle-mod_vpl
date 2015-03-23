@@ -2,10 +2,10 @@
 $string['about']= 'About';
 $string['acceptcertificates']='Accept self signed certificates';
 $string['acceptcertificates_description']='If the execution servers are not using self signed certificates uncheck this option';
-$string['acceptcertificatesnote']= "<p>You are using a secure connection.<p/>
-<p>To use a secure connection with the execution servers it is required that you accept its certificates.</p>
-<p>Instead, you can also use a http insecure connection.</p>
-<p>Please, click on the following links and accept the offered certificate.</p>";
+$string['acceptcertificatesnote']= "<p>You are using an encrypted connection.<p/>
+<p>To use an encrypted connection with the execution servers it is required you accept its certificates.</p>
+<p>If you have problems with this process, you can try to use a http (unencrypted) connection or other browser.</p>
+<p>Please, click on the following links (server #) and accept the offered certificate.</p>";
 $string['addfile'] = 'Add file';
 $string['advanced']='Advanced';
 $string['allfiles']='All files';
