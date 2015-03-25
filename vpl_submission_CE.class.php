@@ -323,6 +323,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
     function run($type){
         //Stop current task if one
         $this->cancelProcess();
+        $plugincfg = get_config('mod_vpl');
         $execute_scripts= array(0=>'vpl_run.sh',1=>'vpl_debug.sh',2=>'vpl_evaluate.sh');
         $data = $this->prepare_execution($type);
         $data->execute =$execute_scripts[$type];
@@ -336,15 +337,18 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
         $jailResponse = $this->jailRequestAction($data,$maxmemory,$localservers,$server);
         $isHTTPS = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on";
         $parsed = parse_url($server);
-        if($isHTTPS)
-            $baseURL = 'wss://';
-        else
-            $baseURL = 'ws://';
+        switch($plugincfg->websocket_protocol) {
+             case 'always_use_wss': $use_wss =true; break;
+             case 'always_use_ws': $use_wss =false; break;
+             default: $use_ws= $isHTTPS;
+        }
+        $baseURL = $use_wss?'wss://':'ws://';
         $baseURL.=$parsed['host'];
-        if($isHTTPS)
+        if($use_wss){
             $baseURL.=':'.$jailResponse['secureport'];
-        elseif(isset($parsed['port']))
+        }elseif(isset($parsed['port'])){
             $baseURL.=':'.$parsed['port'];
+        }
         $baseURL.='/';
         $response = new stdClass();
         $response->monitorURL=$baseURL.$jailResponse['monitorticket'].'/monitor';
