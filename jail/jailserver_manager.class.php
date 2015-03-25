@@ -41,13 +41,18 @@ class vpl_jailserver_manager{
         curl_setopt($ch, CURLOPT_URL, $server);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
         curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/xml;charset=UTF-8', 'User-Agent: VPL 3.0'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/xml;charset=UTF-8', 'User-Agent: VPL 3.1.2'));
         curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        IF($fresh)
+        if( $fresh ){
             curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-        if( @$plugincfg->acceptcertificates )
+        }
+        if( @$plugincfg->acceptcertificates ){
             curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        }
+        if( isset($plugincfg->proxy) && strlen($plugincfg->proxy)>7 ){
+            curl_setopt($ch, CURLOPT_PROXY, $plugincfg->proxy);
+        }
         return $ch;
     }
 
