@@ -240,6 +240,12 @@ $string['vpl_evaluate.sh'] = "Evalúa el programa";
 $string['vpl_run.sh'] = "Prepara la ejecución del programa";
 $string['workingperiods'] = 'Periodos de trabajo';
 $string['worktype']='Tipo de trabajo';
+$string['websocket_protocol'] = 'Protocolo WebSocket';
+$string['websocket_protocol_description'] = 'Tipo protocolo WebSocket (ws:// or wss://) a usar por el navegador al conectarse al servidor de ejecución.';
+$string['always_use_wss'] = 'Siempre usar protocolo websocket cifrado (wss)';
+$string['always_use_ws'] = 'Siempre usar protocolo websocket sin cifrado (ws)';
+$string['depends_on_https'] = 'Usar wss o ws dependiendo de si se usa http o https';
+
 //Added without order
 $string['check_jail_servers_help'] = '<p>Esta página comprueba y muestra el estado de los servidores de ejecución usados por esta actividad.</p>';
 $string['executionfiles_help'] = '<h2>Introducción</h2>
