@@ -84,6 +84,16 @@ $settings->add(new admin_setting_configtextarea($prefix.'jail_servers',
                get_string('jail_servers', VPL),get_string('jail_servers_description', VPL),$default));
 $settings->add(new admin_setting_configcheckbox($prefix.'acceptcertificates', get_string('acceptcertificates', VPL),
                        get_string('acceptcertificates_description', VPL), 1));
+$ws_options = array('always_use_wss' => get_string('always_use_wss', VPL),
+                            'always_use_ws' => get_string('always_use_ws', VPL),
+                            'depends_on_https' => get_string('depends_on_https', VPL));
+$name='websocket_protocol';
+$settings->add(new admin_setting_configselect($prefix.'websocket_protocol',
+                       get_string('websocket_protocol', VPL),
+                       get_string('websocket_protocol_description', VPL), 'depends_on_https', $ws_options));
+$name='proxy';
+$settings->add(new admin_setting_configtext($prefix.$name, get_string($name, VPL)
+        ,get_string($name.'_description', VPL),'', PARAM_URL));
 $settings->add(new admin_setting_heading('heading3','',get_string('miscellaneous')));
 $list = vpl_get_select_time();
 $default = vpl_get_array_key($list,60);
