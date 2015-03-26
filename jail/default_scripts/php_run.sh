@@ -23,9 +23,10 @@ display_startup_errors=On
 END_OF_INI
     #Generate router
     cat >> .router.php << 'END_OF_PHP'
-<?php $path='.'.urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
-if(is_file($path) || is_file($path.'/index.php') || is_file($path.'/index.html') ){
-    unset($path);
+<?php $path=urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
+$file='.'.$path;
+if(is_file($file) || is_file($file.'/index.php') || is_file($file.'/index.html') ){
+    unset($path,$file);
     return false;
 }
 $pclean=htmlentities($path);
