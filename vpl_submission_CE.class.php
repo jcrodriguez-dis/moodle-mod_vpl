@@ -340,7 +340,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
         switch($plugincfg->websocket_protocol) {
              case 'always_use_wss': $use_wss =true; break;
              case 'always_use_ws': $use_wss =false; break;
-             default: $use_ws= $isHTTPS;
+             default: $use_wss= $isHTTPS;
         }
         $baseURL = $use_wss?'wss://':'ws://';
         $baseURL.=$parsed['host'];
