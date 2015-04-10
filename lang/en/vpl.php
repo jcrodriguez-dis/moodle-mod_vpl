@@ -158,6 +158,8 @@ $string['pluginadministration'] ='VPL administration';
 $string['pluginname'] = 'Virtual programming lab';
 $string['previoussubmissionslist'] = 'Previous submissions list';
 $string['proposedgrade'] = 'Proposed grade: {$a}';
+$string['proxy'] = 'proxy';
+$string['proxy_description'] = 'Proxy from Moodle to execution servers';
 $string['redo']= 'Redo';
 $string['regularscreen'] = 'Regular screen';
 $string['removegrade'] = 'Remove grade';
@@ -170,7 +172,7 @@ $string['requiredpassword'] = 'A password is required';
 $string['resetfiles'] = 'Reset files';
 $string['resetvpl'] = 'Reset {$a}';
 $string['resourcelimits'] = 'Resources limits';
-$string['restrictededitor'] = 'Submission by means of restricted Code Editor';
+$string['restrictededitor'] = 'Dissable external file upload, paste and drop external content';
 $string['retrieve'] = 'Retrieve results';
 $string['run'] = 'Run';
 $string['running']='Running';
@@ -335,20 +337,6 @@ $string['executionoptions_help'] = '<p>Various execution options are set in this
 $string['fulldescription_help'] = '<p>You must write here a full description for the activity.</p>
 <p>If you don\'t write anything here, the short description is shown instead.</p>
 <p>If you want to evaluate automatically, the interfaces for the assignments must be detailed and non-ambiguous.</p>';
-$string['index_help'] = '<ul>
-  <li><a href="help.php?module=vpl&amp;file=mods.html">Basic</a></li>
-  <li><a href="help.php?module=vpl&amp;file=fulldescription.html">Full description</a></li>
-  <li><a href="help.php?module=vpl&amp;file=variations.html">Variations</a></li>
-  <li><a href="help.php?module=vpl&amp;file=requestedfiles.html">Requested files</a></li>
-  <li>Execution
-  <ul>
-  <li><a href="help.php?module=vpl&amp;file=executionfiles.html">Execution files</a></li>
-  <li><a href="help.php?module=vpl&amp;file=executionoptions.html">Execution options</a></li>
-  <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">Execution resources limits</a></li>
-  <li><a href="help.php?module=vpl&amp;file=keepfiles.html">Files to keep when running</a></li>
-  </ul>
-  </li>
-</ul>';
 $string['keepfiles_help'] = '<p>Due to security issues, the files added as &quot;Execution files&quot; are deleted before running the file vpl_execution.</p>
 If any of those files is needed during the execution (by example, to be used as test data), it must be marked here.';
 $string['local_jail_servers_help'] = '<p>Here you can set the local execution servers added for this activity and those
@@ -387,7 +375,7 @@ If you set a password the system will ask the password to access the activity.</
 <p>Also common options, such as the grading scale and groups,
 can be setting in this page.</p>';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = '<p>Here you set names for the requested files up to the max number of files that was set in the basic description of the activity.</p>
+$string['requestedfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p>
 <p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p>
 <p>You also can add contents to the requested files, so these contents will be available the first time that they will be opened with the editor, if no previous submission exists.</p>';
 $string['resourcelimits_help'] = '<p>You can set limits for the execution time, the memory used, the execution files sizes and the number of processes to be executed simultaneously.</p>

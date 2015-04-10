@@ -160,6 +160,8 @@ $string['pluginadministration'] ='Administración de VPL';
 $string['pluginname']='Laboratorio virtual de programación';
 $string['previoussubmissionslist'] = 'Lista entregas previas';
 $string['proposedgrade'] = 'Nota propuesta: {$a}';
+$string['proxy'] = 'proxy';
+$string['proxy_description'] = 'Proxy de Moodle a servidores de ejecución';
 $string['redo']= 'Rehacer';
 $string['regularscreen'] = 'Pantalla normal';
 $string['removegrade'] = 'Borra calificación';
@@ -172,7 +174,7 @@ $string['requiredpassword']='Se necesita una clave';
 $string['resetfiles'] = 'Reestablecer ficheros';
 $string['resetvpl'] = 'Reinicia {$a}';
 $string['resourcelimits'] = 'Límites de recursos de ejecución';
-$string['restrictededitor'] = "Sólo se admiten entregas desde el editor restringido";
+$string['restrictededitor'] = "Desactivar la carga de archivos, pegar y soltar contenido externo";
 $string['retrieve']= 'Recupera resultados';
 $string['run'] = 'Ejecutar';
 $string['running'] = "Ejecutando";
@@ -386,19 +388,6 @@ $string['executionoptions_help'] = '<p>En esta página se establecen diferentes 
 $string['fulldescription_help'] = '<p>Escriba aquí la descripción completa de la tarea a realizar en el laboratorio de programación.</p>
 <p>En caso de que no escriba nada se mostrará en su lugar la descripción corta.</p>
 <p>Si desea realizar una evaluación automática, es aconsejable que la especificación de las interfaces sea lo más detallada posible y que no tenga ambigüedad.</p>';
-$string['index_help'] = '<ul>
-  <li><a href="help.php?module=vpl&amp;file=mods.html">Básico</a></li>
-  <li><a href="help.php?module=vpl&amp;file=fulldescription.html">Descripción completa</a></li>
-  <li><a href="help.php?module=vpl&amp;file=variations.html">Variaciones</a></li>
-  <li><a href="help.php?module=vpl&amp;file=requestedfiles.html">Ficheros requeridos</a></li>
-  <li>Ejecución
-  <ul>
-  <li><a href="help.php?module=vpl&amp;file=executionfiles.html">Ficheros de ejecución</a></li>
-  <li><a href="help.php?module=vpl&amp;file=executionoptions.html">Opciones de ejecución</a></li>
-  <li><a href="help.php?module=vpl&amp;file=resourcelimits.html">Límite de recursos de ejecución</a></li>
-  <li><a href="help.php?module=vpl&amp;file=keepfiles.html">Ficheros a mantener mientras se ejecuta</a></li>
-  </ul></li>
-</ul>';
 $string['keepfiles_help'] = '<p>Por razones de seguridad, los ficheros añadidos en "Ficheros de ejecución", se borran  antes de ejecutar el fichero vpl_execution.</p>
 <p>Si es necesario que alguno de estos ficheros permanezca en la fase de ejecución,
 por ejemplo, para usarlo como datos de entrada de las pruebas, márquelos en esta página</p>';
@@ -429,7 +418,7 @@ En el panel <b></b><b>Restricciones de entrega</b> se pueden establecer diversas
 <p>En esta página también se pueden establecer las opciones comunes a toda actividad
 como es la escala de calificación y las opciones de grupos.</p>';
 $string['modulename_link'] = 'mod/vpl/view';
-$string['requestedfiles_help'] = '<p>Aquí se fijan nombres para los ficheros requeridos.</p>
+$string['requestedfiles_help'] = '<p>Aquí se fijan nombres y contenido inicial para los ficheros requeridos.</p>
 <p>Si no se fijan nombres para el número máximo de ficheros establecido en la definición básica de la actividad, los ficheros para los que no se han establecido nombres son opcionales y pueden tener cualquier nombre.</p>
 <p>Además, se pueden establecer contenidos para los ficheros requeridos, de forma que dichos contenidos estarán disponibles la primera vez que el fichero se abra usando el editor, si no se ha realizado una entrega previa.</p>';
 $string['resourcelimits_help'] = '<p>Se pueden establecer límites máximos para el tiempo de ejecución, la memoria usada, el tamaño de los ficheros generados durante la ejecución y el número de procesos simultáneos.</p>
