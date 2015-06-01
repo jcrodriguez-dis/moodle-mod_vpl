@@ -1,10 +1,26 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @version		$Id: similarity_base.class.php,v 1.26 2013-06-13 17:33:22 juanca Exp $
- * @package		VPL. Similarity base and utility class
- * @copyright	2012 Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * Similarity base and utility class
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 require_once dirname(__FILE__).'/tokenizer_factory.class.php';
@@ -554,7 +570,6 @@ class vpl_similarity{
 		debugging("Unzip file ".$zipfilename, DEBUG_DEVELOPER);
 		$SPB->set_value(get_string('unzipping',VPL));
 		if($zip->open($zipfilename)){
-			$toremove=strlen($destdir);
 			$SPB->set_max($zip->numFiles);
 			$i=1;
 			for($i=0; $i < $zip->numFiles ;$i++){
@@ -572,7 +587,7 @@ class vpl_similarity{
 					$sim = vpl_similarity_factory::get($filename);
 					if($sim){
 						//TODO locate userid
-						$from =new vpl_file_from_zipfile($filename,$zipfile);
+						$from =new vpl_file_from_zipfile($filename,$zipname);
 						$sim->init($data,$from);
 						if($sim->size>10){
 							$simil[]=$sim;
@@ -581,11 +596,7 @@ class vpl_similarity{
 				}
 			}
 		}
-		//remove temp dir
-		$SPB->set_value(get_string('cleaningtempdata').' '.count($simil));
-		unlink($dirfilename);
-		vpl_delete_dir($destdir);
-		$SPB->set_value(count($listfiles));
+        $SPB->set_value($zip->numFiles);
 	}
 	static function get_dir_filelist($basepath,$dir){
 		$filelist = array();

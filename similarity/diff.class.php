@@ -1,9 +1,26 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @package		VPL. Class to show two files diff
- * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * Class to show two files diff
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 require_once dirname(__FILE__).'/../../../config.php';
@@ -326,12 +343,12 @@ class vpl_diff{
 			$zipname = required_param('zipfile'.$f,PARAM_RAW);
 			$filename = required_param('filename'.$f,PARAM_RAW);
 			$HTMLheader .= $filename.' '.optional_param('username'.$f,'',PARAM_TEXT);
-			$ext = strtoupper(pathinfo($zipfile,PATHINFO_EXTENSION));
+			$ext = strtoupper(pathinfo($zipname,PATHINFO_EXTENSION));
 			if($ext != 'ZIP'){
 				print_error('nozipfile');
 			}
 			$zip = new ZipArchive();
-			$zipfilename=self::get_zip_filepath($zipname);
+			$zipfilename=vpl_similarity::get_zip_filepath($zipname);
 			if($zip->open($zipfilename)){
 				$data=$zip->getFromName($filename);
 				$zip->close();	
