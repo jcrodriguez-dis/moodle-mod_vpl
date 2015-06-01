@@ -343,12 +343,12 @@ class vpl_diff{
             $zipname = required_param('zipfile'.$f,PARAM_RAW);
             $filename = required_param('filename'.$f,PARAM_RAW);
             $HTMLheader .= $filename.' '.optional_param('username'.$f,'',PARAM_TEXT);
-            $ext = strtoupper(pathinfo($zipfile,PATHINFO_EXTENSION));
+            $ext = strtoupper(pathinfo($zipname,PATHINFO_EXTENSION));
             if($ext != 'ZIP'){
                 print_error('nozipfile');
             }
             $zip = new ZipArchive();
-            $zipfilename=self::get_zip_filepath($zipname);
+            $zipfilename=vpl_similarity::get_zip_filepath($zipname);
             if($zip->open($zipfilename)){
                 $data=$zip->getFromName($filename);
                 $zip->close();

@@ -570,10 +570,9 @@ class vpl_similarity{
         self::create_zip_file($zipname, $zipdata);
         $zip = new ZipArchive();
         $zipfilename=self::get_zip_filepath($zipname);
-        debugging("Unzip file ".$zipfilename, DEBUG_DEVELOPER);
+        //debugging("Unzip file ".$zipfilename, DEBUG_DEVELOPER);
         $SPB->set_value(get_string('unzipping',VPL));
         if($zip->open($zipfilename)){
-            $toremove=strlen($destdir);
             $SPB->set_max($zip->numFiles);
             $i=1;
             for($i=0; $i < $zip->numFiles ;$i++){
@@ -582,7 +581,7 @@ class vpl_similarity{
                 if($filename==false) break;
                 $data = $zip->getFromIndex($i);
                 if($data){
-                    debugging("Examining file ".$filename, DEBUG_DEVELOPER);
+                    //debugging("Examining file ".$filename, DEBUG_DEVELOPER);
                     //TODO remove if no GAP file
                     vpl_file_from_zipfile::process_gap_userfile($filename);
                     if(count($filesselected)>0 && !isset($filesselected[basename($filename)])){
@@ -591,7 +590,7 @@ class vpl_similarity{
                     $sim = vpl_similarity_factory::get($filename);
                     if($sim){
                         //TODO locate userid
-                        $from =new vpl_file_from_zipfile($filename,$zipfile);
+                        $from =new vpl_file_from_zipfile($filename,$zipname);
                         $sim->init($data,$from);
                         if($sim->size>10){
                             $simil[]=$sim;
@@ -600,11 +599,7 @@ class vpl_similarity{
                 }
             }
         }
-        //remove temp dir
-        $SPB->set_value(get_string('cleaningtempdata').' '.count($simil));
-        unlink($dirfilename);
-        vpl_delete_dir($destdir);
-        $SPB->set_value(count($listfiles));
+        $SPB->set_value($zip->numFiles);
     }
     static function get_dir_filelist($basepath,$dir){
         $filelist = array();
