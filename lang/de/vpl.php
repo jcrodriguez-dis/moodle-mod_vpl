@@ -188,10 +188,6 @@ $string['lasterrordate']='Letzter Fehlerzeitpunkt';
 $string['totalnumberoferrors']="Fehler";
 
 $string['proposedgrade'] = 'Bewertungsvorschlag: {$a}';
-$string['proxy_port_from'] = 'Erster Port für den Proxy';
-$string['proxy_port_to'] = 'Letzter Port für den Proxy';
-$string['proxy_port_from_description'] = 'Der Proxy wird verwendet, um den Client mit dem Jail-Server zu verbinden. Die Server-Firewall muss diese Ports erlauben.';
-$string['proxy_port_to_description'] = $string['proxy_port_from_description'];
 $string['discard_submission_period'] = 'Abgabenspeicherungsperiode';
 $string['discard_submission_period_description'] = 'Pro Student und Aufgabe behält das System immer die letzte Abgabe sowie zumindest eine für jede Periode.';
 $string['direct_applet']='Direktes Applet Deployment';

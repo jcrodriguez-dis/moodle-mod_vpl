@@ -193,10 +193,6 @@ $string['lasterrordate']='Viimase vea kuupäev';
 $string['totalnumberoferrors']="Vead";
 
 $string['proposedgrade'] = 'Esialgne hinne: {$a}';
-$string['proxy_port_from'] = 'Proksi jaoks reserveeritud pordivahemiku algus';
-$string['proxy_port_to'] = 'Proksi jaoks reserveeritud pordivahemiku lõpp';
-$string['proxy_port_from_description'] = 'Proksit kasutatakse kliendi ja jooksutusserveri suhtlusel. Serveri tulemüür peab lubama antud pordivahemikku';
-$string['proxy_port_to_description'] = $string['proxy_port_from_description'];
 $string['discard_submission_period'] = 'Esituste kustutamise periood';
 $string['discard_submission_period_description'] = 'Kui tudeng esitab mõne ülesande lahendusi korduvalt, siis süsteem kustutab eelnevad esitused, mis on viimasele esitusele ajaliselt lähemal kui näidatud periood';
 $string['direct_applet']='Direct applet deploys'; // TODO
