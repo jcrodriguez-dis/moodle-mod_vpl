@@ -526,7 +526,7 @@ bool NumbersOutput::Number::operator==(const Number &o)const{
 	if(o.isInteger)
 		return cientific!=0?fabs((cientific-o.integer)/cientific) < 0.0001:o.integer==0;
 	else
-		return cientific!=0?fabs((cientific-o.cientific)/cientific) < 0.0001:o.cientific<0.0001;
+		return cientific!=0?fabs((cientific-o.cientific)/cientific) < 0.0001:fabs(o.cientific)<0.0001;
 }
 
 bool NumbersOutput::Number::operator!=(const Number &o)const{
