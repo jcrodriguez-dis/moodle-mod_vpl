@@ -162,11 +162,5 @@ if(isset($other_activity_load_box)){
 if(isset($zip_load_box0)){
     $zip_load_box0->hide();
 }
-/*if(isset($zip_load_box1)){
-    $zip_load_box1->hide();
-}
-if(isset($dir_load_box)){
-    $dir_load_box->hide();
-}*/
 $search_progression->hide();
 $vpl->print_footer();
