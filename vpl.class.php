@@ -1083,10 +1083,12 @@ class mod_vpl {
      **/
     function print_footer(){
         global $OUTPUT;
+        $plugin = new stdClass();
+        include 'version.php';
         $style="float:right; right:10px; padding:8px; background-color: white;text-align:center;";
         echo '<div style="'.$style.'">';
         echo '<a href="http://vpl.dis.ulpgc.es/">';
-        echo 'VPL 3.1.2';
+        echo 'VPL '.$plugin->release;
         echo '</a>';
         echo '</div>';
         echo $OUTPUT->footer();
