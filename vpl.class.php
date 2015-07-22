@@ -42,6 +42,7 @@
  */
 
 require_once dirname(__FILE__).'/filegroup.class.php';
+require_once dirname(__FILE__).'/lib.php';
 
 class file_group_execution extends file_group_process{
     /**
