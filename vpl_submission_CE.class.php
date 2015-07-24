@@ -230,7 +230,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
                $info .='export VPL_GRADEMIN='.$grade_setting->grademin."\n";
                $info .='export VPL_GRADEMAX='.$grade_setting->grademax."\n";
             }
-            $info .='export VPL_COMPILATIONFAILED=\''.get_string('VPL_COMPILATIONFAILED',VPL)."'\n";
+            $info .='export VPL_COMPILATIONFAILED=\''.addslashes(get_string('VPL_COMPILATIONFAILED',VPL))."'\n";
         }
         $filenames = '';
         $num=0;
