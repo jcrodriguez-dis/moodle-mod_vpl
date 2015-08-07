@@ -1192,11 +1192,11 @@
 					root_obj.removeClass('vpl_ide_root_fullscreen');
 					$JQVPL('body').removeClass('vpl_body_fullscreen');
 					setMenuOptionText('fullscreen', str('fullscreen'));
-					$JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock').show();
+					$JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock, #page-navbar').show();
 					fullScreen = false;
 				} else {
 					$JQVPL('body').addClass('vpl_body_fullscreen').scrollTop(0);
-					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock').hide();
+					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock, #page-navbar').hide();
 					root_obj.addClass('vpl_ide_root_fullscreen');
 					setMenuOptionText('fullscreen', str('regularscreen'));
 					fullScreen = true;
