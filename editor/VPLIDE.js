@@ -154,16 +154,15 @@
 					var editorHeight = editTag.height();
 					var editorWidth = editTag.width();
 					var newHeight = tabs.height();
-					newHeight -= editTag.position().top + 8;
+					newHeight -= editTag.position().top;
 					var newWidth = tabs.width() - editTag.position().left;
-					newWidth -= 2 * scrollBarWidth;
-					newHeight -= scrollBarWidth;
+					//newWidth -= 2 * scrollBarWidth;
+					//newHeight -= scrollBarWidth;
 					if (newHeight != editorHeight || newWidth != editorWidth) {
 						$JQVPL(editTag).height(newHeight);
 						$JQVPL(editTag).width(newWidth);
 						editor.resize(true);
 					}
-					;
 				};
 				this.gotoLine = function(line) {
 					editor.gotoLine(line, 0);
