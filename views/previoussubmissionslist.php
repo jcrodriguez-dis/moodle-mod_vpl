@@ -37,7 +37,9 @@ $vpl = new mod_vpl($id);
 $vpl->prepare_page('views/previoussubmissionslist.php', array('id' => $id, 'userid' => $userid));
 
 $course = $vpl->get_course();
-$vpl->require_capability(VPL_GRADE_CAPABILITY);
+if($USER-id != $userid){ //Not owner
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
+}
 \mod_vpl\event\submission_previous_upload_viewed::log(array(
         'objectid' => $vpl->get_instance()->id,
         'context' => context_module::instance($id),

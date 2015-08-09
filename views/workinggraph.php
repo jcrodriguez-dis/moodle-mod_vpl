@@ -70,7 +70,9 @@ $userid = optional_param('userid',-1, PARAM_INT);
 $type = optional_param('type', 0, PARAM_INT);
 $vpl = new mod_vpl($id);
 $course = $vpl->get_course();
-$vpl->require_capability(VPL_GRADE_CAPABILITY);
+if($USER->id != $userid){
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
+}
 //No log
 if($userid<0){
     $cm = $vpl->get_course_module();

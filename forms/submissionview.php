@@ -62,7 +62,7 @@ try{
         $vpl->require_capability(VPL_VIEW_CAPABILITY);
         $userid = $USER->id;
         $grader = FALSE;
-        if($submissionid && $vpl->has_capability(VPL_GRADE_CAPABILITY)){
+        if($submissionid){
             $subinstance = $DB->get_record('vpl_submissions',array('id' => $submissionid));
         }else{
             $subinstance = $vpl->last_user_submission($userid);
