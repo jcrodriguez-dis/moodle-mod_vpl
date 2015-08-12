@@ -122,7 +122,9 @@ class vpl_similarity_form extends moodleform {
             $mform->setType('allfiles', PARAM_BOOL);
         }
         $mform->addElement('header', 'headerfilestoprocess', get_string('scanoptions', VPL));
+        $defaultlimit=(intval(count($this->vpl->get_submissions_number())/25)+1)*5;
         $options=array();
+        $options[$defaultlimit]=$defaultlimit;
         for($i=5; $i<=40; $i+=5){
             $options[$i]=$i;
         }
@@ -132,15 +134,14 @@ class vpl_similarity_form extends moodleform {
         for($i=150; $i<=400; $i+=50){
             $options[$i]=$i;
         }
+        asort ($options);
         $mform->addElement('select', 'maxoutput', get_string('maxsimilarityoutput',VPL), $options);
         $mform->setType('maxoutput', PARAM_INT);
+        $mform->setDefault('maxoutput', $defaultlimit);
         $cid=$this->vpl->get_course()->id;
         $mform->addElement('header', 'headerothersources', get_string('othersources', VPL));
         $mform->addElement('select', 'scanactivity', get_string('scanactivity',VPL),$this->list_activities($this->vpl->get_instance()->id));
         $mform->addElement('filepicker', 'scanzipfile0', get_string('scanzipfile', VPL));
-        //TODO match 2.X?
-        //$mform->addElement('filepicker', 'scanzipfile1', get_string('scanzipfile', VPL));
-        //$mform->addElement('select', 'scandirectory', get_string('scandirectory', VPL), $this->list_directories($cid));
         $mform->addElement('checkbox','searchotherfiles',get_string('scanother',VPL));
         $mform->setDefault('searchotherfiles', false);
         $this->add_action_buttons(false,get_string('search'));
