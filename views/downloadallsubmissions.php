@@ -67,6 +67,8 @@ function vpl_selzipdirname($name){
 require_login();
 $id = required_param('id', PARAM_INT);
 $group = optional_param('group', -1, PARAM_INT);
+//Undocumented feature, add &CE=1 to the query string
+$includeCE = optional_param('CE', 0, PARAM_INT);
 $subselection = vpl_get_set_session_var('subselection','allsubmissions','selection');
 $vpl = new mod_vpl($id);
 $cm = $vpl->get_course_module();
@@ -119,6 +121,15 @@ if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
         foreach ($fgm->getFileList() as $filename) {
             $source= file_group_process::encodeFileName($filename);
             $zip->addFile($sourcedir.$source,$zipdirname.$filename);
+        }
+        if($includeCE){
+            $CE=$data->submission->getCE();
+            if(!($CE['compilation']===0)){
+                $zip->addFromString($zipdirname.'vpl_data/compilation.txt',$CE['compilation']);
+                if($CE['executed']){
+                    $zip->addFromString($zipdirname.'vpl_data/execution.txt',$CE['execution']);
+                }
+            }
         }
     }
     $zip->close();
