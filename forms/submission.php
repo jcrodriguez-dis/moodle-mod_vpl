@@ -73,13 +73,21 @@ if ($fromform=$mform->get_data()){
     $files=array();
     for($i = 0 ; $i < $instance->maxfiles ; $i++ ){
         $attribute = 'file'.$i;
-        $name = $mform->get_new_filename($attribute);
+        $name = trim($mform->get_new_filename($attribute));
         $data = $mform->get_file_content($attribute);
         if($data !== false && $name !== false ){
         //autodetect data file encode
-            $encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1',true);
-            if($encode > ''){ //If code detected
-                $data = iconv($encode,'UTF-8',$data);
+            $ext = strtolower (pathinfo ($name, PATHINFO_EXTENSION));
+            if(in_array($ext, Array('jar','zip','jpg','gif'))){
+                $data = chunk_split(base64_encode($data));
+                $name .= '.b64';
+            }else{
+                if($data != ''){
+                    $encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1',true);
+                    if($encode > ''){ //If code detected
+                        $data = iconv($encode,'UTF-8',$data);
+                    }
+                }
             }
             $files[] = array('name' => $name, 'data' => $data);
         }else{
