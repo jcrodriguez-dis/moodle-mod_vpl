@@ -156,8 +156,6 @@
 					var newHeight = tabs.height();
 					newHeight -= editTag.position().top;
 					var newWidth = tabs.width() - editTag.position().left;
-					//newWidth -= 2 * scrollBarWidth;
-					//newHeight -= scrollBarWidth;
 					if (newHeight != editorHeight || newWidth != editorWidth) {
 						$JQVPL(editTag).height(newHeight);
 						$JQVPL(editTag).width(newWidth);
@@ -1192,12 +1190,14 @@
 					$JQVPL('body').removeClass('vpl_body_fullscreen');
 					setMenuOptionText('fullscreen', str('fullscreen'));
 					$JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock, #page-navbar').show();
+					$JQVPL('div.vpl_student_picture').css({'position':'absolute','bottom':''});
 					fullScreen = false;
 				} else {
 					$JQVPL('body').addClass('vpl_body_fullscreen').scrollTop(0);
 					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock, #page-navbar').hide();
 					root_obj.addClass('vpl_ide_root_fullscreen');
 					setMenuOptionText('fullscreen', str('regularscreen'));
+                    $JQVPL('div.vpl_student_picture').css({'position':'fixed','bottom':'50px'}).show();
 					fullScreen = true;
 				}
 				autoResizeTab();
