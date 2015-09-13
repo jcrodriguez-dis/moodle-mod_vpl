@@ -25,6 +25,7 @@
 
 require_once dirname(__FILE__).'/locallib.php';
 require_once dirname(__FILE__).'/views/sh_factory.class.php';
+require_once dirname(__FILE__).'/similarity/watermark.class.php';
 
 class file_group_process{
     /**
@@ -305,14 +306,19 @@ class file_group_process{
      * Download files
      * @parm $name name of zip file generated
      **/
-    function download_files($name){
+    function download_files($name,$watermark=false){
         $cname = rawurlencode($name.'.zip');
         global $CFG;
+        global $USER;
         $zip = new ZipArchive();
         $zipfilename=tempnam($CFG->dataroot . '/temp/'  , 'vpl_zipdownload' );
         if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
             foreach ($this->getFileList() as $filename) {
-                $zip->addFromString($filename, $this->getFileData($filename));
+                $data = $this->getFileData($filename);
+                if($watermark){
+                    $data = vpl_watermark::addwm($data,$filename,$USER->id);
+                }
+                $zip->addFromString($filename, $data);
             }
             $zip->close();
             //Get zip data
