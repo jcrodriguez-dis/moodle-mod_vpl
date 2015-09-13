@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/../similarity/watermark.php';
 require_once dirname(__FILE__).'/../../../config.php';
 global $CFG, $USER;
 require_once dirname(__FILE__).'/../locallib.php';
@@ -80,7 +79,7 @@ try{
     }
     $submission = new mod_vpl_submission($vpl,$subinstance);
     $fgm = $submission->get_submitted_fgm();
-    $fgm->download_files($vpl->get_printable_name());
+    $fgm->download_files($vpl->get_printable_name(),true);
 }catch (Exception $e){
     $vpl->prepare_page('views/downloadsubmission.php', array('id' => $id));
     $vpl->print_header(get_string('download',VPL));
