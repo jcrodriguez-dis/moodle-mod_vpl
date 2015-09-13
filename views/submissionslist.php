@@ -409,7 +409,7 @@ foreach ($all_data as $data) {
     if($gradeable){
         $table->data[] = array ($usernumber,
                 $show_photo?$vpl->user_picture($userinfo):'',
-                fullname($userinfo),
+                $vpl->fullname($userinfo),
                 $subtime,
                 $prev,
                 $grade,
@@ -418,7 +418,7 @@ foreach ($all_data as $data) {
     }else{
         $table->data[] = array ($usernumber,
                 $show_photo?$vpl->user_picture($userinfo):'',
-                fullname($userinfo),
+                $vpl->fullname($userinfo),
                 $subtime,
                 $prev);
     }
