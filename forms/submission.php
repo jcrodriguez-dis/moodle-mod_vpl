@@ -31,7 +31,7 @@ require_once dirname(__FILE__).'/../vpl_submission.class.php';
 require_login();
 
 $id = required_param('id',PARAM_INT);
-$userid = optional_param('userid',FALSE,PARAM_INT);
+$userid = optional_param('userid',0,PARAM_INT);
 $vpl = new mod_vpl($id);
 if($userid){
     $vpl->prepare_page('forms/submission.php', array('id' => $id, 'userid' => $userid));
@@ -41,8 +41,9 @@ if($userid){
 if(!$vpl->is_submit_able()){
     notice(get_string('notavailable'));
 }
-if(!$userid || $userid == $USER->id){//Make own submission
-    $userid = $USER->id;
+if(!$userid) {//Make mod test submission
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+}else if($userid == $USER->id){//Make own submission
     if($vpl->get_instance()->restrictededitor){
         $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     }

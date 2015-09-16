@@ -33,14 +33,18 @@ try{
     require_login();
     $id = required_param('id',PARAM_INT);
     $vpl = new mod_vpl($id);
-    $userid = optional_param('userid',FALSE,PARAM_INT);
+    $userid = optional_param('userid',0,PARAM_INT);
     $submissionid =  optional_param('submissionid',FALSE,PARAM_INT);
-    if(!$vpl->has_capability(VPL_GRADE_CAPABILITY)){
-        $userid = FALSE;
-        $submissionid = FALSE;
-    }
-    //Read record
-    if($userid && $userid != $USER->id){
+
+    if (!$userid) {
+        $vpl->require_capability(VPL_GRADE_CAPABILITY);
+        $grader = FALSE;
+        if($submissionid){
+            $subinstance = $DB->get_record('vpl_submissions',array('id' => $submissionid));
+        }else{
+            $subinstance = $vpl->last_user_submission($userid);
+        }
+    } else if($userid != $USER->id){
         //Grader
         $vpl->require_capability(VPL_GRADE_CAPABILITY);
         $grader =TRUE;
@@ -72,7 +76,7 @@ try{
     }
     $submissionid = $subinstance->id;
 
-    if($vpl->is_inconsistent_user($subinstance->userid,$userid)){
+    if($userid && $vpl->is_inconsistent_user($subinstance->userid,$userid)){
         throw new Exception('vpl submission user inconsistence');
     }
     if($vpl->get_instance()->id != $subinstance->vpl){

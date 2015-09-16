@@ -33,10 +33,9 @@ vpl_editor_util::generate_requires_evaluation();
 $id = required_param('id',PARAM_INT);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/evaluation.php', array('id' => $id));
-$userid = optional_param('userid',FALSE,PARAM_INT);
+$userid = optional_param('userid',0,PARAM_INT);
 if((!$userid || $userid == $USER->id)
     && $vpl->get_instance()->evaluate){//Evaluate own submission
-    $userid = $USER->id;
     $vpl->require_capability(VPL_SUBMIT_CAPABILITY);
 }else { //Evaluate other user submission
     $vpl->prepare_page('forms/evaluation.php', array('id' => $id, 'userid' => $userid));
@@ -52,7 +51,7 @@ flush();
 $course = $vpl->get_course();
 $instance = $vpl->get_instance();
 echo '<h2>'.s(get_string('evaluating',VPL)).'</h2>';
-$userinfo=$DB->get_record('user',array('id' => $userid));
+$userinfo=$DB->get_record('user',array('id' => $userid ? $userid : $USER->id));
 $text = ' '.$vpl->user_picture($userinfo);
 $text .= ' '.fullname($userinfo);
 echo $OUTPUT->box($text);

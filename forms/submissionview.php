@@ -32,7 +32,7 @@ try{
     require_login();
 
     $id = required_param('id',PARAM_INT);
-    $userid = optional_param('userid',FALSE,PARAM_INT);
+    $userid = optional_param('userid',0,PARAM_INT);
     $vpl = new mod_vpl($id);
     if($userid){
         $vpl->prepare_page('forms/submissionview.php', array('id' => $id, 'userid' => $userid));
@@ -47,7 +47,15 @@ try{
 
     $submissionid =  optional_param('submissionid',FALSE,PARAM_INT);
     //Read records
-    if($userid && $userid != $USER->id){
+    if(!$userid){
+        $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+        $grader = FALSE;
+        if($submissionid){
+            $subinstance = $DB->get_record('vpl_submissions', array('id' => $submissionid));
+        }else{
+            $subinstance = $vpl->last_user_submission($userid);
+        }
+    } else if($userid != $USER->id){
         //Grader
         $vpl->require_capability(VPL_GRADE_CAPABILITY);
         $grader =TRUE;

@@ -80,6 +80,13 @@ class backup_nested_filegroup extends backup_nested_element {
                 $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $userid . '/' . $subid . '/';
                 return $this->get_files( $path, 'submittedfiles' );
                 break;
+            case 'shared_test' :
+                $vplid = $this->find_first_parent_by_name( 'vpl' )->get_value();
+                $subid = $this->find_first_parent_by_name( 'id' )->get_value();
+                $userid = 0;
+                $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $userid . '/' . $subid . '/';
+                return $this->get_files( $path, 'submittedfiles' );
+                break;
             default :
                 throw new Exception( 'Type of element error for backup_nested_group' );
         }
@@ -177,6 +184,27 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'name',
                 'content'
         ) );
+        $submissionsshared = new backup_nested_element( 'submissionsshared' );
+        $submissionshared = new backup_nested_element( 'submissionshared', array (
+                'id'
+        ), array (
+                'vpl',
+                'userid',
+                'datesubmitted',
+                'comments',
+                'grader',
+                'dategraded',
+                'grade',
+                'mailed',
+                'highlight'
+        ) );
+        $sharedtests = new backup_nested_element( 'shared_tests' );
+        $sharedtest = new backup_nested_filegroup( 'shared_test', array (
+                'id'
+        ), array (
+                'name',
+                'content'
+        ) );
         // Build the tree.
         $vpl->add_child( $requiredfiles );
         $vpl->add_child( $executionfiles );
@@ -190,6 +218,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $submissions->add_child( $submission );
         $submission->add_child( $submissionfiles );
         $submissionfiles->add_child( $submissionfile );
+
+        $vpl->add_child( $submissionsshared );
+        $submissionsshared->add_child( $submissionshared );
+        $submissionshared->add_child( $sharedtests );
+        $sharedtests->add_child( $sharedtest );
+
         // Define sources.
         $vpl->set_source_table( 'vpl', array (
                 'id' => backup::VAR_ACTIVITYID
@@ -211,10 +245,19 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
             $query .= ' (SELECT max(id) as maxid FROM {vpl_submissions}';
             $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) AS ls';
             $query .= ' on ls.maxid = s.id';
+            $query .= ' WHERE s.userid != 0';
             $submission->set_source_sql( $query, array (
                     backup::VAR_ACTIVITYID
             ) );
         }
+
+        $query = 'SELECT s.* FROM {vpl_submissions} AS s';
+        $query .= ' inner join';
+        $query .= ' (SELECT max(id) as maxid FROM {vpl_submissions}';
+        $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) AS ls';
+        $query .= ' on ls.maxid = s.id';
+        $query .= ' WHERE s.userid = 0';
+        $submissionshared->set_source_sql( $query, array (backup::VAR_ACTIVITYID) );
 
         // Define id annotations.
         $vpl->annotate_ids( 'scale', 'grade' );

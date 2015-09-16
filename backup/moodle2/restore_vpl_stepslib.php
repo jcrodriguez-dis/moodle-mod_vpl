@@ -39,6 +39,11 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
                     '/activity/vpl/submissions/submission/submission_files/submission_file'
             );
         }
+        $paths [] = new restore_path_element ( 'submissionshared', '/activity/vpl/submissionsshared/submissionshared' );
+        $paths [] = new restore_path_element (
+                'shared_test',
+                '/activity/vpl/submissionsshared/submissionshared/shared_tests/shared_test'
+        );
 
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure ( $paths );
@@ -100,7 +105,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $data = ( object ) $data;
         $oldid = $data->id;
         $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $data->userid = $this->get_mappingid ( 'user', $data->userid );
+        $data->userid = empty($data->userid) ? 0 : $this->get_mappingid ( 'user', $data->userid );
         $data->grader = $this->get_mappingid ( 'user', $data->grader );
         $newitemid = $DB->insert_record ( 'vpl_submissions', $data );
         $this->set_mapping ( 'submission', $oldid, $newitemid );
@@ -125,6 +130,12 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         }
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $sub->userid . '/' . $subid . '/';
         $this->process_groupfile ( $data, $path );
+    }
+    protected function process_submissionshared($data) {
+        $this->process_submission($data);
+    }
+    protected function process_shared_test($data) {
+        $this->process_submission_file($data);
     }
     protected function after_execute() {
         // Add choice related files, no need to match by itemname (just internally handled context).

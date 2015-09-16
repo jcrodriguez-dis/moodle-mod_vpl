@@ -37,7 +37,7 @@ try{
 
     $id      = required_param('id', PARAM_INT); // course id
     $action  = required_param('action', PARAM_ALPHANUMEXT);
-    $userid = optional_param('userid',FALSE,PARAM_INT);
+    $userid = optional_param('userid',0,PARAM_INT);
     $vpl = new mod_vpl($id);
     //TODO use or not sesskey
     //require_sesskey();
@@ -56,7 +56,9 @@ try{
     if (!$vpl->is_submit_able()) {
        throw new Exception(get_string('notavailable'));
     }
-    if (!$userid || $userid == $USER->id) { // Make own submission
+    if (!$userid) { // Make mod test submission
+        $vpl->require_capability ( VPL_MANAGE_CAPABILITY );
+    } else if ($userid == $USER->id) { // Make own submission
         $userid = $USER->id;
         $vpl->require_capability ( VPL_SUBMIT_CAPABILITY );
         if (! $vpl->pass_network_check ()) {

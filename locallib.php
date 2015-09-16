@@ -262,9 +262,11 @@ function vpl_mod_href(){
     $l=count($parms);
     $href = $CFG->wwwroot.'/mod/vpl/'.$parms[0];
     for( $p=1;$p<$l-1; $p+=2 ) {
-        $href .= ($p>1?'&amp;':'?')
-        .urlencode($parms[$p]).'='
-        .urlencode($parms[$p+1]);
+        if ($parms[$p] != 'userid' || !empty($parms[$p+1])) {
+            $href .= ($p>1?'&amp;':'?')
+            .urlencode($parms[$p]).'='
+            .urlencode($parms[$p+1]);
+        }
     }
     return $href;
 }

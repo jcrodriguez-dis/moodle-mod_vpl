@@ -32,7 +32,7 @@ header("Pragma: no-cache"); //Browser must reload page
 vpl_editor_util::generate_requires();
 require_login();
 $id = required_param('id',PARAM_INT);
-$userid = optional_param('userid',FALSE,PARAM_INT);
+$userid = optional_param('userid',0,PARAM_INT);
 $copy = optional_param('privatecopy',false,PARAM_INT);
 $subid = optional_param('submissionid',false,PARAM_INT);
 $vpl = new mod_vpl($id);
@@ -50,8 +50,9 @@ if(!$vpl->is_visible()){
 if(!$vpl->is_submit_able()){
     print_error('notavailable');
 }
-if(!$userid || $userid == $USER->id){//Edit own submission
-    $userid = $USER->id;
+if(!$userid){//Edit mod test submission
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+}else if($userid == $USER->id){//Edit own submission
     $vpl->require_capability(VPL_SUBMIT_CAPABILITY);
 }
 else { //Edit other user submission

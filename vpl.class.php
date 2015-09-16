@@ -612,7 +612,9 @@ class mod_vpl {
         //Save files
         $submission = new mod_vpl_submission($this,$submissionid);
         $submission->set_submitted_file($files);
-        $submission->remove_grade();
+        if ($userid) {
+            $submission->remove_grade();
+        }
         //if no submitted by grader and not group activity
         //remove near submmissions
         if($submittedby == ''){
@@ -1226,7 +1228,7 @@ class mod_vpl {
         global $CFG, $USER, $DB;
         $active = basename($active);
         $cmid=$this->cm->id;
-        $userid = optional_param('userid',NULL,PARAM_INT);
+        $userid = optional_param('userid',0,PARAM_INT);
         $copy = optional_param('privatecopy',false,PARAM_INT);
         $viewer = $this->has_capability(VPL_VIEW_CAPABILITY);
         $submiter = $this->has_capability(VPL_SUBMIT_CAPABILITY);
@@ -1234,7 +1236,7 @@ class mod_vpl {
         $grader = $this->has_capability(VPL_GRADE_CAPABILITY);
         $manager = $this->has_capability(VPL_MANAGE_CAPABILITY);
         $example = $this->instance->example;
-        if(!$userid || !$grader || $copy){
+        if(!$grader || $copy){
             $userid = $USER->id;
         }
         $level2=$grader||$manager||$similarity;
@@ -1270,8 +1272,8 @@ class mod_vpl {
             }
             //test
             if($grader||$manager){
-                if($userid == $USER->id){
-                    $text = get_string('test',VPL);
+                if(!$userid || $userid == $USER->id){
+                    $text = get_string('usertest',VPL);
                 }else{
                     $user = $DB->get_record('user', array('id'=>$userid));
                     if($this->is_group_activity()){
@@ -1289,9 +1291,14 @@ class mod_vpl {
                     $active == 'previoussubmissionslist.php'){
                     $tabname=$active;
                 }else{
-                    $tabname = 'test';
+                    $tabname = 'usertest';
                 }
-                $href = vpl_mod_href('forms/submissionview.php','id',$cmid,'userid',$userid);
+                $href = vpl_mod_href('forms/submissionview.php','id',$cmid,'userid',$userid ? $userid : $USER->id);
+                $maintabs[]= new tabobject($tabname,$href,$text,$text);
+
+                $tabname = 'sharedtest';
+                $href = vpl_mod_href('forms/submissionview.php','id',$cmid);
+                $text = get_string('sharedtest',VPL);
                 $maintabs[]= new tabobject($tabname,$href,$text,$text);
             }
         }
@@ -1330,13 +1337,13 @@ class mod_vpl {
                 if(!$example){
                     $href = vpl_mod_href('forms/submissionview.php','id',$cmid,'userid',$userid);
                     $tabs[]= new tabobject('submissionview.php',$href,$strsubmissionview,$strsubmissionview);
-                    if($grader && $this->get_grade() !=0 && $subinstance
+                    if($userid && $grader && $this->get_grade() !=0 && $subinstance
                        && ($subinstance->dategraded==0 || $subinstance->grader==$USER->id || $subinstance->grader==0)){
                         $href = vpl_mod_href('forms/gradesubmission.php','id',$cmid,'userid',$userid);
                         $text=get_string('grade');
                         $tabs[]= new tabobject('gradesubmission.php',$href,$text,$text);
                     }
-                    if($subinstance && ($grader || $similarity) ){
+                    if($userid && $subinstance && ($grader || $similarity)){
                         $strlistprevoiussubmissions = get_string('previoussubmissionslist',VPL);
                         $href = vpl_mod_href('views/previoussubmissionslist.php','id',$cmid,'userid',$userid);
                         $tabs[]= new tabobject('previoussubmissionslist.php',$href,$strlistprevoiussubmissions,$strlistprevoiussubmissions);
@@ -1352,7 +1359,9 @@ class mod_vpl {
                     echo '</div>';
                 }
                 if($level2){
-                    print_tabs(array($maintabs,$tabs),$active);
+                    $active_main = $userid ? $active : 'sharedtest';
+                    print_tabs(array($maintabs),$active_main);
+                    print_tabs(array($tabs),$active);
                     return;
                 }
                 else{

@@ -561,18 +561,25 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         if($setjails){
             $advance->add($strsetjails,new moodle_url('/mod/vpl/forms/local_jail_servers.php', $parms), navigation_node::TYPE_SETTING);
         }
-        $testact = $vplnode->create(get_string('test',VPL), null, navigation_node::TYPE_CONTAINER);
+        $testact = $vplnode->create(get_string('usertest',VPL), null, navigation_node::TYPE_CONTAINER);
         $vplnode->add_node($testact,$fkn);
         $strdescription = get_string('description',VPL);
         $strsubmission = get_string('submission',VPL);
         $stredit = get_string('edit',VPL);
         $parmsuser = array('id' => $PAGE->cm->id, 'userid' => $USER->id);
         $strsubmissionview = get_string('submissionview',VPL);
-        $testact->add($strsubmission,new moodle_url('/mod/vpl/forms/submission.php', $parms), navigation_node::TYPE_SETTING);
-        $testact->add($stredit,new moodle_url('/mod/vpl/forms/edit.php', $parms), navigation_node::TYPE_SETTING);
-        $testact->add($strsubmissionview,new moodle_url('/mod/vpl/forms/submissionview.php', $parms), navigation_node::TYPE_SETTING);
+        $testact->add($strsubmission,new moodle_url('/mod/vpl/forms/submission.php', $parmsuser), navigation_node::TYPE_SETTING);
+        $testact->add($stredit,new moodle_url('/mod/vpl/forms/edit.php', $parmsuser), navigation_node::TYPE_SETTING);
+        $testact->add($strsubmissionview,new moodle_url('/mod/vpl/forms/submissionview.php', $parmsuser), navigation_node::TYPE_SETTING);
         $testact->add(get_string('grade'),new moodle_url('/mod/vpl/forms/gradesubmission.php', $parmsuser), navigation_node::TYPE_SETTING);
         $testact->add(get_string('previoussubmissionslist',VPL),new moodle_url('/mod/vpl/views/previoussubmissionslist.php', $parmsuser), navigation_node::TYPE_SETTING);
+
+        $modtestact = $vplnode->create(get_string('sharedtest',VPL), null, navigation_node::TYPE_CONTAINER);
+        $vplnode->add_node($modtestact,$fkn);
+        $modtestact->add($strsubmission,new moodle_url('/mod/vpl/forms/submission.php', $parms), navigation_node::TYPE_SETTING);
+        $modtestact->add($stredit,new moodle_url('/mod/vpl/forms/edit.php', $parms), navigation_node::TYPE_SETTING);
+        $modtestact->add($strsubmissionview,new moodle_url('/mod/vpl/forms/submissionview.php', $parms), navigation_node::TYPE_SETTING);
+
         $nodeindex = $vplnode->create($vplindex, new moodle_url('/mod/vpl/index.php', array('id'=>$PAGE->cm->course)), navigation_node::TYPE_SETTING);
         $vplnode->add_node($nodeindex,$fkn);
     }
