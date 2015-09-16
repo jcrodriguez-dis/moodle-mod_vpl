@@ -30,6 +30,8 @@ require_once dirname(__FILE__).'/../vpl_submission.class.php';
 require_once dirname(__FILE__).'/../views/sh_base.class.php';
 require_once dirname(__FILE__).'/similarity_factory.class.php';
 require_once dirname(__FILE__).'/similarity_base.class.php';
+require_once dirname(__FILE__).'/similarity_sources.class.php';
+
 class vpl_diff{
     /**
      * Remove chars and digits
@@ -299,7 +301,7 @@ class vpl_diff{
 
     }
 
-    static function vpl_get_similfile($f,$vpl,&$HTMLheader,&$filename,&$data){
+    static function vpl_get_similfile($f,&$HTMLheader,&$filename,&$data){
         global $DB;
         $HTMLheader='';
         $filename='';
@@ -327,16 +329,6 @@ class vpl_diff{
                 $data = $fg->getFileData($filename);
                 \mod_vpl\event\vpl_diff_viewed::log($submission);
             }
-        }elseif($type == 2){
-            //FIXME adapt to moodle 2.x
-            /*
-            global $CFG;
-            $dirname = required_param('dirname'.$f,PARAM_RAW);
-            $filename = required_param('filename'.$f,PARAM_RAW);
-            $base=$CFG->dataroot.'/'.$vpl->get_course()->id.'/';
-            $data = file_get_contents($base.$dirname.'/'.$filename);
-            $HTMLheader .= $filename.' '.optional_param('username'.$f,'',PARAM_TEXT);
-            */
         }elseif($type == 3){
             global $CFG;
             $data='';
@@ -348,7 +340,7 @@ class vpl_diff{
                 print_error('nozipfile');
             }
             $zip = new ZipArchive();
-            $zipfilename=vpl_similarity::get_zip_filepath($zipname);
+            $zipfilename=vpl_similarity_preprocess::get_zip_filepath($zipname);
             if($zip->open($zipfilename)){
                 $data=$zip->getFromName($filename);
                 $zip->close();
