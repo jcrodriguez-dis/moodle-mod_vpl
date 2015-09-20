@@ -29,6 +29,7 @@ require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../vpl_submission.class.php';
 require_once dirname(__FILE__).'/similarity_factory.class.php';
 require_once dirname(__FILE__).'/similarity_base.class.php';
+require_once dirname(__FILE__).'/similarity_sources.class.php';
 require_once dirname(__FILE__).'/similarity_form.class.php';
 require_once dirname(__FILE__).'/clusters.class.php';
 require_once dirname(__FILE__).'/../views/status_box.class.php';
@@ -61,6 +62,16 @@ foreach($filelist as $filename){
     }
     $num++;
 }
+if(isset($fromform->allfiles)){
+    $allfiles=$fromform->allfiles;
+}else{
+    $allfiles=false;
+}
+if(isset($fromform->joinedfiles)){
+    $joinedfiles=$fromform->joinedfiles;
+}else{
+    $joinedfiles=false;
+}
 
 $usernumber=0;
 $nwm=0;
@@ -69,7 +80,7 @@ $simil = array();
 @set_time_limit($time_limit);
 $activity_load_box = new vpl_progress_bar(s($vpl->get_printable_name()));
 //debugging("Adding activity files", DEBUG_DEVELOPER);
-vpl_similarity::scan_activity($simil,$vpl,$filesselected,$activity_load_box);
+vpl_similarity_preprocess::activity($simil,$vpl,$filesselected,$allfiles,$joinedfiles,$activity_load_box);
 //debugging("Files to check ".count($simil), DEBUG_DEVELOPER);
 $il = count($simil);
 //Preprocess other VPL instance
@@ -78,7 +89,7 @@ if(isset($fromform->scanactivity) && $fromform->scanactivity>0){
     $othervpl=new mod_vpl($fromform->scanactivity);
     $other_activity_load_box = new vpl_progress_bar(s($othervpl->get_printable_name()));
     //debugging("Adding other activity files", DEBUG_DEVELOPER);
-    vpl_similarity::scan_activity($simil,$othervpl,$filesselected,$other_activity_load_box);
+    vpl_similarity_preprocess::activity($simil,$othervpl,$filesselected,$allfiles,$joinedfiles,$other_activity_load_box);
     //debugging("Files to check ".count($simil), DEBUG_DEVELOPER);
 }
 //Preprocess files in a ZIP file
@@ -88,30 +99,10 @@ if($data !== false && $name !== false ){
     @set_time_limit($time_limit);
     $zip_load_box0 = new vpl_progress_bar(s($name));
     //debugging("Adding files in zip file", DEBUG_DEVELOPER);
-    vpl_similarity::scan_zip($simil,$name,$data,$vpl,$filesselected,$zip_load_box0);
+    vpl_similarity_preprocess::zip($simil,$name,$data,$vpl,$filesselected,$allfiles,$joinedfiles,$zip_load_box0);
     //debugging("Files to check ".count($simil), DEBUG_DEVELOPER);
 }
-/* remove when 1.9 => 2.x
-//Preprocess files in a ZIP file
-$name = $form->get_new_filename('scanzipfile1');
-$data = $form->get_file_content('scanzipfile1');
-if($data !== false && $name !== false ){
-    @set_time_limit($time_limit);
-    $zip_load_box1 = new vpl_progress_bar(s($fromform->scanzipfile1));
-//    debugging("Adding files in zip file", DEBUG_DEVELOPER);
-    vpl_similarity::scan_zip($simil,$fromform->scanzipfile1,$vpl,$filesselected,$zip_load_box1);
-//    debugging("Files to check ".count($simil), DEBUG_DEVELOPER);
-}
-//Preprocess files in a directory
-if(isset($fromform->scandirectory) && $fromform->scandirectory>''){
-    @set_time_limit($time_limit);
-    $dir_load_box = new vpl_progress_bar(s($fromform->scandirectory));
-    $basedir = $CFG->dataroot.'/'.$vpl->get_course()->id;
-    debugging("Adding files in directory", DEBUG_DEVELOPER);
-    vpl_similarity::scan_directory($simil,$fromform->scandirectory,$vpl,$filesselected,$dir_load_box);
-    debugging("Files to check ".count($simil), DEBUG_DEVELOPER);
-}
-*/
+
 //Search similarity in other files after current VPL instance
 if(isset($fromform->searchotherfiles)){
     $il = count($simil);
@@ -136,11 +127,6 @@ if(count($selected)){
     $table->align = array ('right','left', 'center', 'left','right');
     $table->size = array ('','60','60');
     $clusters = new vpl_clusters($selected);
-    foreach($selected as $case){
-        //Cluster assigning
-        $clusters->process($case);
-    }
-    $clusters->assign_number();
     $usernumber=0;
     foreach($selected as $case){
         $table->data[] = array (++$usernumber,
