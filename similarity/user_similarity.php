@@ -101,6 +101,7 @@ $outputsize=array(1,1,1,2,2,2,2,3,3,3,3,3);
 //Process every activity selected
 
 $bars=array();
+$relatedusers=array();
 foreach ($vpls as $vpl) {
     //debugging("Adding activity files", DEBUG_DEVELOPER);
     $simil =array();
@@ -109,7 +110,7 @@ foreach ($vpls as $vpl) {
     if($nuserfiles>0){
         $activity_load_box = new vpl_progress_bar(s($vpl->get_printable_name()));
         $bars[]=$activity_load_box;
-        vpl_similarity_preprocess::activity($simil,$vpl,array(),$activity_load_box);
+        vpl_similarity_preprocess::activity($simil,$vpl,array(),true,false,$activity_load_box);
         $search_progression = new vpl_progress_bar(get_string('similarity',VPL));
         $bars[]=$search_progression;
         if($nuserfiles>= count($outputsize)){
@@ -125,6 +126,12 @@ foreach ($vpls as $vpl) {
                         $case->first->show_info(),
                         $case->get_link(),
                         $case->second->show_info());
+                $other=$case->second->get_userid();
+                if(!isset($relatedusers[$other])){
+                    $relatedusers[$other]=1;
+                }else{
+                    $relatedusers[$other]++;
+                }
             }
         }
     }
@@ -138,5 +145,23 @@ if(count($table->data)){
     echo html_writer::table($table);
 }else{
     echo $OUTPUT->box(get_string('noresults'));
+}
+if(count($relatedusers)>0){
+    arsort($relatedusers);
+    $table = new html_table();
+    $table->head  = array ('#',$name);
+    $table->align = array ('Left', 'left');
+    $table->data = array();
+    foreach($relatedusers as $otheruserid => $rel){
+        if($rel<2){
+            break;
+        }
+        $otheruser= $DB->get_record('user',array('id' => $otheruserid));
+        $table->data[]=array(
+        	$rel,
+            $vpl->user_fullname_picture($otheruser)
+        );
+    }
+    echo html_writer::table($table);
 }
 echo $OUTPUT->footer();
