@@ -28,20 +28,18 @@ require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/diff.class.php';
 
-require_login();
-
-$id = required_param('id', PARAM_INT);
-$vpl = new mod_vpl($id);
-$vpl->prepare_page('similarity/diff.php', array('id' => $id));
-//Print header
+require_course_login($COURSE);
+$strdiff=get_string('diff',VPL);
+$PAGE->set_url('/mod/vpl/similarity/diff.php');
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-$vpl->print_header_simple(get_string('diff',VPL));
-//$vpl->print_view_tabs(basename(__FILE__));
+$PAGE->set_title($strdiff);
+$PAGE->set_pagelayout('popup');
+echo $OUTPUT->header();
+//Print header
 //Get left file
-vpl_diff::vpl_get_similfile('1',$vpl,$HTMLheader1,$filename1,$data1);
+vpl_diff::vpl_get_similfile('1',$HTMLheader1,$filename1,$data1);
 //Get right file
-vpl_diff::vpl_get_similfile('2',$vpl,$HTMLheader2,$filename2,$data2);
+vpl_diff::vpl_get_similfile('2',$HTMLheader2,$filename2,$data2);
 //Show files
 vpl_diff::show($filename1,$data1,$HTMLheader1,$filename2,$data2,$HTMLheader2);
-$vpl->print_footer();
-
+echo $OUTPUT->footer();
