@@ -107,7 +107,7 @@ class vpl_file_from_dir extends vpl_file_from_base{
         return $ret;
     }
     public function can_access(){
-        return true;
+        return $this->filename != vpl_similarity_preprocess::joinedfilename;
     }
     public function link_parms($t){
         $res = array('type'.$t=>2,'dirname'.$t => $this->dirname,'filename'.$t => $this->filename);
@@ -194,7 +194,7 @@ class vpl_file_from_activity extends vpl_file_from_base{
         return $this->userid;
     }
     public function can_access(){
-        return true;
+        return $this->filename != vpl_similarity_preprocess::joinedfilename;
     }
     public function link_parms($t){
         return array('type'.$t=>1,'subid'.$t=>$this->subid,'filename'.$t => $this->filename);
@@ -207,15 +207,76 @@ class vpl_file_from_activity extends vpl_file_from_base{
  */
 class vpl_similarity_preprocess{
     /**
+     * @var const fake file name for files joined
+     */
+    const joinedfilename='_joined_files_';
+    /**
+     * @var minimum number of tokens needed to accept a file to be compared
+     */
+    const mintokens=10;
+    /**
      * Preprocesses activity, loading activity files into $simil array
      * @param $simil array of file processed objects
      * @param $vpl activity to process
-     * @param $filesselected array if set only files selected or unselected will be processed
+     * @param $filesselected array if set only files selected
+     * @param $allfiles preprocess sll files
+     * @param $joinedfiles join files as one
      * @param $SPB Box used to show load process
-     * @param $selected boolean switch to get selected or no selected files (default true)
      * @return void
      */
-    static public function activity(&$simil, $vpl, $filesselected=array(), $SPB, $selected=true){
+    static public function proccess_files($fgm, $filesselected,$allfiles,$joinedfiles,
+        $vpl=false,$subinstance=false,$toRemove=array()){
+        $files = array();
+        $filelist = $fgm->getFileList();
+        $simjf=false;
+        $from=null;
+        $joinedfilesdata='';
+        foreach($filelist as $filename){
+            //debugging("Filename ".$filename, DEBUG_DEVELOPER);
+            if( !isset($filesselected[$filename]) && !$allfiles){
+                continue;
+            }
+            $sim = vpl_similarity_factory::get($filename);
+            if($sim){
+                $data = $fgm->getFileData($filename);
+                if($joinedfiles){
+                    if(!$simjf){
+                        $simjf = $sim;
+                    }
+                    $joinedfilesdata.= $data."\n";
+                }else{
+                    if($vpl){
+                        $from =new vpl_file_from_activity($filename,$vpl,$subinstance);
+                    }
+                    if(isset($toRemove[$filename])){
+                        $sim->init($data,$from,$toRemove[$filename]);
+                    }else{
+                        $sim->init($data,$from);
+                    }
+                    if($sim->size>self::mintokens){
+                        $files[$filename]=$sim;
+                    }
+                }
+            }
+        }
+        if($simjf){
+            $filename=self::joinedfilename;
+            if($vpl){
+                $from =new vpl_file_from_activity($filename,$vpl,$subinstance);
+            }
+            if(isset($toRemove[$filename])){
+                $simjf->init($joinedfilesdata,$from,$toRemove[$filename]);
+            }else{
+                $simjf->init($joinedfilesdata,$from);
+            }
+            if($simjf->size>self::mintokens){
+                $files[self::joinedfilename]=$simjf;
+            }
+        }
+        return $files;
+    }
+
+    static public function activity(&$simil, $vpl, $filesselected=array(),$allfiles,$joinedfiles,$SPB){
         $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
         $list = $vpl->get_students();
         if(count($list) == 0){
@@ -224,17 +285,7 @@ class vpl_similarity_preprocess{
         $submissions = $vpl->all_last_user_submission();
         //Get initial content files
         $reqf = $vpl->get_required_fgm();
-        $filelist = $reqf->getFileList();
-        $toRemove = array();
-        foreach($filelist as $filename){
-            //debugging("Filename ".$filename, DEBUG_DEVELOPER);
-            $sim = vpl_similarity_factory::get($filename);
-            if($sim){
-                $data = $reqf->getFileData($filename);
-                $sim->init($data,null);
-                $toRemove[$filename]=$sim;
-            }
-        }
+        $toRemove = self::proccess_files($reqf, $filesselected, $allfiles, $joinedfiles);
 
         $SPB->set_max(count($list));
         //debugging("Submissions ".count($submissions), DEBUG_DEVELOPER);
@@ -244,35 +295,12 @@ class vpl_similarity_preprocess{
             $SPB->set_value($i);
             if(isset($submissions[$user->id])){
                 $subinstance = $submissions[$user->id];
-                $origin = '';
                 $submission = new mod_vpl_submission($vpl,$subinstance);
                 $subf = $submission->get_submitted_fgm();
-                $filelist = $subf->getFileList();
-                foreach($filelist as $filename){
-                    //debugging("Filename ".$filename, DEBUG_DEVELOPER);
-                    if($selected){
-                        if(count($filesselected)>0 && !isset($filesselected[$filename])){
-                            continue;
-                        }
-                    }else{
-                        if(isset($filesselected[$filename])){
-                            continue;
-                        }
-                    }
-                    //debugging("Added ".$filename, DEBUG_DEVELOPER);
-                    $sim = vpl_similarity_factory::get($filename);
-                    if($sim){
-                        $data = $subf->getFileData($filename);
-                        $from =new vpl_file_from_activity($filename,$vpl,$subinstance);
-                        if(isset($toRemove[$filename])){
-                            $sim->init($data,$from,$toRemove[$filename]);
-                        }else{
-                            $sim->init($data,$from);
-                        }
-                        if($sim->size>10){
-                            $simil[]=$sim;
-                        }
-                    }
+                $files = self::proccess_files($subf, $filesselected, $allfiles, $joinedfiles,
+                            $vpl,$subinstance,$toRemove);
+                foreach($files as $file){
+                    $simil[]=$file;
                 }
             }
         }
@@ -282,7 +310,7 @@ class vpl_similarity_preprocess{
      * Preprocesses user activity, loading user activity files into $simil array
      * @param $simil array of file processed objects
      * @param $vpl activity to process
-     * @param $selected boolean switch to get selected or no selected files (default true)
+     * @param $userid id of the user to preprocess
      * @return void
      */
     static public function user_activity(&$simil, $vpl, $userid){
@@ -343,12 +371,13 @@ class vpl_similarity_preprocess{
      * Preprocesses ZIP file, loading processesed files into $simil array
      * @param $simil array of file processed objects
      * @param $vpl activity to process
-     * @param $filesselected array if set only files selected or unselected will be processed
-     * @param $SPB Box used to show load process
-     * @param $selected boolean switch to get selected or no selected files (default true)
+     * @param $filesselected array if set only files selected
+     * @param $allfiles preprocess sll files
+     * @param $joinedfiles join files as one
+     * @param $SPB
      * @return void
      */
-    static public function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected=array(), $SPB){
+    static public function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected=array(), $allfiles, $joinedfiles,$SPB){
         global $CFG;
         $ext = strtoupper(pathinfo($zipname,PATHINFO_EXTENSION));
         if($ext != 'ZIP'){
@@ -371,12 +400,11 @@ class vpl_similarity_preprocess{
                     //debugging("Examining file ".$filename, DEBUG_DEVELOPER);
                     //TODO remove if no GAP file
                     vpl_file_from_zipfile::process_gap_userfile($filename);
-                    if(count($filesselected)>0 && !isset($filesselected[basename($filename)])){
+                    if( !isset($filesselected[basename($filename)]) && !$allfiles){
                         continue;
                     }
                     $sim = vpl_similarity_factory::get($filename);
                     if($sim){
-                        //TODO locate userid
                         $from =new vpl_file_from_zipfile($filename,$zipname);
                         $sim->init($data,$from);
                         if($sim->size>10){
