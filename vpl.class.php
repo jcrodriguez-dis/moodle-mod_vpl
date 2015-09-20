@@ -883,7 +883,12 @@ class mod_vpl {
             }
             return '';
         }else{
-            return fullname($user);
+            if($withlink){
+                    $url = vpl_abs_href('/user/view.php','id', $user->id,'course',$this->get_course()->id);
+                    return '<a href="'.$url.'">'.fullname($user).'</a>';
+            }else{
+                return fullname($user);
+            }
         }
     }
 
@@ -1347,7 +1352,7 @@ class mod_vpl {
                     $user = $DB->get_record('user',array('id'=>$userid));
                 }
                 if(isset($user)){
-                    echo '<div style="position:absolute; right:50px; z-index:50;">';
+                    echo '<div class="vpl_student_picture" style="position:absolute; right:50px; z-index:500;">';
                     echo $this->user_picture($user);
                     echo '</div>';
                 }
