@@ -27,7 +27,7 @@ require_once dirname(__FILE__).'/../../../config.php';
 require_once dirname(__FILE__).'/../locallib.php';
 require_once dirname(__FILE__).'/../vpl.class.php';
 require_once dirname(__FILE__).'/../vpl_submission.class.php';
-require_once dirname(__FILE__).'/watermark.php';
+require_once dirname(__FILE__).'/watermark.class.php';
 
 require_login();
 
