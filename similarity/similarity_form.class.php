@@ -35,10 +35,11 @@ class vpl_similarity_form extends moodleform {
     }
     function list_activities($vplid){
         global $DB;
+        global $USER;
         $list=array(''=>'');
         $cn = $this->vpl->get_course()->shortname;
-        //Low privilegies
-        $courses=get_user_capability_course(VPL_VIEW_CAPABILITY,null,true,'shortname');
+        //Get all courses the user is enroled
+        $courses=enrol_get_all_users_courses($USER->id);
         //Reorder courses by name similar to current
         usort($courses, function ($a, $b) use ($cn){
             $na = $a->shortname;
@@ -52,6 +53,7 @@ class vpl_similarity_form extends moodleform {
             return 0;
         });
         foreach($courses as $course){
+            //TODO add index in VPL table to accelerate this query
             $vpls = $DB->get_records(VPL,array('course' => $course->id));
             foreach($vpls as $vplinstace){
                 if($vplinstace->id == $vplid){
@@ -73,55 +75,11 @@ class vpl_similarity_form extends moodleform {
         return $list;
     }
 
-    function get_directories($dirpath){
-        $ret = array();
-        $dd = @opendir($dirpath);
-        if($dd !== false){
-            while ($dir=readdir($dd)) {
-                if ($dir!='.' && $dir!='..' && is_dir($dirpath."/".$dir)) {
-                    $ret[] = $dir;
-                }
-            }
-            closedir($dd);
-        }
-        return $ret;
-    }
-
-    function list_directories($cid){
-        global $CFG;
-        $dirs=array();
-        $dirs=array('' => get_string('select'));
-        $basedir=$CFG->dataroot.'/'.$cid;
-        foreach($this->get_directories($basedir) as $dir){
-            $dirs[$dir]=$dir;
-            foreach($this->get_directories($basedir.'/'.$dir) as $inner){
-                $dirs[$dir.'/'.$inner]=$dir.'/'.$inner;
-            }
-        }
-        return $dirs;
-    }
     function definition(){
         $mform    =& $this->_form;
         $mform->addElement('hidden','id',required_param('id',PARAM_INT));
         $mform->setType('id', PARAM_INT);
-        $filelist = $this->vpl->get_required_fgm()->getFileList();
-        if(count($filelist)>0){
-            $mform->addElement('header', 'headerfilestoprocess', get_string('filestoscan', VPL));
-            $num=0;
-            foreach($filelist as $filename){
-                $mform->addElement('checkbox','file'.$num,$filename);
-                $mform->setDefault('file'.$num, true);
-                $mform->disabledIf('file'.$num, 'allfiles','checked');
-                $num++;
-            }
-            $mform->addElement('checkbox','allfiles',get_string('allfiles',VPL));
-            $mform->addElement('checkbox','joinedfiles',get_string('joinedfiles',VPL));
-            $mform->disabledIf('joinedfiles', 'allfiles','checked');
-        }else{
-            $mform->addElement('hidden','allfiles','checked');
-            $mform->setType('allfiles', PARAM_BOOL);
-        }
-        $mform->addElement('header', 'headerfilestoprocess', get_string('scanoptions', VPL));
+        $mform->addElement('header', 'scanoptions', get_string('scanoptions', VPL));
         $defaultlimit=(intval(count($this->vpl->get_submissions_number())/25)+1)*5;
         $options=array();
         $options[$defaultlimit]=$defaultlimit;
@@ -138,6 +96,23 @@ class vpl_similarity_form extends moodleform {
         $mform->addElement('select', 'maxoutput', get_string('maxsimilarityoutput',VPL), $options);
         $mform->setType('maxoutput', PARAM_INT);
         $mform->setDefault('maxoutput', $defaultlimit);
+        $filelist = $this->vpl->get_required_fgm()->getFileList();
+        if(count($filelist)>0){
+            $mform->addElement('header', 'headerfilestoprocess', get_string('filestoscan', VPL));
+            $num=0;
+            foreach($filelist as $filename){
+                $entry='file'.$num;
+                $mform->addElement('checkbox',$entry,$filename);
+                $mform->setDefault($entry, true);
+                $mform->disabledIf($entry, 'allfiles','checked');
+                $num++;
+            }
+            $mform->addElement('checkbox','allfiles',get_string('allfiles',VPL));
+        }else{
+            $mform->addElement('hidden','allfiles','checked');
+            $mform->setType('allfiles', PARAM_BOOL);
+        }
+        $mform->addElement('checkbox','joinedfiles',get_string('joinedfiles',VPL));
         $cid=$this->vpl->get_course()->id;
         $mform->addElement('header', 'headerothersources', get_string('othersources', VPL));
         $mform->addElement('select', 'scanactivity', get_string('scanactivity',VPL),$this->list_activities($this->vpl->get_instance()->id));
