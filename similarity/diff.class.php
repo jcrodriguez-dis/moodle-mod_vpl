@@ -332,6 +332,9 @@ class vpl_diff{
         }elseif($type == 3){
             global $CFG;
             $data='';
+            $vplid = required_param('vplid'.$f, PARAM_INT);
+            $vpl = new mod_vpl(false,$vplid);
+            $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
             $zipname = required_param('zipfile'.$f,PARAM_RAW);
             $filename = required_param('filename'.$f,PARAM_RAW);
             $HTMLheader .= $filename.' '.optional_param('username'.$f,'',PARAM_TEXT);
@@ -340,8 +343,8 @@ class vpl_diff{
                 print_error('nozipfile');
             }
             $zip = new ZipArchive();
-            $zipfilename=vpl_similarity_preprocess::get_zip_filepath($zipname);
-            if($zip->open($zipfilename)){
+            $zipfilename=vpl_similarity_preprocess::get_zip_filepath($vplid,$zipname);
+            if($zip->open($zipfilename) === true){
                 $data=$zip->getFromName($filename);
                 $zip->close();
             }

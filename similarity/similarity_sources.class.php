@@ -87,9 +87,10 @@ class vpl_file_from_dir extends vpl_file_from_base{
         return '';
     }
 
-    function __construct(&$filename,$dirname,$userid=''){
+    function __construct(&$filename,$vplid,$dirname,$userid=''){
         $this->filename=$filename;
         $this->dirname=$dirname;
+        $this->vplid=$vplid;
         $this->userid=self::get_user_id_from_file($filename);
     }
 
@@ -123,8 +124,8 @@ class vpl_file_from_dir extends vpl_file_from_base{
  *
  */
 class vpl_file_from_zipfile extends vpl_file_from_dir{
-    function __construct(&$filename,$zipname,$userid=''){
-        parent::__construct($filename,$zipname,$userid);
+    function __construct(&$filename,$vplid,$zipname,$userid=''){
+        parent::__construct($filename,$vplid,$zipname,$userid);
     }
     public function show_info(){
         $ret='';
@@ -138,7 +139,7 @@ class vpl_file_from_zipfile extends vpl_file_from_dir{
         return true;
     }
     public function link_parms($t){
-        $res = array('type'.$t=>3,'zipfile'.$t=>$this->dirname,'filename'.$t => $this->filename);
+        $res = array('type'.$t=>3,'vplid'.$t=>$this->vplid,'zipfile'.$t=>$this->dirname,'filename'.$t => $this->filename);
         if($this->userid!=''){
             $res['username'.$t]=self::$usersname[$this->userid];;
         }
@@ -354,14 +355,14 @@ class vpl_similarity_preprocess{
         }
     }
 
-    static public function get_zip_filepath($zipname){
-        global $CFG,$COURSE;
+    static public function get_zip_filepath($vplid,$zipname){
+        global $CFG;
         $zipname=basename($zipname);
-        return $CFG->dataroot . '/temp/vpl_zip/'.$COURSE->id.'_'.$zipname;
+        return $CFG->dataroot . '/temp/vpl_zip/'.$vplid.'_'.$zipname;
     }
 
-    static public function create_zip_file($zipname, $zipdata){
-        $filename = self::get_zip_filepath($zipname);
+    static public function create_zip_file($vplid,$zipname, $zipdata){
+        $filename = self::get_zip_filepath($vplid,$zipname);
         $fp = vpl_fopen($filename);
         fwrite($fp,$zipdata);
         fclose($fp);
@@ -383,9 +384,10 @@ class vpl_similarity_preprocess{
         if($ext != 'ZIP'){
             print_error('nozipfile');
         }
-        self::create_zip_file($zipname, $zipdata);
+        $vplid=$vpl->get_instance()->id;
+        self::create_zip_file($vplid,$zipname, $zipdata);
         $zip = new ZipArchive();
-        $zipfilename=self::get_zip_filepath($zipname);
+        $zipfilename=self::get_zip_filepath($vplid,$zipname);
         //debugging("Unzip file ".$zipfilename, DEBUG_DEVELOPER);
         $SPB->set_value(get_string('unzipping',VPL));
         if($zip->open($zipfilename)){
@@ -405,7 +407,7 @@ class vpl_similarity_preprocess{
                     }
                     $sim = vpl_similarity_factory::get($filename);
                     if($sim){
-                        $from =new vpl_file_from_zipfile($filename,$zipname);
+                        $from =new vpl_file_from_zipfile($filename,$vplid,$zipname);
                         $sim->init($data,$from);
                         if($sim->size>10){
                             $simil[]=$sim;
