@@ -22,11 +22,12 @@ Related projects
    to process assignments consisting of computer code.  We list a few
    here.
 
-   Zheng Cheng, Rosemary Monohand, and Aidan Mooney, "nExaminer: A
+   Zheng Cheng, Rosemary Monahan, and Aidan Mooney, "nExaminer: A
    Semi-automated Computer Programming Assignment Assessment Framework
    for Moodle", International Conference on Engaging Pedagogy 2011
    (ICEP11), NCI, Dublin, Ireland, Dec 16, 2011.
    URL http://eprints.maynoothuniversity.ie/5360/
+   http://icep.ie/wp-content/uploads/2012/01/Cheng_Monahan_Mooney1.pdf
 
    Sun Zhigang, Su Xiaohong, Zhu Ning, and Cheng Yanyu, "Moodle
    Plugins for Highly Efficient Programming Courses", 1st Moodle
