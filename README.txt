@@ -13,3 +13,21 @@ VPL - Virtual Programming Lab for Moodle 2
    This software is provided "AS IS" without a warranty of any kind.
 
    For more detail access the web site http://vpl.dis.ulpgc.es
+
+================
+Related projects
+================
+
+   This is not the only system designed to extend moodle's ability to
+   to process assignments consisting of computer code.  We list a few
+   here.
+
+   Zheng Cheng, Rosemary Monohand, and Aidan Mooney, "nExaminer: A
+   Semi-automated Computer Programming Assignment Assessment Framework
+   for Moodle", International Conference on Engaging Pedagogy 2011
+   (ICEP11), NCI, Dublin, Ireland, Dec 16, 2011.
+
+   Sun Zhigang, Su Xiaohong, Zhu Ning, and Cheng Yanyu, "Moodle
+   Plugins for Highly Efficient Programming Courses", 1st Moodle
+   Research Conference, Heraklion, Crete-Greece, Sep 14-15, 2012.
+   URL http://git.io/hmdl
