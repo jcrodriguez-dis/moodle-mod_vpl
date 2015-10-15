@@ -26,6 +26,7 @@ Related projects
    Semi-automated Computer Programming Assignment Assessment Framework
    for Moodle", International Conference on Engaging Pedagogy 2011
    (ICEP11), NCI, Dublin, Ireland, Dec 16, 2011.
+   URL http://eprints.maynoothuniversity.ie/5360/
 
    Sun Zhigang, Su Xiaohong, Zhu Ning, and Cheng Yanyu, "Moodle
    Plugins for Highly Efficient Programming Courses", 1st Moodle
