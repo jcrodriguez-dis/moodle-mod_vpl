@@ -24,77 +24,78 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/../locallib.php';
-require_once dirname(__FILE__).'/../vpl.class.php';
-require_once dirname(__FILE__).'/../vpl_submission_CE.class.php';
-require_once dirname(__FILE__).'/../vpl_example_CE.class.php';
+require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
 class mod_vpl_edit{
-    public static function files2object($array_files){
-        $files = array();
-        foreach($array_files as $name => $data){
-            $file = array('name' =>$name,'data'=>$data);
-            $files[] = $file;
+    public static function files2object($arrayfiles) {
+        $files = array ();
+        foreach ($arrayfiles as $name => $data) {
+            $file = array (
+                    'name' => $name,
+                    'data' => $data
+            );
+            $files [] = $file;
         }
         return $files;
     }
-    
-    public static function save($vpl,$userid,$files){
+
+    public static function save($vpl, $userid, $files) {
         global $USER;
-        if($subid=$vpl->add_submission($userid,$files,'',$error_message)){
+        if ($subid = $vpl->add_submission( $userid, $files, '', $errormessage )) {
             $id = $vpl->get_course_module()->id;
-            \mod_vpl\event\submission_uploaded::log(array(
-                'objectid' => $subid,
-                'context' => $vpl->get_context(),
-                'relateduserid' => ($USER->id != $userid?$userid:null)
-            ));
-        }else{
-            throw new Exception(get_string('notsaved',VPL).': '.$error_message);
+            \mod_vpl\event\submission_uploaded::log( array (
+                    'objectid' => $subid,
+                    'context' => $vpl->get_context(),
+                    'relateduserid' => ($USER->id != $userid ? $userid : null)
+            ) );
+        } else {
+            throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $errormessage );
         }
     }
-    
-    public static function get_requested_files($vpl){
-        $req_fgm = $vpl->get_required_fgm();
-        $req_filelist =$req_fgm->getFileList();
-        $nf = count($req_filelist);
-        $files = Array();
-        for( $i = 0; $i < $nf; $i++){
-            $filename=$req_filelist[$i];
-            $filedata=$req_fgm->getFileData($req_filelist[$i]);
-            $files[$filename]=$filedata;
+
+    public static function get_requested_files($vpl) {
+        $reqfgm = $vpl->get_required_fgm();
+        $reqfilelist = $reqfgm->getFileList();
+        $nf = count( $reqfilelist );
+        $files = Array ();
+        for ($i = 0; $i < $nf; $i ++) {
+            $filename = $reqfilelist [$i];
+            $filedata = $reqfgm->getFileData( $reqfilelist [$i] );
+            $files [$filename] = $filedata;
         }
         return $files;
     }
-    
-    public static function get_submitted_files($vpl,$userid,& $CE){
-        $CE = false;
-        $lastsub = $vpl->last_user_submission($userid);
-        if($lastsub){
-            $submission = new mod_vpl_submission($vpl, $lastsub);
-            $fgp =  $submission->get_submitted_fgm();
+    public static function get_submitted_files($vpl, $userid, & $compilationexecution) {
+        $compilationexecution = false;
+        $lastsub = $vpl->last_user_submission( $userid );
+        if ($lastsub) {
+            $submission = new mod_vpl_submission( $vpl, $lastsub );
+            $fgp = $submission->get_submitted_fgm();
             $filelist = $fgp->getFileList();
-            $nf=count($filelist);
-            for( $i = 0; $i < $nf; $i++){
-                $filename=$filelist[$i];
-                $filedata=$fgp->getFileData($filelist[$i]);
-                $files[$filename]=$filedata;
+            $nf = count( $filelist );
+            for ($i = 0; $i < $nf; $i ++) {
+                $filename = $filelist [$i];
+                $filedata = $fgp->getFileData( $filelist [$i] );
+                $files [$filename] = $filedata;
             }
-            $CE=$submission->get_CE_for_editor();
-        }else{
-            $files = self::get_requested_files($vpl);
+            $compilationexecution = $submission->get_CE_for_editor();
+        } else {
+            $files = self::get_requested_files( $vpl );
         }
         return $files;
     }
-    
-    public static function execute($vpl,$userid,$action,$options=array()){
+    public static function execute($vpl, $userid, $action, $options = array()) {
         $example = $vpl->get_instance()->example;
-        $lastsub = $vpl->last_user_submission($userid);
-        if(!$lastsub && !$example){
-            throw new Exception(get_string('nosubmission',VPL));
+        $lastsub = $vpl->last_user_submission( $userid );
+        if (! $lastsub && ! $example) {
+            throw new Exception( get_string( 'nosubmission', VPL ) );
         }
-        if($example){
-            $submission = new mod_vpl_example_CE($vpl);
-        }else{
-            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+        if ($example) {
+            $submission = new mod_vpl_example_CE( $vpl );
+        } else {
+            $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         }
         $code = array (
                 'run' => 0,
@@ -108,28 +109,26 @@ class mod_vpl_edit{
         );
         $eventclass = '\mod_vpl\event\submission_' . $traslate [$action];
         $eventclass::log( $submission );
-        return $submission->run($code[$action],$options);
+        return $submission->run( $code [$action], $options );
     }
-    
-    public static function retrieve_result($vpl,$userid){
-        $lastsub = $vpl->last_user_submission($userid);
-        if(!$lastsub){
-            throw new Exception(get_string('nosubmission',VPL));
+    public static function retrieve_result($vpl, $userid) {
+        $lastsub = $vpl->last_user_submission( $userid );
+        if (! $lastsub) {
+            throw new Exception( get_string( 'nosubmission', VPL ) );
         }
-        $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         return $submission->retrieveResult();
     }
-    
-    public static function cancel($vpl,$userid){
+    public static function cancel($vpl, $userid) {
         $example = $vpl->get_instance()->example;
-        $lastsub = $vpl->last_user_submission($userid);
-        if(!$lastsub && !$example){
-            throw new Exception(get_string('nosubmission',VPL));
+        $lastsub = $vpl->last_user_submission( $userid );
+        if (! $lastsub && ! $example) {
+            throw new Exception( get_string( 'nosubmission', VPL ) );
         }
-        if($example){
-            $submission = new mod_vpl_example_CE($vpl);
-        }else{
-            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+        if ($example) {
+            $submission = new mod_vpl_example_CE( $vpl );
+        } else {
+            $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         }
         return $submission->cancelProcess();
     }
