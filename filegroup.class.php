@@ -98,7 +98,7 @@ class file_group_process{
      * @parm path file path
      * @return string
      */
-    public static function encodeFileName($path) {
+    public static function encodefilename($path) {
         return str_replace('/', '=', $path);
     }
 
@@ -109,7 +109,7 @@ class file_group_process{
      * @param string $data
      * @return bool (added==true)
      */
-    public function addFile($filename, $data = null) {
+    public function addfile($filename, $data = null) {
         if (! vpl_is_valid_path_name( $filename )) {
             return false;
         }
@@ -147,7 +147,7 @@ class file_group_process{
      *            file position
      * @return bool
      */
-    public function deleteFile($num) {
+    public function deletefile($num) {
         if ($num < $this->numstaticfiles) {
             return false;
         }
@@ -181,7 +181,7 @@ class file_group_process{
      *            new filename
      * @return bool (renamed==true)
      */
-    public function renameFile($num, $filename) {
+    public function renamefile($num, $filename) {
         if ($num < $this->numstaticfiles || ! vpl_is_valid_path_name( $filename )) {
             return false;
         }
@@ -208,7 +208,7 @@ class file_group_process{
      *
      * @return string[]
      */
-    public function getFileList() {
+    public function getfilelist() {
         return vpl_read_list_from_file($this->filelistname);
     }
 
@@ -217,7 +217,7 @@ class file_group_process{
      *
      * @param string[] $filelist
      */
-    public function setFileList($filelist) {
+    public function setfilelist($filelist) {
         vpl_write_list_to_file( $this->filelistname, $filelist );
     }
 
@@ -227,7 +227,7 @@ class file_group_process{
      * @param int $num
      * @return string
      */
-    public function getFileComment($num) {
+    public function getfilecomment($num) {
         return get_string( 'file' ) . ' ' . ($num + 1);
     }
 
@@ -237,7 +237,7 @@ class file_group_process{
      * @param int/string $mix
      * @return string
      */
-    public function getFileData($mix) {
+    public function getfiledata($mix) {
         if (is_int( $mix )) {
             $num = $mix;
             $filelist = $this->getFileList();
@@ -288,7 +288,7 @@ class file_group_process{
      */
     public function print_files($ifnoexist = true) {
         global $OUTPUT;
-        $timeout = time() + 10; // 10 seconds for timeout
+        $timeout = time() + 10; // 10 seconds for timeout.
         $filenames = $this->getFileList();
         foreach ($filenames as $name) {
             if (file_exists( $this->dir . self::encodeFileName( $name ) )) {
@@ -328,11 +328,11 @@ class file_group_process{
                 $zip->addFromString( $filename, $data );
             }
             $zip->close();
-            //Get zip data
+            // Get zip data.
             $data = file_get_contents( $zipfilename );
-            //remove zip file
+            // Remove zip file.
             unlink( $zipfilename );
-            //Send zipdata
+            // Send zipdata.
             @header( 'Content-Length: ' . strlen( $data ) );
             @header( 'Content-Type: application/zip; charset=utf-8' );
             @header( 'Content-Disposition: attachment; filename="' . $name . '.zip"; filename*=utf-8\'\'' . $cname );
