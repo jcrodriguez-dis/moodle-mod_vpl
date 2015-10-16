@@ -1,16 +1,15 @@
 Main developmenter: Juan Carlos Rodriguez-del-Pino, jcrodriguez@dis.ulpgc.es
 
 Translations:
-	Catalan: Antonio Piedras Morente
-	Japanese: Imaizumi Takashi
-	Polish: Marcin Kolodziej, Michal Kedzia
-	German: Lang Michael: michael.lang.ima10@fh-joanneum.at,
-			Lückl Bernd: bernd.lueckl.ima10@fh-joanneum.at and
-			Lang Johannes: johannes.lang.ima10@fh-joanneum.at
-	Estonian: Aivar Annamaa
+    Catalan: Antonio Piedras Morente
+    Japanese: Imaizumi Takashi
+    Polish: Marcin Kolodziej, Michal Kedzia
+    German: Lang Michael: michael.lang.ima10@fh-joanneum.at,
+            Lückl Bernd: bernd.lueckl.ima10@fh-joanneum.at and
+            Lang Johannes: johannes.lang.ima10@fh-joanneum.at
+    Estonian: Aivar Annamaa
 
- vpl_evaluate.cpp: Regular Expressions in test cases implemented by:
+vpl_evaluate.cpp: Regular Expressions in test cases implemented by:
     Daniel José Ojeda Loisel
     Juan David Vega Rodríguez
     Miguel Ángel Viera González
- 
