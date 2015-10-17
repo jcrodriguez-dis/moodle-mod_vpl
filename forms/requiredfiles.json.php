@@ -36,7 +36,7 @@ try {
         throw new Exception( get_string( 'loggedinnot' ) );
     }
 
-    $id = required_param( 'id', PARAM_INT ); // course id
+    $id = required_param( 'id', PARAM_INT ); // Course id.
     $action = required_param( 'action', PARAM_ALPHANUMEXT );
     $vpl = new mod_vpl( $id );
     // TODO use or not sesskey "require_sesskey();".
