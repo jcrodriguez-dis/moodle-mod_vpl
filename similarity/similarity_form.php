@@ -37,7 +37,7 @@ $vpl->prepare_page( 'similarity/similarity_form.php', array (
 
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
 \mod_vpl\event\vpl_similarity_form_viewed::log( $vpl );
-//Print header
+// Print header.
 $vpl->print_header( get_string( 'similarity', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 $form = new vpl_similarity_form( 'listsimilarity.php', $vpl );
