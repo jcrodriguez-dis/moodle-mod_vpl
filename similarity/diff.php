@@ -38,7 +38,7 @@ $PAGE->set_pagelayout( 'popup' );
 echo $OUTPUT->header();
 
 // Get left file.
-vpl_diff::vpl_get_similfile( '1', $HTMLheader1, $filename1, $data1 );
+vpl_diff::vpl_get_similfile( '1', $htmlheader1, $filename1, $data1 );
 
 // Get right file.
 vpl_diff::vpl_get_similfile( '2', $htmlheader2, $filename2, $data2 );
