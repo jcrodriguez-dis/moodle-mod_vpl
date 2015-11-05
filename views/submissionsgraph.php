@@ -46,8 +46,8 @@ if (count( $submissionslist ) > 0) {
         $subs [] = new mod_vpl_submission( $vpl, $submission );
     }
     foreach ($subs as $sub) {
-        $files_array = $sub->get_submitted_files();
-        foreach ($files_array as $file) {
+        $filesarray = $sub->get_submitted_files();
+        foreach ($filesarray as $file) {
             $name = $file ['name'];
             if (! in_array( $name, $names, true )) {
                 $names [] = $name;
@@ -66,38 +66,42 @@ if (count( $submissionslist ) > 0) {
     } else {
         $subshow = 5;
         while ( true ) {
-            if ($subshow >= $subshowl)
+            if ($subshow >= $subshowl) {
                 break;
+            }
             $subshow *= 2;
-            if ($subshow >= $subshowl)
+            if ($subshow >= $subshowl) {
                 break;
+            }
             $subshow = ( int ) (2.5 * $subshow);
-            if ($subshow >= $subshowl)
+            if ($subshow >= $subshowl) {
                 break;
+            }
             $subshow *= 2;
-            if ($subshow >= $subshowl)
+            if ($subshow >= $subshowl) {
                 break;
+            }
         }
     }
     $nsub = 1;
     foreach ($subs as $sub) {
         $subsn [] = $nsub % $subshow == 0 ? $nsub : '';
         $nsub ++;
-        $files_array = $sub->get_submitted_files();
+        $filesarray = $sub->get_submitted_files();
         $files = array ();
         // Used to give stack format last bar has less size.
-        $total_size = 0;
-        foreach ($files_array as $file) {
+        $totalsize = 0;
+        foreach ($filesarray as $file) {
             $size = strlen( $file ['data'] );
             $files [$file ['name']] = $size;
-            $total_size += $size;
+            $totalsize += $size;
         }
         foreach ($names as $name) {
             if (isset( $files [$name] )) {
-                $series [$name] [] = $total_size;
-                $total_size -= $files [$name];
+                $series [$name] [] = $totalsize;
+                $totalsize -= $files [$name];
             } else {
-                $series [$name] [] = $total_size;
+                $series [$name] [] = $totalsize;
             }
         }
     }
@@ -105,4 +109,5 @@ if (count( $submissionslist ) > 0) {
 $user = $DB->get_record( 'user', array (
         'id' => $userid
 ) );
-vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false ), get_string( 'submissions', VPL ), get_string( "sizeb" ), $subsn, $series, $names );
+vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false )
+               , get_string( 'submissions', VPL ) , get_string( "sizeb" ), $subsn, $series, $names );
