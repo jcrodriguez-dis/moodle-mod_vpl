@@ -41,8 +41,8 @@ if (!webservice_protocol_is_enabled('rest')) {
         DEBUG_DEVELOPER);
     die;
 }
-//Modification by Juan Carlos Rodríguez del Pino date 20140601
-//Changed from WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN to WEBSERVICE_AUTHMETHOD_SESSION_TOKEN
+// Modification by Juan Carlos Rodríguez del Pino date 20140601.
+// Changed from WEBSERVICE_AUTHMETHOD_PERMANENT_TOKEN to WEBSERVICE_AUTHMETHOD_SESSION_TOKEN.
 $server = new webservice_rest_server(WEBSERVICE_AUTHMETHOD_SESSION_TOKEN);
 $server->run();
 die;
