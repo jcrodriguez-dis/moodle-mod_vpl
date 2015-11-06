@@ -18,7 +18,6 @@
  * Scala language similarity class
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Lang Michael <michael.lang.ima10@fh-joanneum.at>
  * @author Lückl Bernd <bernd.lueckl.ima10@fh-joanneum.at>

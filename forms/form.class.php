@@ -121,7 +121,7 @@ class vpl_form {
     public function addhtml($html) {
         $this->htmlcode .= $html;
     }
-    public function definition() {
+    protected function definition() {
         $this->htmlcode = '';
         $this->addHidden( 'sesskey', sesskey() );
     }
