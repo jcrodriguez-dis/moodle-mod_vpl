@@ -115,12 +115,7 @@ class mod_vpl_grade_form extends vpl_form {
             $html = ' <a href="javascript:void(0);" onclick="' . $jscript . '">' . s( get_string( 'calculate', VPL ) ) . '</a>';
             $this->addHTML( $html );
         }
-        // TODO user similarity.
-        /*
-         * $url=vpl_mod_href('similarity/user_similarity.php','id',$id,'userid',$userid);
-         * $html=link_to_popup_window($url,'similarity'.$id.'-'.$userid,get_string('similarity',VPL),800,900,null,null,true);
-         * $this->addHTML(' '.$html);
-         */
+
         $this->addHTML( '<br />' );
         if ($grade != 0) {
             $this->addHTML( s( get_string( 'comments', VPL ) ) . '<br />' );
