@@ -150,7 +150,7 @@ $string ['varidentification'] = 'Identifikaator';
 $string ['variation_options'] = 'Variatsiooni valikud';
 $string ['variations_unused'] = 'Sellele ülesandel on variatsioone, kuid need on mittaktiivsed';
 $string ['deleteallsubmissions'] = 'Kustuta kõik esitused';
-/* $string['maxsimilarityoutput'] = 'Maksimaalne tulemuste arv'; */
+
 $string ['resetvpl'] = 'Reset {$a}';
 $string ['numcluster'] = 'Kobar {$a}';
 $string ['inconsistentgroup'] = 'Sa pole ainult ühe grupi liige (0 o >1)';
@@ -266,7 +266,7 @@ $string ['find_replace'] = 'Otsi/Asenda';
 $string ['find_find_replace'] = 'Otsi või otsi/asenda';
 $string ['program_help'] = 'Programmi abiinfo';
 $string ['page_unaccessible'] = 'Kättesaamatu lehekülg';
-/* $string['about']= 'About'; */
+
 $string ['help_about'] = 'Help about'; // TODO.
 $string ['figure'] = 'Figure'; // TODO.
 $string ['line_number'] = 'Reanumber';
