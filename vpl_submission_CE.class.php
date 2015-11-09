@@ -151,6 +151,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public function prepare_execution($type, &$already = array(), $vpl = null) {
         global $CFG;
+        $plugincfg = get_config('mod_vpl');
         if ($vpl == null) {
             $vpl = $this->vpl;
         }
@@ -168,10 +169,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data = new stdClass();
             $data->files = array ();
             $data->filestodelete = array ();
-            $data->maxtime = ( int ) $CFG->vpl_defaultexetime;
-            $data->maxfilesize = ( int ) $CFG->vpl_defaultexefilesize;
-            $data->maxmemory = ( int ) $CFG->vpl_defaultexememory;
-            $data->maxprocesses = ( int ) $CFG->vpl_defaultexeprocesses;
+            $data->maxtime = ( int ) $plugincfg->defaultexetime;
+            $data->maxfilesize = ( int ) $plugincfg->defaultexefilesize;
+            $data->maxmemory = ( int ) $plugincfg->defaultexememory;
+            $data->maxprocesses = ( int ) $plugincfg->defaultexeprocesses;
             $data->jailservers = '';
         }
         // Execution files.
@@ -237,10 +238,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             }
         }
         // Limit resource to maximum.
-        $data->maxtime = min( $data->maxtime, ( int ) $CFG->vpl_maxexetime );
-        $data->maxfilesize = min( $data->maxfilesize, ( int ) $CFG->vpl_maxexefilesize );
-        $data->maxmemory = min( $data->maxmemory, ( int ) $CFG->vpl_maxexememory );
-        $data->maxprocesses = min( $data->maxprocesses, ( int ) $CFG->vpl_maxexeprocesses );
+        $data->maxtime = min( $data->maxtime, ( int ) $plugincfg->maxexetime );
+        $data->maxfilesize = min( $data->maxfilesize, ( int ) $plugincfg->maxexefilesize );
+        $data->maxmemory = min( $data->maxmemory, ( int ) $plugincfg->maxexememory );
+        $data->maxprocesses = min( $data->maxprocesses, ( int ) $plugincfg->maxexeprocesses );
         // Info send with script.
         $info = "#!/bin/bash\n";
         $info .= 'export VPL_LANG=' . vpl_get_lang( true ) . "\n";

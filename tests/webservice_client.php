@@ -77,6 +77,7 @@ function vpl_call_service($url, $fun, $request = '') {
     if (! function_exists( 'curl_init' )) {
         throw new Exception( 'PHP cURL requiered' );
     }
+    $plugincfg = get_config('mod_vpl');
     $ch = curl_init();
     curl_setopt( $ch, CURLOPT_URL, $url . $fun );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -84,7 +85,7 @@ function vpl_call_service($url, $fun, $request = '') {
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
     curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
-    if (@$CFG->vpl_acceptcertificates) {
+    if( @$plugincfg->acceptcertificates ) {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
     }
     $rawresponse = curl_exec( $ch );

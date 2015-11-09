@@ -36,6 +36,7 @@ class vpl_jailserver_manager {
         if (! function_exists( 'curl_init' )) {
             throw new Exception( 'PHP cURL requiered' );
         }
+        $plugincfg = get_config('mod_vpl');
         $ch = curl_init();
         curl_setopt( $ch, CURLOPT_URL, $server );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
@@ -49,7 +50,7 @@ class vpl_jailserver_manager {
         if ($fresh) {
             curl_setopt( $ch, CURLOPT_FRESH_CONNECT, true );
         }
-        if (@$CFG->vpl_acceptcertificates) {
+        if (@$plugincfg->acceptcertificates) {
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
         }
         return $ch;
@@ -138,9 +139,10 @@ class vpl_jailserver_manager {
      */
     static public function get_server_list($localserverlisttext) {
         global $CFG;
+        $plugincfg = get_config('mod_vpl');
         $nllocal = vpl_detect_newline( $localserverlisttext );
-        $nlglobal = vpl_detect_newline( $CFG->vpl_jail_servers );
-        $tempserverlist = array_merge( explode( $nllocal, $localserverlisttext ), explode( $nlglobal, $CFG->vpl_jail_servers ) );
+        $nlglobal = vpl_detect_newline( $plugincfg->jail_servers );
+        $tempserverlist = array_merge( explode( $nllocal, $localserverlisttext ), explode( $nlglobal, $plugincfg->jail_servers ) );
         $serverlist = array ();
         // Clean temp server list and search for 'end_of_jails'.
         foreach ($tempserverlist as $server) {

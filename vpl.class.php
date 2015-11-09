@@ -424,10 +424,10 @@ class mod_vpl {
      *
      */
     public function get_maxfilesize() {
-        global $CFG;
+        $plugincfg = get_config('mod_vpl');
         $max = vpl_get_max_post_size();
-        if ($CFG->vpl_maxfilesize > 0 && $CFG->vpl_maxfilesize < $max) {
-            $max = $CFG->vpl_maxfilesize;
+        if ($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max) {
+            $max = $plugincfg->maxfilesize;
         }
         if ($this->instance->maxfilesize > 0 && $this->instance->maxfilesize < $max) {
             $max = $this->instance->maxfilesize;
@@ -822,15 +822,16 @@ class mod_vpl {
      *
      */
     public function delete_overflow_submissions($userid) {
-        global $CFG, $DB;
-        if (! isset( $CFG->vpl_discard_submission_period )) {
+        global $DB;
+        $plugincfg = get_config('mod_vpl');
+        if (! isset( $plugincfg->discard_submission_period )) {
             return;
         }
-        if ($CFG->vpl_discard_submission_period == 0) {
+        if ($plugincfg->discard_submission_period == 0) {
             // Keep all submissions.
             return;
         }
-        if ($CFG->vpl_discard_submission_period > 0) {
+        if ($plugincfg->discard_submission_period > 0) {
             $select = "(userid = ?) AND (vpl = ?)";
             $params = array (
                     $userid,
@@ -857,7 +858,7 @@ class mod_vpl {
                 if (! ($last->datesubmitted > $second->datesubmitted && $second->datesubmitted > $first->datesubmitted)) {
                     return;
                 }
-                if (($last->datesubmitted - $first->datesubmitted) < $CFG->vpl_discard_submission_period) {
+                if (($last->datesubmitted - $first->datesubmitted) < $plugincfg->discard_submission_period) {
                     // Remove second submission.
                     $submission = new mod_vpl_submission( $this, $second );
                     $submission->delete();

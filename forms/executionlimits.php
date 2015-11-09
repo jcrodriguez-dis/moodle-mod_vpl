@@ -35,7 +35,7 @@ class mod_vpl_executionlimits_form extends moodleform {
         parent::__construct( $page );
     }
     protected function definition() {
-        global $CFG;
+        $plugincfg = get_config('mod_vpl');
         $mform = & $this->_form;
         $id = $this->vpl->get_course_module()->id;
         $instance = $this->vpl->get_instance();
@@ -43,19 +43,19 @@ class mod_vpl_executionlimits_form extends moodleform {
         $mform->setType( 'id', PARAM_INT );
         $mform->addElement( 'header', 'header_execution_limits', get_string( 'resourcelimits', VPL ) );
         $mform->addElement( 'select', 'maxexetime', get_string( 'maxexetime', VPL )
-                           , vpl_get_select_time( ( int ) $CFG->vpl_maxexetime ) );
+                           , vpl_get_select_time( ( int ) $plugincfg->maxexetime ) );
         $mform->setType( 'maxexetime', PARAM_INT );
         if ($instance->maxexetime) {
             $mform->setDefault( 'maxexetime', $instance->maxexetime );
         }
         $mform->addElement( 'select', 'maxexememory', get_string( 'maxexememory', VPL )
-                           , vpl_get_select_sizes( 16 * 1024 * 1024, ( int ) $CFG->vpl_maxexememory ) );
+                           , vpl_get_select_sizes( 16 * 1024 * 1024, ( int ) $plugincfg->maxexememory ) );
         $mform->setType( 'maxexememory', PARAM_INT );
         if ($instance->maxexememory) {
             $mform->setDefault( 'maxexememory', $instance->maxexememory );
         }
         $mform->addElement( 'select', 'maxexefilesize', get_string( 'maxexefilesize', VPL )
-                           , vpl_get_select_sizes( 1024 * 256, ( int ) $CFG->vpl_maxexefilesize ) );
+                           , vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ) );
         $mform->setType( 'maxexefilesize', PARAM_INT );
         if ($instance->maxexefilesize) {
             $mform->setDefault( 'maxexefilesize', $instance->maxexefilesize );
