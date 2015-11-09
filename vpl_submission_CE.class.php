@@ -253,7 +253,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $info .= 'export VPL_MAXPROCESSES=' . $data->maxprocesses . "\n";
             $info .= 'export MOODLE_USER_ID=' . ($subinstance->userid) . "\n";
             if ($user = $DB->get_record( 'user', array ( 'id' => $subinstance->userid ) )) {
-                $info .= 'export MOODLE_USER_NAME=' . addslashes( $vpl->fullname( $user, false ) ) . "\n";
+                $info .= 'export MOODLE_USER_NAME=\'' . addslashes( $vpl->fullname( $user, false ) ) . "'\n";
             }
             $gradesetting = $vpl->get_grade_info();
             if ($gradesetting !== false) {
