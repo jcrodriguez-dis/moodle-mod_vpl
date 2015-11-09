@@ -28,6 +28,9 @@
  * the jail servers. get_Server is the main feature
  *
  */
+
+require_once(dirname(__FILE__).'/../locallib.php');
+
 class vpl_jailserver_manager {
     const RECHECK = 300; // Optional setable?
     const TABLE = 'vpl_jailservers';
@@ -43,7 +46,7 @@ class vpl_jailserver_manager {
         curl_setopt( $ch, CURLOPT_POST, 1 );
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array (
                 'Content-type: text/xml;charset=UTF-8',
-                'User-Agent: VPL 3.0'
+                'User-Agent: VPL ' . vpl_get_version()
         ) );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
@@ -52,6 +55,9 @@ class vpl_jailserver_manager {
         }
         if (@$plugincfg->acceptcertificates) {
             curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+        }
+        if (isset( $plugincfg->proxy ) && strlen( $plugincfg->proxy ) > 7) {
+            curl_setopt( $ch, CURLOPT_PROXY, $plugincfg->proxy );
         }
         return $ch;
     }
