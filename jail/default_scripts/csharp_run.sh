@@ -7,17 +7,15 @@
 
 #load common script and check programs
 . common_script.sh
-check_program gmcs
+check_program mcs
 check_program mono
 get_source_files cs
 #compile
 export MONO_ENV_OPTIONS=--gc=sgen
-export MONO_GC_PARAMS=max-heap-size=64m
-gmcs -pkg:dotnet -out:output.exe $SOURCE_FILES
+mcs -pkg:dotnet -out:output.exe $SOURCE_FILES
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
-	echo "export MONO_GC_PARAMS=max-heap-size=64m" >> vpl_execution
 	echo "mono output.exe" >> vpl_execution
 	chmod +x vpl_execution
 	for FILENAME in $SOURCE_FILES
