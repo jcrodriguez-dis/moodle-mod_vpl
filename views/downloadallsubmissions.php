@@ -26,7 +26,6 @@
 global $CFG, $USER;
 
 require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../../../lib/textlib.class.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
