@@ -199,7 +199,7 @@ class vpl_file_from_activity extends vpl_file_from_base {
     public function get_userid() {
         return $this->userid;
     }
-    public public function can_access() {
+    public function can_access() {
         return $this->filename != vpl_similarity_preprocess::joinedfilename;
     }
     public function link_parms($t) {
