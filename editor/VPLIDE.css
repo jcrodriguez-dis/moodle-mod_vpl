@@ -83,8 +83,16 @@
 	text-shadow: none;
 	cursor: pointer;
 }
+.ui-tabs .ui-tabs-panel {
+	padding:0;
+}
+/*Resolve problem with essential theme*/
+.vpl_ide_file * {
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+}
 
 .vpl_ide_file {
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 	margin: 2px;
 	padding: 0;
 	z-index:0;
@@ -158,7 +166,7 @@ img.vpl_ide_file {
 	white-space: pre-wrap !important;
 }
 .vpl_ide_result_compilation, .vpl_ide_result_execution {
-	font-family: 'Monaco', 'Consolas', monospace;
+	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 	font-size: 12pt;
 	max-width: 120em;
 	white-space: pre;
@@ -176,6 +184,11 @@ img.vpl_ide_file {
     border:0;
     z-index: 1000;
 }
+/*Resolve problem with essential theme*/
+pre.vpl_terminal *{
+	font:1em/1.2 monospace;
+}
+
 pre.vpl_terminal{
 	font:1em/1.2 monospace;
 	font-size:12px;
