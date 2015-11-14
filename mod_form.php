@@ -45,7 +45,11 @@ class mod_vpl_mod_form extends moodleform_mod {
                 'rows' => 1
         ) );
         $mform->setType( 'shortdescription', PARAM_RAW );
-        $this->add_intro_editor( false, get_string( 'fulldescription', VPL ) );
+        if ($CFG->version < 2015041700.00) { // Moodle version < 2.9Beta.
+            $this->add_intro_editor( false, get_string( 'fulldescription', VPL ) ); // Deprecated from 2.9beta.
+        } else {
+            $this->standard_intro_elements( get_string( 'fulldescription', VPL ) );
+        }
         $mform->addElement( 'header', 'submissionperiod', get_string( 'submissionperiod', VPL ) );
         $secondsday = 24 * 60 * 60;
         $now = time();
