@@ -14,6 +14,7 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 	var title ='';
 	var message ='';
 	var tdialog = $JQVPL('#'+dialog_id);
+	
 	var terminal = new Terminal({
 		cols : 80,
 		rows : 24,
@@ -98,6 +99,9 @@ VPL_Terminal = function(dialog_id,terminal_id,str) {
 		width : 'auto',
 		height : 'auto',
 		resizable : false,
+		focus : function(){
+            terminal.focus();
+        },
 		modal:true,
 		dialogClass : 'vpl_ide vpl_vnc',
 		close : function() {
