@@ -39,6 +39,14 @@
 		this.isModified = function() {
 			return modified;
 		};
+		this.change = function(){
+            if (!modified) {
+                modified = true;
+                file_manager.generateFileList();
+                this.setFileName(fileName); // TODO update state of filename
+            }
+            VPL_Util.longDelay(file_manager.setModified);
+		};
 		this.setFileName = function(name) {
 			if (!VPL_Util.validPath(name))
 				return false;
@@ -124,9 +132,8 @@
 				return editor.getValue();
 			};
 			this.setContent = function(c) {
-				if(!opened){
-					value=c;
-				}else{
+                value=c;
+                if(opened){
 					editor.setValue(c);
 				}
 			};
@@ -248,15 +255,8 @@
 						setTimeout(addEventDrop, 50);
 					}
 				}
-				function changed() {
-					if (!modified) {
-						modified = true;
-						self.setFileName(fileName);
-						file_manager.generateFileList();
-					}
-					VPL_Util.longDelay(file_manager.setModified);
-				}
-				editor.on('change', changed);
+				var prevOnChange = editor.onChange;
+				editor.on('change', function(){ self.change();});
 				// Try to grant dropHandler installation
 				setTimeout(addEventDrop, 5);
 				// Save previous onPaste and change for a new one
