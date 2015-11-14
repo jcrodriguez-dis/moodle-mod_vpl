@@ -338,8 +338,8 @@ function vpl_url_add_param($url, $parm, $value) {
  * @return void
  */
 function vpl_redirect($link, $message, $wait = 4) {
-    global $OUTPUT, $vploutputheader;
-    if (! (isset( $vploutputheader ) && $vploutputheader === true)) {
+    global $OUTPUT;
+    if (! mod_vpl::header_is_out()) {
         echo $OUTPUT->header();
     }
     static $idcount = 0;
@@ -691,6 +691,20 @@ function vpl_truncate_running_processes($instance) {
 function vpl_truncate_jailservers($instance) {
     vpl_truncate_string( $instance->server, 255 );
 }
+/**
+ * Get version string
+ * @return string
+ */
+function vpl_get_version() {
+    static $version;
+    if (! isset( $version )) {
+        $plugin = new stdClass();
+        require_once(dirname( __FILE__ ) . '/version.php');
+        $version = $plugin->release;
+    }
+    return $version;
+}
+
 function vpl_get_webservice_available() {
     global $DB, $USER, $CFG;
     if ($USER->id <= 2) {
