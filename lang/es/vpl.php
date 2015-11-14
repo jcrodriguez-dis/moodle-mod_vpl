@@ -14,7 +14,7 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-$string ['about'] = 'Sobre';
+$string ['about'] = 'Acerca de';
 $string ['acceptcertificates'] = 'Aceptar certificados auto firmados';
 $string ['acceptcertificates_description'] = 'Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';
 $string ['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.<p/>
@@ -34,6 +34,7 @@ $string ['averageperiods'] = 'Periodos promedio {$a}';
 $string ['averagetime'] = 'Tiempo promedio {$a}';
 $string ['basedon'] = 'Basado en';
 $string ['basic'] = 'Básico';
+$string ['binaryfile'] = 'Fichero binario';
 $string ['browserupdate'] = 'Actualice su navegador a la última versión<br />o use otro que soporte Websocket';
 $string ['calculate'] = 'Calcular';
 $string ['changesNotSaved'] = 'Cambios no almacenados';
@@ -85,6 +86,7 @@ $string ['file'] = 'Fichero';
 $string ['file_name'] = 'Nombre del fichero';
 $string ['fileadded'] = "El fichero '{\$a}' ha sido añadido";
 $string ['filedeleted'] = "El fichero '{\$a}' ha sido borrado";
+$string ['filelist'] = "Lista de ficheros";
 $string ['filenotadded'] = 'Fichero no añadido';
 $string ['fileNotChanged'] = 'Fichero no modificado';
 $string ['filenotdeleted'] = 'El fichero \'{$a}\' NO ha sido borrado';
