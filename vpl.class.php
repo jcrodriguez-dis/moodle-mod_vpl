@@ -1195,6 +1195,9 @@ class mod_vpl {
     }
 
     protected static $headerisout = false;
+    public static function header_is_out() {
+        return self::$headerisout;
+    }
     /**
      * print header
      *
@@ -1203,6 +1206,9 @@ class mod_vpl {
      */
     public function print_header($info = '') {
         global $COURSE, $PAGE, $OUTPUT;
+        if (self::$headerisout) {
+           return;
+        }
         $tittle = $this->get_printable_name();
         if ($info) {
             $tittle .= ' ' . $info;
@@ -1215,6 +1221,9 @@ class mod_vpl {
     }
     public function print_header_simple($info = '') {
         global $OUTPUT, $PAGE;
+        if (self::$headerisout) {
+            return;
+        }
         $tittle = $this->get_printable_name();
         if ($info) {
             $tittle .= ' ' . $info;
@@ -1232,6 +1241,9 @@ class mod_vpl {
      */
     public function print_heading_with_help($action) {
         global $OUTPUT;
+        if (self::$headerisout) {
+            return;
+        }
         $title = get_string( $action, VPL ) . ': ' . $this->get_printable_name();
         echo $OUTPUT->heading_with_help( $title, $action, 'vpl' );
         self::$headerisout = true;
