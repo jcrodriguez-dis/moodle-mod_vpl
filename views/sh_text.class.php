@@ -47,7 +47,7 @@ class vpl_sh_text extends vpl_sh_base {
     const ENDTAG = '</span>';
     protected function show_line_number() {
         if ($this->showln) {
-            echo '<span class="' . self::c_linenumber . '">';
+            echo '<span class="' . self::C_LINENUMBER . '">';
             $name = $this->filename . '.' . $this->linenumber;
             echo '<a name="' . $name . '"></a>';
             $text = sprintf( '%5d', $this->linenumber );
@@ -87,7 +87,7 @@ class vpl_sh_text extends vpl_sh_base {
         echo '</pre>';
     }
     protected function inithover() {
-        echo '<span class="' . self::c_hover . ($this->hoverlevel < 12 ? $this->hoverlevel : 11) . '">';
+        echo '<span class="' . self::C_HOVER . ($this->hoverlevel < 12 ? $this->hoverlevel : 11) . '">';
         $this->hoverlevel ++;
     }
     protected function endhover() {
