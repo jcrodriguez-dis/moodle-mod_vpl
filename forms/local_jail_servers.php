@@ -53,7 +53,7 @@ vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_SETJAILS_CAPABILITY );
 $vpl->print_header( get_string( 'local_jail_servers', VPL ) );
 $vpl->print_heading_with_help( 'local_jail_servers' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
+
 $mform = new mod_vpl_setjails_form( 'local_jail_servers.php' );
 // Display page.
 $course = $vpl->get_course();

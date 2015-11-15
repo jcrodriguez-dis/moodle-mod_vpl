@@ -111,7 +111,6 @@ class mod_vpl_mod_form extends moodleform_mod {
         $id = optional_param( 'update', false, PARAM_INT );
         if ($id) {
             $vpl = new mod_vpl( $id );
-            $vpl->print_configure_tabs( 'edit' );
             if ($vpl->get_grade_info() !== false) {
                 $vpl->get_instance()->visiblegrade = ($vpl->get_grade_info()->hidden) ? 0 : 1;
             } else {

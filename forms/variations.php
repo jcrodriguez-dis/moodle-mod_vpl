@@ -168,8 +168,6 @@ if ($mform->is_cancelled()) {
     vpl_inmediate_redirect( $href );
 }
 // Display page.
-
-$vpl->print_configure_tabs( basename( __FILE__ ) );
 if (isset( $oform )) {
     $oform->display();
 }

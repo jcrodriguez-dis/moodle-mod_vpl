@@ -40,7 +40,6 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $fgp = $vpl->get_required_fgm();
 $vpl->print_header( get_string( 'executionfiles', VPL ) );
 $vpl->print_heading_with_help( 'executionfiles' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
 
 $options = Array ();
 $options ['restrictededitor'] = false;

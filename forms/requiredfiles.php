@@ -41,7 +41,6 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $fgp = $vpl->get_required_fgm();
 $vpl->print_header( get_string( 'requestedfiles', VPL ) );
 $vpl->print_heading_with_help( 'requestedfiles' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
 
 $options = Array ();
 $options ['restrictededitor'] = false;

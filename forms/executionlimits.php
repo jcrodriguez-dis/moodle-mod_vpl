@@ -81,7 +81,7 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.
 $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'resourcelimits' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
+
 $course = $vpl->get_course();
 $fgp = $vpl->get_execution_fgm();
 $mform = new mod_vpl_executionlimits_form( 'executionlimits.php', $vpl );

@@ -40,7 +40,7 @@ $PAGE->requires->css( new moodle_url( '/mod/vpl/css/checkjailservers.css' ) );
 $course = $vpl->get_course();
 $vpl->print_header( get_string( 'check_jail_servers', VPL ) );
 $vpl->print_heading_with_help( 'check_jail_servers' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
+
 \mod_vpl\event\vpl_jail_servers_tested::log( $vpl );
 $servers = vpl_jailserver_manager::check_servers( $vpl->get_instance()->jailservers );
 $table = new html_table();
