@@ -85,7 +85,7 @@ function vpl_call_service($url, $fun, $request = '') {
     curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
     curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
-    if( @$plugincfg->acceptcertificates ) {
+    if ( @$plugincfg->acceptcertificates ) {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
     }
     $rawresponse = curl_exec( $ch );
