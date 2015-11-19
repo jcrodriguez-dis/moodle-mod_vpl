@@ -1,5 +1,22 @@
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @package VPL. IDE control
+ * IDE Control
+ * 
+ * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -181,10 +198,12 @@
 					VPL_Util.delay(self.updateFileList);
 					VPL_Util.delay(adjustTabsTitles,false);
 					if(openFiles.length > ptab){
-						self.gotoFile(openFiles[ptab].getId(),'c');
+					    var pos= self.getFilePosById(openFiles[ptab].getId());
+						self.gotoFile(pos,'c');
 						return;						
 					}
 					if(ptab > 0){
+                        var pos= self.getFilePosById(openFiles[ptab-1].getId());
 						self.gotoFile(openFiles[ptab-1].getId(),'c');
 						return;						
 					}
@@ -822,13 +841,13 @@
 			var tabsAir = false;
 			function getTabsAir() {
 				if (tabsAir === false)
-					tabsAir = tabs.outerWidth(true) - tabs.width();
+					tabsAir = (tabs.outerWidth(true) - tabs.width())/2;
 				return tabsAir;
 			}
 			var resultAir = false;
 			function getResultAir() {
 				if (resultAir === false)
-					resultAir = result_container.outerWidth(true) - result_container.width();
+					resultAir = (result_container.outerWidth(true) - result_container.width())/2;
 				return resultAir;
 			}
             function resizeTabWidth(e,ui){
@@ -1174,11 +1193,11 @@
 					root_obj.removeClass('vpl_ide_root_fullscreen');
 					$JQVPL('body').removeClass('vpl_body_fullscreen');
 					setMenuOptionText('fullscreen', 'fullscreen');
-					$JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock').show();
+					$JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock, .breadcrumb-nav').show();
 					fullScreen = false;
 				} else {
 					$JQVPL('body').addClass('vpl_body_fullscreen').scrollTop(0);
-					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock').hide();
+					$JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock, .breadcrumb-nav').hide();
 					root_obj.addClass('vpl_ide_root_fullscreen');
 					setMenuOptionText('fullscreen', 'regularscreen');
 					fullScreen = true;
