@@ -139,7 +139,7 @@ static function print_tag($options,$files_to_send,$saved=true){
 		software uses/includes the following software under the
 		corresponding licence:
 		<ul>
-			<li><a href="http://http://ace.c9.io" target="_blank">ACE</a>: an embeddable code
+			<li><a href="http://ace.c9.io" target="_blank">ACE</a>: an embeddable code
 				editor written in JavaScript. Copyright (c) 2010, Ajax.org B.V. (<a
 				href="../editor/ace9/LICENSE" target="_blank">licence</a>)</li>
 			<li><a href="https://github.com/chjj/term.js/" target="_blank">term.js</a>: A full
@@ -148,14 +148,14 @@ static function print_tag($options,$files_to_send,$saved=true){
 			<li><a href="http://kanaka.github.io/noVNC/" target="_blank">noVNC</a>: VNC client
 				using HTML5 (WebSockets, Canvas). noVNC is Copyright (C) 2011 Joel
 				Martin &lt;github@martintribe.org&gt; (<a href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
-			<li><a href="http://http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>: jQuery is a fast, small, and feature-rich JavaScript library. Copyright The jQuery Foundation. (<a href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+			<li><a href="http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>: jQuery is a fast, small, and feature-rich JavaScript library. Copyright The jQuery Foundation. (<a href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+			<li><a href="http://touchpunch.furf.com/" target="_blank">jQuery-UI Touch Punch</a>: Touch event support for jQuery-UI. Copyright Dave Furfero, Dual licensed under the MIT or GPL Version 2 licenses. (<a href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
 				</ul>
 	</div>
 	<form style="display:none;">
 		<input type="file" multiple="multiple" id="vpl_ide_input_file" />
 	</form>
 	<div id="vpl_dialog_terminal">
-		<div style="display: none;"><input type="text" id="vpl_input" /></div>
 		<pre id="vpl_terminal" class="vpl_terminal"></pre>
 	</div>
 	<div id="vpl_dialog_vnc">
@@ -288,5 +288,5 @@ static function send_CE($CE) {
 			VPL_Batch_Evaluation(<?php echo $joptions;?>);
 		</script>
 		<?php
-	}		
+	}
 }
