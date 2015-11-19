@@ -1,6 +1,7 @@
 /**
- * @version $Id: WCodeEditor.js,v 1. 2012-10-05 09:03:48 juanca Exp $
- * @package VPL. HTML/JavaScript Code Editor
+ * Use Own JQuery
+ * 
+ * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
