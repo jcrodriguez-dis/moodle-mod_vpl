@@ -84,7 +84,7 @@
 	cursor: pointer;
 }
 .ui-tabs .ui-tabs-panel {
-	padding:0;
+	padding:0 !important;
 }
 /*Resolve problem with essential theme*/
 .vpl_ide_file * {
