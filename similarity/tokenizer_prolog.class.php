@@ -52,14 +52,14 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $c = $rest [0];
         if ($this->isidentifierchar( $c )) {
             if (($c >= 'A' && $c <= 'Z') || $c == '_') { // Variable.
-                $this->tokens [] = new vpl_token( vpl_token_type::operator, 'V', $this->linenumber );
+                $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, 'V', $this->linenumber );
             } else if (($c >= 'a' && $c <= 'z')) { // Literal.
                 if ($s != null && $this->isnextopenparenthesis( $s, $i ) || $rest == 'is') {
-                    $this->tokens [] = new vpl_token( vpl_token_type::operator, 'L', $this->linenumber );
+                    $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, 'L', $this->linenumber );
                 }
             }
         } else {
-            $this->tokens [] = new vpl_token( vpl_token_type::operator, $rest, $this->linenumber );
+            $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, $rest, $this->linenumber );
         }
         $rest = '';
     }
@@ -185,8 +185,9 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::operator && $next->type == vpl_token_type::operator
-                    && strpos( '()[]{},.;', $current->value ) === false) {
+                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
+                    && strpos( 'LV()[]{},.;', $current->value ) === false
+                    && strpos( 'LV()[]{},.;', $next->value ) === false) {
                     $current->value .= $next->value;
                     $next = false;
                 }
