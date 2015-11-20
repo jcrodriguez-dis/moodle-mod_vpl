@@ -28,7 +28,6 @@ require_once(dirname(__FILE__).'/tokenizer_c.class.php');
 class vpl_tokenizer_java extends vpl_tokenizer_c {
     static private $reservedjava = null;
     public function __construct() {
-        parent::__construct();
         if (self::$reservedjava === null) {
             self::$reservedjava = array (
                     'abstract' => true,
