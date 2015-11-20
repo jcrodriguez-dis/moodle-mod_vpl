@@ -45,7 +45,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         if ($state == self::IN_TAGEND) {
             $pending .= '/';
         }
-        $this->tokens [] = new vpl_token( vpl_token_type::operator, $pending, $this->line_number );
+        $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, $pending, $this->line_number );
     }
     public function parse($filedata) {
         $this->tokens = array ();
