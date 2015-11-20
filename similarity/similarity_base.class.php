@@ -49,6 +49,12 @@ class vpl_similarity_base {
     public function get_type() {
         return 0;
     }
+    public function get_size() {
+        return $this->size;
+    }
+    public function get_sizeh() {
+        return $this->sizeh;
+    }
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'base' );
     }
@@ -77,7 +83,7 @@ class vpl_similarity_base {
             $last [$i] = '';
         }
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::operator) {
+            if ($token->type == vpl_token_type::OPERATOR) {
                 // Calculate hashes table.
                 for ($i = 0; $i < self::HASH_SIZE - 1; $i ++) {
                     $last [$i] = $last [$i + 1];
@@ -130,11 +136,11 @@ class vpl_similarity_base {
     public function show_info($ext = false) {
         $ret = $this->from->show_info();
         if ($ext) {
-            $htmls = htmlspecialchars( s( self::$valueconverter ), ENT_COMPAT | ENT_HTML401, 'UTF-8' );
+            $htmls = vpl_s( self::$valueconverter );
             $ret .= 'valueconverter=' . $htmls . '<br />';
-            $htmls = htmlspecialchars( s( $this->vecfrec ), ENT_COMPAT | ENT_HTML401, 'UTF-8' );
+            $htmls = vpl_s( $this->vecfrec );
             $ret .= 'vecfrec=' . $htmls . '<br />';
-            $htmls = htmlspecialchars( s( $this->hashes ), ENT_COMPAT | ENT_HTML401, 'UTF-8' );
+            $htmls = vpl_s( $this->hashes );
             $ret .= 'hashses=' . $htmls . '<br />';
         }
         return $ret;
@@ -191,8 +197,8 @@ class vpl_similarity_base {
                 $dif += $frec;
             }
         }
-        $dif += $other->size - $taken;
-        return 100 * (1 - ($dif / ($this->size + $other->size)));
+        $dif += $other->get_size() - $taken;
+        return 100 * (1 - ($dif / ($this->size + $other->get_size())));
     }
 
     /**
@@ -213,8 +219,8 @@ class vpl_similarity_base {
                 $dif += $frec;
             }
         }
-        $dif += $other->sizeh - $taken;
-        return 100 * (1 - ($dif / ($this->sizeh + $other->sizeh)));
+        $dif += $other->get_sizeh() - $taken;
+        return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
     }
 }
 
