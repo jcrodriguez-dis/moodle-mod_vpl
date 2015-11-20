@@ -44,13 +44,13 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
     protected function add_pending(&$rawpending) {
         $pending = strtolower( $rawpending );
         if (isset( self::$operators [$pending] )) {
-            $type = vpl_token_type::operator;
+            $type = vpl_token_type::OPERATOR;
         } else if (isset( $this->reserved [$pending] )) {
-            $type = vpl_token_type::reserved;
+            $type = vpl_token_type::RESERVED;
         } else if ($this->is_number( $pending )) {
-            $type = vpl_token_type::literal;
+            $type = vpl_token_type::LITERAL;
         } else {
-            $type = vpl_token_type::identifier;
+            $type = vpl_token_type::IDENTIFIER;
         }
         $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
         $rawpending = '';
@@ -169,7 +169,6 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
             );
         }
         $this->reserved = &self::$adareserved;
-        parent::__construct();
     }
     public function parse($filedata) {
         $this->tokens = array ();
@@ -275,7 +274,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::operator && $next->type == vpl_token_type::operator
+                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
                     && isset( $this->operators [$current->value . $next->value] )) {
                     $current->value .= $next->value;
                     $next = false;
