@@ -30,7 +30,7 @@ class vpl_sh_fortran77 extends vpl_sh_text {
     protected function show_pending(&$rest) {
         $lower = strtolower( $rest );
         if (array_key_exists( $lower, $this->reserved )) {
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
         } else {
@@ -150,28 +150,28 @@ class vpl_sh_fortran77 extends vpl_sh_text {
                     if ($current == '#') {
                         $this->show_pending( $pending );
                         $state = self::IN_LINECOMMENT;
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                     } else if ($current == '\'') {
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $state = self::IN_STRING;
                     } else if ($current == '"') {
                         $this->show_pending( $pending );
                         $state = self::IN_DSTRING;
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     } else if ($current == '$' && $next == '\'') {
                         $this->show_pending( $pending );
                         $pending = '$\'';
                         $i ++;
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $state = self::IN_CSTRING;
                         continue 2;
                     } else if ($this->is_begin_identifier( $current )) {
                         if ($state == self::IN_REGULAR) {
                             $this->show_pending( $pending );
-                            $state = self::in_identifier;
+                            $state = self::IN_IDENTIFIER;
                         }
-                    } else if ($state == self::in_identifier) {
+                    } else if ($state == self::IN_IDENTIFIER) {
                         $this->show_pending( $pending );
                         $state = self::IN_REGULAR;
                     }

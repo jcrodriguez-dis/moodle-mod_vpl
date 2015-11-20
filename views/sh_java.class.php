@@ -171,7 +171,7 @@ class vpl_sh_java extends vpl_sh_c {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     } else {
                         $pending .= $current;
                     }
@@ -195,7 +195,7 @@ class vpl_sh_java extends vpl_sh_c {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     } else {
                         $pending .= $current;
                     }
@@ -225,19 +225,19 @@ class vpl_sh_java extends vpl_sh_c {
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $this->show_text( '"' );
                         break;
                     } else if ($current == "'") {
                         $state = self::IN_CHAR;
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $this->show_text( '\'' );
                         break;
                     } else if ($current == '@' && $firstnospace == $current) {
                         $state = self::IN_MACRO;
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_macro );
+                        $this->initTag( self::C_MACRO );
                         $this->show_text( '@' );
                         break;
                     }

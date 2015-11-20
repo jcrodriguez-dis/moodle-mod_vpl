@@ -50,19 +50,19 @@ class vpl_sh_prolog extends vpl_sh_text {
         if ($this->isidentifierchar( $c )) {
             $needend = true;
             if (($c >= 'A' && $c <= 'Z') || $c == '_') {
-                $this->initTag( self::c_variable );
+                $this->initTag( self::C_VARIABLE );
             } else if (($c >= 'a' && $c <= 'z')) {
                 if ($s != null && $this->isnextopenparenthesis( $s, $i ) || $rest == 'is') {
-                    $this->initTag( self::c_reserved );
+                    $this->initTag( self::C_RESERVED );
                 } else {
-                    $this->initTag( self::c_macro );
+                    $this->initTag( self::C_MACRO );
                 }
             } else {
                 $needend = false;
             }
             parent::show_pending( $rest );
             if ($needend) {
-                echo self::endTag;
+                echo self::ENDTAG;
             }
         } else {
             parent::show_pending( $rest );
@@ -109,7 +109,7 @@ class vpl_sh_prolog extends vpl_sh_text {
                         if ($next == '*') { // Begin block comments.
                             $state = self::IN_COMMENT;
                             $this->show_pending( $pending, $filedata, $i );
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                             $this->show_text( '/*' );
                             $i ++;
                             continue 2;
@@ -118,17 +118,17 @@ class vpl_sh_prolog extends vpl_sh_text {
                     } else if ($current == '%') { // Begin line comment.
                         $this->show_pending( $pending, $filedata, $i );
                         $state = self::IN_LINECOMMENT;
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         break;
                     } else if ($current == '"') {
                         $this->show_pending( $pending, $filedata, $i );
                         $state = self::IN_STRING;
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         break;
                     } else if ($current == "'") {
                         $this->show_pending( $pending, $filedata, $i );
                         $state = self::IN_CHAR;
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         break;
                     } else if ($this->isidentifierchar( $current )) {
                         if ($state == self::IN_REGULAR) {
@@ -165,7 +165,7 @@ class vpl_sh_prolog extends vpl_sh_text {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         continue 2;
                     }
                     break;
@@ -205,7 +205,7 @@ class vpl_sh_prolog extends vpl_sh_text {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         continue 2;
                     }
                     // Discard two backslash.

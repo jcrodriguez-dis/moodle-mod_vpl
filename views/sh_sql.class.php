@@ -30,11 +30,11 @@ class vpl_sh_sql extends vpl_sh_text {
     protected function show_pending(&$rest) {
         $upper = strtoupper( $rest );
         if (array_key_exists( $upper, $this->reserved )) {
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
         } else if (array_key_exists( $upper, $this->keywords )) {
-            $this->initTag( self::c_variable );
+            $this->initTag( self::C_VARIABLE );
             parent::show_pending( $rest );
             echo self::endTag;
         } else {
@@ -373,19 +373,19 @@ class vpl_sh_sql extends vpl_sh_text {
                         }
                         if ($current == '/' && $next == '*') {
                             $state = self::IN_COMMENT;
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                         }
                         if ($current == '-' && $next == '-') {
                             $state = self::IN_LINECOMMENT;
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                         }
                         if ($current == '"') {
                             $state = self::IN_STRING;
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                         }
                         if ($current == "'") {
                             $state = self::IN_CHAR;
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                         }
                         $this->show_text( $current );
                     }

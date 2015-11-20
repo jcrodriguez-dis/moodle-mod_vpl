@@ -29,7 +29,7 @@ require_once(dirname(__FILE__).'/sh_text.class.php');
 class vpl_sh_scala extends vpl_sh_text {
     protected function show_pending(&$rest) {
         if (array_key_exists( $rest, $this->reserved )) {
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
         } else {
@@ -161,7 +161,7 @@ class vpl_sh_scala extends vpl_sh_text {
                         }
                         $this->show_line_number();
                         if ($this->showln) { // Check to send initTagtag.
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                         }
                     } else {
                         $pending .= $current;
@@ -194,7 +194,7 @@ class vpl_sh_scala extends vpl_sh_text {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     } else {
                         $pending .= $current;
                     }
@@ -218,7 +218,7 @@ class vpl_sh_scala extends vpl_sh_text {
                         $pending = '';
                         $this->endTag();
                         $this->show_line_number();
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     } else {
                         $pending .= $current;
                     }
@@ -232,7 +232,7 @@ class vpl_sh_scala extends vpl_sh_text {
                         if ($next == '*') { // Begin block comments.
                             $state = self::IN_COMMENT;
                             $this->show_pending( $pending );
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                             $this->show_text( '/*' );
                             $i ++;
                             continue 2;
@@ -240,7 +240,7 @@ class vpl_sh_scala extends vpl_sh_text {
                         if ($next == '/') { // Begin line comment.
                             $state = self::IN_LINECOMMENT;
                             $this->show_pending( $pending );
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                             $this->show_text( '//' );
                             $i ++;
                             continue 2;
@@ -248,13 +248,13 @@ class vpl_sh_scala extends vpl_sh_text {
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $this->show_text( '"' );
                         break;
                     } else if ($current == "'") {
                         $state = self::IN_CHAR;
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $this->show_text( '\'' );
                         break;
                     }

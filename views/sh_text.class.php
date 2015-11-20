@@ -42,6 +42,7 @@ class vpl_sh_text extends vpl_sh_base {
     const C_MACRO = 'vpl_m';
     const C_RESERVED = 'vpl_r';
     const C_GENERAL = 'vpl_g';
+    const C_GLOBAL = 'vpl_sh';
     const C_HOVER = 'vpl_h';
     const C_LINENUMBER = 'vpl_ln';
     const ENDTAG = '</span>';
@@ -78,7 +79,7 @@ class vpl_sh_text extends vpl_sh_base {
         $this->showln = $showln;
         $this->filename = $filename;
         $this->linenumber = 1;
-        echo '<pre class="vpl_sh ' . self::C_GENERAL . '">';
+        echo '<pre class="' . self::C_GLOBAL . ' ' . self::C_GENERAL . '">';
     }
     protected function end() {
         while ( $this->hoverlevel > 0 ) {

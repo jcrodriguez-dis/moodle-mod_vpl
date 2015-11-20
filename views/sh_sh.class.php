@@ -32,11 +32,11 @@ class vpl_sh_sh extends vpl_sh_text {
     }
     protected function show_pending(&$rest) {
         if (array_key_exists( $rest, $this->reserved )) {
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
         } else if (array_key_exists( $rest, $this->predefinedvars )) {
-            $this->initTag( self::c_variable );
+            $this->initTag( self::C_VARIABLE );
             parent::show_pending( $rest );
             echo self::endTag;
         } else {
@@ -215,12 +215,12 @@ class vpl_sh_sh extends vpl_sh_text {
                 case self::IN_REGULAR :
                     if ($current == '#') { // Begin coment.
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         $pending = $current;
                         $state = self::IN_COMMENT;
                     } else if ($current == '"') {
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $pending = $current;
                         $state = self::IN_DSTRING;
                     } else if ($current == '\\') {
@@ -229,13 +229,13 @@ class vpl_sh_sh extends vpl_sh_text {
                         $i ++;
                     } else if ($current == "'") {
                         $this->show_pending( $pending );
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $pending = $current;
                         $state = self::IN_STRING;
                     } else if ($current == '$') {
                         $this->show_pending( $pending );
                         if ($next == '\'') {
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                             $pending = $current . $next;
                             $current = $next;
                             $state = self::IN_CSTRING;
@@ -245,7 +245,7 @@ class vpl_sh_sh extends vpl_sh_text {
                                    || $next == '-' || $next == '$' || $next == '!'
                                    || $next == '_') { // Parms.
                             $this->show_pending( $pending );
-                            $this->initTag( self::c_variable );
+                            $this->initTag( self::C_VARIABLE );
                             $this->show_text( $current . $next );
                             $this->endTag();
                             $current = $next;
@@ -277,7 +277,7 @@ class vpl_sh_sh extends vpl_sh_text {
                 case self::IN_DSTRING :
                     if ($current == '"') {
                         if ($pending > '' && $pending [0] == '$') {
-                            $this->initTag( self::c_variable );
+                            $this->initTag( self::C_VARIABLE );
                             $this->show_pending( $pending );
                             $this->endTag();
                         } else {
@@ -292,7 +292,7 @@ class vpl_sh_sh extends vpl_sh_text {
                         $i ++;
                     } else if ($current == '$') {
                         if ($pending > '' && $pending [0] == '$') {
-                            $this->initTag( self::c_variable );
+                            $this->initTag( self::C_VARIABLE );
                             $this->show_pending( $pending );
                             $this->endTag();
                         } else {
@@ -301,7 +301,7 @@ class vpl_sh_sh extends vpl_sh_text {
                         $pending .= $current;
                     } else {
                         if ($pending > '' && $pending [0] == '$' && ! $this->is_identifier_char( $current )) {
-                            $this->initTag( self::c_variable );
+                            $this->initTag( self::C_VARIABLE );
                             $this->show_pending( $pending );
                             $this->endTag();
                         }

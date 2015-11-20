@@ -28,11 +28,11 @@ require_once(dirname(__FILE__).'/sh_text.class.php');
 class vpl_sh_python extends vpl_sh_text {
     protected function show_pending(&$rest) {
         if (array_key_exists( $rest, $this->reserved )) {
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
         } else if (strlen( $rest ) > 0 && $rest [0] == '_') {
-            $this->initTag( self::c_variable );
+            $this->initTag( self::C_VARIABLE );
             parent::show_pending( $rest );
             echo self::endTag;
         } else {
@@ -184,14 +184,14 @@ class vpl_sh_python extends vpl_sh_text {
                 case self::IN_COMMENT :
                     if (substr( $filedata, $i, 3 ) == '"""') {
                         $state = self::IN_REGULAR;
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         $this->show_text( $pending . '"""' );
                         $pending = '';
                         $this->endTag();
                         $i += 2;
                         continue 2;
                     } else if ($current == self::LF) {
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         $this->show_text( $pending );
                         $pending = '';
                         $this->endTag();
@@ -201,7 +201,7 @@ class vpl_sh_python extends vpl_sh_text {
                     break;
                 case self::IN_LINECOMMENT :
                     if ($current == self::LF) {
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                         $this->show_text( $pending );
                         $pending = '';
                         $this->endTag();
@@ -214,7 +214,7 @@ class vpl_sh_python extends vpl_sh_text {
                     if (substr( $filedata, $i, strlen( $stringlimit ) ) == $stringlimit) {
                         if ($rawstring || $previous != '\\') {
                             $state = self::IN_REGULAR;
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                             $this->show_text( $pending . $stringlimit );
                             $pending = '';
                             $this->endTag();
@@ -223,7 +223,7 @@ class vpl_sh_python extends vpl_sh_text {
                         }
                     }
                     if ($current == self::LF) {
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                         $this->show_text( $pending );
                         $pending = '';
                         $this->endTag();
@@ -238,7 +238,7 @@ class vpl_sh_python extends vpl_sh_text {
                 case self::IN_DECORATOR :
                     if (! $this->isidentifierchar( $next ) && $next != '.' && $next != ' ') {
                         $state = self::IN_REGULAR;
-                        $this->initTag( self::c_macro );
+                        $this->initTag( self::C_MACRO );
                         $this->show_text( $pending );
                         $this->endTag();
                         if ($current == self::LF) {

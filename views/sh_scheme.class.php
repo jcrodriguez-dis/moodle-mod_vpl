@@ -162,16 +162,16 @@ class vpl_sh_scheme extends vpl_sh_text {
                         if (strlen( $pending )) {
                             if ($this->is_previous_open_parenthesis( $filedata, $pospendig - 1 )) {
                                 if (array_key_exists( $pending, $this->reserved )) {
-                                    $class = self::c_reserved;
+                                    $class = self::C_RESERVED;
                                 } else {
-                                    $class = self::c_variable;
+                                    $class = self::C_VARIABLE;
                                 }
                                 $this->initTag( $class );
                                 $this->show_pending( $pending );
                                 $this->endTag();
                             } else {
                                 if ($pending == "#t" || $pending == "#f") {
-                                    $this->initTag( self::c_reserved );
+                                    $this->initTag( self::C_RESERVED );
                                     $this->show_pending( $pending );
                                     $this->endTag();
                                 } else {
@@ -181,13 +181,13 @@ class vpl_sh_scheme extends vpl_sh_text {
                         }
                         if ($current == ';') {
                             $state = self::IN_COMMENT;
-                            $this->initTag( self::c_comment );
+                            $this->initTag( self::C_COMMENT );
                         } else if ($current == '"') {
                             $state = self::IN_STRING;
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                         } else if ($current == '#' && $next == '\\') {
                             $state = self::IN_CHAR;
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                         }
                         if ($current == '(') {
                             $this->initHover();
