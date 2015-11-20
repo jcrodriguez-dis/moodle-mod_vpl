@@ -106,7 +106,7 @@ class vpl_file_from_dir extends vpl_file_from_base {
         return $ret;
     }
     public function can_access() {
-        return $this->filename != vpl_similarity_preprocess::joinedfilename;
+        return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
     public function link_parms($t) {
         $res = array (
@@ -200,7 +200,7 @@ class vpl_file_from_activity extends vpl_file_from_base {
         return $this->userid;
     }
     public function can_access() {
-        return $this->filename != vpl_similarity_preprocess::joinedfilename;
+        return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
     public function link_parms($t) {
         return array (
@@ -270,7 +270,7 @@ class vpl_similarity_preprocess {
                     } else {
                         $sim->init( $data, $from );
                     }
-                    if ($sim->size > self::MINTOKENS) {
+                    if ($sim->get_size() > self::MINTOKENS) {
                         $files [$filename] = $sim;
                     }
                 }
@@ -286,7 +286,7 @@ class vpl_similarity_preprocess {
             } else {
                 $simjf->init( $joinedfilesdata, $from );
             }
-            if ($simjf->size > self::MINTOKENS) {
+            if ($simjf->get_size() > self::MINTOKENS) {
                 $files [self::JOINEDFILENAME] = $simjf;
             }
         }
@@ -363,7 +363,7 @@ class vpl_similarity_preprocess {
                 } else {
                     $sim->init( $data, $from );
                 }
-                if ($sim->size > 10) {
+                if ($sim->get_size() > self::MINTOKENS) {
                     $simil [] = $sim;
                 }
             }
@@ -429,7 +429,7 @@ class vpl_similarity_preprocess {
                     if ($sim) {
                         $from = new vpl_file_from_zipfile( $filename, $vplid, $zipname );
                         $sim->init( $data, $from );
-                        if ($sim->size > 10) {
+                        if ($sim->get_size() > self::MINTOKENS) {
                             $simil [] = $sim;
                         }
                     }

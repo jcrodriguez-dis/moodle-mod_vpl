@@ -31,7 +31,7 @@ class vpl_similarity_matlab extends vpl_similarity_base {
     public function sintax_normalize(&$tokens) {
         $ret = array ();
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::operator) {
+            if ($token->type == vpl_token_type::OPERATOR) {
                 switch ($token->value) {
                     case '[' :
                         // Only add ].

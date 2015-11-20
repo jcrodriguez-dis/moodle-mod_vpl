@@ -32,7 +32,7 @@ class vpl_similarity_scheme extends vpl_similarity_base {
         $nsemicolon = 0;
         $ret = array ();
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::operator) {
+            if ($token->type == vpl_token_type::OPERATOR) {
                 $ret [] = $token;
             }
         }
