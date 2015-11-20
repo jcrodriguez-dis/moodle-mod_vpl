@@ -8,9 +8,15 @@
 .vpl_c:HOVER {background-color: #B0FFFF;}
 .vpl_m {color:#800000}
 .vpl_m:HOVER {background-color: silver;}
-.vpl_r {color:#0000B0; font-style: oblique;}
+.vpl_r {color:#0000B0; font-style: italic;}
 .vpl_r:HOVER {background-color: silver;color:white;}
-.vpl_g {font-size: 12px; line-height: normal;word-wrap:normal;white-space: pre}
+.vpl_g, .vpl_g * {
+	font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 12px;
+    line-height: normal;
+    word-wrap:normal;
+    white-space: pre
+ }
 .vpl_ln{background-color:#FFFFFF;color:gray;}
 
 .vpl_h0:HOVER {background-color:#D6F5D6;}
