@@ -34,7 +34,7 @@ class vpl_sh_ada extends vpl_sh_text {
             /*
              * if($lower == 'else' || $lower == 'end'){ $this->endHover(); }
              */
-            $this->initTag( self::c_reserved );
+            $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
             /*
@@ -191,16 +191,16 @@ class vpl_sh_ada extends vpl_sh_text {
                     if ($current == '-' && $next == '-') {
                         $incomment = true;
                         $normal = false;
-                        $this->initTag( self::c_comment );
+                        $this->initTag( self::C_COMMENT );
                     }
                     if ($current == '"') {
                         $instring = true;
                         $normal = false;
-                        $this->initTag( self::c_string );
+                        $this->initTag( self::C_STRING );
                     }
                     if ($current == "'" && $i + 2 < $l) {
                         if ($filedata [$i + 2] == "'") {
-                            $this->initTag( self::c_string );
+                            $this->initTag( self::C_STRING );
                             $this->show_text( $current . $next . $current );
                             $this->endTag();
                             $i += 2;
