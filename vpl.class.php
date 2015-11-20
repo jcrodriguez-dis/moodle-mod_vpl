@@ -42,7 +42,7 @@
  */
 
 require_once(dirname(__FILE__).'/filegroup.class.php');
-require_once dirname(__FILE__).'/lib.php';
+require_once(dirname(__FILE__).'/lib.php');
 
 class file_group_execution extends file_group_process {
     /**
@@ -1207,7 +1207,7 @@ class mod_vpl {
     public function print_header($info = '') {
         global $COURSE, $PAGE, $OUTPUT;
         if (self::$headerisout) {
-           return;
+            return;
         }
         $tittle = $this->get_printable_name();
         if ($info) {
