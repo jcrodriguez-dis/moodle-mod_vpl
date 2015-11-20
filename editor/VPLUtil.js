@@ -214,7 +214,7 @@
 			'asm' : 'assembly_x86',
 			'bash' : 'bash',
 			'c' : 'c_cpp',
-			'C' : 'cpp',
+			'C' : 'c_cpp',
 			'cases' : 'cases',
 			'cbl' : 'cobol',
 			'cob' : 'cobol',
@@ -227,11 +227,13 @@
 			'cs' : 'csharp',
 			'css' : 'css',
 			'd' : 'd',
+			'dart' : 'dart',
 			'erl' : 'erlang',
 			'hrl' : 'erlang',
-			'f' : 'fortran',
-			'f77' : 'fortran',
+			/*'f' : 'fortran', // Not available in ace editor
+			'f77' : 'fortran',*/
 			'go' : 'go',
+			'groovy' : 'groovy',
 			'hs' : 'haskell',
 			'htm' : 'html',
 			'html' : 'html',
@@ -239,6 +241,7 @@
 			'java' : 'java',
 			'js' : 'javascript',
 			'json' : 'json',
+			'jsp' : 'jsp',
 			'scm' : 'scheme',
 			's' : 'scheme',
 			'm' : 'matlab',
@@ -260,6 +263,8 @@
 			'sh' : 'sh',
 			'sql' : 'sql',
 			'tcl' : 'tcl',
+            'vhd' : 'vhdl',
+			'vhdl' : 'vhdl',
 			'xml' : 'xml',
 			'yaml' : 'yaml'
 		};
