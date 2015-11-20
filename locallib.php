@@ -676,6 +676,20 @@ function vpl_truncate_string(&$string, $limit) {
         $string = substr( $string, 0, $limit ) . '...';
     }
 }
+
+/**
+ * For debug purpose
+ * Return content of vars ready to HTML
+ */
+function vpl_s() {
+    $var = func_get_args();
+    ob_start();
+    call_user_func_array('var_dump', $var);
+    $content = ob_get_contents();
+    ob_end_clean();
+    return htmlspecialchars($content,ENT_QUOTES);
+}
+
 function vpl_truncate_vpl($instance) {
     vpl_truncate_string( $instance->name, 255 );
     vpl_truncate_string( $instance->requirednet, 255 );
