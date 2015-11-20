@@ -29,7 +29,6 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     protected $linenumber;
     protected $tokens;
     public function __construct() {
-        parent::__construct();
         // TODO need more reserved and functions.
         $list = array (
                 'define',
@@ -101,14 +100,14 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         return $first >= '0' && $first <= '9';
     }
     protected function add_parenthesis() {
-        $this->tokens [] = new vpl_token( vpl_token_type::operator, '(', $this->linenumber );
+        $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
     }
     protected function add_parameter_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
             return;
         }
-        $this->tokens [] = new vpl_token( vpl_token_type::literal, $pending, $this->linenumber );
+        $this->tokens [] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
         $pending = '';
     }
     protected function add_function_pending(&$pending) {
@@ -117,9 +116,9 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             return;
         }
         if (isset( $this->reserved [$pending] )) {
-            $type = vpl_token_type::operator;
+            $type = vpl_token_type::OPERATOR;
         } else {
-            $type = vpl_token_type::identifier;
+            $type = vpl_token_type::IDENTIFIER;
         }
         $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
