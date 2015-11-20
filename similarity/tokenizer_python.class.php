@@ -66,15 +66,15 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         }
         if ($this->is_indentifier( $pending )) {
             if (isset( $this->reserved [$pending] )) {
-                $type = vpl_token_type::reserved;
+                $type = vpl_token_type::RESERVED;
             } else {
-                $type = vpl_token_type::identifier;
+                $type = vpl_token_type::IDENTIFIER;
             }
         } else {
             if ($this->is_number( $pending ) || $this->is_text( $pending )) {
-                $type = vpl_token_type::literal;
+                $type = vpl_token_type::LITERAL;
             } else {
-                $type = vpl_token_type::operator;
+                $type = vpl_token_type::OPERATOR;
             }
         }
         $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
@@ -119,7 +119,6 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
             );
         }
         $this->reserved = &self::$pythonreserved;
-        parent::__construct();
     }
     public function parse($filedata) {
         $this->tokens = array ();
@@ -268,7 +267,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::operator && $next->type == vpl_token_type::operator
+                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
                     && strpos( '()[]{};', $current->value ) === false) {
                     $current->value .= $next->value;
                     $next = false;
