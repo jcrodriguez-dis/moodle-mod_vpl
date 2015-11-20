@@ -1,5 +1,22 @@
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
- * @package VPL. IDE control
+ * File managament
+ * 
+ * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -52,7 +69,7 @@
 				return false;
 			if (name != fileName) {
 				fileName = name;
-				this.changed();
+				self.change();
 			}
 			if(!opened){
 				return true;
@@ -97,10 +114,8 @@
 			var editorHeight = editTag.height();
 			var editorWidth = editTag.width();
 			var newHeight = tabs.height();
-			newHeight -= editTag.position().top + 8;
+			newHeight -= editTag.position().top;
 			var newWidth = tabs.width();
-			newWidth -= 2 * file_manager.scrollBarWidth;
-			newHeight -= file_manager.scrollBarWidth;
 			if (newHeight != editorHeight || newWidth != editorWidth) {
 				$JQVPL(editTag).height(newHeight);
 				$JQVPL(editTag).width(newWidth);
@@ -255,7 +270,6 @@
 						setTimeout(addEventDrop, 50);
 					}
 				}
-				var prevOnChange = editor.onChange;
 				editor.on('change', function(){ self.change();});
 				// Try to grant dropHandler installation
 				setTimeout(addEventDrop, 5);
@@ -316,8 +330,7 @@
 					return;
 				var tabs=editTag.parent();
 				var newHeight = tabs.height();
-				newHeight -= editTag.position().top + 8;
-				newHeight -= file_manager.scrollBarWidth;
+				newHeight -= editTag.position().top;
 				if (newHeight != editTag.height()) {
 					editTag.height(newHeight);
 					return true;
