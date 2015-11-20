@@ -57,15 +57,15 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
         }
         if ($this->is_indentifier( $pending )) {
             if (isset( $this->reserved [$pending] )) {
-                $type = vpl_token_type::reserved;
+                $type = vpl_token_type::RESERVED;
             } else {
-                $type = vpl_token_type::identifier;
+                $type = vpl_token_type::IDENTIFIER;
             }
         } else {
-            if ($this->is_number( $pending )) {
-                $type = vpl_token_type::literal;
+            if (strlen($pending)>1 || $this->is_number( $pending )) {
+                $type = vpl_token_type::LITERAL;
             } else {
-                $type = vpl_token_type::operator;
+                $type = vpl_token_type::OPERATOR;
             }
         }
         $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
@@ -114,7 +114,6 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
             );
         }
         $this->reserved = &self::$creserved;
-        parent::__construct();
     }
     public function parse($filedata) {
         $this->tokens = array ();
@@ -270,9 +269,12 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::operator
-                    && $next->type == vpl_token_type::operator
-                    && strpos( '()[]{};', $current->value ) === false) {
+                if ($current->type == vpl_token_type::OPERATOR
+                    && $next->type == vpl_token_type::OPERATOR
+                    && (
+                            (($current->value == $next->value) && strpos( '|&=+-<>', $current->value ) !== false )
+                         || (($next->value == '=') && strpos( '+-*/%&^|!<>', $current->value ) !== false )
+                       )) {
                     $current->value .= $next->value;
                     $next = false;
                 }
