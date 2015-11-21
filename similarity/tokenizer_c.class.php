@@ -62,7 +62,7 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
                 $type = vpl_token_type::IDENTIFIER;
             }
         } else {
-            if (strlen($pending)>1 || $this->is_number( $pending )) {
+            if (strlen($pending) > 1 || $this->is_number( $pending )) {
                 $type = vpl_token_type::LITERAL;
             } else {
                 $type = vpl_token_type::OPERATOR;
