@@ -106,7 +106,7 @@ if (isset( $fromform->searchotherfiles )) {
 @set_time_limit( $timelimit );
 $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
 $selected = vpl_similarity::get_selected( $simil, $fromform->maxoutput, $il, $searchprogression );
-$extinfo = $USER->id == 2 && $CFG->debugdisplay && $CFG->debug>=2047 ;
+$extinfo = $USER->id == 2 && $CFG->debugdisplay && $CFG->debug >= 2047;
 
 if (count( $selected )) {
     $firstname = get_string( 'firstname' );

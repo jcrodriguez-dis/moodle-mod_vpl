@@ -288,9 +288,9 @@ class vpl_diff {
         echo '</div>';
         echo '<div style="clear:both;"></div>';
         // Files.
-        $open_pre =  '<pre class="' . vpl_sh_text::C_GLOBAL . ' ' . vpl_sh_text::C_GENERAL . '">';
+        $openpre = '<pre class="' . vpl_sh_text::C_GLOBAL . ' ' . vpl_sh_text::C_GENERAL . '">';
         echo '<div style="float:left; text-align: right">';
-        echo $open_pre;
+        echo $openpre;
         echo $datal1;
         echo '</pre>';
         echo '</div>';
@@ -299,12 +299,12 @@ class vpl_diff {
         $shower->print_file( $filename1, $data1, false );
         echo '</div>';
         echo '<div style="float:left">';
-        echo $open_pre;
+        echo $openpre;
         echo $diffl;
         echo '</pre>';
         echo '</div>';
         echo '<div style="float:left; text-align: right;">';
-        echo $open_pre;
+        echo $openpre;
         echo $datal2;
         echo '</pre>';
         echo '</div>';

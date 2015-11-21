@@ -118,7 +118,7 @@ class vpl_clusters {
             // Need clusters fusion?
             if (count( $this->adjlist [$one] ) <= $this->cmembers [$c2] / 2
                 || count( $this->adjlist [$other] ) <= $this->cmembers [$c1] / 2
-                || ($this->cmembers [$c1]+$this->cmembers [$c2]) >  self::MAX_MEMBERS) {
+                || ($this->cmembers [$c1] + $this->cmembers [$c2]) > self::MAX_MEMBERS) {
                 return;
             }
             $cmax = $this->cmembers [$maxcluster];
