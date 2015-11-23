@@ -398,53 +398,16 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $jailresponse ['port'] = $parsed ['port'];
         }
 
-
-        // TODO resolve ws / wss election
         $response = new stdClass();
         $response->server = $parsed ['host'];
         $response->monitorPath = $jailresponse ['monitorticket'] . '/monitor';
         $response->executionPath = $jailresponse ['executionticket'] . '/execute';
         $response->port = $jailresponse ['port'];
         $response->securePort = $jailresponse ['secureport'];
+        $response->wsProtocol = $plugincfg->websocket_protocol;
         $response->VNCpassword = substr( $jailresponse ['executionticket'], 0, 8 );
         $instance = $this->get_instance();
         vpl_running_processes::set( $instance->userid, $jailserver, $instance->vpl, $jailresponse ['adminticket'] );
-        return $response;
-
-        switch ($plugincfg->websocket_protocol) {
-        	case 'always_use_wss' :
-        	    $use_wss = true;
-        	    break;
-        	case 'always_use_ws' :
-        	    $use_wss = false;
-        	    break;
-        	default :
-        	    $use_wss = $isHTTPS;
-        }
-        $baseURL = $use_wss ? 'wss://' : 'ws://';
-        $baseURL .= $parsed ['host'];
-        if ($use_wss) {
-            $baseURL .= ':' . $jailResponse ['secureport'];
-        } elseif (isset( $parsed ['port'] )) {
-            $baseURL .= ':' . $parsed ['port'];
-        }
-        $baseURL .= '/';
-        $response = new stdClass();
-        $response->monitorURL = $baseURL . $jailResponse ['monitorticket'] . '/monitor';
-        $response->executionURL = $baseURL . $jailResponse ['executionticket'] . '/execute';
-        $response->VNChost = $parsed ['host'];
-        $response->VNCpath = $jailResponse ['executionticket'] . '/execute';
-        $response->VNCsecure = $isHTTPS;
-        if ($isHTTPS)
-            $response->port = $jailResponse ['secureport'];
-        else if (isset( $parsed ['port'] )) {
-            $response->port = $parsed ['port'];
-        } else {
-            $response->port = 80;
-        }
-        $response->VNCpassword = substr( $jailResponse ['executionticket'], 0, 8 );
-        $instance = $this->get_instance();
-        vpl_running_processes::set( $instance->userid, $server, $instance->vpl, $jailResponse ['adminticket'] );
         return $response;
     }
     public function retrieveresult() {
