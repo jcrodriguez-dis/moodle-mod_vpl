@@ -612,6 +612,19 @@ function vpl_truncate_RUNNING_PROCESSES($instance){
 function vpl_truncate_JAILSERVERS($instance){
     vpl_truncate_string($instance->server,255);
 }
+/**
+ * Get version string
+ * @return string
+ */
+function vpl_get_version() {
+    static $version;
+    if (! isset( $version )) {
+        $plugin = new stdClass();
+        require_once(dirname( __FILE__ ) . '/version.php');
+        $version = $plugin->release;
+    }
+    return $version;
+}
 
 function vpl_get_webservice_available(){
     global $DB,$USER,$CFG;
