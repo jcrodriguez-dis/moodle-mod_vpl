@@ -8,4 +8,4 @@
  */
 //Get correct version of jQuery for use without conflict in VPL
 //This must be run after loading VPL jQuery
-$JQVPL= jQuery.noConflict(true);
+$JQVPL = jQuery.noConflict(true);
