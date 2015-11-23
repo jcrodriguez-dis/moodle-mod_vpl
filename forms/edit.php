@@ -127,6 +127,6 @@ echo $OUTPUT->box_start();
 vpl_editor_util::print_tag( $options, $files, ($lastsub && ! $copy) );
 echo $OUTPUT->box_end();
 if ($lastsub) {
-    echo vpl_editor_util::send_CE( $compilationexecution );
+    echo vpl_editor_util::send_ce( $compilationexecution );
 }
 $vpl->print_footer();
