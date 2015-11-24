@@ -24,6 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/list_util.class.php');
 require_once($CFG->dirroot.'/course/lib.php');
@@ -187,7 +188,9 @@ function vpl_supports($feature) {
             return true;
         case FEATURE_MOD_INTRO :
             return true;
-        case FEATURE_COMPLETION_TRACKS_VIEWS :
+        case FEATURE_COMPLETION_TRACKS_VIEWS : // TODO FEATURE_COMPLETION_TRACKS_VIEWS.
+            return false;
+        case FEATURE_COMPLETION_HAS_RULES : // TODO FEATURE_COMPLETION_HAS_RULES.
             return false;
         case FEATURE_GRADE_HAS_GRADE :
             return true;
