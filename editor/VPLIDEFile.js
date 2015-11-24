@@ -278,7 +278,7 @@
                     return;
                 }
                 var ext = VPL_Util.fileExtension(fileName);
-                var lang = 'txt';
+                var lang = 'text';
                 if (ext != '') {
                     lang = VPL_Util.langType(ext);
                 }
