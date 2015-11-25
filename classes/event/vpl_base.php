@@ -27,6 +27,13 @@ namespace mod_vpl\event;
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_base extends base {
+    public static function get_objectid_mapping() {
+        return array('db' => VPL, 'restore' => VPL);
+    }
+    public static function get_other_mapping() {
+        // Nothing to map.
+        return false;
+    }
     protected function init() {
         $this->data ['crud'] = 'u';
         $this->data ['edulevel'] = self::LEVEL_TEACHING;
