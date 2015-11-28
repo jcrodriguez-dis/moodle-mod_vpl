@@ -34,11 +34,11 @@ class vpl_sh_sh extends vpl_sh_text {
         if (array_key_exists( $rest, $this->reserved )) {
             $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
-            echo self::endTag;
+            echo self::ENDTAG;
         } else if (array_key_exists( $rest, $this->predefinedvars )) {
             $this->initTag( self::C_VARIABLE );
             parent::show_pending( $rest );
-            echo self::endTag;
+            echo self::ENDTAG;
         } else {
             parent::show_pending( $rest );
         }
