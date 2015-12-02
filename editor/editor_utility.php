@@ -165,6 +165,18 @@ class vpl_editor_util {
 	<div id="vpl_dialog_terminal">
 		<pre id="vpl_terminal" class="vpl_terminal"></pre>
 	</div>
+	<div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
+	    <div class="vpl_clipboard_label1"></div><br />
+	    <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
+	    <div class="vpl_clipboard_label2"></div><br />
+	    <textarea class="vpl_clipboard_entry2"></textarea>
+	</div>
+	<div id="vpl_dialog_vnc_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
+	    <div class="vpl_clipboard_label1"></div><br />
+	    <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
+	    <div class="vpl_clipboard_label2"></div><br />
+	    <textarea class="vpl_clipboard_entry2"></textarea>
+	</div>
 	<div id="vpl_dialog_vnc">
 		<canvas class="vpl_noVNC_canvas">
                 Canvas not supported.
@@ -200,6 +212,7 @@ class vpl_editor_util {
                 'binaryfile',
                 'browserupdate',
                 'changesNotSaved',
+                'clipboard',
                 'comments',
                 'compilation',
                 'connected',
@@ -230,6 +243,7 @@ class vpl_editor_util {
                 'find_replace',
                 'fullscreen',
                 'incorrect_file_name',
+				'keyboard',
                 'maxfilesexceeded',
                 'new',
                 'next',
