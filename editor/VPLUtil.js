@@ -333,8 +333,11 @@
         var reg = /function ([^\(]*)/;
         function functionName(func) {
             var fs = func.toString();
-            var fn = reg.exec(fs)[1];
-            return fn == "" ? fs : fn;
+            var res = reg.exec(fs);
+            if (res === null) {
+               return fs; 
+            }
+            return res[1];
         }
         VPL_Util.delay = function(func, arg1, arg2) {
             var fn = functionName(func);
@@ -403,7 +406,7 @@
             'regularscreen' : 'compress',
             'save' : 'save',
             'sort' : 'sort-amount-asc',
-            'run' : 'caret-square-o-right',
+            'run' : 'rocket',
             'debug' : 'bug',
             'evaluate' : 'check-square-o',
             'console' : 'terminal',
@@ -413,6 +416,13 @@
             'trash' : 'trash',
             'retrieve' : 'download',
             'spinner' : 'refresh fa-spin',
+            'keyboard' : 'keyboard-o',
+            'clipboard' : 'clipboard',
+            'copy' : 'copy',
+            'paste' : 'paste',
+            'resize' : 'arrows-alt',
+            'graphic' : 'picture-o',
+            'send' : 'send'
         };
         VPL_Util.gen_icon = function(icon, size) {
             if (!menu_icons[icon]) {
@@ -429,6 +439,29 @@
         };
     })();
     // UI operations
+    VPL_Util.setTitleBar = function(dialog, type, icon, buttons, handler) {
+        title = $JQVPL(dialog).parent().find("span.ui-dialog-title");
+        function genButton(e) {
+            var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPL_Util.str(e) + "'>";
+            html += VPL_Util.gen_icon(e, 'fw') + "</a>";
+            return html;
+        }
+        var html = VPL_Util.gen_icon(icon);
+        html += " <span class='" + type + "-title-buttons'></span>";
+        html += "<span class='" + type + "-title-text'></span>";
+        title.html(html);
+        titleButtons = title.find("span." + type + "-title-buttons");
+        titleText = title.find("span." + type + "-title-text");
+        html = "";
+        for (var i = 0; i < buttons.length; i++) {
+            html += genButton(buttons[i]);
+        }
+        titleButtons.html(html);
+        for (var i = 0; i < handler.length; i++) {
+            title.find('#vpl_' + type + '_' + buttons[i]).button().click(handler[i]);
+        }
+        return titleText;
+    };
     VPL_Util.progressBar = function(title, message, onUserClose) {
         var labelHTML = '<span class="vpl_ide_progressbarlabel"></span>';
         var sppiner = '<div class="vpl_ide_progressbaricon">' + VPL_Util.gen_icon('spinner') + '</div>';
@@ -591,6 +624,12 @@
             return true;
         }
         return false;
+    };
+    VPL_Util.isAndroid = function() {
+        return window.navigator.userAgent.indexOf('Android') > -1;
+    };
+    VPL_Util.isFirefox = function() {
+        return window.navigator.userAgent.indexOf('Firefox') > -1;
     };
     VPL_Util.clickServer = function(e) {
         var w = 550;
