@@ -91,7 +91,9 @@
     text-shadow: none;
     cursor: pointer;
 }
-
+.ui-widget {
+    font-size:100% !important;
+}
 .ui-tabs .ui-tabs-panel {
     padding: 0 !important;
 }
@@ -180,7 +182,9 @@ img.vpl_ide_file {
 .vpl_ide {
     font-size: 80%;
 }
-
+.vpl_ide .ui-dialog-titlebar{
+    padding: 0.15em !important;
+}
 .ace_gutter-tooltip {
     white-space: pre-wrap !important;
 }
@@ -188,7 +192,7 @@ img.vpl_ide_file {
 .vpl_ide_result_compilation,.vpl_ide_result_execution {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
         'source-code-pro', monospace;
-    font-size: 12pt;
+    font-size: 14px;
     max-width: 120em;
     white-space: pre;
 }
@@ -199,25 +203,49 @@ img.vpl_ide_file {
     z-index: 1000;
 }
 
-.vpl_terminal {
-    padding: 0;
-    margin: 0;
-    border: 0;
-    z-index: 1000;
+.vpl_vnc .ui-dialog-content {
+    padding: 0 !important;
 }
-/*Resolve problem with essential theme*/
-pre.vpl_terminal * {
-    font: 1em/1.2 monospace;
-}
-
-pre.vpl_terminal {
-    font: 1em/1.2 monospace;
-    font-size: 12px;
-    display: inline-block;
-}
-
 .vpl_noVNC_canvas {
     width: 800px;
     height: 600px;
     cursor: none;
+}
+
+.vpl_vnc .ui-button-text-only .ui-button-text {
+    padding: 0.15em;
+}
+
+.vpl_terminal {
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background-color: black;
+    z-index: 1000;
+}
+.vpl_clipboard {
+	display: none;
+}
+.vpl_clipboard_label1.ui-button-text,
+.vpl_clipboard_label1.ui-button-text {
+    padding: 0.15em;
+}
+.vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2{
+    width: 200px;
+    height: 50px;
+}
+
+/*Resolve problem with essential theme*/
+pre.vpl_terminal * {
+	padding: 0;
+    margin: 0;
+    border: 0;
+    font: 1em/1.2 monospace;
+}
+
+pre.vpl_terminal {
+	padding: 2px;
+    font: 1em/1.2 monospace;
+    font-size: 12px;
+    display: inline-block;
 }
