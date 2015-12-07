@@ -29,7 +29,7 @@
             var self = this;
             var minNumberOfFiles = options.minfiles | 0;
             var maxNumberOfFiles = options.maxfiles | 0;
-            var restrictedEdit = options.restrictededitor;
+            var restrictedEdit = options.restrictededitor || options.example;
             var fullScreen = false;
             // Get scrollBarWidth
             var scrollBarWidth = VPL_Util.scrollBarWidth();
@@ -61,7 +61,7 @@
                 options['delete'] = activateModification;
             })();
             options['sort'] = (maxNumberOfFiles - minNumberOfFiles >= 2);
-            options['import'] = !options.restrictededitor;
+            options['import'] = !restrictedEdit;
             function isOptionAllowed(op) {
                 if (!optionsToCheck[op]) {
                     return true;
@@ -688,7 +688,7 @@
                 setTimeout(autoResizeTab, 1000);
             };
 
-            var readOnly = false;
+            var readOnly = options.example;
 
             // Init editor
 
