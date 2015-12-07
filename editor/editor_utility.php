@@ -76,7 +76,7 @@ class vpl_editor_util {
         }
         $options ['files'] = $files;
         $options ['i18n'] = self::i18n();
-        $options ['saved'] = ($saved) ? 1 : 0;
+        $options ['saved'] = ($saved || $options ['example']) ? 1 : 0;
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
