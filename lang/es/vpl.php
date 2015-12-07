@@ -423,19 +423,7 @@ $string ['modulename_help'] = '<p>VPL permite la gestión de prácticas de progr
 <li>Búsqueda de similitud entre prácticas para el control del plagio.</li>
 <li>Restricciones de entrega de prácticas que limitan el corta y pega de código externo.</li>
 </ul></p>
-<p><b>Definición básica de un Laboratorio Virtual de Programación</b></p>
-<p>Establecer la definición básica de la actividad es necesaria para poder
-acceder a otras opciones.
-En el panel <b></b><b>Restricciones de entrega</b> se pueden establecer diversas restricciones:
-<ul>
-<li>Número máximo de ficheros a entregar</li>
-<li>Si sólo se permite la entrega de ficheros por medio del editor restringido que impide el pegado de código exterior.</li>
-<li>Tamaño máximo de cada fichero a entregar</li>
-<li>Contraseña a solicitar para acceder a la actividad y entregar</li>
-<li>Red o redes desde los es posible acceder y entregar</li>
-</ul>
-<p>En esta página también se pueden establecer las opciones comunes a toda actividad
-como es la escala de calificación y las opciones de grupos.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Página oficial de Virtual Programming lab</a>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Aquí se fijan nombres y contenido inicial para los ficheros requeridos.</p>
 <p>Si no se fijan nombres para el número máximo de ficheros establecido en la definición básica de la actividad, los ficheros para los que no se han establecido nombres son opcionales y pueden tener cualquier nombre.</p>

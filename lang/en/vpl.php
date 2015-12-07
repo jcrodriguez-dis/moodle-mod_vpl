@@ -373,26 +373,13 @@ $string ['modulename_help'] = '<p>VPL is a activity module for Moodle that manag
 </p>
 
 <ul>
-<li>Enable to edit the programs source code in the browser using an applet</li>
+<li>Enable to edit the programs source code in the browser</li>
 <li>Students can run interactively programs in the browser</li>
 <li>You can run tests to review the programs.</li>
 <li>Allows searching for similarity between files.</li>
 <li>Allows setting editing restrictions and avoiding external text pasting.</li>
 </ul>
-<p><b>Basic definition of a Virtual Programming Lab activity</b></p>
-<p>To access other options, a basic definition <b>must be saved first</b>.</p>
-<p>Constraints for the submission can be set in the <b>Submission restrictions</b> panel:</p>
-<ul>
-<li>Maximum number of files to be submitted. You can set the file names at the "requested files" tabs.</li>
-<li>Submission available only by means of the restricted Code
-	Editor. If you set this option, you can\'t upload files or paste text from outside the code editor.</li>
-<li>Maximum upload file size.</li>
-<li>Password to access and submit the activity.
-If you set a password the system will ask the password to access the activity.</li>
-<li>Nets from which the submission is permited.</li>
-</ul>
-<p>Also common options, such as the grading scale and groups,
-can be setting in this page.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab Home Page</a>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p>
 <p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p>

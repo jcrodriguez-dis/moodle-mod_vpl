@@ -363,8 +363,7 @@ $string ['modulename_help'] = '
 <li>Hasło do uzyskania dostępu oraz możliwości wysyłania plików.</li>
 <li>Sieci, z których wysyłanie jest dozwolone.</li>
 </ul>
-<p>Inne użyteczne opcje, takie jak skala ocen i grupy, mogą być ustawione na tej stronie.</p>
-';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '
 <h1>Żądane pliki</h1>

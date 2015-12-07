@@ -428,24 +428,13 @@ basiert plus die allgemeinen Jail-Server. Wenn diese Aktivität und jene, die au
 $string ['modulename_help'] = '<p>VPL ist ein Aktivitätsmodul für Moodle, das Programmieraufgaben verwaltet und folgende Eigenschaften aufweist:
 </p>
 <ul>
-<li>Möglichkeit, den Programmcode im Browser über ein Java Applet zu verändern</li>
+<li>Möglichkeit, den Programmcode im Browser</li>
 <li>Studenten können Programme interaktiv im Browser ausführen</li>
 <li>Automatische Tests zur Bewertung von Programmen können ausgeführt werden</li>
 <li>Möglichkeit, Ähnlichkeiten zwischen Dateien zu suchen</li>
 <li>Möglichkeit, Änderungseinschränkungen und externe Einfügeoptionen zu konfigurieren</li>
 </ul>
-<p><b>Grundlegende Definition einer Virtual Programming Lab Aktivität</b></p>
-<p>Um auf erweiterte Optionen zugreifen zu können, muss zuerst eine grundlegende Definition gespeichert werden.</p>
-<p>Bedingungen für die Abgabe können in den <b>Abgabeeinschränkungen</b> eingestellt werden:</p>
-<ul>
-<li>Maximale Anzahl an Dateien, die abgegeben werden können. Man kann die Dateinamen im Tab &quot;Erforderliche Dateien&quot; vorgeben.</li>
-<li>Abgabe nur im eingeschränkten Code Editor möglich. Wenn diese Option gesetzt ist können keine Dateien hochgeladen werden und auch kein Text von außerhalb des Editors hineinkopiert werden.</li>
-<li>Maximale Dateigröße beim Hochladen</li>
-<li>Passwort, um auf die Aktivität zuzugreifen und Abgaben zu tätigen.
-Wenn ein Passwort gesetzt wird, wird das System nach dem Passwort fragen.</li>
-<li>Netzwerke aus denen die Abgabe erlaubt wird.</li>
-</ul>
-<p>Auch häufige Optionen wie die Bewertungsskala und Gruppen können auf dieser Seite konfiguriert werden.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Hier können Namen für die erforderlichen Dateien gesetzt werden.</p>
 <p>Wenn nicht für alle erforderlichen Dateien Namen gesetzt werden sind die unbenannten Dateien optionen und können beliebige Namen erhalten.</p>

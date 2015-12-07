@@ -456,17 +456,7 @@ $string ['modulename_help'] = '<p><b>VPL. Laboratori Virtual de Programaci&oacut
 <li>Cerca de similitud entre pr&agrave;ctiques pel control del plagi.</li>
 <li>Restriccions de lliurament de pr&agrave;ctiques que limiten el talla i enganxa de codi extern.</li>
 </ul>
-<p><b>Definici&oacute; b&agrave;sica d\'un Laboratori Virtual de Programaci&oacute;</b></p>
-En el panel <b></b><b>Restriccions de lliurament</b> es poden establir diverses restriccions:
-<ul>
-<li>Nombre m&agrave;xim de fitxers a lliurar</li>
-<li>Si nom&eacute;s es permet el lliurament de fitxers per mitj&agrave; de l\'editor restringit que impedeix enganxar codi exterior.</li>
-<li>Mida m&agrave;xima de cada fitxer a lliurar</li>
-<li>Contrasenya a sol&middot;licitar per accedir a l\'activitat i lliurar-la</li>
-<li>Xarxa o xarxes des d\'on es possible accedir i lliurar</li>
-</ul>
-<p>En aquesta p&agrave;gina tamb&eacute; es poden establir les opcions comunes a tota activitat
-com es l\'escala de qualificacions i les opcions de grups.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<h1>Fitxers requerits</h1>
 <p>Aqu&iacute; es fixen noms pels fitxers requerits.</p>
