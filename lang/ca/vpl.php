@@ -456,7 +456,7 @@ $string ['modulename_help'] = '<p><b>VPL. Laboratori Virtual de Programaci&oacut
 <li>Cerca de similitud entre pr&agrave;ctiques pel control del plagi.</li>
 <li>Restriccions de lliurament de pr&agrave;ctiques que limiten el talla i enganxa de codi extern.</li>
 </ul>
-<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<h1>Fitxers requerits</h1>
 <p>Aqu&iacute; es fixen noms pels fitxers requerits.</p>

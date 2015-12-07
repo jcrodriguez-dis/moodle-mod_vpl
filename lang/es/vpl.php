@@ -423,7 +423,7 @@ $string ['modulename_help'] = '<p>VPL permite la gestión de prácticas de progr
 <li>Búsqueda de similitud entre prácticas para el control del plagio.</li>
 <li>Restricciones de entrega de prácticas que limitan el corta y pega de código externo.</li>
 </ul></p>
-<p><a href="http://vpl.dis.ulpgc.es">Página oficial de Virtual Programming lab</a>';
+<p><a href="http://vpl.dis.ulpgc.es">Página oficial de Virtual Programming lab</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Aquí se fijan nombres y contenido inicial para los ficheros requeridos.</p>
 <p>Si no se fijan nombres para el número máximo de ficheros establecido en la definición básica de la actividad, los ficheros para los que no se han establecido nombres son opcionales y pueden tener cualquier nombre.</p>

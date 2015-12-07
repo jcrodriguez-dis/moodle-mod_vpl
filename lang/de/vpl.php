@@ -434,7 +434,7 @@ $string ['modulename_help'] = '<p>VPL ist ein Aktivitätsmodul für Moodle, das 
 <li>Möglichkeit, Ähnlichkeiten zwischen Dateien zu suchen</li>
 <li>Möglichkeit, Änderungseinschränkungen und externe Einfügeoptionen zu konfigurieren</li>
 </ul>
-<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Hier können Namen für die erforderlichen Dateien gesetzt werden.</p>
 <p>Wenn nicht für alle erforderlichen Dateien Namen gesetzt werden sind die unbenannten Dateien optionen und können beliebige Namen erhalten.</p>

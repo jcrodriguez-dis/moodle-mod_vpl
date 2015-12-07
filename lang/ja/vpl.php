@@ -457,7 +457,7 @@ $string ['modulename_help'] = '<p>VPLは、プログラミング課題の管理�
 <li>ファイル間の類似度を検索できる</li>
 <li>編集に制限を掛けたり、外部からの貼り付けを無効にできる</li>
 </ul>
-<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<h1>要求されたファイル</h1>
 <p>ここでは、活動の基本部で指定されたファイル数まで、要求されたファイルの名前を指定する。</p>

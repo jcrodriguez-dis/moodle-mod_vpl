@@ -371,7 +371,6 @@ containing "end_of_jails" at the end of the server list.
 </p>';
 $string ['modulename_help'] = '<p>VPL is a activity module for Moodle that manage programming assignments and whose salient features are:
 </p>
-
 <ul>
 <li>Enable to edit the programs source code in the browser</li>
 <li>Students can run interactively programs in the browser</li>
@@ -379,7 +378,7 @@ $string ['modulename_help'] = '<p>VPL is a activity module for Moodle that manag
 <li>Allows searching for similarity between files.</li>
 <li>Allows setting editing restrictions and avoiding external text pasting.</li>
 </ul>
-<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab Home Page</a>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab Home Page</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
 $string ['requestedfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p>
 <p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p>
