@@ -94,7 +94,7 @@ $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linku
 $files = Array ();
 $reqfgm = $vpl->get_required_fgm();
 $options ['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
-$options ['maxfiles'] = $instance->maxfiles;
+$options ['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
 $min = count( $reqfilelist );
 $options ['minfiles'] = $min;
