@@ -112,6 +112,7 @@
 }
 
 .vpl_ide_binary {
+	line-height:200%;
     margin: auto;
     font-size: 300%;
     text-align: center;
