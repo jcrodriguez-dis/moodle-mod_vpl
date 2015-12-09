@@ -637,16 +637,10 @@ function vpl_is_binary($filename) {
     return vpl_is_image( $filename ) || preg_match( '/^(zip|jar|pdf)$/i', vpl_fileextension( $filename ) ) == 1;
 }
 function vpl_encode_binary($filename, $data) {
-    if (vpl_is_binary( $filename )) {
-        return base64_encode( $data );
-    }
-    return $data;
+    return base64_encode( $data );
 }
 function vpl_decode_binary($filename, $data) {
-    if (vpl_is_binary( $filename )) {
-        return base64_decode( $data );
-    }
-    return $data;
+    return base64_decode( $data );
 }
 function vpl_is_valid_path_name($path) {
     if (strlen( $path ) > 256) {
