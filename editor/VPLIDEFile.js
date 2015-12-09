@@ -403,7 +403,7 @@
                     $JQVPL(tid).addClass('vpl_ide_img').append('<img />');
                     this.updateDataURL();
                 } else {
-                    $JQVPL(tid).addClass('vpl_ide_binary').text(str('binaryfile'));
+                    $JQVPL(tid).addClass('vpl_ide_binary').text(VPL_Util.str('binaryfile'));
                 }
                 this.setFileName(fileName);
             };
