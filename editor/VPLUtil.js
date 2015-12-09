@@ -111,16 +111,17 @@
     })();
     VPL_Util.encodeBinary = function(name, data) {
         if (!VPL_Util.isBinary(name)) {
-            return data;
+            return btoa(data);
         }
         return btoa(VPL_Util.ArrayBuffer2String(data));
     };
 
     VPL_Util.decodeBinary = function(name, data) {
+        var decoded=atob(data);
         if (!VPL_Util.isBinary(name)) {
-            return data;
+            return decoded;
         }
-        return VPL_Util.String2ArrayBuffer(atob(data));
+        return VPL_Util.String2ArrayBuffer(decoded);
     };
 
     VPL_Util.validPath = function(path) {
