@@ -5,7 +5,15 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+if [ "$1" == "gui" ] ; then
+cat >vpl_hello.py <<END_OF_FILE
+import Tkinter
+import tkMessageBox
+tkMessageBox.showinfo('VPL','Hello from the Python language!')
+END_OF_FILE
+else
 cat >vpl_hello.py <<END_OF_FILE
 print 'Hello from the Python language!'
 END_OF_FILE
+fi
 export VPL_SUBFILE0=vpl_hello.py

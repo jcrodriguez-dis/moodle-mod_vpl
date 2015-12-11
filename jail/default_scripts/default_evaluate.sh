@@ -1,4 +1,5 @@
 #!/bin/bash
+# This file is part of VPL for Moodle
 # Default evaluate script for VPL
 # Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

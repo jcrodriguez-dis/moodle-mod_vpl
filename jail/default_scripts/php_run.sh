@@ -1,5 +1,6 @@
 #!/bin/bash
-# Default PHP language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running PHP language
 # Copyright (C) 2012 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -7,6 +8,12 @@
 #load common script and check programs
 . common_script.sh
 check_program php5
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "php -v" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi
 check_program x-www-browser
 if [ -f index.php ] ; then
     #Configure session

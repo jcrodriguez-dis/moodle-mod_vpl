@@ -1,6 +1,6 @@
 #!/bin/bash
-# $Id: ada_debug.sh,v 1.4 2012-09-24 15:13:21 juanca Exp $
-# Default ADA language debug script for VPL
+# This file is part of VPL for Moodle
+# Script for debugging ADA language
 # Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

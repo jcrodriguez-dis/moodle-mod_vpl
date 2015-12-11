@@ -1,6 +1,6 @@
 #!/bin/bash
-# $Id: csharp_run.sh,v 1.4 2012-09-24 15:13:21 juanca Exp $
-# Default C# language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running C# language
 # Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -9,10 +9,16 @@
 . common_script.sh
 check_program mcs
 check_program mono
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "mcs --version" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi 
 get_source_files cs
 #compile
 export MONO_ENV_OPTIONS=--gc=sgen
-mcs -pkg:dotnet -out:output.exe $SOURCE_FILES
+mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono/2.0 $SOURCE_FILES
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution

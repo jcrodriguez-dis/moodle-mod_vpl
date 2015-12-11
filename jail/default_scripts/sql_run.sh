@@ -1,6 +1,6 @@
 #!/bin/bash
-# $Id: sql_run.sh,v 1.4 2012-09-24 15:13:22 juanca Exp $
-# Default SQL language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running SQL language (sqlite3)
 # Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -8,6 +8,13 @@
 #load common script and check programs
 . common_script.sh
 check_program sqlite3
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "echo -n \"sqlite3 \"" >> vpl_execution
+	echo "sqlite3 -version" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi
 #Generate execution script
 cat common_script.sh > vpl_execution
 #remove vpl.db
@@ -48,5 +55,8 @@ do
 	fi
 done
 #interactive console
-echo "sqlite3 vpl.db" >> vpl_execution
+if [ "$1" != "batch" ] ; then
+	echo "sqlite3 vpl.db" >> vpl_execution
+fi
+
 chmod +x vpl_execution

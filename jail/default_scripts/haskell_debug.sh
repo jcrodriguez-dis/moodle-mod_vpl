@@ -1,6 +1,6 @@
 #!/bin/bash
-# $Id: haskell_debug.sh,v 1.3 2012-09-24 15:13:21 juanca Exp $
-# Default Haskell language run script for VPL
+# This file is part of VPL for Moodle
+# Script for debugging Haskell language
 # Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino. All rights reserved.
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino

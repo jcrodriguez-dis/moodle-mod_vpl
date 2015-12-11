@@ -1,6 +1,7 @@
 #!/bin/bash
-# Default Java language run script for VPL
-# Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running Java language
+# Copyright (C) 2015 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
@@ -17,6 +18,12 @@ function getClassName {
 
 check_program javac
 check_program java
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "javac -version" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi 
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
 	export CLASSPATH=$CLASSPATH:$JUNIT4
@@ -75,7 +82,7 @@ fi
 chmod +x vpl_execution
 for FILENAME in $SOURCE_FILES
 do
-	grep -E "JFrame|JDialog" $FILENAME 2>&1 >/dev/null
+	grep -E "JFrame|JDialog|JOptionPane|javax\.swing" $FILENAME 2>&1 >/dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 		break

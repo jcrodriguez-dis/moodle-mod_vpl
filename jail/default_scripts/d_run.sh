@@ -8,6 +8,12 @@
 #load common script and check programs
 . common_script.sh
 check_program gdc
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "gdc --version | head -n2" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi 
 get_source_files d
 #compile
 gdc -o vpl_execution -lm -lutil $SOURCE_FILES

@@ -1,5 +1,5 @@
 #!/bin/bash
-# $Id: ada_run.sh,v 1.3 2012-07-25 19:02:20 juanca Exp $
+# This file is part of VPL for Moodle
 # Assambler X86 language hello source code
 
 cat >vpl_hello.asm <<END_OF_FILE
@@ -24,3 +24,4 @@ msg     db  'Hello from Assambler x86 language!',0xa ;our dear string
 len     equ $ - msg             ;length of our dear string
 
 END_OF_FILE
+export VPL_SUBFILE0=vpl_hello.asm

@@ -1,5 +1,6 @@
 #!/bin/bash
-# Default Clojure language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running Clojure language
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author  Daniel Ojeda Loisel
 #         Juan Vega Rodriguez
@@ -9,6 +10,12 @@
 
 . common_script.sh
 check_program clojure
+if [ $1 == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "clojure --eval \"(clojure-version)\"" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi 
 cat common_script.sh > vpl_execution
 echo "clojure $VPL_SUBFILE0" >>vpl_execution
 chmod +x vpl_execution

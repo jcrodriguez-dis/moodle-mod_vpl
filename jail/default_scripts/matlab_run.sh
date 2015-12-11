@@ -1,4 +1,5 @@
 #!/bin/bash
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 # Default Matlab/Octave language run script for VPL
 # Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -6,6 +7,20 @@
 
 #load common script and check programs
 . common_script.sh
+if [ $1 == "version" ] ; then
+	if [ "$(command -v matlab)" == "" ] ; then
+		if [ "$(command -v octave)" != "" ] ; then
+			echo "#!/bin/bash" > vpl_execution
+			echo "octave --version | head -n2" >> vpl_execution
+			chmod +x vpl_execution
+		fi
+	else
+		echo "#!/bin/bash" > vpl_execution
+		echo "matlab --version | head -n2" >> vpl_execution
+		chmod +x vpl_execution
+	fi
+	exit
+fi
 exec 2>&1
 get_source_files m
 X11=
@@ -40,7 +55,11 @@ END_SCRIPT
 			echo "octave --no-window-system -q" >> vpl_execution
 		else
 			check_program xterm
-			echo "xterm -e octave -q --persist" >> vpl_execution
+			if [ "$1" == "batch" ] ; then
+				echo "xterm -e octave -q" >> vpl_execution
+			else
+				echo "xterm -e octave -q --persist" >> vpl_execution
+			fi
 			mv vpl_execution vpl_wexecution
 		fi
 	fi

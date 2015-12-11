@@ -1,6 +1,6 @@
 #!/bin/bash
-# $Id: c_run.sh,v 1.3 2012-07-25 19:02:20 juanca Exp $
-# Default HTML language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running HTML language
 # Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
