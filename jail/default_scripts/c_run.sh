@@ -7,7 +7,7 @@
 #load common script and check programs
 . common_script.sh
 check_program gcc
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "gcc --version | head -n2" >> vpl_execution
 	chmod +x vpl_execution

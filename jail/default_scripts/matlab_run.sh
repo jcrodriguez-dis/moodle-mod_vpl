@@ -7,7 +7,7 @@
 
 #load common script and check programs
 . common_script.sh
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	if [ "$(command -v matlab)" == "" ] ; then
 		if [ "$(command -v octave)" != "" ] ; then
 			echo "#!/bin/bash" > vpl_execution

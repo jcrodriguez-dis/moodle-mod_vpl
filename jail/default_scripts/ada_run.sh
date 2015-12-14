@@ -9,7 +9,7 @@
 . common_script.sh
 check_program gnat
 #compile
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "gnat 1>.aux 2>/dev/null" >> vpl_execution
 	echo "cat .aux | head -n2" >> vpl_execution

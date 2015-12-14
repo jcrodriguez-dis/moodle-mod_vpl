@@ -7,7 +7,7 @@
 
 #load common script and check programs
 . common_script.sh
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	PROPATH=$(command -v fpc 2>/dev/null)
 	if [ "$PROPATH" == "" ] ; then
 		PROPATH=$(command -v gpc 2>/dev/null)

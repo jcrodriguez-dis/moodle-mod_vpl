@@ -8,7 +8,7 @@
 #load common script and check programs
 . common_script.sh
 check_program gvhdl
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	exit
 fi
 get_source_files vhdl vhd

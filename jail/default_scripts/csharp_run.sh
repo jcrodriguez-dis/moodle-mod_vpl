@@ -9,7 +9,7 @@
 . common_script.sh
 check_program mcs
 check_program mono
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "mcs --version" >> vpl_execution
 	chmod +x vpl_execution

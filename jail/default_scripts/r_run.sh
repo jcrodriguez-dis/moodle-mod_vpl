@@ -8,7 +8,7 @@
 #load common script and check programs
 . common_script.sh
 check_program Rscript
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "R --version | head -n3" >> vpl_execution
 	chmod +x vpl_execution

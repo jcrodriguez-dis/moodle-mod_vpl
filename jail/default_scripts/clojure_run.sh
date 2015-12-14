@@ -10,7 +10,7 @@
 
 . common_script.sh
 check_program clojure
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "clojure --eval \"(clojure-version)\"" >> vpl_execution
 	chmod +x vpl_execution

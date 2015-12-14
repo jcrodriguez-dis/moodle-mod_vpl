@@ -8,7 +8,7 @@
 #load common script and check programs
 . common_script.sh
 check_program hugs
-if [ $1 == "version" ] ; then
+if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "echo | hugs | head -n6" >> vpl_execution
 	chmod +x vpl_execution
