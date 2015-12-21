@@ -12,7 +12,11 @@ function getClassName {
 	CLASSNAME=$(basename "$CLASSNAME" .java)
 	echo $CLASSNAME
 }
-
+function getClassFile {
+	#remove file extension .java
+	CLASSNAME=$(basename "$1" .java)
+	echo "$CLASSNAME.class"
+}
 #load common script and check programs
 . common_script.sh
 
@@ -38,7 +42,7 @@ if [ "$?" -ne "0" ] ; then
 fi
 #Search main procedure class
 MAINCLASS=
-for FILENAME in $VPL_SUBFILES
+for FILENAME in $SOURCE_FILES
 do
 	egrep "void[ \t]+main[ \t]*\(" $FILENAME 2>&1 >/dev/null
 	if [ "$?" -eq "0" ]	; then
@@ -61,7 +65,8 @@ if [ "$MAINCLASS" = "" ] ; then
 	TESTCLASS=
 	for FILENAME in $SOURCE_FILES
 	do
-		grep "org\.junit\." $FILENAME 2>&1 >/dev/null
+		CLASSFILE=$(getClassFile "$FILENAME")
+		grep "org/junit/" $CLASSFILE 2>&1 >/dev/null
 		if [ "$?" -eq "0" ]	; then
 			TESTCLASS=$(getClassName "$FILENAME")
 			break
@@ -82,7 +87,8 @@ fi
 chmod +x vpl_execution
 for FILENAME in $SOURCE_FILES
 do
-	grep -E "JFrame|JDialog|JOptionPane|javax\.swing" $FILENAME 2>&1 >/dev/null
+	CLASSFILE=$(getClassFile "$FILENAME")
+	grep -E "javax/swing/(JFrame|JDialog|JOptionPane|JApplet)" $CLASSFILE 2>&1 >/dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 		break
