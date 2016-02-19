@@ -103,6 +103,9 @@ class restore_vpl_activity_task extends restore_activity_task {
         ) );
         if ($data != false) {
             $data->basedon = $this->structurestep->get_mappingid ( 'vpl', $data->basedon );
+            if ($data->basedon == false ) {
+                $data->basedon = $this->structurestep->get_baseon_by_name($data);
+            }
             $DB->update_record ( 'vpl', $data );
         }
     }
