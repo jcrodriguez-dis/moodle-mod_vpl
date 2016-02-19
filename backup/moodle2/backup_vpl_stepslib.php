@@ -31,11 +31,11 @@ class backup_nested_filegroup extends backup_nested_element {
         if ( vpl_is_binary($filename, $data) ) {
             $info->name = $filename . '.b64'; // For backward compatibility.
             $info->content = base64_encode( $data );
-            $info->binary = 1;
+            $info->encoding = 1;
         } else {
             $info->name = $filename;
             $info->content = $data;
-            $info->binary = 0;
+            $info->encoding = 0;
         }
         return $info;
     }
@@ -135,22 +135,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'emailteachers',
                 'worktype'
         ) );
+        $filefields = array ('name', 'content', 'encoding');
+        $idfield = array ('id');
         $requiredfiles = new backup_nested_element( 'required_files' );
-        $requiredfile = new backup_nested_filegroup( 'required_file', array (
-                'id'
-        ), array (
-                'name',
-                'content',
-                'binary'
-        ) );
+        $requiredfile = new backup_nested_filegroup( 'required_file', $idfield,  $filefields);
         $executionfiles = new backup_nested_element( 'execution_files' );
-        $executionfile = new backup_nested_filegroup( 'execution_file', array (
-                'id'
-        ), array (
-                'name',
-                'content',
-                'binary'
-        ) );
+        $executionfile = new backup_nested_filegroup( 'execution_file', $idfield,  $filefields);
         $variations = new backup_nested_element( 'variations' );
         $variation = new backup_nested_element( 'variation', array (
                 'id'
@@ -182,13 +172,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'highlight'
         ) );
         $submissionfiles = new backup_nested_element( 'submission_files' );
-        $submissionfile = new backup_nested_filegroup( 'submission_file', array (
-                'id'
-        ), array (
-                'name',
-                'content',
-                'binary'
-        ) );
+        $submissionfile = new backup_nested_filegroup( 'submission_file', $idfield,  $filefields);
         // Build the tree.
         $vpl->add_child( $requiredfiles );
         $vpl->add_child( $executionfiles );

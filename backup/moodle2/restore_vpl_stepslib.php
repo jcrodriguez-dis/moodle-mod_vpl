@@ -77,7 +77,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         global $CFG;
         $data = ( object ) $data;
         $filename = $data->name;
-        if ( isset($data->binary) and ($data->binary == 1) ) {
+        if ( isset($data->encoding) and ($data->encoding == 1) ) {
             $content = base64_decode($data->content);
             if ( substr($filename, -4) === '.b64' ) { // For backware compatibility.
                 $filename = substr($filename, 0, strlen($filename) - 4);
