@@ -17,12 +17,24 @@
 /**
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2016 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined ( 'MOODLE_INTERNAL' ) || die ();
 class restore_vpl_activity_structure_step extends restore_activity_structure_step {
+    protected $basedonnames = array();
+    public function get_baseon_by_name($data) {
+        global $DB;
+        if ( isset($this->basedonnames[$data->id]) ) {
+            $basedonname = $this->basedonnames[$data->id];
+            $basedon = $DB->get_record( 'vpl', array ( 'course' => $data->course, 'name' => $basedonname ));
+            if ( $basedon != false ) {
+                return $basedon->id;
+            }
+        }
+        return false;
+    }
     protected function define_structure() {
         $paths = array ();
         $userinfo = $this->get_setting_value ( 'userinfo' );
@@ -56,13 +68,25 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         // Insert the choice record.
         $newitemid = $DB->insert_record ( 'vpl', $data );
         // Immediately after inserting "activity" record, call this.
+        if (isset($data->basedon) and $data->basedon > 0 and isset($data->basedonname)) {
+            $this->basedonnames[$newitemid] = $data->basedonname;
+        }
         $this->apply_activity_instance ( $newitemid );
     }
     private function process_groupfile($data, $path) {
         global $CFG;
         $data = ( object ) $data;
-        $fp = vpl_fopen ( $path . $data->name );
-        fwrite ( $fp, $data->content );
+        $filename = $data->name;
+        if ( isset($data->binary) and ($data->binary == 1) ) {
+            $content = base64_decode($data->content);
+            if ( substr($filename, -4) === '.b64' ) { // For backware compatibility.
+                $filename = substr($filename, 0, strlen($filename) - 4);
+            }
+        } else {
+            $content = $data->content;
+        }
+        $fp = vpl_fopen ( $path . $filename );
+        fwrite ( $fp, $content );
         fclose ( $fp );
     }
     protected function process_required_file($data) {

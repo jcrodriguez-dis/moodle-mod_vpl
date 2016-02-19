@@ -25,6 +25,20 @@
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../vpl.class.php');
 class backup_nested_filegroup extends backup_nested_element {
+    private function load_file($base, $filename) {
+        $data = file_get_contents( $base . $filename );
+        $info = new stdClass();
+        if ( vpl_is_binary($filename, $data) ) {
+            $info->name = $filename . '.b64'; // For backward compatibility.
+            $info->content = base64_encode( $data );
+            $info->binary = 1;
+        } else {
+            $info->name = $filename;
+            $info->content = $data;
+            $info->binary = 0;
+        }
+        return $info;
+    }
     private function get_files($base, $dirname) {
         $files = array ();
         $filelst = $dirname . '.lst';
@@ -37,10 +51,7 @@ class backup_nested_filegroup extends backup_nested_element {
         );
         foreach ($extrafiles as $file) {
             if (file_exists( $base . $file )) {
-                $data = new stdClass();
-                $data->name = $file;
-                $data->content = file_get_contents( $base . $file );
-                $files [] = $data;
+                $files [] = $this->load_file($base, $file);
             }
         }
         $dirpath = $base . $dirname;
@@ -50,10 +61,7 @@ class backup_nested_filegroup extends backup_nested_element {
                 if ($filename == "." || $filename == "..") {
                     continue;
                 }
-                $data = new stdClass();
-                $data->name = $dirname . '/' . $filename;
-                $data->content = file_get_contents( $dirpath . '/' . $filename );
-                $files [] = $data;
+                $files [] = $this->load_file($base, $dirname . '/' . $filename);
             }
             closedir( $dirlst );
         }
@@ -111,6 +119,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'usevariations',
                 'variationtitle',
                 'basedon',
+                'basedonname',
                 'run',
                 'debug',
                 'evaluate',
@@ -131,14 +140,16 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'id'
         ), array (
                 'name',
-                'content'
+                'content',
+                'binary'
         ) );
         $executionfiles = new backup_nested_element( 'execution_files' );
         $executionfile = new backup_nested_filegroup( 'execution_file', array (
                 'id'
         ), array (
                 'name',
-                'content'
+                'content',
+                'binary'
         ) );
         $variations = new backup_nested_element( 'variations' );
         $variation = new backup_nested_element( 'variation', array (
@@ -175,7 +186,8 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'id'
         ), array (
                 'name',
-                'content'
+                'content',
+                'binary'
         ) );
         // Build the tree.
         $vpl->add_child( $requiredfiles );
@@ -191,16 +203,20 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $submission->add_child( $submissionfiles );
         $submissionfiles->add_child( $submissionfile );
         // Define sources.
-        $vpl->set_source_table( 'vpl', array (
-                'id' => backup::VAR_ACTIVITYID
+        // VPL record with basedonname field.
+        $query = 'SELECT s.*, o.name as basedonname FROM {vpl} AS s';
+        $query .= ' LEFT join {vpl} as o';
+        $query .= '   ON s.basedon = o.id';
+        $query .= '   WHERE s.id = ?';
+        $vpl->set_source_sql( $query, array (
+                backup::VAR_ACTIVITYID
         ) );
         $variation->set_source_table( 'vpl_variations', array (
                 'vpl' => backup::VAR_ACTIVITYID
         ) );
         if ($userinfo) {
             $asignedvariation->set_source_table( 'vpl_assigned_variations', array (
-                    'vpl' => backup::VAR_ACTIVITYID,
-                    'variation' => backup::VAR_ACTIVITYID
+                    'vpl' => backup::VAR_ACTIVITYID
             ) );
             /*
              * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
