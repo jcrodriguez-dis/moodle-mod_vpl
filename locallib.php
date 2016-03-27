@@ -633,10 +633,19 @@ function vpl_fileextension($filename) {
 function vpl_is_image($filename) {
     return preg_match( '/^(gif|jpg|jpeg|png|ico)$/i', vpl_fileextension( $filename ) ) == 1;
 }
-function vpl_is_binary($filename) {
-    return vpl_is_image( $filename ) || preg_match( '/^(zip|jar|pdf)$/i', vpl_fileextension( $filename ) ) == 1;
+function vpl_is_binary($filename, &$data = false) {
+    if ( vpl_is_image( $filename ) ) {
+        return true;
+    }
+    if ( preg_match( '/^(zip|jar|pdf|tar)$/i', vpl_fileextension( $filename ) ) == 1 ) {
+        return true;
+    }
+    if ($data === false) {
+        return false;
+    }
+    return mb_detect_encoding( $data, 'UTF-8', true ) != 'UTF-8';
 }
-function vpl_encode_binary($filename, $data) {
+function vpl_encode_binary($filename, &$data) {
     return base64_encode( $data );
 }
 function vpl_decode_binary($filename, $data) {
