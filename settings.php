@@ -107,6 +107,10 @@ $settings->add(
         new admin_setting_configtext( $prefix . $name, get_string( $name, VPL ), get_string( $name . '_description', VPL ), '',
                 PARAM_URL ) );
 $settings->add( new admin_setting_heading( 'heading3', '', get_string( 'miscellaneous' ) ) );
+$settings->add(
+        new admin_setting_configcheckbox( $prefix . 'use_watermarks', get_string( 'usewatermarks', VPL ),
+                get_string( 'usewatermarks_description', VPL ), 0 ) );
+
 $list = vpl_get_select_time();
 $default = vpl_get_array_key( $list, 60 );
 $settings->add(
