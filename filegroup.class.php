@@ -141,6 +141,51 @@ class file_group_process{
     }
 
     /**
+     * Add new files to the group/Modify the data file
+     *
+     * @param array $files
+     * @return bool (added==true)
+     */
+    public function addallfiles($files) {
+        ignore_user_abort( true );
+        $filelist = $this->getFileList();
+        $filehash = array();
+        foreach ($filelist as $f) {
+            $filehash [$f] = 1;
+        }
+        foreach ($files as $filename => $data) {
+            if ( !isset($filehash[$filename]) ){
+                $filelist[] = $filename;
+            }
+            if ($data === null) {
+                $data='';
+            }
+            $path = $this->dir . self::encodeFileName( $filename );
+            $fd = vpl_fopen( $path );
+            fwrite( $fd, $data );
+            fclose( $fd );
+        }
+        $this->setFileList( $filelist );
+    }
+
+    /**
+     * Delete all files from groupfile
+     *
+     * @return void
+     */
+    public function deleteallfiles() {
+        ignore_user_abort( true );
+        $filelist = $this->getFileList();
+        foreach ($filelist as $filename) {
+            $fullname = $this->dir . self::encodeFileName( $filename );
+            if (file_exists( $fullname )) {
+                unlink( $fullname );
+            }
+        }
+        $this->setFileList( array() );
+    }
+
+    /**
      * Delete a file from groupfile
      *
      * @param int $num
@@ -210,6 +255,25 @@ class file_group_process{
      */
     public function getfilelist() {
         return vpl_read_list_from_file($this->filelistname);
+    }
+
+    /**
+     * Get all files from group
+     *
+     * @return array $files
+     */
+    public function getallfiles() {
+        $files = array();
+        $filelist = $this->getFileList();
+        foreach ($filelist as $filename) {
+            $fullname = $this->dir . self::encodeFileName( $filename );
+            if (file_exists( $fullname )) {
+                 $files [$filename] = file_get_contents( $fullname );
+            } else {
+                 $files [$filename] = '';
+            }
+        }
+        return $files;
     }
 
     /**
@@ -288,11 +352,11 @@ class file_group_process{
      */
     public function print_files($ifnoexist = true) {
         global $OUTPUT;
-        $timeout = time() + 10; // 10 seconds for timeout.
+        $timeout = time() + 5; // 5 seconds for timeout.
         $filenames = $this->getFileList();
         foreach ($filenames as $name) {
             if (file_exists( $this->dir . self::encodeFileName( $name ) )) {
-                echo '<h3>' . s( $name ) . '</h3>';
+                echo '<h4>' . s( $name ) . '</h4>';
                 echo $OUTPUT->box_start();
                 if (time() < $timeout) {
                     $printer = vpl_sh_factory::get_sh( $name );
@@ -303,7 +367,7 @@ class file_group_process{
                 }
                 echo $OUTPUT->box_end();
             } else if ($ifnoexist) {
-                echo '<h3>' . s( $name ) . '</h3>';
+                echo '<h4>' . s( $name ) . '</h4>';
             }
         }
     }
