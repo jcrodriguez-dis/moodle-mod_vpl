@@ -1,0 +1,15 @@
+#vpl_grade_view {
+	height:220px;
+}
+#vpl_grade_form {
+	float:left;
+}
+#vpl_grade_comments {
+	float:left;
+	width:40%;
+	overflow:auto;
+}
+#vpl_submission_view {
+	clear:both;
+	overflow:auto;
+}
