@@ -1,7 +1,6 @@
 #!/bin/bash
-# $Id: common_script.sh,v 1.6 2013-04-18 17:14:35 juanca Exp $
-# Default common utils for scripts of VPL
-# Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
+# Default common funtions for scripts of VPL
+# Copyright (C) 2016 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
@@ -19,7 +18,7 @@ function get_source_files {
 	SOURCE_FILES=""
 	for ext in "$@"
 	do
-	    source_files_ext=$(find . -name "*.$ext" | sed 's/^.\///g' |xargs)
+	    source_files_ext="$(find . -name "*.$ext" -printf "%f?" | sed 's/^.\///g' | sed 's/ /\\ /g' | sed 's/\?/ /g')"
 	    SOURCE_FILES="$SOURCE_FILES $source_files_ext"
 	done
 }
