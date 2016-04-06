@@ -7,7 +7,7 @@
 
 cat >vpl_hello.adb <<END_OF_FILE
 with ada.text_io;
-use ada.text_iO;
+use ada.text_io;
 procedure vpl_hello is
 begin
     put_line("Hello from the Ada language!");
