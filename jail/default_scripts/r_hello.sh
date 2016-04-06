@@ -11,4 +11,4 @@ msgBox <- tkmessageBox(title = "VPL",
                        message = "Hello from the R language!", icon = "info", type = "ok")
 q();
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.py
+export VPL_SUBFILE0=vpl_hello.r
