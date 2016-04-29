@@ -360,8 +360,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission{
         $response->executionURL=$baseURL.$jailResponse['executionticket'].'/execute';
         $response->VNChost = $parsed['host'];
         $response->VNCpath = $jailResponse['executionticket'].'/execute';
-        $response->VNCsecure = $isHTTPS;
-        if($isHTTPS)
+        $response->VNCsecure = $use_wss;
+        if($use_wss)
            $response->port = $jailResponse['secureport'];
         elseif(isset($parsed['port']))
            $response->port = $parsed['port'];
