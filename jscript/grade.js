@@ -22,11 +22,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-(function(){
+(function() {
     if (typeof VPL != 'object') {
         VPL = new Object();
     }
-    VPL.getOffsetY = function (obj){
+    VPL.getOffsetY = function(obj) {
         var offset = 0;
         var i;
         for (i = 0; i < 200 && obj != document.body; i++) {
@@ -36,10 +36,10 @@
         return offset;
     };
     /**
-     * resize the submission view div to greatest visible size 
+     * resize the submission view div to greatest visible size
      */
 
-    VPL.resizeSView = function (){
+    VPL.resizeSView = function() {
         var gview = window.document.getElementById('vpl_grade_view');
         var cview = window.document.getElementById('vpl_grade_comments');
         var fview = window.document.getElementById('vpl_grade_form');
@@ -64,35 +64,34 @@
     VPL.resizeSView();
     setInterval(VPL.resizeSView, 3000);
     /**
-     * Recalculate numeric grade from the max sustracting grades found at the end of
-     * lines.
-     * valid grade format: "- text (-grade)" 
+     * Recalculate numeric grade from the max sustracting grades found at the
+     * end of lines. valid grade format: "- text (-grade)"
      */
-    VPL.calculateGrade = function(maxgrade){
+    VPL.calculateGrade = function(maxgrade) {
         var form1 = window.document.getElementById('form1');
         var text = new String(form1.comments.value);
         var grade = new Number(maxgrade);
         while (text.length > 0) {
-            /* Separate next line*/
+            /* Separate next line */
             var line = new String();
             var i;
             for (i = 0; i < text.length; i++) {
-                if(text.charAt(i) == '\n' || text.charAt(i) == '\r') {
+                if (text.charAt(i) == '\n' || text.charAt(i) == '\r') {
                     break;
                 }
             }
-            line = text.substr(0,i);
+            line = text.substr(0, i);
             if (i < text.length) {
-                text = text.substr(i + 1,(text.length - i) - 1);
+                text = text.substr(i + 1, (text.length - i) - 1);
             } else {
                 text = '';
             }
-            if(line.length == 0) {
+            if (line.length == 0) {
                 continue;
             }
 
             /* Is a message title line */
-            if(line.charAt(0) == '-'){
+            if (line.charAt(0) == '-') {
                 var nline = new String();
                 for (i = 0; i < line.length; i++) {
                     if (line.charAt(i) != ' ') {
@@ -108,7 +107,7 @@
                     if (pos == -1) {
                         continue;
                     }
-                    var rest = nline.substr(pos + 1,nline.length - 2 - pos);
+                    var rest = nline.substr(pos + 1, nline.length - 2 - pos);
                     /* update grade with rest */
                     if (rest < 0) {
                         grade += new Number(rest);
@@ -116,18 +115,17 @@
                 }
             }
         }
-        /*No negative grade*/
-        if(grade < 0) {
+        /* No negative grade */
+        if (grade < 0) {
             grade = 0;
         }
-        /*Max two decimal points*/
+        /* Max two decimal points */
         grade = Math.round(100 * grade) / 100;
         form1.grade.value = grade;
     };
 
     /**
-     * Add new comment to the form
-     * comment string to add
+     * Add new comment to the form comment string to add
      */
     VPL.addComment = function(comment) {
         if (comment == '') {
@@ -137,7 +135,7 @@
         var form1 = window.document.getElementById('form1');
         var field = form1.comments;
         var text = new String(field.value);
-        if(text.indexOf(comment, 0) >= 0) { /*Comment already in form*/
+        if (text.indexOf(comment, 0) >= 0) { /* Comment already in form */
             return;
         }
         if (document.selection) { /* For MS Explorer */
@@ -151,6 +149,16 @@
             field.value = text.substring(0, startPos) + comment + text.substring(endPos, text.length);
         } else { /* Other case */
             field.value += comment;
+        }
+    };
+    VPL.removeHeaderFooter = function() {
+        var l = window.document.getElementsByTagName('header');
+        for (var i = 0; i < l.length; i++) {
+            l[i].style.display = 'none';
+        }
+        l = window.document.getElementsByTagName('footer');
+        for (var i = 0; i < l.length; i++) {
+            l[i].style.display = 'none';
         }
     };
 })();
