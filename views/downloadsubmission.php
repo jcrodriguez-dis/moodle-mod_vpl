@@ -84,8 +84,10 @@ try {
         throw new Exception( 'vpl submission vpl inconsistence' );
     }
     $submission = new mod_vpl_submission( $vpl, $subinstance );
+    $plugincfg = get_config('mod_vpl');
+    $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
     $fgm = $submission->get_submitted_fgm();
-    $fgm->download_files( $vpl->get_printable_name() );
+    $fgm->download_files( $vpl->get_printable_name() , $watermark);
 } catch ( Exception $e ) {
     $vpl->prepare_page( 'views/downloadsubmission.php', array (
             'id' => $id
