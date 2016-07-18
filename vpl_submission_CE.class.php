@@ -34,6 +34,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'ada' => 'ada',
             'adb' => 'ada',
             'ads' => 'ada',
+            'all' => 'all',
             'asm' => 'asm',
             'c' => 'c',
             'cc' => 'cpp',
@@ -137,6 +138,21 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($script == 'vpl_evaluate.sh') {
             $ret ['vpl_evaluate.cpp'] = file_get_contents( $path . 'vpl_evaluate.cpp' );
         }
+        if ($pln == 'all' && $this->vpl->has_capability( VPL_MANAGE_CAPABILITY )) { // Test all scripts.
+            $dirpath = dirname( __FILE__ ) . '/jail/default_scripts';
+            if (file_exists( $dirpath )) {
+                $dirlst = opendir( $dirpath );
+                while ( false !== ($filename = readdir( $dirlst )) ) {
+                    if ($filename == "." || $filename == "..") {
+                        continue;
+                    }
+                    if (substr( $filename, - 7 ) == '_run.sh' || substr( $filename, - 9 ) == '_hello.sh') {
+                        $ret [$filename] = file_get_contents( $path . $filename );
+                    }
+                }
+                closedir( $dirlst );
+            }
+        }
         return $ret;
     }
 
@@ -150,7 +166,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return object with files, limits, interactive and other info
      */
     public function prepare_execution($type, &$already = array(), $vpl = null) {
-        global $CFG;
+        global $CFG, $DB;
         $plugincfg = get_config('mod_vpl');
         if ($vpl == null) {
             $vpl = $this->vpl;
@@ -371,22 +387,29 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if (isset( $options ['XGEOMETRY'] )) { // TODO refactor to a better solution.
             $data->files ['vpl_environment.sh'] .= "\nexport VPL_XGEOMETRY=" . $options ['XGEOMETRY'] . "\n";
         }
+        if (isset( $options ['COMMANDARGS'] )) {
+            $data->commandargs = $options ['COMMANDARGS'];
+        }
         $localservers = $data->jailservers;
         $maxmemory = $data->maxmemory;
         // Remove jailservers field.
         unset( $data->jailservers );
         // Adapt files to send binary as base64.
+        $fileencoding = array();
         $encodefiles = array ();
         foreach ($data->files as $filename => $filedata) {
             if (vpl_is_binary( $filename )) {
                 $encodefiles [$filename . '.b64'] = base64_encode( $filedata );
+                $fileencoding [$filename . '.b64'] = 1;
                 $data->filestodelete [$filename . '.b64'] = 1;
             } else {
+                $fileencoding [$filename] = 0;
                 $encodefiles [$filename] = $filedata;
             }
             $data->files [$filename] = '';
         }
         $data->files = $encodefiles;
+        $data->fileencoding = $fileencoding;
         $jailserver = '';
         $jailresponse = $this->jailrequestaction( $data, $maxmemory, $localservers, $jailserver );
         $parsed = parse_url( $jailserver );
