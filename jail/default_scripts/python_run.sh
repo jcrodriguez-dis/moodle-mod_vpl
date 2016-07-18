@@ -17,7 +17,7 @@ fi
 cat common_script.sh > vpl_execution
 echo "python $VPL_SUBFILE0" >>vpl_execution
 chmod +x vpl_execution
-grep -E "Tkinter" $VPL_SUBFILE0 2>&1 >/dev/null
+grep -E "Tkinter" $VPL_SUBFILE0 &> /dev/null
 if [ "$?" -eq "0" ]	; then
 	mv vpl_execution vpl_wexecution
 fi

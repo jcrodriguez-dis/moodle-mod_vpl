@@ -23,5 +23,5 @@ do
 done
 #compile
 cat common_script.sh > vpl_wexecution
-echo "Rscript --default-packages=utils --vanilla $SOURCE_FILE" >>vpl_wexecution
+echo "xterm -e R --default-packages=utils --vanilla $SOURCE_FILE" >>vpl_wexecution
 chmod +x vpl_wexecution
