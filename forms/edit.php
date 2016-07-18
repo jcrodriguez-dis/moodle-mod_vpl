@@ -87,17 +87,21 @@ $options ['run'] = ($instance->run || $manager);
 $options ['debug'] = ($instance->debug || $manager);
 $options ['evaluate'] = ($instance->evaluate || $manager);
 $options ['example'] = true && $instance->example;
+$options ['comments'] = ! $options ['example'];
 $linkuserid = $copy ? $USER->id : $userid;
 $options ['ajaxurl'] = "edit.json.php?id={$id}&userid={$linkuserid}&action=";
 $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
+if ( $instance->duedate > 0 ) {
+    $options ['timeLeft'] = $instance->duedate - time();
+}
 // Get files.
 $files = Array ();
 $reqfgm = $vpl->get_required_fgm();
 $options ['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
 $options ['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
-$min = count( $reqfilelist );
-$options ['minfiles'] = $min;
+$options ['minfiles'] = count( $reqfilelist );
+/*
 $nf = count( $reqfilelist );
 for ($i = 0; $i < $nf; $i ++) {
     $filename = $reqfilelist [$i];
@@ -116,7 +120,8 @@ if ($lastsub) {
     }
     $compilationexecution = $submission->get_CE_for_editor();
     \mod_vpl\event\submission_edited::log( $submission );
-}
+}*/
+$lastsub=false;
 session_write_close();
 if ($copy && $grader) {
     $userid = $USER->id;
