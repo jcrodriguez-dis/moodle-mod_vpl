@@ -32,6 +32,7 @@ try {
     require_once(dirname( __FILE__ ) . '/../../../config.php');
     require_once(dirname( __FILE__ ) . '/../locallib.php');
     require_once(dirname( __FILE__ ) . '/../vpl.class.php');
+    require_once(dirname( __FILE__ ) . '/edit.class.php');
     if (! isloggedin()) {
         throw new Exception( get_string( 'loggedinnot' ) );
     }
@@ -46,19 +47,26 @@ try {
             'action' => $action
     ) ) );
     echo $OUTPUT->header(); // Send headers.
-    $data = json_decode( file_get_contents( 'php://input' ) );
+    $actiondata = json_decode( file_get_contents( 'php://input' ) );
     switch ($action) {
         case 'save' :
             $filename = 'vpl_evaluate.cases';
-            $postfiles = ( array ) $data;
+            $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
             if (count( $postfiles ) != 1 || ! isset( $postfiles [$filename] )) {
-                throw new Execption( get_string( 'incorrect_file_name', VPL ) );
+                throw new Exception( get_string( 'incorrect_file_name', VPL ) );
             }
             $fgm = $vpl->get_execution_fgm();
             $fgm->addFile( $filename, $postfiles [$filename] );
             break;
+        case 'load' :
+            $filename = 'vpl_evaluate.cases';
+            $fgm = $vpl->get_execution_fgm();
+            $files = array();
+            $files[$filename] = $fgm->getfiledata($filename);
+            $outcome->response->files = mod_vpl_edit::filestoide( $files );
+            break;
         default :
-            throw new Exception( 'ajax action error' );
+            throw new Exception( 'ajax action error: ' + $action );
     }
 } catch ( Exception $e ) {
     $outcome->success = false;
