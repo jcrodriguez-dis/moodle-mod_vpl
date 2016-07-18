@@ -589,9 +589,9 @@ function vpl_is_valid_file_name($fileName){
 }
 
 function vpl_truncate_string(&$string, $limit){
-    $limit -= 3; //Add space for ...
+    $limit -= 4; //Add space for ...
     if(strlen($string) > $limit )
-        $string = substr($string,0,$limit).'...';
+        $string = substr($string,0,$limit).' ...';
 }
 
 function vpl_truncate_VPL($instance){
@@ -606,6 +606,7 @@ function vpl_truncate_VARIATIONS($instance){
 }
 
 function vpl_truncate_RUNNING_PROCESSES($instance){
+    vpl_truncate_string( $instance->laststrerror, 255 );
     vpl_truncate_string($instance->server,255);
 }
 
