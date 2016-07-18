@@ -15,5 +15,5 @@ if [ "$1" == "version" ] ; then
 	echo "cat .aux | head -n2" >> vpl_execution
 	chmod +x vpl_execution
 else 
-	gnat make -gnat05 -gnatW8 -q -o vpl_execution $VPL_SUBFILE0
+	gnat make -gnat05 -gnatW8 -q -o vpl_execution "$VPL_SUBFILE0"
 fi
