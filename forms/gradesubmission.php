@@ -43,6 +43,7 @@ require_login();
 vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
 vpl_include_jsfile( 'updatesublist.js', false );
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
 
@@ -195,11 +196,11 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         }
 
         $gradeform->set_data( $data );
-        echo '<div id="vpl_grade_view" style="height:220px">';
-        echo '<div id="vpl_grade_form" style="float:left">';
+        echo '<div id="vpl_grade_view">';
+        echo '<div id="vpl_grade_form">';
         $gradeform->display();
         echo '</div>';
-        echo '<div id="vpl_grade_comments" style="float:left;width:40%;overflow:auto">';
+        echo '<div id="vpl_grade_comments">';
         $comments = $vpl->get_grading_help();
         if ($comments > '') {
             echo $OUTPUT->box_start();
@@ -209,13 +210,16 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         }
         echo '</div>';
         echo '</div>';
-        echo '<div id="vpl_submission_view" style="clear:both;overflow:auto;" >';
+        echo '<div id="vpl_submission_view">';
         echo '<hr />';
         $vpl->print_variation( $subinstance->userid );
         $submission->print_submission();
         echo '</div>';
         $jscript .= 'VPL.hlrow(' . $submissionid . ');';
         $jscript .= 'window.onunload= function(){VPL.unhlrow(' . $submissionid . ');};';
+        if ($inpopup) {
+            $jscript .= 'VPL.removeHeaderFooter();';
+        }
     }
 } else {
     vpl_inmediate_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ) );
