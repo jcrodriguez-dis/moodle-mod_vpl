@@ -23,7 +23,7 @@ if [ -f $JUNIT4 ] ; then
 fi
 get_source_files java
 #compile all SOURCE_FILES files
-javac -g -J-Xmx16m -Xlint:deprecation $SOURCE_FILES
+javac -g -Xlint:deprecation $SOURCE_FILES
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
@@ -32,7 +32,7 @@ fi
 MAINCLASS=
 for FILENAME in $VPL_SUBFILES
 do
-	egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME 2>&1 >/dev/null
+	egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME &>/dev/null
 	if [ "$?" -eq "0" ]	; then
 		MAINCLASS=$(getClassName "$FILENAME")
 		break
@@ -42,8 +42,8 @@ if [ "$MAINCLASS" = "" ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
 	    echo $FILENAME
-		egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME 2>&1 >/dev/null
-		if [ "$?" -eq "0" -a "$MAINCLASS" = "" ]	; then
+		egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME &>/dev/null
+		if [ "$?" -eq "0" -a "$MAINCLASS" = "" ] ; then
 			MAINCLASS=$(getClassName "$FILENAME")
 			break
 		fi
@@ -54,7 +54,7 @@ if [ "$MAINCLASS" = "" ] ; then
 	TESTCLASS=
 	for FILENAME in $SOURCE_FILES
 	do
-		grep "org\.junit\." $FILENAME 2>&1 >/dev/null
+		grep "org\.junit\." $FILENAME &>/dev/null
 		if [ "$?" -eq "0" ]	; then
 			TESTCLASS=$(getClassName "$FILENAME")
 			break
@@ -81,7 +81,7 @@ elif [ "$(command -v ddd)" == "" ] ; then
 	echo "jdb $MAINCLASS" >> vpl_execution
 	for FILENAME in $SOURCE_FILES
 	do
-		grep -E "JFrame|JDialog" $FILENAME 2>&1 >/dev/null
+		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
 		if [ "$?" -eq "0" ]	; then
 			check_program xterm
 			cat common_script.sh > vpl_wexecution
