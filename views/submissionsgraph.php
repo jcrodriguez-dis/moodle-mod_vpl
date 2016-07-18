@@ -46,9 +46,8 @@ if (count( $submissionslist ) > 0) {
         $subs [] = new mod_vpl_submission( $vpl, $submission );
     }
     foreach ($subs as $sub) {
-        $filesarray = $sub->get_submitted_files();
-        foreach ($filesarray as $file) {
-            $name = $file ['name'];
+        $filesarray = $sub->get_submitted_fgm()->getfilelist();
+        foreach ($filesarray as $name) {
             if (! in_array( $name, $names, true )) {
                 $names [] = $name;
                 $series [$name] = array ();
@@ -91,9 +90,9 @@ if (count( $submissionslist ) > 0) {
         $files = array ();
         // Used to give stack format last bar has less size.
         $totalsize = 0;
-        foreach ($filesarray as $file) {
-            $size = strlen( $file ['data'] );
-            $files [$file ['name']] = $size;
+        foreach ($filesarray as $name => $data) {
+            $size = strlen( $data );
+            $files [$name] = $size;
             $totalsize += $size;
         }
         foreach ($names as $name) {
