@@ -67,13 +67,13 @@ class mod_vpl_submission {
         if (is_object( $mix )) {
             $this->instance = $mix;
         } else if ($mix === false) {
-            throw new Execption( 'vpl_submission id error' );
+            throw new Exception( 'vpl_submission id error' );
         } else {
             $this->instance = $DB->get_record( 'vpl_submissions', array (
                     'id' => $mix
             ) );
             if (! $this->instance) {
-                throw new Execption( 'vpl_submission id error' );
+                throw new Exception( 'vpl_submission id error' );
             }
         }
         $this->submittedfgm = null;
@@ -149,40 +149,28 @@ class mod_vpl_submission {
      * @return array of array 'name' and 'data'
      */
     public function get_submitted_files() {
-        // TODO refactor to file_group_process.
         $fg = $this->get_submitted_fgm();
-        $ret = array ();
-        foreach ($fg->getFileList() as $filename) {
-            $data = $fg->getFileData( $filename );
-            $ret [] = array (
-                    'name' => $filename,
-                    'data' => $data
-            );
-        }
-        return $ret;
+        return $fg->getallfiles();
     }
     public function set_submitted_file($files) {
-        // TODO Add new operation in file_group_process.
         $fg = $this->get_submitted_fgm();
-        foreach ($files as $file) {
-            $fg->addFile( $file ['name'], $file ['data'] );
-        }
+        $fg->addallfiles($files);
     }
     public function is_equal_to(&$files, $comment = '') {
+        if ($this->instance->comments != $comment) {
+            return false;
+        }
         $subfiles = $this->get_submitted_files();
         if (count( $files ) != count( $subfiles )) {
             return false;
         }
-        for ($i = 0; $i < count( $files ); $i ++) {
-            if ($files [$i] ['name'] != $subfiles [$i] ['name']) {
+        foreach ( $files as $name => $data ) {
+            if ( ! isset ($subfiles [$name]) ) {
                 return false;
             }
-            if ($files [$i] ['data'] != $subfiles [$i] ['data']) {
+            if ($subfiles [$name] != $data ) {
                 return false;
             }
-        }
-        if ($this->instance->comments != $comment) {
-            return false;
         }
         return true;
     }
@@ -626,7 +614,7 @@ class mod_vpl_submission {
         $commmets = $this->instance->comments;
         if ($commmets > '') {
             echo '<br />';
-            echo get_string( 'comments', VPL );
+            echo '<h4>' . get_string( 'comments', VPL ) . '</h4>';
             echo $OUTPUT->box( $commmets );
         }
     }
