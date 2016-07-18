@@ -33,13 +33,12 @@ class vpl_editor_util {
             $PAGE->requires->jquery();
             $PAGE->requires->jquery_plugin( 'ui' );
             $PAGE->requires->jquery_plugin( 'ui-css' );
-            $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery-touch/jquery.ui.touch-punch.min.js' ), true );
         } else {
             $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css' ) );
             $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
             $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js' ), true );
-            $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery-touch/jquery.ui.touch-punch.min.js' ), true );
         }
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery-touch/jquery.ui.touch-punch.min.js' ), true );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
     }
     public static function generate_requires_evaluation() {
@@ -62,19 +61,12 @@ class vpl_editor_util {
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLTerminal.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDE.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDEFile.js' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDEButton.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
     }
     public static function print_tag($options, $filestosend, $saved = true) {
         global $CFG;
         $tagid = 'vplide';
-        $files = Array ();
-        foreach ($filestosend as $name => $data) {
-            $file = new stdClass();
-            $file->name = $name;
-            $file->data = vpl_encode_binary( $name, $data );
-            $files [] = $file;
-        }
-        $options ['files'] = $files;
         $options ['i18n'] = self::i18n();
         $options ['saved'] = ($saved || $options ['example']) ? 1 : 0;
         $joptions = json_encode( $options );
@@ -129,8 +121,18 @@ class vpl_editor_util {
 		style="display: none;">
 		<ol id="vpl_sort_list"></ol>
 	</div>
+	<div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
+		style="display: none;">
+		<fieldset>
+			<label for="vpl_ide_input_comments">
+                <?php p(get_string('comments', VPL))?></label> <textarea
+				id="vpl_ide_input_comments" name="vpl_ide_input_comments"
+				class="ui-widget-content ui-corner-all" autofocus ></textarea>
+		</fieldset>
+	</div>
 	<div id="vpl_ide_dialog_about" class="vpl_ide_dialog"
 		style="display: none;">
+		<div class="vpl_ide_dialog_content">
 		<h3>IDE for VPL</h3>
 		This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
 			target="_blank">Virtual Programming Lab for Moodel</a><br /> Author:
@@ -158,10 +160,14 @@ class vpl_editor_util {
 				Furfero, Dual licensed under the MIT or GPL Version 2 licenses. (<a
 				href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
 		</ul>
+		</div>
 	</div>
 	<form style="display: none;">
 		<input type="file" multiple="multiple" id="vpl_ide_input_file" />
 	</form>
+	<div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog"	>
+		<div class="vpl_ide_dialog_content"></div>
+	</div>
 	<div id="vpl_dialog_terminal">
 		<pre id="vpl_terminal" class="vpl_terminal"></pre>
 	</div>
@@ -243,13 +249,16 @@ class vpl_editor_util {
                 'find_replace',
                 'fullscreen',
                 'incorrect_file_name',
-				'keyboard',
+                'keyboard',
                 'maxfilesexceeded',
                 'new',
                 'next',
+                'load',
+                'loading',
                 'options',
                 'outofmemory',
                 'paste',
+                'print',
                 'redo',
                 'regularscreen',
                 'rename',
@@ -261,7 +270,9 @@ class vpl_editor_util {
                 'save',
                 'saving',
                 'select_all',
+                'shortcuts',
                 'sureresetfiles',
+                'timeleft',
                 'timeout',
                 'undo'
         );
@@ -284,6 +295,7 @@ class vpl_editor_util {
         foreach ($words as $word) {
             $list [$word] = get_string( $word );
         }
+        $list ['close'] = get_string( 'closebuttontitle' );
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
