@@ -22,8 +22,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 (function() {
-    function doNothing() {
-    }
+
     VPL_File = function(id, name, value, file_manager) {
         // General functions
         var tid = "#vpl_file" + id;
@@ -129,28 +128,32 @@
             }
             return false;
         };
-        this.gotoLine = doNothing;
-        this.setReadOnly = doNothing;
-        this.focus = doNothing;
-        this.blur = doNothing;
-        this.undo = doNothing;
-        this.redo = doNothing;
-        this.selectAll = doNothing;
+        this.gotoLine = VPL_Util.doNothing;
+        this.setReadOnly = VPL_Util.doNothing;
+        this.focus = VPL_Util.doNothing;
+        this.blur = VPL_Util.doNothing;
+        this.undo = VPL_Util.doNothing;
+        this.redo = VPL_Util.doNothing;
+        this.selectAll = VPL_Util.doNothing;
         this.hasUndo = function() {
             return false;
         };
         this.hasRedo = function() {
             return false;
         };
-        this.find = doNothing;
-        this.replace = doNothing;
-        this.next = doNothing;
+        this.find = VPL_Util.doNothing;
+        this.replace = VPL_Util.doNothing;
+        this.next = VPL_Util.doNothing;
         this.getAnnotations = function() {
             return [];
         };
-        this.setAnnotations = doNothing;
-        this.clearAnnotations = doNothing;
-        this.langSelection = doNothing;
+        this.setAnnotations = VPL_Util.doNothing;
+        this.setFontSize = VPL_Util.doNothing;
+        this.clearAnnotations = VPL_Util.doNothing;
+        this.langSelection = VPL_Util.doNothing;
+        this.isBinary = function() {
+            return false;
+        };
         this.extendToCodeEditor = function() {
             var editor = null;
             var session = null;
@@ -172,6 +175,11 @@
                     editor.destroy();
                 }
                 this.oldDestroy();
+            };
+            this.setFontSize = function(size) {
+                if (opened) {
+                    editor.setFontSize(size);
+                }
             };
             this.oldAdjustSize = this.adjustSize;
             this.adjustSize = function() {
@@ -284,9 +292,15 @@
                 }
                 session.setMode("ace/mode/" + lang);
             };
+            this.getEditor = function() {
+                if (!opened) {
+                    return false;
+                }
+                return editor;
+            };
             this.open = function() {
                 if (opened) {
-                    return;
+                    return false;
                 }
                 ace.require("ext/language_tools");
                 opened = true;
@@ -347,12 +361,14 @@
                 $JQVPL(tid + ' div.ace_content').on('dragover', file_manager.dragoverHandler);
                 // size adjust
                 this.adjustSize();
+                return editor;
             };
             this.close = function() {
                 opened = false;
-                if (editor !== null) {
+                if (editor === null) {
                     return;
                 }
+                value = editor.getValue();
                 editor.destroy();
                 editor = null;
                 session = null;
@@ -360,6 +376,9 @@
         };
 
         this.extendToBinary = function() {
+            this.isBinary = function() {
+                return true;
+            };
             this.setContent = function(c) {
                 modified = true;
                 value = c;
@@ -367,18 +386,12 @@
                 this.updateDataURL();
             };
             this.updateDataURL = function() {
-                var blob = new Blob([ value ], {
-                    type : VPL_Util.getMIME(fileName)
-                });
-                var fr = new FileReader();
-                fr.onload = function(e) {
-                    try {
-                        $JQVPL(tid).find('img').attr('src', e.target.result);
-                    } catch (e) {
-                        $JQVPL(tid).find('img').attr('src', '');
-                    }
-                };
-                fr.readAsDataURL(blob);
+                if(VPL_Util.isImage(fileName)){
+                    var prevalue='data:'+VPL_Util.getMIME(fileName)+';base64,';
+                    $JQVPL(tid).find('img').attr('src', prevalue+value);                    
+                } else {
+                    $JQVPL(tid).find('img').attr('src', '');
+                }
             };
             this.adjustSize = function() {
                 if (!opened) {
@@ -406,6 +419,7 @@
                     $JQVPL(tid).addClass('vpl_ide_binary').text(VPL_Util.str('binaryfile'));
                 }
                 this.setFileName(fileName);
+                return false;
             };
             this.close = function() {
                 opened = false;
