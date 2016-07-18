@@ -7,19 +7,26 @@
 
 #load common script and check programs
 . common_script.sh
-check_program php5
+check_program php5 php
+PHP=$PROGRAM
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
-	echo "php -v" >> vpl_execution
+	echo "$PHP -v" >> vpl_execution
 	chmod +x vpl_execution
 	exit
 fi
-check_program x-www-browser
+check_program x-www-browser firefox
+BROWSER=$PROGRAM
 if [ -f index.php ] ; then
+	PHPCONFIGFILE=$($PHP -i 2>/dev/null | grep "Loaded Configuration File" | sed 's/^[^\/]*//' )
+	if [ "$PHPCONFIGFILE" == "" ] ; then
+		touch .php.ini
+	else
+		cp $PHPCONFIGFILE .php.ini	
+	fi
     #Configure session
 	SESSIONPATH=$HOME/.php_sessions
 	mkdir $SESSIONPATH
-	cp /etc/php5/cli/php.ini .php.ini
 	#Generate php.ini
 	cat >> .php.ini <<END_OF_INI
 	
@@ -28,6 +35,7 @@ error_reporting=E_ALL
 display_errors=On
 display_startup_errors=On
 END_OF_INI
+
     #Generate router
     cat >> .router.php << 'END_OF_PHP'
 <?php $path=urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
@@ -47,19 +55,19 @@ header(':', true, 404);
 <body><h1>404 Not found</h1><p>The requested resource <code><?php echo "'$pclean'"; ?></code> 
 was not found on this server</body></html>
 END_OF_PHP
-    cat > vpl_wexecution <<"END_OF_SCRIPT"
-#!/bin/bash
 while true; do
    	PHPPORT=$((6000+$RANDOM%25000))
-   	lsof -i :$PHPPORT
+   	netstat -tln | grep -q ":$PHPPORT "
    	[ "$?" != "0" ] && break
 done
-php -c .php.ini -S "127.0.0.1:$PHPPORT" .router.php &
-x-www-browser "127.0.0.1:$PHPPORT"
+cat > vpl_wexecution <<END_OF_SCRIPT
+#!/bin/bash
+$PHP -c .php.ini -S "127.0.0.1:$PHPPORT" .router.php &
+$BROWSER "127.0.0.1:$PHPPORT"
 END_OF_SCRIPT
     chmod +x vpl_wexecution
 else
     cat common_script.sh > vpl_execution
-    echo "php -n -f $VPL_SUBFILE0" >>vpl_execution
+    echo "$PHP -n -f $VPL_SUBFILE0" >>vpl_execution
     chmod +x vpl_execution
 fi
