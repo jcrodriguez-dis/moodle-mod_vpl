@@ -15,23 +15,45 @@ fi
 rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 #functions
 function get_source_files {
+	local ext
 	SOURCE_FILES=""
+	SOURCE_FILES_LINE=""
 	for ext in "$@"
 	do
-	    source_files_ext="$(find . -name "*.$ext" -printf "%f?" | sed 's/^.\///g' | sed 's/ /\\ /g' | sed 's/\?/ /g')"
-	    SOURCE_FILES="$SOURCE_FILES $source_files_ext"
+	    local source_files_ext="$(find . -name "*.$ext" -print | sed 's/^.\///g' | sed 's/ /\\ /g')"
+	    if [ "$SOURCE_FILES_LINE" == "" ] ; then
+	        SOURCE_FILES_LINE="$source_files_ext"
+	    else
+	        SOURCE_FILES_LINE=$(echo -en "$SOURCE_FILES_LINE\n$source_files_ext")
+	    fi
+	    local source_files_ext_s="$(find . -name "*.$ext" -print | sed 's/^.\///g')"
+	    if [ "$SOURCE_FILES" == "" ] ; then
+	        SOURCE_FILES="$source_files_ext_s"
+	    else
+	        SOURCE_FILES=$(echo -en "$SOURCE_FILES\n$source_files_ext_s")
+	    fi
 	done
 }
 
 function check_program {
-	PROPATH=$(command -v $1)
-	if [ "$PROPATH" == "" ] ; then
-		echo "The execution server needs to install \"$1\" to run this type of program"
-		exit 0;
-	fi
+	PROGRAM=
+	for check in "$@"
+	do
+		local PROPATH=$(command -v $check)
+		if [ "$PROPATH" == "" ] ; then
+			continue
+		fi
+		PROGRAM=$PROPATH
+		return 0
+	done
+	echo "The execution server needs to install \"$1\" to run this type of program"
+	exit 0;
 }
+
 #Decode BASE64 files
 get_source_files b64
+SAVEIFS=$IFS
+IFS=$(echo -en "\n\b")
 for FILENAME in $SOURCE_FILES
 do
 	if [ -f "$FILENAME" ] ; then
@@ -51,6 +73,7 @@ do
 		break
 	fi
 done
+IFS=$SAVEIFS
 if $VPL_NS ; then
 	if [ -x pre_vpl_run.sh ] ; then
 		./pre_vpl_run.sh
