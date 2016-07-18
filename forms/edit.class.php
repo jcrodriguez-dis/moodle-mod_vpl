@@ -29,7 +29,34 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
 class mod_vpl_edit{
-    public static function files2object($arrayfiles) {
+    public static function filesfromide(& $postfiles) {
+        $files = Array ();
+        foreach ($postfiles as $file) {
+            if( $file->encoding == 1 ) {
+                $files [$file->name] = base64_decode( $file->contents );
+            } else{
+                $files [$file->name] = $file->contents;
+            }
+        }
+        return $files;
+    }
+    public static function filestoide(& $from) {
+        $files = Array ();
+        foreach ($from as $name => $data) {
+             $file = new stdClass();
+             $file->name = $name;
+             if( vpl_is_binary($name, $data) ) {
+                 $file->contents = base64_encode( $data );
+                 $file->encoding = 1;
+             } else {
+                 $file->contents = $data;
+                 $file->encoding = 0;
+             }
+            $files [] = $file;
+        }
+        return $files;
+    }
+    public static function files2object(& $arrayfiles) {
         $files = array ();
         foreach ($arrayfiles as $name => $data) {
             $file = array (
@@ -41,9 +68,9 @@ class mod_vpl_edit{
         return $files;
     }
 
-    public static function save($vpl, $userid, $files) {
+    public static function save($vpl, $userid, & $files, $comments='') {
         global $USER;
-        if ($subid = $vpl->add_submission( $userid, $files, '', $errormessage )) {
+        if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
             $id = $vpl->get_course_module()->id;
             \mod_vpl\event\submission_uploaded::log( array (
                     'objectid' => $subid,
@@ -57,15 +84,7 @@ class mod_vpl_edit{
 
     public static function get_requested_files($vpl) {
         $reqfgm = $vpl->get_required_fgm();
-        $reqfilelist = $reqfgm->getFileList();
-        $nf = count( $reqfilelist );
-        $files = Array ();
-        for ($i = 0; $i < $nf; $i ++) {
-            $filename = $reqfilelist [$i];
-            $filedata = $reqfgm->getFileData( $reqfilelist [$i] );
-            $files [$filename] = $filedata;
-        }
-        return $files;
+        return $reqfgm->getallfiles();
     }
     public static function get_submitted_files($vpl, $userid, & $compilationexecution) {
         $compilationexecution = false;
@@ -73,19 +92,32 @@ class mod_vpl_edit{
         if ($lastsub) {
             $submission = new mod_vpl_submission( $vpl, $lastsub );
             $fgp = $submission->get_submitted_fgm();
-            $filelist = $fgp->getFileList();
-            $nf = count( $filelist );
-            for ($i = 0; $i < $nf; $i ++) {
-                $filename = $filelist [$i];
-                $filedata = $fgp->getFileData( $filelist [$i] );
-                $files [$filename] = $filedata;
-            }
+            $files = $fgp->getallfiles();
             $compilationexecution = $submission->get_CE_for_editor();
         } else {
             $files = self::get_requested_files( $vpl );
         }
         return $files;
     }
+    public static function load($vpl, $userid) {
+        $response = new stdClass();
+        $response->id = 0;
+        $response->comments = '';
+        $response->compilationexecution = false;
+        $lastsub = $vpl->last_user_submission( $userid );
+        if ($lastsub) {
+            $submission = new mod_vpl_submission( $vpl, $lastsub );
+            $fgp = $submission->get_submitted_fgm();
+            $response->id .= $lastsub->id;
+            $response->comments .= $lastsub->comments;
+            $response->files = $fgp->getallfiles();
+            $response->compilationexecution = $submission->get_CE_for_editor();
+        } else {
+            $response->files = self::get_requested_files( $vpl );
+        }
+        return $response;
+    }
+
     public static function execute($vpl, $userid, $action, $options = array()) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );
