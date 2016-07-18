@@ -594,9 +594,8 @@ class mod_vpl {
         }
         $lr = count( $list );
         $lad = count( $alldata );
-        for ($i = 0; $i < $lad; $i ++) {
-            $name = $alldata [$i] ['name'];
-            $data = $alldata [$i] ['data'];
+        $i = 0;
+        foreach ($alldata as $name => $data) {
             if (strlen( $data ) > $max) {
                 $error .= '"' . s( $name ) . '" ' . get_string( 'maxfilesizeexceeded', VPL ) . "<br />";
             }
@@ -609,6 +608,7 @@ class mod_vpl {
                 $a->found = $name;
                 $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br />";
             }
+            $i++;
         }
         return strlen( $error ) == 0;
     }
@@ -1241,11 +1241,8 @@ class mod_vpl {
      */
     public function print_heading_with_help($action) {
         global $OUTPUT;
-        if (self::$headerisout) {
-            return;
-        }
         $title = get_string( $action, VPL ) . ': ' . $this->get_printable_name();
-        echo $OUTPUT->heading_with_help( $title, $action, 'vpl' );
+        echo $OUTPUT->heading_with_help( $title, $action, 'vpl', 'icon' );
         self::$headerisout = true;
     }
 
@@ -1423,9 +1420,13 @@ class mod_vpl {
                         $string = get_string( 'listsimilarity', VPL );
                         $tabs [] = new tabobject( 'listsimilarity.php', '', $string, $string );
                     }
-                    $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
-                    $string = get_string( 'listwatermarks', VPL );
-                    $tabs [] = new tabobject( 'listwatermark.php', $href, $string, $string );
+                    $plugincfg = get_config('mod_vpl');
+                    $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
+                    if ($watermark) {
+                        $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
+                        $string = get_string( 'listwatermarks', VPL );
+                        $tabs [] = new tabobject( 'listwatermark.php', $href, $string, $string );
+                    }
                     $href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $cmid );
                     $string = get_string( 'downloadallsubmissions', VPL );
                     $tabs [] = new tabobject( 'downloadallsubmissions.php', $href, $string, $string );
