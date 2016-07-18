@@ -32,6 +32,8 @@ try {
     require_once(dirname( __FILE__ ) . '/../../../config.php');
     require_once(dirname( __FILE__ ) . '/../locallib.php');
     require_once(dirname( __FILE__ ) . '/../vpl.class.php');
+    require_once(dirname( __FILE__ ) . '/edit.class.php');
+
     if (! isloggedin()) {
         throw new Exception( get_string( 'loggedinnot' ) );
     }
@@ -50,19 +52,17 @@ try {
     $data = json_decode( file_get_contents( 'php://input' ) );
     switch ($action) {
         case 'save' :
-            $postfiles = ( array ) $data;
-            $reqfgm = $vpl->get_required_fgm();
-            $reqfilelist = $reqfgm->getFileList();
-            // TODO Make new file_group operation to do it better.
-            for ($i = count( $reqfilelist ) - 1; $i >= 0; $i --) {
-                $reqfgm->deleteFile( $i );
-            }
-            foreach ($postfiles as $name => $data) {
-                $reqfgm->addFile( $name, vpl_decode_binary( $name, $data ) );
-            }
+            $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
+            $fgm = $vpl->get_required_fgm();
+            $fgm->deleteallfiles();
+            $fgm->addallfiles($postfiles);
+            break;
+        case 'load' :
+            $fgm = $vpl->get_required_fgm();
+            $outcome->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
             break;
         default :
-            throw new Exception( 'ajax action error' );
+            throw new Exception( 'ajax action error: ' + $action );
     }
 } catch ( Exception $e ) {
     $outcome->success = false;
