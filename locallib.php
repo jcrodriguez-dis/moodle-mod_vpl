@@ -706,6 +706,7 @@ function vpl_truncate_running_processes($instance) {
     vpl_truncate_string( $instance->server, 255 );
 }
 function vpl_truncate_jailservers($instance) {
+    vpl_truncate_string( $instance->laststrerror, 255 );
     vpl_truncate_string( $instance->server, 255 );
 }
 /**
