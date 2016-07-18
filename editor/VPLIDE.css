@@ -85,6 +85,12 @@
     text-shadow: 1px 0px 1px gray, 0px 1px 1px gray, 0px -1px 1px gray, -1px
         0px 1px gray;
 }
+div.vpl_ide_dialog_content {
+    width: 350px;
+    height: 250px;
+    overflow: scroll;
+}
+
 
 .vpl_ide_closeicon:hover {
     color: gray;
@@ -249,4 +255,19 @@ pre.vpl_terminal {
     font: 1em/1.2 monospace;
     font-size: 12px;
     display: inline-block;
+}
+.vpl_buttonleft_orange {
+	background-color : orange;
+	color : white;
+	font-weight: bold;
+}
+.vpl_buttonleft_red {
+	background-color : red;
+	color : white;
+	font-weight: bold;
+}
+.vpl_buttonleft_black {
+	background-color : black;
+	color : white;
+	font-weight: bold;
 }
