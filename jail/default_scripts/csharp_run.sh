@@ -24,7 +24,7 @@ if [ -f output.exe ] ; then
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
 	echo "mono output.exe" >> vpl_execution
 	chmod +x vpl_execution
-	grep -E "System\.Windows\.Forms" output.exe 2>&1 >/dev/null
+	grep -E "System\.Windows\.Forms" output.exe &>/dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 	fi
