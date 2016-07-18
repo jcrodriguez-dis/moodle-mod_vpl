@@ -22,7 +22,7 @@ else
 	#avoid conflict with C++ compilation
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
 	#Prepare run
-	./vpl_run.sh >>vpl_compilation_error.txt 2>&1
+	./vpl_run.sh &>>vpl_compilation_error.txt
 	cat vpl_compilation_error.txt
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution vpl_test
@@ -61,4 +61,3 @@ else
 	fi
 	chmod +x vpl_execution
 fi
-
