@@ -266,22 +266,39 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
     global $CFG, $USER, $DB;
     $grader = false;
     $vpl = new mod_vpl( $cmid );
-    $modinfo = & get_fast_modinfo( $vpl->get_course() );
-    $cm = $modinfo->cms [$cmid];
-    if ($vpl->is_visible()) {
-        $vplid = $vpl->get_instance()->id;
-        $grader = $vpl->has_capability( VPL_GRADE_CAPABILITY );
-    } else {
+    $modinfo = get_fast_modinfo( $vpl->get_course() );
+    $cm = $modinfo->get_cm($cmid);
+    $vplid = $vpl->get_instance()->id;
+    $grader = $vpl->has_capability( VPL_GRADE_CAPABILITY );
+    if (! $vpl->is_visible() && ! $grader) {
         return;
     }
-    $select = '(vpl = ?)';
-    $select .= ' and ((datesubmitted >= ?) or (dategraded >= ?))';
-    $parms = array ( $vplid, $timestart, $timestart );
-    if (! $grader) { // Own activity.
-        array_unshift( $parms, $USER->id );
-        $select = '(userid = ?) and ' . $select;
+    $select = 'select * from {vpl_submissions} subs';
+    $where = ' where (subs.vpl = :vplid) and ((subs.datesubmitted >= :timestartsub) or (subs.dategraded >= :timestartgrade))';
+    $parms = array ( 'vplid' => $vplid, 'timestartsub' => $timestart, 'timestartgrade' => $timestart);
+    if (! $grader || ($userid != 0)) { // User activity.
+        if ( ! $grader ) {
+            $userid = $USER->id;
+        }
+        $parms['userid'] = $userid;
+        $where .= ' and (subs.userid = :userid)';
     }
-    $subs = $DB->get_records_select( VPL_SUBMISSIONS, $select, $parms, 'datesubmitted DESC' );
+    if ($groupid != 0) { // Group activity.
+        $parms['groupid'] = $groupid;
+        $select .= ' join {groups_members} gm on gm.userid=subs.userid ';
+        $where .= ' and gm.groupid = :groupid';
+    }
+    $where .= ' order by subs.datesubmitted DESC';
+    $subs = $DB->get_records_sql( $select . $where , $parms);
+    if ($grader) {
+        require_once($CFG->libdir.'/gradelib.php');
+        $userids = array();
+        foreach ($subs as $sub) {
+            $userids[] = $sub->userid;
+        }
+        $grades = grade_get_grades($courseid, 'mod', 'vpl', $cm->instance, $userids);
+    }
+
     $aname = format_string( $vpl->get_printable_name(), true );
     foreach ($subs as $sub) { // Show recent activity.
         $activity = new stdClass();
@@ -290,8 +307,8 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
         $activity->name = $aname;
         $activity->sectionnum = $cm->sectionnum;
         $activity->timestamp = $sub->datesubmitted;
-        if ($grader) {
-            $activity->grade = $sub->grade;
+        if ($grader && isset($grades->items[0]) && isset($grades->items[0]->grades[$sub->userid])) {
+            $activity->grade = $grades->items[0]->grades[$sub->userid]->str_long_grade;
         }
         $activity->user = $DB->get_record( 'user', array ( 'id' => $sub->userid ) );
         $activities [$index ++] = $activity;
@@ -302,13 +319,28 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
 function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
     // TODO improve.
     global $CFG, $OUTPUT;
-    echo '<table border="0" cellpadding="3" cellspacing="0" class="forum-recent">';
-    echo "<tr><td class=\"userpicture\" valign=\"top\">";
+    echo '<table border="0" cellpadding="3" cellspacing="0" class="vpl-recent">';
+    echo '<tr><td class="userpicture" valign="top">';
     echo $OUTPUT->user_picture( $activity->user );
     echo '</td><td>';
+    if ($detail) {
+        $modname = $modnames[$activity->type];
+        echo '<div class="title">';
+        echo '<img src="' . $OUTPUT->pix_url('icon', 'vpl') . '" ' . 'class="icon" alt="' . $modname . '">';
+        echo '<a href="' . $CFG->wwwroot . '/mod/vpl/view.php?id=' . $activity->cmid . '">';
+        echo $activity->name;
+        echo '</a>';
+        echo '</div>';
+    }
+    if (isset($activity->grade)) {
+        echo '<div class="grade">';
+        echo get_string('grade').': ';
+        echo $activity->grade;
+        echo '</div>';
+    }
     echo '<div class="user">';
     $fullname = fullname( $activity->user, $viewfullnames );
-    echo "<a href=\"$CFG->wwwroot/user/view.php?id={$activity->user->id}&amp;course=$courseid\">" . "{$fullname}</a> - ";
+    echo "<a href=\"{$CFG->wwwroot}/user/view.php?id={$activity->user->id}&amp;course=$courseid\">" . "{$fullname}</a> - ";
     $link = vpl_mod_href( 'forms/submissionview.php', 'id', $activity->cmid, 'userid', $activity->user->id, 'inpopup', 1 );
     echo '<a href="' . $link . '">' . userdate( $activity->timestamp ) . '</a>';
     echo '</div>';
