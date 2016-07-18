@@ -23,7 +23,7 @@
  */
 
 // Terminal constructor
-VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus){
+VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus) {
     var tdialog = $JQVPL('#' + dialog_id);
     var label1 = tdialog.find('.vpl_clipboard_label1');
     var label2 = tdialog.find('.vpl_clipboard_label2');
@@ -31,10 +31,10 @@ VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus)
     var entry2 = tdialog.find('.vpl_clipboard_entry2');
     label1.html(hlabel1);
     label2.html(hlabel2);
-    if(action1) {
+    if (action1) {
         label1.button().click(action1);
     }
-    if(action2) {
+    if (action2) {
         label2.button().click(action2);
     }
     tdialog.dialog({
@@ -46,8 +46,8 @@ VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus)
         resizable : true,
         dialogClass : 'vpl_ide',
     });
-    if ( onFocus ){
-        tdialog.on( "click",onFocus);
+    if (onFocus) {
+        tdialog.on("click", onFocus);
     }
     this.show = function() {
         tdialog.dialog('open');
@@ -69,26 +69,26 @@ VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus)
         return entry2.val();
     };
     var titleTag = tdialog.siblings().find('.ui-dialog-title');
-    var clipboardTitle =  VPL_Util.gen_icon('clipboard','sw');
-    clipboardTitle +=  ' '+VPL_Util.str('clipboard');
+    var clipboardTitle = VPL_Util.gen_icon('clipboard', 'sw');
+    clipboardTitle += ' ' + VPL_Util.str('clipboard');
     titleTag.html(clipboardTitle);
-    tdialog.parent().css('overflow',''); //Fix problem with JQuery
+    tdialog.parent().css('overflow', ''); // Fix problem with JQuery
 };
 
 VPL_Terminal = function(dialog_id, terminal_id, str) {
     var self = this;
-    var ws;
+    var ws = null;
     var onCloseAction = function() {
     };
     var title = '';
     var message = '';
     var tdialog = $JQVPL('#' + dialog_id);
-    var titleText;
+    var titleText = '';
     var clipboard = null;
     var cliboardMaxsize = 64000;
     var clipboardData = '';
     var textWritten = '';
-    
+
     var terminal = new Terminal({
         cols : 80,
         rows : 24,
@@ -119,23 +119,23 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
     };
     function receiveClipboard(data) {
         clipboardData += data;
-        if(clipboardData.length > cliboardMaxsize){
-            var from=clipboardData.length - cliboardMaxsize/2;
+        if (clipboardData.length > cliboardMaxsize) {
+            var from = clipboardData.length - cliboardMaxsize / 2;
             clipboardData = clipboardData.substr(from);
         }
-    };
+    }
     function pasteClipboard() {
         if (ws && ws.readyState == ws.OPEN) {
             ws.send(clipboard.getEntry2());
         }
-    };
+    }
     function updateClipboard() {
         clipboard.setEntry1(clipboardData);
-    };
+    }
     function openClipboard() {
         updateClipboard();
         clipboard.show();
-    };
+    }
 
     this.connect = function(server, onClose) {
         onCloseAction = onClose;
@@ -189,11 +189,12 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
         }
         onCloseAction();
     };
-    var HTMLUpdateClipboard=VPL_Util.gen_icon('copy', 'sw')+' ' + str('copy');
-    var HTMLPaste=VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
-    clipboard = new VPL_Clipboard('vpl_dialog_terminal_clipboard',
-                                    HTMLUpdateClipboard, function(){updateClipboard(); document.execCommand('copy');},
-                                    HTMLPaste, pasteClipboard);
+    var HTMLUpdateClipboard = VPL_Util.gen_icon('copy', 'sw') + ' ' + str('copy');
+    var HTMLPaste = VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
+    clipboard = new VPL_Clipboard('vpl_dialog_terminal_clipboard', HTMLUpdateClipboard, function() {
+        updateClipboard();
+        document.execCommand('copy');
+    }, HTMLPaste, pasteClipboard);
 
     tdialog.dialog({
         closeOnEscape : false,
@@ -206,10 +207,11 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
         },
         modal : true,
         dialogClass : 'vpl_ide vpl_vnc',
-        create: function() {
-            titleText = VPL_Util.setTitleBar(tdialog,'console','console',
-                    ['clipboard','keyboard'],
-                    [openClipboard,function(){terminal.focus();}]);
+        create : function() {
+            titleText = VPL_Util.setTitleBar(tdialog, 'console', 'console', [ 'clipboard', 'keyboard' ], [ openClipboard,
+                    function() {
+                        terminal.focus();
+                    } ]);
         },
         close : function() {
             clipboard.hide();
@@ -255,17 +257,17 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
     VNCDialog.append(inputarea);
     var resetValue = "_________________________________________________________";
     var lastValue = resetValue;
-    function readInput(){
+    function readInput() {
         var value = inputarea.value;
-        if(value == lastValue && value == resetValue) {
+        if (value == lastValue && value == resetValue) {
             return;
         }
-        var l = Math.min(value.length,lastValue.length);
+        var l = Math.min(value.length, lastValue.length);
         var mod = 0;
-        for ( mod = 0; mod < l ; mod++){
-            if (value.charAt(i) != lastValue.charAt(i)){
+        for (mod = 0; mod < l; mod++) {
+            if (value.charAt(i) != lastValue.charAt(i)) {
                 break;
-            } 
+            }
         }
         for (var i = lastValue.length - 1; i >= value.length; i--) {
             self.sendBackspace();
@@ -274,14 +276,16 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             self.send(value.substr(mod));
         }
         lastValue = value;
-        if(value.length > 500 || value.length == 0) {
+        if (value.length > 500 || value.length == 0) {
             inputarea.blur();
             setTimeout(function() {
                 inputarea.focus();
                 inputarea.value = resetValue;
                 lastValue = resetValue;
-                try { inputarea.setSelectionRange(resetValue.length, resetValue.length); }
-                catch (err) {}
+                try {
+                    inputarea.setSelectionRange(resetValue.length, resetValue.length);
+                } catch (err) {
+                }
             }, 10);
         }
     }
@@ -320,53 +324,51 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             }
         });
     }
-    
-    function keyboardButton(){
-        if($JQVPL(inputarea).is(':focus')){
+
+    function keyboardButton() {
+        if ($JQVPL(inputarea).is(':focus')) {
             inputarea.blur();
-        }else{
+        } else {
             inputarea.focus();
         }
     }
     function pasteClipboard() {
-        if ( self.isConnected()) {
+        if (self.isConnected()) {
             rfb.clipboardPasteFrom(clipboard.getEntry2());
         }
-    };
-    function receiveClipboard(rfb,text) {
+    }
+    function receiveClipboard(rfb, text) {
         clipboard.setEntry1(text);
-    };
+    }
     function openClipboard() {
         clipboard.show();
-    };
+    }
     function getFocus() {
-        if(self.isConnected()){
+        if (self.isConnected()) {
             rfb.get_keyboard().set_focused(true);
         }
-    };
+    }
     function lostFocus() {
-        if(self.isConnected()){
+        if (self.isConnected()) {
             rfb.get_keyboard().set_focused(false);
         }
-    };
+    }
     function copyAction() {
         clipboard.setEntry1(clipboard.getEntry1());
         document.execCommand('copy');
-    };
-    var HTMLUpdateClipboard=VPL_Util.gen_icon('copy', 'sw')+' ' + str('copy');
-    var HTMLPaste=VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
-    clipboard = new VPL_Clipboard('vpl_dialog_vnc_clipboard',
-                                    HTMLUpdateClipboard, copyAction,
-                                    HTMLPaste, pasteClipboard,lostFocus);
-    canvas.on('click', function(e){
-        if(e.target == canvas[0]) {
+    }
+    var HTMLUpdateClipboard = VPL_Util.gen_icon('copy', 'sw') + ' ' + str('copy');
+    var HTMLPaste = VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
+    clipboard = new VPL_Clipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard, lostFocus);
+    canvas.on('click', function(e) {
+        if (e.target == canvas[0]) {
             getFocus();
         } else {
             lostFocus();
         }
     });
-    function displayResize(){ // TODO hot screen resize
-        if(self.isConnected()){
+    function displayResize() { // TODO hot screen resize
+        if (self.isConnected()) {
             var w = VNCDialog.width();
             var h = VNCDialog.height();
             self.setCanvasSize(w, h);
@@ -380,17 +382,16 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
         width : 'auto',
         height : 'auto',
         dialogClass : 'vpl_ide vpl_vnc',
-        create: function() {
-            titleText = VPL_Util.setTitleBar(VNCDialog,'vnc','graphic',
-                    ['clipboard','keyboard'],
-                    [openClipboard,keyboardButton]);
+        create : function() {
+            titleText = VPL_Util.setTitleBar(VNCDialog, 'vnc', 'graphic', [ 'clipboard', 'keyboard' ], [ openClipboard,
+                    keyboardButton ]);
         },
-        focus: getFocus,
+        focus : getFocus,
         beforeClose : function() {
-            if(needResize){
+            if (needResize) {
                 var w = VNCDialog.width();
                 var h = VNCDialog.height();
-                needResize =false;
+                needResize = false;
                 self.setCanvasSize(w, h);
             }
         },
@@ -455,7 +456,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
                 'onPasswordRequired' : null,
                 'onClipboard' : receiveClipboard
             });
-             rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
+            rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
         }
         if (!port) {
             port = secure ? 443 : 80;
