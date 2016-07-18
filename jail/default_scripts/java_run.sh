@@ -14,9 +14,16 @@ function getClassName {
 }
 function getClassFile {
 	#remove file extension .java
-	CLASSNAME=$(basename "$1" .java)
-	echo "$CLASSNAME.class"
+	local CLASSNAME=$(basename "$1" .java)
+	local DIRNAME=$(dirname "$1")
+	echo "$DIRNAME/$CLASSNAME.class"
 }
+function hasMain {
+	local FILE=$(getClassFile "$1")
+	local CLASSNAME=$(getClassName "$1")
+	local COMPNAME=$(echo "$1" |sed 's/\./\\/g')
+}
+
 #load common script and check programs
 . common_script.sh
 
@@ -44,7 +51,7 @@ fi
 MAINCLASS=
 for FILENAME in $SOURCE_FILES
 do
-	egrep "void[ \t]+main[ \t]*\(" $FILENAME 2>&1 >/dev/null
+	egrep "void[ \t]+main[ \t]*\(" $FILENAME &> /dev/null
 	if [ "$?" -eq "0" ]	; then
 		MAINCLASS=$(getClassName "$FILENAME")
 		break
@@ -53,7 +60,7 @@ done
 if [ "$MAINCLASS" = "" ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
-		egrep "void[ \t]+main[ \t]*\(" $FILENAME 2>&1 >/dev/null
+		egrep "void[ \t]+main[ \t]*\(" $FILENAME &> /dev/null
 		if [ "$?" -eq "0" ]	; then
 			MAINCLASS=$(getClassName "$FILENAME")
 			break
@@ -66,7 +73,7 @@ if [ "$MAINCLASS" = "" ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
 		CLASSFILE=$(getClassFile "$FILENAME")
-		grep "org/junit/" $CLASSFILE 2>&1 >/dev/null
+		grep "org/junit/" $CLASSFILE &> /dev/null
 		if [ "$?" -eq "0" ]	; then
 			TESTCLASS=$(getClassName "$FILENAME")
 			break
@@ -88,7 +95,7 @@ chmod +x vpl_execution
 for FILENAME in $SOURCE_FILES
 do
 	CLASSFILE=$(getClassFile "$FILENAME")
-	grep -E "javax/swing/(JFrame|JDialog|JOptionPane|JApplet)" $CLASSFILE 2>&1 >/dev/null
+	grep -E "javax/swing/(JFrame|JDialog|JOptionPane|JApplet)" $CLASSFILE &> /dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 		break
