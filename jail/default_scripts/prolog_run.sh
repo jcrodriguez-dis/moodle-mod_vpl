@@ -14,15 +14,9 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-swipl -q -s $VPL_SUBFILE0 -t halt
+swipl -q -s $VPL_SUBFILE0 -t halt 1 > /dev/null < /dev/null
 cat common_script.sh > vpl_execution
-if [ "$1" != "batch" ] ; then
-	echo "swipl -q -L32M -s $VPL_SUBFILE0" >>vpl_execution
-else
-	predicate=$(basename $VPL_SUBFILE0 .pro)
-	echo "$predicate ." > .swi_pred
-	echo "halt." >> .swi_pred
-	echo "swipl -q -L32M -s $VPL_SUBFILE0 < .swi_pred" >>vpl_execution
-fi
+echo "swipl -q -L32M -s $VPL_SUBFILE0" >>vpl_execution
 
 chmod +x vpl_execution
+
