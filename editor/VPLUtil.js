@@ -17,13 +17,15 @@
  * Tools for IDE and related
  * 
  * @package mod_vpl
- * @copyright 2013 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2016 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 (function() {
-    // Get scrollBarWidth
     VPL_Util = {};
+    VPL_Util.doNothing = function() {
+    };
+    // Get scrollBarWidth
     VPL_Util.scrollBarWidth = function() {
         var parent, child, width;
         parent = $JQVPL('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
@@ -109,17 +111,20 @@
             return !(regInvalidFileName.test(fileName));
         };
     })();
+    VPL_Util.getCurrentTime = function() {
+        return parseInt((new Date()).valueOf() / 1000);
+    };
     VPL_Util.encodeBinary = function(name, data) {
         if (!VPL_Util.isBinary(name)) {
-            return btoa(data);
+            return btoa(unescape(encodeURIComponent(data)));
         }
         return btoa(VPL_Util.ArrayBuffer2String(data));
     };
 
     VPL_Util.decodeBinary = function(name, data) {
-        var decoded=atob(data);
+        var decoded = atob(data);
         if (!VPL_Util.isBinary(name)) {
-            return decoded;
+            return decodeURIComponent(escape(decoded));
         }
         return VPL_Util.String2ArrayBuffer(decoded);
     };
@@ -139,6 +144,9 @@
     VPL_Util.getFileName = function(path) {
         var dirs = path.split("/");
         return dirs[dirs.length - 1];
+    };
+    VPL_Util.dataFromURLData = function(data) {
+        return data.substr(data.indexOf(',')+1);
     };
     VPL_Util.readZipFile = function(data, save, progressBar) {
         var ab = VPL_Util.ArrayBuffer2String(data);
@@ -167,7 +175,7 @@
                     data = VPL_Util.String2ArrayBuffer(uncompressed);
                     if (VPL_Util.isBinary(fileName)) {
                         // If binary use as arrayBuffer
-                        save(fileName, data);
+                        save({name:fileName, contents:btoa(uncompressed), encoding:1});
                         progressBar.endFile();
                     } else {
                         blob = new Blob([ data ], {
@@ -175,7 +183,7 @@
                         });
                         fr = new FileReader();
                         fr.onload = function(e) {
-                            save(fileName, e.target.result);
+                            save({name:fileName, contents:e.target.result, encoding:0});
                             progressBar.endFile();
                         };
                         fr.readAsText(blob);
@@ -207,20 +215,30 @@
             }
             var f = filesToRead[sec];
             pb.processFile(f.name);
+            var binary = VPL_Util.isBinary(f.name);
             var reader = new FileReader();
             var ext = VPL_Util.fileExtension(f.name).toLowerCase();
             reader.onload = function(e) {
-                if (ext == 'zip') {
-                    VPL_Util.readZipFile(e.target.result, save, pb);
-                } else {
-                    save(f.name, e.target.result);
+                if (binary) {
+                    if (ext == 'zip') {
+                        VPL_Util.readZipFile(e.target.result, save, pb);
+                    } else {
+                        var data = VPL_Util.dataFromURLData(e.target.result);
+                        save({name:f.name, contents:data, encoding:1});
+                    }
+                } else{
+                    save({name:f.name, contents:e.target.result, encoding:0});                    
                 }
                 // Load next file
                 readSecuencial(sec + 1);
                 pb.endFile();
             };
-            if (VPL_Util.isBinary(f.name)) {
-                reader.readAsArrayBuffer(f);
+            if (binary) {
+                if (ext == 'zip') {
+                    reader.readAsArrayBuffer(f);
+                } else {
+                    reader.readAsDataURL(f);
+                }
             } else {
                 reader.readAsText(f);
             }
@@ -242,6 +260,32 @@
                 return MIME[ext];
             }
             return 'application/octet-stream';
+        };
+        VPL_Util.getTimeLeft = function(timeLeft) {
+            var res = '';
+            var minute = 60;
+            var hour = 60 * minute;
+            var day = 24 * hour;
+            if (timeLeft < 0) {
+                res += '-';
+                timeLeft = -timeLeft;
+            }
+            var days = parseInt(timeLeft / day);
+            timeLeft -= days * day;
+            if (days != 0) {
+                res += days + 'T';
+            }
+            var hours = parseInt(timeLeft / hour);
+            timeLeft -= hours * hour;
+            var minutes = parseInt(timeLeft / minute);
+            timeLeft -= minutes * minute;
+            var seconds = parseInt(timeLeft);
+            res += ('00' + hours).substr(-2) + ':';
+            res += ('00' + minutes).substr(-2);
+            if (days == 0) {
+                res += ':' + ('00' + seconds).substr(-2);
+            }
+            return res;
         };
     })();
     (function() {
@@ -327,6 +371,15 @@
             for (var key in newi18n) {
                 i18n[key] = newi18n[key];
             }
+            VPL_Util.dialogbase_options = {
+                autoOpen : false,
+                minHeight : 10,
+                width : 'auto',
+                closeText : VPL_Util.str('cancel'),
+                modal : true,
+                dialogClass : 'vpl_ide vpl_ide_dialog'
+            };
+
         };
     })();
     (function() {
@@ -336,7 +389,7 @@
             var fs = func.toString();
             var res = reg.exec(fs);
             if (res === null) {
-               return fs; 
+                return fs;
             }
             return res[1];
         }
@@ -379,7 +432,7 @@
     VPL_Util.iconRequired = function() {
         var html = ' <span title="' + VPL_Util.str('required') + '" class="vpl_ide_charicon">';
         html += '<i class="fa fa-shield"></i>' + '</span> ';
-        return  html;
+        return html;
     };
     VPL_Util.iconFolder = function() {
         return '<i class="fa fa-folder-open-o"></i>';
@@ -392,6 +445,7 @@
             'rename' : 'pencil',
             'delete' : 'trash',
             'close' : 'remove',
+            'comments' : 'commenting',
             'import' : 'upload',
             'print' : 'print',
             'edit' : 'edit',
@@ -419,6 +473,7 @@
             'spinner' : 'refresh fa-spin',
             'keyboard' : 'keyboard-o',
             'clipboard' : 'clipboard',
+            'timeleft' : 'clock-o',
             'copy' : 'copy',
             'paste' : 'paste',
             'resize' : 'arrows-alt',
@@ -461,6 +516,7 @@
         for (var i = 0; i < handler.length; i++) {
             title.find('#vpl_' + type + '_' + buttons[i]).button().click(handler[i]);
         }
+        titleButtons.on('focus','*', function(){$JQVPL(this).blur();});
         return titleText;
     };
     VPL_Util.progressBar = function(title, message, onUserClose) {
@@ -515,14 +571,6 @@
         this.setLabel(VPL_Util.str(message));
         dialog.dialog('open');
         dialog.dialog('option', 'height', 'auto');
-    };
-    VPL_Util.dialogbase_options = {
-        autoOpen : false,
-        minHeight : 10,
-        width : 'auto',
-        closeText : VPL_Util.str('cancel'),
-        modal : true,
-        dialogClass : 'vpl_ide vpl_ide_dialog'
     };
     VPL_Util.showMessage = function(message, options) {
         var message_dialog = $JQVPL('<div class="vpl_ide_dialog"></div>');
@@ -631,6 +679,9 @@
     };
     VPL_Util.isFirefox = function() {
         return window.navigator.userAgent.indexOf('Firefox') > -1;
+    };
+    VPL_Util.isMac = function() {
+        return window.navigator.userAgent.indexOf('Mac') > -1;
     };
     VPL_Util.clickServer = function(e) {
         var w = 550;
@@ -758,7 +809,7 @@
             pb.close();
             if (coninfo.secure && ws.notOpen) {
                 VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl, function(response) {
-                    VPL_Util.acceptCertificates(servers, externalActions.getLastAction);
+                    VPL_Util.acceptCertificates(response.servers, externalActions.getLastAction);
                 }, showErrorMessage);
             } else {
                 showErrorMessage(VPL_Util.str('connection_fail'));
