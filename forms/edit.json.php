@@ -52,7 +52,7 @@ try {
     if ($_SERVER ['CONTENT_LENGTH'] != $rawdatasize) {
         throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER ['CONTENT_LENGTH'] . " found $rawdatasize)" );
     }
-    $data = json_decode( $rawdata );
+    $actiondata = json_decode( $rawdata );
     if (! $vpl->is_submit_able()) {
         throw new Exception( get_string( 'notavailable' ) );
     }
@@ -71,22 +71,26 @@ try {
     $instance = $vpl->get_instance();
     switch ($action) {
         case 'save' :
-            $postfiles = ( array ) $data;
-            $files = Array ();
-            foreach ($postfiles as $name => $contens) {
-                $files [] = array (
-                        'name' => $name,
-                        'data' => vpl_decode_binary( $name, $contens )
-                );
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            if (! isset($actiondata->comments) ) {
+                $actiondata->comments = '';
             }
-            mod_vpl_edit::save( $vpl, $userid, $files );
+            mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments );
+            if ( $instance->duedate > 0 ) {
+                $outcome->response->timeLeft = $instance->duedate - time();
+            }
             break;
         case 'resetfiles' :
             $files = mod_vpl_edit::get_requested_files( $vpl );
-            foreach ($files as $name => $contents) {
-                $files [$name] = vpl_encode_binary( $name, $contents );
+            $outcome->response->files = mod_vpl_edit::filestoide( $files );
+            break;
+        case 'load' :
+            $load = mod_vpl_edit::load( $vpl, $userid );
+            $load->files = mod_vpl_edit::filestoide( $load->files );
+            if ( $instance->duedate > 0 ) {
+                $outcome->response->timeLeft = $instance->duedate - time();
             }
-            $outcome->response->files = $files;
+            $outcome->response = $load;
             break;
         case 'run' :
         case 'debug' :
@@ -94,7 +98,7 @@ try {
             if (! $instance->$action and ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
-            $outcome->response = mod_vpl_edit::execute( $vpl, $userid, $action, $data );
+            $outcome->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );
             break;
         case 'retrieve' :
             $outcome->response = mod_vpl_edit::retrieve_result( $vpl, $userid );
@@ -106,7 +110,7 @@ try {
             $outcome->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
             break;
         default :
-            throw new Exception( 'ajax action error' );
+            throw new Exception( 'ajax action error: ' + $action );
     }
 } catch ( Exception $e ) {
     $outcome->success = false;
