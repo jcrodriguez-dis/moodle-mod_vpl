@@ -347,6 +347,7 @@
             'sh' : 'sh',
             'sql' : 'sql',
             'tcl' : 'tcl',
+            'v' : 'verilog',
             'vhd' : 'vhdl',
             'vhdl' : 'vhdl',
             'xml' : 'xml',
