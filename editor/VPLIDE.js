@@ -505,6 +505,7 @@
 				'sh' : 'sh',
 				'sql' : 'sql',
 				'tcl' : 'tcl',
+				'v': 'verilog',
 				'xml' : 'xml',
 				'yaml':'yaml'
 			};
