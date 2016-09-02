@@ -68,6 +68,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'prl' => 'perl',
             'php' => 'php',
             'py' => 'python',
+            'v' => 'verilog',
             'vhd' => 'vhdl',
             'vhdl' => 'vhdl',
             'r' => 'r',
