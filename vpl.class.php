@@ -1475,7 +1475,7 @@ class mod_vpl {
             require_once $CFG->libdir.'/gradelib.php';
             if($gie = $this->get_grade_info()){
                 if($gie->scaleid == 0){
-                    $info = get_string('grademax','core_grades').': '.vpl_rtzeros($gie->grademax);
+                    $info = get_string('grademax','core_grades').': '.format_float($gie->grademax,5,true,true);
                     $info .= $gie->hidden ? (' <b>'.get_string('hidden','core_grades')).'</b>':'';
                     $info .= $gie->locked ? (' <b>'.get_string('locked','core_grades')).'</b>':'';
                 }else{

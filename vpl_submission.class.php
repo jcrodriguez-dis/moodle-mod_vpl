@@ -298,7 +298,10 @@ class mod_vpl_submission {
         if($scaleid!=0){
             //Sanitize grade
             if($scaleid>0){
-                $info->grade = (float) $info->grade;
+                $floatn = unformat_float($info->grade);
+                if ( $floatn !== null and $floatn !== false ) {
+                    $info->grade = $floatn;
+                }
             }
             else{
                 $info->grade = (int) $info->grade;
@@ -477,8 +480,7 @@ class mod_vpl_submission {
             }
             if ($scaleid > 0) {
                 if($grade == null){
-                    //remove trailing zeros if needed
-                    $grade=vpl_rtzeros($inst->grade);
+                    $grade=format_float($inst->grade,5,true,true);
                 }
                 $ret = $grade.' / '.$scaleid;
             } elseif($scaleid < 0) {
