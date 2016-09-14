@@ -126,7 +126,8 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $sub->userid . '/' . $subid . '/';
         $this->process_groupfile ( $data, $path );
     }
+
     protected function after_execute() {
-        // Add choice related files, no need to match by itemname (just internally handled context).
+        $this->add_related_files('mod_vpl', 'intro', null);
     }
 }
