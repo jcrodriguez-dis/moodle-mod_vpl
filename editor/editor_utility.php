@@ -68,7 +68,7 @@ class vpl_editor_util {
         global $CFG;
         $tagid = 'vplide';
         $options ['i18n'] = self::i18n();
-        $options ['saved'] = ($saved || $options ['example']) ? 1 : 0;
+        $options ['saved'] = ($saved || $options ['example']) ? true : false;
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
