@@ -72,6 +72,22 @@ if ($vpl->has_capability( VPL_GRADE_CAPABILITY )) {
         echo '<h2>' . get_string( 'executionfiles', VPL ) . "</h2>\n";
         $fe->print_files( false );
     }
+
+    // print names of output files defined for this lab
+    $output_files = $vpl->get_output_files();
+    if (count($output_files) > 0) {
+        echo '<h2>'.get_string('outputfiles', VPL)."</h2>\n";
+        echo '<ul>';
+        foreach ($output_files as $filename) {
+            // distinguish between hidden and normal files
+            if (substr(basename($filename), 0, 1) == '.') {
+                echo '<li><i>'.s($filename).'</i></li>';
+            } else {
+                echo '<li><b>'.s($filename).'</b></li>';
+            }
+        }
+        echo '</ul>';
+    }
 }
 // Finish the page.
 if (vpl_get_webservice_available()) {

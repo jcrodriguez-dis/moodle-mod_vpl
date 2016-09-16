@@ -179,13 +179,15 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         } else {
             $res = $submission->getCE();
             if ($res ['executed']) {
-                $graderaw = $submission->proposedGrade($res['execution']);
-                if ( $graderaw > '' ) {
+                $parsed_execution = $submission->parse_execution($res['execution']);
+                $graderaw = $parsed_execution->grade;
+
+                if( $graderaw > '' ) {
                     $data->grade = format_float($graderaw, 5, true, true);
                 } else {
                     $data->grade = '';
                 }
-                $data->comments = $submission->proposedComment( $res ['execution'] );
+                $data->comments = $parsed_execution->comments;
             }
         }
         if (! empty( $CFG->enableoutcomes )) {

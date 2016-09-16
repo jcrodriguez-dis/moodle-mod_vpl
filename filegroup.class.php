@@ -329,6 +329,40 @@ class file_group_process{
     }
 
     /**
+     * Get file size by number or name
+     *
+     * @param int/string $mix
+     * @return int
+     */
+    function get_file_size($mix) {
+        if (is_int( $mix )) {
+            $num = $mix;
+            $filelist = $this->getFileList();
+            if ($num >=0 && $num < count($filelist)) {
+                $filename = $this->dir.self::encodeFileName( $filelist[$num] );
+                if (file_exists( $filename )) {
+                    return filesize( $filename );
+                } else {
+                    return -1;
+                }
+            }
+        }  else if (is_string( $mix )) {
+            $filelist = $this->getFileList();
+            if (array_search( $mix, $filelist ) !== false) {
+                $fullfilename = $this->dir.self::encodeFileName( $mix );
+                if (file_exists( $fullfilename )) {
+                    return filesize( $fullfilename );
+                } else {
+                    return -1;
+                }
+            }
+        }
+
+        debugging( "File not found $mix" , DEBUG_DEVELOPER );
+        return '';
+    }
+
+    /**
      * Return is there is some file with data
      *
      * @return boolean
@@ -409,5 +443,34 @@ class file_group_process{
             die();
         }
     }
+
+    /**
+     * Download a file
+     * @param $filename filename
+     * @return boolean true, if the file has been sent, false otherwise.
+     */
+    function download_file($filename) {
+        $filelist = $this->getFileList();
+
+        if (array_search( $filename, $filelist ) !== false) {
+            $fullfilename = $this->dir.self::encodeFileName( $filename );
+            if (!file_exists( $fullfilename )) {
+                return false;
+            }
+        } else {
+            return false;
+        }
+
+        @header( 'Content-Description: File Transfer' );
+        @header( 'Content-Type: application/octet-stream' );
+        @header( 'Content-Disposition: attachment; filename="'.basename($filename).'"' );
+        @header( 'Expires: 0' );
+        @header( 'Cache-Control: must-revalidate' );
+        @header( 'Pragma: public' );
+        @header( 'Content-Length: ' . filesize($fullfilename) );
+        readfile( $fullfilename );
+        return true;
+    }
+
 }
 

@@ -54,6 +54,12 @@ class mod_vpl_submission {
     protected $submittedfgm;
 
     /**
+     * Internal var object to output file group manager
+     * @var object of file group manager
+     */
+    protected $output_files_fgm;
+
+    /**
      * Constructor
      *
      * @param $vpl object
@@ -156,6 +162,33 @@ class mod_vpl_submission {
         $fg = $this->get_submitted_fgm();
         $fg->addallfiles($files);
     }
+
+    /**
+     * get path to directory with output files
+     * @return string directory with output files
+     */
+    function get_output_files_directory() {
+        return $this->get_data_directory().'outputfiles/';
+    }
+
+    /**
+     * get absolute path to name of file with list of output files
+     * @return string file name
+     **/
+    function get_outputfileslistname() {
+        return $this->get_data_directory().'outputfiles.lst';
+    }
+
+    /**
+     * @return object file group manager for output files
+     **/
+    function get_output_files_fgm(){
+        if (!$this->output_files_fgm) {
+            $this->output_files_fgm = new file_group_process( $this->get_outputfileslistname(), $this->get_output_files_directory() );
+        }
+        return $this->output_files_fgm;
+    }
+
     public function is_equal_to(&$files, $comment = '') {
         if ($this->instance->comments != $comment) {
             return false;
@@ -635,28 +668,80 @@ class mod_vpl_submission {
      */
     public function print_ce() {
         global $OUTPUT;
-        $ce = $this->getce();
-        if ($ce ['compilation'] === 0) {
+        $ce = $this->getCE();
+        if($ce['compilation'] === 0){
             return;
         }
-        $this->get_ce_html( $ce, $compilation, $execution, $grade, true, true );
-        if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
-            $div = new vpl_hide_show_div( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
-            echo '<h3>' . get_string( 'automaticevaluation', VPL ) . $div->generate( true ) . '</h3>';
+
+        $ce_html = $this->get_ce_html($ce, true, true);
+        $outputfiles = $this->get_ce_output_files_html();
+
+        $show_evaluation = false;
+        $show_evaluation |= strlen($ce_html->compilation) > 0;
+        $show_evaluation |= strlen($ce_html->execution) > 0;
+        $show_evaluation |= strlen($ce_html->grade) > 0;
+        $show_evaluation |= strlen($ce_html->checklist) > 0;
+        $show_evaluation |= strlen($outputfiles) > 0;
+
+        if($show_evaluation){
+            $div = new vpl_hide_show_div(!$this->is_graded() || !$this->vpl->get_visiblegrade());
+            echo '<h3>'.get_string('automaticevaluation',VPL).$div->generate(true).'</h3>';
             $div->begin_div();
             echo $OUTPUT->box_start();
-            if (strlen( $grade ) > 0) {
-                echo '<b>' . $grade . '</b><br />';
+            if(strlen($ce_html->grade)>0){
+                echo '<b>'.$ce_html->grade.'</b><br />';
             }
-            if (strlen( $compilation ) > 0) {
-                echo $compilation;
+            if(strlen($ce_html->compilation)>0){
+                echo $ce_html->compilation;
             }
-            if (strlen( $execution ) > 0) {
-                echo $execution;
+            if(strlen($ce_html->execution)>0){
+                echo $ce_html->execution;
             }
+            if (strlen($ce_html->checklist)>0) {
+                echo $ce_html->checklist;
+            }
+            if (strlen($outputfiles)>0){
+                echo $outputfiles;
+            }
+
             echo $OUTPUT->box_end();
             $div->end_div();
         }
+    }
+
+    private function get_ce_output_files_html() {
+        $fgm = $this->get_output_files_fgm();
+        $output_files = $fgm->getFileList();
+        $downloadable_files = array();
+        $is_grader = $this->vpl->has_capability(VPL_GRADE_CAPABILITY);
+        foreach ($output_files as $output_file) {
+            $is_hidden = (substr(basename($output_file), 0, 1) == '.');
+            if ($is_grader || !$is_hidden) {
+                $downloadable_files[] = $output_file;
+            }
+        }
+
+        if (count($downloadable_files) == 0) {
+            return '';
+        }
+
+        $id = $this->vpl->get_course_module()->id;
+        $user_id = $this->instance->userid;
+        $submission_id = $this->instance->id;
+
+        $ret = '';
+        $ret .= '<h4>'.get_string('outputfiles', VPL).'</h4>'."\n";
+        $ret .= '<ul>';
+        foreach ($downloadable_files as $file) {
+            $url = vpl_mod_href('views/downloadoutputfile.php', 'id', $id, 'userid', $user_id, 'submissionid', $submission_id, 'file', $file);
+            $fs = $fgm->get_file_size($file);
+            if ($fs >= 0) {
+                $ret .= '<li><a href="'.$url.'">'.s($file).'</a> ('.$fs.' B)</li>';
+            }
+        }
+        $ret .= '</ul>';
+
+        return $ret;
     }
 
     /**
@@ -674,6 +759,8 @@ class mod_vpl_submission {
     const COMMENTTAG = 'Comment :=>>';
     const BEGINCOMMENTTAG = '<|--';
     const ENDCOMMENTTAG = '--|>';
+    const CHECKLISTTAG = 'Checklist :=>>';
+
     public function proposedgrade($text) {
         $ret = '';
         $nl = vpl_detect_newline( $text );
@@ -686,6 +773,9 @@ class mod_vpl_submission {
         return $ret;
     }
     public function proposedcomment($text) {
+        $parsed_execution = $this->parse_execution($text);
+        return $parsed_execution->comments;
+        /*
         $incomment = false;
         $ret = '';
         $nl = vpl_detect_newline( $text );
@@ -704,6 +794,70 @@ class mod_vpl_submission {
                     $ret .= substr( $line, strlen( self::COMMENTTAG ) ) . "\n";
                 } else if ($tline == self::BEGINCOMMENTTAG) {
                     $incomment = true;
+                }
+            }
+        }
+        return $ret;
+        */
+    }
+
+    /**
+     * Parses raw execution.
+     * @param $text string the raw execution result
+     * @return string execution result without lines with/in tags.
+     */
+    function parse_execution($text) {
+        $ret = new stdClass();
+        $ret->grade = '';
+        $ret->comments = '';
+        $ret->checklist = array();
+        $ret->execution = '';
+
+        $nl = vpl_detect_newline($text);
+        $lines = explode($nl,$text);
+
+        $closing_tag = false;
+        $tagPairs = array(self::GRADETAG => false, self::COMMENTTAG => false, self::CHECKLISTTAG => false, self::BEGINCOMMENTTAG => self::ENDCOMMENTTAG);
+        foreach($lines as $line){
+            $line = rtrim($line);
+            $tline = trim($line);
+            if($closing_tag !== false) {
+                // we are in a block tag
+                if ($tline === $closing_tag) {
+                    $closing_tag = false;
+                } else {
+                    // handle line in a block tag
+                    if ($closing_tag === self::ENDCOMMENTTAG) {
+                        $ret->comments .= $line."\n";
+                    }
+                }
+            }else{
+                // detect presence of opening tag
+                $opening_tag = false;
+                foreach ($tagPairs as $opening => $closing) {
+                    if (substr($line, 0, strlen($opening)) === $opening) {
+                        $opening_tag = $opening;
+                        $closing_tag = $closing;
+                        break;
+                    }
+                }
+
+                // remove opening tag from line when found
+                if ($opening_tag !== false) {
+                    $line = substr($line, strlen($opening_tag));
+                }
+
+                // handle line according to found tag
+                if ($opening_tag === false) {
+                    $ret->execution .= $line."\n";
+                } elseif ($opening_tag === self::COMMENTTAG) {
+                    $ret->comments .= $line."\n";
+                } elseif ($opening_tag === self::CHECKLISTTAG) {
+                    $ret->checklist[] = $line;
+                } elseif ($opening_tag === self::GRADETAG) {
+                    if ($ret->grade == '') {
+                        $ret->grade = $line;
+                    }
                 }
             }
         }
@@ -919,6 +1073,17 @@ class mod_vpl_submission {
         if ($result ['executed'] > 0) {
             file_put_contents( $execfn, $result ['execution'] );
         }
+
+        if(isset($result['outputfiles'])) {
+            $fgm = $this->get_output_files_fgm();
+            foreach ($result['outputfiles'] as $filename => $content) {
+                if (is_string($content)) {
+                    $fgm->addFile($filename, $content);
+                } else if (is_object($content)) {
+                    $fgm->addFile($filename, $content->scalar);
+                }
+            }
+        }
     }
 
     /**
@@ -944,58 +1109,61 @@ class mod_vpl_submission {
         return $ret;
     }
 
-    /**
-     * Get compilation, execution and proposed grade from array
-     *
-     * @param $response array
-     *            response from server
-     * @param
-     *            $compilation
-     * @param
-     *            $execution
-     * @param
-     *            $grade
-     * @return void
-     */
-    public function get_ce_html($response, &$compilation, &$execution, &$grade, $dropdown, $returnrawexecution = false) {
-        $compilation = '';
-        $execution = '';
-        $grade = '';
-        if ($response ['compilation']) {
-            $compilation = $this->result_to_html( $response ['compilation'], $dropdown );
-            if (strlen( $compilation )) {
-                $compilation = '<b>' . get_string( 'compilation', VPL ) . '</b><br />' . $compilation;
+    public function get_ce_html($response, $dropdown, $returnrawexecution=false){
+        $ret = new stdClass();
+        $ret->compilation = '';
+        $ret->execution = '';
+        $ret->grade = '';
+        $ret->checklist = '';
+
+        if($response['compilation']){
+            $ret->compilation = $this->result_to_html($response['compilation'],$dropdown);
+            if(strlen($ret->compilation)>0){
+                $ret->compilation ='<b>'.get_string('compilation',VPL).'</b><br />'.$ret->compilation;
             }
         }
-        if ($response ['executed'] > 0) {
-            $rawexecution = $response ['execution'];
-            $proposedcomments = $this->proposedcomment( $rawexecution );
-            $proposedgrade = $this->proposedgrade( $rawexecution );
-            $execution = $this->result_to_html( $proposedcomments, $dropdown );
-            if (strlen( $execution )) {
-                $execution = '<b>' . get_string( 'comments', VPL ) . "</b><br />\n" . $execution;
+
+        if($response['executed']>0){
+            $raw_execution = $response['execution'];
+            $parsed_execution = $this->parse_execution($raw_execution);
+            $proposed_comments = $parsed_execution->comments;
+            $proposed_grade = $parsed_execution->grade;
+            $execution=$this->result_to_HTML($proposed_comments,$dropdown);
+            if(strlen($execution)>0){
+                $execution = '<b>'.get_string('comments',VPL)."</b><br />\n".$execution;
             }
-            if (strlen( $proposedgrade )) {
-                $sgrade = $this->print_grade_core( $proposedgrade );
-                $grade = get_string( 'proposedgrade', VPL, $sgrade );
+            if(strlen($proposed_grade)>0){
+                $sgrade = $this->print_grade_core($proposed_grade);
+                $ret->grade = get_string('proposedgrade',VPL,$sgrade);
             }
-            // Show raw ejecution if no grade or comments.
-            if (strlen( $rawexecution ) > 0 && (strlen( $execution ) + strlen( $proposedgrade ) == 0)) {
-                $execution .= "<br />\n";
-                $execution .= '<b>' . get_string( 'execution', VPL ) . "</b><br />\n";
-                $execution .= '<pre>' . s( $rawexecution ) . '</pre>';
-            } else if ($returnrawexecution && strlen( $rawexecution ) > 0
-                       && ($this->vpl->has_capability( VPL_MANAGE_CAPABILITY ))) {
-                // Show raw ejecution if manager and $returnrawexecution.
+
+            if (count($parsed_execution->checklist)>0) {
+                $ret->checklist = $this->get_checklist_html($parsed_execution->checklist);
+            }
+
+            // show raw ejecution if no grade or comments
+            if(strlen($raw_execution)>0 &&
+                (strlen($execution)+strlen($proposed_grade)==0) ){
+                $execution .="<br />\n";
+                $execution .='<b>'.get_string('execution',VPL)."</b><br />\n";
+                $execution .= '<pre>'.s($parsed_execution->execution).'</pre>';
+            } // show raw ejecution if manager and $returnrawexecution
+            elseif($returnrawexecution && strlen($raw_execution)>0 &&
+                ($this->vpl->has_capability(VPL_MANAGE_CAPABILITY))){
                 $div = new vpl_hide_show_div();
-                $execution .= "<br />\n";
-                $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate( true ) . "</b><br />\n";
-                $execution .= $div->begin_div( true );
-                $execution .= '<pre>' . s( $rawexecution ) . '</pre>';
-                $execution .= $div->end_div( true );
+                $execution .="<br />\n";
+                $execution .='<b>'.get_string('execution',VPL).$div->generate(true)."</b><br />\n";
+                $execution .=$div->begin_div(true);
+                $execution .= '<pre>'.s($raw_execution).'</pre>';
+                $execution .=$div->end_div(true);
             }
+
+            $ret->execution = $execution;
         }
+
+        return $ret;
     }
+
     public function get_ce_for_editor($response = null) {
         $ce = new stdClass();
         $ce->compilation = '';
@@ -1010,8 +1178,10 @@ class mod_vpl_submission {
         }
         if ($response ['executed'] > 0) {
             $rawexecution = $response ['execution'];
-            $evaluation = $this->proposedcomment( $rawexecution );
-            $proposedgrade = $this->proposedgrade( $rawexecution );
+            $parsed_execution = $this->parse_execution($rawexecution);
+            $evaluation = $parsed_execution->comments;
+            $proposedgrade = $parsed_execution->grade;
+
             $ce->evaluation = $evaluation;
             // TODO Important what to show to students about grade.
             if (strlen( $proposedgrade ) && $this->vpl->get_instance()->grade) {
@@ -1020,7 +1190,11 @@ class mod_vpl_submission {
             }
             // Show raw ejecution if no grade or comments.
             $manager = $this->vpl->has_capability( VPL_MANAGE_CAPABILITY );
-            if ((strlen( $rawexecution ) > 0 && (strlen( $evaluation ) + strlen( $proposedgrade ) == 0)) || $manager) {
+            if ((strlen( $rawexecution ) > 0 && (strlen( $evaluation ) + strlen( $proposedgrade ) == 0)) && !$manager) {
+                $ce->execution = $parsed_execution->execution;
+            }
+
+            if ($manager) {
                 $ce->execution = $rawexecution;
             }
         }
@@ -1043,17 +1217,135 @@ class mod_vpl_submission {
     }
     public function get_ce_parms() {
         $response = $this->getce();
-        $this->get_ce_html( $response, $compilation, $execution, $grade, false );
+        $ce_html = $this->get_ce_html($response, false);
         $params = '';
-        if (strlen( $compilation )) {
-            $params .= vpl_param_tag( 'compilation', $compilation );
+        if (strlen( $ce_html->compilation )) {
+            $params .= vpl_param_tag( 'compilation', $ce_html->compilation );
         }
-        if (strlen( $execution )) {
-            $params .= vpl_param_tag( 'evaluation', $execution );
+        if (strlen( $ce_html->execution )) {
+            $params .= vpl_param_tag( 'evaluation', $ce_html->execution );
         }
-        if (strlen( $grade )) {
-            $params .= vpl_param_tag( 'grade', $grade );
+        if (strlen( $ce_html->grade )) {
+            $params .= vpl_param_tag( 'grade', $ce_html->grade );
         }
         return $params;
     }
+
+    /**
+     * Returns checklist transformed to html.
+     * @param $checklist array items of generated checklist
+     * @return string checklist formatted as html
+     */
+    private function  get_checklist_html($checklist) {
+        // each checklist line has format: type > details
+        // types: group (named group of checklist items - test), test (a test),
+        // error (error message related to the last test)
+        // warning (warning message related to the last test)
+        // note (information message related to the last test)
+        // internal (information message related to the last test which is available only for graders)
+        // OK (indicates that the last test passed)
+        // FAILED (indicates that the last test failed)
+
+        $is_grader = $this->vpl->has_capability(VPL_GRADE_CAPABILITY);
+
+        // build checklist tree
+        $message_types = array('error', 'warning', 'note', 'internal');
+        $groups = array();
+        $current_group = null;
+        $current_test = null;
+        foreach ($checklist as $line) {
+            $details = '';
+            $separator = strpos($line, '>');
+            if ($separator === false) {
+                $type = trim($line);
+            } else {
+                $type = trim(substr($line, 0, $separator));
+                $details = trim(substr($line, $separator+1));
+            }
+
+            // ensure group
+            if (($type === 'group') || is_null($current_group)) {
+                $current_group = new stdClass();
+                $current_group->title = '';
+                $current_group->tests = array();
+                $groups[] = $current_group;
+                $current_test = null;
+            }
+
+            if ($type === 'group') {
+                $current_group->title = $details;
+                continue;
+            }
+
+            // ensure test
+            if (($type === 'test') || is_null($current_test)) {
+                $current_test = new stdClass();
+                $current_test->title = '';
+                $current_test->messages = array();
+                $current_test->status = false;
+                $current_group->tests[] = $current_test;
+            }
+
+            if ($type == 'test') {
+                $current_test->title = $details;
+                continue;
+            }
+
+            if ($type === 'OK') {
+                $current_test->status = true;
+                continue;
+            }
+
+            if ($type === 'FAILED') {
+                $current_test->status = false;
+                continue;
+            }
+
+            if (in_array($type, $message_types)) {
+                $message = new stdClass();
+                $message->type = $type;
+                $message->content = $details;
+                $current_test->messages[] = $message;
+            }
+        }
+
+        // generate html
+        $ret = '';
+        foreach ($groups as $group) {
+            if (count($group->tests) == 0) {
+                continue;
+            }
+
+            $table = new html_table();
+            $table->caption = s($group->title);
+            $table->align = array ('left', 'right');
+            $table->data = array();
+
+            foreach ($group->tests as $test) {
+                $messages = '';
+                foreach ($test->messages as $message) {
+                    if (($message->type !== 'internal') || (($message->type === 'internal') && $is_grader)) {
+                        $messages .= '<li><small><b>' . get_string('message_' . $message->type, VPL) . '</b> ' . s($message->content) . '</small></li>';
+                    }
+                }
+
+                if (strlen($messages) > 0) {
+                    $messages = '<ul>'.$messages.'</ul>';
+                }
+
+                if ($test->status) {
+                    $status_html = '<span style="color: green; font-weight: bold">'.get_string('test_ok', VPL).'</span>';
+                } else {
+                    $status_html = '<span style="color: red; font-weight: bold">'.get_string('test_failed', VPL).'</span>';
+                }
+
+                $table->data[] = array(s($test->title).$messages, $status_html);
+            }
+
+            $ret .= html_writer::table($table);
+        }
+
+        return $ret;
+    }
+
 }

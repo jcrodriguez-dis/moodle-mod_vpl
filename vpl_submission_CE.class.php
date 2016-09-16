@@ -313,10 +313,16 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->files ['vpl_environment.sh'] = $info;
         $data->files ['common_script.sh'] = file_get_contents( dirname( __FILE__ ) . '/jail/default_scripts/common_script.sh' );
 
-        // TODO change jail server to avoid this patch.
+        // TODO change jail server to avoid this patch (NOTE: can be removed as jail server fixes it)
         if (count( $data->filestodelete ) == 0) { // If keeping all files => add dummy.
             $data->filestodelete ['__vpl_to_delete__'] = 1;
         }
+
+        // Add names of output files
+        foreach ($vpl->get_output_files() as $filename) {
+            $data->outputfiles [$filename] = 1;
+        }
+
         // Info to log who/what.
         $data->userid = $this->instance->userid;
         $data->activityid = $this->vpl->get_instance()->id;
@@ -445,8 +451,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 // If automatic grading.
                 if ($this->vpl->get_instance()->automaticgrading) {
                     $data = new StdClass();
-                    $data->grade = $this->proposedGrade( $response ['execution'] );
-                    $data->comments = $this->proposedComment( $response ['execution'] );
+                    $parsed_execution = $this->parse_execution( $response['execution'] );
+                    $data->grade = $parsed_execution->grade;
+                    $data->comments = $parsed_execution->comments;
                     $this->set_grade( $data, true );
                 }
             }

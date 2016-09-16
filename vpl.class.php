@@ -351,6 +351,31 @@ class mod_vpl {
         }
         return $this->executionfgm;
     }
+
+    /**
+     * Returns name of file storing list of output files.
+     * @return string filename to store list of output files
+     **/
+    function get_output_files_filename(){
+        return $this->get_data_directory().'/output_files.lst';
+    }
+
+    /**
+     * Returns names of output files.
+     * @return array names of output files
+     **/
+    function get_output_files(){
+        return vpl_read_list_from_file($this->get_output_files_filename());
+    }
+
+    /**
+     * Sets names of output files.
+     * @param $files array list of filenames of output files.
+     */
+    function set_output_files($files) {
+        vpl_write_list_to_file($this->get_output_files_filename(), $files);
+    }
+
     // FIXME check and remove function.
     public function set_initial_file($name, $files) {
         $filelist = '';

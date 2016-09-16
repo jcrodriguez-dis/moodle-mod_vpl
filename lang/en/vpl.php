@@ -413,3 +413,21 @@ $string ['variations_help'] = '<p>A set of variations can be defined for an acti
 <p>Each variation has an identification code and a description. The identification code is used by the <b>vpl_enviroment.sh</b> file to pass
 the variation assigned to each student to the script files. The description, formatted in HTML, is shown to the students that have assigned
 the corresponding variation.</p>';
+
+$string['menuoutputfiles'] = 'Output files';
+$string['outputfiles'] = 'Output files';
+$string['outputfiles_help'] = 'Some help about output files';
+$string['newoutputfile'] = 'Filename';
+$string['newoutputfile_help'] = 'Some help about file name';
+$string['addoutputfile'] = 'Add';
+$string['removeoutputfiles'] = 'Remove selected';
+$string['duplicatedfilename'] = 'Duplicated filename';
+$string['invalidfilename'] = 'Invalid filename';
+$string['outputlistupdated'] = 'List of output files has been updated.';
+$string['checklist'] = 'Checklist';
+$string['message_error'] = 'Error:';
+$string['message_warning'] = 'Warning:';
+$string['message_note'] = 'Note:';
+$string['message_internal'] = 'Internal:';
+$string['test_ok'] = 'OK';
+$string['test_failed'] = 'FAILED';
