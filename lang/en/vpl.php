@@ -416,9 +416,9 @@ the corresponding variation.</p>';
 
 $string['menuoutputfiles'] = 'Output files';
 $string['outputfiles'] = 'Output files';
-$string['outputfiles_help'] = 'Some help about output files';
+$string['outputfiles_help'] = 'If the evaluation produces supplementary files, you can specify their filenames and these files will be included to the result of evaluation.';
 $string['newoutputfile'] = 'Filename';
-$string['newoutputfile_help'] = 'Some help about file name';
+$string['newoutputfile_help'] = 'Dot prefixed filenames determine hidden files which are available only to graders.';
 $string['addoutputfile'] = 'Add';
 $string['removeoutputfiles'] = 'Remove selected';
 $string['duplicatedfilename'] = 'Duplicated filename';
