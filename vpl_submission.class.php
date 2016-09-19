@@ -164,6 +164,13 @@ class mod_vpl_submission {
         if (count( $files ) != count( $subfiles )) {
             return false;
         }
+        $oldnames = array_keys( $subfiles );
+        $newnames = array_keys( $files );
+        foreach ( $oldnames as $pos => $name ) {
+            if ( $name != $newnames [$pos] ) {
+                return false;
+            }
+        }
         foreach ( $files as $name => $data ) {
             if ( ! isset ($subfiles [$name]) ) {
                 return false;
