@@ -52,6 +52,7 @@ $options ['download'] = "../views/downloadexecutionfiles.php?id={$id}";
 $options ['resetfiles'] = false;
 $options ['minfiles'] = 0;
 $options ['maxfiles'] = 1000;
+$options ['saved'] = true;
 
 // Get files.
 $fgp = $vpl->get_execution_fgm();
@@ -66,6 +67,6 @@ for ($i = 0; $i < $nf; $i ++) {
 }
 session_write_close();
 echo $OUTPUT->box_start();
-vpl_editor_util::print_tag( $options, $files );
+vpl_editor_util::print_tag( $options );
 echo $OUTPUT->box_end();
 $vpl->print_footer_simple();
