@@ -85,7 +85,13 @@ try {
             $outcome->response->files = mod_vpl_edit::filestoide( $files );
             break;
         case 'load' :
-            $load = mod_vpl_edit::load( $vpl, $userid );
+            if ( isset($actiondata->submissionid) &&
+                $actiondata->submissionid > 0 &&
+                $vpl->has_capability( VPL_MANAGE_CAPABILITY ) ) {
+                $load = mod_vpl_edit::load( $vpl, $userid , $actiondata->submissionid);
+            } else {
+                $load = mod_vpl_edit::load( $vpl, $userid );
+            }
             $load->files = mod_vpl_edit::filestoide( $load->files );
             if ( $instance->duedate > 0 ) {
                 $outcome->response->timeLeft = $instance->duedate - time();

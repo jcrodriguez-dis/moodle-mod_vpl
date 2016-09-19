@@ -99,17 +99,28 @@ class mod_vpl_edit{
         }
         return $files;
     }
-    public static function load($vpl, $userid) {
+    public static function load($vpl, $userid, $submissionid = false) {
+        global $DB;
         $response = new stdClass();
         $response->id = 0;
         $response->comments = '';
         $response->compilationexecution = false;
-        $lastsub = $vpl->last_user_submission( $userid );
-        if ($lastsub) {
-            $submission = new mod_vpl_submission( $vpl, $lastsub );
+        if( $submissionid != false ) {
+            $parms = array('id'=> $submissionid, 'vpl'=> $instance->id ,'userid' =>$userid);
+            $res = $DB->get_records('vpl_submissions', $parms);
+            if(count($res)==1){
+                    $subreg = $res[$subid];
+            }else{
+                    $subreg = false;
+            }
+        } else {
+            $subreg = $vpl->last_user_submission( $userid );
+        }
+        if ($subreg) {
+            $submission = new mod_vpl_submission( $vpl, $subreg );
             $fgp = $submission->get_submitted_fgm();
-            $response->id .= $lastsub->id;
-            $response->comments .= $lastsub->comments;
+            $response->id .= $subreg->id;
+            $response->comments .= $subreg->comments;
             $response->files = $fgp->getallfiles();
             $response->compilationexecution = $submission->get_CE_for_editor();
         } else {
