@@ -54,20 +54,11 @@ $options ['download'] = "../views/downloadrequiredfiles.php?id={$id}";
 $options ['resetfiles'] = false;
 $options ['minfiles'] = 0;
 $options ['maxfiles'] = $instance->maxfiles;
+$options ['saved'] = true;
 
-// Get files.
-$files = Array ();
-$reqfgm = $vpl->get_required_fgm();
-$reqfilelist = $reqfgm->getFileList();
-$nf = count( $reqfilelist );
-for ($i = 0; $i < $nf; $i ++) {
-    $filename = $reqfilelist [$i];
-    $filedata = $reqfgm->getFileData( $reqfilelist [$i] );
-    $files [$filename] = $filedata;
-}
 session_write_close();
 
 echo $OUTPUT->box_start();
-vpl_editor_util::print_tag( $options, $files );
+vpl_editor_util::print_tag( $options );
 echo $OUTPUT->box_end();
 $vpl->print_footer_simple();
