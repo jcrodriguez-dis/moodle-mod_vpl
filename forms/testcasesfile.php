@@ -53,11 +53,8 @@ $options ['download'] = "../views/downloadexecutionfiles.php?id={$id}";
 $options ['resetfiles'] = false;
 $options ['minfiles'] = 1;
 $options ['maxfiles'] = 1;
-// Get files.
-$fgp = $vpl->get_execution_fgm();
-$files = array ();
-$filename = 'vpl_evaluate.cases';
-$files [$filename] = $fgp->getFileData( $filename );
+$options ['saved'] = true;
+
 session_write_close();
-vpl_editor_util::print_tag( $options, $files );
+vpl_editor_util::print_tag( $options );
 $vpl->print_footer_simple();
