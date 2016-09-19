@@ -94,34 +94,21 @@ $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linku
 if ( $instance->duedate > 0 ) {
     $options ['timeLeft'] = $instance->duedate - time();
 }
-// Get files.
-$files = Array ();
+if ( $subid ) {
+    $options ['submissionid'] = $subid;
+}
+
 $reqfgm = $vpl->get_required_fgm();
 $options ['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
 $options ['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
 $options ['minfiles'] = count( $reqfilelist );
-/*
-$nf = count( $reqfilelist );
-for ($i = 0; $i < $nf; $i ++) {
-    $filename = $reqfilelist [$i];
-    $filedata = $reqfgm->getFileData( $reqfilelist [$i] );
-    $files [$filename] = $filedata;
-}
+$options ['saved'] = $lastsub && ! $copy;
 if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );
-    $fgp = $submission->get_submitted_fgm();
-    $filelist = $fgp->getFileList();
-    $nf = count( $filelist );
-    for ($i = 0; $i < $nf; $i ++) {
-        $filename = $filelist [$i];
-        $filedata = $fgp->getFileData( $filelist [$i] );
-        $files [$filename] = $filedata;
-    }
     $compilationexecution = $submission->get_CE_for_editor();
     \mod_vpl\event\submission_edited::log( $submission );
-}*/
-$lastsub=false;
+}
 session_write_close();
 if ($copy && $grader) {
     $userid = $USER->id;
@@ -129,7 +116,7 @@ if ($copy && $grader) {
 $vpl->print_header( get_string( 'edit', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 echo $OUTPUT->box_start();
-vpl_editor_util::print_tag( $options, $files, ($lastsub && ! $copy) );
+vpl_editor_util::print_tag( $options );
 echo $OUTPUT->box_end();
 if ($lastsub) {
     echo vpl_editor_util::send_ce( $compilationexecution );
