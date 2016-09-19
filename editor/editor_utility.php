@@ -64,11 +64,9 @@ class vpl_editor_util {
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDEButton.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
     }
-    public static function print_tag($options, $filestosend, $saved = true) {
-        global $CFG;
+    public static function print_tag($options) {
         $tagid = 'vplide';
         $options ['i18n'] = self::i18n();
-        $options ['saved'] = ($saved || $options ['example']) ? true : false;
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
