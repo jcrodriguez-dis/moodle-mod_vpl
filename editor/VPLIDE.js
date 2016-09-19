@@ -277,22 +277,22 @@
                     VPL_Util.delay(self.updateFileList);
                     return newfile;
                 };
-                this.renameFile = function(id, newname, showError) {
-                    // TODO check file name
+                this.renameFile = function(oldname, newname, showError) {
+                    var pos = fileNameExists(oldname);
                     try {
-                        if (!(id in files)){
+                        if (pos == -1){
                             throw "";
                         }
-                        if (id < minNumberOfFiles){
+                        if (pos < minNumberOfFiles){
                             throw "";
                         }
-                        if (files[id].getFileName() == newname){
+                        if (files[pos].getFileName() == newname){
                             return true; // equals name file
                         }
                         if (!VPL_Util.validPath(newname) || fileNameIncluded(newname)) {
                             throw str('incorrect_file_name');
                         }
-                        files[id].setFileName(newname);
+                        files[pos].setFileName(newname);
                     } catch (e) {
                         showError(str('filenotrenamed').replace(/\{\$a\}/g, newname) + ': ' + e);
                         return false;
@@ -810,12 +810,12 @@
                 newHeight -= getTabsAir();
                 tabs.height(newHeight);
                 if (result_container.vpl_visible) {
-                    result_container.height(newHeight);
+                    result_container.height(newHeight + getTabsAir());
                     result.accordion('refresh');
                 }
                 if (file_list_container.vpl_visible) {
-                    file_list_container.height(newHeight);
                     file_list_content.height(newHeight - file_list.outerHeight());
+                    file_list_container.height(newHeight);
                 }
             }
             function adjustTabsTitles(center) {
@@ -948,8 +948,9 @@
                     return;
                 }
                 dialog_rename.dialog('close');
-                file_manager.renameFile(tabs.tabs('option', 'active'), $JQVPL('#vpl_ide_input_renamefilename').val(),
-                        showErrorMessage);
+                file_manager.renameFile(file_manager.currentFile('getFileName')
+                        , $JQVPL('#vpl_ide_input_renamefilename').val()
+                        , showErrorMessage);
                 event.preventDefault();
             }
             dialog_rename.find('input').on('keypress', renameHandler);
@@ -1510,7 +1511,7 @@
                 }
                 setInterval(checkMenuWidth, 1000);
             }());
-            VPL_Util.requestAction('load', 'loading', '', options.ajaxurl, function(response) {
+            VPL_Util.requestAction('load', 'loading', options, options.ajaxurl, function(response) {
                 if(response.compilationexecution){
                     self.setResult(response.compilationexecution,false);
                 }
