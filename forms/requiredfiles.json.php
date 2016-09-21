@@ -49,7 +49,7 @@ try {
             'action' => $action
     ) ) );
     echo $OUTPUT->header(); // Send headers.
-    $data = json_decode( file_get_contents( 'php://input' ) );
+    $actiondata = json_decode( file_get_contents( 'php://input' ) );
     switch ($action) {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
