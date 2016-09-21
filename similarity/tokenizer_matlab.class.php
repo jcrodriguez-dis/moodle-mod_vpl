@@ -251,7 +251,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     }
                     break;
                 case self::IN_NUMBER :
-                    //  Bug fixe 'e' => 'E'd by Lang Michael: michael.lang.ima10@fh-joanneum.at.
+                    // Bug fixed 'e' => 'E'd by Lang Michael: michael.lang.ima10@fh-joanneum.at.
                     if (($current >= '0' && $current <= '9') ||
                          $current == '.' || $current == 'E' || $current == 'e') {
                         $pending .= $current;

@@ -14,16 +14,13 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * JavaScript function to show hide div
- * 
+ * JavaScript function to Show/hide div and change text ([+] <=> [-]).
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino. All rights reserved.
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  **/
-/**
-* Show/hide div and change text ([+]/[-])
-*/
+
 (function() {
     if (typeof VPL != 'object') {
         VPL = new Object();

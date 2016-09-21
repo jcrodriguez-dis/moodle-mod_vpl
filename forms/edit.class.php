@@ -32,9 +32,9 @@ class mod_vpl_edit{
     public static function filesfromide(& $postfiles) {
         $files = Array ();
         foreach ($postfiles as $file) {
-            if( $file->encoding == 1 ) {
+            if ( $file->encoding == 1 ) {
                 $files [$file->name] = base64_decode( $file->contents );
-            } else{
+            } else {
                 $files [$file->name] = $file->contents;
             }
         }
@@ -43,15 +43,15 @@ class mod_vpl_edit{
     public static function filestoide(& $from) {
         $files = Array ();
         foreach ($from as $name => $data) {
-             $file = new stdClass();
-             $file->name = $name;
-             if( vpl_is_binary($name, $data) ) {
-                 $file->contents = base64_encode( $data );
-                 $file->encoding = 1;
-             } else {
-                 $file->contents = $data;
-                 $file->encoding = 0;
-             }
+            $file = new stdClass();
+            $file->name = $name;
+            if ( vpl_is_binary($name, $data) ) {
+                $file->contents = base64_encode( $data );
+                $file->encoding = 1;
+            } else {
+                $file->contents = $data;
+                $file->encoding = 0;
+            }
             $files [] = $file;
         }
         return $files;
@@ -105,13 +105,13 @@ class mod_vpl_edit{
         $response->id = 0;
         $response->comments = '';
         $response->compilationexecution = false;
-        if( $submissionid != false ) {
-            $parms = array('id'=> $submissionid, 'vpl'=> $instance->id ,'userid' =>$userid);
+        if ( $submissionid != false ) {
+            $parms = array('id' => $submissionid, 'vpl' => $instance->id, 'userid' => $userid);
             $res = $DB->get_records('vpl_submissions', $parms);
-            if(count($res)==1){
-                    $subreg = $res[$subid];
-            }else{
-                    $subreg = false;
+            if ( count($res) == 1 ) {
+                 $subreg = $res[$subid];
+            } else {
+                 $subreg = false;
             }
         } else {
             $subreg = $vpl->last_user_submission( $userid );

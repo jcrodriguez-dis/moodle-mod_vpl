@@ -8,7 +8,6 @@
 cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
 NG=0
-NNG=0
 FILES=*_hello.sh
 touch .tuierrors
 for HELLOSCRIPT in $FILES
@@ -16,21 +15,26 @@ do
 	typeset -u LANGUAGE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$//")
 	RUNSCRIPT=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_run.sh/")
 	VPLEXE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_execute.sh/")
-	echo -n "$LANGUAGE "
+	echo -n "$LANGUAGE:"
 	rm .curerror &>/dev/null
 	. $HELLOSCRIPT &>.curerror
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
 	echo "export SOURCE_FILES=$VPL_SUBFILE0" >> common_script.sh
-	. $RUNSCRIPT batch &>>.curerror
+	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"
 		mv vpl_execution $VPLEXE
+		echo " Compiled"
 		echo "printf \"%2d %s: \" $NG $LANGUAGE" >> all_execute
 		echo "./$VPLEXE" >> all_execute
 	else
-		let "NNG=NNG+1"
-		echo "Error: Hello program not generated" >> .curerror
+		if [ -f vpl_wexecution ] ; then
+			echo " Use debug button to run graphic Hello World!"
+			rm vpl_wexecution
+		else
+			echo " Hello program not generated"
+		fi
 	fi
 	if [ -s .curerror ] ; then
 		echo "- The compilation of $LANGUAGE has generated the folloging menssages:" >> .tuierrors

@@ -31,17 +31,9 @@ class vpl_sh_ada extends vpl_sh_text {
         // TODO FIX hover highlight.
         $lower = strtolower( $rest );
         if (array_key_exists( $lower, $this->reserved )) {
-            /*
-             * if($lower == 'else' || $lower == 'end'){ $this->endHover(); }
-             */
             $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
             echo self::endTag;
-            /*
-             * if(($lower == 'begin' || $lower == 'loop' || $lower == 'else'
-             *   || $lower == 'is') && ($this->previouspending != 'end')){
-             *    $this->initHover(); }
-             */
         } else {
             parent::show_pending( $rest );
         }

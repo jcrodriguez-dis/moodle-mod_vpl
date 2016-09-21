@@ -49,7 +49,8 @@ class mod_vpl_variation_option_form extends moodleform {
 class mod_vpl_variation_form extends moodleform {
     protected $varid;
     protected $number;
-    public function __construct($page, $number, $varid = -1) { // If -1 new variation.
+    // Parm $varid = -1 new variation.
+    public function __construct($page, $number, $varid = -1) {
         $this->number = $number;
         $this->varid = $varid;
         parent::__construct( $page );

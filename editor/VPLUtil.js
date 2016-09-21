@@ -1,31 +1,31 @@
-//This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
-//VPL for Moodle is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//VPL for Moodle is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//GNU General Public License for more details.
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//You should have received a copy of the GNU General Public License
-//along with VPL for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * Tools for IDE and related
- * 
  * @package mod_vpl
  * @copyright 2016 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 (function() {
     VPL_Util = {};
     VPL_Util.doNothing = function() {
     };
-    // Get scrollBarWidth
+    // Get scrollBarWidth.
     VPL_Util.scrollBarWidth = function() {
         var parent, child, width;
         parent = $JQVPL('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
@@ -146,7 +146,7 @@
         return dirs[dirs.length - 1];
     };
     VPL_Util.dataFromURLData = function(data) {
-        return data.substr(data.indexOf(',')+1);
+        return data.substr(data.indexOf(',') + 1);
     };
     VPL_Util.readZipFile = function(data, save, progressBar) {
         var ab = VPL_Util.ArrayBuffer2String(data);
@@ -160,21 +160,21 @@
                 var entry = unzipper.entries[i];
                 var fileName = entry.fileName;
                 var data;
-                // Is directory entry then skip
+                // Is directory entry then skip.
                 if (fileName.match(/\/$/)) {
                     process(i + 1);
                 } else {
                     progressBar.processFile(fileName);
                     var uncompressed = '';
                     if (entry.compressionMethod === 0) {
-                        // plain
+                        // Plain file.
                         uncompressed = entry.data;
                     } else if (entry.compressionMethod === 8) {
                         uncompressed = JSInflate.inflate(entry.data);
                     }
                     data = VPL_Util.String2ArrayBuffer(uncompressed);
                     if (VPL_Util.isBinary(fileName)) {
-                        // If binary use as arrayBuffer
+                        // If binary use as arrayBuffer.
                         save({name:fileName, contents:btoa(uncompressed), encoding:1});
                         progressBar.endFile();
                     } else {
@@ -196,7 +196,7 @@
     };
 
     VPL_Util.readSelectedFiles = function(filesToRead, save) {
-        // process all File objects
+        // Process all File objects.
         var pb = new VPL_Util.progressBar('import', 'import');
         var filePending = 0;
         pb.processFile = function(name) {
@@ -227,9 +227,9 @@
                         save({name:f.name, contents:data, encoding:1});
                     }
                 } else{
-                    save({name:f.name, contents:e.target.result, encoding:0});                    
+                    save({name:f.name, contents:e.target.result, encoding:0});
                 }
-                // Load next file
+                // Load next file.
                 readSecuencial(sec + 1);
                 pb.endFile();
             };
@@ -495,7 +495,7 @@
             return ret = "<i class='" + classes + "'></i>";
         };
     })();
-    // UI operations
+    // UI operations.
     VPL_Util.setTitleBar = function(dialog, type, icon, buttons, handler) {
         title = $JQVPL(dialog).parent().find("span.ui-dialog-title");
         function genButton(e) {
@@ -528,7 +528,6 @@
         var dialog = $JQVPL(HTML);
         $JQVPL('body').append(dialog);
         var progressbar = dialog.find('.vpl_ide_progressbar');
-        // progressbar.progressbar({value : false});
         var label = progressbar.find('.vpl_ide_progressbarlabel');
         dialog.dialog({
             'title' : VPL_Util.str(title),
@@ -637,13 +636,11 @@
     };
 
     VPL_Util.requestAction = function(action, title, data, URL, ok, error) {
-        // console.log('Open request '+action);
         var request = null;
         if (title == '') {
             title = 'connecting';
         }
         var pb = new VPL_Util.progressBar(action, title, function() {
-            // console.log('Close request '+action);
             if (request.readyState != 4) {
                 request.abort();
             }
@@ -706,7 +703,7 @@
     };
     VPL_Util.acceptCertificates = function(servers, getLastAction) {
         if (servers.length > 0) {
-            // generate links dialog
+            // Generate links dialog.
             var html = VPL_Util.str('acceptcertificatesnote');
             html += '<ol>';
             for (var i in servers) {
@@ -800,7 +797,6 @@
         pb = new VPL_Util.progressBar(title, 'connecting', function() {
             ws.close();
         });
-        // console.log('Open ws '+response.monitorURL);
         ws.notOpen = true;
         ws.onopen = function(event) {
             ws.notOpen = false;
@@ -817,7 +813,6 @@
             }
         };
         ws.onclose = function(event) {
-            // console.log('Close ws '+response.monitorURL);
             if (externalActions.getConsole) {
                 externalActions.getConsole().disconnect();
             }
@@ -825,7 +820,6 @@
         };
 
         ws.onmessage = function(event) {
-            // console.log("Monitor receive: " + event.data);
             var message = /^([^:]+):/i.exec(event.data);
             if (message !== null) {
                 var action = message[1];

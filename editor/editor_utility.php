@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-
 class vpl_editor_util {
     public static function generate_jquery() {
         global $PAGE;
@@ -70,122 +69,122 @@ class vpl_editor_util {
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
-	<div id="vpl_menu" class="vpl_ide_menu"></div>
-	<div id="vpl_tr" class="vpl_ide_tr">
-		<div id="vpl_filelist" style="display: none;">
-			<div id="vpl_filelist_header"><?php p(get_string('filelist', VPL))?></div>
-			<div id="vpl_filelist_content"></div>
-		</div>
-		<div id="vpl_tabs" class="vpl_ide_tabs">
-			<div id="vpl_tabs_scroll">
-				<ul id="vpl_tabs_ul"></ul>
-			</div>
-		</div>
-		<div id="vpl_results" class="vpl_ide_results">
-			<div id="vpl_results_accordion"></div>
-		</div>
-	</div>
-	<div id="vpl_ide_dialog_new" class="vpl_ide_dialog"
-		style="display: none;">
-		<fieldset>
-			<label for="vpl_ide_input_newfilename">
+    <div id="vpl_menu" class="vpl_ide_menu"></div>
+    <div id="vpl_tr" class="vpl_ide_tr">
+        <div id="vpl_filelist" style="display: none;">
+            <div id="vpl_filelist_header"><?php p(get_string('filelist', VPL))?></div>
+            <div id="vpl_filelist_content"></div>
+        </div>
+        <div id="vpl_tabs" class="vpl_ide_tabs">
+            <div id="vpl_tabs_scroll">
+                <ul id="vpl_tabs_ul"></ul>
+            </div>
+        </div>
+        <div id="vpl_results" class="vpl_ide_results">
+            <div id="vpl_results_accordion"></div>
+        </div>
+    </div>
+    <div id="vpl_ide_dialog_new" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_newfilename">
                 <?php p(get_string('new_file_name', VPL))?></label> <input
-				type="text" id="vpl_ide_input_newfilename"
-				name="vpl_ide_input_newfilename" value=""
-				class="ui-widget-content ui-corner-all" autofocus /><br />
-		</fieldset>
-	</div>
-	<div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
-		style="display: none;">
-		<fieldset>
-			<label for="vpl_ide_input_renamefilename">
+                type="text" id="vpl_ide_input_newfilename"
+                name="vpl_ide_input_newfilename" value=""
+                class="ui-widget-content ui-corner-all" autofocus /><br />
+        </fieldset>
+    </div>
+    <div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_renamefilename">
                 <?php p(get_string('rename'))?></label> <input
-				type="text" id="vpl_ide_input_renamefilename"
-				name="vpl_ide_input_renamefilename" value=""
-				class="ui-widget-content ui-corner-all" autofocus /><br />
-		</fieldset>
-	</div>
-	<div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
-		style="display: none;">
-		<fieldset>
-			<label for="vpl_ide_input_deletefilename">
+                type="text" id="vpl_ide_input_renamefilename"
+                name="vpl_ide_input_renamefilename" value=""
+                class="ui-widget-content ui-corner-all" autofocus /><br />
+        </fieldset>
+    </div>
+    <div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_deletefilename">
                 <?php p(get_string('delete'))?></label> <input
-				type="text" id="vpl_ide_input_deletefilename"
-				name="vpl_ide_input_deletefilename" value=""
-				class="ui-widget-content ui-corner-all" autofocus /><br />
-		</fieldset>
-	</div>
-	<div id="vpl_ide_dialog_sort" class="vpl_ide_dialog"
-		style="display: none;">
-		<ol id="vpl_sort_list"></ol>
-	</div>
-	<div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
-		style="display: none;">
-		<fieldset>
-			<label for="vpl_ide_input_comments">
+                type="text" id="vpl_ide_input_deletefilename"
+                name="vpl_ide_input_deletefilename" value=""
+                class="ui-widget-content ui-corner-all" autofocus /><br />
+        </fieldset>
+    </div>
+    <div id="vpl_ide_dialog_sort" class="vpl_ide_dialog"
+        style="display: none;">
+        <ol id="vpl_sort_list"></ol>
+    </div>
+    <div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_comments">
                 <?php p(get_string('comments', VPL))?></label> <textarea
-				id="vpl_ide_input_comments" name="vpl_ide_input_comments"
-				class="ui-widget-content ui-corner-all" autofocus ></textarea>
-		</fieldset>
-	</div>
-	<div id="vpl_ide_dialog_about" class="vpl_ide_dialog"
-		style="display: none;">
-		<div class="vpl_ide_dialog_content">
-		<h3>IDE for VPL</h3>
-		This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
-			target="_blank">Virtual Programming Lab for Moodel</a><br /> Author:
-		Juan Carlos Rodríguez del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br />
-		Licence: <a href="http://www.gnu.org/copyleft/gpl.html"
-			target="_blank">GNU GPL v3</a><br /> This software uses/includes the
-		following software under the corresponding licence:
-		<ul>
-			<li><a href="http://ace.c9.io" target="_blank">ACE</a>: an embeddable
-				code editor written in JavaScript. Copyright (c) 2010, Ajax.org B.V.
-				(<a href="../editor/ace9/LICENSE" target="_blank">licence</a>)</li>
-			<li><a href="https://github.com/chjj/term.js/" target="_blank">term.js</a>:
-				A full xterm clone written in javascript. Copyright (c) 2012-2013,
-				Christopher Jeffrey (MIT License)</li>
-			<li><a href="http://kanaka.github.io/noVNC/" target="_blank">noVNC</a>:
-				VNC client using HTML5 (WebSockets, Canvas). noVNC is Copyright (C)
-				2011 Joel Martin &lt;github@martintribe.org&gt; (<a
-				href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
-			<li><a href="http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>:
-				jQuery is a fast, small, and feature-rich JavaScript library.
-				Copyright The jQuery Foundation. (<a
-				href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
-			<li><a href="http://touchpunch.furf.com/" target="_blank">jQuery-UI
-					Touch Punch</a>: Touch event support for jQuery-UI. Copyright Dave
-				Furfero, Dual licensed under the MIT or GPL Version 2 licenses. (<a
-				href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
-		</ul>
-		</div>
-	</div>
-	<form style="display: none;">
-		<input type="file" multiple="multiple" id="vpl_ide_input_file" />
-	</form>
-	<div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog"	>
-		<div class="vpl_ide_dialog_content"></div>
-	</div>
-	<div id="vpl_dialog_terminal">
-		<pre id="vpl_terminal" class="vpl_terminal"></pre>
-	</div>
-	<div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
-	    <div class="vpl_clipboard_label1"></div><br />
-	    <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
-	    <div class="vpl_clipboard_label2"></div><br />
-	    <textarea class="vpl_clipboard_entry2"></textarea>
-	</div>
-	<div id="vpl_dialog_vnc_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
-	    <div class="vpl_clipboard_label1"></div><br />
-	    <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
-	    <div class="vpl_clipboard_label2"></div><br />
-	    <textarea class="vpl_clipboard_entry2"></textarea>
-	</div>
-	<div id="vpl_dialog_vnc">
-		<canvas class="vpl_noVNC_canvas">
+                id="vpl_ide_input_comments" name="vpl_ide_input_comments"
+                class="ui-widget-content ui-corner-all" autofocus ></textarea>
+        </fieldset>
+    </div>
+    <div id="vpl_ide_dialog_about" class="vpl_ide_dialog"
+        style="display: none;">
+        <div class="vpl_ide_dialog_content">
+        <h3>IDE for VPL</h3>
+        This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
+            target="_blank">Virtual Programming Lab for Moodel</a><br /> Author:
+        Juan Carlos Rodríguez del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br />
+        Licence: <a href="http://www.gnu.org/copyleft/gpl.html"
+            target="_blank">GNU GPL v3</a><br /> This software uses/includes the
+        following software under the corresponding licence:
+        <ul>
+            <li><a href="http://ace.c9.io" target="_blank">ACE</a>: an embeddable
+                code editor written in JavaScript. Copyright (c) 2010, Ajax.org B.V.
+                (<a href="../editor/ace9/LICENSE" target="_blank">licence</a>)</li>
+            <li><a href="https://github.com/chjj/term.js/" target="_blank">term.js</a>:
+                A full xterm clone written in javascript. Copyright (c) 2012-2013,
+                Christopher Jeffrey (MIT License)</li>
+            <li><a href="http://kanaka.github.io/noVNC/" target="_blank">noVNC</a>:
+                VNC client using HTML5 (WebSockets, Canvas). noVNC is Copyright (C)
+                2011 Joel Martin &lt;github@martintribe.org&gt; (<a
+                href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
+            <li><a href="http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>:
+                jQuery is a fast, small, and feature-rich JavaScript library.
+                Copyright The jQuery Foundation. (<a
+                href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+            <li><a href="http://touchpunch.furf.com/" target="_blank">jQuery-UI
+                    Touch Punch</a>: Touch event support for jQuery-UI. Copyright Dave
+                Furfero, Dual licensed under the MIT or GPL Version 2 licenses. (<a
+                href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+        </ul>
+        </div>
+    </div>
+    <form style="display: none;">
+        <input type="file" multiple="multiple" id="vpl_ide_input_file" />
+    </form>
+    <div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog"    >
+        <div class="vpl_ide_dialog_content"></div>
+    </div>
+    <div id="vpl_dialog_terminal">
+        <pre id="vpl_terminal" class="vpl_terminal"></pre>
+    </div>
+    <div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
+        <div class="vpl_clipboard_label1"></div><br />
+        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
+        <div class="vpl_clipboard_label2"></div><br />
+        <textarea class="vpl_clipboard_entry2"></textarea>
+    </div>
+    <div id="vpl_dialog_vnc_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
+        <div class="vpl_clipboard_label1"></div><br />
+        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
+        <div class="vpl_clipboard_label2"></div><br />
+        <textarea class="vpl_clipboard_entry2"></textarea>
+    </div>
+    <div id="vpl_dialog_vnc">
+        <canvas class="vpl_noVNC_canvas">
                 Canvas not supported.
          </canvas>
-	</div>
+    </div>
 </div>
 <script>
     INCLUDE_URI="../editor/noVNC/include/";

@@ -1,39 +1,35 @@
-//This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
-//VPL for Moodle is free software: you can redistribute it and/or modify
-//it under the terms of the GNU General Public License as published by
-//the Free Software Foundation, either version 3 of the License, or
-//(at your option) any later version.
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-//VPL for Moodle is distributed in the hope that it will be useful,
-//but WITHOUT ANY WARRANTY; without even the implied warranty of
-//MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-//GNU General Public License for more details.
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
 //
-//You should have received a copy of the GNU General Public License
-//along with VPL for Moodle. If not, see <http://www.gnu.org/licenses/>.
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * IDE Control
- * 
  * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 (function() {
-    // "use strict";
     if (!window.VPL_IDE) {
-        // Editor constructor (only one at this moment)
+        // Editor constructor (only one at this moment).
         VPL_IDE = function(root_id, options) {
             var self = this;
             var minNumberOfFiles = options.minfiles | 0;
             var maxNumberOfFiles = options.maxfiles | 0;
             var restrictedEdit = options.restrictededitor || options.example;
             var fullScreen = false;
-            // Get scrollBarWidth
             var scrollBarWidth = VPL_Util.scrollBarWidth();
-            // Set i18n in VPL_Util
             VPL_Util.set_str(options.i18n);
             var str = VPL_Util.str;
             var root_obj = $JQVPL('#' + root_id);
@@ -80,14 +76,14 @@
                 }
                 e.preventDefault();
             }
-            // Control drop operations
+
             function dropHandler(e) {
-                if (restrictedEdit) { // No drop allowed
+                if (restrictedEdit) { // No drop allowed.
                     e.stopImmediatePropagation();
                     return false;
                 }
                 var dt = e.originalEvent.dataTransfer;
-                // Drop files
+                // Drop files.
                 if (dt.files.length > 0) {
                     VPL_Util.readSelectedFiles(dt.files, function(file) {
                         file_manager.addFile(file, true, updateMenu, showErrorMessage);
@@ -99,7 +95,7 @@
             root_obj.on('drop', dropHandler);
             root_obj.on('dragover', dragoverHandler);
 
-            // Control paste
+            // Control paste.
             function restrictedPaste(e) {
                 if (restrictedEdit) {
                     e.stopPropagation();
@@ -113,7 +109,6 @@
                 var openFiles = [];
                 var modified = true;
                 var self = this;
-                // Make autonomous function
                 this.updateFileList = function() {
                     self.generateFileList();
                 };
@@ -130,7 +125,7 @@
                     var checkName = name.toLowerCase() + '/';
                     for (var i = 0; i < files.length; i++) {
                         var nameMod = files[i].getFileName().toLowerCase() + '/';
-                        // Check for name as directory existent
+                        // Check for name as directory existent.
                         if (nameMod.indexOf(checkName) === 0 || checkName.indexOf(nameMod) === 0) {
                             return true;
                         }
@@ -287,7 +282,7 @@
                             throw "";
                         }
                         if (files[pos].getFileName() == newname){
-                            return true; // equals name file
+                            return true; // Equals name file.
                         }
                         if (!VPL_Util.validPath(newname) || fileNameIncluded(newname)) {
                             throw str('incorrect_file_name');
@@ -312,7 +307,6 @@
                         showError(str('filenotdeleted').replace(/\{\$a\}/g, name));
                         return false;
                     }
-                    // TODO change
                     self.setModified();
                     self.close(files[pos]);
                     files.splice(pos, 1);
@@ -380,7 +374,7 @@
                         var file = {};
                         file.name = files[i].getFileName();
                         file.contents = files[i].getContent();
-                        file.encoding = files[i].isBinary()?1:0;
+                        file.encoding = files[i].isBinary() ? 1 : 0;
                         ret.push(file);
                     }
                     return ret;
@@ -429,20 +423,20 @@
                         var current = structure;
                         for (var p in path) {
                             var part = path[p];
-                            if (p == path.length - 1) { // File
+                            if (p == path.length - 1) { // File.
                                 current.content[part] = {
                                     isDir : false,
                                     content : file,
                                     pos : i
                                 };
                             } else {
-                                if (!current.content[part]) { // New dir
+                                if (!current.content[part]) { // New dir.
                                     current.content[part] = {
                                         isDir : true,
                                         content : []
                                     };
                                 }
-                                // Descend Dir
+                                // Descend Dir.
                                 current = current.content[part];
                             }
                         }
@@ -510,7 +504,7 @@
                     var regWarning = new RegExp('warning|' + escReg(str('warning')), 'i');
                     var state = '';
                     var html = '';
-                    var comment = ''; // Comment
+                    var comment = '';
                     var case_ = '';
                     var lines = text.split(/\r\n|\n|\r/);
                     var regFiles = [];
@@ -521,7 +515,7 @@
                     }
                     for (var i = 0; i < files.length; i++) {
                         var regf = escReg(files[i].getFileName());
-                        var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)[:\,]?(\\d+)?\\)?";// ($|[^\\d])
+                        var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)[:\,]?(\\d+)?\\)?";
                         regFiles[i] = new RegExp(reg, '');
                     }
                     function genFileLinks(line, rawline) {
@@ -531,8 +525,7 @@
                             var match;
                             while ((match = reg.exec(line)) !== null) {
                                 var anot = files[i].getAnnotations();
-                                // annotations[]
-                                // {row:,column:,raw:,type:error,warning,info;text}
+                                // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
                                 lastAnotationFile = i;
                                 used = true;
                                 type = line.search(regWarning) == -1 ? 'error' : 'warning';
@@ -673,7 +666,6 @@
                         result_container.width(menu.width() / 3);
                     }
                     result.accordion('refresh');
-                    // console.log(tabs.height());
                     if (grade > '') {
                         result.accordion('option', 'active', 1);
                     } else {
@@ -694,7 +686,7 @@
 
             var readOnly = options.example;
 
-            // Init editor
+            // Init editor.
 
             var menu = $JQVPL('#vpl_menu');
             var menuButtons = new VPL_IDEButtons(menu,isOptionAllowed);
@@ -727,7 +719,7 @@
             });
             result_container.vpl_visible = false;
             result_container.hide();
-            // TODO generate fileList
+
             file_list_container.addClass('ui-tabs ui-widget ui-widget-content ui-corner-all');
             file_list.text(str('filelist'));
             file_list.html(VPL_Util.iconFolder() + file_list.html());
@@ -777,7 +769,6 @@
                     tabs.resizable('option', 'minWidth', 100);
                     if (result_container.vpl_visible) {
                         result_container.vpl_original_width = result_container.width();
-                        // tabs.resizable('option','minWidth',100);
                     }
                     if (file_list_container.vpl_visible) {
                         file_list_container.vpl_original_width = file_list_container.width();
@@ -819,7 +810,6 @@
                 }
             }
             function adjustTabsTitles(center) {
-                // Adjust tabs titles line width
                 var newWidth = tabs.width();
                 var tabs_ul_width = 0;
                 tabs_ul.width(100000);
@@ -845,9 +835,7 @@
                     tabs_ul.width('');
                 }
             }
-            // TODO try to remade based on diff with position of container
             function autoResizeTab() {
-                // console.log('autoResizeTab tabs.width '+tabs.width());
                 var oldWidth = tabs.width();
                 var newWidth = menu.width();
                 var planb = false;
@@ -908,7 +896,6 @@
                 });
             }
 
-            // New file dialog
             var dialog_new = $JQVPL('#vpl_ide_dialog_new');
             function newFileHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
@@ -916,12 +903,11 @@
                 }
                 dialog_new.dialog('close');
                 var file = {
-                        name:$JQVPL('#vpl_ide_input_newfilename').val(),
-                        contents:'',
-                        encoding:0
-                    };
+                    name:$JQVPL('#vpl_ide_input_newfilename').val(),
+                    contents:'',
+                    encoding:0
+                };
                 var newfile;
-                // TODO refactor
                 if (newfile = file_manager.addFile(file, false, updateMenu, showErrorMessage)) {
                     file_manager.open(newfile);
                     tabs.tabs('option', 'active', file_manager.getTabPos(newfile));
@@ -941,7 +927,6 @@
                 buttons : dialogButtons
             }));
 
-            // Rename file dialog
             var dialog_rename = $JQVPL('#vpl_ide_dialog_rename');
             function renameHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
@@ -999,7 +984,6 @@
                 height: 'auto',
                 buttons : OKButtons
             }));
-            // File sort dialog
             var dialog_sort = $JQVPL('#vpl_ide_dialog_sort');
             var dialogSortButtons = {};
             dialogSortButtons[str('ok')] = function() {
@@ -1067,7 +1051,7 @@
                 });
             };
             file_select.on('change', file_select_handler);
-            // Set menu acctions
+            // Menu acctions.
             menuButtons.add({
                 name:'filelist',
                 originalAction: function() {
@@ -1248,7 +1232,6 @@
                 VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        // TODO refactor
                         file_manager.addFile(files[fileName], true, updateMenu, showErrorMessage);
                     }
                     VPL_Util.delay(updateMenu);
@@ -1263,7 +1246,6 @@
                             VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
                                 var files = response.files;
                                 for (var fileName in files) {
-                                    // TODO refactor
                                     file_manager.addFile(files[fileName], data, true, updateMenu, showErrorMessage);
                                 }
                                 VPL_Util.delay(updateMenu);
@@ -1280,7 +1262,6 @@
                         comments: $JQVPL('#vpl_ide_input_comments').val()
                     };
                     VPL_Util.requestAction('save', 'saving', data, options.ajaxurl, function(response) {
-                        // TODO refactor
                         file_manager.resetModified();
                         menuButtons.setTimeLeft(response);
                         VPL_Util.delay(updateMenu);
@@ -1296,7 +1277,6 @@
                 'getConsole' : function() {
                     return lastConsole;
                 },
-                // TODO refactor
                 'setResult' : self.setResult,
                 'ajaxurl' : options.ajaxurl,
                 'run' : function(type, coninfo, ws) {
@@ -1400,8 +1380,7 @@
             menu_html += menuButtons.getHTML('resetfiles');
             menu_html += menuButtons.getHTML('sort');
             menu_html += "</span> ";
-            // TODO print still not full implemented
-            // menu_html += menu_option('print');
+            // TODO print still not implemented.
             menu_html += "<span id='vpl_ide_edit'>";
             menu_html += menuButtons.getHTML('undo');
             menu_html += menuButtons.getHTML('redo');
@@ -1410,8 +1389,7 @@
             menu_html += menuButtons.getHTML('find_replace');
             menu_html += menuButtons.getHTML('next');
             menu_html += "</span> ";
-            // TODO autosave
-            // menu_html += menu_option('autosave');
+            // TODO autosave not implemented.
             menu_html += "<span id='vpl_ide_mexecution'>";
             menu_html += menuButtons.getHTML('run');
             menu_html += menuButtons.getHTML('debug');
@@ -1431,7 +1409,6 @@
             $JQVPL('#vpl_ide_timeleft').button().css('float','right').hide();
             menuButtons.setTimeLeft(options);
             function updateMenu() {
-                // TODO refactor
                 var file = file_manager.currentFile();
                 var nfiles = file_manager.length();
                 var id = tabs.tabs('option', 'active');
@@ -1485,10 +1462,10 @@
                 VPL_Util.delay(autoResizeTab);
             });
 
-            // VPL_IDE resize view control
+            // VPL_IDE resize view control.
             var jw = $JQVPL(window);
             jw.on('resize', autoResizeTab);
-            // Save? before exit
+            // Save? before exit.
             if (!options.example) {
                 jw.on('beforeunload', function() {
                     if (file_manager.isModified()) {
@@ -1499,7 +1476,7 @@
             var file_manager = new File_manager();
 
             autoResizeTab();
-            // Check the menu width that can change without event
+            // Check the menu width that can change without event.
             (function() {
                 var oldMenuWidth = menu.width();
                 function checkMenuWidth() {
@@ -1517,7 +1494,7 @@
                 }
                 var allOK = true;
                 var files = response.files;
-                for (var i=0; i< files.length; i++) {
+                for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     var r = file_manager.addFile(file, false, updateMenu, showErrorMessage);
                     if (r) {
@@ -1546,6 +1523,6 @@
                 }
                 menuButtons.setTimeLeft(response);
             }, showErrorMessage);
-       };
+        };
     }
 })();

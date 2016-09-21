@@ -15,14 +15,12 @@
 
 /**
  * Terminal control
- * 
  * @package mod_vpl
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-// Terminal constructor
 VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus) {
     var tdialog = $JQVPL('#' + dialog_id);
     var label1 = tdialog.find('.vpl_clipboard_label1');
@@ -72,7 +70,7 @@ VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus)
     var clipboardTitle = VPL_Util.gen_icon('clipboard', 'sw');
     clipboardTitle += ' ' + VPL_Util.str('clipboard');
     titleTag.html(clipboardTitle);
-    tdialog.parent().css('overflow', ''); // Fix problem with JQuery
+    tdialog.parent().css('overflow', ''); // Fix problem with JQuery.
 };
 
 VPL_Terminal = function(dialog_id, terminal_id, str) {
@@ -223,9 +221,8 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
         terminal.focus();
     };
     terminal.open(terminal_tag[0]);
-    // End constructor
 };
-// VNC client constructor
+
 VPL_VNC_Client = function(vnc_dialog_id, str) {
     var self = this;
     var rfb;
@@ -367,7 +364,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             lostFocus();
         }
     });
-    function displayResize() { // TODO hot screen resize
+    function displayResize() { // TODO hot screen resize.
         if (self.isConnected()) {
             var w = VNCDialog.width();
             var h = VNCDialog.height();

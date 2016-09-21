@@ -174,14 +174,14 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         $data->userid = $subinstance->userid;
         $data->submissionid = $submissionid;
         if ($submission->is_graded()) {
-            $data->grade = format_float($subinstance->grade,5,true,true);
+            $data->grade = format_float($subinstance->grade, 5, true, true);
             $data->comments = $submission->get_grade_comments();
         } else {
             $res = $submission->getCE();
             if ($res ['executed']) {
                 $graderaw = $submission->proposedGrade($res['execution']);
-                if( $graderaw > '' ) {
-                    $data->grade = format_float($graderaw,5,true,true);
+                if ( $graderaw > '' ) {
+                    $data->grade = format_float($graderaw, 5, true, true);
                 } else {
                     $data->grade = '';
                 }

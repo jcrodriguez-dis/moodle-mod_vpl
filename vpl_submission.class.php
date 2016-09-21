@@ -166,12 +166,12 @@ class mod_vpl_submission {
         }
         $oldnames = array_keys( $subfiles );
         $newnames = array_keys( $files );
-        foreach ( $oldnames as $pos => $name ) {
+        foreach ($oldnames as $pos => $name) {
             if ( $name != $newnames [$pos] ) {
                 return false;
             }
         }
-        foreach ( $files as $name => $data ) {
+        foreach ($files as $name => $data) {
             if ( ! isset ($subfiles [$name]) ) {
                 return false;
             }
@@ -514,7 +514,7 @@ class mod_vpl_submission {
             }
             if ($scaleid > 0) {
                 if ($grade == null) {
-                    $grade = format_float($inst->grade,5,true,true);
+                    $grade = format_float($inst->grade, 5, true, true);
                 }
                 $ret = $grade . ' / ' . $scaleid;
             } else if ($scaleid < 0) {

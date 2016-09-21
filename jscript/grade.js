@@ -15,7 +15,6 @@
 
 /**
  * JavaScript functions to help grade form
- * 
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

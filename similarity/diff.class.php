@@ -123,10 +123,10 @@ class vpl_diff {
      * @return void
      */
     static public function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
-        // Set matrix[0..nl1+1][0..nl2+1]=0.
+        // Set the matrix[0..nl1+1][0..nl2+1] to 0.
         $row = array_pad( array (), $nl2 + 1, 0 );
         $matrix = array_pad( array (), $nl1 + 1, $row );
-        // Set prev[0..nl1+1][0..nl2+1]=0.
+        // Set the prev matrix [0..nl1+1][0..nl2+1] to 0.
         $prev = $matrix;
 
         // Update first column.

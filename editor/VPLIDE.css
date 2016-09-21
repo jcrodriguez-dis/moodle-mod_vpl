@@ -118,7 +118,7 @@ div.vpl_ide_dialog_content {
 }
 
 .vpl_ide_binary {
-	line-height:200%;
+    line-height:200%;
     margin: auto;
     font-size: 300%;
     text-align: center;
@@ -231,7 +231,7 @@ img.vpl_ide_file {
     z-index: 1000;
 }
 .vpl_clipboard {
-	display: none;
+    display: none;
 }
 .vpl_clipboard_label1.ui-button-text,
 .vpl_clipboard_label1.ui-button-text {
@@ -244,30 +244,30 @@ img.vpl_ide_file {
 
 /*Resolve problem with essential theme*/
 pre.vpl_terminal * {
-	padding: 0;
+    padding: 0;
     margin: 0;
     border: 0;
     font: 1em/1.2 monospace;
 }
 
 pre.vpl_terminal {
-	padding: 2px;
+    padding: 2px;
     font: 1em/1.2 monospace;
     font-size: 12px;
     display: inline-block;
 }
 .vpl_buttonleft_orange {
-	background-color : orange;
-	color : white;
-	font-weight: bold;
+    background-color : orange;
+    color : white;
+    font-weight: bold;
 }
 .vpl_buttonleft_red {
-	background-color : red;
-	color : white;
-	font-weight: bold;
+    background-color : red;
+    color : white;
+    font-weight: bold;
 }
 .vpl_buttonleft_black {
-	background-color : black;
-	color : white;
-	font-weight: bold;
+    background-color : black;
+    color : white;
+    font-weight: bold;
 }

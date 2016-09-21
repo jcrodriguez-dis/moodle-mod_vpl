@@ -27,7 +27,8 @@ defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_list_util {
     static protected $fields; // Field to compare.
     static protected $ascending; // Value to return when ascending or descending order.
-    static public function cpm($avpl, $bvpl) { // Compare two submission fields.
+    // Compare two submission fields.
+    static public function cpm($avpl, $bvpl) {
         $a = $avpl->get_instance();
         $b = $bvpl->get_instance();
         foreach (self::$fields as $field) {
@@ -102,7 +103,9 @@ class vpl_list_util {
         }
         return '<a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
     }
-    static public function count_graded($vpl) { // Count submissions graded.
+
+    // Count submissions graded.
+    static public function count_graded($vpl) {
         $numsubs = 0;
         $numgraded = 0;
         $subs = $vpl->all_last_user_submission( 's.dategraded' );

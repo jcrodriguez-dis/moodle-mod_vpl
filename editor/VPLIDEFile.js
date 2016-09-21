@@ -15,7 +15,7 @@
 
 /**
  * File managament
- * 
+ *
  * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -24,7 +24,6 @@
 (function() {
 
     VPL_File = function(id, name, value, file_manager) {
-        // General functions
         var tid = "#vpl_file" + id;
         var tabnameid = "#vpl_tab_name" + id;
         var fileName = name;
@@ -60,7 +59,7 @@
             if (!modified) {
                 modified = true;
                 file_manager.generateFileList();
-                this.setFileName(fileName); // TODO update state of filename
+                this.setFileName(fileName); // TODO update state of filename.
             }
             VPL_Util.longDelay(file_manager.setModified);
         };
@@ -317,11 +316,10 @@
                 editor.setReadOnly(file_manager.readOnly);
                 session.setUseSoftTabs(true);
                 session.setTabSize(4);
-                // Avoid undo of editor initial content
+                // Avoid undo of editor initial content.
 
                 session.setUndoManager(new ace.UndoManager());
-                // =================================================
-                // Code to control Paste and drop under restricted editing
+                // Code to control Paste and drop under restricted editing.
                 editor.execCommand('replace');
                 function addEventDrop() {
                     var tag = $JQVPL(tid + ' div.ace_search');
@@ -340,9 +338,9 @@
                 editor.on('change', function() {
                     self.change();
                 });
-                // Try to grant dropHandler installation
+                // Try to grant dropHandler installation.
                 setTimeout(addEventDrop, 5);
-                // Save previous onPaste and change for a new one
+                // Save previous onPaste and change for a new one.
                 var prevOnPaste = editor.onPaste;
                 editor.onPaste = function(s) {
                     if (file_manager.restrictedEdit) {
@@ -351,15 +349,13 @@
                         prevOnPaste.call(editor, s);
                     }
                 };
-                // Control copy and cut (yes cut also use this) for
-                // localClipboard
+                // Control copy and cut (yes cut also use this) for localClipboard.
                 editor.on('copy', function(t) {
                     file_manager.setClipboard(t);
                 });
                 $JQVPL(tid).on('paste', '*', file_manager.restrictedPaste);
                 $JQVPL(tid + ' div.ace_content').on('drop', file_manager.dropHandler);
                 $JQVPL(tid + ' div.ace_content').on('dragover', file_manager.dragoverHandler);
-                // size adjust
                 this.adjustSize();
                 return editor;
             };
@@ -387,8 +383,8 @@
             };
             this.updateDataURL = function() {
                 if(VPL_Util.isImage(fileName)){
-                    var prevalue='data:'+VPL_Util.getMIME(fileName)+';base64,';
-                    $JQVPL(tid).find('img').attr('src', prevalue+value);                    
+                    var prevalue = 'data:' + VPL_Util.getMIME(fileName) + ';base64,';
+                    $JQVPL(tid).find('img').attr('src', prevalue + value);
                 } else {
                     $JQVPL(tid).find('img').attr('src', '');
                 }

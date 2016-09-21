@@ -32,14 +32,16 @@ class vpl_submissionlist_order {
     protected static $field; // Field to compare.
     protected static $ascending; // Value to return when ascending or descending order
     protected static $corder = null; // Funtion usort of old PHP versions don't call static class functions
-    static public function cpm_userid($a, $b) { // Compare two submission fields.
+    // Compare two submission fields.
+    static public function cpm_userid($a, $b) {
         if ($a->userinfo->id < $b->userinfo->id) {
             return self::$ascending;
         } else {
             return - self::$ascending;
         }
     }
-    static public function cpm_userinfo($a, $b) { // Compare two userinfo fields.
+    // Compare two userinfo fields.
+    static public function cpm_userinfo($a, $b) {
         $field = self::$field;
         $adata = $a->userinfo->$field;
         $bdata = $b->userinfo->$field;
@@ -55,7 +57,8 @@ class vpl_submissionlist_order {
             return - self::$ascending;
         }
     }
-    static public function cpm_submission($a, $b) { // Compare two submission fields.
+    // Compare two submission fields.
+    static public function cpm_submission($a, $b) {
         $field = self::$field;
         $submissiona = $a->submission;
         $submissionb = $b->submission;

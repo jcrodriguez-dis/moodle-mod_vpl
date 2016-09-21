@@ -15,10 +15,10 @@
 // along with VPL.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * @package		VPL. Show a VPL instance
- * @copyright	2012 onwards Juan Carlos Rodríguez-del-Pino
- * @license		http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author		Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @package   VPL. Show a VPL instance
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author    Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 require_once(dirname(__FILE__).'/../../config.php');

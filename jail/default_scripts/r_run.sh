@@ -23,5 +23,9 @@ do
 done
 #compile
 cat common_script.sh > vpl_wexecution
-echo "xterm -e R --default-packages=utils --vanilla $SOURCE_FILE" >>vpl_wexecution
+if [ "$1" == "batch" ] ; then
+	echo "xterm -e R --vanilla -q -f $SOURCE_FILE" >>vpl_wexecution
+else
+	echo "xterm -e R --vanilla --interactive -q -f $SOURCE_FILE" >>vpl_wexecution
+fi
 chmod +x vpl_wexecution

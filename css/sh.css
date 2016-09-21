@@ -11,7 +11,7 @@
 .vpl_r {color:#0000B0; font-style: italic;}
 .vpl_r:HOVER {background-color: silver;color:white;}
 .vpl_g, .vpl_g * {
-	font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     font-size: 12px;
     line-height: normal;
     word-wrap:normal;

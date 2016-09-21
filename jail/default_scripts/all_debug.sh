@@ -17,18 +17,21 @@ FILES=*_hello.sh
 touch .guierrors
 for HELLOSCRIPT in $FILES
 do
-	cp common_script.sav common_script.sh
 	typeset -u LANGUAGE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$//")
 	RUNSCRIPT=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_run.sh/")
 	VPLEXE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_execute.sh/")
-	. $HELLOSCRIPT gui 2>>.guierrors
+	echo -n "$LANGUAGE:"
+	rm .curerror &>/dev/null
+	. $HELLOSCRIPT gui &>.curerror
+	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
 	echo "export SOURCE_FILES=$VPL_SUBFILE0" >> common_script.sh
-	. $RUNSCRIPT batch 2>>.guierrors
+	eval ./$RUNSCRIPT batch 2 &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		let "NG=NG+1"
 		LANGGEN="$LANGGEN $LANGUAGE"
 		mv vpl_wexecution $VPLEXE
+		echo " Compiled"
 		echo "echo \"Launching $LANGUAGE\"" >> all_execute
 		echo "/bin/bash ./$VPLEXE" >> all_execute
 		
@@ -39,6 +42,10 @@ do
 	else
 		let "NEG=NEG+1"
 		LANGEG="$LANGEG $LANGUAGE"
+	fi
+	if [ -s .curerror ] ; then
+		echo "- The compilation of $LANGUAGE has generated the folloging menssages:" >> .tuierrors
+		cat .curerror >> .guierrors
 	fi
 done
 echo "read" >> all_execute

@@ -154,11 +154,11 @@ class file_group_process{
             $filehash [$f] = 1;
         }
         foreach ($files as $filename => $data) {
-            if ( !isset($filehash[$filename]) ){
+            if ( !isset($filehash[$filename]) ) {
                 $filelist[] = $filename;
             }
             if ($data === null) {
-                $data='';
+                $data = '';
             }
             $path = $this->dir . self::encodeFileName( $filename );
             $fd = vpl_fopen( $path );
