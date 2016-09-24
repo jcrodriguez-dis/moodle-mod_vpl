@@ -74,8 +74,11 @@ if ($fromform = $mform->get_data()) {
         die();
     }
     $rfn = $vpl->get_required_fgm();
-    $minfiles = count( $rfn->getFilelist() );
+    $required_files = $rfn->getFilelist();
+    $minfiles = count( $required_files );
     $files = array ();
+
+    $errormessage = '';
     for ($i = 0; $i < $instance->maxfiles; $i ++) {
         $attribute = 'file' . $i;
         $name = $mform->get_new_filename( $attribute );
@@ -88,21 +91,20 @@ if ($fromform = $mform->get_data()) {
                     $data = iconv( $encode, 'UTF-8', $data );
                 }
             }
-            $files [] = array (
-                    'name' => $name,
-                    'data' => $data
-            );
+            // check file duplicates as indication of wrong submission
+            if (array_key_exists($name, $files) && !is_null($files [$name])) {
+                $errormessage .= s(get_string('duplicate_file', VPL, $name)) . "<br />";
+                break;
+            }
+            $files [$name] = $data;
         } else {
-            if ($i < $minfiles) { // Add empty file if required.
-                $files [] = array (
-                        'name' => '',
-                        'data' => ''
-                );
+            // if required file is missing, add the file with undefined content.
+            if ($i < $minfiles) {
+                $files [$required_files[$i]] = null;
             }
         }
     }
-    $errormessage = '';
-    if ($subid = $vpl->add_submission( $userid, $files, $fromform->comments, $errormessage )) {
+    if ((strlen($errormessage) == 0) && ($subid = $vpl->add_submission( $userid, $files, $fromform->comments, $errormessage ))) {
         \mod_vpl\event\submission_uploaded::log( array (
                 'objectid' => $subid,
                 'context' => $vpl->get_context(),

@@ -64,5 +64,5 @@ if (optional_param( 'grading', 0, PARAM_INT )) {
 } else {
     $nexturl = "../forms/submissionview.php?id={$id}&userid={$userid}";
 }
-vpl_editor_util::generateEvaluateScript( $ajaxurl, $nexturl );
+vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
 $vpl->print_footer();

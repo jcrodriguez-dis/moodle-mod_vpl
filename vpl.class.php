@@ -633,6 +633,10 @@ class mod_vpl {
                 $a->found = $name;
                 $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br />";
             }
+            if ($i < $lr && is_null($data)) {
+                $error .= s( get_string( 'missing_requested_file', VPL, $list[ $i ] ) ) . "<br />";
+            }
+
             $i++;
         }
         return strlen( $error ) == 0;
