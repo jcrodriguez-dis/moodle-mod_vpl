@@ -665,7 +665,8 @@
                         result_container.show();
                         result_container.width(menu.width() / 3);
                     }
-                    result.accordion('refresh');
+                    // causes exception (not fully loaded?); refresh is invoked later during autoResizeTab
+                    //result.accordion('refresh');
                     if (grade > '') {
                         result.accordion('option', 'active', 1);
                     } else {
