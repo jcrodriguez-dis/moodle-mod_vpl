@@ -1,6 +1,6 @@
-===========================================
-VPL - Virtual Programming Lab for Moodle 2
-===========================================
+========================================
+VPL - Virtual Programming Lab for Moodle
+========================================
 
    VPL is a programming assignment management system that lets edit and execute
    programs and enable the automatic and continuous assessment.
