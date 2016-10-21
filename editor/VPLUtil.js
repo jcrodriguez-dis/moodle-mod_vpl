@@ -195,7 +195,7 @@
         }
     };
 
-    VPL_Util.readSelectedFiles = function(filesToRead, save) {
+    VPL_Util.readSelectedFiles = function(filesToRead, save, end) {
         // Process all File objects.
         var pb = new VPL_Util.progressBar('import', 'import');
         var filePending = 0;
@@ -211,6 +211,9 @@
         };
         function readSecuencial(sec) {
             if (sec >= filesToRead.length || pb.isClosed()) {
+                if ( end ) {
+                    end();
+                }
                 return;
             }
             var f = filesToRead[sec];
