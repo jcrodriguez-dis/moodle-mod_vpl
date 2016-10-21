@@ -680,6 +680,14 @@ function vpl_truncate_string(&$string, $limit) {
     }
 }
 
+function vpl_bash_export($var, $value){
+    if ( is_int($value) ) {
+        return 'export '.$var.'=' . $value . "\n";
+    } else {
+        return 'export '.$var."='" . str_replace("'","'\\''",$value) . "'\n";
+    }
+}
+
 /**
  * For debug purpose
  * Return content of vars ready to HTML
