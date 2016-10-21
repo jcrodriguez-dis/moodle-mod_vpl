@@ -294,7 +294,16 @@ class vpl_similarity_preprocess {
     }
     static public function activity(&$simil, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
-        $list = $vpl->get_students();
+        $cm = $vpl->get_course_module();
+        $groupmode = groups_get_activity_groupmode( $cm );
+        if (! $groupmode) {
+            $groupmode = groups_get_course_groupmode( $vpl->get_course() );
+        }
+        $currentgroup = groups_get_activity_group( $cm, true );
+        if (! $currentgroup) {
+            $currentgroup = '';
+        }
+        $list = $vpl->get_students($currentgroup);
         if (count( $list ) == 0) {
             return;
         }

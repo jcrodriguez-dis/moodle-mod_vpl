@@ -108,6 +108,20 @@ $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
 $selected = vpl_similarity::get_selected( $simil, $fromform->maxoutput, $il, $searchprogression );
 $extinfo = $USER->id == 2 && $CFG->debugdisplay && $CFG->debug >= 2047;
 
+$cm = $vpl->get_course_module();
+$groupmode = groups_get_activity_groupmode( $cm );
+if (! $groupmode) {
+    $groupmode = groups_get_course_groupmode( $vpl->get_course() );
+}
+$currentgroup = groups_get_activity_group( $cm, true );
+if (! $currentgroup) {
+    $currentgroup = '';
+}else{
+    if ( groups_group_exists($currentgroup) ){
+        echo groups_get_group_name($currentgroup);
+    }
+}
+
 if (count( $selected )) {
     $firstname = get_string( 'firstname' );
     $lastname = get_string( 'lastname' );

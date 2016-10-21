@@ -35,11 +35,27 @@ $vpl->prepare_page( 'similarity/similarity_form.php', array (
         'id' => $id
 ) );
 
+// Find out current groups mode.
+$cm = $vpl->get_course_module();
+$groupmode = groups_get_activity_groupmode( $cm );
+if (! $groupmode) {
+    $groupmode = groups_get_course_groupmode( $vpl->get_course() );
+}
+$currentgroup = groups_get_activity_group( $cm, true );
+if (! $currentgroup) {
+    $currentgroup = '';
+}
+
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
 \mod_vpl\event\vpl_similarity_form_viewed::log( $vpl );
 // Print header.
 $vpl->print_header( get_string( 'similarity', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
+// Menu for groups.
+if ($groupmode) {
+    $groupsurl = vpl_mod_href( 'similarity/similarity_form.php', 'id', $id );
+    groups_print_activity_menu( $cm, $groupsurl );
+}
 $form = new vpl_similarity_form( 'listsimilarity.php', $vpl );
 $form->display();
 $vpl->print_footer();
