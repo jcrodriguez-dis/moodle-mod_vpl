@@ -30,7 +30,7 @@ class vpl_sh_matlab extends vpl_sh_text {
         if (array_key_exists( $rest, $this->reserved )) {
             $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
-            echo self::endTag;
+            echo self::ENDTAG;
         } else if (array_key_exists( $rest, $this->functions )) {
             $this->initTag( self::C_FUNCTION );
             parent::show_pending( $rest );
@@ -976,7 +976,7 @@ class vpl_sh_matlab extends vpl_sh_text {
                     } else if ($current == self::LF) {
                         $this->show_text( $pending );
                         $pending = '';
-                        $this->endTag();
+                        $this->ENDTAG();
                         $this->show_line_number();
                         $this->initTag( self::C_STRING );
                     } else {
