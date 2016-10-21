@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 if [ "$1" == "gui" ] ; then
-cat >vpl_hello.java <<END_OF_FILE
+cat >vpl_hello.java <<'END_OF_FILE'
 import javax.swing.JOptionPane;
 public class vpl_hello {
     public static void main(String[] args) {
@@ -16,7 +16,7 @@ public class vpl_hello {
 }
 END_OF_FILE
 else
-cat >vpl_hello.java <<END_OF_FILE
+cat >vpl_hello.java <<'END_OF_FILE'
 public class vpl_hello {
     public static void main(String[] args) {
         System.out.println("Hello from the Java language!");

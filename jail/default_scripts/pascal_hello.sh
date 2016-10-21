@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.pas <<END_OF_FILE
+cat >vpl_hello.pas <<'END_OF_FILE'
 program vpl_hello;
 begin
   writeln('Hello from the Pascal language!')

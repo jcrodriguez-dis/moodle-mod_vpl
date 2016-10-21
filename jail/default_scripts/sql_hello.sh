@@ -5,8 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.sql <<END_OF_FILE
-SELECT 'Hello from the SQL!';
+cat >vpl_hello.sql <<'END_OF_FILE'
+SELECT 'Hello from the SQL language!';
 .exit
 
 END_OF_FILE

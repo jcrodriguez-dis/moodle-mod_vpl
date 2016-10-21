@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 
-cat >vpl_hello.cpp <<END_OF_FILE
+cat >vpl_hello.cpp <<'END_OF_FILE'
 #include <iostream>
 int main(){
 	std::cout << "Hello from the C++ language!" << std::endl;

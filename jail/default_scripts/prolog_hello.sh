@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.pro <<END_OF_FILE
+cat >vpl_hello.pro <<'END_OF_FILE'
 vpl_hello:-writeln('Hello from the Prolog language!'),halt.
 END_OF_FILE
 export VPL_SUBFILE0=vpl_hello.pro

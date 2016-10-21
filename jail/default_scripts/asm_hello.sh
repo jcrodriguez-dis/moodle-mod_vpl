@@ -2,7 +2,7 @@
 # This file is part of VPL for Moodle
 # Assambler X86 language hello source code
 
-cat >vpl_hello.asm <<END_OF_FILE
+cat >vpl_hello.asm <<'END_OF_FILE'
 ;From http://asm.sourceforge.net/intro/hello.html
 section     .text
 global      _start        ;must be declared for linker (ld)

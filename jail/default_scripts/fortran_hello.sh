@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.f <<END_OF_FILE
+cat >vpl_hello.f <<'END_OF_FILE'
        PRINT *, "Hello from the Fortran language!"
        END
 END_OF_FILE

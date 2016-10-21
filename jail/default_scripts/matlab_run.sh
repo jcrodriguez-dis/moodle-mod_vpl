@@ -47,7 +47,7 @@ if [ "$(command -v matlab)" == "" ] ; then
 			echo "octave --no-window-system -q" >> vpl_execution
 		else
 cat > .octaverc << "END_SCRIPT"
-can_use_graphics_toolkit =exist("graphics_toolkit","file") | exist("graphics_toolkit","builtin");
+can_use_graphics_toolkit = exist("graphics_toolkit","file") | exist("graphics_toolkit","builtin");
 if can_use_graphics_toolkit
 	graphics_toolkit("gnuplot");
 endif
@@ -55,9 +55,9 @@ endif
 END_SCRIPT
 			check_program xterm
 			if [ "$1" == "batch" ] ; then
-				echo "xterm -e octave -q" >> vpl_execution
+				echo "xterm -e octave -q --no-gui" >> vpl_execution
 			else
-				echo "xterm -e octave -q --persist" >> vpl_execution
+				echo "xterm -e octave -q --no-gui --persist" >> vpl_execution
 			fi
 			mv vpl_execution vpl_wexecution
 		fi

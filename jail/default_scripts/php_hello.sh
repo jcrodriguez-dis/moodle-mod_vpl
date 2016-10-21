@@ -20,7 +20,7 @@ phpinfo();
 END_OF_FILE
 export VPL_SUBFILE0=index.php
 else
-cat >vpl_hello.php <<END_OF_FILE
+cat >vpl_hello.php <<'END_OF_FILE'
 <?php
 echo "Hello from the PHP language!\n";
 END_OF_FILE

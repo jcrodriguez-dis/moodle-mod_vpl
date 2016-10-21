@@ -5,11 +5,11 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.v <<END_OF_FILE
+cat >vpl_hello.v <<'END_OF_FILE'
 module vpl_hello;
   initial
   begin
-     $display("Hello from the Verilog!");
+     $display("Hello from the Verilog language!");
   end
 endmodule
 

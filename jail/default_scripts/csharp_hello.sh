@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 if [ "$1" == "gui" ] ; then
-cat >vpl_hello.cs <<END_OF_FILE
+cat >vpl_hello.cs <<'END_OF_FILE'
 using System.Windows.Forms;
 public class vpl_hello
 {
@@ -18,7 +18,7 @@ public class vpl_hello
 }
 END_OF_FILE
 else
-cat >vpl_hello.cs <<END_OF_FILE
+cat >vpl_hello.cs <<'END_OF_FILE'
 public class vpl_hello
 {
    public static void Main()

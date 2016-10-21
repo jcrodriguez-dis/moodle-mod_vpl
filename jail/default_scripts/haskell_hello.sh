@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.hs <<END_OF_FILE
+cat >vpl_hello.hs <<'END_OF_FILE'
 main = putStrLn "Hello from the Haskell language!"
 END_OF_FILE
 export VPL_SUBFILE0=vpl_hello.hs

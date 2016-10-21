@@ -5,8 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.sh <<END_OF_FILE
+cat >vpl_hello.sh <<'END_OF_FILE'
 #!/bin/bash
-echo "Hello from the Shell!"
+echo "Hello from the Shell (Bash) language!"
 END_OF_FILE
 export VPL_SUBFILE0=vpl_hello.sh

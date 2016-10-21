@@ -4,7 +4,7 @@
 # Author  Juan Carlos Rodriguez-del-pino
 #load common script and check programs
 
-cat >vpl_hello.js <<END_OF_FILE
+cat >vpl_hello.js <<'END_OF_FILE'
 console.log('Hello from the JavaScript language!');
 END_OF_FILE
 export VPL_SUBFILE0=vpl_hello.js

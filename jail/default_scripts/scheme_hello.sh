@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.scm <<END_OF_FILE
+cat >vpl_hello.scm <<'END_OF_FILE'
 (display "Hello from the Scheme language!\n")
 (exit)
 END_OF_FILE
