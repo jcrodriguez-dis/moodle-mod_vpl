@@ -76,9 +76,6 @@ try {
                 $actiondata->comments = '';
             }
             mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments );
-            if ( $instance->duedate > 0 ) {
-                $outcome->response->timeLeft = $instance->duedate - time();
-            }
             break;
         case 'resetfiles' :
             $files = mod_vpl_edit::get_requested_files( $vpl );
@@ -93,9 +90,6 @@ try {
                 $load = mod_vpl_edit::load( $vpl, $userid );
             }
             $load->files = mod_vpl_edit::filestoide( $load->files );
-            if ( $instance->duedate > 0 ) {
-                $outcome->response->timeLeft = $instance->duedate - time();
-            }
             $outcome->response = $load;
             break;
         case 'run' :
@@ -117,6 +111,9 @@ try {
             break;
         default :
             throw new Exception( 'ajax action error: ' + $action );
+    }
+    if ( $instance->duedate > 0 ) {
+        $outcome->response->timeLeft = $instance->duedate - time();
     }
 } catch ( Exception $e ) {
     $outcome->success = false;
