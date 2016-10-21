@@ -261,36 +261,36 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->maxprocesses = min( $data->maxprocesses, ( int ) $plugincfg->maxexeprocesses );
         // Info send with script.
         $info = "#!/bin/bash\n";
-        $info .= 'export VPL_LANG=' . vpl_get_lang( true ) . "\n";
+        $info .= vpl_bash_export( 'VPL_LANG', vpl_get_lang( true ) );
         if ($type == 2) { // If evaluation add information.
             $subinstance = $this->get_instance();
-            $info .= 'export VPL_MAXTIME=' . $data->maxtime . "\n";
-            $info .= 'export VPL_MAXMEMORY=' . $data->maxmemory . "\n";
-            $info .= 'export VPL_MAXFILESIZE=' . $data->maxfilesize . "\n";
-            $info .= 'export VPL_MAXPROCESSES=' . $data->maxprocesses . "\n";
-            $info .= 'export MOODLE_USER_ID=' . ($subinstance->userid) . "\n";
+            $info .= vpl_bash_export( 'VPL_MAXTIME', $data->maxtime );
+            $info .= vpl_bash_export( 'VPL_MAXMEMORY',  $data->maxmemory );
+            $info .= vpl_bash_export( 'VPL_MAXFILESIZE',  $data->maxfilesize );
+            $info .= vpl_bash_export( 'VPL_MAXPROCESSES',  $data->maxprocesses );
+            $info .= vpl_bash_export( 'MOODLE_USER_ID',  $subinstance->userid );
             if ($user = $DB->get_record( 'user', array ( 'id' => $subinstance->userid ) )) {
-                $info .= 'export MOODLE_USER_NAME=\'' . addslashes( $vpl->fullname( $user, false ) ) . "'\n";
+                $info .= vpl_bash_export( 'MOODLE_USER_NAME', $vpl->fullname( $user, false ) );
             }
             $gradesetting = $vpl->get_grade_info();
             if ($gradesetting !== false) {
-                $info .= 'export VPL_GRADEMIN=' . $gradesetting->grademin . "\n";
-                $info .= 'export VPL_GRADEMAX=' . $gradesetting->grademax . "\n";
+                $info .= vpl_bash_export( 'VPL_GRADEMIN',  $gradesetting->grademin );
+                $info .= vpl_bash_export( 'VPL_GRADEMAX',  $gradesetting->grademax );
             }
-            $info .= 'export VPL_COMPILATIONFAILED=\'' . addslashes( get_string( 'VPL_COMPILATIONFAILED', VPL ) ) . "'\n";
+            $info .= vpl_bash_export( 'VPL_COMPILATIONFAILED', get_string( 'VPL_COMPILATIONFAILED', VPL ) );
         }
         $filenames = '';
         $num = 0;
         foreach ($submittedlist as $filename) {
             $filenames .= $filename . ' ';
-            $info .= 'export VPL_SUBFILE' . $num . '="' . $filename . "\"\n";
+            $info .= vpl_bash_export( 'VPL_SUBFILE' . $num, $filename );
             $num ++;
         }
         $info .= 'export VPL_SUBFILES="' . $filenames . "\"\n";
         // Add identifications of variations if exist.
         $varids = $vpl->get_variation_identification( $this->instance->userid );
         foreach ($varids as $id => $varid) {
-            $info .= 'export VPL_VARIATION' . $id . '=' . $varid . "\n";
+            $info .= vpl_bash_export( 'VPL_VARIATION' . $id, $varid );
         }
         for ($i = 0; $i <= $type; $i ++) {
             $script = self::$scriptlist [$i];
@@ -386,7 +386,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->interactive = $type < 2 ? 1 : 0;
         $data->lang = vpl_get_lang( true );
         if (isset( $options ['XGEOMETRY'] )) { // TODO refactor to a better solution.
-            $data->files ['vpl_environment.sh'] .= "\nexport VPL_XGEOMETRY=" . $options ['XGEOMETRY'] . "\n";
+            $data->files ['vpl_environment.sh'] .= "\n".vpl_bash_export( 'VPL_XGEOMETRY', $options ['XGEOMETRY'] );
         }
         if (isset( $options ['COMMANDARGS'] )) {
             $data->commandargs = $options ['COMMANDARGS'];
