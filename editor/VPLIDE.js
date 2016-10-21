@@ -89,7 +89,7 @@
                        file_manager.addFile(file, true, updateMenu, showErrorMessage);
                     },
                     function(){
-                       file_manager.fileListDoVisibleIfNeeded();
+                       file_manager.fileListVisibleIfNeeded();
                     });
                     e.stopImmediatePropagation();
                     return false;
@@ -230,7 +230,7 @@
                 this.isFileListVisible = function() {
                     return file_list_container.vpl_visible;
                 };
-                this.fileListDoVisibleIfNeeded = function() {
+                this.fileListVisibleIfNeeded = function() {
                     if ( this.isFileListVisible() ){
                         return;
                     }
@@ -1064,7 +1064,7 @@
                     file_manager.addFile(file, true, updateMenu, showErrorMessage);
                 },
                 function(){
-                    file_manager.fileListDoVisibleIfNeeded();
+                    file_manager.fileListVisibleIfNeeded();
                 });
             };
             file_select.on('change', file_select_handler);
