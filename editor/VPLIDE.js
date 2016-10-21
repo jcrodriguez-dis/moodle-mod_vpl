@@ -86,7 +86,10 @@
                 // Drop files.
                 if (dt.files.length > 0) {
                     VPL_Util.readSelectedFiles(dt.files, function(file) {
-                        file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                       file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                    },
+                    function(){
+                       file_manager.fileListDoVisibleIfNeeded();
                     });
                     e.stopImmediatePropagation();
                     return false;
@@ -226,6 +229,17 @@
                 };
                 this.isFileListVisible = function() {
                     return file_list_container.vpl_visible;
+                };
+                this.fileListDoVisibleIfNeeded = function() {
+                    if ( this.isFileListVisible() ){
+                        return;
+                    }
+                    for (var i = 0; i < files.length; i++) {
+                        if (!files[i].isOpen()) {
+                            this.fileListVisible(true);
+                            return;
+                        }
+                    }
                 };
                 this.addFile = function(file, replace, ok, showError) {
                     if ((typeof file.name != 'string') || !VPL_Util.validPath(file.name)) {
@@ -1048,6 +1062,9 @@
             var file_select_handler = function(e) {
                 VPL_Util.readSelectedFiles(this.files, function(file) {
                     file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                },
+                function(){
+                    file_manager.fileListDoVisibleIfNeeded();
                 });
             };
             file_select.on('change', file_select_handler);
@@ -1400,6 +1417,7 @@
             menu_html += menuButtons.getHTML('fullscreen') + ' ';
             menu_html += menuButtons.getHTML('about');
             menu_html += menuButtons.getHTML('timeleft');
+            menu_html += '<div class="clearfix"></div>';
             menu.append(menu_html);
             $JQVPL('#vpl_ide_file').buttonset();
             $JQVPL('#vpl_ide_edit').buttonset();
