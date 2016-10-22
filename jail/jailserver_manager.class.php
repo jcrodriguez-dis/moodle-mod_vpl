@@ -161,7 +161,7 @@ class vpl_jailserver_manager{
      */
     static function get_server($maxmemory,$localserverlisttext='', &$feedback=null){
         if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC requiered');
+            throw new Exception('PHP XMLRPC required');
         }
         $serverlist = vpl_jailserver_manager::get_server_list($localserverlisttext);
         shuffle($serverlist);
@@ -231,7 +231,7 @@ class vpl_jailserver_manager{
         global $CFG;
         global $DB;
         if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC requiered');
+            throw new Exception('PHP XMLRPC required');
         }
         $data = new stdClass();
         $data->maxmemory=(int)1024*10;
@@ -273,7 +273,7 @@ class vpl_jailserver_manager{
         global $CFG;
         global $DB;
         if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC requiered');
+            throw new Exception('PHP XMLRPC required');
         }
         $data = new stdClass();
         $data->maxmemory=(int)1024*10;
