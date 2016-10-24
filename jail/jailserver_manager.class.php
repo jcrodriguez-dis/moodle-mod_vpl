@@ -37,7 +37,7 @@ class vpl_jailserver_manager {
     static public function get_curl($server, $request, $fresh = false) {
         global $CFG;
         if (! function_exists( 'curl_init' )) {
-            throw new Exception( 'PHP cURL requiered' );
+            throw new Exception( 'PHP cURL required' );
         }
         $plugincfg = get_config('mod_vpl');
         $ch = curl_init();
@@ -168,7 +168,7 @@ class vpl_jailserver_manager {
      * Return a valid server to be used, May tag some servers as faulty
      *
      * @param int $maxmemory
-     *            requiered
+     *            required
      * @param string $localserverlisttext=''
      *            List of local server in text
      * @param string $feedback
@@ -177,7 +177,7 @@ class vpl_jailserver_manager {
      */
     static public function get_server($maxmemory, $localserverlisttext = '', &$feedback = null) {
         if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC requiered' );
+            throw new Exception( 'PHP XMLRPC required' );
         }
         $serverlist = self::get_server_list( $localserverlisttext );
         shuffle( $serverlist );
@@ -250,7 +250,7 @@ class vpl_jailserver_manager {
         global $CFG;
         global $DB;
         if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC requiered' );
+            throw new Exception( 'PHP XMLRPC required' );
         }
         $data = new stdClass();
         $data->maxmemory = ( int ) 1024 * 10;
@@ -296,7 +296,7 @@ class vpl_jailserver_manager {
         global $CFG;
         global $DB;
         if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC requiered' );
+            throw new Exception( 'PHP XMLRPC required' );
         }
         $data = new stdClass();
         $data->maxmemory = ( int ) 1024 * 10;
