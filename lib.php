@@ -510,6 +510,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $strcheckjails = get_string( 'check_jail_servers', VPL );
         $strsetjails = get_string( 'local_jail_servers', VPL );
         $menustrexecutionkeepfiles = get_string( 'menukeepfiles', VPL );
+        $menustroutputfiles = get_string('menuoutputfiles',VPL);
         $menustrcheckjails = get_string( 'menucheck_jail_servers', VPL );
         $menustrsetjails = get_string( 'menulocal_jail_servers', VPL );
         $advance->add( $strexecutionfiles, new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms )
@@ -517,6 +518,8 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $advance->add( $strexecutionlimits, new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms )
                        , navigation_node::TYPE_SETTING );
         $advance->add( $strexecutionkeepfiles, new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms )
+                       , navigation_node::TYPE_SETTING );
+        $advance->add( $menustroutputfiles, new moodle_url( '/mod/vpl/forms/outputfiles.php', $parms )
                        , navigation_node::TYPE_SETTING );
         $advance->add( $strvariations, new moodle_url( '/mod/vpl/forms/variations.php', $parms )
                        , navigation_node::TYPE_SETTING );

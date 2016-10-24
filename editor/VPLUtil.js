@@ -38,7 +38,15 @@
         return $JQVPL('<div>' + t + '</div>').html();
     };
     VPL_Util.sanitizeText = function(s) {
-        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        var map = {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        };
+
+        return s.replace(/[&<>"']/g, function(m) { return map[m]; });
     };
 
     VPL_Util.setProtocol = function(coninfo) {
