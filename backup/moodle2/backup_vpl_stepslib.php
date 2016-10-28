@@ -188,8 +188,8 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $submissionfiles->add_child( $submissionfile );
         // Define sources.
         // VPL record with basedonname field.
-        $query = 'SELECT s.*, o.name as basedonname FROM {vpl} AS s';
-        $query .= ' LEFT join {vpl} as o';
+        $query = 'SELECT s.*, o.name basedonname FROM {vpl} s';
+        $query .= ' LEFT join {vpl} o';
         $query .= '   ON s.basedon = o.id';
         $query .= '   WHERE s.id = ?';
         $vpl->set_source_sql( $query, array (
@@ -206,10 +206,10 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
              * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
              * $submission->set_source_table('vpl_submissions', array('vpl' => backup::VAR_ACTIVITYID));
              */
-            $query = 'SELECT s.* FROM {vpl_submissions} AS s';
+            $query = 'SELECT s.* FROM {vpl_submissions} s';
             $query .= ' inner join';
-            $query .= ' (SELECT max(id) as maxid FROM {vpl_submissions}';
-            $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) AS ls';
+            $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
+            $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
             $query .= ' on ls.maxid = s.id';
             $submission->set_source_sql( $query, array (
                     backup::VAR_ACTIVITYID
