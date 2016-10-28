@@ -181,7 +181,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             if ($res ['executed']) {
                 $graderaw = $submission->proposedGrade($res['execution']);
                 if ( $graderaw > '' ) {
-                    $data->grade = format_float($graderaw, 5, true, true);
+                    $data->grade = format_float(floatval($graderaw), 5, true, true);
                 } else {
                     $data->grade = '';
                 }
