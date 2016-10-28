@@ -387,25 +387,7 @@ function vpl_get_coursemodule_info($coursemodule) {
 
 function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) {
     global $CFG, $USER, $DB;
-    /*
-    //FIXME
-    //Student
-    //Descripción
-    //Entrega
-    //Edición
-    //Ver entrega
-    //En grupos visibles lista de entregas
-    //Profesor
-    //Descripción
-    //Lista de entregas
-    //Similaridad
-    //Si se esta accediendo a la información de un alumno
-    //Entrega
-    //Editar
-    //Ver entrega
-    //Calificar
-    //Lista de entregas previas
-     */
+
     $vpl = new mod_vpl( $cm->id );
     $viewer = $vpl->has_capability( VPL_VIEW_CAPABILITY );
     $submiter = $vpl->has_capability( VPL_SUBMIT_CAPABILITY );
