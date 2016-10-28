@@ -116,8 +116,8 @@ if (! $groupmode) {
 $currentgroup = groups_get_activity_group( $cm, true );
 if (! $currentgroup) {
     $currentgroup = '';
-}else{
-    if ( groups_group_exists($currentgroup) ){
+} else {
+    if ( groups_group_exists($currentgroup) ) {
         echo groups_get_group_name($currentgroup);
     }
 }
