@@ -470,7 +470,7 @@ foreach ($alldata as $data) {
         $table->data [] = array (
                 $usernumber,
                 $showphoto ? $vpl->user_picture( $userinfo ) : '',
-                fullname( $userinfo ),
+                $vpl->fullname( $userinfo, !$showphoto),
                 $subtime,
                 $prev,
                 $grade,
@@ -481,7 +481,7 @@ foreach ($alldata as $data) {
         $table->data [] = array (
                 $usernumber,
                 $showphoto ? $vpl->user_picture( $userinfo ) : '',
-                fullname( $userinfo ),
+                $vpl->fullname( $userinfo, !$showphoto),
                 $subtime,
                 $prev
         );
