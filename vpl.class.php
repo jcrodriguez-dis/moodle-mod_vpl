@@ -977,7 +977,14 @@ class mod_vpl {
             }
             return '';
         } else {
-            return fullname( $user );
+            $fullname = fullname( $user );
+            if ($withlink) {
+                $url = vpl_abs_href( '/user/view.php', 'id', $user->id, 'course', $this->get_course()->id);
+                $html = "<a href=\"$url\" title=\"$fullname\">$fullname</a>";
+            } else {
+                $html = $fullname;
+            }
+            return $html;
         }
     }
 
