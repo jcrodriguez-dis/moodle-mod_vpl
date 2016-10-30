@@ -47,8 +47,7 @@ try {
         ) );
     }
     if (! $vpl->is_visible()) {
-        $logurl = vpl_rel_url( 'forms/submissionview.php', 'id', $id );
-        $vpl->add_to_log( 'view submission', $logurl, "not show" );
+        \mod_vpl\event\vpl_security::log( $vpl );
         notice( get_string( 'notavailable' ) );
     }
     $course = $vpl->get_course();
