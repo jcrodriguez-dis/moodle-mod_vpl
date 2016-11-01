@@ -150,7 +150,7 @@ function vpl_evaluate($vpl, $alldata, $userinfo, $nevaluation, $groupsurl) {
         $url = vpl_url_add_param( $groupsurl, 'evaluate', optional_param( 'evaluate', 0, PARAM_INT ) );
         $url = vpl_url_add_param( $url, 'nevaluation', $nevaluation );
         $nexturl = str_replace( '&amp;', '&', urldecode( $url ) );
-        vpl_editor_util::generateEvaluateScript( $ajaxurl, $nexturl );
+        vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
     } catch ( Exception $e ) {
         echo $OUTPUT->box( $e->getMessage() );
     }
