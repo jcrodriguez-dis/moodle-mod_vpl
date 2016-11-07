@@ -593,7 +593,7 @@
                         lastAnotation = false;
                         var ret = case_;
                         case_ = '';
-                        return '<pre>' + ret + '</pre>';
+                        return '<pre><i>' + ret + '</i></pre>';
                     }
 
                     for (i = 0; i < lines.length; i++) {
