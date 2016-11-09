@@ -798,7 +798,7 @@ class mod_vpl_submission {
                 $casetoshow = '';
             }
             // Is title line.
-            if (strlen( $line ) > 2 && $line [0] == '-') { // Title.
+            if (strlen( $line ) > 1 && $line [0] == '-') { // Title.
                 $html .= $this->get_last_comment( $title, $comment, $dropdown );
                 $line = trim( substr( $line, 1 ) );
                 if ($line [strlen( $line ) - 1] == ')') { // Has grade?
