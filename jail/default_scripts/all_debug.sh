@@ -31,15 +31,17 @@ do
 		let "NG=NG+1"
 		LANGGEN="$LANGGEN $LANGUAGE"
 		mv vpl_wexecution $VPLEXE
-		echo " Compiled"
+		echo " Compiled for GUI"
 		echo "echo \"Launching $LANGUAGE\"" >> all_execute
 		echo "/bin/bash ./$VPLEXE" >> all_execute
 		
 	elif [ -f vpl_execution ] ; then
+		echo " Compiled for TUI => removed"
 		rm vpl_execution
 		let "NNG=NNG+1"
 		LANGNGEN="$LANGNGEN $LANGUAGE"
 	else
+		echo " Not compiled"
 		let "NEG=NEG+1"
 		LANGEG="$LANGEG $LANGUAGE"
 	fi
@@ -48,6 +50,7 @@ do
 		cat .curerror >> .guierrors
 	fi
 done
+echo "echo \"Finsh. Press enter\"" >> all_execute
 echo "read" >> all_execute
 chmod +x all_execute
 cat common_script.sh > vpl_wexecution
