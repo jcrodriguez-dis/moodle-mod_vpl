@@ -39,29 +39,34 @@
      */
 
     VPL.resizeSView = function() {
-        var gview = window.document.getElementById('vpl_grade_view');
-        var cview = window.document.getElementById('vpl_grade_comments');
-        var fview = window.document.getElementById('vpl_grade_form');
-        var sview = window.document.getElementById('vpl_submission_view');
-        if (gview && cview && fview && sview) {
-            gview.style.height = fview.scrollHeight + 'px';
-            cview.style.height = fview.scrollHeight + 'px';
-            cview.style.width = (gview.scrollWidth - fview.scrollWidth - 8) + 'px';
+        var grade_view = window.document.getElementById('vpl_grade_view');
+        var comments_view = window.document.getElementById('vpl_grade_comments');
+        var textarea = window.document.getElementsByTagName('textarea')[0];
+        var form_view = window.document.getElementById('vpl_grade_form');
+        var submission_view = window.document.getElementById('vpl_submission_view');
+        if (grade_view && comments_view && form_view && submission_view && textarea) {
+            textarea.style.resize="both";
+            form_view.style.width = (textarea.offsetWidth+8)+ 'px';
+            grade_view.style.height = form_view.scrollHeight + 'px';
+            comments_view.style.height = form_view.scrollHeight + 'px';
+            comments_view.style.width = (grade_view.scrollWidth - form_view.scrollWidth - 8) + 'px';
             var newHeight;
             if (window.innerHeight) {
-                newHeight = window.innerHeight - VPL.getOffsetY(sview) - 35;
+                newHeight = window.innerHeight - VPL.getOffsetY(submission_view) - 35;
             } else {
-                newHeight = document.documentElement.clientHeight - VPL.getOffsetY(sview) - 35;
+                newHeight = document.documentElement.clientHeight - VPL.getOffsetY(submission_view) - 35;
             }
-            sview.style.height = newHeight + 'px';
+            if(newHeight < 300) {
+                newHeight = 300;
+            }
+            submission_view.style.height = newHeight + 'px';
         }
     };
 
     /* Set the resize controler */
 
-    window.onresize = VPL.resizeSView;
     VPL.resizeSView();
-    setInterval(VPL.resizeSView, 3000);
+    setInterval(VPL.resizeSView, 1000);
     /**
      * Recalculate numeric grade from the max sustracting grades found at the
      * end of lines. valid grade format: "- text (-grade)"
