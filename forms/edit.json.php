@@ -112,8 +112,10 @@ try {
         default :
             throw new Exception( 'ajax action error: ' + $action );
     }
-    if ( $instance->duedate > 0 ) {
-        $outcome->response->timeLeft = $instance->duedate - time();
+    $timeleft = $instance->duedate - time();
+    $hour = 60*60;
+    if ( $instance->duedate > 0 && $timeleft > -$hour ) {
+        $outcome->response->timeLeft = $timeleft;
     }
 } catch ( Exception $e ) {
     $outcome->success = false;

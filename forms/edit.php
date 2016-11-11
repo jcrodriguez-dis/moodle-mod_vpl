@@ -91,8 +91,10 @@ $options ['comments'] = ! $options ['example'];
 $linkuserid = $copy ? $USER->id : $userid;
 $options ['ajaxurl'] = "edit.json.php?id={$id}&userid={$linkuserid}&action=";
 $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
-if ( $instance->duedate > 0 ) {
-    $options ['timeLeft'] = $instance->duedate - time();
+$timeleft = $instance->duedate - time();
+$hour = 60*60;
+if ( $instance->duedate > 0 && $timeleft > -$hour ) {
+    $options ['timeLeft'] = $timeleft;
 }
 if ( $subid ) {
     $options ['submissionid'] = $subid;
