@@ -162,10 +162,10 @@ class vpl_editor_util {
     <form style="display: none;">
         <input type="file" multiple="multiple" id="vpl_ide_input_file" />
     </form>
-    <div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog"    >
+    <div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog" style="display: none;" >
         <div class="vpl_ide_dialog_content"></div>
     </div>
-    <div id="vpl_dialog_terminal">
+    <div id="vpl_dialog_terminal" style="display: none;">
         <pre id="vpl_terminal" class="vpl_terminal"></pre>
     </div>
     <div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
@@ -180,7 +180,7 @@ class vpl_editor_util {
         <div class="vpl_clipboard_label2"></div><br />
         <textarea class="vpl_clipboard_entry2"></textarea>
     </div>
-    <div id="vpl_dialog_vnc">
+    <div id="vpl_dialog_vnc" style="display: none;">
         <canvas class="vpl_noVNC_canvas">
                 Canvas not supported.
          </canvas>
