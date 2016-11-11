@@ -48,7 +48,7 @@
                     title += ' (' + buttons[button].key + ')';
                 }
                 $JQVPL('#vpl_ide_' + button).attr('title', title);
-                $JQVPL('#vpl_ide_' + button + ' .ui-button-text').html(VPL_Util.gen_icon(icon));
+                $JQVPL('#vpl_ide_' + button + ' i').replaceWith(VPL_Util.gen_icon(icon));
             };
             this.add = function(button) {
                 if (typeof button === 'string') {

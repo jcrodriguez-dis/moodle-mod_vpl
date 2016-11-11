@@ -1217,15 +1217,16 @@
             menuButtons.add({
                 name:'fullscreen',
                 originalAction: function() {
+                    var tags='header, footer, aside, #page-header, div.navbar, div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         root_obj.removeClass('vpl_ide_root_fullscreen');
                         $JQVPL('body').removeClass('vpl_body_fullscreen');
                         menuButtons.setText('fullscreen', 'fullscreen');
-                        $JQVPL('header, footer, aside, #page-header, div.navbar, div.tabtree, #dock, .breadcrumb-nav').show();
+                        $JQVPL(tags).show();
                         fullScreen = false;
                     } else {
                         $JQVPL('body').addClass('vpl_body_fullscreen').scrollTop(0);
-                        $JQVPL('header, footer, aside,#page-header, div.navbar, div.tabtree, #dock, .breadcrumb-nav').hide();
+                        $JQVPL(tags).hide();
                         root_obj.addClass('vpl_ide_root_fullscreen');
                         menuButtons.setText('fullscreen', 'regularscreen');
                         fullScreen = true;
@@ -1425,6 +1426,8 @@
             $JQVPL('#vpl_ide_fullscreen').button();
             $JQVPL('#vpl_ide_about').button();
             $JQVPL('#vpl_ide_timeleft').button().css('float','right').hide();
+            $JQVPL('#vpl_menu .ui-button').css('padding','6px');
+            $JQVPL('#vpl_menu .ui-button-text').css('padding','0');
             menuButtons.setTimeLeft(options);
             function updateMenu() {
                 var file = file_manager.currentFile();
@@ -1504,6 +1507,7 @@
                         autoResizeTab();
                     }
                 }
+                checkMenuWidth();
                 setInterval(checkMenuWidth, 1000);
             }());
             VPL_Util.requestAction('load', 'loading', options, options.ajaxurl, function(response) {
