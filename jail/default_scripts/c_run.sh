@@ -10,4 +10,4 @@
 check_program gcc
 get_source_files c
 #compile
-eval gcc -o vpl_execution -std=c99 $SOURCE_FILES -lm -lutil 
+eval gcc -fno-diagnostics-color -o vpl_execution -std=c99 $SOURCE_FILES -lm -lutil 
