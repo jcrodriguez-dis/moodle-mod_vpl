@@ -86,7 +86,7 @@
                 // Drop files.
                 if (dt.files.length > 0) {
                     VPL_Util.readSelectedFiles(dt.files, function(file) {
-                       file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                       return file_manager.addFile(file, true, updateMenu, showErrorMessage);
                     },
                     function(){
                        file_manager.fileListVisibleIfNeeded();
@@ -428,30 +428,30 @@
                 this.getDirectoryStructure = function() {
                     var structure = {
                         isDir : true,
-                        content : []
+                        content : {}
                     };
                     for (var i in files) {
                         var file = files[i];
                         var fileName = file.getFileName();
                         var path = fileName.split("/");
-                        var current = structure;
+                        var curdir = structure;
                         for (var p in path) {
                             var part = path[p];
                             if (p == path.length - 1) { // File.
-                                current.content[part] = {
+                                curdir.content[part] = {
                                     isDir : false,
                                     content : file,
                                     pos : i
                                 };
                             } else {
-                                if (!current.content[part]) { // New dir.
-                                    current.content[part] = {
+                                if (!curdir.content[part]) { // New dir.
+                                    curdir.content[part] = {
                                         isDir : true,
-                                        content : []
+                                        content : {}
                                     };
                                 }
                                 // Descend Dir.
-                                current = current.content[part];
+                                curdir = curdir.content[part];
                             }
                         }
                     }
@@ -462,16 +462,12 @@
                         return;
                     }
                     var dirIndent = '<span class="vpl_ide_dirindent"></span>';
-                    function lister(dir) {
-                        var lines = [];
+                    function lister(dir,indent,lines) {
                         for (var name in dir.content) {
                             var fd = dir.content[name];
                             if (fd.isDir) {
-                                lines.push(VPL_Util.iconFolder() + VPL_Util.sanitizeText(name));
-                                var directory = lister(fd);
-                                for (var i in directory) {
-                                    lines.push(dirIndent + directory[i]);
-                                }
+                                lines.push(indent+VPL_Util.iconFolder() + VPL_Util.sanitizeText(name));
+                                lister(fd,indent+dirIndent,lines);
                             } else {
                                 var file = fd.content;
                                 var sname = VPL_Util.sanitizeText(name);
@@ -487,14 +483,15 @@
                                 if (fd.pos < minNumberOfFiles) {
                                     line = line + VPL_Util.iconRequired();
                                 }
-                                lines.push(line);
+                                lines.push(indent+line);
                             }
                         }
-                        return lines;
                     }
+
                     var structure = self.getDirectoryStructure();
+                    var lines = [];
                     var html = '';
-                    var lines = lister(structure);
+                    lister(structure,'',lines);
                     for (var i in lines) {
                         html += lines[i] + '<br />';
                     }
@@ -1061,7 +1058,7 @@
             var file_select = $JQVPL('#vpl_ide_input_file');
             var file_select_handler = function(e) {
                 VPL_Util.readSelectedFiles(this.files, function(file) {
-                    file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                    return file_manager.addFile(file, true, updateMenu, showErrorMessage);
                 },
                 function(){
                     file_manager.fileListVisibleIfNeeded();
@@ -1250,7 +1247,7 @@
                 VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        file_manager.addFile(files[fileName], true, updateMenu, showErrorMessage);
+                        return file_manager.addFile(files[fileName], true, updateMenu, showErrorMessage);
                     }
                     VPL_Util.delay(updateMenu);
                 }, showErrorMessage);
