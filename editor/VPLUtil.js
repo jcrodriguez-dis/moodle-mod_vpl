@@ -148,13 +148,15 @@
     VPL_Util.dataFromURLData = function(data) {
         return data.substr(data.indexOf(',') + 1);
     };
-    VPL_Util.readZipFile = function(data, save, progressBar) {
+    VPL_Util.readZipFile = function(data, save, progressBar,end) {
         var ab = VPL_Util.ArrayBuffer2String(data);
         var unzipper = new JUnzip(ab);
         if (unzipper.isZipFile()) {
             unzipper.readEntries();
+            var out = unzipper.entries.length;
             function process(i) {
-                if (i >= unzipper.entries.length || progressBar.isClosed()) {
+                if (i >= out || progressBar.isClosed()) {
+                    end && end();
                     return;
                 }
                 var entry = unzipper.entries[i];
@@ -175,7 +177,10 @@
                     data = VPL_Util.String2ArrayBuffer(uncompressed);
                     if (VPL_Util.isBinary(fileName)) {
                         // If binary use as arrayBuffer.
-                        save({name:fileName, contents:btoa(uncompressed), encoding:1});
+                        if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
+                            i = out;
+                        }
+                        process(i + 1);
                         progressBar.endFile();
                     } else {
                         blob = new Blob([ data ], {
@@ -183,12 +188,14 @@
                         });
                         fr = new FileReader();
                         fr.onload = function(e) {
-                            save({name:fileName, contents:e.target.result, encoding:0});
+                            if ( ! save({name:fileName, contents:e.target.result, encoding:0}) ) {
+                                i = out;
+                            }
+                            process(i + 1);
                             progressBar.endFile();
                         };
                         fr.readAsText(blob);
                     }
-                    process(i + 1);
                 }
             }
             process(0);
@@ -199,6 +206,9 @@
         // Process all File objects.
         var pb = new VPL_Util.progressBar('import', 'import');
         var filePending = 0;
+        if ( ! end ) {
+            end = VPL_Util.doNothing;
+        }        
         pb.processFile = function(name) {
             pb.setLabel(name);
             filePending++;
@@ -206,14 +216,12 @@
         pb.endFile = function() {
             filePending--;
             if (filePending == 0) {
+                end();
                 pb.close();
             }
         };
         function readSecuencial(sec) {
             if (sec >= filesToRead.length || pb.isClosed()) {
-                if ( end ) {
-                    end();
-                }
                 return;
             }
             var f = filesToRead[sec];
@@ -222,18 +230,25 @@
             var reader = new FileReader();
             var ext = VPL_Util.fileExtension(f.name).toLowerCase();
             reader.onload = function(e) {
+                var goNext = false;
                 if (binary) {
                     if (ext == 'zip') {
-                        VPL_Util.readZipFile(e.target.result, save, pb);
+                        try {
+                            VPL_Util.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
+                        } catch (e) {
+                            VPL_Util.showErrorMessage(e+ " : "+f.name);
+                        }
                     } else {
                         var data = VPL_Util.dataFromURLData(e.target.result);
-                        save({name:f.name, contents:data, encoding:1});
+                        goNext = save({name:f.name, contents:data, encoding:1});
                     }
                 } else{
-                    save({name:f.name, contents:e.target.result, encoding:0});
+                    goNext = save({name:f.name, contents:e.target.result, encoding:0});
                 }
-                // Load next file.
-                readSecuencial(sec + 1);
+                // Load next file if OK.
+                if ( goNext ) {
+                    readSecuencial(sec + 1);
+                }
                 pb.endFile();
             };
             if (binary) {
