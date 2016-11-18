@@ -219,18 +219,21 @@
                     return;
                 }
                 editor.undo();
+                editor.focus();
             };
             this.redo = function() {
                 if (!opened) {
                     return;
                 }
                 editor.redo();
+                editor.focus();
             };
             this.selectAll = function() {
                 if (!opened) {
                     return;
                 }
                 editor.selectAll();
+                editor.focus();
             };
             this.hasUndo = function() {
                 if (!opened) {
