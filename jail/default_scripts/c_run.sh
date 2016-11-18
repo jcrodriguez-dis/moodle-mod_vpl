@@ -15,4 +15,4 @@ if [ "$1" == "version" ] ; then
 fi 
 get_source_files c
 #compile
-eval gcc -o vpl_execution $SOURCE_FILES -lm -lutil 
+eval gcc -fno-diagnostics-color -o vpl_execution $SOURCE_FILES -lm -lutil 
