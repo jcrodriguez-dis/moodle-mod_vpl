@@ -66,9 +66,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault( 'duedate', $endtime );
 
         $mform->addElement( 'header', 'submissionrestrictions', get_string( 'submissionrestrictions', VPL ) );
-        $mform->addElement( 'text', 'maxfiles', get_string( 'maxfiles', VPL ), array (
-                'size' => '2'
-        ) );
+        $mform->addElement( 'text', 'maxfiles', get_string( 'maxfiles', VPL ) );
         $mform->setType( 'maxfiles', PARAM_INT );
         $mform->setDefault( 'maxfiles', 1 );
         $mform->addElement( 'select', 'worktype', get_string( 'worktype', VPL ), array (
