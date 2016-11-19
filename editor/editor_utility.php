@@ -156,6 +156,9 @@ class vpl_editor_util {
                     Touch Punch</a>: Touch event support for jQuery-UI. Copyright Dave
                 Furfero, Dual licensed under the MIT or GPL Version 2 licenses. (<a
                 href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
+            <li><a href="http://fontawesome.io">Font Awesome</a> by Dave Gandy</li>
+            <li>unzip.js August Lilleaas</li>
+            <li>inflate.js August Lilleaas and Masanao Izumo <iz@onicos.co.jp></li>
         </ul>
         </div>
     </div>
