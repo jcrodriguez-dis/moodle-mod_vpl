@@ -197,6 +197,8 @@ class vpl_editor_util {
     $JQVPL(document).ready(function(){
         $JQVPL("#page-footer").hide();
         vpl_ide = new VPL_IDE('<?php echo $tagid;?>',<?php echo $joptions;?>);
+        $JQVPL("head").append('<meta name="viewport" content="initial-scale=1">');
+        $JQVPL("head").append('<meta name="viewport" width="device-width">');
     });
     </script>
 <?php
