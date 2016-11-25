@@ -259,7 +259,7 @@
                     var tl = timeLeft - (lastLap - start);
                     var thtml = VPL_Util.gen_icon('timeleft');
                     if (show) {
-                        thtml += VPL_Util.getTimeLeft(tl);
+                        thtml += ' ' + VPL_Util.getTimeLeft(tl);
                     }
                     var cssclass = '';
                     if (tl <= 0) {
