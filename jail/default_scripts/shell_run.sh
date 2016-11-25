@@ -8,5 +8,5 @@
 #load common script and check programs
 . common_script.sh
 cat common_script.sh > vpl_execution
-cat VPL_SUBFILE0 >> vpl_execution
+cat $VPL_SUBFILE0 >> vpl_execution
 chmod +x vpl_execution
