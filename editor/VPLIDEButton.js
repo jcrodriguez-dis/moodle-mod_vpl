@@ -264,7 +264,7 @@
                     var cssclass = '';
                     if (tl <= 0) {
                         cssclass = 'vpl_buttonleft_black';
-                    } else if (tl < 5 * 60) {
+                    } else if (tl <= 5 * 60) {
                         cssclass = 'vpl_buttonleft_red';
                     } else if (tl <= 15 * 60) {
                         cssclass = 'vpl_buttonleft_orange';
@@ -295,11 +295,14 @@
                         if (timeLeft > day) {
                             precision = 5 * 60;
                         }
+                        var sync = timeLeft % precision;
                         timeLeft = self.multiple(timeLeft, precision);
                         start = self.multiple(VPL_Util.getCurrentTime(), precision);
                         lastLap = start - 1;
                         update();
-                        interval = setInterval(update, checkt);
+                        setTimeout(() => {
+                            interval = setInterval(update, checkt);                            
+                        }, sync * 1000);
                     } else {
                         $JQVPL('#vpl_ide_timeleft').hide();
                     }

@@ -257,17 +257,17 @@ pre.vpl_terminal {
     display: inline-block;
 }
 .vpl_buttonleft_orange {
-    background-color : orange;
-    color : white;
+    background-color : orange !important;
+    color : white !important;
     font-weight: bold;
 }
 .vpl_buttonleft_red {
-    background-color : red;
-    color : white;
+    background-color : red !important;
+    color : white !important;
     font-weight: bold;
 }
 .vpl_buttonleft_black {
-    background-color : black;
-    color : white;
+    background-color : black !important;
+    color : white !important;
     font-weight: bold;
 }
