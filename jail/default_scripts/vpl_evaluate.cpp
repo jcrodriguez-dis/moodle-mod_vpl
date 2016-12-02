@@ -1249,13 +1249,13 @@ void Evaluation::loadTestCases(string fname) {
 	} state, newstate;
 	bool inCase = false;
 	vector<string> lines = Tools::splitLines(Tools::readFile(fname));
+    remove(fname.c_str());
 	string inputEnd = "";
 	string outputEnd = "";
 	string input = "";
 	string output = "";
 	string caseDescription = "";
 	string tag, value;
-
 	float gradeReduction = std::numeric_limits<float>::min();
 	/*must be changed from String
 	 * to pair type (regexp o no) and string*/
