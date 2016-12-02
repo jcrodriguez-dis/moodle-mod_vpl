@@ -131,7 +131,7 @@ class vpl_editor_util {
         <div class="vpl_ide_dialog_content">
         <h3>IDE for VPL</h3>
         This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
-            target="_blank">Virtual Programming Lab for Moodel</a><br /> Author:
+            target="_blank">Virtual Programming Lab for Moodle</a><br /> Author:
         Juan Carlos Rodríguez del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br />
         Licence: <a href="http://www.gnu.org/copyleft/gpl.html"
             target="_blank">GNU GPL v3</a><br /> This software uses/includes the
