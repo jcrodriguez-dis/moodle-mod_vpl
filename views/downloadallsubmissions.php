@@ -102,8 +102,6 @@ foreach ($list as $userinfo) {
     }
     $alldata [] = $data;
 }
-// Unblock user session.
-session_write_close();
 
 $zip = new ZipArchive();
 $zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownloadall' );
@@ -122,17 +120,5 @@ if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
         }
     }
     $zip->close();
-    // Get zip data.
-    $data = file_get_contents( $zipfilename );
-    // Remove zip file.
-    unlink( $zipfilename );
-    $name = $vpl->get_instance()->name;
-    // Send zipdata.
-    @header( 'Content-Length: ' . strlen( $data ) );
-    @header( 'Content-Disposition: attachment; filename="' . $name . '.zip"' );
-    @header( 'Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0' );
-    @header( 'Expires: ' . gmdate( 'D, d M Y H:i:s', 0 ) . ' GMT' );
-    @header( 'Pragma: no-cache' );
-    @header( 'Accept-Ranges: none' );
-    echo $data;
+    vpl_output_zip($zipfilename,$vpl->get_instance()->name);
 }
