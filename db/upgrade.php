@@ -204,5 +204,21 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
+    //include 3.2 and before
+    $VPL3_2n = 2016111812+1;
+    if ($oldversion < $VPL3_2n) {
+
+        // Define field id to be added to vpl.
+        $table = new xmldb_table('vpl');
+        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+
+        // Conditionally launch add field id.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Vpl savepoint reached.
+        upgrade_mod_savepoint(true, $VPL3_2n, 'vpl');
+    }
     return true;
 }
