@@ -93,7 +93,7 @@ if ($fromform = $mform->get_data()) {
         $instance->maxexememory = $fromform->maxexememory;
         $instance->maxexefilesize = $fromform->maxexefilesize;
         $instance->maxexeprocesses = $fromform->maxexeprocesses;
-        if ($DB->update_record( VPL, $instance )) {
+        if ( $vpl->update() ) {
             vpl_notice( get_string( 'optionssaved', VPL ) );
         } else {
             vpl_error( get_string( 'optionsnotsaved', VPL ) );

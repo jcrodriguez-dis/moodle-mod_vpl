@@ -54,6 +54,7 @@ try {
             $fgm = $vpl->get_execution_fgm();
             $fgm->deleteallfiles();
             $fgm->addallfiles($postfiles);
+            $vpl->update();
             break;
         case 'load' :
             $fgm = $vpl->get_execution_fgm();

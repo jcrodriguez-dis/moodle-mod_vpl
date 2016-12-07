@@ -107,10 +107,12 @@ if (optional_param( 'varid', - 13, PARAM_INT ) == - 13) { // No variation saved.
     if ($oform->is_cancelled()) {
         vpl_inmediate_redirect( $href ); // Reload page.
     } else if ($fromform = $oform->get_data()) {
-        $fromform->id = $vplid;
         vpl_truncate_string( $fromform->variationtitle, 255 );
+        $instance = $vpl->get_instance();
+        $instance->usevariations = $fromform->usevariations;
+        $instance->variationtitle = $fromform->variationtitle;
+        $vpl->update();
         \mod_vpl\event\vpl_variation_updated::log( $vpl );
-        $DB->update_record( VPL, $fromform );
         vpl_inmediate_redirect( $href );
     }
     $vplinstmod = clone $vpl->get_instance();

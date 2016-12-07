@@ -98,7 +98,7 @@ if ($fromform = $mform->get_data()) {
         $instance->evaluate = $fromform->evaluate;
         $instance->evaluateonsubmission = $fromform->evaluate && $fromform->evaluateonsubmission;
         $instance->automaticgrading = $fromform->evaluate && $fromform->automaticgrading;
-        if ($DB->update_record( VPL, $instance )) {
+        if ( $vpl->update() ) {
             vpl_notice( get_string( 'optionssaved', VPL ) );
         } else {
             vpl_error( get_string( 'optionsnotsaved', VPL ) );

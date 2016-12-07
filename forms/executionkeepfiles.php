@@ -76,6 +76,7 @@ if ($fromform = $mform->get_data()) {
             }
         }
         $fgp->setFileKeepList( $keeplist );
+        $vpl->update();
         \mod_vpl\event\vpl_execution_keeplist_updated::log( $vpl );
         vpl_notice( get_string( 'optionssaved', VPL ) );
     }
