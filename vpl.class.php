@@ -254,6 +254,17 @@ class mod_vpl {
     }
 
     /**
+     * Update a VPL instance including timemodified
+     *
+     * @return bool true if all OK
+     */
+    public function update() {
+        global $DB;
+        $this->instance->timemodified = time();
+        return $DB->update_record( VPL, $this->instance );
+    }
+
+    /**
      *
      * @return instance data directory
      */
