@@ -139,9 +139,10 @@
                 this.restrictedPaste = restrictedPaste;
                 this.dropHandler = dropHandler;
                 this.dragoverHandler = dragoverHandler;
+                this.readOnly = readOnly;
+                this.restrictedEdit = restrictedEdit;
                 this.adjustTabsTitles = adjustTabsTitles;
                 this.minNumberOfFiles = minNumberOfFiles;
-                this.readOnly = readOnly;
                 this.scrollBarWidth = scrollBarWidth;
                 var localClipboard = "";
                 this.setClipboard = function(t) {
