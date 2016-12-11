@@ -27,16 +27,9 @@ class vpl_editor_util {
     public static function generate_jquery() {
         global $PAGE;
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/font-awesome/css/font-awesome.min.css' ) );
-        // Auto selection dont work in 2.3.
-        if (method_exists( $PAGE->requires, 'jquery_plugin' )) {
-            $PAGE->requires->jquery();
-            $PAGE->requires->jquery_plugin( 'ui' );
-            $PAGE->requires->jquery_plugin( 'ui-css' );
-        } else {
-            $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css' ) );
-            $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
-            $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js' ), true );
-        }
+        $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js' ), true );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
     }
     public static function generate_requires_evaluation() {
