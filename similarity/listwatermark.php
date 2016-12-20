@@ -81,8 +81,8 @@ foreach ($list as $userinfo) {
         $subf = $submission->get_submitted_fgm();
         $filelist = $subf->getFileList();
         foreach ($filelist as $filename) {
-            $data = $subf->getFileData( $filename );
-            $wm = vpl_watermark::getwm( $data );
+            $userdata = $subf->getFileData( $filename );
+            $wm = vpl_watermark::getwm( $userdata );
             if ($wm) {
                 if ($wm != $userinfo->id) {
                     $userorigin = $DB->get_record( 'user', array (
