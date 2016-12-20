@@ -716,7 +716,7 @@ class mod_vpl {
     }
 
     /**
-     * Get all last usersubmission
+     * Get the last submission of all users
      *
      * @param $fields fields
      *            to retrieve from submissions table, default s.*. userid is always retrieved
@@ -726,7 +726,7 @@ class mod_vpl {
         // Get last submissions records for this vpl module.
         global $DB;
         $id = $this->get_instance()->id;
-        $query = "SELECT s.userid, $fields FROM {vpl_submissions} AS s";
+        $query = "SELECT s.userid, $fields FROM {vpl_submissions} s";
         $query .= ' inner join ';
         $query .= ' (SELECT max(id) as maxid FROM {vpl_submissions} ';
         $query .= '  WHERE {vpl_submissions}.vpl=? ';
@@ -738,6 +738,23 @@ class mod_vpl {
         return $DB->get_records_sql( $query, $parms );
     }
 
+    /**
+     * Get all saved submission of all users
+     *
+     * @param $fields fields
+     *            to retrieve from submissions table, default s.*
+     * @return object array
+     */
+    public function all_user_submission($fields = 's.*') {
+        global $DB;
+        $id = $this->get_instance()->id;
+        $query = "SELECT $fields FROM {vpl_submissions} s";
+        $query .= '  WHERE {vpl_submissions}.vpl=? ;';
+        $parms = array (
+                $id
+        );
+        return $DB->get_records_sql( $query, $parms );
+    }
     /**
      * Get number of user submissions
      *
