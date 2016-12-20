@@ -30,42 +30,29 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
-function vpl_selzipdirname($name) {
-    static $names = null;
-    if ($names == null) {
-        $names = array ();
-    }
+function vpl_user_zip_dirname($name) {
     // Prepare name.
     $name = trim( $name );
     $name = iconv( 'UTF-8', 'ASCII//TRANSLIT', $name );
     $name = str_replace( '?', '_', $name );
     $name = str_replace( '.', ' ', $name );
     $name = str_replace( ',', ' ', $name );
-    $ret = '';
-    $word = false;
-    for ($i = 0; $i < strlen( $name ); $i ++) {
-        $c = $name [$i];
-        if ($c != ' ' && ! $word) {
-            $ret .= strtoupper( $c );
-        }
-        if ($c != ' ') {
-            $word = true;
-        } else {
-            $word = false;
-        }
+
+    return $name;
+}
+
+function vpl_add_files_to_zip($zip, $zipdirname, $sourcedir, $fgm) {
+    foreach ($fgm->getFileList() as $filename) {
+        $source = file_group_process::encodeFileName( $filename );
+        $zip->addFile( $sourcedir . $source, $zipdirname . $filename );
     }
-    if (isset( $names [$ret] )) {
-        $names [$ret] ++;
-        $ret .= $names [$ret];
-    } else {
-        $names [$ret] = 0;
-    }
-    return $ret;
 }
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $group = optional_param( 'group', - 1, PARAM_INT );
+$all = optional_param( 'all', 0, PARAM_INT );
+
 $subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
 $vpl = new mod_vpl( $id );
 $cm = $vpl->get_course_module();
@@ -77,29 +64,42 @@ if (! $currentgroup) {
     $currentgroup = '';
 }
 $list = $vpl->get_students( $currentgroup );
-$submissions = $vpl->all_last_user_submission();
 
-// Get all information.
+if($all){
+    $asorted_submissions = $vpl->all_last_user_submission();
+}else{
+    $asorted_submissions = $vpl->all_user_submission();
+}
+// Organize information by user id.
+$submissions = array();
+foreach ($asorted_submissions as $instance){
+    if( ! isset($submissions[$instance->userid]) ){
+        $submissions[$instance->userid] = array();
+    }
+    $submissions[$instance->userid][]=$instance;
+}
+
+// Get all information by user.
 $alldata = array ();
 foreach ($list as $userinfo) {
     if ($vpl->is_group_activity() && $userinfo->id != $vpl->get_group_leaderid( $userinfo->id )) {
         continue;
     }
-    $submission = null;
     if (! isset( $submissions [$userinfo->id] )) {
         continue;
-    } else {
-        $subinstance = $submissions [$userinfo->id];
-        $submission = new mod_vpl_submission_CE( $vpl, $subinstance );
     }
     $data = new stdClass();
     $data->userinfo = $userinfo;
-    $data->submission = $submission;
     // When group activity => change leader object lastname to groupname for order porpouse.
     if ($vpl->is_group_activity()) {
         $data->userinfo->firstname = '';
         $data->userinfo->lastname = $vpl->fullname( $userinfo );
     }
+    $user_submissions = arra();
+    foreach( $submissions [$userinfo->id]  as $subinstance) {
+        $user_submissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
+    }
+    $data->submissions = $user_submissions;
     $alldata [] = $data;
 }
 
@@ -108,15 +108,19 @@ $zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownloadall' );
 if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
     foreach ($alldata as $data) {
         $user = $data->userinfo;
-        $fgm = $data->submission->get_submitted_fgm();
-        $zipdirname = vpl_selzipdirname( $user->lastname . ' ' . $user->firstname );
+        $zipdirname = vpl_user_zip_dirname( $user->lastname . ' ' . $user->firstname );
+        $zipdirname .= ' ' . $user->id;
         // Create directory.
         $zip->addEmptyDir( $zipdirname );
         $zipdirname .= '/';
-        $sourcedir = $data->submission->get_submission_directory() . '/';
-        foreach ($fgm->getFileList() as $filename) {
-            $source = file_group_process::encodeFileName( $filename );
-            $zip->addFile( $sourcedir . $source, $zipdirname . $filename );
+        foreach ($data->submissions as $submission) {
+            $zipsubdirname = $zipdirname;
+            if ( $all ) {
+                $zipsubdirname .= $submission->instance->id . '/';
+            }
+            $fgm = $submission->get_submitted_fgm();
+            $sourcedir = $submission->get_submission_directory() . '/';
+            vpl_add_files_to_zip($zip,$sourcedir,$zipsubdirname,$fgm);
         }
     }
     $zip->close();
