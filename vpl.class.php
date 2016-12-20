@@ -1527,6 +1527,9 @@ class mod_vpl {
         } else {
             $this->print_restriction( 'worktype', $values [$worktype] );
         }
+        if ($this->instance->example) {
+            $this->print_restriction( 'isexample', $stryes );
+        }
         if ($this->has_capability( VPL_GRADE_CAPABILITY )) {
             $stryes = get_string( 'yes' );
             $strno = get_string( 'no' );
@@ -1554,9 +1557,6 @@ class mod_vpl {
             }
             if ($this->instance->restrictededitor) {
                 $this->print_restriction( 'restrictededitor', $stryes );
-            }
-            if ($this->instance->example) {
-                $this->print_restriction( 'isexample', $stryes );
             }
             if (! $this->get_course_module()->visible) {
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
