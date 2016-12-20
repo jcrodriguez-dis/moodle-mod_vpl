@@ -1248,8 +1248,9 @@
                 VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        return file_manager.addFile(files[fileName], true, updateMenu, showErrorMessage);
+                        file_manager.addFile(files[fileName], true, VPL_Util.doNothing, showErrorMessage);
                     }
+                    file_manager.fileListVisibleIfNeeded();
                     VPL_Util.delay(updateMenu);
                 }, showErrorMessage);
             }
@@ -1258,15 +1259,7 @@
                 originalAction: function() {
                     showMessage(str('sureresetfiles'), {
                         title : str('resetfiles'),
-                        ok : function() {
-                            VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
-                                var files = response.files;
-                                for (var fileName in files) {
-                                    file_manager.addFile(files[fileName], data, true, updateMenu, showErrorMessage);
-                                }
-                                VPL_Util.delay(updateMenu);
-                            }, showErrorMessage);
-                        }
+                        ok : resetFiles
                     });
                 }
             });
