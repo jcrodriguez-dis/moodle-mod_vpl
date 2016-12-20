@@ -166,17 +166,15 @@ function vpl_write_list_to_file($filename, $list) {
  *
  */
 function vpl_output_zip($zipfilename, $name) {
-    // Get zip data.
-    $data = file_get_contents( $zipfilename );
-    // Remove zip file.
-    unlink( $zipfilename );
     // Send zipdata.
+    $blocksize = 1000*1024;
+    $size = filesize( $zipfilename );
     $cname = rawurlencode( $name . '.zip' );
     $content_disposition = 'Content-Disposition: attachment;';
     $content_disposition .= ' filename="' . $name . '.zip";';
     $content_disposition .= ' filename*=utf-8\'\'' . $cname;
 
-    @header( 'Content-Length: ' . strlen( $data ) );
+    @header( 'Content-Length: ' . $size );
     @header( 'Content-Type: application/zip; charset=utf-8' );
     @header( $content_disposition );
     @header( 'Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0' );
@@ -184,8 +182,16 @@ function vpl_output_zip($zipfilename, $name) {
     @header( 'Expires: 0' );
     @header( 'Pragma: no-cache' );
     @header( 'Accept-Ranges: none' );
-    echo $data;
+    // Get zip data.
+    $offset = 0;
+    while ( $offset < $size ){
+        echo file_get_contents( $zipfilename, false,  NULL, $offset, $blocksize);
+        $offset += $blocksize;
+    }
+    // Remove zip file.
+    unlink( $zipfilename );
 }
+
 /**
  * Get lang code @parm $bashadapt true adapt lang to bash LANG (default false)
  *
