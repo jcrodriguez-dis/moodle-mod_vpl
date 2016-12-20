@@ -234,6 +234,10 @@ class TestCase {
 	string caseDescription;
 	float gradeReduction;
 	float gradeReductionApplied;
+	string failMessage;
+	string commandToRun;
+	string commandArgs;
+	int expectedExitCode;
 	string programOutputBefore, programOutputAfter, programInput;
 
 	void cutOutputTooLarge(string &output);
@@ -246,7 +250,8 @@ public:
 	TestCase& operator=(const TestCase &o);
 	~TestCase();
 	TestCase(int id, const string &input, const vector<string> &output,
-			const string &caseDescription, const float gradeReduction);
+			const string &caseDescription, const float gradeReduction,
+		    string failMessage, commandToRun, commandArgs, expectedExitCode);
 	bool isCorrectResult();
 	float getGradeReduction();
 	void setGradeReductionApplied(float r);
@@ -963,6 +968,10 @@ TestCase::TestCase(const TestCase &o) {
 	input=o.input;
 	caseDescription=o.caseDescription;
 	gradeReduction=o.gradeReduction;
+	failMessage=o.failMessage;
+	commandToRun=o.commandToRun;
+	commandArgs=o.commandArgs;
+	expectedExitCode=o.expectedExitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
@@ -983,6 +992,10 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	input=o.input;
 	caseDescription=o.caseDescription;
 	gradeReduction=o.gradeReduction;
+	failMessage=o.failMessage;
+	commandToRun=o.commandToRun;
+	commandArgs=o.commandArgs;
+	expectedExitCode=o.expectedExitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
@@ -1002,7 +1015,8 @@ TestCase::~TestCase() {
 }
 
 TestCase::TestCase(int id, const string &input, const vector<string> &output,
-		const string &caseDescription, const float gradeReduction) {
+		const string &caseDescription, const float gradeReduction,
+		string failMessage, commandToRun, commandArgs, expectedExitCode) {
 	this->id = id;
 	this->input = input;
 	for(int i=0;i<output.size(); i++){
@@ -1212,9 +1226,11 @@ void Evaluation::deleteSinglenton(){
 }
 
 void Evaluation::addTestCase(string &input, vector<string> &output,
-		string &caseDescription, float &gradeReduction) {
+		string &caseDescription, float &gradeReduction,
+		string failMessage, string commandToRun, string commandArgs, int expectedExitCode) {
 	testCases.push_back(TestCase(testCases.size() + 1, input, output,
-			caseDescription, gradeReduction));
+			caseDescription, gradeReduction, failMessage, commandToRun,
+			commandArgs, expectedExitCode ));
 	input = "";
 	output.resize(0);
 	caseDescription = "";
@@ -1244,6 +1260,14 @@ void Evaluation::loadTestCases(string fname) {
 	const char *OUTPUT_TAG = "output=";
 	const char *OUTPUT_END_TAG = "outputend=";
 	const char *GRADEREDUCTION_TAG = "gradereduction=";
+	const char *FAILMESSAGE_TAG = "failmessage=";
+	const char *COMMANDTORUN_TAG = "commandtorun=";
+	const char *COMMANDARGS_TAG = "commandargs=";
+	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
+	const char *FREEEVALUATIONS_TAG = "freevaluations=";
+	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
+	string failMessage, string commandToRun, string commandArgs;
+	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
 		regular, ininput, inoutput
 	} state, newstate;
@@ -1338,6 +1362,15 @@ void Evaluation::loadTestCases(string fname) {
 				if(value.size()>1 && value[value.size()-1]=='%'){
 					float percent = atof(value.c_str());
 					gradeReduction = (grademax-grademin)*percent/100;
+				}else{
+					gradeReduction = atof(value.c_str());
+				}
+			} else if (tag == EVALUATIONREDUCTION_TAG) {
+				value=Tools::trim(value);
+				//A percent value?
+				if(value.size()>1 && value[value.size()-1]=='%'){
+					float percent = atof(value.c_str());
+					evaluationReduction = (grademax-grademin)*percent/100;
 				}else{
 					gradeReduction = atof(value.c_str());
 				}
