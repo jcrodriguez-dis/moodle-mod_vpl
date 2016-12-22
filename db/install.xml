@@ -35,8 +35,8 @@
         <FIELD NAME="maxexefilesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum size in bytes for every file created running, debugging or evaluating" PREVIOUS="maxexememory" NEXT="maxexeprocesses"/>
         <FIELD NAME="maxexeprocesses" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of processes can be running simultaneously" PREVIOUS="maxexefilesize" NEXT="jailservers"/>
         <FIELD NAME="jailservers" TYPE="text" LENGTH="small" NOTNULL="false" SEQUENCE="false" COMMENT="List of jail servers" PREVIOUS="maxexeprocesses" NEXT="worktype"/>
-        <FIELD NAME="worktype" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Type of work 0=individual, 1=group, 2=distributed work" PREVIOUS="jailservers" NEXT="emailteachers"/>
-        <FIELD NAME="emailteachers" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" PREVIOUS="worktype"/>
+        <FIELD NAME="emailteachers" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this VPL instance was last modified"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

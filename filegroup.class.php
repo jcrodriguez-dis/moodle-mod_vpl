@@ -378,7 +378,6 @@ class file_group_process{
      * @parm $name name of zip file generated
      */
     public function download_files($name, $watermark = false) {
-        $cname = rawurlencode( $name . '.zip' );
         global $CFG;
         global $USER;
         $zip = new ZipArchive();
@@ -392,20 +391,7 @@ class file_group_process{
                 $zip->addFromString( $filename, $data );
             }
             $zip->close();
-            // Get zip data.
-            $data = file_get_contents( $zipfilename );
-            // Remove zip file.
-            unlink( $zipfilename );
-            // Send zipdata.
-            @header( 'Content-Length: ' . strlen( $data ) );
-            @header( 'Content-Type: application/zip; charset=utf-8' );
-            @header( 'Content-Disposition: attachment; filename="' . $name . '.zip"; filename*=utf-8\'\'' . $cname );
-            @header( 'Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0' );
-            @header( 'Content-Transfer-Encoding: binary' );
-            @header( 'Expires: 0' );
-            @header( 'Pragma: no-cache' );
-            @header( 'Accept-Ranges: none' );
-            echo $data;
+            vpl_output_zip($zipfilename,$name);
             die();
         }
     }

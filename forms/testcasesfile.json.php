@@ -57,6 +57,7 @@ try {
             }
             $fgm = $vpl->get_execution_fgm();
             $fgm->addFile( $filename, $postfiles [$filename] );
+            $vpl->update();
             break;
         case 'load' :
             $filename = 'vpl_evaluate.cases';
