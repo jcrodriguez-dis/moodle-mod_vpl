@@ -121,6 +121,12 @@ class mod_vpl_webservice extends external_api {
         if ($instance->example or $instance->restrictededitor) {
             throw new Exception( get_string( 'notavailable' ) );
         }
+        // Adapts to the file format VPL3.2.
+        $oldfiles = $files;
+        $files = array();
+        foreach ( $oldfiles as $file ) {
+            $files [ $file->name ] = $file->data;
+        }
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
     public static function save_returns() {
