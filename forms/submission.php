@@ -88,17 +88,7 @@ if ($fromform = $mform->get_data()) {
                     $data = iconv( $encode, 'UTF-8', $data );
                 }
             }
-            $files [] = array (
-                    'name' => $name,
-                    'data' => $data
-            );
-        } else {
-            if ($i < $minfiles) { // Add empty file if required.
-                $files [] = array (
-                        'name' => '',
-                        'data' => ''
-                );
-            }
+            $files [$name] = $data;
         }
     }
     $errormessage = '';

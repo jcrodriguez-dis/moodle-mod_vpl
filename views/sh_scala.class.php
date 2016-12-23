@@ -31,7 +31,7 @@ class vpl_sh_scala extends vpl_sh_text {
         if (array_key_exists( $rest, $this->reserved )) {
             $this->initTag( self::C_RESERVED );
             parent::show_pending( $rest );
-            echo self::endTag;
+            echo self::ENDTAG;
         } else {
             parent::show_pending( $rest );
         }
