@@ -657,18 +657,18 @@
                 } else {
                     var html = '';
                     if (grade > '') {
-                        html += '<h4 class="vpl_ide_grade">' + grade + '</h4><div></div>';
+                        html += '<h3 class="vpl_ide_grade">' + grade + '</h3><div></div>';
                     }
                     if (compilation > '') {
-                        html += '<h4>' + str('compilation') + '</h4>';
+                        html += '<h3>' + str('compilation') + '</h3>';
                         html += '<div class="ui-widget vpl_ide_result_compilation">' + resultToHTML(compilation) + '</div>';
                     }
                     if (evaluation > '') {
-                        html += '<h4>' + str('comments') + '</h4>';
+                        html += '<h3>' + str('comments') + '</h3>';
                         html += '<div class="ui-widget">' + resultToHTML(evaluation) + '</div>';
                     }
                     if (execution > '') {
-                        html += '<h4>' + str('execution') + '</h4>';
+                        html += '<h3>' + str('execution') + '</h3>';
                         html += '<div class="ui-widget vpl_ide_result_execution">' + VPL_Util.sanitizeText(execution) + '</div>';
                     }
                     result.html(html);
@@ -677,7 +677,6 @@
                         result_container.show();
                         result_container.width(menu.width() / 3);
                     }
-                    result.accordion('refresh');
                     if (grade > '') {
                         result.accordion('option', 'active', 1);
                     } else {
@@ -693,7 +692,7 @@
                         }
                     }
                 }
-                setTimeout(autoResizeTab, 1000);
+                VPL_Util.delay(autoResizeTab);
             };
 
             var readOnly = options.example;
@@ -892,6 +891,9 @@
                 adjustTabsTitles(true);
                 resizeHeight();
                 file_manager.currentFile('adjustSize');
+                if (result_container.vpl_visible) {
+                    result.accordion('refresh');
+                }
             }
             function focusCurrentFile() {
                 file_manager.currentFile('focus');
