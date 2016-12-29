@@ -40,7 +40,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             }, {
                 caseInsensitive : true,
                 token : "variable",
-                regex : rkey("fail message"),
+                regex : rkey("fail message|program to run|program arguments"),
                 next : endText
             }, {
                 caseInsensitive : true,
@@ -60,7 +60,12 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             }, ];
 
             var CasesHighlightRules = function() {
-                this.createKeywordMapper({keyword:"Case =|Input =|Output =|Grade reduction ="}, "identifier", 0);
+                this.createKeywordMapper({
+                    keyword:"Case =|Input =|Output =" +
+                    		"|Grade reduction =|Fail message =" +
+                    		"|Reduction by evaluation =|Expected exit code =" +
+                    		"|Free evaluations =|Program to run =|Program arguments ="},
+                        "identifier", 0);
                 this.$rules = {
                     "start" : [ base, {
                         token : "text",
