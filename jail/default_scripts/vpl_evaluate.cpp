@@ -235,8 +235,8 @@ class TestCase {
 	float gradeReduction;
 	float gradeReductionApplied;
 	string failMessage;
-	string commandToRun;
-	string commandArgs;
+	string programToRun;
+	string programArgs;
 	int expectedExitCode;
 	string programOutputBefore, programOutputAfter, programInput;
 
@@ -251,7 +251,7 @@ public:
 	~TestCase();
 	TestCase(int id, const string &input, const vector<string> &output,
 			const string &caseDescription, const float gradeReduction,
-		    string failMessage, commandToRun, commandArgs, expectedExitCode);
+		    string failMessage, string programToRun, string programArgs, int expectedExitCode);
 	bool isCorrectResult();
 	float getGradeReduction();
 	void setGradeReductionApplied(float r);
@@ -287,7 +287,8 @@ public:
 	static Evaluation* getSinglenton();
 	static void deleteSinglenton();
 	void addTestCase(string &input, vector<string> &output,
-			string &caseDescription, float &gradeReduction);
+			string &caseDescription, float &gradeReduction,
+		string failMessage, string commandToRun, string commandArgs, int expectedExitCode);
 	void removeLastNL(string &s);
 	bool cutToEndTag(string &value, const string &endTag);
 	void loadTestCases(string fname);
@@ -969,8 +970,8 @@ TestCase::TestCase(const TestCase &o) {
 	caseDescription=o.caseDescription;
 	gradeReduction=o.gradeReduction;
 	failMessage=o.failMessage;
-	commandToRun=o.commandToRun;
-	commandArgs=o.commandArgs;
+	programToRun=o.programToRun;
+	programArgs=o.programArgs;
 	expectedExitCode=o.expectedExitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
@@ -993,8 +994,8 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	caseDescription=o.caseDescription;
 	gradeReduction=o.gradeReduction;
 	failMessage=o.failMessage;
-	commandToRun=o.commandToRun;
-	commandArgs=o.commandArgs;
+	programToRun=o.programToRun;
+	programArgs=o.programArgs;
 	expectedExitCode=o.expectedExitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
@@ -1016,7 +1017,7 @@ TestCase::~TestCase() {
 
 TestCase::TestCase(int id, const string &input, const vector<string> &output,
 		const string &caseDescription, const float gradeReduction,
-		string failMessage, commandToRun, commandArgs, expectedExitCode) {
+		string failMessage, string programToRun, string programArgs, int expectedExitCode) {
 	this->id = id;
 	this->input = input;
 	for(int i=0;i<output.size(); i++){
@@ -1227,10 +1228,10 @@ void Evaluation::deleteSinglenton(){
 
 void Evaluation::addTestCase(string &input, vector<string> &output,
 		string &caseDescription, float &gradeReduction,
-		string failMessage, string commandToRun, string commandArgs, int expectedExitCode) {
+		string failMessage, string programToRun, string programArgs, int expectedExitCode) {
 	testCases.push_back(TestCase(testCases.size() + 1, input, output,
-			caseDescription, gradeReduction, failMessage, commandToRun,
-			commandArgs, expectedExitCode ));
+			caseDescription, gradeReduction, failMessage, programToRun,
+			programArgs, expectedExitCode ));
 	input = "";
 	output.resize(0);
 	caseDescription = "";
@@ -1261,12 +1262,12 @@ void Evaluation::loadTestCases(string fname) {
 	const char *OUTPUT_END_TAG = "outputend=";
 	const char *GRADEREDUCTION_TAG = "gradereduction=";
 	const char *FAILMESSAGE_TAG = "failmessage=";
-	const char *COMMANDTORUN_TAG = "commandtorun=";
-	const char *COMMANDARGS_TAG = "commandargs=";
+	const char *PROGRAMTORUN_TAG = "programtorun=";
+	const char *PROGRAMARGS_TAG = "programarguments=";
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
 	const char *FREEEVALUATIONS_TAG = "freevaluations=";
 	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
-	string failMessage, string commandToRun, string commandArgs;
+	string failMessage, programToRun, programArgs;
 	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
 		regular, ininput, inoutput
@@ -1281,6 +1282,7 @@ void Evaluation::loadTestCases(string fname) {
 	string caseDescription = "";
 	string tag, value;
 	float gradeReduction = std::numeric_limits<float>::min();
+	float evaluationReduction=0;
 	/*must be changed from String
 	 * to pair type (regexp o no) and string*/
 	vector<string> outputs;
@@ -1365,7 +1367,7 @@ void Evaluation::loadTestCases(string fname) {
 				}else{
 					gradeReduction = atof(value.c_str());
 				}
-			} else if (tag == EVALUATIONREDUCTION_TAG) {
+			} else if (tag == REDUCTIONBYEVALUATION_TAG) {
 				value=Tools::trim(value);
 				//A percent value?
 				if(value.size()>1 && value[value.size()-1]=='%'){
@@ -1381,7 +1383,7 @@ void Evaluation::loadTestCases(string fname) {
 			} else if (tag == CASE_TAG) {
 				if (inCase) {
 					addTestCase(input, outputs, caseDescription,
-							gradeReduction);
+							gradeReduction,"","","",0); //TODO
 				}
 				inCase = true;
 				caseDescription = Tools::trim(value);
@@ -1394,7 +1396,7 @@ void Evaluation::loadTestCases(string fname) {
 		outputs.push_back(output);
 	}
 	if (inCase) { //Last case => save current
-		addTestCase(input, outputs, caseDescription, gradeReduction);
+		addTestCase(input, outputs, caseDescription, gradeReduction,"","","",0); //TODO
 	}
 }
 
