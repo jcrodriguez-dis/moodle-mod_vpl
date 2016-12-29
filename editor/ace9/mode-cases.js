@@ -102,7 +102,7 @@ ace.define("ace/mode/folding/cases",
             var line = session.getLine(row), match = line.search(foldStart);
             if (match == -1 )
                 return;
-            var ini = line.search('=')+1;
+            var ini = line.length;
             var maxRow = session.getLength();
             var ln = row+1;
             var lastLine = line;
@@ -113,7 +113,11 @@ ace.define("ace/mode/folding/cases",
                 }
                 lastLine = line;
             }
-            return new Range(row, ini, maxRow-1, lastLine.length);                
+            if ( lastLine == "") {
+                return new Range(row, ini, maxRow-2, session.getLine(maxRow-2).length);
+            } else {
+                return new Range(row, ini, maxRow-1, lastLine.length);
+            }
         };
         this.getFoldWidget = function(session, foldStyle, row) {
             var line = session.getLine(row), match = line.search(foldStart);
