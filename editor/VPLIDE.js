@@ -655,6 +655,7 @@
                     result_container.hide();
                     result_container.vpl_visible = false;
                 } else {
+                    result.accordion("destroy");
                     var html = '';
                     if (grade > '') {
                         html += '<h4 class="vpl_ide_grade">' + grade + '</h4><div></div>';
@@ -677,11 +678,13 @@
                         result_container.show();
                         result_container.width(menu.width() / 3);
                     }
-                    result.accordion('refresh');
-                    if (grade > '') {
+                    result.accordion({
+                        heightStyle : 'fill',
+                        header : 'h4',
+                        beforeActivate : avoidSelectGrade,
+                    });
+                    if (grade > '' && compilation+evaluation+execution > '') {
                         result.accordion('option', 'active', 1);
-                    } else {
-                        result.accordion('option', 'active', 0);
                     }
                     for (var i = 0; i < files.length; i++) {
                         var anot = files[i].getAnnotations();
@@ -693,7 +696,7 @@
                         }
                     }
                 }
-                setTimeout(autoResizeTab, 1000);
+                VPL_Util.longDelay(autoResizeTab);
             };
 
             var readOnly = options.example;
@@ -722,6 +725,7 @@
             }
             result.accordion({
                 heightStyle : 'fill',
+                header : 'h4',
                 beforeActivate : avoidSelectGrade,
             });
             result_container.width(2 * result_container.vpl_minWidth);
