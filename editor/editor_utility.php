@@ -191,12 +191,6 @@ class vpl_editor_util {
     </script>
 <?php
     }
-    public static function send_ce($ce) {
-        $jce = json_encode( $ce );
-        $js = "vpl_ide.setResult({$jce},true);";
-        $js = '$JQVPL(document).ready(function(){' . $js . '});';
-        return '<script>' . $js . '</script>';
-    }
     /**
      * get list of i18n translations for the editor
      */

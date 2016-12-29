@@ -108,7 +108,6 @@ $options ['minfiles'] = count( $reqfilelist );
 $options ['saved'] = $lastsub && ! $copy;
 if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );
-    $compilationexecution = $submission->get_CE_for_editor();
     \mod_vpl\event\submission_edited::log( $submission );
 }
 session_write_close();
@@ -120,7 +119,4 @@ $vpl->print_view_tabs( basename( __FILE__ ) );
 echo $OUTPUT->box_start();
 vpl_editor_util::print_tag( $options );
 echo $OUTPUT->box_end();
-if ($lastsub) {
-    echo vpl_editor_util::send_ce( $compilationexecution );
-}
 $vpl->print_footer();
