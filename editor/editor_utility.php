@@ -29,7 +29,7 @@ class vpl_editor_util {
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/font-awesome/css/font-awesome.min.css' ) );
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.3.custom.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.3.js' ), true );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
     }
     public static function generate_requires_evaluation() {
