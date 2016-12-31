@@ -42,7 +42,7 @@ try {
     // TODO use or not sesskey."require_sesskey();".
     require_login( $vpl->get_course(), false );
 
-    $PAGE->set_url( new moodle_url( '/mod/vpl/forms/editor.json.php', array (
+    $PAGE->set_url( new moodle_url( '/mod/vpl/forms/edit.json.php', array (
             'id' => $id,
             'action' => $action
     ) ) );
