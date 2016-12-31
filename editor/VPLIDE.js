@@ -812,7 +812,10 @@
             }
             function resizeHeight() {
                 var newHeight = $JQVPL(window).outerHeight();
-                newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 35);
+                newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 30);
+                if (newHeight < 150) {
+                    newHeight = 150;
+                }
                 tr.height(newHeight);
                 newHeight -= getTabsAir();
                 tabs.height(newHeight);
