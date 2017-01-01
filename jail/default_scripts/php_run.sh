@@ -68,6 +68,6 @@ END_OF_SCRIPT
     chmod +x vpl_wexecution
 else
     cat common_script.sh > vpl_execution
-    echo "$PHP -n -f $VPL_SUBFILE0" >>vpl_execution
+    echo "$PHP -n -f $VPL_SUBFILE0 \$@" >>vpl_execution
     chmod +x vpl_execution
 fi

@@ -87,9 +87,9 @@ fi
 cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
 if [ ! "$MAINCLASS" = "" ] ; then
-	echo "java -enableassertions $MAINCLASS" >> vpl_execution
+	echo "java -enableassertions $MAINCLASS \$@" >> vpl_execution
 else
-	echo "java org.junit.runner.JUnitCore $TESTCLASS" >> vpl_execution
+	echo "java org.junit.runner.JUnitCore $TESTCLASS \$@" >> vpl_execution
 fi
 chmod +x vpl_execution
 for FILENAME in $SOURCE_FILES

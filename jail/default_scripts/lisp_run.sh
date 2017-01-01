@@ -13,5 +13,5 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 cat common_script.sh > vpl_execution
-echo "clisp $VPL_SUBFILE0" >> vpl_execution
+echo "clisp $VPL_SUBFILE0 \$@" >> vpl_execution
 chmod +x vpl_execution

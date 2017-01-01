@@ -22,7 +22,7 @@ mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono/2.0 $SOURCE_FILES
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
-	echo "mono output.exe" >> vpl_execution
+	echo "mono output.exe \$@" >> vpl_execution
 	chmod +x vpl_execution
 	grep -E "System\.Windows\.Forms" output.exe &>/dev/null
 	if [ "$?" -eq "0" ]	; then
