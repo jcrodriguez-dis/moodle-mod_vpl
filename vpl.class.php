@@ -745,11 +745,11 @@ class mod_vpl {
      *            to retrieve from submissions table, default s.*
      * @return object array
      */
-    public function all_user_submission($fields = 's.*') {
+    public function all_user_submission($fields = '*') {
         global $DB;
         $id = $this->get_instance()->id;
-        $query = "SELECT $fields FROM {vpl_submissions} s";
-        $query .= '  WHERE {vpl_submissions}.vpl=? ;';
+        $query = "SELECT $fields FROM {vpl_submissions}";
+        $query .= '  WHERE vpl=? ;';
         $parms = array (
                 $id
         );
@@ -989,7 +989,7 @@ class mod_vpl {
      * @param
      *            user object
      * @param
-     *            withlink boolean. if true and is group add link to group
+     *            withlink boolean. if true and is group add link to group. Default true
      * @return String
      */
     public function fullname($user, $withlink = true) {
@@ -1462,9 +1462,6 @@ class mod_vpl {
                         $string = get_string( 'listwatermarks', VPL );
                         $tabs [] = new tabobject( 'listwatermark.php', $href, $string, $string );
                     }
-                    $href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $cmid );
-                    $string = get_string( 'downloadallsubmissions', VPL );
-                    $tabs [] = new tabobject( 'downloadallsubmissions.php', $href, $string, $string );
                 }
                 print_tabs( array (
                         $maintabs,
