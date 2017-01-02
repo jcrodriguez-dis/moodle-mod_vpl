@@ -30,21 +30,36 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
-function vpl_user_zip_dirname($name) {
+function vpl_user_zip_dirname( $name ) {
     // Prepare name.
     $name = trim( $name );
-    $name = iconv( 'UTF-8', 'ASCII//TRANSLIT', $name );
     $name = str_replace( '?', '_', $name );
-    $name = str_replace( '.', ' ', $name );
-    $name = str_replace( ',', ' ', $name );
+    $name = str_replace( '.', '_', $name );
+    $name = str_replace( ',', '_', $name );
+    $name = str_replace( ':', '_', $name );
+    $name = str_replace( '*', '_', $name );
+    $name = str_replace( '\\', '_', $name );
+    $name = str_replace( '<', '_', $name );
+    $name = str_replace( '>', '_', $name );
+    $name = str_replace( '|', '_', $name );
+
 
     return $name;
 }
 
-function vpl_add_files_to_zip($zip, $zipdirname, $sourcedir, $fgm) {
+function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$zip_errors) {
     foreach ($fgm->getFileList() as $filename) {
         $source = file_group_process::encodeFileName( $filename );
-        $zip->addFile( $sourcedir . $source, $zipdirname . $filename );
+        $filepath_origen = $sourcedir . $source;
+        $filepath_target = $zipdirname . $filename;
+        if( ! $zip->addFile( $filepath_origen, $filepath_target ) ) {
+            if ( ! file_exists($filepath_origen) ) {
+                $zip_errors .='File "'.$filepath_origen . "\" don't exists\n";
+            } else {
+                $zip_errors .='File "'.$filepath_origen . '" in "' . $filepath_target . '" ';
+                $zip_errors .='generate ' . $zip->getStatusString () ."\n";
+            }
+        }
     }
 }
 
@@ -60,8 +75,11 @@ $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
 \mod_vpl\event\vpl_all_submissions_downloaded::log( $vpl );
 // Get students.
 $currentgroup = groups_get_activity_group( $cm );
+$extraname = '';
 if (! $currentgroup) {
     $currentgroup = '';
+} else {
+    $extraname = ' ' . groups_get_group_name( $currentgroup );
 }
 $list = $vpl->get_students( $currentgroup );
 
@@ -93,9 +111,9 @@ foreach ($list as $userinfo) {
     // When group activity => change leader object lastname to groupname for order porpouse.
     if ($vpl->is_group_activity()) {
         $data->userinfo->firstname = '';
-        $data->userinfo->lastname = $vpl->fullname( $userinfo );
+        $data->userinfo->lastname = $vpl->fullname( $userinfo, false );
     }
-    $user_submissions = arra();
+    $user_submissions = array();
     foreach( $submissions [$userinfo->id]  as $subinstance) {
         $user_submissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
     }
@@ -104,8 +122,10 @@ foreach ($list as $userinfo) {
 }
 
 $zip = new ZipArchive();
-$zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownloadall' );
+$zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownloadsubmissions' );
+
 if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
+    $zip_errors='';
     foreach ($alldata as $data) {
         $user = $data->userinfo;
         $zipdirname = vpl_user_zip_dirname( $user->lastname . ' ' . $user->firstname );
@@ -116,13 +136,18 @@ if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
         foreach ($data->submissions as $submission) {
             $zipsubdirname = $zipdirname;
             if ( $all ) {
-                $zipsubdirname .= $submission->instance->id . '/';
+                $zipsubdirname .= $submission->get_instance()->id . '/';
             }
             $fgm = $submission->get_submitted_fgm();
             $sourcedir = $submission->get_submission_directory() . '/';
-            vpl_add_files_to_zip($zip,$sourcedir,$zipsubdirname,$fgm);
+            vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $zip_errors);
+            // TODO Adds code to save user comments .
+            // TODO Adds code to save execution result ( use get_ce() ) .
         }
     }
+    if ( $zip_errors > '' ) {
+        $zip->addFromString( 'errors.txt' , $zip_errors );
+    }
     $zip->close();
-    vpl_output_zip($zipfilename,$vpl->get_instance()->name);
+    vpl_output_zip($zipfilename, $vpl->get_instance()->name . $extraname);
 }
