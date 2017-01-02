@@ -18,7 +18,7 @@
  * Catalan translation, 06/2013
  * @author Antonio Piedras Morente (Universitat de Barcelona)
  */
-$string ['downloadallsubmissions'] = 'Baixa totes les trameses';
+$string ['downloadsubmissions'] = 'Baixa totes les trameses';
 $string ['groupwork'] = 'Treball en grup';
 $string ['inconsistentgroup'] = 'No és membre d\'un únic grup (0 o >1)';
 $string ['individualwork'] = 'Treball individual';

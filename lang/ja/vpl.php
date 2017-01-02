@@ -20,7 +20,7 @@
  * @author Imaizumi Takashi (Chiba University)
  */
 $string ['VPL_COMPILATIONFAILED'] = 'コンパイルか実行の準備に失敗しました';
-$string ['downloadallsubmissions'] = 'すべての提出物をダウンロード';
+$string ['downloadsubmissions'] = 'すべての提出物をダウンロード';
 $string ['groupwork'] = 'グループワーク';
 $string ['inconsistentgroup'] = 'あなたが所属しているグループ数は1ではありません';
 $string ['individualwork'] = '個別の作業';
