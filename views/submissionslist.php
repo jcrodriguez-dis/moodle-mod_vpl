@@ -576,6 +576,15 @@ if (count( $ngrades ) > 0) {
     echo '<br />';
     echo html_writer::table( $tablegraders );
 }
+
+$href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $id );
+$string = get_string( 'downloadsubmissions', VPL );
+echo html_writer::link($href, $string,array('class' => 'btn btn-secondary'));
+echo " ";
+$href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $id, 'all', 1 );
+$string = get_string( 'downloadprevioussubmissions', VPL );
+echo html_writer::link($href, $string, array('class' => 'btn btn-secondary'));
+
 // Generate next info as <div id="submissionid">nextuser</div>.
 if (count( $nextids )) {
     // Hide info.
