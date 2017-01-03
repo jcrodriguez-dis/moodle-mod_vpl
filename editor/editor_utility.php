@@ -56,8 +56,14 @@ class vpl_editor_util {
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
     }
     public static function print_tag($options) {
+        $plugincfg = get_config('mod_vpl');
         $tagid = 'vplide';
         $options ['i18n'] = self::i18n();
+        if ( isset($plugincfg->editor_theme) ) {
+            $options ['theme'] = $plugincfg->editor_theme;
+        } else {
+            $options ['theme'] = 'chrome';
+        }
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
