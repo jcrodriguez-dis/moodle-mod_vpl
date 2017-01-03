@@ -76,6 +76,7 @@ $string ['downloadsubmissions'] = 'Descargar entregas';
 $string ['duedate'] = 'Límite de entrega';
 $string ['edit'] = 'Editar';
 $string ['editing'] = 'Editando';
+$string ['editortheme'] = 'Tema de editor';
 $string ['evaluate'] = 'Evaluar';
 $string ['evaluateonsubmission'] = 'Evaluar al entregar';
 $string ['evaluating'] = "evaluando";

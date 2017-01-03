@@ -74,6 +74,7 @@ $string ['downloadsubmissions'] = 'Download submissions';
 $string ['duedate'] = 'Due date';
 $string ['edit'] = 'Edit';
 $string ['editing'] = 'Editing';
+$string ['editortheme'] = 'Editor theme';
 $string ['evaluate'] = 'Evaluate';
 $string ['evaluateonsubmission'] = 'Evaluate just on submission';
 $string ['evaluating'] = 'Evaluating';

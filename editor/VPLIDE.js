@@ -159,6 +159,9 @@
                     }
                     return openFiles.length;
                 };
+                this.getTheme = function(){
+                    return options.theme;
+                };
                 this.addTab = function(fid) {
                     var hlink = '<a href="#vpl_file' + fid + '"></a>';
                     tabs_ul.append('<li id="vpl_tab_name' + fid + '">' + hlink + '</li>');

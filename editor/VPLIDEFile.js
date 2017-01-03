@@ -312,7 +312,7 @@
                     enableBasicAutocompletion : true,
                     enableSnippets : true,
                 });
-                editor.setTheme("ace/theme/chrome");
+                editor.setTheme("ace/theme/"+file_manager.getTheme());
                 this.setFileName(fileName);
                 editor.setValue(value);
                 editor.gotoLine(0, 0);
