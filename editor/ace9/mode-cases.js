@@ -35,6 +35,11 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             var base = [ {
                 caseInsensitive : true,
                 token : "keyword",
+                regex : '^[ \\t]*case[ \\t]*=$',
+                next : 'start'
+            },{
+                caseInsensitive : true,
+                token : "keyword",
                 regex : rkey("case"),
                 next : endText
             }, {
@@ -74,7 +79,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                     } ],
                     "endBlock" : [ base, {
                         token : "string",
-                        regex : ".*$",
+                        regex : ".*$"
                     } ]
                 };
                 this.normalizeRules();
