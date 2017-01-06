@@ -30,6 +30,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/grade_form.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
+require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
 
 try {
     require_login();
@@ -87,8 +88,8 @@ try {
         $vpl->password_check();
     }
     // Print header.
-    $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
-    $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
+    vpl_sh_factory::include_js();
+
     $vpl->print_header( get_string( 'submissionview', VPL ) );
     $vpl->print_view_tabs( basename( __FILE__ ) );
     // Display submission.

@@ -48,6 +48,25 @@ if (! $vpl->has_capability( VPL_MANAGE_CAPABILITY ) && ! $vpl->has_capability( V
 }
 
 \mod_vpl\event\vpl_description_viewed::log( $vpl );
+
+// Prepares showing requiere and execution files
+$showfr = false;
+$fr = $vpl->get_required_fgm();
+if ( $fr->is_populated() ) {
+    $showfr = true;
+}
+$showfe=false;
+if ($vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+    $fe = $vpl->get_execution_fgm();
+    if ( $fe->is_populated() ) {
+        $showfe = true;
+    }
+}
+if ( $showfr || $showfe ) {
+    require_once(dirname(__FILE__).'/views/sh_factory.class.php');
+    vpl_sh_factory::include_js();
+}
+
 // Print the page header.
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 $vpl->print_header( get_string( 'description', VPL ) );
@@ -57,23 +76,21 @@ $vpl->print_view_tabs( basename( __FILE__ ) );
 $vpl->print_name();
 echo $OUTPUT->box_start();
 $vpl->print_submission_period();
+if ( $showfr ) {
+    echo '<h2>' . get_string( 'requestedfiles', VPL ) . "</h2>\n";
+    $fr->print_files( false );
+}
+if ( $showfe ) {
+    echo '<h2>' . get_string( 'executionfiles', VPL ) . "</h2>\n";
+    $fe->print_files( false );
+}
+
 $vpl->print_submission_restriction();
 $vpl->print_variation( $userid );
 echo $OUTPUT->box_end();
 $vpl->print_fulldescription();
-$fr = $vpl->get_required_fgm();
-if ($fr->is_populated()) {
-    echo '<h2>' . get_string( 'requestedfiles', VPL ) . "</h2>\n";
-    $fr->print_files( false );
-}
-if ($vpl->has_capability( VPL_GRADE_CAPABILITY )) {
-    $fe = $vpl->get_execution_fgm();
-    if ($fe->is_populated()) {
-        echo '<h2>' . get_string( 'executionfiles', VPL ) . "</h2>\n";
-        $fe->print_files( false );
-    }
-}
-// Finish the page.
+
+
 if (vpl_get_webservice_available()) {
     echo "<a href='views/show_webservice.php?id=$id'>";
     echo get_string( 'webservice', 'core_webservice' ) . '</a><br>';

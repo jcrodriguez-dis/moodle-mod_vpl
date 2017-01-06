@@ -25,6 +25,12 @@
 
 class vpl_sh_factory {
     protected static $cache = array ();
+    public static function include_js() {
+        global $PAGE;
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ) );
+    }
     public static function get_object($type) {
         if (! isset( self::$cache [$type] )) {
             require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');
@@ -42,6 +48,7 @@ class vpl_sh_factory {
                 return self::get_object( 'binary' );
             }
         }
+        return self::get_object( 'ace' );
         switch ($ext) {
             case 'c' :
                 return self::get_object( 'c' );
@@ -74,7 +81,7 @@ class vpl_sh_factory {
             case 'scala' :
                 return self::get_object( 'scala' );
             default :
-                return self::get_object( 'geshi' );
+                return self::get_object( 'ace' );
         }
     }
 }
