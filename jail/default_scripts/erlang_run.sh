@@ -15,7 +15,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-erlc $VPL_SUBFILE0 > /dev/null < /dev/null
+erlc $VPL_SUBFILE0 < /dev/null
 cat common_script.sh > vpl_execution
 if [ "$1" == "batch" ] ; then
 	echo "escript $VPL_SUBFILE0" >>vpl_execution
