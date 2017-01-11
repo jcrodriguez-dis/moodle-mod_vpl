@@ -29,6 +29,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/grade_form.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
+require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
 
 function vpl_grade_header($vpl, $inpopup) {
     if ($inpopup) {
@@ -43,9 +44,7 @@ require_login();
 vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
 vpl_include_jsfile( 'updatesublist.js', false );
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
-$PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
+vpl_sh_factory::include_js();
 
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );

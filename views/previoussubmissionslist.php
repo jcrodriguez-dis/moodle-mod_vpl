@@ -49,8 +49,8 @@ $vpl->require_capability( VPL_GRADE_CAPABILITY );
 $strdatesubmitted = get_string( 'datesubmitted', VPL );
 $strdescription = get_string( 'description', VPL );
 if ($detailed) {
-    $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
-    $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
+    require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
+    vpl_sh_factory::include_js();
 }
 
 $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
