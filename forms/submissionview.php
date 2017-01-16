@@ -119,6 +119,7 @@ try {
     $submission->print_submission();
     $vpl->print_footer();
     \mod_vpl\event\submission_viewed::log( $submission );
+    vpl_sh_factory::syntaxHighlight();
 } catch ( Exception $e ) {
     print_error( 'Exception '.s($e) );
 }

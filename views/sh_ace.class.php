@@ -33,6 +33,7 @@ class vpl_sh_ace extends vpl_sh_base {
         return 'fileid' . self::$fid;
     }
     public function print_file($filename, $filedata, $showln = true) {
+        global $OUTPUT;
         $tid = self::getId();
         $plugincfg = get_config('mod_vpl');
         if ( isset($plugincfg->editor_theme) ) {
@@ -40,29 +41,14 @@ class vpl_sh_ace extends vpl_sh_base {
         } else {
             $theme = 'chrome';
         }
-
+        echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
+        echo $OUTPUT->box_start();
         $code = '<pre class="" style="position:relative" ';
-        $code .= ' id="'. $tid . '" >';
+        $code .= " id='code$tid' >";
         $code .= htmlentities( $filedata, ENT_NOQUOTES ) ;
         $code .= '</pre>';
-        $code .= "<script>
-                (function(){
-                    function sh(){
-                       try{
-                           var lang = VPL_Util.langType(VPL_Util.fileExtension('$filename'));
-                           var file = ace.edit('$tid');
-                           file.setTheme('ace/theme/$theme');
-                           file.getSession().setMode('ace/mode/'+lang);
-                           file.setReadOnly(true);
-                           file.setHighlightActiveLine(false);
-                           file.setAutoScrollEditorIntoView(true);
-                           file.setOption('maxLines', 30);
-                       } catch(e){ setTimeout(sh,1000);}
-                     };
-                     sh();
-                 })();
-                </script>";
-
+        $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme');</script>";
         echo $code;
+        echo $OUTPUT->box_end();
     }
 }

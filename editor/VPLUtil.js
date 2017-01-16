@@ -715,6 +715,7 @@
         $JQVPL(this).parent().hide();
         return false;
     };
+
     VPL_Util.acceptCertificates = function(servers, getLastAction) {
         if (servers.length > 0) {
             // Generate links dialog.
@@ -846,5 +847,217 @@
             }
         };
     };
+    VPL_Util.processResult = function(text, filenames, sh, noFormat) {
+        var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
+        var regtit = /^-.*/;
+        var regcas = /^\s*\>/;
+        var regWarning = new RegExp('warning|' + escReg(VPL_Util.str('warning')), 'i');
+        var state = '';
+        var html = '';
+        var comment = '';
+        var case_ = '';
+        var lines = text.split(/\r\n|\n|\r/);
+        var regFiles = [];
+        var lastAnotation = false;
+        var lastAnotationFile = false;
+        function getHref( i ) {
+            if ( typeof sh[i].getTagId == 'undefined' ) {
+                return 'href="#" ';
+            } else {
+                return 'href="#' + sh[i].getTagId() + '" ';
+            }
+        }
+        function escReg(t) {
+            return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
+        }
+        for (var i = 0; i < filenames.length; i++) {
+            var regf = escReg(filenames[i]);
+            var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)([:\,]?(\\d+)?\\)?)";
+            regFiles[i] = new RegExp(reg, '');
+        }
+        function genFileLinks(line, rawline) {
+            var used = false;
+            for (var i = 0; i < regFiles.length; i++) {
+                var reg = regFiles[i];
+                var match;
+                while ((match = reg.exec(line)) !== null) {
+                    var anot = sh[i].getAnnotations();
+                    // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
+                    lastAnotationFile = i;
+                    used = true;
+                    type = line.search(regWarning) == -1 ? 'error' : 'warning';
+                    lastAnotation = {
+                        row : (match[2] - 1),
+                        column : match[3],
+                        type : type,
+                        text : rawline,
+                    };
+                    anot.push(lastAnotation);
+                    var fileName = filenames[i];
+                    var href = getHref( i );
+                    var lt = VPL_Util.sanitizeText( fileName );
+                    var data = 'data-file="' + fileName + '" data-line="' + match[2] + '"';
+                    line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + ':$2$3</a>');
+                    sh[i].setAnnotations(anot);
+                }
+            }
+            if (!used && lastAnotation) {
+                if (rawline != '') {
+                    lastAnotation.text += "\n" + rawline;
+                    sh[lastAnotationFile].setAnnotations(sh[lastAnotationFile].getAnnotations());
+                } else {
+                    lastAnotation = false;
+                }
+            }
+            return line;
+        }
+        function getTitle(line) {
+            lastAnotation = false;
+            line = line.substr(1);
+            var end = regtitgra.exec(line);
+            if (end !== null) {
+                line = line.substr(0, line.length - end[0].length);
+            }
+            return '<div class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</div>';
+        }
+        function getComment() {
+            lastAnotation = false;
+            var ret = comment;
+            comment = '';
+            return ret;
+        }
+        function addComment(rawline) {
+            var line = VPL_Util.sanitizeText(rawline);
+            comment += genFileLinks(line, rawline) + '<br />';
+        }
+        function addCase(rawline) {
+            var line = VPL_Util.sanitizeText(rawline);
+            case_ += genFileLinks(line, rawline) + "\n";
+        }
+        function getCase() {
+            lastAnotation = false;
+            var ret = case_;
+            case_ = '';
+            return '<pre><i>' + ret + '</i></pre>';
+        }
 
+        for (i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            if ( noFormat ) {
+                html += genFileLinks(VPL_Util.sanitizeText(line), line) + "\n";
+                continue;
+            }
+            var match = regcas.exec(line);
+            var regcasv = regcas.test(line);
+            if ((match !== null) != regcasv) {
+                console.log('error');
+            }
+            if (regtit.test(line)) {
+                switch (state) {
+                    case 'comment':
+                        html += getComment();
+                        break;
+                    case 'case':
+                        html += getCase();
+                        break;
+                }
+                html += getTitle(line);
+                state = '';
+            } else if (regcasv) {
+                switch (state) {
+                    case 'comment':
+                        html += getComment();
+                    default:
+                    case 'case':
+                        addCase(line.substr(match[0].length));
+                }
+                state = 'case';
+            } else {
+                switch (state) {
+                    case 'case':
+                        html += getCase();
+                    default:
+                    case 'comment':
+                        addComment(line);
+                        break;
+                }
+                state = 'comment';
+            }
+        }
+        switch (state) {
+            case 'comment':
+                html += getComment();
+                break;
+            case 'case':
+                html += getCase();
+                break;
+        }
+        return html;
+    };
+    (function() {
+        var files = [];
+        var results = [];
+        var shs = [];
+
+        VPL_Util.addResults = function( tagId, noFormat ){
+            results.push({ 'tagId' : tagId, 'noFormat' : noFormat });
+        };
+        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme){
+            files.push({ 'tagId' : tagId, 'fileName' : fileName, 'theme' : theme });
+        };
+        VPL_Util.syntaxHighlight = function(){
+            if ( typeof ace == 'undefined' ) {
+                setTimeout(VPL_Util.syntaxHighlight, 100);
+                return;
+            }
+            var shFiles = [];
+            var shFileNames = [];
+            for ( var i = 0 ; i < files.length ; i++) {
+                var file = files[i];
+                var lang = VPL_Util.langType(VPL_Util.fileExtension( file.fileName ));
+                var tagId = file.tagId;
+                var sh = ace.edit( 'code' +  tagId);
+                sh.setTheme( 'ace/theme/' + file.theme );
+                sh.getSession().setMode( 'ace/mode/' + lang );
+                sh.setReadOnly( true );
+                sh.setHighlightActiveLine( false );
+                sh.setAutoScrollEditorIntoView( true );
+                sh.setOption('maxLines', 30);
+                sh.getAnnotations = function(){
+                    return this.getSession().getAnnotations();
+                };
+                sh.setAnnotations = function(a){
+                    return this.getSession().setAnnotations(a);
+                };
+                sh.getTagId = function(){
+                    return this.vplTagId;
+                };
+                sh.vplTagId = tagId;
+                shFiles.push( sh );
+                shFileNames.push( file.fileName );
+                shs[ file.tagId ] = sh;
+            }
+            for ( var i = 0 ; i < results.length ; i++) {
+                var tag = document.getElementById(results[i].tagId);
+                var text = tag.textContent || tag.innerText;
+                tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles, results[i].noFormat);
+            }
+            files = [];
+            results = [];
+        };
+        VPL_Util.flEventHandler = function( event ){
+            var tag = event.target.getAttribute('href').substring(1);
+            var line = event.target.getAttribute('data-line');
+            var sh = shs[tag];
+            sh.gotoLine(line, 0);
+            sh.scrollToLine(line, true);
+        };
+        VPL_Util.setflEventHandler = function(){
+            var links = document.getElementsByClassName("vpl_fl");
+            for( var i = 0; i < links.length; i++) {
+                links[i].onclick = VPL_Util.flEventHandler;
+            }
+        };
+        
+    })();
 })();

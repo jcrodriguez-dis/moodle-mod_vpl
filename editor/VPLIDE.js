@@ -376,14 +376,12 @@
                     }
                     file.focus();
                 };
-                this.gotoFileLink = function(linkclass) {
-                    var m = /vpl_l_(\d+)_(\d+|c)/g.exec(linkclass);
-                    if (m !== null) {
-                        var fid = parseInt(m[1], 10);
-                        var fpos = self.getFilePosById(fid);
-                        if (fpos >= 0) {
-                            self.gotoFile(fpos, m[2]);
-                        }
+                this.gotoFileLink = function(a) {
+                    var tag = $JQVPL(a);
+                    var line = tag.data('line');
+                    var fpos=fileNameExists( tag.data( 'file' ) );
+                    if (fpos >= 0) {
+                        self.gotoFile(fpos, line);
                     }
                 };
                 this.getFilesToSave = function() {
@@ -646,7 +644,11 @@
                     }
                     return html;
                 }
-
+                var fileNames = [];
+                for ( var i=0; i < files.length ; i++ ) {
+                    fileNames [i] = files[i].getFileName();
+                }
+                
                 var grade = VPL_Util.sanitizeText(res.grade);
                 var compilation = res.compilation;
                 var evaluation = res.evaluation;
@@ -659,17 +661,20 @@
                     result_container.vpl_visible = false;
                 } else {
                     result.accordion("destroy");
+                    var formated = '';
                     var html = '';
                     if (grade > '') {
                         html += '<h4 class="vpl_ide_grade">' + grade + '</h4><div></div>';
                     }
                     if (compilation > '') {
+                        formated = VPL_Util.processResult( compilation, fileNames, files, true );
                         html += '<h4>' + str('compilation') + '</h4>';
-                        html += '<div class="ui-widget vpl_ide_result_compilation">' + resultToHTML(compilation) + '</div>';
+                        html += '<div class="ui-widget vpl_ide_result_compilation">' + formated + '</div>';
                     }
                     if (evaluation > '') {
+                        formated = VPL_Util.processResult( evaluation, fileNames, files, false );
                         html += '<h4>' + str('comments') + '</h4>';
-                        html += '<div class="ui-widget">' + resultToHTML(evaluation) + '</div>';
+                        html += '<div class="ui-widget">' + formated + '</div>';
                     }
                     if (execution > '') {
                         html += '<h4>' + str('execution') + '</h4>';
@@ -734,7 +739,7 @@
             result_container.width(2 * result_container.vpl_minWidth);
             result.on('click', 'a', function(event) {
                 event.preventDefault();
-                file_manager.gotoFileLink(event.currentTarget.className);
+                file_manager.gotoFileLink(event.currentTarget);
             });
             result_container.vpl_visible = false;
             result_container.hide();
@@ -1512,9 +1517,6 @@
                 setInterval(checkMenuWidth, 1000);
             }());
             VPL_Util.requestAction('load', 'loading', options, options.ajaxurl, function(response) {
-                if(response.compilationexecution){
-                    self.setResult(response.compilationexecution,false);
-                }
                 var allOK = true;
                 var files = response.files;
                 for (var i = 0; i < files.length; i++) {
@@ -1543,6 +1545,9 @@
                     menuButtons.getAction('new')();
                 } else if (!options['saved']) {
                     file_manager.setModified();
+                }
+                if(response.compilationexecution){
+                    self.setResult(response.compilationexecution,false);
                 }
                 menuButtons.setTimeLeft(response);
             }, showErrorMessage);

@@ -25,11 +25,20 @@
 
 class vpl_sh_factory {
     protected static $cache = array ();
+    protected static $loaded = false;
     public static function include_js() {
         global $PAGE;
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ) );
+        self::$loaded = true;
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ), true );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ), true );
+    }
+    public static function syntaxHighlight() {
+        if( self::$loaded ) {
+            echo "<script>VPL_Util.syntaxHighlight();VPL_Util.setflEventHandler();</script>";
+        }
     }
     public static function get_object($type) {
         if (! isset( self::$cache [$type] )) {
@@ -49,39 +58,5 @@ class vpl_sh_factory {
             }
         }
         return self::get_object( 'ace' );
-        switch ($ext) {
-            case 'c' :
-                return self::get_object( 'c' );
-            case 'cpp' :
-            case 'h' :
-                return self::get_object( 'cpp' );
-            case 'java' :
-                return self::get_object( 'java' );
-            case 'ada' :
-            case 'adb' :
-            case 'ads' :
-                return self::get_object( 'ada' );
-            case 'sql' :
-                return self::get_object( 'sql' );
-            case 'scm' :
-                return self::get_object( 'scheme' );
-            case 'sh' :
-                return self::get_object( 'sh' );
-            case 'pas' :
-                return self::get_object( 'pascal' );
-            case 'f77' :
-            case 'f' :
-                return self::get_object( 'fortran77' );
-            case 'pl' :
-                return self::get_object( 'prolog' );
-            case 'm' :
-                return self::get_object( 'matlab' );
-            case 'py' :
-                return self::get_object( 'python' );
-            case 'scala' :
-                return self::get_object( 'scala' );
-            default :
-                return self::get_object( 'ace' );
-        }
     }
 }

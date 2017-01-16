@@ -648,8 +648,12 @@ class mod_vpl_submission {
             if (strlen( $grade ) > 0) {
                 echo '<b>' . $grade . '</b><br />';
             }
+            $compilation = $ce ['compilation'];
             if (strlen( $compilation ) > 0) {
-                echo $compilation;
+                $tagid = 'compilation' . $this->get_instance()->id;
+                echo '<b>' . get_string( 'compilation', VPL ) . '</b><br />';
+                echo "<pre id='$tagid'>" . s($compilation) . '</pre>';
+                echo "<script>VPL_Util.addResults('$tagid',true);</script>";
             }
             if (strlen( $execution ) > 0) {
                 echo $execution;

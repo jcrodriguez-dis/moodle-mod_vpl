@@ -97,3 +97,4 @@ if (vpl_get_webservice_available()) {
     echo get_string( 'webservice', 'core_webservice' ) . '</a><br>';
 }
 $vpl->print_footer();
+vpl_sh_factory::syntaxHighlight();

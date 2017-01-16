@@ -347,29 +347,30 @@ class file_group_process{
         return false;
     }
 
+    static protected $timeout = -1; // 5 seconds for timeout.
     /**
      * Print file group
      */
     public function print_files($ifnoexist = true) {
-        global $OUTPUT;
-        $timeout = time() + 5; // 5 seconds for timeout.
+        if ( self::$timeout == -1 ) {
+            self::$timeout = time() + 5;
+        }
         $filenames = $this->getFileList();
         foreach ($filenames as $name) {
             if (file_exists( $this->dir . self::encodeFileName( $name ) )) {
-                echo '<h4>' . s( $name ) . '</h4>';
-                echo $OUTPUT->box_start();
-                if (time() < $timeout) {
+                if (time() < self::$timeout) {
                     $printer = vpl_sh_factory::get_sh( $name );
                     $data = $this->getFileData( $name );
                     $printer->print_file( $name, $data );
                 } else {
+                    echo '<h4>' . s( $name ) . '</h4>';
                     echo "[...]";
                 }
-                echo $OUTPUT->box_end();
             } else if ($ifnoexist) {
                 echo '<h4>' . s( $name ) . '</h4>';
             }
         }
+        vpl_sh_factory::syntaxHighlight();
     }
 
     /**
