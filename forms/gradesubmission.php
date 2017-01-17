@@ -40,7 +40,7 @@ function vpl_grade_header($vpl, $inpopup) {
     }
 }
 require_login();
-
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
 vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
 vpl_include_jsfile( 'updatesublist.js', false );
@@ -228,4 +228,5 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
     vpl_inmediate_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ) );
 }
 $vpl->print_footer_simple();
+vpl_sh_factory::syntaxHighlight();
 echo vpl_include_js( $jscript );
