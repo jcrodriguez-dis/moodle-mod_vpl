@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 cat >vpl_hello.erl <<'END_OF_FILE'
--module(vpl).
+-module(vpl_hello).
 -export([main/1]).
 main([]) ->
     io:format("Hello from the Erlang language!\n").
