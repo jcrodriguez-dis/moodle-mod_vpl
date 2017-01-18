@@ -300,7 +300,7 @@
                         start = self.multiple(VPL_Util.getCurrentTime(), precision);
                         lastLap = start - 1;
                         update();
-                        setTimeout(() => {
+                        setTimeout( function() {
                             interval = setInterval(update, checkt);                            
                         }, sync * 1000);
                     } else {
