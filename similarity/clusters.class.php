@@ -23,7 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/similarity_base.class.php');
+
 class vpl_clusters {
     protected $clusters; // Array of clusters.
     protected $cmembers; // Array with number of cluster members.

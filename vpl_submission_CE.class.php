@@ -43,7 +43,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'clj' => 'clojure',
             'cs' => 'csharp',
             'd' => 'd',
-            'erl'=> 'erlang',
+            'erl' => 'erlang',
             'go' => 'go',
             'java' => 'java',
             'js' => 'javascript',

@@ -23,6 +23,8 @@
  * @author        Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 function vpl_get_working_periods($vpl, $userid) {
     $submissionslist = $vpl->user_submissions( $userid );
     if (count( $submissionslist ) == 0) {

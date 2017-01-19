@@ -204,9 +204,9 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
-    //include 3.2 and before
-    $VPL3_2n = 2016111812+1;
-    if ($oldversion < $VPL3_2n) {
+    // Include 3.2 and before.
+    $vpl32n = 2016111812 + 1;
+    if ($oldversion < $vpl32n) {
 
         // Define field id to be added to vpl.
         $table = new xmldb_table('vpl');
@@ -218,7 +218,7 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         }
 
         // Vpl savepoint reached.
-        upgrade_mod_savepoint(true, $VPL3_2n, 'vpl');
+        upgrade_mod_savepoint(true, $vpl32n, 'vpl');
     }
     return true;
 }

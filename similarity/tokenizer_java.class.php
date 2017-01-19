@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/tokenizer_c.class.php');
 
 class vpl_tokenizer_java extends vpl_tokenizer_c {

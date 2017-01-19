@@ -23,6 +23,7 @@
 
 // TODO Organize security checks.
 
+defined( 'MOODLE_INTERNAL' ) || die();
 require_once($CFG->libdir . "/externallib.php");
 require_once(dirname( __FILE__ ) . '/locallib.php');
 require_once(dirname( __FILE__ ) . '/forms/edit.class.php');
@@ -124,7 +125,7 @@ class mod_vpl_webservice extends external_api {
         // Adapts to the file format VPL3.2.
         $oldfiles = $files;
         $files = array();
-        foreach ( $oldfiles as $file ) {
+        foreach ($oldfiles as $file) {
             $files [ $file->name ] = $file->data;
         }
         mod_vpl_edit::save( $vpl, $USER->id, $files );

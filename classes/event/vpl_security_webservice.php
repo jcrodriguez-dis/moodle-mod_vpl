@@ -25,8 +25,8 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_security_webservice extends vpl_security {
     public function get_description() {
         return $this->get_description_mod( 'webservice acccess' );

@@ -24,12 +24,14 @@
  */
 
 define( 'AJAX_SCRIPT', true );
+
+require(__DIR__ . '/../../../config.php');
+
 $outcome = new stdClass();
 $outcome->success = true;
 $outcome->response = new stdClass();
 $outcome->error = '';
 try {
-    require_once(dirname( __FILE__ ) . '/../../../config.php');
     require_once(dirname( __FILE__ ) . '/../locallib.php');
     require_once(dirname( __FILE__ ) . '/../vpl.class.php');
     require_once(dirname( __FILE__ ) . '/edit.class.php');

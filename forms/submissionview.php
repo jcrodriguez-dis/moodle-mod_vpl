@@ -23,14 +23,14 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-global $CFG, $USER;
-
-require_once(dirname(__FILE__).'/../../../config.php');
+require_once(__DIR__ . '/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/grade_form.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
+
+global $CFG, $USER;
 
 try {
     require_login();
@@ -119,7 +119,7 @@ try {
     $submission->print_submission();
     $vpl->print_footer();
     \mod_vpl\event\submission_viewed::log( $submission );
-    vpl_sh_factory::syntaxHighlight();
+    vpl_sh_factory::syntaxhighlight();
 } catch ( Exception $e ) {
     print_error( 'Exception '.s($e) );
 }

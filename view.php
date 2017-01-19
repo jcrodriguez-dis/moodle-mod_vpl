@@ -49,13 +49,13 @@ if (! $vpl->has_capability( VPL_MANAGE_CAPABILITY ) && ! $vpl->has_capability( V
 
 \mod_vpl\event\vpl_description_viewed::log( $vpl );
 
-// Prepares showing requiere and execution files
+// Prepares showing requiered and execution files.
 $showfr = false;
 $fr = $vpl->get_required_fgm();
 if ( $fr->is_populated() ) {
     $showfr = true;
 }
-$showfe=false;
+$showfe = false;
 if ( $vpl->has_capability( VPL_GRADE_CAPABILITY ) &&
     ($fe = $vpl->get_execution_fgm())->is_populated() ) {
     $showfe = true;
@@ -97,4 +97,4 @@ if (vpl_get_webservice_available()) {
     echo get_string( 'webservice', 'core_webservice' ) . '</a><br>';
 }
 $vpl->print_footer();
-vpl_sh_factory::syntaxHighlight();
+vpl_sh_factory::syntaxhighlight();

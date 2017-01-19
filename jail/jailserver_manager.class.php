@@ -29,7 +29,8 @@
  *
  */
 
-require_once(dirname(__FILE__).'/../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once( __DIR__ . '/../locallib.php');
 
 class vpl_jailserver_manager {
     const RECHECK = 300; // Optional setable?

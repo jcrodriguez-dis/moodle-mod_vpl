@@ -154,7 +154,7 @@ $list = array(
         'xcode'
 );
 $themelist = array();
-foreach ( $list as $theme) {
+foreach ($list as $theme) {
     $themelist [$theme] = $theme;
 }
 $settings->add(

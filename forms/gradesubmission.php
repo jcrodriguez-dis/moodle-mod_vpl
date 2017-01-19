@@ -22,7 +22,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-global $CFG, $USER;
 
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
@@ -228,5 +227,5 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
     vpl_inmediate_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ) );
 }
 $vpl->print_footer_simple();
-vpl_sh_factory::syntaxHighlight();
+vpl_sh_factory::syntaxhighlight();
 echo vpl_include_js( $jscript );

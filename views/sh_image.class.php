@@ -23,6 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
 require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 
 class vpl_sh_image extends vpl_sh_base {

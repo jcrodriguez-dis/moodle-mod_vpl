@@ -24,12 +24,13 @@
  */
 
 define( 'AJAX_SCRIPT', true );
+
+require(__DIR__ . '/../../../config.php');
 $outcome = new stdClass();
 $outcome->success = true;
 $outcome->response = new stdClass();
 $outcome->error = '';
 try {
-    require_once(dirname( __FILE__ ) . '/../../../config.php');
     require_once(dirname( __FILE__ ) . '/edit.class.php');
     if (! isloggedin()) {
         throw new Exception( get_string( 'loggedinnot' ) );
@@ -113,7 +114,7 @@ try {
             throw new Exception( 'ajax action error: ' + $action );
     }
     $timeleft = $instance->duedate - time();
-    $hour = 60*60;
+    $hour = 60 * 60;
     if ( $instance->duedate > 0 && $timeleft > -$hour ) {
         $outcome->response->timeLeft = $timeleft;
     }

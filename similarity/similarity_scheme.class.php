@@ -22,6 +22,9 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/similarity_base.class.php');
 
 class vpl_similarity_scheme extends vpl_similarity_base {

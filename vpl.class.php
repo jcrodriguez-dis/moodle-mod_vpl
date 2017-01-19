@@ -40,6 +40,7 @@
  * path/usersdata/userid#/submissionid#/teachertest.txt
  * path/usersdata/userid#/submissionid#/studenttest.txt
  */
+defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/filegroup.class.php');
 require_once(dirname(__FILE__).'/lib.php');

@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 class vpl_sh_factory {
     protected static $cache = array ();
     protected static $loaded = false;
@@ -35,8 +37,8 @@ class vpl_sh_factory {
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ), true );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ), true );
     }
-    public static function syntaxHighlight() {
-        if( self::$loaded ) {
+    public static function syntaxhighlight() {
+        if ( self::$loaded ) {
             echo "<script>VPL_Util.syntaxHighlight();VPL_Util.setflEventHandler();</script>";
         }
     }

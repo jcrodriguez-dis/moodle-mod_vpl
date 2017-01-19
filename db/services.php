@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+defined( 'MOODLE_INTERNAL' ) || die();
 // Definition of functions of the web service.
 $functions = array (
         'mod_vpl_info' => array (

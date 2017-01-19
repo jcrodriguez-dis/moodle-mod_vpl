@@ -67,6 +67,7 @@ class vpl_hide_show_div {
             return '';
         }
     }
+
     public function end_div($return = false) {
         if ($return) {
             return '</div>';
@@ -75,4 +76,9 @@ class vpl_hide_show_div {
             return '';
         }
     }
+
+    public function get_div_id() {
+        return 'shd' . $this->id;
+    }
+
 }

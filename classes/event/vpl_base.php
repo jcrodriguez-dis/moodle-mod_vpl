@@ -24,8 +24,8 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_base extends base {
     public static function get_objectid_mapping() {
         return array('db' => VPL, 'restore' => VPL);

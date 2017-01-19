@@ -22,7 +22,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-global $CFG;
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
@@ -92,7 +91,7 @@ $linkuserid = $copy ? $USER->id : $userid;
 $options ['ajaxurl'] = "edit.json.php?id={$id}&userid={$linkuserid}&action=";
 $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
 $timeleft = $instance->duedate - time();
-$hour = 60*60;
+$hour = 60 * 60;
 if ( $instance->duedate > 0 && $timeleft > -$hour ) {
     $options ['timeLeft'] = $timeleft;
 }

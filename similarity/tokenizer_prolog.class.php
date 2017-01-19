@@ -23,7 +23,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
+
 class vpl_tokenizer_prolog extends vpl_tokenizer_base {
     protected $reserved = null;
     protected $linenumber;

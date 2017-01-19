@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-global $CFG;
+defined( 'MOODLE_INTERNAL' ) || die();
 require_once($CFG->libdir.'/formslib.php');
 class mod_vpl_password_form extends moodleform {
     protected function definition() {

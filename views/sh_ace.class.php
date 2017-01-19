@@ -23,18 +23,20 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/sh_base.class.php');
 require_once(dirname(__FILE__).'/sh_factory.class.php');
 
 class vpl_sh_ace extends vpl_sh_base {
     protected static $fid = 0;
-    protected static function getId() {
+    protected static function getid() {
         self::$fid ++;
         return 'fileid' . self::$fid;
     }
     public function print_file($filename, $filedata, $showln = true) {
         global $OUTPUT;
-        $tid = self::getId();
+        $tid = self::getid();
         $plugincfg = get_config('mod_vpl');
         if ( isset($plugincfg->editor_theme) ) {
             $theme = $plugincfg->editor_theme;
@@ -45,7 +47,7 @@ class vpl_sh_ace extends vpl_sh_base {
         echo $OUTPUT->box_start();
         $code = '<pre class="" style="position:relative" ';
         $code .= " id='code$tid' >";
-        $code .= htmlentities( $filedata, ENT_NOQUOTES ) ;
+        $code .= htmlentities( $filedata, ENT_NOQUOTES );
         $code .= '</pre>';
         $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme');</script>";
         echo $code;

@@ -22,6 +22,9 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+require_once(dirname( __FILE__ ) . '/../../../config.php');
+
 class vpl_form {
     private $htmlcode;
     private $formcode;

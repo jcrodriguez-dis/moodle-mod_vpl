@@ -23,6 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once(dirname(__FILE__).'/similarity/watermark.class.php');
@@ -370,7 +371,7 @@ class file_group_process{
                 echo '<h4>' . s( $name ) . '</h4>';
             }
         }
-        vpl_sh_factory::syntaxHighlight();
+        vpl_sh_factory::syntaxhighlight();
     }
 
     /**
@@ -392,7 +393,7 @@ class file_group_process{
                 $zip->addFromString( $filename, $data );
             }
             $zip->close();
-            vpl_output_zip($zipfilename,$name);
+            vpl_output_zip($zipfilename, $name);
             die();
         }
     }

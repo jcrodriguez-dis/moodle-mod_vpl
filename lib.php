@@ -358,32 +358,31 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
  * @return object An object on information that the coures will know about
  *      (most noticeably, an icon). fields all optional extra, icon, name.
  */
-/*
-function vpl_get_coursemodule_info($coursemodule) {
-	global $CFG;
-	print_r($coursemodule);
-    $ret = new Object();
-    	$ret->icon = $CFG->wwwroot.'/mod/vpl/icon.gif';
+
+function vpl_get_coursemodule_info_not_valid($coursemodule) {
+    global $CFG;
+    $ret = new stdClass();
+    $ret->icon = $CFG->wwwroot.'/mod/vpl/icon.gif';
     $vpl = new mod_vpl($coursemodule->id);
-    $instance=$vpl->get_instance();
-    if($instance->example){ //Is example
-    	$ret->icon = $CFG->wwwroot.'/mod/vpl/icon_yellow.gif';
-    	$ret->name=$vpl->get_instance()->name.' '.get_string('example',VPL);
-    	return;
+    $instance = $vpl->get_instance();
+    if ($instance->example) { // Is example.
+        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_yellow.gif';
+        $ret->name = $vpl->get_instance()->name.' '.get_string('example', VPL);
+        return;
     }
-    if($instance->grade==0){ //Not grade_able
-    	$ret->icon = $CFG->wwwroot.'/mod/vpl/icon_green.gif';
-    	return;
+    if ($instance->grade == 0) { // Not grade_able .
+        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_green.gif';
+        return;
     }
-    if($instance->automaticgrading){ //Automatic grading
-    	$ret->icon = $CFG->wwwroot.'/mod/vpl/icon_red.gif';
+    if ($instance->automaticgrading) { // Automatic grading.
+        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_red.gif';
     }
-    if($instance->duedate>0 && $instance->duedate<time()){ //Closed
-    	$ret->icon = $CFG->wwwroot.'/mod/vpl/icon_black.gif';
-    	return;
+    if ($instance->duedate > 0 && $instance->duedate < time()) { // Closed.
+        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_black.gif';
+        return;
     }
     return $ret;
-}*/
+}
 
 function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) {
     global $CFG, $USER, $DB;
@@ -546,10 +545,10 @@ function vpl_cron() {
     $rebuilds = array ();
     $now = time();
     $sql = 'SELECT id, startdate, duedate, course, name
-	FROM {vpl}
-	WHERE startdate > ?
-	  and startdate <= ?
-	  and (duedate > ? or duedate = 0)';
+    FROM {vpl}
+    WHERE startdate > ?
+      and startdate <= ?
+      and (duedate > ? or duedate = 0)';
     $parms = array (
             $now - (2 * 3600),
             $now,
@@ -583,14 +582,14 @@ function vpl_get_participants($vplid) {
     global $CFG, $DB;
     // Locate students.
     $submiters = $DB->get_records_sql( 'SELECT DISTINCT userid
-	FROM {vpl_submissions}
-	WHERE vpl = ?', array (
+    FROM {vpl_submissions}
+    WHERE vpl = ?', array (
             $vplid
     ) );
     // Locate graders.
     $graders = $DB->get_records_sql( 'SELECT DISTINCT grader
-	FROM {vpl_submissions}
-	WHERE vpl = ? AND grader > 0', array (
+    FROM {vpl_submissions}
+    WHERE vpl = ? AND grader > 0', array (
             $vplid
     ) );
 

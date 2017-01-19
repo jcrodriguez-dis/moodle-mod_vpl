@@ -124,5 +124,5 @@ if ($detailed) {
 }
 $vpl->print_footer();
 if ($detailed) {
-    vpl_sh_factory::syntaxHighlight();
+    vpl_sh_factory::syntaxhighlight();
 }

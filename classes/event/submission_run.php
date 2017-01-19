@@ -24,8 +24,8 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_run extends submission_base {
     protected function init() {
         parent::init();

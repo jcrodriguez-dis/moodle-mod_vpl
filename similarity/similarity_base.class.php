@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/tokenizer_factory.class.php');
 require_once(dirname(__FILE__).'/similarity_sources.class.php');
 require_once(dirname(__FILE__).'/../views/status_box.class.php');
