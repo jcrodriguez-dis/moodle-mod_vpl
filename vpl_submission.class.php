@@ -560,8 +560,11 @@ class mod_vpl_submission {
                 if ($detailed) {
                     $feedback = $this->get_grade_comments();
                     if ($feedback) {
-                        $ret .= '<b>' . get_string( 'gradercomments', VPL ) . '</b><br />';
-                        $ret .= $this->result_to_html( $feedback, true );
+                        $div = new vpl_hide_show_div( true );
+                        $tagid = 'gradercomments' . $this->get_instance()->id;
+                        $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br />';
+                        $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
+                        $ret .= "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
                     }
                 }
             }
@@ -650,13 +653,19 @@ class mod_vpl_submission {
             }
             $compilation = $ce ['compilation'];
             if (strlen( $compilation ) > 0) {
-                $tagid = 'compilation' . $this->get_instance()->id;
-                echo '<b>' . get_string( 'compilation', VPL ) . '</b><br />';
-                echo "<pre id='$tagid'>" . s($compilation) . '</pre>';
-                echo "<script>VPL_Util.addResults('$tagid',true);</script>";
+                $div = new vpl_hide_show_div( true );
+                echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br />';
+                echo $div->begin_div( true ) . s($compilation) . $div->end_div( true );
+                echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
             }
             if (strlen( $execution ) > 0) {
-                echo $execution;
+                $proposedcomments = $this->proposedcomment( $ce ['execution'] );
+                if (strlen( $execution )) {
+                    $div = new vpl_hide_show_div( true );
+                    echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br />";
+                    echo $div->begin_div( true ) . s($proposedcomments) . $div->end_div( true );
+                    echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
+                }
             }
             echo $OUTPUT->box_end();
             $div->end_div();
