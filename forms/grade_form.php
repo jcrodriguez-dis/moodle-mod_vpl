@@ -82,11 +82,13 @@ class mod_vpl_grade_form extends vpl_form {
             }
             $this->addHTML( ' &nbsp;' );
         }
+        $class = " class='btn btn-secondary'";
         $this->addSubmitButton( 'save', get_string( 'grade' ) );
         if ($inpopup) {
             $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
         }
         $this->addSubmitButton( 'removegrade', get_string( 'removegrade', VPL ) );
+        $this->addHTML( '<br />' );
         // Tranfer files to teacher's work area.
         $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userid, 'privatecopy', 1 );
         $options = array (
@@ -100,19 +102,20 @@ class mod_vpl_grade_form extends vpl_form {
                 'toolbar' => 0
         );
         $action = new popup_action( 'click', $url, 'privatecopy' . ($vplinstance->id), $options );
-        $this->addHTML( $OUTPUT->action_link( $url, get_string( 'copy', VPL ), $action ) );
+        $atributes = array('class' => 'btn btn-secondary');
+        $this->addHTML( ' ' . $OUTPUT->action_link( $url, get_string( 'copy', VPL ), $action,  $atributes) );
 
         if ($vplinstance->evaluate) {
             // Link to recalculate numeric grade from comments.
             $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid, 'grading', 1, 'inpopup', $inpopup );
-            $html = ' <a href="' . $url . '">' . s( get_string( 'evaluate', VPL ) ) . '</a>';
+            $html = " <a href='$url' $class>" . s( get_string( 'evaluate', VPL ) ) . '</a>';
             $this->addHTML( $html );
         }
         // Numeric grade.
         if ($grade > 0) {
             // Link to recalculate numeric grade from comments.
             $jscript = 'VPL.calculateGrade(' . $grade . ')';
-            $html = ' <a href="javascript:void(0);" onclick="' . $jscript . '">' . s( get_string( 'calculate', VPL ) ) . '</a>';
+            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . s( get_string( 'calculate', VPL ) ) . '</a>';
             $this->addHTML( $html );
         }
 
