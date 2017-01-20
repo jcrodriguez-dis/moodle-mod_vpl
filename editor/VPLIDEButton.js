@@ -300,8 +300,8 @@
                         start = self.multiple(VPL_Util.getCurrentTime(), precision);
                         lastLap = start - 1;
                         update();
-                        setTimeout(() => {
-                            interval = setInterval(update, checkt);                            
+                        setTimeout( function() {
+                            interval = setInterval(update, checkt);
                         }, sync * 1000);
                     } else {
                         $JQVPL('#vpl_ide_timeleft').hide();
