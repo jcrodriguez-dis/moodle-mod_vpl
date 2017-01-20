@@ -45,21 +45,13 @@
         var form_view = window.document.getElementById('vpl_grade_form');
         var submission_view = window.document.getElementById('vpl_submission_view');
         if (grade_view && comments_view && form_view && submission_view && textarea) {
-            textarea.style.resize="both";
-            form_view.style.width = (textarea.offsetWidth+8)+ 'px';
+            textarea.style.resize = "both";
+            form_view.style.width = (textarea.offsetWidth + 8) + 'px';
             grade_view.style.height = form_view.scrollHeight + 'px';
             comments_view.style.height = form_view.scrollHeight + 'px';
-            comments_view.style.width = (grade_view.scrollWidth - form_view.scrollWidth - 8) + 'px';
-            var newHeight;
-            if (window.innerHeight) {
-                newHeight = window.innerHeight - VPL.getOffsetY(submission_view) - 35;
-            } else {
-                newHeight = document.documentElement.clientHeight - VPL.getOffsetY(submission_view) - 35;
-            }
-            if(newHeight < 300) {
-                newHeight = 300;
-            }
-            submission_view.style.height = newHeight + 'px';
+            var commentsw = (grade_view.clientWidth - form_view.offsetWidth);
+            commentsw -= comments_view.offsetWidth - comments_view.clientWidth;
+            comments_view.style.width = commentsw + 'px';
         }
     };
 

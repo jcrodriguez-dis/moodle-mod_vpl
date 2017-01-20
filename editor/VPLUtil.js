@@ -25,6 +25,11 @@
     VPL_Util = {};
     VPL_Util.doNothing = function() {
     };
+    var debugMode = M && M.cfg && M.cfg.developerdebug;
+    VPL_Util.log = function( m, forced) {
+        (debugMode || forced) && console && console.log && console.log( m );
+        (debugMode || forced) && console && console.trace && console.trace();
+    };
     // Get scrollBarWidth.
     VPL_Util.scrollBarWidth = function() {
         var parent, child, width;
@@ -208,7 +213,7 @@
         var filePending = 0;
         if ( ! end ) {
             end = VPL_Util.doNothing;
-        }        
+        }
         pb.processFile = function(name) {
             pb.setLabel(name);
             filePending++;
@@ -236,7 +241,7 @@
                         try {
                             VPL_Util.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
                         } catch (e) {
-                            VPL_Util.showErrorMessage(e+ " : "+f.name);
+                            VPL_Util.showErrorMessage(e + " : " + f.name);
                         }
                     } else {
                         var data = VPL_Util.dataFromURLData(e.target.result);
@@ -315,8 +320,6 @@
             'asm' : 'assembly_x86',
             'bash' : 'sh',
             'bat' : 'batchfile',
-            'ada' : 'ada', 'ads' : 'ada', 'adb' : 'ada',
-            'asm' : 'assembly_x86',
             'c' : 'c_cpp', 'C' : 'c_cpp', 'cc' : 'c_cpp', 'cpp' : 'c_cpp', 'hxx' : 'cpp', 'h' : 'cpp',
             'cases' : 'cases',
             'cbl' : 'cobol', 'cob' : 'cobol',
@@ -552,11 +555,9 @@
             height : 20,
             modal : true,
             dialogClass : 'vpl_ide vpl_ide_dialog',
-            close : function() {
+            close : function( event ) {
                 if (dialog) {
-                    $JQVPL(dialog).remove();
-                    dialog = false;
-                    if (onUserClose) {
+                    if (onUserClose && event.originalEvent ) {
                         onUserClose();
                     }
                     onUserClose = false;
@@ -572,9 +573,10 @@
             }
         };
         this.close = function() {
-            onUserClose = false;
-            if (dialog) {
-                dialog.dialog('close');
+            if(dialog) {
+                dialog.dialog('destroy');
+                $JQVPL(dialog).remove();
+                dialog = false;
             }
         };
         this.isClosed = function() {
@@ -586,7 +588,8 @@
         dialog.dialog('open');
         dialog.dialog('option', 'height', 'auto');
     };
-    VPL_Util.showMessage = function(message, options) {
+    VPL_Util.showMessage = function(message, initialoptions) {
+        var options = $JQVPL.extend({}, initialoptions);
         var message_dialog = $JQVPL('<div class="vpl_ide_dialog"></div>');
         if (!options) {
             options = {};
@@ -649,36 +652,47 @@
         return VPL_Util.showMessage(message, currentOptions);
     };
 
-    VPL_Util.requestAction = function(action, title, data, URL, ok, error) {
+    VPL_Util.requestAction = function(action, title, data, URL) {
+        var deferred = $JQVPL.Deferred();
         var request = null;
+        var xhr = false;
         if (title == '') {
             title = 'connecting';
         }
-        var pb = new VPL_Util.progressBar(action, title, function() {
+        var apb = new VPL_Util.progressBar(action, title, function() {
             if (request.readyState != 4) {
-                request.abort();
+                xhr && xhr.abort && xhr.abort();
             }
         });
         request = $JQVPL.ajax({
+            beforeSend: function (jqXHR) {
+                xhr = jqXHR;
+                return true;
+            },
             async : true,
             type : "POST",
             url : URL + action,
             'data' : JSON.stringify(data),
             contentType : "application/json; charset=utf-8",
             dataType : "json"
+        }).always(function() {
+            apb.close();
         }).done(function(response) {
-            pb.close();
             if (!response.success) {
-                error(response.error);
+                deferred.reject(response.error);
             } else {
-                ok(response.response);
+                deferred.resolve(response.response);
             }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            pb.close();
-            if (errorThrown != 'abort') {
-                error(VPL_Util.str('connection_fail') + ': ' + textStatus);
+            var message = VPL_Util.str('connection_fail') + ': ' + textStatus;
+            if ( debugMode ) {
+                message += '<br>' + errorThrown.message;
+                message += '<br>' + jqXHR.responseText.substr(0,80);
             }
+            VPL_Util.log(message);
+            deferred.reject(message);
         });
+        return deferred;
     };
     VPL_Util.supportWebSocket = function() {
         if ("WebSocket" in window) {
@@ -709,6 +723,7 @@
                 return true;
             }
         } catch (e) {
+            VPL_Util.log( e );
             return true;
         }
         e.preventDefault();
@@ -738,6 +753,7 @@
             });
             $JQVPL(m).find('a').on('click keypress', VPL_Util.clickServer);
         } else {
+            VPL_Util.log('servers.length == 0');
             VPL_Util.showErrorMessage(VPL_Util.str('connection_fail'));
         }
     };
@@ -746,11 +762,11 @@
         VPL_Util.setProtocol(coninfo);
         var ws = null;
         var pb = null;
-        function showErrorMessage(message) {
-            VPL_Util.showErrorMessage(message, {
-                next : externalActions.next
-            });
-        }
+        var deferred = $JQVPL.Deferred();
+        var defail = function( m ) {
+            deferred.reject( m );
+        };
+        var delegated = false;
         var messageActions = {
             'message' : function(content) {
                 var parsed = /^([^:]*):?(.*)/i.exec(content);
@@ -781,17 +797,23 @@
             },
             'retrieve' : function() {
                 pb.close();
-                VPL_Util.requestAction('retrieve', '', '', externalActions.ajaxurl, function(response) {
-                    if (externalActions.setResult) {
-                        externalActions.setResult(response, true);
+                delegated = true;
+                VPL_Util.requestAction('retrieve', '', '', externalActions.ajaxurl)
+                .done(
+                    function(response) {
+                        deferred.resolve();
+                        if (externalActions.setResult) {
+                            externalActions.setResult(response, true);
+                        }
                     }
-                }, showErrorMessage);
+                ).fail(defail);
             },
             'run' : function(content) {
                 pb.close();
                 externalActions.run(content, coninfo, ws);
             },
             'close' : function() {
+                VPL_Util.log('ws close message from jail');
                 ws.close();
                 if (externalActions.close) {
                     externalActions.close();
@@ -802,14 +824,17 @@
             if (VPL_Util.supportWebSocket()) {
                 ws = new WebSocket(coninfo.monitorURL);
             } else {
-                showErrorMessage(VPL_Util.str('browserupdate'));
-                return;
+                VPL_Util.log('ws not available');
+                deferred.reject(VPL_Util.str('browserupdate'));
+                return deferred;
             }
         } catch (e) {
-            showErrorMessage(e.message);
-            return;
+            VPL_Util.log('ws new say ' + e);
+            deferred.reject(e.message);
+            return deferred;
         }
         pb = new VPL_Util.progressBar(title, 'connecting', function() {
+            deferred.reject('Stopped by user');
             ws.close();
         });
         ws.notOpen = true;
@@ -818,13 +843,16 @@
             pb.setLabel(VPL_Util.str('connected'));
         };
         ws.onerror = function(event) {
+            VPL_Util.log('ws error ' + event);
             pb.close();
             if (coninfo.secure && ws.notOpen) {
-                VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl, function(response) {
+                VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
+                .done(function(response) {
                     VPL_Util.acceptCertificates(response.servers, externalActions.getLastAction);
-                }, showErrorMessage);
+                })
+                .fail(defail);
             } else {
-                showErrorMessage(VPL_Util.str('connection_fail'));
+                deferred.reject(VPL_Util.str('connection_fail'));
             }
         };
         ws.onclose = function(event) {
@@ -832,6 +860,9 @@
                 externalActions.getConsole().disconnect();
             }
             pb.close();
+            if ( ! delegated && deferred.state() != 'rejected' ) {
+                deferred.resolve();
+            }
         };
 
         ws.onmessage = function(event) {
@@ -846,8 +877,9 @@
                 pb.setLabel(VPL_Util.str('error') + ': ' + event.data);
             }
         };
+        return deferred;
     };
-    VPL_Util.processResult = function(text, filenames, sh, noFormat) {
+    VPL_Util.processResult = function(text, filenames, sh, noFormat, folding) {
         var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
         var regtit = /^-.*/;
         var regcas = /^\s*\>/;
@@ -860,6 +892,7 @@
         var regFiles = [];
         var lastAnotation = false;
         var lastAnotationFile = false;
+        var afterTitle = false;
         function getHref( i ) {
             if ( typeof sh[i].getTagId == 'undefined' ) {
                 return 'href="#" ';
@@ -918,7 +951,11 @@
             if (end !== null) {
                 line = line.substr(0, line.length - end[0].length);
             }
-            return '<div class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</div>';
+            var html = '';
+            folding && ( html += '<a href="javascript:void(0)" onclick="VPL_Util.show_hide_div(this)">[+]</a>' );
+            html += '<b class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</b><br />';
+            html = genFileLinks(html, line);
+            return html;
         }
         function getComment() {
             lastAnotation = false;
@@ -961,7 +998,10 @@
                         html += getCase();
                         break;
                 }
+                afterTitle && (html += '</div>');
                 html += getTitle(line);
+                html += folding ? '<div style="display:none">' : '<div>';
+                afterTitle = true;
                 state = '';
             } else if (regcasv) {
                 switch (state) {
@@ -992,6 +1032,7 @@
                 html += getCase();
                 break;
         }
+        afterTitle && (html += '</div>');
         return html;
     };
     (function() {
@@ -999,8 +1040,8 @@
         var results = [];
         var shs = [];
 
-        VPL_Util.addResults = function( tagId, noFormat ){
-            results.push({ 'tagId' : tagId, 'noFormat' : noFormat });
+        VPL_Util.addResults = function( tagId, noFormat, folding ){
+            results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
         };
         VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme){
             files.push({ 'tagId' : tagId, 'fileName' : fileName, 'theme' : theme });
@@ -1012,11 +1053,11 @@
             }
             var shFiles = [];
             var shFileNames = [];
-            for ( var i = 0 ; i < files.length ; i++) {
+            for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 var lang = VPL_Util.langType(VPL_Util.fileExtension( file.fileName ));
                 var tagId = file.tagId;
-                var sh = ace.edit( 'code' +  tagId);
+                var sh = ace.edit( 'code' + tagId);
                 sh.setTheme( 'ace/theme/' + file.theme );
                 sh.getSession().setMode( 'ace/mode/' + lang );
                 sh.setReadOnly( true );
@@ -1037,10 +1078,11 @@
                 shFileNames.push( file.fileName );
                 shs[ file.tagId ] = sh;
             }
-            for ( var i = 0 ; i < results.length ; i++) {
+            for (var i = 0; i < results.length; i++) {
                 var tag = document.getElementById(results[i].tagId);
                 var text = tag.textContent || tag.innerText;
-                tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles, results[i].noFormat);
+                tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles,
+                                                       results[i].noFormat, results[i].folding);
             }
             files = [];
             results = [];
@@ -1054,10 +1096,38 @@
         };
         VPL_Util.setflEventHandler = function(){
             var links = document.getElementsByClassName("vpl_fl");
-            for( var i = 0; i < links.length; i++) {
+            for(var i = 0; i < links.length; i++) {
                 links[i].onclick = VPL_Util.flEventHandler;
             }
         };
-        
+        VPL_Util.show_hide_div = function (a){
+            var text = a;
+            var div = a;
+            if ( ! div.nextSibling ) {
+                div = div.parentNode;
+            }
+            div = div.nextSibling;
+            while ( div.nodeName != 'DIV' && div.nodeName != 'PRE' ) {
+                div = div.nextSibling;
+                if ( ! div ) {
+                    return;
+                }
+            }
+            if(text){
+                if(text.innerHTML == '[+]'){
+                    if ( div.savedDisplay ) {
+                        div.style.display = div.savedDisplay;
+                    } else {
+                        div.style.display = '';
+                    }
+                    text.innerHTML = '[-]';
+                }else{
+                    div.savedDisplay = div.style.display;
+                    div.style.display = 'none';
+                    text.innerHTML = '[+]';
+                }
+            }
+        };
+
     })();
 })();

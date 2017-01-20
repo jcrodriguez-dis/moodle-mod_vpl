@@ -86,10 +86,10 @@
                 // Drop files.
                 if (dt.files.length > 0) {
                     VPL_Util.readSelectedFiles(dt.files, function(file) {
-                       return file_manager.addFile(file, true, updateMenu, showErrorMessage);
+                        return file_manager.addFile(file, true, updateMenu, showErrorMessage);
                     },
                     function(){
-                       file_manager.fileListVisibleIfNeeded();
+                        file_manager.fileListVisibleIfNeeded();
                     });
                     e.stopImmediatePropagation();
                     return false;
@@ -379,7 +379,7 @@
                 this.gotoFileLink = function(a) {
                     var tag = $JQVPL(a);
                     var line = tag.data('line');
-                    var fpos=fileNameExists( tag.data( 'file' ) );
+                    var fpos = fileNameExists( tag.data( 'file' ) );
                     if (fpos >= 0) {
                         self.gotoFile(fpos, line);
                     }
@@ -468,13 +468,13 @@
                         for (var name in dir.content) {
                             var fd = dir.content[name];
                             if (fd.isDir) {
-                                lines.push(indent+VPL_Util.iconFolder() + VPL_Util.sanitizeText(name));
-                                lister(fd,indent+dirIndent,lines);
+                                lines.push( indent + VPL_Util.iconFolder() + VPL_Util.sanitizeText(name) );
+                                lister(fd, indent + dirIndent, lines);
                             } else {
                                 var file = fd.content;
-                                var sname = VPL_Util.sanitizeText(name);
-                                var path = VPL_Util.sanitizeText(file.getFileName());
-                                if (file.isOpen()) {
+                                var sname = VPL_Util.sanitizeText( name );
+                                var path = VPL_Util.sanitizeText( file.getFileName() );
+                                if ( file.isOpen() ) {
                                     sname = '<b>' + sname + '</b>';
                                 }
                                 var attrs = 'href="#" class="vpl_l_' + file.getId() + '_c" title="' + path + '"';
@@ -485,7 +485,7 @@
                                 if (fd.pos < minNumberOfFiles) {
                                     line = line + VPL_Util.iconRequired();
                                 }
-                                lines.push(indent+line);
+                                lines.push( indent + line );
                             }
                         }
                     }
@@ -645,10 +645,10 @@
                     return html;
                 }
                 var fileNames = [];
-                for ( var i=0; i < files.length ; i++ ) {
+                for (var i = 0; i < files.length; i++) {
                     fileNames [i] = files[i].getFileName();
                 }
-                
+
                 var grade = VPL_Util.sanitizeText(res.grade);
                 var compilation = res.compilation;
                 var evaluation = res.evaluation;
@@ -667,12 +667,12 @@
                         html += '<h4 class="vpl_ide_grade">' + grade + '</h4><div></div>';
                     }
                     if (compilation > '') {
-                        formated = VPL_Util.processResult( compilation, fileNames, files, true );
+                        formated = VPL_Util.processResult( compilation, fileNames, files, true, false );
                         html += '<h4>' + str('compilation') + '</h4>';
                         html += '<div class="ui-widget vpl_ide_result_compilation">' + formated + '</div>';
                     }
                     if (evaluation > '') {
-                        formated = VPL_Util.processResult( evaluation, fileNames, files, false );
+                        formated = VPL_Util.processResult( evaluation, fileNames, files, false, false );
                         html += '<h4>' + str('comments') + '</h4>';
                         html += '<div class="ui-widget">' + formated + '</div>';
                     }
@@ -691,7 +691,7 @@
                         header : 'h4',
                         beforeActivate : avoidSelectGrade,
                     });
-                    if (grade > '' && compilation+evaluation+execution > '') {
+                    if (grade > '' && compilation + evaluation + execution > '') {
                         result.accordion('option', 'active', 1);
                     }
                     for (var i = 0; i < files.length; i++) {
@@ -1230,7 +1230,7 @@
             menuButtons.add({
                 name:'fullscreen',
                 originalAction: function() {
-                    var tags='header, footer, aside, #page-header, div.navbar, #nav-drawer, div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
+                    var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer, div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         root_obj.removeClass('vpl_ide_root_fullscreen');
                         $JQVPL('body').removeClass('vpl_body_fullscreen');
@@ -1260,14 +1260,15 @@
             });
 
             function resetFiles() {
-                VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl, function(response) {
+                VPL_Util.requestAction('resetfiles', '', {}, options.ajaxurl)
+                .done( function(response) {
                     var files = response.files;
                     for (var fileName in files) {
                         file_manager.addFile(files[fileName], true, VPL_Util.doNothing, showErrorMessage);
                     }
                     file_manager.fileListVisibleIfNeeded();
                     VPL_Util.delay(updateMenu);
-                }, showErrorMessage);
+                }).fail(showErrorMessage);
             }
             menuButtons.add({
                 name:'resetfiles',
@@ -1285,11 +1286,12 @@
                         files: file_manager.getFilesToSave(),
                         comments: $JQVPL('#vpl_ide_input_comments').val()
                     };
-                    VPL_Util.requestAction('save', 'saving', data, options.ajaxurl, function(response) {
+                    VPL_Util.requestAction('save', 'saving', data, options.ajaxurl)
+                    .done( function(response) {
                         file_manager.resetModified();
                         menuButtons.setTimeLeft(response);
                         VPL_Util.delay(updateMenu);
-                    }, showErrorMessage);
+                    }).fail(showErrorMessage);
                 },
                 bindKey:{
                     win: 'Ctrl-S',
@@ -1329,9 +1331,11 @@
                 if (!data)
                     data = {};
                 if (!lastConsole.isConnected()) {
-                    VPL_Util.requestAction(action, '', data, options.ajaxurl, function(response) {
+                    VPL_Util.requestAction(action, '', data, options.ajaxurl)
+                    .done(function(response) {
                         VPL_Util.webSocketMonitor(response, action, acting, executionActions);
-                    }, showErrorMessage);
+                    })
+                    .fail(showErrorMessage);
                 }
             }
             menuButtons.add({
@@ -1516,7 +1520,8 @@
                 checkMenuWidth();
                 setInterval(checkMenuWidth, 1000);
             }());
-            VPL_Util.requestAction('load', 'loading', options, options.ajaxurl, function(response) {
+            VPL_Util.requestAction('load', 'loading', options, options.ajaxurl)
+            .done(function(response) {
                 var allOK = true;
                 var files = response.files;
                 for (var i = 0; i < files.length; i++) {
@@ -1550,7 +1555,8 @@
                     self.setResult(response.compilationexecution,false);
                 }
                 menuButtons.setTimeLeft(response);
-            }, showErrorMessage);
+            })
+            .fail(showErrorMessage);
         };
     }
 })();
