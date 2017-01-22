@@ -34,7 +34,7 @@ class vpl_sh_ace extends vpl_sh_base {
         self::$fid ++;
         return 'fileid' . self::$fid;
     }
-    public function print_file($filename, $filedata, $showln = true) {
+    public function print_file($filename, $filedata, $showln = true, $nl = 30, $title = true) {
         global $OUTPUT;
         $tid = self::getid();
         $plugincfg = get_config('mod_vpl');
@@ -43,14 +43,15 @@ class vpl_sh_ace extends vpl_sh_base {
         } else {
             $theme = 'chrome';
         }
-        echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
-        echo $OUTPUT->box_start();
+        if ( $title ) {
+            echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
+        }
         $code = '<pre class="" style="position:relative" ';
         $code .= " id='code$tid' >";
         $code .= htmlentities( $filedata, ENT_NOQUOTES );
         $code .= '</pre>';
-        $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme');</script>";
+        $sshowline = $showln ? 'true' : 'false';
+        $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme', $sshowline, $nl);</script>";
         echo $code;
-        echo $OUTPUT->box_end();
     }
 }

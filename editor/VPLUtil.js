@@ -1043,8 +1043,13 @@
         VPL_Util.addResults = function( tagId, noFormat, folding ){
             results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
         };
-        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme){
-            files.push({ 'tagId' : tagId, 'fileName' : fileName, 'theme' : theme });
+        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
+            files.push({ 'tagId' : tagId,
+                         'fileName' : fileName,
+                         'theme' : theme,
+                         'showln' : showln,
+                         'nl' : nl
+                         });
         };
         VPL_Util.syntaxHighlight = function(){
             if ( typeof ace == 'undefined' ) {
@@ -1060,10 +1065,11 @@
                 var sh = ace.edit( 'code' + tagId);
                 sh.setTheme( 'ace/theme/' + file.theme );
                 sh.getSession().setMode( 'ace/mode/' + lang );
+                sh.renderer.setShowGutter( file.showln );
                 sh.setReadOnly( true );
                 sh.setHighlightActiveLine( false );
                 sh.setAutoScrollEditorIntoView( true );
-                sh.setOption('maxLines', 30);
+                sh.setOption('maxLines', file.nl);
                 sh.getAnnotations = function(){
                     return this.getSession().getAnnotations();
                 };
