@@ -28,9 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/../views/sh_text.class.php');
 require_once(dirname(__FILE__).'/similarity_factory.class.php');
-require_once(dirname(__FILE__).'/similarity_base.class.php');
 require_once(dirname(__FILE__).'/similarity_sources.class.php');
 
 class vpl_diff {
@@ -142,6 +140,10 @@ class vpl_diff {
         }
     }
 
+    static public function similine($line1, $line2, $pattern) {
+        return preg_replace($pattern,'' , $line1) == preg_replace($pattern, '', $line2);
+    }
+
     /**
      * Calculate diff for two array of lines
      *
@@ -209,8 +211,10 @@ class vpl_diff {
                 $pj --;
             } else if ($p == - 1) {
                 $pi --;
-            } else {
+            } else if ($p == 1){
                 $pj --;
+            } else {
+                debbuging('error');
             }
             $limit --;
         }
@@ -221,15 +225,21 @@ class vpl_diff {
         $prevpair->j = 0;
         foreach ($pairs as $pair) {
             if ($pair->i == $prevpair->i + 1 && $pair->j == $prevpair->j + 1) { // Regular advance.
-                if ($lines1 [$pair->i - 1] == $lines2 [$pair->j - 1]) { // Equals.
+                $l1 = $lines1 [$pair->i - 1];
+                $l2 = $lines2 [$pair->j - 1];
+                if ($l1 == $l2) { // Equals.
                     $ret [] = self::newlineinfo( '=', $pair->i, $pair->j );
+                } else if ( self::similine($l1,$l2,'/\s/')) {
+                    $ret [] = self::newlineinfo( '1', $pair->i, $pair->j );
+                } else if ( self::similine($l1,$l2,'/(\s|[0-9]|[a-z])/i')) {
+                    $ret [] = self::newlineinfo( '2', $pair->i, $pair->j );
                 } else {
                     $ret [] = self::newlineinfo( '#', $pair->i, $pair->j );
                 }
             } else if ($pair->i == $prevpair->i + 1) { // Removed next line.
-                $ret [] = self::newlineinfo( '<', $pair->i );
+                $ret [] = self::newlineinfo( '<', $pair->i, false );
             } else if ($pair->j == $prevpair->j + 1) { // Added one line.
-                $ret [] = self::newlineinfo( '>', 0, $pair->j );
+                $ret [] = self::newlineinfo( '>', false, $pair->j );
             } else {
                 debugging( "Internal error " . s( $pair ) . " " . s( $prevpair) );
             }
@@ -252,9 +262,11 @@ class vpl_diff {
                 '<' => ' <<< ',
                 '>' => ' >>> ',
                 '=' => ' === ',
+                '1' => ' ==# ',
+                '2' => ' =## ',
                 '#' => ' ### '
         );
-        $emptyline = "&nbsp;\n";
+        $emptyline = "\n";
         $data1 = '';
         $data2 = '';
         $datal1 = '';
@@ -265,17 +277,25 @@ class vpl_diff {
         foreach ($diff as $line) {
             $diffl .= $separator [$line->type] . "\n";
             if ($line->ln1) {
-                $datal1 .= $line->ln1 . " \n";
+                $datal1 .= sprintf("%4d\n",$line->ln1);
                 $data1 .= $lines1 [$line->ln1 - 1] . "\n";
             } else {
-                $data1 .= " \n";
+                if ( $data1 == '' ) {
+                    $data1 .= $emptyline;
+                    $datal1 .= $emptyline;
+                }
+                $data1 .= $emptyline;
                 $datal1 .= $emptyline;
             }
             if ($line->ln2) {
-                $datal2 .= $line->ln2 . " \n";
+                $datal2 .= sprintf("%4d\n",$line->ln2);
                 $data2 .= $lines2 [$line->ln2 - 1] . "\n";
             } else {
-                $data2 .= " \n";
+                if ( $data2 == '' ) {
+                    $data2 .= $emptyline;
+                    $datal2 .= $emptyline;
+                }
+                $data2 .= $emptyline;
                 $datal2 .= $emptyline;
             }
         }
@@ -289,32 +309,30 @@ class vpl_diff {
         echo '</div>';
         echo '<div style="clear:both;"></div>';
         // Files.
-        $openpre = '<pre class="' . vpl_sh_text::C_GLOBAL . ' ' . vpl_sh_text::C_GENERAL . '">';
-        echo '<div style="float:left; text-align: right">';
-        echo $openpre;
-        echo $datal1;
-        echo '</pre>';
+        $pre = '<pre clas="vpl_g">';
+        echo '<div style="float:left; text-align: right; width: 3em">';
+        $shower = vpl_sh_factory::get_sh( 'a.txt' );
+        $shower->print_file( 'a.txt', $datal1, false, count($diff) + 1, false );
         echo '</div>';
         echo '<div style="float:left; width: 390px; overflow:auto">';
         $shower = vpl_sh_factory::get_sh( $filename1 );
-        $shower->print_file( $filename1, $data1, false );
+        $shower->print_file( $filename1, $data1, false, count($diff) + 1, false );
         echo '</div>';
-        echo '<div style="float:left">';
-        echo $openpre;
-        echo $diffl;
-        echo '</pre>';
+        echo '<div style="float:left; width: 3em"">';
+        $shower = vpl_sh_factory::get_sh( 'b.txt' );
+        $shower->print_file( 'b.txt', $diffl, false, count($diff) + 1, false );
         echo '</div>';
-        echo '<div style="float:left; text-align: right;">';
-        echo $openpre;
-        echo $datal2;
-        echo '</pre>';
+        echo '<div style="float:left; text-align: right; width: 3em"">';
+        $shower = vpl_sh_factory::get_sh( 'b.txt' );
+        $shower->print_file( 'b.txt', $datal2, false, count($diff) + 1, false );
         echo '</div>';
         echo '<div style="float:left; width: 390px; overflow:auto">';
         $shower = vpl_sh_factory::get_sh( $filename2 );
-        $shower->print_file( $filename2, $data2, false );
+        $shower->print_file( $filename2, $data2, false, count($diff) + 1, false );
         echo '</div>';
         echo '</div>';
         echo '<div style="clear:both;"></div>';
+        vpl_sh_factory::syntaxhighlight();
     }
     static public function vpl_get_similfile($f, &$htmlheader, &$filename, &$data) {
         global $DB;
