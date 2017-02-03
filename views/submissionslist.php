@@ -464,11 +464,23 @@ foreach ($alldata as $data) {
         $grader = '<div id="m' . $subid . '">' . $grader . '</div>';
         $gradedon = '<div id="o' . $subid . '">' . $gradedon . '</div>';
     }
-
+    $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userinfo->id, 'privatecopy', 1 );
+    $options = array (
+            'height' => 550,
+            'width' => 780,
+            'directories' => 0,
+            'location' => 0,
+            'menubar' => 0,
+            'personalbar' => 0,
+            'status' => 0,
+            'toolbar' => 0
+    );
+    $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
     $usernumber ++;
+    $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
     if ($gradeable) {
         $table->data [] = array (
-                $usernumber,
+                $usernumberlink,
                 $showphoto ? $vpl->user_picture( $userinfo ) : '',
                 $vpl->fullname( $userinfo, !$showphoto),
                 $subtime,
@@ -479,7 +491,7 @@ foreach ($alldata as $data) {
         );
     } else {
         $table->data [] = array (
-                $usernumber,
+                $usernumberlink,
                 $showphoto ? $vpl->user_picture( $userinfo ) : '',
                 $vpl->fullname( $userinfo, !$showphoto),
                 $subtime,
@@ -577,13 +589,16 @@ if (count( $ngrades ) > 0) {
     echo html_writer::table( $tablegraders );
 }
 
-$href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $id );
+$url = new moodle_url( '/mod/vpl/views/downloadallsubmissions.php', array (
+        'id' => $id) );
 $string = get_string( 'downloadsubmissions', VPL );
-echo html_writer::link($href, $string, array('class' => 'btn btn-secondary'));
+echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
 echo " ";
-$href = vpl_mod_href( 'views/downloadallsubmissions.php', 'id', $id, 'all', 1 );
-$string = get_string( 'downloadprevioussubmissions', VPL );
-echo html_writer::link($href, $string, array('class' => 'btn btn-secondary'));
+$url =  new moodle_url( '/mod/vpl/views/downloadallsubmissions.php', array (
+        'id' => $id,
+        'all' => 1) );
+$string = get_string( 'downloadallsubmissions', VPL );
+echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
 
 // Generate next info as <div id="submissionid">nextuser</div>.
 if (count( $nextids )) {
