@@ -383,7 +383,11 @@ class file_group_process{
         global $CFG;
         global $USER;
         $zip = new ZipArchive();
-        $zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownload' );
+        $dir = $CFG->dataroot . '/temp/vpl';
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        $zipfilename = tempnam( $dir, 'zip' );
         if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
             foreach ($this->getFileList() as $filename) {
                 $data = $this->getFileData( $filename );
