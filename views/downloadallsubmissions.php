@@ -50,13 +50,14 @@ function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) 
         $source = file_group_process::encodeFileName( $filename );
         $filepathorigen = $sourcedir . $source;
         $filepathtarget = $zipdirname . $filename;
-        if ( ! $zip->addFile( $filepathorigen, $filepathtarget ) ) {
-            if ( ! file_exists($filepathorigen) ) {
-                $ziperrors .= 'File "'.$filepathorigen . "\" don't exists\n";
-            } else {
-                $ziperrors .= 'File "'.$filepathorigen . '" in "' . $filepathtarget . '" ';
-                $ziperrors .= 'generate ' . $zip->getStatusString () ."\n";
-            }
+        if ( ! file_exists($filepathorigen) ) {
+            $ziperrors .= 'Warning: file "'.$filepathorigen . "\" does not exists\n";
+            $zip->addFromString( $filepathtarget, '' );
+            continue;
+        }
+        if ( ! $zip->addFromString( $filepathtarget, file_get_contents($filepathorigen) ) ) {
+            $ziperrors .= 'File "'.$filepathorigen . '" in "' . $filepathtarget . '" ';
+            $ziperrors .= 'generate ' . $zip->getStatusString () ."\n";
         }
     }
 }
@@ -82,12 +83,13 @@ if (! $currentgroup) {
 $list = $vpl->get_students( $currentgroup );
 
 if ($all) {
-    $asortedsubmissions = $vpl->all_last_user_submission();
-} else {
     $asortedsubmissions = $vpl->all_user_submission();
+} else {
+    $asortedsubmissions = $vpl->all_last_user_submission();
 }
 // Organize information by user id.
 $submissions = array();
+
 foreach ($asortedsubmissions as $instance) {
     if ( ! isset($submissions[$instance->userid]) ) {
         $submissions[$instance->userid] = array();
@@ -120,9 +122,13 @@ foreach ($list as $userinfo) {
 }
 
 $zip = new ZipArchive();
-$zipfilename = tempnam( $CFG->dataroot . '/temp/', 'vpl_zipdownloadsubmissions' );
+$dir = $CFG->dataroot . '/temp/vpl';
+if (! file_exists($dir)) {
+    mkdir($dir);
+}
+$zipfilename = tempnam( $dir, 'zip' );
 
-if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
+if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
     $ziperrors = '';
     foreach ($alldata as $data) {
         $user = $data->userinfo;
@@ -133,14 +139,33 @@ if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
         $zipdirname .= '/';
         foreach ($data->submissions as $submission) {
             $zipsubdirname = $zipdirname;
-            if ( $all ) {
-                $zipsubdirname .= $submission->get_instance()->id . '/';
-            }
+            $date = date("Y-m-d-H-i-s",$submission->get_instance()->datesubmitted );
+            $zipsubdirname .= $date . '/';
             $fgm = $submission->get_submitted_fgm();
-            $sourcedir = $submission->get_submission_directory() . '/';
+            $sourcedir = $submission->get_submission_directory() ;
+
             vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
-            // TODO Adds code to save user comments .
-            // TODO Adds code to save execution result ( use get_ce() ) .
+            $instance = $submission->get_instance();
+            $cecg = $submission->getce();
+            $cecg['gradecomments'] = $submission->get_grade_comments();
+            $cecg['usercomments'] = $instance->comments;
+            $cecg['grade'] = $instance->grade;
+            if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
+                $cecg['gradecomments']+$cecg['usercomments']+$cecg['grade'] > '') {
+                $zipsubdirname = $zipdirname . $date . '.ceg/';
+                if ( $cecg['compilation'] !== 0 ) {
+                    $zip->addFromString( $zipsubdirname . 'compilation' . '.txt', $cecg['compilation']);
+                }
+                if ( $cecg['executed'] == 1 ) {
+                    $zip->addFromString( $zipsubdirname . 'execution' . '.txt', $cecg['execution']);
+                }
+                $elements = array('gradecomments', 'usercomments', 'grade');
+                foreach ( $elements as $ele) {
+                    if ( $cecg[$ele] !== '' ) {
+                        $zip->addFromString( $zipsubdirname . $ele . '.txt', $cecg[$ele]);
+                    }
+                }
+            }
         }
     }
     if ( $ziperrors > '' ) {
