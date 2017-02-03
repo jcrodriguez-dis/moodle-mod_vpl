@@ -166,6 +166,10 @@ function vpl_write_list_to_file($filename, $list) {
  *
  */
 function vpl_output_zip($zipfilename, $name) {
+    if (! file_exists($zipfilename)) {
+        print_error("Zip file not found");
+        die;
+    }
     // Send zipdata.
     $blocksize = 1000 * 1024;
     $size = filesize( $zipfilename );
