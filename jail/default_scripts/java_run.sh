@@ -20,8 +20,7 @@ function getClassFile {
 }
 function hasMain {
 	local FILE=$(getClassFile "$1")
-	local CLASSNAME=$(getClassName "$1")
-	local COMPNAME=$(echo "$1" |sed 's/\./\\/g')
+	cat -v $FILE | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
 }
 
 #load common script and check programs
@@ -51,7 +50,7 @@ fi
 MAINCLASS=
 for FILENAME in $SOURCE_FILES
 do
-	egrep "void[ \t]+main[ \t]*\(" $FILENAME &> /dev/null
+	hasMain "$FILENAME"
 	if [ "$?" -eq "0" ]	; then
 		MAINCLASS=$(getClassName "$FILENAME")
 		break
@@ -60,7 +59,7 @@ done
 if [ "$MAINCLASS" = "" ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
-		egrep "void[ \t]+main[ \t]*\(" $FILENAME &> /dev/null
+		hasMain "$FILENAME"
 		if [ "$?" -eq "0" ]	; then
 			MAINCLASS=$(getClassName "$FILENAME")
 			break
