@@ -141,7 +141,7 @@ class vpl_diff {
     }
 
     static public function similine($line1, $line2, $pattern) {
-        return preg_replace($pattern,'' , $line1) == preg_replace($pattern, '', $line2);
+        return preg_replace($pattern, '', $line1) == preg_replace($pattern, '', $line2);
     }
 
     /**
@@ -211,7 +211,7 @@ class vpl_diff {
                 $pj --;
             } else if ($p == - 1) {
                 $pi --;
-            } else if ($p == 1){
+            } else if ($p == 1) {
                 $pj --;
             } else {
                 debbuging('error');
@@ -229,9 +229,9 @@ class vpl_diff {
                 $l2 = $lines2 [$pair->j - 1];
                 if ($l1 == $l2) { // Equals.
                     $ret [] = self::newlineinfo( '=', $pair->i, $pair->j );
-                } else if ( self::similine($l1,$l2,'/\s/')) {
+                } else if ( self::similine($l1, $l2, '/\s/')) {
                     $ret [] = self::newlineinfo( '1', $pair->i, $pair->j );
-                } else if ( self::similine($l1,$l2,'/(\s|[0-9]|[a-z])/i')) {
+                } else if ( self::similine($l1, $l2, '/(\s|[0-9]|[a-z])/i')) {
                     $ret [] = self::newlineinfo( '2', $pair->i, $pair->j );
                 } else {
                     $ret [] = self::newlineinfo( '#', $pair->i, $pair->j );
@@ -277,7 +277,7 @@ class vpl_diff {
         foreach ($diff as $line) {
             $diffl .= $separator [$line->type] . "\n";
             if ($line->ln1) {
-                $datal1 .= sprintf("%4d\n",$line->ln1);
+                $datal1 .= sprintf("%4d\n", $line->ln1);
                 $data1 .= $lines1 [$line->ln1 - 1] . "\n";
             } else {
                 if ( $data1 == '' ) {
@@ -288,7 +288,7 @@ class vpl_diff {
                 $datal1 .= $emptyline;
             }
             if ($line->ln2) {
-                $datal2 .= sprintf("%4d\n",$line->ln2);
+                $datal2 .= sprintf("%4d\n", $line->ln2);
                 $data2 .= $lines2 [$line->ln2 - 1] . "\n";
             } else {
                 if ( $data2 == '' ) {
