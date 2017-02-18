@@ -1044,12 +1044,13 @@
             results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
         };
         VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
-            files.push({ 'tagId' : tagId,
-                         'fileName' : fileName,
-                         'theme' : theme,
-                         'showln' : showln,
-                         'nl' : nl
-                         });
+            files.push({
+                'tagId' : tagId,
+                'fileName' : fileName,
+                'theme' : theme,
+                'showln' : showln,
+                'nl' : nl
+             });
         };
         VPL_Util.syntaxHighlight = function(){
             if ( typeof ace == 'undefined' ) {
