@@ -39,6 +39,7 @@ try {
     $id = required_param( 'id', PARAM_INT ); // Course id.
     $action = required_param( 'action', PARAM_ALPHANUMEXT );
     $userid = optional_param( 'userid', false, PARAM_INT );
+    $subid = optional_param( 'subid', false, PARAM_INT );
     $vpl = new mod_vpl( $id );
     // TODO use or not sesskey."require_sesskey();".
     require_login( $vpl->get_course(), false );
@@ -57,7 +58,7 @@ try {
     if (! $vpl->is_submit_able()) {
         throw new Exception( get_string( 'notavailable' ) );
     }
-    if (! $userid || $userid == $USER->id) { // Make own submission.
+    if (! $userid || $userid == $USER->id) { // Make load own submission.
         $userid = $USER->id;
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         if (! $vpl->pass_network_check()) {
@@ -83,10 +84,8 @@ try {
             $outcome->response->files = mod_vpl_edit::filestoide( $files );
             break;
         case 'load' :
-            if ( isset($actiondata->submissionid) &&
-                $actiondata->submissionid > 0 &&
-                $vpl->has_capability( VPL_MANAGE_CAPABILITY ) ) {
-                $load = mod_vpl_edit::load( $vpl, $userid , $actiondata->submissionid);
+            if ( $subid && $vpl->has_capability( VPL_MANAGE_CAPABILITY ) ) {
+                $load = mod_vpl_edit::load( $vpl, $userid , $subid);
             } else {
                 $load = mod_vpl_edit::load( $vpl, $userid );
             }

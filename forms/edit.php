@@ -88,7 +88,18 @@ $options ['evaluate'] = ($instance->evaluate || $manager);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
 $linkuserid = $copy ? $USER->id : $userid;
-$options ['ajaxurl'] = "edit.json.php?id={$id}&userid={$linkuserid}&action=";
+$ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
+if ( $subid && $lastsub ) {
+    $ajaxurl .= "&subid={$lastsub->id}";
+}
+$options ['ajaxurl'] = $ajaxurl . '&action=';
+if ( $copy ) {
+    $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}";
+    if ( $subid && $lastsub ) {
+        $loadajaxurl .= "&subid={$lastsub->id}";
+    }
+    $options ['loadajaxurl'] = $loadajaxurl . '&action=';
+}
 $options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
 $timeleft = $instance->duedate - time();
 $hour = 60 * 60;

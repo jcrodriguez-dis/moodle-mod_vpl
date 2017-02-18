@@ -51,6 +51,9 @@
                 'console' : true,
                 'comments' : true
             };
+            if ( (typeof options.loadajaxurl) == 'undefined' ) {
+                options.loadajaxurl = options.ajaxurl;
+            }
             (function() {
                 var activateModification = (minNumberOfFiles < maxNumberOfFiles);
                 options['new'] = activateModification;
@@ -378,9 +381,18 @@
                 };
                 this.gotoFileLink = function(a) {
                     var tag = $JQVPL(a);
-                    var line = tag.data('line');
-                    var fpos = fileNameExists( tag.data( 'file' ) );
+                    var fname = tag.data( 'file' );
+                    var fpos = -1;
+                    if (fname > '') {
+                        fpos = fileNameExists( fname )
+                    } else {
+                        fpos = self.getFilePosById( tag.data( 'fileid' ) )
+                    }
                     if (fpos >= 0) {
+                        var line = tag.data('line');
+                        if ( typeof line == 'undefined' ) {
+                            line = 'c';
+                        }
                         self.gotoFile(fpos, line);
                     }
                 };
@@ -477,7 +489,7 @@
                                 if ( file.isOpen() ) {
                                     sname = '<b>' + sname + '</b>';
                                 }
-                                var attrs = 'href="#" class="vpl_l_' + file.getId() + '_c" title="' + path + '"';
+                                var attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
                                 var line = '<a ' + attrs + '>' + sname + '</a>';
                                 if (file.isModified()) {
                                     line = VPL_Util.iconModified() + line;
@@ -550,8 +562,9 @@
                                 };
                                 anot.push(lastAnotation);
                                 var lt = VPL_Util.sanitizeText(files[i].getFileName());
-                                var cl = 'vpl_l_' + files[i].getId() + '_' + match[2];
-                                line = line.replace(reg, '$1<a href="#" class="' + cl + '">' + lt + ':$2</a>');
+                                var data = 'data-fileid="' + files[i].getId() + '"';
+                                data += ' data-line="' + match[2] + '"';
+                                line = line.replace(reg, '$1<a href="#" ' + data + ' >' + lt + ':$2</a>');
                                 files[i].setAnnotations(anot);
                             }
                         }
@@ -752,7 +765,7 @@
             file_list_container.width(2 * file_list_container.vpl_minWidth);
             file_list_container.on('click', 'a', function(event) {
                 event.preventDefault();
-                file_manager.gotoFileLink(event.currentTarget.className);
+                file_manager.gotoFileLink(event.currentTarget);
             });
             file_list_container.vpl_visible = false;
             file_list_container.hide();
@@ -1520,7 +1533,7 @@
                 checkMenuWidth();
                 setInterval(checkMenuWidth, 1000);
             }());
-            VPL_Util.requestAction('load', 'loading', options, options.ajaxurl)
+            VPL_Util.requestAction('load', 'loading', options, options.loadajaxurl)
             .done(function(response) {
                 var allOK = true;
                 var files = response.files;
