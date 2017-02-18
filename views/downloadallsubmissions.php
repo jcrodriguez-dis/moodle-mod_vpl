@@ -139,10 +139,10 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
         $zipdirname .= '/';
         foreach ($data->submissions as $submission) {
             $zipsubdirname = $zipdirname;
-            $date = date("Y-m-d-H-i-s",$submission->get_instance()->datesubmitted );
+            $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted );
             $zipsubdirname .= $date . '/';
             $fgm = $submission->get_submitted_fgm();
-            $sourcedir = $submission->get_submission_directory() ;
+            $sourcedir = $submission->get_submission_directory();
 
             vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
             $instance = $submission->get_instance();
@@ -151,16 +151,16 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
             $cecg['usercomments'] = $instance->comments;
             $cecg['grade'] = $instance->grade;
             if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
-                $cecg['gradecomments']+$cecg['usercomments']+$cecg['grade'] > '') {
+                $cecg['gradecomments'] + $cecg['usercomments'] + $cecg['grade'] > '') {
                 $zipsubdirname = $zipdirname . $date . '.ceg/';
                 if ( $cecg['compilation'] !== 0 ) {
-                    $zip->addFromString( $zipsubdirname . 'compilation' . '.txt', $cecg['compilation']);
+                    $zip->addFromString( $zipsubdirname. 'compilation' . '.txt', $cecg['compilation']);
                 }
                 if ( $cecg['executed'] == 1 ) {
                     $zip->addFromString( $zipsubdirname . 'execution' . '.txt', $cecg['execution']);
                 }
                 $elements = array('gradecomments', 'usercomments', 'grade');
-                foreach ( $elements as $ele) {
+                foreach ($elements as $ele) {
                     if ( $cecg[$ele] !== '' ) {
                         $zip->addFromString( $zipsubdirname . $ele . '.txt', $cecg[$ele]);
                     }
