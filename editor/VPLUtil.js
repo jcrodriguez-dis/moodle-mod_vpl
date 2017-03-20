@@ -93,7 +93,7 @@
     (function() {
         var reg_ext = /\.([^.]*)$/;
         var reg_img = /^(gif|jpg|jpeg|png|ico)$/i;
-        var reg_bin = /^(zip|jar|pdf)$/i;
+        var reg_bin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
         VPL_Util.fileExtension = function(fileName) {
             var res = reg_ext.exec(fileName);
             return res !== null ? res[1] : '';

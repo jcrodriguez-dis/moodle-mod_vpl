@@ -675,7 +675,7 @@ function vpl_is_binary($filename, &$data = false) {
     if ( vpl_is_image( $filename ) ) {
         return true;
     }
-    if ( preg_match( '/^(zip|jar|pdf|tar)$/i', vpl_fileextension( $filename ) ) == 1 ) {
+    if ( preg_match( '/^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i', vpl_fileextension( $filename ) ) == 1 ) {
         return true;
     }
     if ($data === false) {
