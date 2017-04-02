@@ -57,8 +57,9 @@ if ( $fr->is_populated() ) {
     $showfr = true;
 }
 $showfe = false;
+$fe = $vpl->get_execution_fgm();
 if ( $vpl->has_capability( VPL_GRADE_CAPABILITY ) &&
-    ($fe = $vpl->get_execution_fgm())->is_populated() ) {
+    $fe->is_populated() ) {
     $showfe = true;
 }
 if ( $showfr || $showfe ) {
