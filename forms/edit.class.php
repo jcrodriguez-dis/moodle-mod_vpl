@@ -123,7 +123,7 @@ class mod_vpl_edit{
             $fgp = $submission->get_submitted_fgm();
             $response->id .= $subreg->id;
             $response->comments .= $subreg->comments;
-            $response->files = array_merge($response->files,$fgp->getallfiles());
+            $response->files = array_merge($response->files, $fgp->getallfiles());
             $response->compilationexecution = $submission->get_CE_for_editor();
         }
         return $response;

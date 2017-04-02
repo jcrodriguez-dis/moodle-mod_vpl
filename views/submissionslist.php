@@ -594,7 +594,7 @@ $url = new moodle_url( '/mod/vpl/views/downloadallsubmissions.php', array (
 $string = get_string( 'downloadsubmissions', VPL );
 echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
 echo " ";
-$url =  new moodle_url( '/mod/vpl/views/downloadallsubmissions.php', array (
+$url = new moodle_url( '/mod/vpl/views/downloadallsubmissions.php', array (
         'id' => $id,
         'all' => 1) );
 $string = get_string( 'downloadallsubmissions', VPL );
