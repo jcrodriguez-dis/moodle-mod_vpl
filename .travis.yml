@@ -27,6 +27,14 @@ before_install:
 install:
   - moodle-plugin-ci install
   - sudo apt-get install g++
+  - >
+    cd mod/vpl/jail/default_scripts
+    mv vpl_evaluate.cpp vpl_evaluate.cpp.save
+    echo "const float VPL_GRADEMIN=0;" >vpl_evaluate.cpp
+    echo "const float VPL_GRADEMAX=10;" >>vpl_evaluate.cpp
+    echo "const int VPL_MAXTIME=20;" >>vpl_evaluate.cpp
+    cat vpl_evaluate.cpp.save >> vpl_evaluate.cpp
+    g++ vpl_evaluate.cpp -g -lm -lutil
 
 script:
   - moodle-plugin-ci phplint
