@@ -1,6 +1,6 @@
 .vpl_ide_root {
-    text-align: left;
     direction: ltr;
+	text-align: left;
     width: 100%;
 }
 
@@ -9,12 +9,12 @@
 }
 
 .vpl_ide_root_fullscreen {
-    width: 100%;
-    height: 100%;
-    position: fixed;
     background-color: white;
-    top: 0;
+    height: 100%;
     left: 0;
+    position: fixed;
+    top: 0;
+	width: 100%;
     z-index: 90;
 }
 
@@ -33,19 +33,19 @@
 }
 
 .vpl_ide_tr {
-    margin: 0;
-    padding: 0;
     border: 0;
-    position: relative;
+	margin: 0;
     min-width: 330px;
+    padding: 0;
+    position: relative;
     width: 100%;
 }
 
 #vpl_filelist {
-    position: absolute !important;
-    top: 0px;
-    left: 0px;
     display: none;
+    left: 0px;
+	position: absolute !important;
+    top: 0px;
 }
 
 #vpl_filelist_header {
@@ -53,9 +53,9 @@
 }
 
 #vpl_filelist_content {
-    padding-left: 0.5em;
-    white-space: pre;
     overflow: auto;
+	padding-left: 0.5em;
+    white-space: pre;
 }
 
 .vpl_ide_dirindent {
@@ -64,8 +64,8 @@
 }
 
 .vpl_ide_tabs {
-    top: 0;
     position: absolute !important;
+	top: 0;
 }
 
 #vpl_tabs_scroll {
@@ -86,16 +86,15 @@
         0px 1px gray;
 }
 div.vpl_ide_dialog_content {
-    width: 350px;
     height: 250px;
     overflow: scroll;
+    width: 350px;
 }
-
 
 .vpl_ide_closeicon:hover {
     color: gray;
-    text-shadow: none;
     cursor: pointer;
+    text-shadow: none;
 }
 .ui-widget {
     font-size:100% !important;
@@ -118,9 +117,9 @@ div.vpl_ide_dialog_content {
 }
 
 .vpl_ide_binary {
-    line-height:200%;
-    margin: auto;
     font-size: 300%;
+	line-height:200%;
+    margin: auto;
     text-align: center;
     z-index: 0;
 }
@@ -131,23 +130,23 @@ div.vpl_ide_dialog_content {
 
 img.vpl_ide_file {
     display: block;
-    width: auto;
     height: auto;
     padding: 2px;
+    width: auto;
     z-index: 0;
 }
 
 .vpl_ide_results {
-    top: 0;
+    height: 100%;
     min-width: 100px;
     position: absolute !important;
     right: 0;
-    height: 100%;
+    top: 0;
 }
 
 .vpl_ide_results a {
-    padding: 1px 2px;
     border-bottom: solid 1px;
+    padding: 1px 2px;
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
 }
 
@@ -159,31 +158,31 @@ img.vpl_ide_file {
 }
 
 .vpl_ide_progressbar {
-    position: relative;
     min-width: 100px;
+	position: relative;
 }
 
 .vpl_ide_progressbaricon {
-    position: absolute;
-    witdh: 2em;
     display: block;
-    padding: 0;
     margin: 0;
+    padding: 0;
+	position: absolute;
+    witdh: 2em;
 }
 
 .vpl_ide_progressbarlabel {
-    margin: 0;
-    witdh: 100%;
-    display: block;
     border: 0;
+	display: block;
+    font-weight: bold;
+	margin: 0;
     padding: 0 1em 0 1em;
     text-align: center;
-    font-weight: bold;
+    witdh: 100%;
 }
 
 .vpl_icon_repeat {
-    position: absolute;
     left: -0.7em;
+	position: absolute;
 }
 
 .vpl_ide {
@@ -214,9 +213,9 @@ img.vpl_ide_file {
     padding: 0 !important;
 }
 .vpl_noVNC_canvas {
-    width: 800px;
-    height: 600px;
     cursor: none;
+    height: 600px;
+	width: 800px;
 }
 
 .vpl_vnc .ui-button-text-only .ui-button-text {
@@ -224,10 +223,10 @@ img.vpl_ide_file {
 }
 
 .vpl_terminal {
-    padding: 0;
-    margin: 0;
-    border: 0;
     background-color: black;
+    border: 0;
+	padding: 0;
+    margin: 0;
     z-index: 1000;
 }
 .vpl_clipboard {
@@ -238,23 +237,23 @@ img.vpl_ide_file {
     padding: 0.15em;
 }
 .vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2{
-    width: 200px;
     height: 50px;
+	width: 200px;
 }
 
 /*Resolve problem with essential theme*/
 pre.vpl_terminal * {
-    padding: 0;
-    margin: 0;
     border: 0;
     font: 1em/1.2 monospace;
+    margin: 0;
+	padding: 0;
 }
 
 pre.vpl_terminal {
-    padding: 2px;
+    display: inline-block;
     font: 1em/1.2 monospace;
     font-size: 12px;
-    display: inline-block;
+    padding: 2px;
 }
 .vpl_buttonleft_orange {
     background-color : orange !important;
