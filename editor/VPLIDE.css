@@ -43,9 +43,9 @@
 
 #vpl_filelist {
     display: none;
-    left: 0px;
+    left: 0;
 	position: absolute !important;
-    top: 0px;
+    top: 0;
 }
 
 #vpl_filelist_header {
@@ -82,8 +82,8 @@
 
 .vpl_ide_closeicon {
     color: white;
-    text-shadow: 1px 0px 1px gray, 0px 1px 1px gray, 0px -1px 1px gray, -1px
-        0px 1px gray;
+    text-shadow: 1px 0 1px gray, 0 1px 1px gray, 0 -1px 1px gray, -1px
+        0 1px gray;
 }
 div.vpl_ide_dialog_content {
     height: 250px;

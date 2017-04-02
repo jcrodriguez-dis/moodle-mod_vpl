@@ -880,6 +880,9 @@
         return deferred;
     };
     VPL_Util.processResult = function(text, filenames, sh, noFormat, folding) {
+        function escReg(t) {
+            return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
+        }
         var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
         var regtit = /^-.*/;
         var regcas = /^\s*\>/;
@@ -899,9 +902,6 @@
             } else {
                 return 'href="#' + sh[i].getTagId() + '" ';
             }
-        }
-        function escReg(t) {
-            return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
         }
         for (var i = 0; i < filenames.length; i++) {
             var regf = escReg(filenames[i]);

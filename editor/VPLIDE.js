@@ -25,8 +25,8 @@
         // Editor constructor (only one at this moment).
         VPL_IDE = function(root_id, options) {
             var self = this;
-            var minNumberOfFiles = options.minfiles | 0;
-            var maxNumberOfFiles = options.maxfiles | 0;
+            var minNumberOfFiles = options.minfiles || 0;
+            var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
             var fullScreen = false;
             var scrollBarWidth = VPL_Util.scrollBarWidth();
@@ -56,20 +56,20 @@
             }
             (function() {
                 var activateModification = (minNumberOfFiles < maxNumberOfFiles);
-                options['new'] = activateModification;
-                options['rename'] = activateModification;
-                options['delete'] = activateModification;
-                options['comments'] = options['comments'] && ! options.example;
+                options.new = activateModification;
+                options.rename = activateModification;
+                options.delete = activateModification;
+                options.comments = options.comments && ! options.example;
             })();
-            options['sort'] = (maxNumberOfFiles - minNumberOfFiles >= 2);
-            options['import'] = !restrictedEdit;
+            options.sort = (maxNumberOfFiles - minNumberOfFiles >= 2);
+            options.import = !restrictedEdit;
             function isOptionAllowed(op) {
                 if (!optionsToCheck[op]) {
                     return true;
                 }
                 return options[op];
             }
-            options['console'] = isOptionAllowed('run') || isOptionAllowed('debug');
+            options.console = isOptionAllowed('run') || isOptionAllowed('debug');
 
             function dragoverHandler(e) {
                 if (restrictedEdit) {
@@ -197,6 +197,7 @@
                     if (!file.isOpen()) {
                         return;
                     }
+                    var pos;
                     var fid = file.getId();
                     file.close();
                     self.removeTab(fid);
@@ -208,12 +209,12 @@
                     VPL_Util.delay(self.updateFileList);
                     VPL_Util.delay(adjustTabsTitles, false);
                     if (openFiles.length > ptab) {
-                        var pos = self.getFilePosById(openFiles[ptab].getId());
+                        pos = self.getFilePosById(openFiles[ptab].getId());
                         self.gotoFile(pos, 'c');
                         return;
                     }
                     if (ptab > 0) {
-                        var pos = self.getFilePosById(openFiles[ptab - 1].getId());
+                        pos = self.getFilePosById(openFiles[ptab - 1].getId());
                         self.gotoFile(pos, 'c');
                         return;
                     }
@@ -384,9 +385,9 @@
                     var fname = tag.data( 'file' );
                     var fpos = -1;
                     if (fname > '') {
-                        fpos = fileNameExists( fname )
+                        fpos = fileNameExists( fname );
                     } else {
-                        fpos = self.getFilePosById( tag.data( 'fileid' ) )
+                        fpos = self.getFilePosById( tag.data( 'fileid' ) );
                     }
                     if (fpos >= 0) {
                         var line = tag.data('line');
@@ -522,141 +523,6 @@
 
             this.setResult = function(res, go) {
                 var files = file_manager.getFiles();
-                function resultToHTML(text) {
-                    var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
-                    var regtit = /^-.*/;
-                    var regcas = /^\s*\>/;
-                    var regWarning = new RegExp('warning|' + escReg(str('warning')), 'i');
-                    var state = '';
-                    var html = '';
-                    var comment = '';
-                    var case_ = '';
-                    var lines = text.split(/\r\n|\n|\r/);
-                    var regFiles = [];
-                    var lastAnotation = false;
-                    var lastAnotationFile = false;
-                    function escReg(t) {
-                        return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
-                    }
-                    for (var i = 0; i < files.length; i++) {
-                        var regf = escReg(files[i].getFileName());
-                        var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)[:\,]?(\\d+)?\\)?";
-                        regFiles[i] = new RegExp(reg, '');
-                    }
-                    function genFileLinks(line, rawline) {
-                        var used = false;
-                        for (var i = 0; i < regFiles.length; i++) {
-                            var reg = regFiles[i];
-                            var match;
-                            while ((match = reg.exec(line)) !== null) {
-                                var anot = files[i].getAnnotations();
-                                // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
-                                lastAnotationFile = i;
-                                used = true;
-                                type = line.search(regWarning) == -1 ? 'error' : 'warning';
-                                lastAnotation = {
-                                    row : (match[2] - 1),
-                                    column : match[3],
-                                    type : type,
-                                    text : rawline,
-                                };
-                                anot.push(lastAnotation);
-                                var lt = VPL_Util.sanitizeText(files[i].getFileName());
-                                var data = 'data-fileid="' + files[i].getId() + '"';
-                                data += ' data-line="' + match[2] + '"';
-                                line = line.replace(reg, '$1<a href="#" ' + data + ' >' + lt + ':$2</a>');
-                                files[i].setAnnotations(anot);
-                            }
-                        }
-                        if (!used && lastAnotation) {
-                            if (rawline != '') {
-                                lastAnotation.text += "\n" + rawline;
-                                files[lastAnotationFile].setAnnotations(files[lastAnotationFile].getAnnotations());
-                            } else {
-                                lastAnotation = false;
-                            }
-                        }
-                        return line;
-                    }
-                    function getTitle(line) {
-                        lastAnotation = false;
-                        line = line.substr(1);
-                        var end = regtitgra.exec(line);
-                        if (end !== null) {
-                            line = line.substr(0, line.length - end[0].length);
-                        }
-                        return '<div class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</div>';
-                    }
-                    function getComment() {
-                        lastAnotation = false;
-                        var ret = comment;
-                        comment = '';
-                        return ret;
-                    }
-                    function addComment(rawline) {
-                        var line = VPL_Util.sanitizeText(rawline);
-                        comment += genFileLinks(line, rawline) + '<br />';
-                    }
-                    function addCase(rawline) {
-                        var line = VPL_Util.sanitizeText(rawline);
-                        case_ += genFileLinks(line, rawline) + "\n";
-                    }
-                    function getCase() {
-                        lastAnotation = false;
-                        var ret = case_;
-                        case_ = '';
-                        return '<pre><i>' + ret + '</i></pre>';
-                    }
-
-                    for (i = 0; i < lines.length; i++) {
-                        var line = lines[i];
-                        var match = regcas.exec(line);
-                        var regcasv = regcas.test(line);
-                        if ((match !== null) != regcasv) {
-                            console.log('error');
-                        }
-                        if (regtit.test(line)) {
-                            switch (state) {
-                                case 'comment':
-                                    html += getComment();
-                                    break;
-                                case 'case':
-                                    html += getCase();
-                                    break;
-                            }
-                            html += getTitle(line);
-                            state = '';
-                        } else if (regcasv) {
-                            switch (state) {
-                                case 'comment':
-                                    html += getComment();
-                                default:
-                                case 'case':
-                                    addCase(line.substr(match[0].length));
-                            }
-                            state = 'case';
-                        } else {
-                            switch (state) {
-                                case 'case':
-                                    html += getCase();
-                                default:
-                                case 'comment':
-                                    addComment(line);
-                                    break;
-                            }
-                            state = 'comment';
-                        }
-                    }
-                    switch (state) {
-                        case 'comment':
-                            html += getComment();
-                            break;
-                        case 'case':
-                            html += getCase();
-                            break;
-                    }
-                    return html;
-                }
                 var fileNames = [];
                 for (var i = 0; i < files.length; i++) {
                     fileNames [i] = files[i].getFileName();
