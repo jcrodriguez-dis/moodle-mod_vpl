@@ -33,7 +33,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     public function test_vpl_delete_dir() {
         global $CFG;
         $text = 'Example text';
-        $testdir = $CFG->dirroot .'/mod/vpl/test/tmp';
+        $testdir = $CFG->dirroot . '/mod/vpl/test/tmp';
         // Dir empty.
         mkdir($testdir, 0777, true);
         $this->assertTrue( is_dir($testdir) );
@@ -41,14 +41,14 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertFalse( is_dir($testdir) );
         // Dir complex.
         mkdir($testdir . '/a1/b1/c1', 0777, true);
-        file_put_contents ($testdir . '/a1/b1/c1/t1' ,$text);
+        file_put_contents ($testdir . '/a1/b1/c1/t1', $text);
         mkdir($testdir . '/a1/b1/c2', 0777, true);
-        file_put_contents ($testdir . '/a1/b1/t1' ,$text);
-        file_put_contents ($testdir . '/a1/b1/t2' ,$text);
+        file_put_contents ($testdir . '/a1/b1/t1', $text);
+        file_put_contents ($testdir . '/a1/b1/t2', $text);
         mkdir($testdir . '/a1/b2/c1', 0777, true);
-        file_put_contents ($testdir . '/a1/b2/t1' ,$text);
+        file_put_contents ($testdir . '/a1/b2/t1', $text);
         mkdir($testdir . '/a1/b3', 0777, true);
-        file_put_contents ($testdir . '/a1/t1' ,$text);
+        file_put_contents ($testdir . '/a1/t1', $text);
         $this->assertTrue( is_dir($testdir) );
         vpl_delete_dir($testdir);
         $this->assertFalse( is_dir($testdir) );
