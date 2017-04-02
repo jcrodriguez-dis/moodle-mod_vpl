@@ -28,6 +28,7 @@ install:
   - moodle-plugin-ci install
   - sudo apt-get install g++
   - >
+    cd
     cd jail/default_scripts
     mv vpl_evaluate.cpp vpl_evaluate.cpp.save
     echo "const float VPL_GRADEMIN=0;" >vpl_evaluate.cpp
