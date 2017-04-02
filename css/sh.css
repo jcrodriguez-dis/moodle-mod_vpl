@@ -1,6 +1,6 @@
-.vpl_sh {text-align:left;direction:ltr;}
+.vpl_sh {direction:ltr; text-align:left;}
 .vpl_sh div {display:inline-block;}
-.vpl_f {font-style: italic; color:blue}
+.vpl_f { color:blue; font-style: italic;}
 .vpl_v {font-style: italic;}
 .vpl_s {color:blue}
 .vpl_s:HOVER {background-color: #FFB0FF }
@@ -9,15 +9,15 @@
 .vpl_m {color:#800000}
 .vpl_m:HOVER {background-color: silver;}
 .vpl_r {color:#0000B0; font-style: italic;}
-.vpl_r:HOVER {background-color: silver;color:white;}
+.vpl_r:HOVER {background-color: silver; color:white;}
 .vpl_g, .vpl_g * {
-font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     font-size: 12px;
     line-height: normal;
-    word-wrap:normal;
-    white-space: pre
+    white-space: pre;
+    word-wrap: normal;
  }
-.vpl_ln{background-color:#FFFFFF;color:gray;}
+.vpl_ln{ background-color:#FFFFFF; color:gray;}
 
 .vpl_h0:HOVER {background-color:#D6F5D6;}
 .vpl_h1:HOVER {background-color:#ADEBAD;}
