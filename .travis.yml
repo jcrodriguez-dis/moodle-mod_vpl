@@ -1,6 +1,6 @@
 language: php
 
-sudo: true
+sudo: false
 
 cache:
   directories:
@@ -26,7 +26,6 @@ before_install:
 
 install:
   - moodle-plugin-ci install
-  - sudo apt-get install g++
 
 script:
   - moodle-plugin-ci phplint
