@@ -53,4 +53,22 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         vpl_delete_dir($testdir);
         $this->assertFalse( is_dir($testdir) );
     }
+    public function test_vpl_get_set_session_var() {
+        global $SESSION;
+        $nosession = false;
+        if( !isset ($SESSION)) {
+            $SESSION = array();
+            $nosession = true;
+        } else {
+            $SESSIONSAVE = $SESSION;
+        }
+        $SESSION['vpl_testvpl1'] = 'testdata';
+        $this->assertEquals('testdata', vpl_get_set_session_var('testvpl1', 'nada'));
+        $this->assertEquals('nada', vpl_get_set_session_var('testvpl2', 'nada'));
+        if( $nosession ) {
+            unset($SESSION);
+        } else {
+            $SESSION = $SESSIONSAVE;
+        }
+    }
 }
