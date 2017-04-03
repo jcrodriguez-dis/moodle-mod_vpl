@@ -57,19 +57,30 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         global $SESSION;
         $nosession = false;
         if ( !isset ($SESSION) ) {
-            $SESSION = array();
             $nosession = true;
         } else {
-            $session_save = $SESSION;
-            $SESSION = array();
+            $sessionsave = $SESSION;
         }
-        $SESSION['vpl_testvpl1'] = 'testdata';
+        if ( !isset ($_POST) ) {
+            $nopost = true;
+        } else {
+            $postsave = $_POST;
+        }
+        $SESSION = new stdClass();
+        $SESSION->vpl_testvpl1 = 'testdata';
         $this->assertEquals('testdata', vpl_get_set_session_var('testvpl1', 'nada'));
         $this->assertEquals('nada', vpl_get_set_session_var('testvpl2', 'nada'));
+        $_POST['testvpl3'] = 'algo';
+        $this->assertEquals('algo', vpl_get_set_session_var('testvpl3', 'nada'));
+        if ( $nopost) {
+            unset($_POST);
+        } else {
+            $_POST = $postsave;
+        }
         if ( $nosession ) {
             unset($SESSION);
         } else {
-            $SESSION = $session_save;
+            $SESSION = $sessionsave;
         }
     }
 }
