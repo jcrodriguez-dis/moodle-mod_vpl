@@ -56,19 +56,20 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     public function test_vpl_get_set_session_var() {
         global $SESSION;
         $nosession = false;
-        if( !isset ($SESSION)) {
+        if ( !isset ($SESSION) ) {
             $SESSION = array();
             $nosession = true;
         } else {
-            $SESSIONSAVE = $SESSION;
+            $session_save = $SESSION;
+            $SESSION = array();
         }
         $SESSION['vpl_testvpl1'] = 'testdata';
         $this->assertEquals('testdata', vpl_get_set_session_var('testvpl1', 'nada'));
         $this->assertEquals('nada', vpl_get_set_session_var('testvpl2', 'nada'));
-        if( $nosession ) {
+        if ( $nosession ) {
             unset($SESSION);
         } else {
-            $SESSION = $SESSIONSAVE;
+            $SESSION = $session_save;
         }
     }
 }
