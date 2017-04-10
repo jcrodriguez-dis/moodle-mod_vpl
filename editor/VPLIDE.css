@@ -1,6 +1,6 @@
 .vpl_ide_root {
     direction: ltr;
-	text-align: left;
+    text-align: left;
     width: 100%;
 }
 
@@ -14,7 +14,7 @@
     left: 0;
     position: fixed;
     top: 0;
-	width: 100%;
+    width: 100%;
     z-index: 90;
 }
 
@@ -34,7 +34,7 @@
 
 .vpl_ide_tr {
     border: 0;
-	margin: 0;
+    margin: 0;
     min-width: 330px;
     padding: 0;
     position: relative;
@@ -44,7 +44,7 @@
 #vpl_filelist {
     display: none;
     left: 0;
-	position: absolute !important;
+    position: absolute !important;
     top: 0;
 }
 
@@ -54,7 +54,7 @@
 
 #vpl_filelist_content {
     overflow: auto;
-	padding-left: 0.5em;
+    padding-left: 0.5em;
     white-space: pre;
 }
 
@@ -65,7 +65,7 @@
 
 .vpl_ide_tabs {
     position: absolute !important;
-	top: 0;
+    top: 0;
 }
 
 #vpl_tabs_scroll {
@@ -118,7 +118,7 @@ div.vpl_ide_dialog_content {
 
 .vpl_ide_binary {
     font-size: 300%;
-	line-height:200%;
+    line-height:200%;
     margin: auto;
     text-align: center;
     z-index: 0;
@@ -159,22 +159,22 @@ img.vpl_ide_file {
 
 .vpl_ide_progressbar {
     min-width: 100px;
-	position: relative;
+    position: relative;
 }
 
 .vpl_ide_progressbaricon {
     display: block;
     margin: 0;
     padding: 0;
-	position: absolute;
+    position: absolute;
     witdh: 2em;
 }
 
 .vpl_ide_progressbarlabel {
     border: 0;
-	display: block;
+    display: block;
     font-weight: bold;
-	margin: 0;
+    margin: 0;
     padding: 0 1em 0 1em;
     text-align: center;
     witdh: 100%;
@@ -182,7 +182,7 @@ img.vpl_ide_file {
 
 .vpl_icon_repeat {
     left: -0.7em;
-	position: absolute;
+    position: absolute;
 }
 
 .vpl_ide {
@@ -215,7 +215,7 @@ img.vpl_ide_file {
 .vpl_noVNC_canvas {
     cursor: none;
     height: 600px;
-	width: 800px;
+    width: 800px;
 }
 
 .vpl_vnc .ui-button-text-only .ui-button-text {
@@ -225,7 +225,7 @@ img.vpl_ide_file {
 .vpl_terminal {
     background-color: black;
     border: 0;
-	padding: 0;
+    padding: 0;
     margin: 0;
     z-index: 1000;
 }
@@ -238,7 +238,7 @@ img.vpl_ide_file {
 }
 .vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2{
     height: 50px;
-	width: 200px;
+    width: 200px;
 }
 
 /*Resolve problem with essential theme*/
@@ -246,7 +246,7 @@ pre.vpl_terminal * {
     border: 0;
     font: 1em/1.2 monospace;
     margin: 0;
-	padding: 0;
+    padding: 0;
 }
 
 pre.vpl_terminal {
