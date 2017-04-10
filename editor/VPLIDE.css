@@ -167,7 +167,7 @@ img.vpl_ide_file {
     margin: 0;
     padding: 0;
     position: absolute;
-    witdh: 2em;
+    width: 2em;
 }
 
 .vpl_ide_progressbarlabel {
@@ -177,7 +177,7 @@ img.vpl_ide_file {
     margin: 0;
     padding: 0 1em 0 1em;
     text-align: center;
-    witdh: 100%;
+    width: 100%;
 }
 
 .vpl_icon_repeat {
@@ -225,8 +225,8 @@ img.vpl_ide_file {
 .vpl_terminal {
     background-color: black;
     border: 0;
-    padding: 0;
     margin: 0;
+    padding: 0;
     z-index: 1000;
 }
 .vpl_clipboard {
