@@ -47,7 +47,7 @@ class vpl_sh_ace extends vpl_sh_base {
             echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
         }
         $code = '<pre class="" style="position:relative" ';
-        $code .= " id='code$tid' >";
+        $code .= " id='code$tid' >\n";
         $code .= htmlentities( $filedata, ENT_NOQUOTES );
         $code .= '</pre>';
         $sshowline = $showln ? 'true' : 'false';
