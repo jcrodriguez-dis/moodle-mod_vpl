@@ -2,7 +2,7 @@
 <libraries>
     <library>
         <location>editor/ace9</location>
-        <name>ACEA (Ajax.org Cloud9 Editor)</name>
+        <name>ACE (Ajax.org Cloud9 Editor)</name>
         <version>1.2.2</version>
         <license>BSD</license>
         <licenseversion>3</licenseversion>
