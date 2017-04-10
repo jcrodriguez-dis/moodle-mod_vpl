@@ -102,12 +102,24 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     }
 
     public function test_vpl_truncate_string() {
-        $this->assertEquals('...', vpl_truncate_string('testvpl3', 3));
-        $this->assertEquals('t...', vpl_truncate_string('testvpl3', 4));
-        $this->assertEquals('te...', vpl_truncate_string('testvpl3', 5));
-        $this->assertEquals('testvpl3', vpl_truncate_string('testvpl3', 8));
-        $this->assertEquals('test...', vpl_truncate_string('testvpl3', 7));
-        $this->assertEquals('testvpl3', vpl_truncate_string('testvpl3', 80));
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 3);
+        $this->assertEquals('...', $var);
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 4);
+        $this->assertEquals('t...', $var);
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 5);
+        $this->assertEquals('te...', $var);
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 8);
+        $this->assertEquals('testvpl3', $var);
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 7);
+        $this->assertEquals('test...', $var);
+        $var = 'testvpl3';
+        vpl_truncate_string($var, 80);
+        $this->assertEquals('testvpl3', $var);
     }
 
     public function test_vpl_bash_export() {

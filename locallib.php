@@ -706,7 +706,7 @@ function vpl_is_valid_path_name($path) {
     return true;
 }
 function vpl_is_valid_file_name($filename) {
-    $backtick = chr( 96 ); // Avoid warnning in codecheck
+    $backtick = chr( 96 ); // Avoid warnning in codecheck.
     $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\|\[|\]|[\/\^';
     $regexp .= $backtick . '´]|^\-|^ | $|\.\./';
     if (strlen( $filename ) < 1) {
@@ -719,7 +719,7 @@ function vpl_is_valid_file_name($filename) {
 }
 function vpl_truncate_string(&$string, $limit) {
     if (strlen( $string ) <= $limit) {
-        return $string;
+        return;
     }
     $string = substr( $string, 0, $limit - 3 ) . '...';
 }
