@@ -668,14 +668,18 @@ function vpl_select_array($url, $array) {
 function vpl_fileextension($filename) {
     return pathinfo( $filename, PATHINFO_EXTENSION );
 }
+
 function vpl_is_image($filename) {
     return preg_match( '/^(gif|jpg|jpeg|png|ico)$/i', vpl_fileextension( $filename ) ) == 1;
 }
+
 function vpl_is_binary($filename, &$data = false) {
     if ( vpl_is_image( $filename ) ) {
         return true;
     }
-    if ( preg_match( '/^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i', vpl_fileextension( $filename ) ) == 1 ) {
+    $fileext = 'zip|jar|pdf|tar|bin|7z|arj|deb|gzip|';
+    $fileext .= 'rar|rpm|dat|db|rtf|doc|docx|odt';
+    if ( preg_match( '/^(' . $fileext . ')$/i', vpl_fileextension( $filename ) ) == 1 ) {
         return true;
     }
     if ($data === false) {
@@ -702,7 +706,9 @@ function vpl_is_valid_path_name($path) {
     return true;
 }
 function vpl_is_valid_file_name($filename) {
-    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./';
+    $backtick = chr( 96 );
+    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\|\[|\]|[\/\^';
+    $regexp .= $backtick . '´]|^\-|^ | $|\.\./';
     if (strlen( $filename ) < 1) {
         return false;
     }
@@ -712,10 +718,10 @@ function vpl_is_valid_file_name($filename) {
     return preg_match( $regexp, $filename ) === 0;
 }
 function vpl_truncate_string(&$string, $limit) {
-    $limit -= 3; // Add space for ...
-    if (strlen( $string ) > $limit) {
-        $string = substr( $string, 0, $limit ) . '...';
+    if (strlen( $string ) <= $limit) {
+        return $string;
     }
+    $string = substr( $string, 0, $limit - 3 ) . '...';
 }
 
 function vpl_bash_export($var, $value) {
@@ -745,6 +751,7 @@ function vpl_truncate_vpl($instance) {
     vpl_truncate_string( $instance->password, 255 );
     vpl_truncate_string( $instance->variationtitle, 255 );
 }
+
 function vpl_truncate_variations($instance) {
     vpl_truncate_string( $instance->identification, 40 );
 }
