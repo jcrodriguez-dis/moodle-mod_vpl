@@ -56,6 +56,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     public function test_vpl_get_set_session_var() {
         global $SESSION;
         $nosession = false;
+        $nopost = false;
         if ( !isset ($SESSION) ) {
             $nosession = true;
         } else {
@@ -82,5 +83,49 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         } else {
             $SESSION = $sessionsave;
         }
+    }
+    public function test_vpl_is_image() {
+        $this->assertTrue(vpl_is_image('filename.gif'));
+        $this->assertTrue(vpl_is_image('filename.jpg'));
+        $this->assertTrue(vpl_is_image('filename.jpeg'));
+        $this->assertTrue(vpl_is_image('filename.png'));
+        $this->assertTrue(vpl_is_image('filename.ico'));
+        $this->assertTrue(vpl_is_image('filename.Jpg'));
+        $this->assertTrue(vpl_is_image('filename.JPEG'));
+        $this->assertTrue(vpl_is_image('filename.PNG'));
+        $this->assertFalse(vpl_is_image('filename.db'));
+        $this->assertFalse(vpl_is_image('filename.pdf'));
+        $this->assertFalse(vpl_is_image('filename.ico.old'));
+        $this->assertFalse(vpl_is_image('a.ico/filename.pdf'));
+        $this->assertFalse(vpl_is_image('a.ico/filename_jpg'));
+        $this->assertFalse(vpl_is_image('a.ico/jpg'));
+    }
+
+    public function test_vpl_truncate_string() {
+        $this->assertEquals('...', vpl_truncate_string('testvpl3', 3));
+        $this->assertEquals('t...', vpl_truncate_string('testvpl3', 4));
+        $this->assertEquals('te...', vpl_truncate_string('testvpl3', 5));
+        $this->assertEquals('testvpl3', vpl_truncate_string('testvpl3', 8));
+        $this->assertEquals('test...', vpl_truncate_string('testvpl3', 7));
+        $this->assertEquals('testvpl3', vpl_truncate_string('testvpl3', 80));
+    }
+
+    public function test_vpl_bash_export() {
+        $this->assertEquals('export VPL=3', vpl_bash_export('VPL', 3));
+        $this->assertEquals('export ALGO=\'text\'', vpl_bash_export('ALGO', 'text'));
+        $this->assertEquals('export ALGO=\'te" $xt\'', vpl_bash_export('ALGO', 'te" $xt'));
+        $this->assertEquals('export ALGO=\'te\\\'\\\'xt\\\'\'', vpl_bash_export('ALGO', "te''xt'"));
+    }
+
+    public function test_vpl_is_valid_file_name() {
+        $this->assertTrue(vpl_is_valid_file_name('filename.PNG.png'));
+        $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafsñ fdj kfsdhahfskdh'));
+        $this->assertTrue(vpl_is_valid_file_name('f'));
+        $this->assertTrue(vpl_is_valid_file_name('fj'));
+        $this->assertFalse(vpl_is_valid_file_name('.'));
+        $this->assertFalse(vpl_is_valid_file_name('..'));
+        $this->assertFalse(vpl_is_valid_file_name(' '));
+        $this->assertFalse(vpl_is_valid_file_name('             '));
+        $this->assertFalse(vpl_is_valid_file_name('\.'));
     }
 }
