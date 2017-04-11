@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL_IDEButtons */
+/* globals VPL_IDEButtons: true */
 /* globals VPL_Util */
 /* globals $JQVPL */
 
@@ -136,15 +136,17 @@
                     var commands = editor.commands.commands;
                     var platform = editor.commands.platform;
                     for (var button in buttons) {
-                        var editorName = buttons[button].editorName;
-                        if (commands[editorName] && commands[editorName].bindKey && !buttons[button].Key) {
-                            buttons[button].key = commands[editorName].bindKey[platform];
-                            self.setText(button);
-                        } else {
-                            if (buttons[button].bindKey) {
-                                if (!buttons[button].hasOwnProperty('key')) {
-                                    buttons[button].key = buttons[button].bindKey[platform];
-                                    self.setText(button);
+                        if ( buttons.hasOwnProperty(button) ) {
+                            var editorName = buttons[button].editorName;
+                            if (commands[editorName] && commands[editorName].bindKey && !buttons[button].Key) {
+                                buttons[button].key = commands[editorName].bindKey[platform];
+                                self.setText(button);
+                            } else {
+                                if (buttons[button].bindKey) {
+                                    if (!buttons[button].hasOwnProperty('key')) {
+                                        buttons[button].key = buttons[button].bindKey[platform];
+                                        self.setText(button);
+                                    }
                                 }
                             }
                         }

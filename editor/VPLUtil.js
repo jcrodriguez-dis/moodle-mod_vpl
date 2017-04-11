@@ -177,7 +177,9 @@
         var out = unzipper.entries.length;
         function process(i) {
             if (i >= out || progressBar.isClosed()) {
-                if ( end ) end();
+                if ( end ) {
+                    end();
+                }
                 return;
             }
             var entry = unzipper.entries[i];
@@ -678,7 +680,9 @@
         }
         var apb = new VPL_Util.progressBar(action, title, function() {
             if (request.readyState != 4) {
-                if ( xhr && xhr.abort ) xhr.abort();
+                if ( xhr && xhr.abort ) {
+                    xhr.abort();
+                }
             }
         });
         request = $JQVPL.ajax({
@@ -858,7 +862,7 @@
             ws.close();
         });
         ws.notOpen = true;
-        ws.onopen = function(event) {
+        ws.onopen = function() {
             ws.notOpen = false;
             pb.setLabel(VPL_Util.str('connected'));
         };
@@ -868,14 +872,17 @@
             if (coninfo.secure && ws.notOpen) {
                 VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
                 .done(function(response) {
-                    VPL_Util.acceptCertificates(response.servers, externalActions.getLastAction);
+                    VPL_Util.acceptCertificates(response.servers, funtion(){
+                        return externalActions.getLastAction();
+                    });
+                    }
                 })
                 .fail(defail);
             } else {
                 deferred.reject(VPL_Util.str('connection_fail'));
             }
         };
-        ws.onclose = function(event) {
+        ws.onclose = function() {
             if (externalActions.getConsole) {
                 externalActions.getConsole().disconnect();
             }
@@ -1020,20 +1027,22 @@
                         html += getCase();
                         break;
                 }
-                if ( afterTitle ) html += '</div>';
+                if ( afterTitle ) {
+                    html += '</div>';
+                }
                 html += getTitle(line);
                 html += folding ? '<div style="display:none">' : '<div>';
                 afterTitle = true;
                 state = '';
             } else if (regcasv) {
                 if ( state == 'comment' ) {
-                        html += getComment();
+                    html += getComment();
                 }
                 addCase(line.substr(match[0].length));
                 state = 'case';
             } else {
                 if ( state == 'case' ) {
-                        html += getCase();
+                    html += getCase();
                 }
                 addComment(line);
                 state = 'comment';

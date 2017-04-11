@@ -21,12 +21,12 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL_Clipboard */
+/* globals VPL_Clipboard: true */
+/* globals VPL_Terminal: true */
+/* globals VPL_VNC_Client: true */
 /* globals VPL_Util */
 /* globals $JQVPL */
-/* globals VPL_Terminal */
 /* globals Terminal */
-/* globals VPL_VNC_Client */
 /* globals console */
 /* globals RFB */
 
@@ -111,7 +111,7 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
     var terminal_tag = $JQVPL('#' + terminal_id);
     this.updateTitle = function() {
         var text = title;
-        if (message != '') {
+        if (message !== '') {
             text += ' (' + message + ')';
         }
         titleText.text(str('console') + ": " + text);
@@ -282,7 +282,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             self.send(value.substr(mod));
         }
         lastValue = value;
-        if (value.length > 500 || value.length == 0) {
+        if (value.length > 500 || value.length === 0) {
             inputarea.blur();
             setTimeout(function() {
                 inputarea.focus();
@@ -373,14 +373,14 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             lostFocus();
         }
     });
-    function displayResize() { // TODO hot screen resize.
+    this.displayResize = function() { // TODO hot screen resize.
         if (self.isConnected()) {
             var w = VNCDialog.width();
             var h = VNCDialog.height();
             self.setCanvasSize(w, h);
             rfb.get_display().viewportChange(0, 0, w, h);
         }
-    }
+    };
     VNCDialog.dialog({
         closeOnEscape : false,
         autoOpen : false,
@@ -410,7 +410,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
     });
     this.updateTitle = function() {
         var text = title;
-        if (message != '') {
+        if (message !== '') {
             text += ' (' + message + ')';
         }
         titleText.text(str('console') + ": " + text);

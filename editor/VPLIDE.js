@@ -16,12 +16,12 @@
 /**
  * IDE Control
  * @package mod_vpl
- * @copyright 2013 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2017 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL_IDE */
+/* globals VPL_IDE: true */
 /* globals VPL_Util */
 /* globals $JQVPL */
 /* globals VPL_File */
@@ -456,27 +456,31 @@
                         content : {}
                     };
                     for (var i in files) {
-                        var file = files[i];
-                        var fileName = file.getFileName();
-                        var path = fileName.split("/");
-                        var curdir = structure;
-                        for (var p in path) {
-                            var part = path[p];
-                            if (p == path.length - 1) { // File.
-                                curdir.content[part] = {
-                                    isDir : false,
-                                    content : file,
-                                    pos : i
-                                };
-                            } else {
-                                if (!curdir.content[part]) { // New dir.
-                                    curdir.content[part] = {
-                                        isDir : true,
-                                        content : {}
-                                    };
+                        if ( files.hasOwnProperty(i) ) {
+                            var file = files[i];
+                            var fileName = file.getFileName();
+                            var path = fileName.split("/");
+                            var curdir = structure;
+                            for (var p in path) {
+                                if ( path.hasOwnProperty(p) ) {
+                                    var part = path[p];
+                                    if (p == path.length - 1) { // File.
+                                        curdir.content[part] = {
+                                            isDir : false,
+                                            content : file,
+                                            pos : i
+                                        };
+                                    } else {
+                                        if (!curdir.content[part]) { // New dir.
+                                            curdir.content[part] = {
+                                                isDir : true,
+                                                content : {}
+                                            };
+                                        }
+                                        // Descend Dir.
+                                        curdir = curdir.content[part];
+                                    }
                                 }
-                                // Descend Dir.
-                                curdir = curdir.content[part];
                             }
                         }
                     }
@@ -489,26 +493,28 @@
                     var dirIndent = '<span class="vpl_ide_dirindent"></span>';
                     function lister(dir,indent,lines) {
                         for (var name in dir.content) {
-                            var fd = dir.content[name];
-                            if (fd.isDir) {
-                                lines.push( indent + VPL_Util.iconFolder() + VPL_Util.sanitizeText(name) );
-                                lister(fd, indent + dirIndent, lines);
-                            } else {
-                                var file = fd.content;
-                                var sname = VPL_Util.sanitizeText( name );
-                                var path = VPL_Util.sanitizeText( file.getFileName() );
-                                if ( file.isOpen() ) {
-                                    sname = '<b>' + sname + '</b>';
+                            if ( dir.content.hasOwnProperty(name) ) {
+                                var fd = dir.content[name];
+                                if (fd.isDir) {
+                                    lines.push( indent + VPL_Util.iconFolder() + VPL_Util.sanitizeText(name) );
+                                    lister(fd, indent + dirIndent, lines);
+                                } else {
+                                    var file = fd.content;
+                                    var sname = VPL_Util.sanitizeText( name );
+                                    var path = VPL_Util.sanitizeText( file.getFileName() );
+                                    if ( file.isOpen() ) {
+                                        sname = '<b>' + sname + '</b>';
+                                    }
+                                    var attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
+                                    var line = '<a ' + attrs + '>' + sname + '</a>';
+                                    if (file.isModified()) {
+                                        line = VPL_Util.iconModified() + line;
+                                    }
+                                    if (fd.pos < minNumberOfFiles) {
+                                        line = line + VPL_Util.iconRequired();
+                                    }
+                                    lines.push( indent + line );
                                 }
-                                var attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
-                                var line = '<a ' + attrs + '>' + sname + '</a>';
-                                if (file.isModified()) {
-                                    line = VPL_Util.iconModified() + line;
-                                }
-                                if (fd.pos < minNumberOfFiles) {
-                                    line = line + VPL_Util.iconRequired();
-                                }
-                                lines.push( indent + line );
                             }
                         }
                     }
@@ -517,7 +523,7 @@
                     var lines = [];
                     var html = '';
                     lister(structure,'',lines);
-                    for (var i in lines) {
+                    for (var i = 0; i <lines.length; i++) {
                         html += lines[i] + '<br />';
                     }
                     file_list_content.html('<div>' + html + '</div>');
@@ -534,7 +540,8 @@
             this.setResult = function(res, go) {
                 var files = file_manager.getFiles();
                 var fileNames = [];
-                for (var i = 0; i < files.length; i++) {
+                var i;
+                for (i = 0; i < files.length; i++) {
                     fileNames [i] = files[i].getFileName();
                 }
 
@@ -542,7 +549,7 @@
                 var compilation = res.compilation;
                 var evaluation = res.evaluation;
                 var execution = res.execution;
-                for (var i = 0; i < files.length; i++) {
+                for (i = 0; i < files.length; i++) {
                     files[i].clearAnnotations();
                 }
                 if (grade + compilation + evaluation + execution === '') {
@@ -583,7 +590,7 @@
                     if (grade > '' && compilation + evaluation + execution > '') {
                         result.accordion('option', 'active', 1);
                     }
-                    for (var i = 0; i < files.length; i++) {
+                    for (i = 0; i < files.length; i++) {
                         var anot = files[i].getAnnotations();
                         for (var j = 0; j < anot.length; j++) {
                             if (go || anot[j].type == 'error') {
@@ -595,8 +602,6 @@
                 }
                 VPL_Util.longDelay(autoResizeTab);
             };
-
-
 
             // Init editor.
 
@@ -653,21 +658,15 @@
                 }
                 return tabsAir;
             }
-            var resultAir = false;
-            function getResultAir() {
-                if (resultAir === false) {
-                    resultAir = (result_container.outerWidth(true) - result_container.width()) / 2;
-                }
-                return resultAir;
-            }
             function resizeTabWidth(e, ui) {
                 var diff_left = ui.position.left - ui.originalPosition.left;
+                var maxWidth;
                 if (diff_left !== 0) {
-                    var maxWidth = tabs.width() + file_list_container.width() - file_list_container.vpl_minWidth;
+                    maxWidth = tabs.width() + file_list_container.width() - file_list_container.vpl_minWidth;
                     tabs.resizable('option', 'maxWidth', maxWidth);
                     file_list_container.width(file_list_container.vpl_original_width + diff_left);
                 } else {
-                    var maxWidth = tabs.width() + result_container.width() - result_container.vpl_minWidth;
+                    maxWidth = tabs.width() + result_container.width() - result_container.vpl_minWidth;
                     tabs.resizable('option', 'maxWidth', maxWidth);
                     var diff_width = ui.size.width - ui.originalSize.width;
                     result_container.width(result_container.vpl_original_width - diff_width);
@@ -862,7 +861,6 @@
                 title : str('rename_file'),
                 buttons : dialogButtons
             }));
-            var dialog_comments = null;
             dialogButtons[str('ok')] = function(){
                 $JQVPL(this).dialog('close');
             };
@@ -1119,7 +1117,7 @@
                 name:'fullscreen',
                 originalAction: function() {
                     var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer';
-                    tags +=', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
+                    tags += ', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         root_obj.removeClass('vpl_ide_root_fullscreen');
                         $JQVPL('body').removeClass('vpl_body_fullscreen');
@@ -1153,7 +1151,9 @@
                 .done( function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        file_manager.addFile(files[fileName], true, VPL_Util.doNothing, showErrorMessage);
+                        if ( files.hasOwnProperty(fileName) ) { 
+                            file_manager.addFile(files[fileName], true, VPL_Util.doNothing, showErrorMessage);
+                        }
                     }
                     file_manager.fileListVisibleIfNeeded();
                     VPL_Util.delay(updateMenu);
@@ -1210,10 +1210,14 @@
                                 });
                     }
                 },
+                'lastAction' : false,
                 'getLastAction' : function() {
-                    var ret = lastAction;
-                    lastAction = false;
+                    var ret = this.lastAction;
+                    this.lastAction = false;
                     return ret;
+                },
+                'setLastAction' : function(action) {
+                    this.lastAction = action;
                 }
             };
             function executionRequest(action, acting, data) {
@@ -1228,34 +1232,46 @@
                     .fail(showErrorMessage);
                 }
             }
+            function runAction(){
+                executionRequest('run', 'running', {
+                    XGEOMETRY : VNCClient.getCanvasSize()
+                });
+            }
             menuButtons.add({
                 name:'run',
                 originalAction: function() {
-                    executionRequest('run', 'running', {
-                        XGEOMETRY : VNCClient.getCanvasSize()
-                    });
+                    executionActions.setLastAction(runAction);
+                    runAction();
                 },
                 bindKey:{
                     win: 'Ctrl-F11',
                     mac: 'Command-U'
                 }
             });
+            function debugAction(){
+                executionRequest('debug', 'debugging', {
+                    XGEOMETRY : VNCClient.getCanvasSize()
+                });
+            }
             menuButtons.add({
                 name:'debug',
                 originalAction: function() {
-                    executionRequest('debug', 'debugging', {
-                        XGEOMETRY : VNCClient.getCanvasSize()
-                    });
+                    executionActions.setLastAction(debugAction);
+                    debugAction();
                 },
                 bindKey:{
                     win: 'Alt-F11',
                     mac: 'Option-U'
                 }
             });
+            function evaluateAction(){
+                executionRequest('evaluate', 'evaluating');
+            }
             menuButtons.add({
                 name:'evaluate',
                 originalAction: function() {
-                    executionRequest('evaluate', 'evaluating');
+                    executionActions.setLastAction(evaluateAction);
+                    evaluateAction();
                 },
                 bindKey:{
                     win: 'Shift-F11',
@@ -1330,9 +1346,9 @@
             $JQVPL('#vpl_menu .ui-button-text').css('padding','0');
             menuButtons.setTimeLeft(options);
             function updateMenu() {
+                var i;
                 var file = file_manager.currentFile();
                 var nfiles = file_manager.length();
-                var id = tabs.tabs('option', 'active');
                 if (nfiles) {
                     tabs.show();
                 } else {
@@ -1351,9 +1367,10 @@
                 menuButtons.enable('download', !modified);
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
+                var sel;
                 if (!file) {
-                    var sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
-                    for (var i in sel) {
+                    sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
+                    for (i = 0; i < sel.length; i++) {
                         menuButtons.enable(sel[i], false);
                     }
                     return;
@@ -1361,16 +1378,17 @@
                 var id = file_manager.getFilePosById(file.getId());
                 menuButtons.enable('rename', id >= minNumberOfFiles && nfiles !== 0);
                 menuButtons.enable('delete', id >= minNumberOfFiles && nfiles !== 0);
+
                 if (nfiles === 0 || VPL_Util.isBinary(file.getFileName())) {
-                    var sel = [ 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
-                    for (var i in sel) {
+                    sel = [ 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
+                    for (i = 0; i < sel.length; i++) {
                         menuButtons.enable(sel[i], false);
                     }
                 } else {
                     menuButtons.enable('undo', file.hasUndo());
                     menuButtons.enable('redo', file.hasRedo());
-                    var sel = [ 'select_all', 'find', 'find_replace', 'next' ];
-                    for (var i in sel) {
+                    sel = [ 'select_all', 'find', 'find_replace', 'next' ];
+                    for (i = 0; i < sel.length; i++) {
                         menuButtons.enable(sel[i], true);
                     }
                 }
@@ -1401,7 +1419,7 @@
             (function() {
                 var oldMenuWidth = menu.width();
                 function checkMenuWidth() {
-                    newMenuWidth = menu.width();
+                    var newMenuWidth = menu.width();
                     if (oldMenuWidth != newMenuWidth) {
                         oldMenuWidth = newMenuWidth;
                         autoResizeTab();
@@ -1438,7 +1456,7 @@
                 tabs.tabs('option', 'active', 0);
                 if (file_manager.length() === 0 && maxNumberOfFiles > 0) {
                     menuButtons.getAction('new')();
-                } else if (!options['saved']) {
+                } else if ( ! options.saved ) {
                     file_manager.setModified();
                 }
                 if(response.compilationexecution){

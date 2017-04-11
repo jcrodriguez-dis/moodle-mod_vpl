@@ -22,7 +22,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL_File */
+/* globals VPL_File: true */
 /* globals VPL_Util */
 /* globals $JQVPL */
 /* globals ace */
@@ -294,7 +294,7 @@
                 }
                 var ext = VPL_Util.fileExtension(fileName);
                 var lang = 'text';
-                if (ext != '') {
+                if (ext !== '') {
                     lang = VPL_Util.langType(ext);
                 }
                 session.setMode("ace/mode/" + lang);
