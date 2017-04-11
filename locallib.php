@@ -707,7 +707,7 @@ function vpl_is_valid_path_name($path) {
 }
 function vpl_is_valid_file_name($filename) {
     $backtick = chr( 96 ); // Avoid warnning in codecheck.
-    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\|\[|\]|[\/\^';
+    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\\\|\[|\]|[\/\^';
     $regexp .= $backtick . '´]|^\-|^ | $|^\.$|^\.\.$/';
     if (strlen( $filename ) < 1) {
         return false;
@@ -728,7 +728,7 @@ function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
         return 'export ' . $var . '=' . $value . "\n";
     } else {
-        return 'export ' . $var . "='" . str_replace( "'", "'\\''", $value ) . "'\n";
+        return 'export ' . $var . "='" . str_replace( "'", "'\"'\"'", $value ) . "'\n";
     }
 }
 

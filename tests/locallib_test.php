@@ -126,7 +126,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
         $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
         $this->assertEquals("export ALGO='te\" \$xt'\n", vpl_bash_export('ALGO', 'te" $xt'));
-        $this->assertEquals("export ALGO='te\'\'xt\''\n", vpl_bash_export('ALGO', "te''xt'"));
+        $this->assertEquals("export ALGO='te'\"'\"''\"'\"'xt'\"'\"''\n", vpl_bash_export('ALGO', "te''xt'"));
     }
 
     public function test_vpl_is_valid_file_name() {
@@ -134,10 +134,16 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafsñ fdj kfsdhahfskdh'));
         $this->assertTrue(vpl_is_valid_file_name('f'));
         $this->assertTrue(vpl_is_valid_file_name('fj'));
+        $this->assertTrue(vpl_is_valid_file_name('.f'));
+        $this->assertTrue(vpl_is_valid_file_name('f.'));
+        $this->assertTrue(vpl_is_valid_file_name('.f.'));
+        $this->assertTrue(vpl_is_valid_file_name('..f'));
         $this->assertFalse(vpl_is_valid_file_name('.'));
         $this->assertFalse(vpl_is_valid_file_name('..'));
         $this->assertFalse(vpl_is_valid_file_name(' '));
         $this->assertFalse(vpl_is_valid_file_name('             '));
+        $this->assertFalse(vpl_is_valid_file_name('a/b'));
+        $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
     }
 }
