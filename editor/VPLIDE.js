@@ -145,7 +145,7 @@
                     }
                 }
             }
-            File_manager = function() {
+            function File_manager() {
                 var tabs_ul = $JQVPL('#vpl_tabs_ul');
                 var tabs = $JQVPL('#vpl_tabs').tabs("widget");
                 var files = [];
@@ -562,7 +562,7 @@
                 tabs_ul.on('dblclick', 'a',  menuButtons.getAction('rename'));
                 file_list_content.on('dblclick', 'a',  menuButtons.getAction('rename'));
 
-            };
+            }
 
             this.setResult = function(res, go) {
                 var files = file_manager.getFiles();
@@ -754,7 +754,7 @@
                 if (tabs_ul_width < newWidth) {
                     tabs_ul.width('');
                 }
-            }
+            };
             autoResizeTab = function () {
                 var oldWidth = tabs.width();
                 var newWidth = menu.width();
@@ -800,7 +800,7 @@
                 adjustTabsTitles(true);
                 resizeHeight();
                 file_manager.currentFile('adjustSize');
-            }
+            };
             function focusCurrentFile() {
                 file_manager.currentFile('focus');
             }
@@ -814,7 +814,7 @@
                 return VPL_Util.showErrorMessage(message, {
                     close : focusCurrentFile
                 });
-            }
+            };
 
             var dialog_new = $JQVPL('#vpl_ide_dialog_new');
             function newFileHandler(event) {
@@ -1398,7 +1398,7 @@
                     }
                 }
                 VPL_Util.delay(file_manager.updateFileList);
-            }
+            };
 
             tabs.on("tabsactivate", function() {
                 file_manager.currentFile('focus');
