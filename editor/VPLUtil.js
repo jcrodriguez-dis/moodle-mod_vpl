@@ -21,13 +21,15 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL_Util */
+/* globals VPL_Util: true */
 /* globals $JQVPL */
 /* globals console */
 /* globals unescape */
 /* globals escape */
 /* globals JUnzip */
+/* globals JSInflate */
 /* globals ace */
+/* globals M */
 
 (function() {
     VPL_Util = {};
@@ -168,55 +170,56 @@
     VPL_Util.readZipFile = function(data, save, progressBar,end) {
         var ab = VPL_Util.ArrayBuffer2String(data);
         var unzipper = new JUnzip(ab);
-        if (unzipper.isZipFile()) {
-            unzipper.readEntries();
-            var out = unzipper.entries.length;
-            function process(i) {
-                if (i >= out || progressBar.isClosed()) {
-                    end && end();
-                    return;
+        if ( ! unzipper.isZipFile()) {
+            return;
+        }
+        unzipper.readEntries();
+        var out = unzipper.entries.length;
+        function process(i) {
+            if (i >= out || progressBar.isClosed()) {
+                if ( end ) end();
+                return;
+            }
+            var entry = unzipper.entries[i];
+            var fileName = entry.fileName;
+            var data;
+            // Is directory entry then skip.
+            if (fileName.match(/\/$/)) {
+                process(i + 1);
+            } else {
+                progressBar.processFile(fileName);
+                var uncompressed = '';
+                if (entry.compressionMethod === 0) {
+                    // Plain file.
+                    uncompressed = entry.data;
+                } else if (entry.compressionMethod === 8) {
+                    uncompressed = JSInflate.inflate(entry.data);
                 }
-                var entry = unzipper.entries[i];
-                var fileName = entry.fileName;
-                var data;
-                // Is directory entry then skip.
-                if (fileName.match(/\/$/)) {
-                    process(i + 1);
-                } else {
-                    progressBar.processFile(fileName);
-                    var uncompressed = '';
-                    if (entry.compressionMethod === 0) {
-                        // Plain file.
-                        uncompressed = entry.data;
-                    } else if (entry.compressionMethod === 8) {
-                        uncompressed = JSInflate.inflate(entry.data);
+                data = VPL_Util.String2ArrayBuffer(uncompressed);
+                if (VPL_Util.isBinary(fileName)) {
+                    // If binary use as arrayBuffer.
+                    if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
+                        i = out;
                     }
-                    data = VPL_Util.String2ArrayBuffer(uncompressed);
-                    if (VPL_Util.isBinary(fileName)) {
-                        // If binary use as arrayBuffer.
-                        if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
+                    process(i + 1);
+                    progressBar.endFile();
+                } else {
+                    var blob = new Blob([ data ], {
+                        type : 'text/plain'
+                    });
+                    var fr = new FileReader();
+                    fr.onload = function(e) {
+                        if ( ! save({name:fileName, contents:e.target.result, encoding:0}) ) {
                             i = out;
                         }
                         process(i + 1);
                         progressBar.endFile();
-                    } else {
-                        blob = new Blob([ data ], {
-                            type : 'text/plain'
-                        });
-                        fr = new FileReader();
-                        fr.onload = function(e) {
-                            if ( ! save({name:fileName, contents:e.target.result, encoding:0}) ) {
-                                i = out;
-                            }
-                            process(i + 1);
-                            progressBar.endFile();
-                        };
-                        fr.readAsText(blob);
-                    }
+                    };
+                    fr.readAsText(blob);
                 }
             }
-            process(0);
         }
+        process(0);
     };
 
     VPL_Util.readSelectedFiles = function(filesToRead, save, end) {
@@ -252,8 +255,8 @@
                     if (ext == 'zip') {
                         try {
                             VPL_Util.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
-                        } catch (e) {
-                            VPL_Util.showErrorMessage(e + " : " + f.name);
+                        } catch (ex) {
+                            VPL_Util.showErrorMessage(ex + " : " + f.name);
                         }
                     } else {
                         var data = VPL_Util.dataFromURLData(e.target.result);
@@ -307,7 +310,7 @@
             }
             var days = parseInt(timeLeft / day);
             timeLeft -= days * day;
-            if (days != 0) {
+            if (days !== 0) {
                 res += days + 'T';
             }
             var hours = parseInt(timeLeft / hour);
@@ -399,7 +402,9 @@
         };
         VPL_Util.set_str = function(newi18n) {
             for (var key in newi18n) {
-                i18n[key] = newi18n[key];
+                if ( newi18n.hasOwnProperty(key) ) {
+                    i18n[key] = newi18n[key];
+                }
             }
             VPL_Util.dialogbase_options = {
                 autoOpen : false,
@@ -521,12 +526,12 @@
                 classes += size;
             }
             classes += ' fa-' + menu_icons[icon];
-            return ret = "<i class='" + classes + "'></i>";
+            return "<i class='" + classes + "'></i>";
         };
     })();
     // UI operations.
     VPL_Util.setTitleBar = function(dialog, type, icon, buttons, handler) {
-        title = $JQVPL(dialog).parent().find("span.ui-dialog-title");
+        var title = $JQVPL(dialog).parent().find("span.ui-dialog-title");
         function genButton(e) {
             var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPL_Util.str(e) + "'>";
             html += VPL_Util.gen_icon(e, 'fw') + "</a>";
@@ -536,15 +541,15 @@
         html += " <span class='" + type + "-title-buttons'></span>";
         html += "<span class='" + type + "-title-text'></span>";
         title.html(html);
-        titleButtons = title.find("span." + type + "-title-buttons");
-        titleText = title.find("span." + type + "-title-text");
+        var titleButtons = title.find("span." + type + "-title-buttons");
+        var titleText = title.find("span." + type + "-title-text");
         html = "";
         for (var i = 0; i < buttons.length; i++) {
             html += genButton(buttons[i]);
         }
         titleButtons.html(html);
-        for (var i = 0; i < handler.length; i++) {
-            title.find('#vpl_' + type + '_' + buttons[i]).button().click(handler[i]);
+        for (var ih = 0; ih < handler.length; ih++) {
+            title.find('#vpl_' + type + '_' + buttons[ih]).button().click(handler[ih]);
         }
         titleButtons.on('focus','*', function(){$JQVPL(this).blur();});
         return titleText;
@@ -673,7 +678,7 @@
         }
         var apb = new VPL_Util.progressBar(action, title, function() {
             if (request.readyState != 4) {
-                xhr && xhr.abort && xhr.abort();
+                if ( xhr && xhr.abort ) xhr.abort();
             }
         });
         request = $JQVPL.ajax({
@@ -734,8 +739,8 @@
             if (!win) {
                 return true;
             }
-        } catch (e) {
-            VPL_Util.log( e );
+        } catch (ex) {
+            VPL_Util.log( ex );
             return true;
         }
         e.preventDefault();
@@ -749,8 +754,11 @@
             var html = VPL_Util.str('acceptcertificatesnote');
             html += '<ol>';
             for (var i in servers) {
-                var n = Number(i) + 1;
-                html += '<li><a href="' + servers[i] + '" target="_blank">Server ' + n + '</a><br /></ul>';
+                if ( servers.hasOwnProperty(i) ) {
+                    var n = 1 + i;
+                    html += '<li><a href="' + servers[i] + '" target="_blank">Server ';
+                    html += n + '</a><br /></ul>';
+                }
             }
             html += '</ol>';
             var m = VPL_Util.showMessage(html, {
@@ -930,7 +938,7 @@
                     // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
                     lastAnotationFile = i;
                     used = true;
-                    type = line.search(regWarning) == -1 ? 'error' : 'warning';
+                    var type = line.search(regWarning) == -1 ? 'error' : 'warning';
                     lastAnotation = {
                         row : (match[2] - 1),
                         column : match[3],
@@ -947,7 +955,7 @@
                 }
             }
             if (!used && lastAnotation) {
-                if (rawline != '') {
+                if (rawline !== '') {
                     lastAnotation.text += "\n" + rawline;
                     sh[lastAnotationFile].setAnnotations(sh[lastAnotationFile].getAnnotations());
                 } else {
@@ -964,7 +972,9 @@
                 line = line.substr(0, line.length - end[0].length);
             }
             var html = '';
-            folding && ( html += '<a href="javascript:void(0)" onclick="VPL_Util.show_hide_div(this)">[+]</a>' );
+            if ( folding ) {
+                html += '<a href="javascript:void(0)" onclick="VPL_Util.show_hide_div(this)">[+]</a>';
+            }
             html += '<b class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</b><br />';
             html = genFileLinks(html, line);
             return html;
@@ -1010,29 +1020,22 @@
                         html += getCase();
                         break;
                 }
-                afterTitle && (html += '</div>');
+                if ( afterTitle ) html += '</div>';
                 html += getTitle(line);
                 html += folding ? '<div style="display:none">' : '<div>';
                 afterTitle = true;
                 state = '';
             } else if (regcasv) {
-                switch (state) {
-                    case 'comment':
+                if ( state == 'comment' ) {
                         html += getComment();
-                    default:
-                    case 'case':
-                        addCase(line.substr(match[0].length));
                 }
+                addCase(line.substr(match[0].length));
                 state = 'case';
             } else {
-                switch (state) {
-                    case 'case':
+                if ( state == 'case' ) {
                         html += getCase();
-                    default:
-                    case 'comment':
-                        addComment(line);
-                        break;
                 }
+                addComment(line);
                 state = 'comment';
             }
         }
@@ -1044,7 +1047,7 @@
                 html += getCase();
                 break;
         }
-        afterTitle && (html += '</div>');
+        if ( afterTitle ) html += '</div>';
         return html;
     };
     (function() {
@@ -1097,11 +1100,11 @@
                 shFileNames.push( file.fileName );
                 shs[ file.tagId ] = sh;
             }
-            for (var i = 0; i < results.length; i++) {
-                var tag = document.getElementById(results[i].tagId);
+            for (var ri = 0; ri < results.length; ri++) {
+                var tag = document.getElementById(results[ri].tagId);
                 var text = tag.textContent || tag.innerText;
                 tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles,
-                                                       results[i].noFormat, results[i].folding);
+                                                       results[ri].noFormat, results[ri].folding);
             }
             files = [];
             results = [];
