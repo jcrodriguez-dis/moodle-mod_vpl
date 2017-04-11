@@ -21,8 +21,12 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-(function() {
+/* exports VPL_File */
+/* globals VPL_Util */
+/* globals $JQVPL */
+/* globals ace */
 
+(function() {
     VPL_File = function(id, name, value, file_manager) {
         var tid = "#vpl_file" + id;
         var tabnameid = "#vpl_tab_name" + id;

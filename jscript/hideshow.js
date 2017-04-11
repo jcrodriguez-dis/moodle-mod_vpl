@@ -21,9 +21,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  **/
 
+/* exports VPL */
 (function() {
     if (typeof VPL != 'object') {
-        VPL = new Object();
+        VPL = {};
     }
 
     VPL.show_hide_div = function (id){
@@ -46,5 +47,5 @@
             div.style.display = 'none';
         }
     };
-    setTimeout('VPL.hide_later()', 5000);
+    setTimeout(VPL.hide_later, 5000);
 })();

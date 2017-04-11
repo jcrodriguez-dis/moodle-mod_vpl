@@ -20,10 +20,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+/* exports VPL */
 
 (function() {
     if (typeof VPL != 'object') {
-        VPL = new Object();
+        VPL = {};
     }
     VPL.getOffsetY = function(obj) {
         var offset = 0;
@@ -65,8 +66,8 @@
      */
     VPL.calculateGrade = function(maxgrade) {
         var form1 = window.document.getElementById('form1');
-        var text = new String(form1.comments.value);
-        var grade = new Number(maxgrade);
+        var text = "" + form1.comments.value;
+        var grade = 0 + maxgrade;
         while (text.length > 0) {
             /* Separate next line */
             var line = new String();
@@ -82,7 +83,7 @@
             } else {
                 text = '';
             }
-            if (line.length == 0) {
+            if (line.length === 0) {
                 continue;
             }
 
@@ -94,13 +95,13 @@
                         nline += line.charAt(i);
                     }
                 }
-                if (nline.length == 0) {
+                if (nline.length === 0) {
                     continue;
                 }
                 /* End of line format (-grade) */
                 if (nline.charAt(nline.length - 1) == ')') {
                     var pos = nline.lastIndexOf('(');
-                    if (pos == -1) {
+                    if (pos === -1) {
                         continue;
                     }
                     var rest = nline.substr(pos + 1, nline.length - 2 - pos);
@@ -124,7 +125,7 @@
      * Add new comment to the form comment string to add
      */
     VPL.addComment = function(comment) {
-        if (comment == '') {
+        if (comment === '') {
             return;
         }
         comment = '-' + comment;

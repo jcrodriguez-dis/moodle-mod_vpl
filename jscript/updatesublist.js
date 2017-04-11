@@ -20,9 +20,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+/* exports VPL */
 (function(){
     if (typeof VPL != 'object') {
-        VPL = new Object();
+        VPL = {};
     }
     /**
      * Highlight row
@@ -55,7 +57,7 @@
      * @param subid submission identification
     */
     VPL.unhlrow = function(subid){
-        if(opener == null){
+        if(opener === null){
             return;
         }
         var ssubid = new String(subid);
@@ -81,7 +83,7 @@
      * @param subid submission identification
     */
     VPL.updatesublist = function(subid, grade, grader, gradeon){
-        if(opener == null){
+        if(opener === null){
             return;
         }
         var ssubid = new String(subid);
@@ -111,7 +113,7 @@
      * @param url base of next
     */
     VPL.go_next = function(subid, url){
-        if (opener == null) {
+        if (opener === null) {
             window.close();
         }
         var ssubid = new String(subid);

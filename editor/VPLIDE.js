@@ -20,6 +20,14 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+/* exports VPL_IDE */
+/* globals VPL_Util */
+/* globals $JQVPL */
+/* globals VPL_File */
+/* globals VPL_IDEButtons */
+/* globals VPL_Terminal */
+/* globals VPL_VNC_Client */
+
 (function() {
     if (!window.VPL_IDE) {
         // Editor constructor (only one at this moment).

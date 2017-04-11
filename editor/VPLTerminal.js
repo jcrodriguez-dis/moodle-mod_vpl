@@ -20,6 +20,14 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+/* exports VPL_Clipboard */
+/* globals VPL_Util */
+/* globals $JQVPL */
+/* globals VPL_Terminal */
+/* globals Terminal */
+/* globals VPL_VNC_Client */
+/* globals console */
+/* globals RFB */
 
 VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus) {
     var tdialog = $JQVPL('#' + dialog_id);

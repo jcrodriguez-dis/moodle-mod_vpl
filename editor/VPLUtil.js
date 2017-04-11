@@ -20,6 +20,13 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+/* exports VPL_Util */
+/* globals $JQVPL */
+/* globals console */
+/* globals unescape */
+/* globals escape */
+/* globals JUnzip */
+/* globals ace */
 
 (function() {
     VPL_Util = {};
@@ -27,8 +34,12 @@
     };
     var debugMode = M && M.cfg && M.cfg.developerdebug;
     VPL_Util.log = function( m, forced) {
-        (debugMode || forced) && console && console.log && console.log( m );
-        (debugMode || forced) && console && console.trace && console.trace();
+        if ( (debugMode || forced) && console && console.log ) {
+            console.log( m );
+        }
+        if ( (debugMode || forced) && console && console.trace ) {
+            console.trace();
+        }
     };
     // Get scrollBarWidth.
     VPL_Util.scrollBarWidth = function() {
@@ -220,7 +231,7 @@
         };
         pb.endFile = function() {
             filePending--;
-            if (filePending == 0) {
+            if (filePending === 0) {
                 end();
                 pb.close();
             }
@@ -305,7 +316,7 @@
             var seconds = parseInt(timeLeft);
             res += ('00' + hours).substr(-2) + ':';
             res += ('00' + minutes).substr(-2);
-            if (days == 0) {
+            if (days === 0) {
                 res += ':' + ('00' + seconds).substr(-2);
             }
             return res;
@@ -580,7 +591,7 @@
             }
         };
         this.isClosed = function() {
-            return dialog == false;
+            return dialog === false;
         };
         var titleTag = dialog.siblings().find('.ui-dialog-title');
         titleTag.html(VPL_Util.gen_icon(title) + ' ' + titleTag.html());
@@ -656,7 +667,7 @@
         var deferred = $JQVPL.Deferred();
         var request = null;
         var xhr = false;
-        if (title == '') {
+        if (title === '') {
             title = 'connecting';
         }
         var apb = new VPL_Util.progressBar(action, title, function() {
@@ -897,7 +908,7 @@
         var lastAnotationFile = false;
         var afterTitle = false;
         function getHref( i ) {
-            if ( typeof sh[i].getTagId == 'undefined' ) {
+            if ( typeof sh[i].getTagId === 'undefined' ) {
                 return 'href="#" ';
             } else {
                 return 'href="#' + sh[i].getTagId() + '" ';
@@ -1053,7 +1064,7 @@
              });
         };
         VPL_Util.syntaxHighlight = function(){
-            if ( typeof ace == 'undefined' ) {
+            if ( typeof ace === 'undefined' ) {
                 setTimeout(VPL_Util.syntaxHighlight, 100);
                 return;
             }
