@@ -20,8 +20,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-/* exports VPL_Single_Evaluation */
-/* globals $JQVPL */
+
+/* globals VPL_Single_Evaluation: true */
 /* globals VPL_Util */
 
 (function() {

@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL */
+/* globals VPL: true */
 
 (function(){
     if (typeof VPL != 'object') {
@@ -32,10 +32,10 @@
      * @param subid submission identification
      */
     VPL.hlrow = function(subid){
-        if(opener == null){
+        if(opener === null){
             return;
         }
-        var ssubid = new String(subid);
+        var ssubid = "" + subid;
         var divgrade = opener.document.getElementById('g' + ssubid);
         var divgrader = opener.document.getElementById('m' + ssubid);
         var divgradeon = opener.document.getElementById('o' + ssubid);
@@ -61,7 +61,7 @@
         if(opener === null){
             return;
         }
-        var ssubid = new String(subid);
+        var ssubid = "" + subid;
         var divgrade = opener.document.getElementById('g' + ssubid);
         var divgrader = opener.document.getElementById('m' + ssubid);
         var divgradeon = opener.document.getElementById('o' + ssubid);
@@ -87,7 +87,7 @@
         if(opener === null){
             return;
         }
-        var ssubid = new String(subid);
+        var ssubid = "" + subid;
         var divgrade = opener.document.getElementById('g' + ssubid);
         var divgrader = opener.document.getElementById('m' + ssubid);
         var divgradeon = opener.document.getElementById('o' + ssubid);
@@ -117,7 +117,7 @@
         if (opener === null) {
             window.close();
         }
-        var ssubid = new String(subid);
+        var ssubid = "" + subid;
         var divnext = opener.document.getElementById('n' + ssubid);
         if (divnext) {
             location.replace(url + divnext.innerHTML);

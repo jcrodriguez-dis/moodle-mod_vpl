@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* exports VPL */
+/* globals VPL: true */
 
 (function() {
     if (typeof VPL != 'object') {
@@ -71,7 +71,7 @@
         var grade = 0 + maxgrade;
         while (text.length > 0) {
             /* Separate next line */
-            var line = new String();
+            var line = "";
             var i;
             for (i = 0; i < text.length; i++) {
                 if (text.charAt(i) == '\n' || text.charAt(i) == '\r') {
@@ -90,7 +90,7 @@
 
             /* Is a message title line */
             if (line.charAt(0) == '-') {
-                var nline = new String();
+                var nline = "";
                 for (i = 0; i < line.length; i++) {
                     if (line.charAt(i) != ' ') {
                         nline += line.charAt(i);
@@ -108,7 +108,7 @@
                     var rest = nline.substr(pos + 1, nline.length - 2 - pos);
                     /* update grade with rest */
                     if (rest < 0) {
-                        grade += new Number(rest);
+                        grade += rest;
                     }
                 }
             }
@@ -132,7 +132,7 @@
         comment = '-' + comment;
         var form1 = window.document.getElementById('form1');
         var field = form1.comments;
-        var text = new String(field.value);
+        var text = field.value;
         if (text.indexOf(comment, 0) >= 0) { /* Comment already in form */
             return;
         }
@@ -150,12 +150,13 @@
         }
     };
     VPL.removeHeaderFooter = function() {
+        var i;
         var l = window.document.getElementsByTagName('header');
-        for (var i = 0; i < l.length; i++) {
+        for ( i = 0; i < l.length; i++) {
             l[i].style.display = 'none';
         }
         l = window.document.getElementsByTagName('footer');
-        for (var i = 0; i < l.length; i++) {
+        for ( i = 0; i < l.length; i++) {
             l[i].style.display = 'none';
         }
     };

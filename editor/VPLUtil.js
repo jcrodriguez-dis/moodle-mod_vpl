@@ -875,7 +875,6 @@
                     VPL_Util.acceptCertificates(response.servers, funtion(){
                         return externalActions.getLastAction();
                     });
-                    }
                 })
                 .fail(defail);
             } else {

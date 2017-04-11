@@ -31,6 +31,7 @@
 
 (function() {
     if (!window.VPL_IDE) {
+       
         // Editor constructor (only one at this moment).
         VPL_IDE = function(root_id, options) {
             var self = this;
@@ -118,6 +119,21 @@
                     return false;
                 }
             }
+            // Init editor vars.
+
+            var menu = $JQVPL('#vpl_menu');
+            var menuButtons = new VPL_IDEButtons(menu,isOptionAllowed);
+            var tr = $JQVPL('#vpl_tr');
+            var file_list_container = $JQVPL('#vpl_filelist');
+            var file_list = $JQVPL('#vpl_filelist_header');
+            var file_list_content = $JQVPL('#vpl_filelist_content');
+            var tabs_ul = $JQVPL('#vpl_tabs_ul');
+            var tabs = $JQVPL('#vpl_tabs');
+            var result_container = $JQVPL('#vpl_results');
+            var result = $JQVPL('#vpl_results_accordion');
+            file_list_container.vpl_minWidth = 80;
+            result_container.vpl_minWidth = 100;
+            
             var File_manager = function() {
                 var tabs_ul = $JQVPL('#vpl_tabs_ul');
                 var tabs = $JQVPL('#vpl_tabs').tabs("widget");
@@ -523,7 +539,7 @@
                     var lines = [];
                     var html = '';
                     lister(structure,'',lines);
-                    for (var i = 0; i <lines.length; i++) {
+                    for (var i = 0; i < lines.length; i++) {
                         html += lines[i] + '<br />';
                     }
                     file_list_content.html('<div>' + html + '</div>');
@@ -602,21 +618,6 @@
                 }
                 VPL_Util.longDelay(autoResizeTab);
             };
-
-            // Init editor.
-
-            var menu = $JQVPL('#vpl_menu');
-            var menuButtons = new VPL_IDEButtons(menu,isOptionAllowed);
-            var tr = $JQVPL('#vpl_tr');
-            var file_list_container = $JQVPL('#vpl_filelist');
-            var file_list = $JQVPL('#vpl_filelist_header');
-            var file_list_content = $JQVPL('#vpl_filelist_content');
-            var tabs_ul = $JQVPL('#vpl_tabs_ul');
-            var tabs = $JQVPL('#vpl_tabs');
-            var result_container = $JQVPL('#vpl_results');
-            var result = $JQVPL('#vpl_results_accordion');
-            file_list_container.vpl_minWidth = 80;
-            result_container.vpl_minWidth = 100;
 
             function avoidSelectGrade(event, ui) {
                 if ("newHeader" in ui) {
@@ -1151,7 +1152,7 @@
                 .done( function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        if ( files.hasOwnProperty(fileName) ) { 
+                        if ( files.hasOwnProperty(fileName) ) {
                             file_manager.addFile(files[fileName], true, VPL_Util.doNothing, showErrorMessage);
                         }
                     }

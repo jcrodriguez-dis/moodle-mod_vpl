@@ -252,19 +252,19 @@
                 }
                 return session.getUndoManager().hasRedo();
             };
-            this.find = function(s) {
+            this.find = function() {
                 if (!opened) {
                     return;
                 }
                 editor.execCommand('find');
             };
-            this.replace = function(s) {
+            this.replace = function() {
                 if (!opened) {
                     return;
                 }
                 editor.execCommand('replace');
             };
-            this.next = function(s) {
+            this.next = function() {
                 if (!opened) {
                     return;
                 }

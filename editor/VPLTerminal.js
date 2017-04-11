@@ -170,11 +170,11 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
                     setTimeout(ws.writeIt, 0);
                 }
             };
-            ws.onopen = function(event) {
+            ws.onopen = function() {
                 self.setMessage('');
                 self.setTitle(str('connected'));
             };
-            ws.onclose = function(event) {
+            ws.onclose = function() {
                 self.setTitle(str('connection_closed'));
                 terminal.blur();
                 onClose();
@@ -271,7 +271,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
         var l = Math.min(value.length, lastValue.length);
         var mod = 0;
         for (mod = 0; mod < l; mod++) {
-            if (value.charAt(i) != lastValue.charAt(i)) {
+            if (value.charAt(mod) != lastValue.charAt(mod)) {
                 break;
             }
         }
@@ -309,7 +309,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
         inputarea.focus();
         try {
             inputarea.setSelectionRange(resetValue.length, resetValue.length);
-        } catch (e) {
+        } catch (ex) {
         }
         $JQVPL(inputarea).on('change', function() {
             readInput();
@@ -365,7 +365,8 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
     }
     var HTMLUpdateClipboard = VPL_Util.gen_icon('copy', 'sw') + ' ' + str('copy');
     var HTMLPaste = VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
-    clipboard = new VPL_Clipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard, lostFocus);
+    clipboard = new VPL_Clipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard,
+                                  copyAction, HTMLPaste, pasteClipboard, lostFocus);
     canvas.on('click', function(e) {
         if (e.target == canvas[0]) {
             getFocus();
