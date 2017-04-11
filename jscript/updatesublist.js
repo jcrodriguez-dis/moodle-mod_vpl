@@ -22,6 +22,7 @@
  */
 
 /* exports VPL */
+
 (function(){
     if (typeof VPL != 'object') {
         VPL = {};
