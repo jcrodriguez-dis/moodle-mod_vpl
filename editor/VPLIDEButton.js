@@ -20,6 +20,10 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+/* globals VPL_IDEButtons */
+/* globals VPL_Util */
+/* globals $JQVPL */
+
 (function() {
     if (!window.VPL_IDEButtons) {
         VPL_IDEButtons = function(menu_element, isOptionAllowed) {
@@ -252,7 +256,7 @@
                 var timeLeft = 0;
                 var update = function() {
                     var now = self.multiple(VPL_Util.getCurrentTime(), precision);
-                    if (now == lastLap || element == null) {
+                    if (now === lastLap || element === null) {
                         return;
                     }
                     lastLap = now;
@@ -279,7 +283,7 @@
                 };
                 self.setTimeLeft = function(options) {
                     element = $JQVPL('#vpl_ide_timeleft span');
-                    if (interval != false) {
+                    if (interval !== false) {
                         clearInterval(interval);
                         interval = false;
                     }

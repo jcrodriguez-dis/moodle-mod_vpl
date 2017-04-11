@@ -28,6 +28,7 @@
             var minNumberOfFiles = options.minfiles || 0;
             var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
+            var readOnly = options.example;
             var fullScreen = false;
             var scrollBarWidth = VPL_Util.scrollBarWidth();
             VPL_Util.set_str(options.i18n);
@@ -586,7 +587,7 @@
                 VPL_Util.longDelay(autoResizeTab);
             };
 
-            var readOnly = options.example;
+
 
             // Init editor.
 
@@ -652,7 +653,7 @@
             }
             function resizeTabWidth(e, ui) {
                 var diff_left = ui.position.left - ui.originalPosition.left;
-                if (diff_left != 0) {
+                if (diff_left !== 0) {
                     var maxWidth = tabs.width() + file_list_container.width() - file_list_container.vpl_minWidth;
                     tabs.resizable('option', 'maxWidth', maxWidth);
                     file_list_container.width(file_list_container.vpl_original_width + diff_left);
@@ -694,7 +695,7 @@
                 index += result_container.vpl_visible ? 2 : 0;
                 tabs.resizable('destroy');
                 resizableOptions.handles = handles[index];
-                resizableOptions.disable = index == 0;
+                resizableOptions.disable = index === 0;
                 tabs.resizable(resizableOptions);
             }
             function resizeHeight() {
@@ -813,8 +814,8 @@
                     contents:'',
                     encoding:0
                 };
-                var newfile;
-                if (newfile = file_manager.addFile(file, false, updateMenu, showErrorMessage)) {
+                var newfile = file_manager.addFile(file, false, updateMenu, showErrorMessage);
+                if (newfile) {
                     file_manager.open(newfile);
                     tabs.tabs('option', 'active', file_manager.getTabPos(newfile));
                     newfile.focus();
@@ -839,9 +840,8 @@
                     return;
                 }
                 dialog_rename.dialog('close');
-                file_manager.renameFile(file_manager.currentFile('getFileName')
-                        , $JQVPL('#vpl_ide_input_renamefilename').val()
-                        , showErrorMessage);
+                file_manager.renameFile(file_manager.currentFile('getFileName'),
+                        $JQVPL('#vpl_ide_input_renamefilename').val(), showErrorMessage);
                 event.preventDefault();
             }
             dialog_rename.find('input').on('keypress', renameHandler);
@@ -1109,7 +1109,8 @@
             menuButtons.add({
                 name:'fullscreen',
                 originalAction: function() {
-                    var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer, div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
+                    var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer';
+                    tags +=', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         root_obj.removeClass('vpl_ide_root_fullscreen');
                         $JQVPL('body').removeClass('vpl_body_fullscreen');
@@ -1134,7 +1135,7 @@
             menuButtons.add({
                 name:'download',
                 originalAction: function() {
-                    window.location = options['download'];
+                    window.location = options.download;
                 }
             });
 
@@ -1207,8 +1208,9 @@
                 }
             };
             function executionRequest(action, acting, data) {
-                if (!data)
+                if (!data) {
                     data = {};
+                }
                 if (!lastConsole.isConnected()) {
                     VPL_Util.requestAction(action, '', data, options.ajaxurl)
                     .done(function(response) {
@@ -1348,9 +1350,9 @@
                     return;
                 }
                 var id = file_manager.getFilePosById(file.getId());
-                menuButtons.enable('rename', id >= minNumberOfFiles && nfiles != 0);
-                menuButtons.enable('delete', id >= minNumberOfFiles && nfiles != 0);
-                if (nfiles == 0 || VPL_Util.isBinary(file.getFileName())) {
+                menuButtons.enable('rename', id >= minNumberOfFiles && nfiles !== 0);
+                menuButtons.enable('delete', id >= minNumberOfFiles && nfiles !== 0);
+                if (nfiles === 0 || VPL_Util.isBinary(file.getFileName())) {
                     var sel = [ 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
                     for (var i in sel) {
                         menuButtons.enable(sel[i], false);
@@ -1425,7 +1427,7 @@
                 VPL_Util.delay(updateMenu);
                 file_manager.generateFileList();
                 tabs.tabs('option', 'active', 0);
-                if (file_manager.length() == 0 && maxNumberOfFiles > 0) {
+                if (file_manager.length() === 0 && maxNumberOfFiles > 0) {
                     menuButtons.getAction('new')();
                 } else if (!options['saved']) {
                     file_manager.setModified();
