@@ -25,7 +25,7 @@
 /* globals VPL_Util */
 
 (function() {
-     function VPL_Evaluation(options) {
+    function VPL_Evaluation(options) {
         function showErrorMessage(message) {
             VPL_Util.showErrorMessage(message, {
                 next : options.next

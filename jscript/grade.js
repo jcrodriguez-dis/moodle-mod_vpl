@@ -152,11 +152,11 @@
     VPL.removeHeaderFooter = function() {
         var i;
         var l = window.document.getElementsByTagName('header');
-        for ( i = 0; i < l.length; i++) {
+        for (i = 0; i < l.length; i++) {
             l[i].style.display = 'none';
         }
         l = window.document.getElementsByTagName('footer');
-        for ( i = 0; i < l.length; i++) {
+        for (i = 0; i < l.length; i++) {
             l[i].style.display = 'none';
         }
     };

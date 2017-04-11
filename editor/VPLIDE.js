@@ -31,7 +31,6 @@
 
 (function() {
     if (!window.VPL_IDE) {
-       
         // Editor constructor (only one at this moment).
         VPL_IDE = function(root_id, options) {
             var self = this;
@@ -141,7 +140,6 @@
                     }
                 }
             }
-            
             var File_manager = function() {
                 var tabs_ul = $JQVPL('#vpl_tabs_ul');
                 var tabs = $JQVPL('#vpl_tabs').tabs("widget");
@@ -960,7 +958,7 @@
             var VNCClient = new VPL_VNC_Client('vpl_dialog_vnc', str);
             var lastConsole = terminal;
             var file_select = $JQVPL('#vpl_ide_input_file');
-            var file_select_handler = function(e) {
+            var file_select_handler = function() {
                 VPL_Util.readSelectedFiles(this.files, function(file) {
                     return file_manager.addFile(file, true, updateMenu, showErrorMessage);
                 },

@@ -315,7 +315,7 @@ VPL_VNC_Client = function(vnc_dialog_id, str) {
             readInput();
             self.send('\r');
         });
-        $JQVPL(inputarea).on('input', function(e) {
+        $JQVPL(inputarea).on('input', function() {
             readInput();
         });
         $JQVPL(inputarea).on('keypress', function(e) {

@@ -1055,7 +1055,9 @@
                 html += getCase();
                 break;
         }
-        if ( afterTitle ) html += '</div>';
+        if ( afterTitle ) {
+            html += '</div>';
+        }
         return html;
     };
     (function() {
