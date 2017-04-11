@@ -34,6 +34,11 @@
         // Editor constructor (only one at this moment).
         VPL_IDE = function(root_id, options) {
             var self = this;
+            var file_manager;
+            var adjustTabsTitles;
+            var autoResizeTab;
+            var showErrorMessage;
+            var updateMenu;
             var minNumberOfFiles = options.minfiles || 0;
             var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
@@ -140,7 +145,7 @@
                     }
                 }
             }
-            var File_manager = function() {
+            File_manager = function() {
                 var tabs_ul = $JQVPL('#vpl_tabs_ul');
                 var tabs = $JQVPL('#vpl_tabs').tabs("widget");
                 var files = [];
@@ -724,7 +729,7 @@
                     file_list_container.height(newHeight);
                 }
             }
-            function adjustTabsTitles(center) {
+            adjustTabsTitles = function(center) {
                 var newWidth = tabs.width();
                 var tabs_ul_width = 0;
                 tabs_ul.width(100000);
@@ -750,7 +755,7 @@
                     tabs_ul.width('');
                 }
             }
-            function autoResizeTab() {
+            autoResizeTab = function () {
                 var oldWidth = tabs.width();
                 var newWidth = menu.width();
                 var planb = false;
@@ -805,7 +810,7 @@
             function showMessage(message, options) {
                 return VPL_Util.showMessage(message, $JQVPL.extend({}, dialogbase_options, options));
             }
-            function showErrorMessage(message) {
+            showErrorMessage = function(message) {
                 return VPL_Util.showErrorMessage(message, {
                     close : focusCurrentFile
                 });
@@ -1345,7 +1350,7 @@
             $JQVPL('#vpl_menu .ui-button').css('padding','6px');
             $JQVPL('#vpl_menu .ui-button-text').css('padding','0');
             menuButtons.setTimeLeft(options);
-            function updateMenu() {
+            updateMenu = function() {
                 var i;
                 var file = file_manager.currentFile();
                 var nfiles = file_manager.length();
@@ -1412,7 +1417,7 @@
                     }
                 });
             }
-            var file_manager = new File_manager();
+            file_manager = new File_manager();
 
             autoResizeTab();
             // Check the menu width that can change without event.
