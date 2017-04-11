@@ -126,7 +126,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
         $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
         $this->assertEquals("export ALGO='te\" \$xt'\n", vpl_bash_export('ALGO', 'te" $xt'));
-        $this->assertEquals("export ALGO='te\\'\\'xt\\''\n", vpl_bash_export('ALGO', "te''xt'"));
+        $this->assertEquals("export ALGO='te\'\'xt\''\n", vpl_bash_export('ALGO', "te''xt'"));
     }
 
     public function test_vpl_is_valid_file_name() {
