@@ -34,8 +34,6 @@ class vpl_similarity_python extends vpl_similarity_base {
         return 8;
     }
     public function sintax_normalize(&$tokens) {
-        $openbrace = false;
-        $nsemicolon = 0;
         $ret = array ();
         $prev = new vpl_token( vpl_token_type::IDENTIFIER, '', 0 );
         foreach ($tokens as $token) {
@@ -47,22 +45,8 @@ class vpl_similarity_python extends vpl_similarity_base {
                     case '(' :
                         // Only add ).
                         break;
-                    case '{' :
-                        // Only add }.
-                        $nsemicolon = 0;
-                        $openbrace = true;
-                        break;
-                    case '}' :
-                        // Remove unneeded {}.
-                        if (! ($openbrace && $nsemicolon < 2)) {
-                            $ret [] = $token;
-                        }
-                        $openbrace = false;
-                        break;
                     case ';' :
-                        // Count semicolon after a {.
-                        $nsemicolon ++;
-                        $ret [] = $token;
+                        // Ignore semicolon
                         break;
                     case '+=' :
                         $token->value = '=';
@@ -88,23 +72,16 @@ class vpl_similarity_python extends vpl_similarity_base {
                         $token->value = '/';
                         $ret [] = $token;
                         break;
+                    case '//=' :
+                        $token->value = '=';
+                        $ret [] = $token;
+                        $token->value = '//';
+                        $ret [] = $token;
+                        break;
                     case '%=' :
                         $token->value = '=';
                         $ret [] = $token;
                         $token->value = '%';
-                        $ret [] = $token;
-                        break;
-                    case '->' :
-                        if ($prev->value == 'this') {
-                            break;
-                        }
-                        $token->value = '(';
-                        $ret [] = $token;
-                        $token->value = '*';
-                        $ret [] = $token;
-                        $token->value = ')';
-                        $ret [] = $token;
-                        $token->value = '.';
                         $ret [] = $token;
                         break;
                     default :
