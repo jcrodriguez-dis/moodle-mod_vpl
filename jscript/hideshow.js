@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  **/
 
-/* exports VPL */
+/* globals VPL: true */
 
 (function() {
     if (typeof VPL != 'object') {

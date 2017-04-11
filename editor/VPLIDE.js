@@ -133,6 +133,14 @@
             var result = $JQVPL('#vpl_results_accordion');
             file_list_container.vpl_minWidth = 80;
             result_container.vpl_minWidth = 100;
+
+            function avoidSelectGrade(event, ui) {
+                if ("newHeader" in ui) {
+                    if (ui.newHeader.hasClass('vpl_ide_grade')) {
+                        return false;
+                    }
+                }
+            }
             
             var File_manager = function() {
                 var tabs_ul = $JQVPL('#vpl_tabs_ul');
@@ -619,13 +627,6 @@
                 VPL_Util.longDelay(autoResizeTab);
             };
 
-            function avoidSelectGrade(event, ui) {
-                if ("newHeader" in ui) {
-                    if (ui.newHeader.hasClass('vpl_ide_grade')) {
-                        return false;
-                    }
-                }
-            }
             result.accordion({
                 heightStyle : 'fill',
                 header : 'h4',
@@ -677,7 +678,7 @@
             var resizableOptions = {
                 containment : 'parent',
                 resize : resizeTabWidth,
-                start : function(e, ui) {
+                start : function() {
                     $JQVPL(window).off('resize', autoResizeTab);
                     tabs.resizable('option', 'minWidth', 100);
                     if (result_container.vpl_visible) {
@@ -1396,7 +1397,7 @@
                 VPL_Util.delay(file_manager.updateFileList);
             }
 
-            tabs.on("tabsactivate", function(event, ui) {
+            tabs.on("tabsactivate", function() {
                 file_manager.currentFile('focus');
                 VPL_Util.delay(updateMenu);
                 VPL_Util.delay(autoResizeTab);

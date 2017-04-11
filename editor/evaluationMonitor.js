@@ -25,7 +25,7 @@
 /* globals VPL_Util */
 
 (function() {
-    var VPL_Evaluation = function(options) {
+     function VPL_Evaluation(options) {
         function showErrorMessage(message) {
             VPL_Util.showErrorMessage(message, {
                 next : options.next
@@ -47,7 +47,7 @@
             }
         )
         .fail(showErrorMessage);
-    };
+    }
     VPL_Single_Evaluation = function(options) {
         VPL_Util.set_str(options.i18n);
         options.next = function() {

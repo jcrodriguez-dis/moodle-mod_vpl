@@ -872,7 +872,7 @@
             if (coninfo.secure && ws.notOpen) {
                 VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
                 .done(function(response) {
-                    VPL_Util.acceptCertificates(response.servers, funtion(){
+                    VPL_Util.acceptCertificates(response.servers, function(){
                         return externalActions.getLastAction();
                     });
                 })
