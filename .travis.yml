@@ -1,6 +1,6 @@
 language: php
 
-sudo: false
+sudo: true
 
 cache:
   directories:
@@ -26,6 +26,7 @@ before_install:
 
 install:
   - moodle-plugin-ci install
+  - sudo apt-get install g++
 
 script:
   - moodle-plugin-ci phplint
@@ -38,3 +39,7 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat
+  - >
+  cd /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate
+  ./test_vpl_evaluate.sh
+  
