@@ -1,4 +1,10 @@
 #!/bin/bash
+function writeHeading {
+	echo "<bg=green;fg=white;> RUN </> <fg=blue>$1</>"
+}
+function write {
+	echo "<info>$1</info>"
+}
 function initTest {
 	mkdir $TESTDIR
 	cp $ORIGINDIR/vpl_evaluate.cpp $TESTDIR
@@ -10,12 +16,12 @@ function initTest {
 }
 
 function runTest {
-	echo "Test: $1"
+	write "Test: $1"
 	cd $TESTDIR
 	chmod +x *.sh
 	./default_evaluate.sh
 	if [ ! -s vpl_execution ] ; then
-		echo "Test $1 failed: evaluation program compilation failed"
+		write "Test $1 failed: evaluation program compilation failed"
 		cd ..
 		exit 1
 	else
@@ -33,7 +39,7 @@ function evalTest {
 }
 
 function runAllTests {
-	local cases="$(find $CASESDIR -name "vpl_run_*.sh" -print | sed 's/^vpl_run_\///g' | sed 's/.sh$\///g' )"
+	local cases="$(find $CASESDIR -name "vpl_run_*.sh" -print | sed 's/^vpl_run_\///g' | sed 's/\.sh$\///g' )"
 	for case in $cases
 	do
 		initTest $case
@@ -41,8 +47,8 @@ function runAllTests {
 		evalTest $case
 	done
 }
-
-echo "Testing default Student's program tester of VPL for Moodle"
+writeHeading "TDSPT"
+write "Testing default Student's program tester of VPL for Moodle"
 ORIGINDIR="../../jail/default_scripts"
 TESTDIR="test"
 CASESDIR="cases"
