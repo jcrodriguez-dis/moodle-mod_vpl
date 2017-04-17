@@ -46,7 +46,7 @@ class vpl_similarity_python extends vpl_similarity_base {
                         // Only add ).
                         break;
                     case ';' :
-                        // Ignore semicolon
+                        // Ignore semicolon.
                         break;
                     case '+=' :
                         $token->value = '=';
