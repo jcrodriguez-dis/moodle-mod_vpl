@@ -7,6 +7,7 @@
 
 #include <cstdlib>
 #include <cstdio>
+#include <climits>
 #include <limits>
 #include <errno.h>
 #include <sys/types.h>
@@ -51,6 +52,8 @@ public:
 	static void fdblock(int fd, bool set);
 	static bool convert2(const string& str, double &data);
 	static bool convert2(const string& str, long int &data);
+	static const char* getenv(const char* name, const char* defaultvalue);
+	static double getenv(const char* name, double defaultvalue);
 };
 
 
@@ -206,7 +209,7 @@ public:
 class TestCase {
 	const char *command;
 	const char **argv;
-	const char **envv;
+	static const char **envv;
 	int id;
 	bool correctOutput;
 	bool outputTooLarge;
@@ -223,7 +226,7 @@ class TestCase {
 	string programToRun;
 	string programArgs;
 	string variantion;
-	int expectedExitCode; // Default value INT_MAX
+	int expectedExitCode; // Default value INT_MIN
 	string programOutputBefore, programOutputAfter, programInput;
 
 	void cutOutputTooLarge(string &output);
@@ -298,9 +301,7 @@ public:
 
 volatile bool Stop::TERMRequested = false;
 time_t Timer::startTime;
-const char *TestCase::command = NULL;
-const char **TestCase::argv = NULL;
-const char **TestCase::envv = NULL;
+const char **TestCase::envv=NULL;
 Evaluation* Evaluation::singlenton = NULL;
 
 /**
@@ -372,11 +373,11 @@ string Tools::caseFormat(string text) {
 bool Tools::parseLine(const string &text, string &name, string &data) {
 	size_t poseq;
 	if ((poseq = text.find('=')) != string::npos) {
-		tag = normalizeTag(text.substr(0, poseq + 1));
+		name = normalizeTag(text.substr(0, poseq + 1));
 		data = text.substr(poseq + 1);
 		return true;
 	}
-	tag = "";
+	name = "";
 	data = text;
 	return false;
 }
@@ -458,6 +459,22 @@ bool Tools::convert2(const string& str, long int &data){
 	conv >> data;
 	return conv.eof();
 }
+const char* Tools::getenv(const char* name, const char* defaultvalue) {
+	const char* value = ::getenv(name);
+	if ( value == NULL ) {
+		value = defaultvalue;
+	}
+}
+
+double Tools::getenv(const char* name, double defaultvalue) {
+	const char* svalue = ::getenv(name);
+	double value = defaultvalue;
+	if ( svalue != NULL ) {
+		Tools::convert2(svalue, value);
+	}
+	return value;
+}
+
 
 /**
  * Class Stop Definitions
@@ -598,10 +615,10 @@ bool NumbersOutput::typeMatch(const string& text){
 	for(int i=0; i<l; i++){
 		char c=text[i];
 		//Skip espaces/CR/LF... and *
-		if(!isspace(c) && c!='*'){
-			str+=c;
-		}else if(str.size()>0){
-			if(!isNumStart(str[0])||
+		if(!isspace(c) && c!='*') {
+			str += c;
+		}else if(str.size()>0) {
+			if (!isNumStart(str[0])||
 				!number.set(str)) return false;
 			str="";
 		}
@@ -621,8 +638,8 @@ string NumbersOutput::type(){
  */
 
 bool TextOutput::isAlpha(char c){
-	if(isalnum(c)) return true;
-	return c<0;
+	if ( isalnum(c) ) return true;
+	return c < 0;
 }
 
 TextOutput::TextOutput(const string &text):OutputChecker(text){
@@ -642,26 +659,28 @@ TextOutput::TextOutput(const string &text):OutputChecker(text){
 	}
 }
 
-bool TextOutput::operator==(const TextOutput& o){
-	int l=tokens.size();
-	if(o.tokens.size() < l) return false;
-	int offset=o.tokens.size()-l;
-	for(int i=0; i<l; i++)
-		if(tokens[i] != o.tokens[offset+i])
+bool TextOutput::operator==(const TextOutput& o) {
+	cout << text << tokens.size() << endl;
+	cout << o.text << o.tokens.size() << endl;
+	int l = tokens.size();
+	if (o.tokens.size() < l) return false;
+	int offset = o.tokens.size() - l;
+	for (int i = 0; i < l; i++)
+		if (tokens[i] != o.tokens[ offset + i ])
 			return false;
 	return true;
 }
 
-bool TextOutput::match(const string& output){
+bool TextOutput::match(const string& output) {
 	TextOutput temp(output);
-	return operator==(temp);
+	return operator== (temp);
 }
 
-OutputChecker* TextOutput::clone(){
+OutputChecker* TextOutput::clone() {
 	return new TextOutput(outputExpected());
 }
 
-bool TextOutput::typeMatch(const string& text){
+bool TextOutput::typeMatch(const string& text) {
 	return true;
 }
 
@@ -675,14 +694,14 @@ string TextOutput::type(){
 
 bool ExactTextOutput::isAlpha(char c){
 	if(isalnum(c)) return true;
-	return c<0;
+	return c < 0;
 }
 
 ExactTextOutput::ExactTextOutput(const string &text):OutputChecker(text){
-	string clean=Tools::trim(text);
-	if(clean.size()>2 && clean[0]=='*'){
-		startWithAsterix =true;
-		cleanText=clean.substr(2,clean.size()-3);
+	string clean = Tools::trim(text);
+	if(clean.size() > 2 && clean[0] == '*') {
+		startWithAsterix = true;
+		cleanText = clean.substr(2, clean.size() - 3);
 	}else{
 		startWithAsterix =false;
 		cleanText=clean.substr(1,clean.size()-2);
@@ -782,7 +801,6 @@ bool RegularExpressionOutput::match (const string& output) {
 	reti=-1;
 	const char * in = cleanText.c_str();
 	// Use POSIX-C regrex.h
-
 	// Flag compilation
 	if (flagI || flagM) {
 		if (flagM && flagI) {
@@ -809,7 +827,6 @@ bool RegularExpressionOutput::match (const string& output) {
 			return false;
 
 		} else { // Memory Error
-
 			Evaluation* p_ErrorTest = Evaluation::getSinglenton();
 			string errorType = string("Out of memory error, during maching case ") + string(errorCase);
 			const char* flagError = errorType.c_str();
@@ -1001,6 +1018,7 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 	}
 	this->caseDescription = caseDescription;
 	this->gradeReduction = gradeReduction;
+	this->expectedExitCode = expectedExitCode;
 	outputTooLarge = false;
 	programTimeout = false;
 	executionError = false;
@@ -1131,7 +1149,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 	programOutputAfter = "";
 	pid_t pidr;
 	int status;
-	int exitedValue = INT_MIN; 
+	int exitedValue = INT_MAX;
 	while ((pidr = waitpid(pid, &status, WNOHANG | WUNTRACED)) == 0) {
 		readWrite(fdread, fdwrite);
 		usleep(5000);
@@ -1171,9 +1189,10 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 		strcpy(executionErrorReason, "waitpid error");
 	}
 	readWrite(fdread, fdwrite);
-	correctOutput = expectedExitCode == exitedValue
+	correctOutput = /*( expectedExitCode != std::numeric_limits<int>::min()
+			       && expectedExitCode == exitedValue)
 	               || match(programOutputAfter)
-	               || match(programOutputBefore + programOutputAfter);
+	               || */ match(programOutputBefore + programOutputAfter);
 }
 
 bool TestCase::match(string data) {
@@ -1265,7 +1284,7 @@ void Evaluation::loadTestCases(string fname) {
 	string caseDescription = "";
 	string tag, value;
 	float gradeReduction = std::numeric_limits<float>::min();
-	float evaluationReduction=0;
+	float evaluationReduction = 0;
 	/* must be changed from String
 	 * to pair type (regexp o no) and string. */
 	vector<string> outputs;
@@ -1273,7 +1292,7 @@ void Evaluation::loadTestCases(string fname) {
 	int nlines = lines.size();
 	for (int i = 0; i < nlines; i++) {
 		string &line = lines[i];
-		Tools::parseLine(lin, tag, value);
+		Tools::parseLine(line, tag, value);
 		if (state == ininput) {
 			if (inputEnd.size()) { // Check for end of input.
 				size_t pos = line.find(inputEnd);
@@ -1336,9 +1355,9 @@ void Evaluation::loadTestCases(string fname) {
 				}
 			} else if (tag == GRADEREDUCTION_TAG) {
 				inCase = true;
-				value=Tools::trim(value);
+				value = Tools::trim(value);
 				// A percent value?
-				if(value.size()>1 && value[value.size()-1]=='%'){
+				if( value.size() > 1 && value[ value.size() - 1 ] == '%' ){
 					float percent = atof(value.c_str());
 					gradeReduction = (grademax-grademin)*percent/100;
 				}else{
@@ -1378,23 +1397,23 @@ void Evaluation::loadTestCases(string fname) {
 }
 
 bool Evaluation::loadParams() {
-	grademin= VPL_GRADEMIN;
-	grademax = VPL_GRADEMAX;
-	maxtime = VPL_MAXTIME;
-	noGrade = grademin>=grademax;
+	grademin= (int) Tools::getenv("VPL_GRADEMIN", 0.0);
+	grademax = (int) Tools::getenv("VPL_GRADEMAX", 10);
+	maxtime = (int) Tools::getenv("VPL_MAXTIME", 20);
+	noGrade = grademin >= grademax;
 	//printf("Min=%f max=%f time=%d\n",grademin,grademax,maxtime);
 	return true;
 }
 
 void Evaluation::addFatalError(const char *m) {
-	float reduction=grademax-grademin;
-	if(ncomments>= MAXCOMMENTS)
-		ncomments = MAXCOMMENTS-1;
+	float reduction = grademax - grademin;
+	if (ncomments >= MAXCOMMENTS)
+		ncomments = MAXCOMMENTS - 1;
 
-	snprintf(titles[ncomments],MAXCOMMENTSTITLELENGTH,"%s",m);
-	snprintf(titlesGR[ncomments],MAXCOMMENTSTITLELENGTH,"%s (%.2f)",m,reduction);
-	strcpy(comments[ncomments],"");
-	ncomments++;
+	snprintf(titles[ncomments], MAXCOMMENTSTITLELENGTH, "%s", m);
+	snprintf(titlesGR[ncomments], MAXCOMMENTSTITLELENGTH, "%s (%.2f)", m, reduction);
+	strcpy(comments[ncomments], "");
+	ncomments ++;
 	grade = grademin;
 }
 
@@ -1412,7 +1431,7 @@ void Evaluation::runTests() {
 	float defaultGradeReduction = (grademax - grademin) / testCases.size();
 	int timeout = maxtime / testCases.size();
 	for (int i = 0; i < testCases.size(); i++) {
-		printf("Testing %d/%lu : %s\n",i+1,(unsigned long)testCases.size(),testCases[i].getCaseDescription().c_str());
+		printf("Testing %d/%lu : %s\n", i+1, (unsigned long)testCases.size(), testCases[i].getCaseDescription().c_str());
 		if (timeout <= 1 || Timer::elapsedTime() >= maxtime) {
 			grade = grademin;
 			addFatalError("Global timeout");
@@ -1432,8 +1451,9 @@ void Evaluation::runTests() {
 			else
 				testCases[i].setGradeReductionApplied(gr);
 			grade -= testCases[i].getGradeReductionApplied();
-			if(grade<grademin)
-				grade=grademin;
+			if (grade < grademin) {
+				grade = grademin;
+			}
 			nerrors++;
 			if(ncomments<MAXCOMMENTS){
 				strncpy(titles[ncomments], testCases[i].getCommentTitle().c_str(),
@@ -1449,7 +1469,7 @@ void Evaluation::runTests() {
 }
 
 void Evaluation::outputEvaluation() {
-	const char* stest[]={" test","tests"};
+	const char* stest[] = {" test", "tests"};
 	if (testCases.size() > 0) {
 		if (ncomments > 1) {
 			printf("\n<|--\n");
@@ -1459,7 +1479,7 @@ void Evaluation::outputEvaluation() {
 			}
 			printf("--|>\n");
 		}
-		if (ncomments > 0) {
+		if ( ncomments > 0 ) {
 			printf("\n<|--\n");
 			for (int i = 0; i < ncomments; i++) {
 				printf("-%s", titlesGR[i]);
@@ -1467,8 +1487,8 @@ void Evaluation::outputEvaluation() {
 			}
 			printf("--|>\n");
 		}
-		if (nruns > 0) {
-			int passed=nruns-nerrors;
+		if ( nruns > 0 ) {
+			int passed = nruns - nerrors;
 			printf("\n<|--\n");
 			printf("-Summary of tests\n");
 			printf(">+------------------------------+\n");
@@ -1478,7 +1498,7 @@ void Evaluation::outputEvaluation() {
 			printf(">+------------------------------+\n");
 			printf("\n--|>\n");
 		}
-		if(!noGrade){
+		if ( ! noGrade ) {
 			char buf[100];
 			sprintf(buf, "%5.2f", grade);
 			int len = strlen(buf);
