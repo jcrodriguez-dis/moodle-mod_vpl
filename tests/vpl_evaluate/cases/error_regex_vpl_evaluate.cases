@@ -1,0 +1,16 @@
+case=Number error 1
+output=3 4 5.5 8.008
+case=Number 1
+output=3 4 5.5 8.000001
+case=Number 2
+output=3.0 4 5.5000 8
+case=Number 3
+output=3 4
+5.5 8
+case=Number 4
+output=3.0000001 4
+5.5 8
+case=Number error 2
+output=1 4.1 5.5 8
+case=Number error 3
+output=3 4 5.501 8
