@@ -10,6 +10,7 @@
 if [ "$SECONDS" = "" ] ; then
 	export SECONDS=20
 fi
+let VPL_MAXTIME=$SECONDS-5;
 if [ "$VPL_GRADEMIN" = "" ] ; then
 	export VPL_GRADEMIN=0
 	export VPL_GRADEMAX=10
@@ -32,12 +33,7 @@ else
 			echo "Error need file 'vpl_evaluate.cases' to make an evaluation"
 			exit 1
 		fi
-		#Add constants to vpl_evaluate.cpp
-		echo "const float VPL_GRADEMIN=$VPL_GRADEMIN;" >vpl_evaluate.cpp
-		echo "const float VPL_GRADEMAX=$VPL_GRADEMAX;" >>vpl_evaluate.cpp
-		let VPL_MAXTIME=VPL_MAXTIME-$SECONDS-1;
-		echo "const int VPL_MAXTIME=$VPL_MAXTIME;" >>vpl_evaluate.cpp
-		cat vpl_evaluate.cpp.save >> vpl_evaluate.cpp
+		mv vpl_evaluate.cpp.save vpl_evaluate.cpp
 		check_program g++
 		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
 		if [ ! -f .vpl_tester ] ; then
