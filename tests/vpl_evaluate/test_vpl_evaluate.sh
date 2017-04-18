@@ -41,7 +41,10 @@ function runTest {
 		cd ..
 		exit 1
 	else
+		. common_script.sh
 		./vpl_execution > "$VPLTESTOUTPUT" 2> "$VPLTESTERRORS"
+		VPL_GRADEMIN=0
+		VPL_GRADEMAX=10
 	fi
     cd ..
 }

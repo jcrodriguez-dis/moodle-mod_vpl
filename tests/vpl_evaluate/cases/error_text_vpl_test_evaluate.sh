@@ -4,7 +4,7 @@ if [ -s "$VPLTESTERRORS" ] ; then
     cat $VPLTESTERRORS
     exit 1
 fi
-grep -e "Grade :=>> 6" "$VPLTESTOUTPUT" >/dev/null
+grep -e "Grade :=>> 6\$" "$VPLTESTOUTPUT" >/dev/null
 if [ $? != 0 ] ; then
     echo "Test: $1 failed"
     cat "$VPLTESTOUTPUT"

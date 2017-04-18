@@ -1,16 +1,12 @@
-case=Number error 1
-output=3 4 5.5 8.008
-case=Number 1
-output=3 4 5.5 8.000001
-case=Number 2
-output=3.0 4 5.5000 8
-case=Number 3
-output=3 4
-5.5 8
-case=Number 4
-output=3.0000001 4
-5.5 8
-case=Number error 2
-output=1 4.1 5.5 8
-case=Number error 3
-output=3 4 5.501 8
+case=Regex error 1
+output=/Line 1 regular  expression test/
+case=Regex 1
+output=/Line 1 regular expression test
+Line 2 regular expression test
+/
+case=Regex 2
+output=/Line .* test/
+case=Regex error 2
+output=/Line 3/
+case=Regex 3
+output=/Line 2/
