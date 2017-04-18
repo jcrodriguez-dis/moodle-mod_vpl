@@ -69,7 +69,8 @@ function runAllTests {
 	done
 	return $finalResult
 }
-
+OLDDIR=$(pwd)
+cd $(dirname $0)
 writeHeading "TDSPT Testing default Student's program tester of VPL for Moodle"
 export ORIGINDIR="../../jail/default_scripts"
 export TESTDIR="test"
@@ -78,3 +79,4 @@ export VPLTESTOUTPUT=".vpl_test_output"
 export VPLTESTERRORS=".vpl_test_errors"
 
 runAllTests
+cd $OLDDIR
