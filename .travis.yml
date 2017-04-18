@@ -39,8 +39,8 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat
-  - >
-    cd /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate
-    chmod +x test_vpl_evaluate.sh
-    ./test_vpl_evaluate.sh
+  - cd /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate \
+    && chmod +x test_vpl_evaluate.sh \
+    && ./test_vpl_evaluate.sh
+  
   
