@@ -4,17 +4,23 @@ X_MARK="\u274C";
 function writeHeading {
 	echo -e "\e[37;42m RUN \e[39;49m \e[34m$1\e[39m"
 }
-function info {
+function writeInfo {
 	echo -e "\e[42m$1\e[0m"
 }
-function error {
+function writeError {
 	echo -e "\e[31m$1\e[0m"
 }
 function write {
 	echo -e "$1"
 }
+
+export -f writeHeading
+export -f writeInfo
+export -f writeError
+export -f write
+
 function initTest {
-	info "Test: $1"
+	writeInfo "Test: $1"
 	if [ -s "$TESTDIR" ] ; then
 		rm -Rf "$TESTDIR"
 	fi
@@ -37,7 +43,7 @@ function runTest {
 	chmod +x *.sh
 	./default_evaluate.sh
 	if [ ! -s vpl_execution ] ; then
-		error "Test $1 failed: evaluation program compilation failed"
+		writeError "Test $1 failed: evaluation program compilation failed"
 		cd ..
 		exit 1
 	else
