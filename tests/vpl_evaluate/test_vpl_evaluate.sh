@@ -5,10 +5,10 @@ function writeHeading {
 	echo -e "\e[37;42m RUN \e[39;49m \e[34m$1\e[39m"
 }
 function writeInfo {
-	echo -e "\e[42m$1\e[0m"
+	echo -e $3 "\e[42m$1\e[0m$2"
 }
 function writeError {
-	echo -e "\e[31m$1\e[0m"
+	echo -e "\e[31m$1\e[0m$2"
 }
 function write {
 	echo -e "$1"
@@ -20,7 +20,7 @@ export -f writeError
 export -f write
 
 function initTest {
-	writeInfo "Test: $1"
+	writeInfo "Test" ": $1 " -n
 	if [ -s "$TESTDIR" ] ; then
 		rm -Rf "$TESTDIR"
 	fi
@@ -42,11 +42,7 @@ function runTest {
 	cd $TESTDIR
 	chmod +x *.sh
 	./default_evaluate.sh
-	if [ ! -s vpl_execution ] ; then
-		writeError "Test $1 failed: evaluation program compilation failed"
-		cd ..
-		exit 1
-	else
+	if [ -s vpl_execution ] ; then
 		. common_script.sh
 		./vpl_execution > "$VPLTESTOUTPUT" 2> "$VPLTESTERRORS"
 		VPL_GRADEMIN=0
@@ -56,26 +52,58 @@ function runTest {
 }
 
 function evalTest {
+	local result=0
 	cd $TESTDIR
-	./vpl_test_evaluate.sh $1
-	local result=$?
+	if [ ! -s vpl_execution ] ; then
+		result=1
+	else
+		./vpl_test_evaluate.sh $1
+		result=$?
+	fi
+	if [ "$result" != "0" ] ; then
+	    writeError "$X_MARK"
+	    echo "travis_fold:start:vpl_test.$1"
+		if [ ! -s vpl_execution ] ; then
+			writeError "Test $1 failed: evaluation program compilation failed"
+		else
+			if [ -s "$VPLTESTERRORS" ] ; then
+			    echo "The program has generated the following errors"
+			    cat $VPLTESTERRORS
+			fi
+		    cat "$VPLTESTOUTPUT"
+		fi
+	    echo "travis_fold:end:vpl_test.$1"
+	else
+	    writeInfo "$CHECK_MARK"
+	fi
     cd ..
     rm -Rf $TESTDIR
     return $result
 }
 
 function runAllTests {
+	local ntests=0
+	local npass=0
     local finalResult=0
 	local cases=$(find $CASESDIR -name "*_vpl_run.sh" -print | sort | sed "s/^$CASESDIR\///g" | sed 's/\_vpl_run.sh$//g' )
 	for case in $cases
 	do
+		let ntests=ntests+1
 		initTest $case
 		runTest $case
 		evalTest $case
 		if [ "$?" != "0" ] ; then
 			finalResult=1
+		else
+			let npass=npass+1
 		fi
 	done
+	if [ "$npass" == "$ntests" ] ; then
+		echo -n "OK "
+	else
+		echo -n "Fail "
+	fi
+	echo "$npass/$ntests tests passed"
 	return $finalResult
 }
 OLDDIR=$(pwd)
