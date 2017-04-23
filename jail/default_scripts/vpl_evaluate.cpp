@@ -98,6 +98,7 @@ public:
 	OutputChecker(const string &t):text(t){}
 	virtual ~OutputChecker(){};
 	virtual string type(){return "";}
+	virtual operator string (){return "";}
 	virtual string outputExpected(){return text;}
 	virtual string studentOutputExpected(){return text;}
 	virtual bool match(const string&)=0;
@@ -116,6 +117,7 @@ class NumbersOutput:public OutputChecker{
 		bool set(const string& str);
 		bool operator==(const Number &o)const;
 		bool operator!=(const Number &o)const;
+		operator string () const;
 	};
 
 	vector<Number> numbers;
@@ -134,6 +136,7 @@ public:
 	OutputChecker* clone();
 	static bool typeMatch(const string& text);
 	string type();
+	operator string () const;
 };
 
 /**
@@ -449,6 +452,9 @@ void Tools::fdblock(int fd, bool set) {
 }
 
 bool Tools::convert2(const string& str, double &data){
+	if ( str == "." ){
+		return false;
+	}
 	stringstream conv(str);
 	conv >> data;
 	return conv.eof();
@@ -527,16 +533,27 @@ bool NumbersOutput::Number::set(const string& str){
 
 bool NumbersOutput::Number::operator==(const Number &o)const{
 	if(isInteger)
-		return o.isInteger && integer==o.integer;
+		return o.isInteger && integer == o.integer;
 	if(o.isInteger)
-		return cientific!=0?fabs((cientific-o.integer)/cientific) < 0.0001:o.integer==0;
+		return cientific != 0?fabs((cientific - o.integer) / cientific) < 0.0001 : o.integer == 0;
 	else
-		return cientific!=0?fabs((cientific-o.cientific)/cientific) < 0.0001:fabs(o.cientific)<0.0001;
+		return cientific != 0?fabs((cientific - o.cientific) / cientific) < 0.0001 : fabs(o.cientific) < 0.0001;
 }
 
 bool NumbersOutput::Number::operator!=(const Number &o)const{
 	return !((*this)==o);
 }
+
+NumbersOutput::Number::operator string() const{
+	char buf[100];
+	if(isInteger) {
+		sprintf(buf, "%ld", integer);
+	} else {
+		sprintf(buf, "%10.5lf", cientific);
+	}
+	return buf;
+}
+
 
 bool NumbersOutput::isNum(char c){
 	if(isdigit(c)) return true;
@@ -633,6 +650,17 @@ string NumbersOutput::type(){
 	return "numbers";
 }
 
+NumbersOutput::operator string () const{
+	string ret="[";
+	int l=numbers.size();
+	for(int i=0; i<l; i++){
+		ret += i > 0 ? ", " : "";
+		ret += numbers[i];
+	}
+	ret += "]";
+	return ret;
+}
+
 /**
  * Class TextOutput Definitions
  */
@@ -660,8 +688,6 @@ TextOutput::TextOutput(const string &text):OutputChecker(text){
 }
 
 bool TextOutput::operator==(const TextOutput& o) {
-	cout << text << tokens.size() << endl;
-	cout << o.text << o.tokens.size() << endl;
 	int l = tokens.size();
 	if (o.tokens.size() < l) return false;
 	int offset = o.tokens.size() - l;
@@ -1177,7 +1203,8 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 			sprintf(executionErrorReason,
 					"Program terminated due to \"%s\" (%d)\n", strsignal(
 							signal), signal);
-		} else if (WIFEXITED(status)) {
+		}
+		if (WIFEXITED(status)) {
 			exitedValue = WEXITSTATUS(status);
 		} else {
 			executionError = true;
@@ -1189,10 +1216,10 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 		strcpy(executionErrorReason, "waitpid error");
 	}
 	readWrite(fdread, fdwrite);
-	correctOutput = /*( expectedExitCode != std::numeric_limits<int>::min()
+	correctOutput = ( expectedExitCode != std::numeric_limits<int>::min()
 			       && expectedExitCode == exitedValue)
 	               || match(programOutputAfter)
-	               || */ match(programOutputBefore + programOutputAfter);
+	               || match(programOutputBefore + programOutputAfter);
 }
 
 bool TestCase::match(string data) {
@@ -1372,6 +1399,8 @@ void Evaluation::loadTestCases(string fname) {
 				}else{
 					gradeReduction = atof(value.c_str());
 				}
+			} else if (tag == EXPECTEDEXITCODE_TAG) {
+				expectedExitCode = atoi(value.c_str());
 			} else if (tag == INPUT_END_TAG) {
 				inputEnd = Tools::trim(value);
 			} else if (tag == OUTPUT_END_TAG) {
@@ -1379,7 +1408,8 @@ void Evaluation::loadTestCases(string fname) {
 			} else if (tag == CASE_TAG) {
 				if (inCase) {
 					addTestCase(input, outputs, caseDescription,
-							gradeReduction, "", "", "", 0); // TODO
+							gradeReduction, "", "", "", expectedExitCode); // TODO
+					expectedExitCode = std::numeric_limits<int>::min();
 				}
 				inCase = true;
 				caseDescription = Tools::trim(value);
@@ -1392,7 +1422,7 @@ void Evaluation::loadTestCases(string fname) {
 		outputs.push_back(output);
 	}
 	if (inCase) { // Last case => save current.
-		addTestCase(input, outputs, caseDescription, gradeReduction, "", "", "", 0); // TODO
+		addTestCase(input, outputs, caseDescription, gradeReduction, "", "", "", expectedExitCode);
 	}
 }
 
