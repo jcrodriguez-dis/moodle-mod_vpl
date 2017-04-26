@@ -44,7 +44,13 @@ function runTest {
 	./default_evaluate.sh
 	if [ -s vpl_execution ] ; then
 		. common_script.sh
-		./vpl_execution > "$VPLTESTOUTPUT" 2> "$VPLTESTERRORS"
+		command -v valgrind > /dev/null
+		if [ "$?" != "0" ] || [ "$VPL_VALGRIND" == "" ] ; then
+			./vpl_execution > "$VPLTESTOUTPUT" 2> "$VPLTESTERRORS"
+		else
+			valgrind --tool=memcheck ./vpl_execution > "$VPLTESTOUTPUT" 2> "$VPLTESTERRORS"
+		fi
+		VPL_VALGRIND=
 		VPL_GRADEMIN=0
 		VPL_GRADEMAX=10
 		VPL_NEVALUATIONS=0
