@@ -48,6 +48,7 @@ function runTest {
 		VPL_GRADEMIN=0
 		VPL_GRADEMAX=10
 		VPL_NEVALUATIONS=0
+		VPL_VARIATION=
 	fi
     cd ..
 }
