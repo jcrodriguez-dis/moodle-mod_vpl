@@ -1,6 +1,6 @@
 /**
  * VPL builtin program for submissions evaluation
- * @Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
+ * @Copyright (C) 2017 Juan Carlos Rodríguez-del-Pino
  * @License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -204,10 +204,43 @@ public:
 
 	string type();
 };
+/**
+ * Class Case Declaration
+ * Case represents cases
+ */
+class Case {
+	string input;
+	vector< string > output;
+	string caseDescription;
+	float gradeReduction;
+	string failMessage;
+	string programToRun;
+	string programArgs;
+	int expectedExitCode; // Default value INT_MIN
+public:
+	Case();
+	void reset();
+	void addInput(string );
+	string getInput();
+	void addOutput(string );
+	const vector< string > & getOutput();
+	void setFailMessage(const string &);
+	string getFailMessage();
+	void setCaseDescription(const string &);
+	string getCaseDescription();
+	void setGradeReduction(float);
+	float getGradeReduction();
+	void setExpectedExitCode(int);
+	int getExpectedExitCode();
+	void setProgramToRun(const string &);
+	string getProgramToRun();
+	void setProgramArgs(const string &);
+	string getProgramArgs();
+};
 
 /**
  * Class TestCase Declaration
- * TestCase represents cases of test
+ * TestCase represents cases to tested
  */
 class TestCase {
 	const char *command;
@@ -251,6 +284,7 @@ public:
 	string getCaseDescription();
 	string getCommentTitle(bool withGradeReduction/*=false*/); // Suui
 	string getComment();
+	void splitArgs(string);
 	void runTest(time_t timeout);
 	bool match(string data);
 };
@@ -262,6 +296,7 @@ class Evaluation {
 	int maxtime;
 	float grademin, grademax;
 	int nevaluations;
+	string variation;
 	bool noGrade;
 	float grade;
 	int nerrors, nruns;
@@ -280,9 +315,7 @@ class Evaluation {
 public:
 	static Evaluation* getSinglenton();
 	static void deleteSinglenton();
-	void addTestCase(string &input, vector<string> &output,
-			string &caseDescription, float &gradeReduction,
-		string failMessage, string commandToRun, string commandArgs, int expectedExitCode);
+	void addTestCase(Case &);
 	void removeLastNL(string &s);
 	bool cutToEndTag(string &value, const string &endTag);
 	void loadTestCases(string fname);
@@ -900,6 +933,85 @@ bool RegularExpressionOutput::typeMatch(const string& text) {
 string RegularExpressionOutput::type() {
 	return "regular expression";
 }
+/**
+ * Class Case Definitions
+ * Case represents cases
+ */
+Case::Case() {
+	reset();
+}
+
+void Case::reset() {
+	input = "";
+	output.clear();
+	caseDescription = "";
+	gradeReduction = std::numeric_limits<float>::min();
+	failMessage = "";
+	programToRun = "";
+	programArgs = "";
+	expectedExitCode = std::numeric_limits<int>::min();
+}
+
+void Case::addInput(string s) {
+	input += s;
+}
+
+string Case::getInput() {
+	return input;
+}
+
+void Case::addOutput(string o) {
+	output.push_back(o);
+}
+
+const vector< string > & Case::getOutput() {
+	return output;
+}
+
+void Case::setFailMessage(const string &s) {
+	failMessage = s;
+}
+
+string Case::getFailMessage() {
+	return failMessage;
+}
+void Case::setCaseDescription(const string &s) {
+	caseDescription = s;
+}
+
+string Case::getCaseDescription() {
+	return caseDescription;
+}
+void Case::setGradeReduction(float g) {
+	gradeReduction = g;
+}
+
+float Case::getGradeReduction() {
+	return gradeReduction;
+}
+
+void Case::setExpectedExitCode(int e) {
+	expectedExitCode = e;
+}
+
+int Case::getExpectedExitCode() {
+	return expectedExitCode;
+}
+void Case::setProgramToRun(const string &s) {
+	programToRun = s;
+}
+
+string Case::getProgramToRun() {
+	return programToRun;
+}
+
+void Case::setProgramArgs(const string &s) {
+	programArgs = s;
+}
+
+string Case::getProgramArgs() {
+	return programArgs;
+}
 
 /**
  * Class TestCase Definitions
@@ -1001,6 +1113,7 @@ TestCase::TestCase(const TestCase &o) {
 		output.push_back(o.output[i]->clone());
 	}
 	setDefaultCommand();
+	printf("Copia %s\n", programArgs.c_str());
 }
 
 TestCase& TestCase::operator=(const TestCase &o) {
@@ -1028,6 +1141,7 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	for(int i=0; i<o.output.size(); i++){
 		output.push_back(o.output[i]->clone());
 	}
+	printf("asignacion %s\n", programArgs.c_str());
 	return *this;
 }
 
@@ -1047,6 +1161,9 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 	this->caseDescription = caseDescription;
 	this->gradeReduction = gradeReduction;
 	this->expectedExitCode = expectedExitCode;
+	this->programToRun = programToRun;
+	this->programArgs = programArgs;
+	this->failMessage = failMessage;
 	outputTooLarge = false;
 	programTimeout = false;
 	executionError = false;
@@ -1055,6 +1172,7 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 	gradeReductionApplied =0;
 	strcpy(executionErrorReason, "");
 	setDefaultCommand();
+	printf("constructor %s\n", programArgs.c_str());
 }
 
 bool TestCase::isCorrectResult() {
@@ -1128,7 +1246,39 @@ string TestCase::getComment() {
 	return ret;
 }
 
+void TestCase::splitArgs(string programArgs) {
+	int l = programArgs.size();
+	int nargs = 1;
+	char *buf = new char[programArgs.size() + 1];
+	strcpy(buf, programArgs.c_str());
+	printf("%s\n",buf);
+	argv = (const char **) new char*[programArgs.size() + 1];
+	argv[0] = command;
+	char last = '\0';
+	char separator = ' ';
+	for(int i=0; i < l; i++) { // TODO improve
+		if ( buf[i] == separator ) {
+			buf[i] = '\0';
+			separator = ' ';
+		} else if ( buf[i] == '\'' ) {
+			argv[nargs++] = buf + i + 1;
+			separator = '\'';
+		} else if ( buf[i] == '"' ) {
+			argv[nargs++] = buf + i + 1;
+			separator = '"';
+		} else if ( buf[i] != '\0' && last == '\0') {
+			argv[nargs++] = buf + i;
+		}
+		last = buf[i];
+	}
+	argv[nargs] = NULL;
+	for(int i=0; argv[i] != NULL; i++) { // TODO improve
+		printf("a%d %s\n", i, argv[i]);
+	}
+}
+
 void TestCase::runTest(time_t timeout) {//timeout in seconds
+	printf("ejecu %s\n", programArgs.c_str());
 	time_t start = time(NULL);
 	int pp1[2]; //Send data
 	int pp2[2]; //Receive data
@@ -1138,7 +1288,18 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 				strerror(errno));
 		return;
 	}
+	if ( programToRun > "" && programToRun.size() < 512) {
+		command = programToRun.c_str();
+	}
+	if ( ! Tools::existFile(command) ){
+		executionError = true;
+		sprintf(executionErrorReason, "Execution file not found '%s'", command);
+		return;
+	}
 	pid_t pid;
+	if ( programArgs.size() > 0) {
+		splitArgs(programArgs);
+	}
 	if ((pid = fork()) == 0) {
 		//Execute
 		close(pp1[1]);
@@ -1147,12 +1308,6 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 		dup2(pp2[1], STDOUT_FILENO);
 		dup2(STDOUT_FILENO, STDERR_FILENO);
 		setpgrp();
-		if ( programToRun > "" ) {
-			command = programToRun.c_str();
-		}
-		if ( programArgs > "") {
-			// TODO change argv
-		}
 		execve(command, (char * const *) argv, (char * const *) envv);
 		perror("Internal error, execve fails");
 		abort(); //end of child
@@ -1260,16 +1415,10 @@ void Evaluation::deleteSinglenton(){
 	}
 }
 
-void Evaluation::addTestCase(string &input, vector<string> &output,
-		string &caseDescription, float &gradeReduction,
-		string failMessage, string programToRun, string programArgs, int expectedExitCode) {
-	testCases.push_back(TestCase(testCases.size() + 1, input, output,
-			caseDescription, gradeReduction, failMessage, programToRun,
-			programArgs, expectedExitCode ));
-	input = "";
-	output.resize(0);
-	caseDescription = "";
-	gradeReduction = std::numeric_limits<float>::min();
+void Evaluation::addTestCase(Case &caso) {
+	testCases.push_back(TestCase(testCases.size() + 1, caso.getInput(), caso.getOutput(),
+			caso.getCaseDescription(), caso.getGradeReduction(), caso.getFailMessage(),
+			caso.getProgramToRun(), caso.getProgramArgs(), caso.getExpectedExitCode() ));
 }
 
 void Evaluation::removeLastNL(string &s) {
@@ -1301,7 +1450,6 @@ void Evaluation::loadTestCases(string fname) {
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
 	const char *NOREDUCTIONEVALUATIONS_TAG = "noreductionevaluations=";
 	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
-	string failMessage, programToRun, programArgs;
 	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
 		regular, ininput, inoutput
@@ -1311,15 +1459,11 @@ void Evaluation::loadTestCases(string fname) {
     remove(fname.c_str());
 	string inputEnd = "";
 	string outputEnd = "";
-	string input = "";
+	Case caso;
 	string output = "";
-	string caseDescription = "";
 	string tag, value;
-	float gradeReduction = std::numeric_limits<float>::min();
-	float evaluationReduction = 0;
 	/* must be changed from String
 	 * to pair type (regexp o no) and string. */
-	vector<string> outputs;
 	state = regular;
 	int nlines = lines.size();
 	for (int i = 0; i < nlines; i++) {
@@ -1329,10 +1473,10 @@ void Evaluation::loadTestCases(string fname) {
 			if (inputEnd.size()) { // Check for end of input.
 				size_t pos = line.find(inputEnd);
 				if (pos == string::npos) {
-					input += line + "\n";
+					caso.addInput(line + "\n");
 				} else {
 					cutToEndTag(line, inputEnd);
-					input += line;
+					caso.addInput(line);
 					state = regular;
 					continue; // Next line.
 				}
@@ -1341,7 +1485,7 @@ void Evaluation::loadTestCases(string fname) {
 				state = regular;
 				// Go on to process the current tag.
 			} else {
-				input += line + "\n";
+				caso.addInput(line + "\n");
 				continue; // Next line.
 			}
 		} else if (state == inoutput) {
@@ -1352,7 +1496,7 @@ void Evaluation::loadTestCases(string fname) {
 				} else {
 					cutToEndTag(line, outputEnd);
 					output += line;
-					outputs.push_back(output);
+					caso.addOutput(output);
 					output = "";
 					state = regular;
 					continue; // Next line.
@@ -1360,7 +1504,7 @@ void Evaluation::loadTestCases(string fname) {
 			} else if (tag.size() && (tag == INPUT_TAG || tag == OUTPUT_TAG
 					|| tag == GRADEREDUCTION_TAG || tag == CASE_TAG)) {// New valid tag.
 				removeLastNL(output);
-				outputs.push_back(output);
+				caso.addOutput(output);
 				output = "";
 				state = regular;
 			} else {
@@ -1372,15 +1516,15 @@ void Evaluation::loadTestCases(string fname) {
 			if (tag == INPUT_TAG) {
 				inCase = true;
 				if (cutToEndTag(value, inputEnd)) {
-					input = value;
+					caso.addInput(value);
 				} else {
 					state = ininput;
-					input = value + '\n';
+					caso.addInput(value + '\n');
 				}
 			} else if (tag == OUTPUT_TAG) {
 				inCase = true;
 				if (cutToEndTag(value, outputEnd))
-					outputs.push_back(value);
+					caso.addOutput(value);
 				else {
 					state = inoutput;
 					output = value + '\n';
@@ -1391,9 +1535,9 @@ void Evaluation::loadTestCases(string fname) {
 				// A percent value?
 				if( value.size() > 1 && value[ value.size() - 1 ] == '%' ){
 					float percent = atof(value.c_str());
-					gradeReduction = (grademax-grademin)*percent/100;
+					caso.setGradeReduction((grademax-grademin)*percent/100);
 				}else{
-					gradeReduction = atof(value.c_str());
+					caso.setGradeReduction( atof(value.c_str()) );
 				}
 			} else if (tag == REDUCTIONBYEVALUATION_TAG) {
 				value=Tools::trim(value);
@@ -1410,29 +1554,32 @@ void Evaluation::loadTestCases(string fname) {
 				value=Tools::trim(value);
 			    noreductionevaluations =  atoi(value.c_str());
 			} else if (tag == EXPECTEDEXITCODE_TAG) {
-				expectedExitCode = atoi(value.c_str());
+				caso.setExpectedExitCode( atoi(value.c_str()) );
+			} else if (tag == PROGRAMTORUN_TAG) {
+				caso.setProgramToRun(Tools::trim(value));
+			} else if (tag == PROGRAMARGS_TAG) {
+				caso.setProgramArgs(Tools::trim(value));
 			} else if (tag == INPUT_END_TAG) {
 				inputEnd = Tools::trim(value);
 			} else if (tag == OUTPUT_END_TAG) {
 				outputEnd = Tools::trim(value);
 			} else if (tag == CASE_TAG) {
 				if (inCase) {
-					addTestCase(input, outputs, caseDescription,
-							gradeReduction, "", "", "", expectedExitCode); // TODO
-					expectedExitCode = std::numeric_limits<int>::min();
+					addTestCase(caso);
+					caso.reset();
 				}
 				inCase = true;
-				caseDescription = Tools::trim(value);
+				caso.setCaseDescription( Tools::trim(value) );
 			}
 		}
 	}
 	// TODO review
 	if (state == inoutput) {
 		removeLastNL(output);
-		outputs.push_back(output);
+		caso.addOutput(output);
 	}
 	if (inCase) { // Last case => save current.
-		addTestCase(input, outputs, caseDescription, gradeReduction, "", "", "", expectedExitCode);
+		addTestCase(caso);
 	}
 }
 
@@ -1441,6 +1588,7 @@ bool Evaluation::loadParams() {
 	grademax = (int) Tools::getenv("VPL_GRADEMAX", 10);
 	maxtime = (int) Tools::getenv("VPL_MAXTIME", 20);
 	nevaluations = (int) Tools::getenv("VPL_NEVALUATIONS", 0.0);
+	variation = Tools::getenv("VPL_VARIATION","");
 	noGrade = grademin >= grademax;
 	return true;
 }
@@ -1539,22 +1687,29 @@ void Evaluation::outputEvaluation() {
 			printf("\n--|>\n");
 		}
 		if ( ! noGrade ) {
-			printf("\n<|--\n");
-			if ( noreductionevaluations > 0 && reductionbyevaluation > 0 ) {
-				printf("- %d evaluations of %d with no reduction\n", nevaluations, noreductionevaluations);
-			} else {
-				printf("- %d evaluations\n", nevaluations);
-			}
-			if ( noreductionevaluations < nevaluations && reductionbyevaluation > 0 ) {
-				for( int i = 0; i < (nevaluations - noreductionevaluations); i++ ) {
-					if ( reductionbyevaluationpc ) {
-					    grade -= grade * reductionbyevaluation / 100;
-					} else {
-					    grade -= reductionbyevaluation;
-					}
+			if ( nevaluations > 0 ) {
+				printf("\n<|--\n");
+				if ( noreductionevaluations > 0 && reductionbyevaluation > 0 ) {
+					printf("-Grade reductions by evaluations\n");
+					printf("%d evaluations done. %d evaluations granted without grade reduction\n", nevaluations, noreductionevaluations);
+					printf("Grade reduction by evaluation %5.2f%s\n",reductionbyevaluation, (reductionbyevaluationpc ? "%":""));
+				} else {
+					printf("%d evaluations\n", nevaluations);
 				}
+				if ( noreductionevaluations < nevaluations && reductionbyevaluation > 0 ) {
+					float calcgrade = grade;
+					for( int i = 0; i < (nevaluations - noreductionevaluations); i++ ) {
+						if ( reductionbyevaluationpc ) {
+							calcgrade -= calcgrade * reductionbyevaluation / 100;
+						} else {
+							calcgrade -= reductionbyevaluation;
+						}
+					}
+					printf("Grade reduction %5.2f\n", (grade-calcgrade));
+					grade = calcgrade;
+				}
+				printf("\n--|>\n");
 			}
-			printf("\n--|>\n");
 			char buf[100];
 			sprintf(buf, "%5.2f", grade);
 			int len = strlen(buf);
