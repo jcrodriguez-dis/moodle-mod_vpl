@@ -216,7 +216,8 @@ class Case {
 	string failMessage;
 	string programToRun;
 	string programArgs;
-	int expectedExitCode; // Default value INT_MIN
+	int expectedExitCode; // Default value std::numeric_limits<int>::min()
+	string variation;
 public:
 	Case();
 	void reset();
@@ -236,6 +237,8 @@ public:
 	string getProgramToRun();
 	void setProgramArgs(const string &);
 	string getProgramArgs();
+	void setVariation(const string &);
+	string getVariation();
 };
 
 /**
@@ -251,6 +254,7 @@ class TestCase {
 	bool outputTooLarge;
 	bool programTimeout;
 	bool executionError;
+	bool correctExitCode;
 	char executionErrorReason[1000];
 	int sizeReaded;
 	string input;
@@ -262,7 +266,8 @@ class TestCase {
 	string programToRun;
 	string programArgs;
 	string variantion;
-	int expectedExitCode; // Default value INT_MIN
+	int expectedExitCode; // Default value std::numeric_limits<int>::min()
+	int exitCode; // Default value std::numeric_limits<int>::min()
 	string programOutputBefore, programOutputAfter, programInput;
 
 	void cutOutputTooLarge(string &output);
@@ -278,6 +283,7 @@ public:
 			const string &caseDescription, const float gradeReduction,
 		    string failMessage, string programToRun, string programArgs, int expectedExitCode);
 	bool isCorrectResult();
+	bool isExitCodeTested();
 	float getGradeReduction();
 	void setGradeReductionApplied(float r);
 	float getGradeReductionApplied();
@@ -949,6 +955,7 @@ void Case::reset() {
 	failMessage = "";
 	programToRun = "";
 	programArgs = "";
+	variation = "";
 	expectedExitCode = std::numeric_limits<int>::min();
 }
 
@@ -1011,6 +1018,14 @@ void Case::setProgramArgs(const string &s) {
 
 string Case::getProgramArgs() {
 	return programArgs;
+}
+
+void Case::setVariation(const string &s) {
+	variation = Tools::toLower(Tools::trim(s));
+}
+
+string Case::getVariation() {
+	return variation;
 }
 
 /**
@@ -1093,6 +1108,7 @@ void TestCase::setDefaultCommand() {
 TestCase::TestCase(const TestCase &o) {
 	id=o.id;
 	correctOutput=o.correctOutput;
+	correctExitCode = o.correctExitCode;
 	outputTooLarge=o.outputTooLarge;
 	programTimeout=o.programTimeout;
 	executionError=o.executionError;
@@ -1101,10 +1117,11 @@ TestCase::TestCase(const TestCase &o) {
 	input=o.input;
 	caseDescription=o.caseDescription;
 	gradeReduction=o.gradeReduction;
+	expectedExitCode = o.expectedExitCode;
+	exitCode = o.exitCode;
 	failMessage=o.failMessage;
 	programToRun=o.programToRun;
 	programArgs=o.programArgs;
-	expectedExitCode=o.expectedExitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
@@ -1113,12 +1130,12 @@ TestCase::TestCase(const TestCase &o) {
 		output.push_back(o.output[i]->clone());
 	}
 	setDefaultCommand();
-	printf("Copia %s\n", programArgs.c_str());
 }
 
 TestCase& TestCase::operator=(const TestCase &o) {
 	id=o.id;
 	correctOutput=o.correctOutput;
+	correctExitCode = o.correctExitCode;
 	outputTooLarge=o.outputTooLarge;
 	programTimeout=o.programTimeout;
 	executionError=o.executionError;
@@ -1130,7 +1147,8 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	failMessage=o.failMessage;
 	programToRun=o.programToRun;
 	programArgs=o.programArgs;
-	expectedExitCode=o.expectedExitCode;
+	expectedExitCode = o.expectedExitCode;
+	exitCode = o.exitCode;
 	gradeReductionApplied=o.gradeReductionApplied;
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
@@ -1141,7 +1159,6 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	for(int i=0; i<o.output.size(); i++){
 		output.push_back(o.output[i]->clone());
 	}
-	printf("asignacion %s\n", programArgs.c_str());
 	return *this;
 }
 
@@ -1164,20 +1181,24 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 	this->programToRun = programToRun;
 	this->programArgs = programArgs;
 	this->failMessage = failMessage;
+	exitCode = std::numeric_limits<int>::min();
 	outputTooLarge = false;
 	programTimeout = false;
 	executionError = false;
 	correctOutput = false;
+	correctExitCode = false;
 	sizeReaded = 0;
 	gradeReductionApplied =0;
 	strcpy(executionErrorReason, "");
 	setDefaultCommand();
-	printf("constructor %s\n", programArgs.c_str());
 }
 
 bool TestCase::isCorrectResult() {
-	return correctOutput && !(programTimeout || outputTooLarge
-			|| executionError);
+	return correctOutput && !programTimeout && !outputTooLarge
+		  && !executionError || (isExitCodeTested() && correctExitCode);
+}
+bool TestCase::isExitCodeTested() {
+	return expectedExitCode != std::numeric_limits<int>::min();
 }
 
 float TestCase::getGradeReduction() {
@@ -1213,15 +1234,14 @@ string TestCase::getCommentTitle(bool withGradeReduction=false) {
 }
 
 string TestCase::getComment() {
-	if(output.size()==0){
-		return "Configuration error in the test case: the output is not defined";
-	}
-	if (correctOutput && !(programTimeout || outputTooLarge
-			|| executionError)) {
+	if (isCorrectResult()) {
 		return "";
 	}
 	char buf[100];
 	string ret;
+	if(output.size()==0){
+		ret += "Configuration error in the test case: the output is not defined";
+	}
 	if (programTimeout) {
 		ret += "Program timeout\n";
 	}
@@ -1232,15 +1252,24 @@ string TestCase::getComment() {
 	if (executionError) {
 		ret += executionErrorReason + string("\n");
 	}
-	if (!correctOutput) {
-		ret += "Incorrect program result\n";
-		ret += " --- Input ---\n";
-		ret += Tools::caseFormat(input);
-		ret += "\n --- Program output ---\n";
-		ret += Tools::caseFormat(programOutputBefore + programOutputAfter);
-		if(output.size()>0){
-			ret += "\n --- Expected output ("+output[0]->type()+")---\n";
-			ret += Tools::caseFormat(output[0]->studentOutputExpected());
+	if (isExitCodeTested() && ! correctExitCode) {
+		char buf[250];
+		sprintf(buf, "Incorrect exit code. Expected %d, found %d\n", expectedExitCode, exitCode);
+		ret += buf;
+	}
+	if (! correctOutput) {
+		if (failMessage.size()) {
+			ret += failMessage + "\n";
+		} else {
+			ret += "Incorrect program output\n";
+			ret += " --- Input ---\n";
+			ret += Tools::caseFormat(input);
+			ret += "\n --- Program output ---\n";
+			ret += Tools::caseFormat(programOutputBefore + programOutputAfter);
+			if(output.size()>0){
+				ret += "\n --- Expected output ("+output[0]->type()+")---\n";
+				ret += Tools::caseFormat(output[0]->studentOutputExpected());
+			}
 		}
 	}
 	return ret;
@@ -1251,7 +1280,6 @@ void TestCase::splitArgs(string programArgs) {
 	int nargs = 1;
 	char *buf = new char[programArgs.size() + 1];
 	strcpy(buf, programArgs.c_str());
-	printf("%s\n",buf);
 	argv = (const char **) new char*[programArgs.size() + 1];
 	argv[0] = command;
 	char last = '\0';
@@ -1272,13 +1300,9 @@ void TestCase::splitArgs(string programArgs) {
 		last = buf[i];
 	}
 	argv[nargs] = NULL;
-	for(int i=0; argv[i] != NULL; i++) { // TODO improve
-		printf("a%d %s\n", i, argv[i]);
-	}
 }
 
 void TestCase::runTest(time_t timeout) {//timeout in seconds
-	printf("ejecu %s\n", programArgs.c_str());
 	time_t start = time(NULL);
 	int pp1[2]; //Send data
 	int pp2[2]; //Receive data
@@ -1332,7 +1356,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 	programOutputAfter = "";
 	pid_t pidr;
 	int status;
-	int exitedValue = INT_MAX;
+	exitCode = std::numeric_limits<int>::min();
 	while ((pidr = waitpid(pid, &status, WNOHANG | WUNTRACED)) == 0) {
 		readWrite(fdread, fdwrite);
 		usleep(5000);
@@ -1362,7 +1386,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 							signal), signal);
 		}
 		if (WIFEXITED(status)) {
-			exitedValue = WEXITSTATUS(status);
+			exitCode = WEXITSTATUS(status);
 		} else {
 			executionError = true;
 			strcpy(executionErrorReason,
@@ -1373,10 +1397,9 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 		strcpy(executionErrorReason, "waitpid error");
 	}
 	readWrite(fdread, fdwrite);
-	correctOutput = ( expectedExitCode != std::numeric_limits<int>::min()
-			       && expectedExitCode == exitedValue)
-	               || match(programOutputAfter)
-	               || match(programOutputBefore + programOutputAfter);
+	correctExitCode = isExitCodeTested() && expectedExitCode == exitCode;
+	correctOutput = match(programOutputAfter)
+			     || match(programOutputBefore + programOutputAfter);
 }
 
 bool TestCase::match(string data) {
@@ -1416,6 +1439,9 @@ void Evaluation::deleteSinglenton(){
 }
 
 void Evaluation::addTestCase(Case &caso) {
+	if ( caso.getVariation().size() && caso.getVariation() != variation ) {
+		return;
+	}
 	testCases.push_back(TestCase(testCases.size() + 1, caso.getInput(), caso.getOutput(),
 			caso.getCaseDescription(), caso.getGradeReduction(), caso.getFailMessage(),
 			caso.getProgramToRun(), caso.getProgramArgs(), caso.getExpectedExitCode() ));
@@ -1448,6 +1474,7 @@ void Evaluation::loadTestCases(string fname) {
 	const char *PROGRAMTORUN_TAG = "programtorun=";
 	const char *PROGRAMARGS_TAG = "programarguments=";
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
+	const char *VARIATION_TAG = "variation=";
 	const char *NOREDUCTIONEVALUATIONS_TAG = "noreductionevaluations=";
 	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
 	int expectedExitCode = std::numeric_limits<int>::min();
@@ -1559,6 +1586,10 @@ void Evaluation::loadTestCases(string fname) {
 				caso.setProgramToRun(Tools::trim(value));
 			} else if (tag == PROGRAMARGS_TAG) {
 				caso.setProgramArgs(Tools::trim(value));
+			} else if (tag == FAILMESSAGE_TAG) {
+				caso.setFailMessage(Tools::trim(value));
+			} else if (tag == VARIATION_TAG) {
+				caso.setVariation(value);
 			} else if (tag == INPUT_END_TAG) {
 				inputEnd = Tools::trim(value);
 			} else if (tag == OUTPUT_END_TAG) {
@@ -1570,6 +1601,12 @@ void Evaluation::loadTestCases(string fname) {
 				}
 				inCase = true;
 				caso.setCaseDescription( Tools::trim(value) );
+			} else {
+				if ( line.size() > 0 ) {
+					char buf[250];
+					sprintf(buf,"Syntax error: unexpected line %d", i+1);
+					addFatalError(buf);
+				}
 			}
 		}
 	}
@@ -1588,7 +1625,7 @@ bool Evaluation::loadParams() {
 	grademax = (int) Tools::getenv("VPL_GRADEMAX", 10);
 	maxtime = (int) Tools::getenv("VPL_MAXTIME", 20);
 	nevaluations = (int) Tools::getenv("VPL_NEVALUATIONS", 0.0);
-	variation = Tools::getenv("VPL_VARIATION","");
+	variation = Tools::toLower(Tools::trim(Tools::getenv("VPL_VARIATION","")));
 	noGrade = grademin >= grademax;
 	return true;
 }
