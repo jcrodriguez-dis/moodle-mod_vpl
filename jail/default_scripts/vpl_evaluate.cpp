@@ -1282,22 +1282,31 @@ void TestCase::splitArgs(string programArgs) {
 	strcpy(buf, programArgs.c_str());
 	argv = (const char **) new char*[programArgs.size() + 1];
 	argv[0] = command;
-	char last = '\0';
+	bool inArg = false;
 	char separator = ' ';
 	for(int i=0; i < l; i++) { // TODO improve
-		if ( buf[i] == separator ) {
-			buf[i] = '\0';
-			separator = ' ';
-		} else if ( buf[i] == '\'' ) {
-			argv[nargs++] = buf + i + 1;
-			separator = '\'';
-		} else if ( buf[i] == '"' ) {
-			argv[nargs++] = buf + i + 1;
-			separator = '"';
-		} else if ( buf[i] != '\0' && last == '\0') {
-			argv[nargs++] = buf + i;
+		if ( ! inArg ) {
+			if ( buf[i] == ' ' ) {
+				buf[i] = '\0';
+				continue;
+			} else if ( buf[i] == '\'' ) {
+				argv[nargs++] = buf + i + 1;
+				separator = '\'';
+			} else if ( buf[i] == '"' ) {
+				argv[nargs++] = buf + i + 1;
+				separator = '"';
+			} else if ( buf[i] != '\0') {
+				argv[nargs++] = buf + i;
+				separator = ' ';
+			}
+			inArg = true;
+		} else {
+			if ( buf[i] == separator  ) {
+				buf[i] = '\0';
+				separator = ' ';
+				inArg = false;
+			}
 		}
-		last = buf[i];
 	}
 	argv[nargs] = NULL;
 }
