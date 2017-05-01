@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/sh_factory.class.php');
 
 class vpl_sh_ace extends vpl_sh_base {
     protected static $fid = 0;
-    protected static $execution_files = array('vpl_run.sh', 'vpl_debug.sh',
+    protected static $executionfiles = array('vpl_run.sh', 'vpl_debug.sh',
                                               'vpl_evaluate.sh', 'vpl_evaluate.cases');
     protected static function getid() {
         self::$fid ++;
@@ -38,7 +38,7 @@ class vpl_sh_ace extends vpl_sh_base {
     }
     public function print_file($filename, $filedata, $showln = true, $nl = 30, $title = true) {
         global $OUTPUT;
-        if ( array_search($filename, self::$execution_files) !== false &&
+        if ( array_search($filename, self::$executionfiles) !== false &&
              $filedata == '') {
             return;
         }
