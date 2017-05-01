@@ -231,6 +231,7 @@ img.vpl_ide_file {
 }
 .vpl_clipboard {
     display: none;
+    z-index: 1010;
 }
 .vpl_clipboard_label1.ui-button-text,
 .vpl_clipboard_label1.ui-button-text {
