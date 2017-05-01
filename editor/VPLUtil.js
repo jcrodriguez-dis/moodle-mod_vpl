@@ -421,7 +421,7 @@
     })();
     (function() {
         var delayedActions = {};
-        var reg = /function ([^\(]*)/;
+        var reg = /function ([^\(]+)/;
         function functionName(func) {
             var fs = func.toString();
             var res = reg.exec(fs);
