@@ -210,6 +210,8 @@
                 if (!opened) {
                     return;
                 }
+                // Workaround to remove jquery-ui theme background color.
+                $JQVPL(tid).removeClass('ui-tabs-panel');
                 this.adjustSize();
                 editor.focus();
             };
