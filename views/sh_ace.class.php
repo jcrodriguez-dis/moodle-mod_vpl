@@ -30,12 +30,18 @@ require_once(dirname(__FILE__).'/sh_factory.class.php');
 
 class vpl_sh_ace extends vpl_sh_base {
     protected static $fid = 0;
+    protected static $executionfiles = array('vpl_run.sh', 'vpl_debug.sh',
+                                              'vpl_evaluate.sh', 'vpl_evaluate.cases');
     protected static function getid() {
         self::$fid ++;
         return 'fileid' . self::$fid;
     }
     public function print_file($filename, $filedata, $showln = true, $nl = 30, $title = true) {
         global $OUTPUT;
+        if ( array_search($filename, self::$executionfiles) !== false &&
+             $filedata == '') {
+            return;
+        }
         $tid = self::getid();
         $plugincfg = get_config('mod_vpl');
         if ( isset($plugincfg->editor_theme) ) {
@@ -46,12 +52,14 @@ class vpl_sh_ace extends vpl_sh_base {
         if ( $title ) {
             echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
         }
-        $code = '<pre class="" style="position:relative" ';
-        $code .= " id='code$tid' >\n";
-        $code .= htmlentities( $filedata, ENT_NOQUOTES );
-        $code .= '</pre>';
-        $sshowline = $showln ? 'true' : 'false';
-        $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme', $sshowline, $nl);</script>";
-        echo $code;
+        if ( $filedata > '' ) {
+            $code = '<pre class="" style="position:relative" ';
+            $code .= " id='code$tid' >\n";
+            $code .= htmlentities( $filedata, ENT_NOQUOTES );
+            $code .= '</pre>';
+            $sshowline = $showln ? 'true' : 'false';
+            $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme', $sshowline, $nl);</script>";
+            echo $code;
+        }
     }
 }

@@ -51,7 +51,7 @@ VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus)
         width : 'auto',
         height : 'auto',
         resizable : true,
-        dialogClass : 'vpl_ide',
+        dialogClass : 'vpl_clipboard vpl_ide',
     });
     if (onFocus) {
         tdialog.on("click", onFocus);

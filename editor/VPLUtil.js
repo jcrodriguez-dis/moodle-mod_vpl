@@ -337,7 +337,7 @@
             'asm' : 'assembly_x86',
             'bash' : 'sh',
             'bat' : 'batchfile',
-            'c' : 'c_cpp', 'C' : 'c_cpp', 'cc' : 'c_cpp', 'cpp' : 'c_cpp', 'hxx' : 'cpp', 'h' : 'cpp',
+            'c' : 'c_cpp', 'C' : 'c_cpp', 'cc' : 'c_cpp', 'cpp' : 'c_cpp', 'hxx' : 'c_cpp', 'h' : 'c_cpp',
             'cases' : 'cases',
             'cbl' : 'cobol', 'cob' : 'cobol',
             'coffee' : 'coffee',
@@ -421,7 +421,7 @@
     })();
     (function() {
         var delayedActions = {};
-        var reg = /function ([^\(]*)/;
+        var reg = /function ([^\(]+)/;
         function functionName(func) {
             var fs = func.toString();
             var res = reg.exec(fs);
