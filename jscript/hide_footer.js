@@ -23,11 +23,11 @@
 
 (function() {
     var footer = document.getElementById('page-footer');
-    if (footer !== undefined) {
+    if (footer !== null) {
         footer.style.display = 'none';
     }
     footer = document.getElementById('footer');
-    if (footer !== undefined) {
+    if (footer !== null) {
         footer.style.display = 'none';
     }
 })();
