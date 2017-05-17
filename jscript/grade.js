@@ -71,7 +71,7 @@
         var grade = parseFloat(maxgrade);
         var regDiscount = /^-[^(]+\(([0-9\.\-]+)\) *$/gm;
         var match;
-        while((match = regDiscount.exec(text)) != null) {
+        while((match = regDiscount.exec(text)) !== null) {
             var rest = parseFloat(match[1]);
             if (rest < 0) {
                 grade += rest;
@@ -105,13 +105,13 @@
             var sel = document.selection.createRange();
             sel.text = comment;
         } /* For Firefox */
-        else if (field.selectionStart || field.selectionStart == 0) {
+        else if (field.selectionStart || field.selectionStart === 0) {
             var startPos = field.selectionStart;
             var endPos = field.selectionEnd;
             if(startPos != endPos) {
                 field.value = text.substring(0, startPos) + comment + text.substring(endPos, text.length);
             } else {
-                var pos =  text.substr(startPos).indexOf("\n");
+                var pos = text.substr(startPos).indexOf("\n");
                 if (pos == -1){
                     pos = text.length;
                 } else {
