@@ -67,50 +67,14 @@
      */
     VPL.calculateGrade = function(maxgrade) {
         var form1 = window.document.getElementById('form1');
-        var text = "" + form1.comments.value;
-        var grade = 0 + maxgrade;
-        while (text.length > 0) {
-            /* Separate next line */
-            var line = "";
-            var i;
-            for (i = 0; i < text.length; i++) {
-                if (text.charAt(i) == '\n' || text.charAt(i) == '\r') {
-                    break;
-                }
-            }
-            line = text.substr(0, i);
-            if (i < text.length) {
-                text = text.substr(i + 1, (text.length - i) - 1);
-            } else {
-                text = '';
-            }
-            if (line.length === 0) {
-                continue;
-            }
-
-            /* Is a message title line */
-            if (line.charAt(0) == '-') {
-                var nline = "";
-                for (i = 0; i < line.length; i++) {
-                    if (line.charAt(i) != ' ') {
-                        nline += line.charAt(i);
-                    }
-                }
-                if (nline.length === 0) {
-                    continue;
-                }
-                /* End of line format (-grade) */
-                if (nline.charAt(nline.length - 1) == ')') {
-                    var pos = nline.lastIndexOf('(');
-                    if (pos === -1) {
-                        continue;
-                    }
-                    var rest = nline.substr(pos + 1, nline.length - 2 - pos);
-                    /* update grade with rest */
-                    if (rest < 0) {
-                        grade += rest;
-                    }
-                }
+        var text = form1.comments.value;
+        var grade = parseFloat(maxgrade);
+        var regDiscount = /^-[^(]+\(([0-9\.\-]+)\) *$/gm;
+        var match;
+        while((match = regDiscount.exec(text)) != null) {
+            var rest = parseFloat(match[1]);
+            if (rest < 0) {
+                grade += rest;
             }
         }
         /* No negative grade */
@@ -141,11 +105,27 @@
             var sel = document.selection.createRange();
             sel.text = comment;
         } /* For Firefox */
-        else if (field.selectionStart || field.selectionStart == '0') {
+        else if (field.selectionStart || field.selectionStart == 0) {
             var startPos = field.selectionStart;
             var endPos = field.selectionEnd;
-            field.value = text.substring(0, startPos) + comment + text.substring(endPos, text.length);
+            if(startPos != endPos) {
+                field.value = text.substring(0, startPos) + comment + text.substring(endPos, text.length);
+            } else {
+                var pos =  text.substr(startPos).indexOf("\n");
+                if (pos == -1){
+                    pos = text.length;
+                } else {
+                    pos += startPos;
+                }
+                if ( pos > 0 ) {
+                    comment = '\n' + comment;
+                }
+                field.value = text.substring(0, pos) + comment + text.substring(pos, text.length);
+            }
         } else { /* Other case */
+            if(text > '' && text.substr(-1) != '\n'){
+                comment = '\n' + comment;
+            }
             field.value += comment;
         }
     };
