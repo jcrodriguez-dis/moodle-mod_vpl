@@ -24,6 +24,8 @@
  */
 
 defined( 'MOODLE_INTERNAL' ) || die();
+global $CFG;
+
 require_once($CFG->libdir.'/formslib.php');
 class mod_vpl_password_form extends moodleform {
     protected function definition() {
