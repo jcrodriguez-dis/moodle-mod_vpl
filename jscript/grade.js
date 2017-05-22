@@ -69,7 +69,7 @@
         var form1 = window.document.getElementById('form1');
         var text = form1.comments.value;
         var grade = parseFloat(maxgrade);
-        var regDiscount = /^-[^(]+\(([0-9\.\-]+)\) *$/gm;
+        var regDiscount = /^-.+\(([0-9\.\-]+)\) *$/gm;
         var match;
         while((match = regDiscount.exec(text)) !== null) {
             var rest = parseFloat(match[1]);
