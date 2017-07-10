@@ -22,7 +22,7 @@
     <library>
         <location>editor/jquery</location>
         <name>JQuery-UI</name>
-        <version>1.10.3</version>
+        <version>1.10.4</version>
         <license>MIT</license>
     </library>
     <library>
