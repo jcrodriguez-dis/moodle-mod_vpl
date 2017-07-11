@@ -252,7 +252,7 @@ class vpl_similarity_preprocess {
         $from = null;
         $joinedfilesdata = '';
         foreach ($filelist as $filename) {
-            if (! isset( $filesselected [$filename] ) && ! $allfiles) {
+            if (! isset( $filesselected [ basename($filename) ] ) && ! $allfiles) {
                 continue;
             }
             $sim = vpl_similarity_factory::get( $filename );
