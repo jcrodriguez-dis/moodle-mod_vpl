@@ -89,7 +89,7 @@ foreach ($ovpls as $ovpl) {
     if ($timenow >= $instance->startdate && $timenow <= $instance->duedate) {
         continue;
     }
-    // Can be graded => NO
+    // Can be graded => NO.
     if ($vpl->get_grade() == 0) {
         continue;
     }

@@ -41,7 +41,7 @@ function vpl_grade_item_update($instance, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    $params = array('itemname'=>$instance->name);
+    $params = array('itemname' => $instance->name);
     $itemdetails ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
     if ( isset($instance->cmidnumber) ) {
         $params['idnumber'] = $instance->cmidnumber;
@@ -61,7 +61,7 @@ function vpl_grade_item_update($instance, $grades=null) {
         $params['deleted'] = 1;
     }
 
-    if ($grades  === 'reset') {
+    if ($grades === 'reset') {
         $params['reset'] = true;
         $grades = null;
     }
@@ -100,7 +100,7 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
         }
     }
     $grades = array();
-    foreach($subs as $sub) {
+    foreach ($subs as $sub) {
         if ($sub->dategraded > 0) {
             $subc = new mod_vpl_submission_CE($vpl, $sub);
             $feedback = $subc->result_to_html($subc->get_grade_comments(), false);
@@ -530,14 +530,15 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
                 'edit' => 3
         ) ), navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $node = $vplnode->create( $strexecutionoptions, new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms )
-                                  , navigation_node::TYPE_SETTING );
+        $urlexecutionoptions = new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms );
+        $node = $vplnode->create( $strexecutionoptions, $urlexecutionoptions, navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $node = $vplnode->create( $strrequestedfiles, new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms )
-                                  , navigation_node::TYPE_SETTING );
+        $urlrequiredfiles = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
+        $node = $vplnode->create( $strrequestedfiles, $urlrequiredfiles, navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $advance = $vplnode->create( get_string( 'advancedsettings' ),  new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms )
-                       , navigation_node::TYPE_CONTAINER);
+        $urlexecutionfiles = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
+        $stradvancedsettings = get_string( 'advancedsettings' );
+        $advance = $vplnode->create( $stradvancedsettings, $urlexecutionfiles, navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $advance, $fkn );
         $strexecutionlimits = get_string( 'maxresourcelimits', VPL );
         $strexecutionfiles = get_string( 'executionfiles', VPL );

@@ -1291,51 +1291,61 @@ class mod_vpl {
      * @param $active tab
      *
      */
-    function print_configure_tabs($path) {
-         global $CFG, $PAGE;
-         $active = basename($path);
-         $strbasic = get_string('basic', VPL);
-         $strfulldescription = get_string('fulldescription', VPL);
-         $strtestcases = get_string('testcases', VPL);
-         $strexecutionoptions = get_string('executionoptions', VPL);
-         $menustrexecutionoptions = get_string('menuexecutionoptions', VPL);
-         $strrequestedfiles = get_string('requestedfiles', VPL);
-         $stradvanced = get_string('advanced', VPL);
-         $strexecution = get_string('execution', VPL);
-         $tabs = array();
-         $tabs[] = new tabobject('edit', vpl_abs_href('/course/modedit.php', 'update', $this->cm->id), $strbasic, $strbasic);
-         $tabs[] = new tabobject('testcasesfile.php', vpl_mod_href('forms/testcasesfile.php', 'id', $this->cm->id, 'edit' ,3),$strtestcases,$strtestcases);
-         $tabs[] = new tabobject('executionoptions.php', vpl_mod_href('forms/executionoptions.php', 'id', $this->cm->id), $menustrexecutionoptions, $strexecutionoptions);
-         $tabs[] = new tabobject('requiredfiles.php',vpl_mod_href('forms/requestedfiles.php', 'id', $this->cm->id), $strrequestedfiles, $strrequestedfiles);
-         if ($active == 'executionfiles.php' || $active=='executionlimits.php'
-         ||	$active == 'executionkeepfiles.php' || $active == 'variations.php'
-         || $active == 'local_jail_servers.php' || $active == 'checkjailservers.php') {
-             $tabs[] = new tabobject($active, VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id), $stradvanced, $stradvanced);
-             $strexecutionlimits = get_string('maxresourcelimits', VPL);
-             $strexecutionfiles = get_string('executionfiles', VPL);
-             $menustrexecutionfiles = get_string('menuexecutionfiles', VPL);
-             $menustrexecutionlimits = get_string('menuresourcelimits', VPL);
-             $strvariations = get_string('variations', VPL);
-             $strexecutionkeepfiles = get_string('keepfiles', VPL);
-             $strexecutionlimits = get_string('maxresourcelimits', VPL);
-             $strcheckjails = get_string('check_jail_servers', VPL);
-             $strsetjails = get_string('local_jail_servers', VPL);
-             $menustrexecutionkeepfiles = get_string('menukeepfiles', VPL);
-             $menustrcheckjails = get_string('menucheck_jail_servers', VPL);
-             $menustrsetjails = get_string('menulocal_jail_servers', VPL);
-             $subtabs = array();
-             $subtabs[]= new tabobject('executionfiles.php', VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id), $menustrexecutionfiles, $strexecutionfiles);
-             $subtabs[]= new tabobject('executionlimits.php', VPL_mod_href('forms/executionlimits.php', 'id', $this->cm->id), $menustrexecutionlimits, $strexecutionlimits);
-             $subtabs[]= new tabobject('executionkeepfiles.php', VPL_mod_href('forms/executionkeepfiles.php', 'id', $this->cm->id), $menustrexecutionkeepfiles, $strexecutionkeepfiles);
-             $subtabs[]= new tabobject('variations.php', VPL_mod_href('forms/variations.php', 'id', $this->cm->id), $strvariations, $strvariations);
-             $subtabs[]= new tabobject('checkjailservers.php', VPL_mod_href('views/checkjailservers.php', 'id', $this->cm->id), $menustrcheckjails, $strcheckjails);
-             if($this->has_capability(VPL_SETJAILS_CAPABILITY)){
-                $subtabs[]= new tabobject('local_jail_servers.php', VPL_mod_href('forms/local_jail_servers.php', 'id', $this->cm->id), $menustrsetjails, $strsetjails);
-             }
-         }
-         else{
-             $tabs[]= new tabobject('executionfiles.php', VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id), $stradvanced, $stradvanced);
-         }
+    public function print_configure_tabs($path) {
+        global $CFG, $PAGE;
+        $active = basename($path);
+        $strbasic = get_string('basic', VPL);
+        $strfulldescription = get_string('fulldescription', VPL);
+        $strtestcases = get_string('testcases', VPL);
+        $strexecutionoptions = get_string('executionoptions', VPL);
+        $menustrexecutionoptions = get_string('menuexecutionoptions', VPL);
+        $strrequestedfiles = get_string('requestedfiles', VPL);
+        $stradvanced = get_string('advanced', VPL);
+        $strexecution = get_string('execution', VPL);
+        $tabs = array();
+        $tabs[] = new tabobject('edit', vpl_abs_href('/course/modedit.php', 'update', $this->cm->id), $strbasic, $strbasic);
+        $urltestcasesfile = vpl_mod_href('forms/testcasesfile.php', 'id', $this->cm->id, 'edit', 3);
+        $tabs[] = new tabobject('testcasesfile.php', $urltestcasesfile, $strtestcases, $strtestcases);
+        $urlexecutionoptions = vpl_mod_href('forms/executionoptions.php', 'id', $this->cm->id);
+        $tabs[] = new tabobject('executionoptions.php', $urlexecutionoptions, $menustrexecutionoptions, $strexecutionoptions);
+        $urlrequestedfiles = vpl_mod_href('forms/requestedfiles.php', 'id', $this->cm->id);
+        $tabs[] = new tabobject('requiredfiles.php', $urlrequestedfiles, $strrequestedfiles, $strrequestedfiles);
+        if ($active == 'executionfiles.php' || $active == 'executionlimits.php'
+            || $active == 'executionkeepfiles.php' || $active == 'variations.php'
+            || $active == 'local_jail_servers.php' || $active == 'checkjailservers.php') {
+                $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
+                $tabs[] = new tabobject($active, $urlexecutionfiles, $stradvanced, $stradvanced);
+            $strexecutionlimits = get_string('maxresourcelimits', VPL);
+            $strexecutionfiles = get_string('executionfiles', VPL);
+            $menustrexecutionfiles = get_string('menuexecutionfiles', VPL);
+            $menustrexecutionlimits = get_string('menuresourcelimits', VPL);
+            $strvariations = get_string('variations', VPL);
+            $strexecutionkeepfiles = get_string('keepfiles', VPL);
+            $strexecutionlimits = get_string('maxresourcelimits', VPL);
+            $strcheckjails = get_string('check_jail_servers', VPL);
+            $strsetjails = get_string('local_jail_servers', VPL);
+            $menustrexecutionkeepfiles = get_string('menukeepfiles', VPL);
+            $menustrcheckjails = get_string('menucheck_jail_servers', VPL);
+            $menustrsetjails = get_string('menulocal_jail_servers', VPL);
+            $subtabs = array();
+            $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $menustrexecutionfiles, $strexecutionfiles);
+            $urlexecutionlimits = VPL_mod_href('forms/executionlimits.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionlimits.php', $urlexecutionlimits, $menustrexecutionlimits, $strexecutionlimits);
+            $urlexecutionkeepfiles = VPL_mod_href('forms/executionkeepfiles.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionkeepfiles.php', $urlexecutionkeepfiles,
+                                       $menustrexecutionkeepfiles, $strexecutionkeepfiles);
+            $urlvariations = VPL_mod_href('forms/variations.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('variations.php', $urlvariations, $strvariations, $strvariations);
+            $urlcheckjailservers = VPL_mod_href('views/checkjailservers.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('checkjailservers.php', $urlcheckjailservers, $menustrcheckjails, $strcheckjails);
+            if ($this->has_capability(VPL_SETJAILS_CAPABILITY)) {
+                $urllocaljailservers = VPL_mod_href('forms/local_jail_servers.php', 'id', $this->cm->id);
+                $subtabs[] = new tabobject('local_jail_servers.php', $urllocaljailservers, $menustrsetjails, $strsetjails);
+            }
+        } else {
+            $tabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $stradvanced, $stradvanced);
+        }
     }
 
     /**
@@ -1645,17 +1655,17 @@ class mod_vpl {
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
             }
             if ($this->instance->basedon) {
-               try {
-                   $basedon = new mod_vpl( null, $this->instance->basedon );
-                   $link = '<a href="';
-                   $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
-                   $link .= '">';
-                   $link .= $basedon->get_printable_name();
-                   $link .= '</a>';
-                   $this->print_restriction( 'basedon', $link );
-               } catch (Exception $e) {
-                   $this->print_restriction( 'basedon', $e->getMessage() );
-               }
+                try {
+                    $basedon = new mod_vpl( null, $this->instance->basedon );
+                    $link = '<a href="';
+                    $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
+                    $link .= '">';
+                    $link .= $basedon->get_printable_name();
+                    $link .= '</a>';
+                    $this->print_restriction( 'basedon', $link );
+                } catch (Exception $e) {
+                    $this->print_restriction( 'basedon', $e->getMessage() );
+                }
             }
             $noyes = array (
                     $strno,
