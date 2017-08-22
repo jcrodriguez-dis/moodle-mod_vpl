@@ -16,4 +16,4 @@ if [ "$1" == "version" ] ; then
 fi 
 get_source_files cpp C
 #compile
-g++ -fno-diagnostics-color -o vpl_execution $SOURCE_FILES -lm -lutil
+g++ --std=c++11 -O2 -fno-diagnostics-color -o vpl_execution $SOURCE_FILES -lm -lutil

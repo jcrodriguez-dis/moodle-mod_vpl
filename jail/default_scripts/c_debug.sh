@@ -10,7 +10,7 @@
 check_program gcc
 get_source_files c
 #compile
-gcc -fno-diagnostics-color -o vpl_program -g -O0 $SOURCE_FILES -lm -lutil
+gcc --std=c11 -fno-diagnostics-color -o vpl_program -g -Og $SOURCE_FILES -lm -lutil
 if [ -f vpl_program ] ; then
 	cat common_script.sh > vpl_execution
 	chmod +x vpl_execution
