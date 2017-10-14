@@ -109,6 +109,7 @@ public:
  * Class NumbersOutput Declaration
  */
 class NumbersOutput:public OutputChecker{
+	static regex_t* regNumber;
 	struct Number{
 		bool isInteger;
 		long int integer;
@@ -621,8 +622,27 @@ bool NumbersOutput::calcStartWithAsterisk(){
 	}
 	return false;
 }
-
+regex_t* NumbersOutput::regNumber = NULL;
 NumbersOutput::NumbersOutput(const string &text):OutputChecker(text){
+	if( regNumber == NULL) {
+		regNumber = new regex_t;
+		regcomp(regNumber, "[-+]?[0-9]*\\.?[0-9]+(e[-+]?[0-9]+)?", REG_EXTENDED | REG_NEWLINE | REG_ICASE);
+	}
+	regmatch_t pmatch[2];
+	int offset=0;
+	const char *str = text.c_str();
+	Number number;
+	string nstr;
+	while (offset < text.size() && regexec(regNumber, str+offset, 2, pmatch, 0) == 0 ) {
+		int pos = offset + pmatch[0].rm_so;
+		int length = pmatch[0].rm_eo - pmatch[0].rm_so;
+		offset += pmatch[0].rm_eo;
+		nstr = text.substr(pos, length);
+		if ( number.set(nstr) ) {
+			numbers.push_back(number);
+		}
+	}
+/*
 	int l=text.size();
 	string str;
 	Number number;
@@ -638,6 +658,7 @@ NumbersOutput::NumbersOutput(const string &text):OutputChecker(text){
 	if(str.size()>0){
 		if(isNumStart(str[0]) && number.set(str)) numbers.push_back(number);
 	}
+	*/
 	startWithAsterisk=calcStartWithAsterisk();
 }
 
