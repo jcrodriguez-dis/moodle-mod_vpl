@@ -81,12 +81,16 @@ foreach ($ovpls as $ovpl) {
         continue;
     }
     $instance = $vpl->get_instance();
-    // Example NO.
+    // Example => NO.
     if ($instance->example) {
         continue;
     }
-    // Open and limited NO.
+    // Open and limited => NO.
     if ($timenow >= $instance->startdate && $timenow <= $instance->duedate) {
+        continue;
+    }
+    // Can be graded => NO.
+    if ($vpl->get_grade() == 0) {
         continue;
     }
     $vpls [] = $vpl;

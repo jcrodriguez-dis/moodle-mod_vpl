@@ -216,9 +216,6 @@ class mod_vpl_submission {
         global $CFG;
         global $DB;
         ignore_user_abort( true );
-        if (! function_exists( 'grade_update' )) {
-            require_once($CFG->libdir . '/gradelib.php');
-        }
         if ($this->vpl->is_group_activity()) {
             $usersid = array ();
             foreach ($this->vpl->get_usergroup_members( $this->instance->userid ) as $user) {
@@ -239,16 +236,7 @@ class mod_vpl_submission {
             $grades [$userid] = $gradeinfo;
         }
         $vplinstance = $this->vpl->get_instance();
-        if ($this->vpl->get_grade() == 0 || $vplinstance->example != 0) {
-            $itemdetails = array (
-                    'deleted' => 1
-            );
-        } else {
-            $itemdetails = null;
-        }
-        if (grade_update( 'mod/vpl', $this->vpl->get_course()->id
-                         , 'mod', VPL, $this->vpl->get_instance()->id
-                         , 0, $grades, $itemdetails ) != GRADE_UPDATE_OK) {
+        if (vpl_grade_item_update( $vplinstance, $grades ) != GRADE_UPDATE_OK) {
             return false;
         }
         if (! empty( $CFG->enableoutcomes )) {
@@ -303,9 +291,6 @@ class mod_vpl_submission {
         $scaleid = $this->vpl->get_grade();
         if ($scaleid == 0 && empty( $CFG->enableoutcomes )) { // No scale no outcomes.
             return;
-        }
-        if (! function_exists( 'grade_update' )) {
-            require_once($CFG->libdir . '/gradelib.php');
         }
         if ($automatic) { // Who grade.
             $this->instance->grader = 0;
@@ -364,8 +349,7 @@ class mod_vpl_submission {
                 $gradeinfo ['userid'] = $userid;
                 $grades [$userid] = $gradeinfo;
             }
-            if (grade_update( 'mod/vpl', $this->vpl->get_course()->id, 'mod'
-                             , VPL, $this->vpl->get_instance()->id, 0, $grades ) != GRADE_UPDATE_OK) {
+            if (vpl_grade_item_update( $this->vpl->get_instance(), $grades ) != GRADE_UPDATE_OK) {
                 return false;
             }
         }

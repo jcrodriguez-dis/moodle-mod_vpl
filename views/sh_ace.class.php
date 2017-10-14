@@ -36,7 +36,7 @@ class vpl_sh_ace extends vpl_sh_base {
         self::$fid ++;
         return 'fileid' . self::$fid;
     }
-    public function print_file($filename, $filedata, $showln = true, $nl = 30, $title = true) {
+    public function print_file($filename, $filedata, $showln = true, $nl = 3000, $title = true) {
         global $OUTPUT;
         if ( array_search($filename, self::$executionfiles) !== false &&
              $filedata == '') {

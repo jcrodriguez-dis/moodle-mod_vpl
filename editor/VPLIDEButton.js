@@ -264,17 +264,18 @@
                     }
                     lastLap = now;
                     var tl = timeLeft - (lastLap - start);
-                    var thtml = VPL_Util.gen_icon('timeleft');
-                    if (show) {
-                        thtml += ' ' + VPL_Util.getTimeLeft(tl);
-                    }
                     var cssclass = '';
                     if (tl <= 0) {
                         cssclass = 'vpl_buttonleft_black';
                     } else if (tl <= 5 * 60) {
+                        show = true;
                         cssclass = 'vpl_buttonleft_red';
                     } else if (tl <= 15 * 60) {
                         cssclass = 'vpl_buttonleft_orange';
+                    }
+                    var thtml = VPL_Util.gen_icon('timeleft');
+                    if (show) {
+                        thtml += ' ' + VPL_Util.getTimeLeft(tl);
                     }
                     element.html(thtml);
                     element.removeClass(cssclases).addClass(cssclass);

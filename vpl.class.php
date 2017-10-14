@@ -178,6 +178,7 @@ class mod_vpl {
             ) )) {
                 print_error( 'module instance id unknow' );
             }
+            $this->instance->cmidnumber = $this->cm->id;
         } else {
             if (! $this->instance = $DB->get_record( VPL, array (
                     "id" => $a
@@ -193,6 +194,8 @@ class mod_vpl {
             if (! $this->cm = get_coursemodule_from_instance( VPL, $this->instance->id, $this->course->id )) {
                 echo $OUTPUT->box( get_string( 'invalidcoursemodule' ) . ' VPL id=' . $a );
                 // Don't stop on error. This let delete a corrupted course.
+            } else {
+                $this->instance->cmidnumber = $this->cm->id;
             }
         }
         $this->requiredfgm = null;
@@ -1288,9 +1291,72 @@ class mod_vpl {
      * @param $active tab
      *
      */
+    public function print_configure_tabs($path) {
+        global $CFG, $PAGE;
+        $active = basename($path);
+        $strbasic = get_string('basic', VPL);
+        $strfulldescription = get_string('fulldescription', VPL);
+        $strtestcases = get_string('testcases', VPL);
+        $strexecutionoptions = get_string('executionoptions', VPL);
+        $menustrexecutionoptions = get_string('menuexecutionoptions', VPL);
+        $strrequestedfiles = get_string('requestedfiles', VPL);
+        $stradvanced = get_string('advanced', VPL);
+        $strexecution = get_string('execution', VPL);
+        $tabs = array();
+        $tabs[] = new tabobject('edit', vpl_abs_href('/course/modedit.php', 'update', $this->cm->id), $strbasic, $strbasic);
+        $urltestcasesfile = vpl_mod_href('forms/testcasesfile.php', 'id', $this->cm->id, 'edit', 3);
+        $tabs[] = new tabobject('testcasesfile.php', $urltestcasesfile, $strtestcases, $strtestcases);
+        $urlexecutionoptions = vpl_mod_href('forms/executionoptions.php', 'id', $this->cm->id);
+        $tabs[] = new tabobject('executionoptions.php', $urlexecutionoptions, $menustrexecutionoptions, $strexecutionoptions);
+        $urlrequestedfiles = vpl_mod_href('forms/requestedfiles.php', 'id', $this->cm->id);
+        $tabs[] = new tabobject('requiredfiles.php', $urlrequestedfiles, $strrequestedfiles, $strrequestedfiles);
+        if ($active == 'executionfiles.php' || $active == 'executionlimits.php'
+            || $active == 'executionkeepfiles.php' || $active == 'variations.php'
+            || $active == 'local_jail_servers.php' || $active == 'checkjailservers.php') {
+                $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
+                $tabs[] = new tabobject($active, $urlexecutionfiles, $stradvanced, $stradvanced);
+            $strexecutionlimits = get_string('maxresourcelimits', VPL);
+            $strexecutionfiles = get_string('executionfiles', VPL);
+            $menustrexecutionfiles = get_string('menuexecutionfiles', VPL);
+            $menustrexecutionlimits = get_string('menuresourcelimits', VPL);
+            $strvariations = get_string('variations', VPL);
+            $strexecutionkeepfiles = get_string('keepfiles', VPL);
+            $strexecutionlimits = get_string('maxresourcelimits', VPL);
+            $strcheckjails = get_string('check_jail_servers', VPL);
+            $strsetjails = get_string('local_jail_servers', VPL);
+            $menustrexecutionkeepfiles = get_string('menukeepfiles', VPL);
+            $menustrcheckjails = get_string('menucheck_jail_servers', VPL);
+            $menustrsetjails = get_string('menulocal_jail_servers', VPL);
+            $subtabs = array();
+            $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $menustrexecutionfiles, $strexecutionfiles);
+            $urlexecutionlimits = VPL_mod_href('forms/executionlimits.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionlimits.php', $urlexecutionlimits, $menustrexecutionlimits, $strexecutionlimits);
+            $urlexecutionkeepfiles = VPL_mod_href('forms/executionkeepfiles.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('executionkeepfiles.php', $urlexecutionkeepfiles,
+                                       $menustrexecutionkeepfiles, $strexecutionkeepfiles);
+            $urlvariations = VPL_mod_href('forms/variations.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('variations.php', $urlvariations, $strvariations, $strvariations);
+            $urlcheckjailservers = VPL_mod_href('views/checkjailservers.php', 'id', $this->cm->id);
+            $subtabs[] = new tabobject('checkjailservers.php', $urlcheckjailservers, $menustrcheckjails, $strcheckjails);
+            if ($this->has_capability(VPL_SETJAILS_CAPABILITY)) {
+                $urllocaljailservers = VPL_mod_href('forms/local_jail_servers.php', 'id', $this->cm->id);
+                $subtabs[] = new tabobject('local_jail_servers.php', $urllocaljailservers, $menustrsetjails, $strsetjails);
+            }
+        } else {
+            $tabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $stradvanced, $stradvanced);
+        }
+    }
+
+    /**
+     * Create tabs to view_description/submit/view_submission/edit
+     *
+     * @param $active tab
+     *
+     */
     public function print_view_tabs($active) {
         // TODO refactor using functions.
-        global $CFG, $USER, $DB;
+        global $CFG, $USER, $DB, $OUTPUT;
         $active = basename( $active );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
@@ -1362,6 +1428,7 @@ class mod_vpl {
         switch ($active) {
             case 'view.php' :
                 if ($level2) {
+                    // TODO replace by $OUTPUT->tabtree.
                     print_tabs(
                             array (
                                     $maintabs,
@@ -1588,13 +1655,17 @@ class mod_vpl {
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
             }
             if ($this->instance->basedon) {
-                $basedon = new mod_vpl( null, $this->instance->basedon );
-                $link = '<a href="';
-                $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
-                $link .= '">';
-                $link .= $basedon->get_printable_name();
-                $link .= '</a>';
-                $this->print_restriction( 'basedon', $link );
+                try {
+                    $basedon = new mod_vpl( null, $this->instance->basedon );
+                    $link = '<a href="';
+                    $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
+                    $link .= '">';
+                    $link .= $basedon->get_printable_name();
+                    $link .= '</a>';
+                    $this->print_restriction( 'basedon', $link );
+                } catch (Exception $e) {
+                    $this->print_restriction( 'basedon', $e->getMessage() );
+                }
             }
             $noyes = array (
                     $strno,

@@ -30,36 +30,92 @@ require_once(dirname(__FILE__).'/list_util.class.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 /**
- * Create grade item for vpl
+ * Create/update grade item for given VPL activity.
  *
- * @param object $assignment
- *        object with extra cmidnumber
- * @param
- *        mixed optional array/object of grade(s); 'reset' means reset grades in gradebook
+ * @param stdClass VPL record with extra cmidnumber
+ * @param array $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
  * @return int 0 if ok, error code otherwise
+ * (Code and comments adaptes from Moodle assign)
  */
-function vpl_update_grade_item($instance, $cm = null) {
+function vpl_grade_item_update($instance, $grades=null) {
     global $CFG;
-    require_once($CFG->libdir . '/gradelib.php');
-    $itemdetails = array ( 'itemname' => $instance->name );
+    require_once($CFG->libdir.'/gradelib.php');
+
+    $params = array('itemname' => $instance->name);
     $itemdetails ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
-    if ($cm !== null) {
-        $itemdetails ['idnumber'] = $cm->id;
+    if ( isset($instance->cmidnumber) ) {
+        $params['idnumber'] = $instance->cmidnumber;
     }
     if ($instance->grade > 0) {
-        $itemdetails ['gradetype'] = GRADE_TYPE_VALUE;
-        $itemdetails ['grademax'] = $instance->grade;
-        $itemdetails ['grademin'] = 0;
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax']  = $instance->grade;
+        $params['grademin']  = 0;
+
     } else if ($instance->grade < 0) {
-        $itemdetails ['gradetype'] = GRADE_TYPE_SCALE;
-        $itemdetails ['scaleid'] = - $instance->grade;
+        $params['gradetype'] = GRADE_TYPE_SCALE;
+        $params['scaleid']   = -$instance->grade;
+
+    }
+    if ($instance->grade == 0 || $instance->example != 0) {
+        $params['gradetype'] = GRADE_TYPE_NONE;
+        $params['deleted'] = 1;
+    }
+
+    if ($grades === 'reset') {
+        $params['reset'] = true;
+        $grades = null;
+    }
+
+    return grade_update('mod/vpl', $instance->course, 'mod', 'vpl',
+                        $instance->id, 0, $grades, $params);
+}
+
+/**
+ * Update activity grades.
+ *
+ * @param stdClass VPL database record
+ * @param int $userid specific user only, 0 means all
+ * @param bool $nullifnone - not used
+ * (API and comment taken from Moodle assign)
+ */
+
+function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
+    global $CFG;
+    require_once($CFG->libdir.'/gradelib.php');
+    require_once(dirname( __FILE__ ) . '/vpl_submission_CE.class.php');
+
+    if ($instance->grade == 0) {
+        return vpl_grade_item_update($instance);
+    } else if ($userid == 0) {
+        $vpl = new mod_vpl( false, $instance->id);
+        $subs = $vpl->all_last_user_submission();
+
     } else {
-        $itemdetails = array ( 'deleted' => 1 );
+        $vpl = new mod_vpl( false, $instance->id);
+        $sub = $vpl->last_user_submission($userid);
+        if ($sub === false) {
+            $subs = array();
+        } else {
+            $subs = array($sub);
+        }
     }
-    if ($instance->example) {
-        $itemdetails = array ( 'deleted' => 1 );
+    $grades = array();
+    foreach ($subs as $sub) {
+        if ($sub->dategraded > 0) {
+            $subc = new mod_vpl_submission_CE($vpl, $sub);
+            $feedback = $subc->result_to_html($subc->get_grade_comments(), false);
+            $grade = new stdClass();
+            $grade->userid = $sub->userid;
+            $grade->rawgrade = $sub->grade;
+            $grade->feedback = $feedback;
+            $grade->feedbackformat = FORMAT_HTML;
+            $grade->usermodified = $sub->grader;
+            $grade->dategraded = $sub->dategraded;
+            $grade->datesubmitted = $sub->datesubmitted;
+            $grades[$grade->userid] = $grade;
+        }
     }
-    grade_update( 'mod/vpl', $instance->course, 'mod', VPL, $instance->id, 0, null, $itemdetails );
+    return vpl_grade_item_update($instance, $grades);
 }
 
 /**
@@ -115,7 +171,7 @@ function vpl_add_instance($instance) {
     }
     // Add grade to grade book.
     $instance->id = $id;
-    vpl_update_grade_item( $instance );
+    vpl_grade_item_update( $instance );
     return $id;
 }
 
@@ -149,7 +205,8 @@ function vpl_update_instance($instance) {
         }
     }
     $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
-    vpl_update_grade_item( $instance, $cm );
+    $instance->cmidnumber = $cm->id;
+    vpl_grade_item_update( $instance );
     return $DB->update_record( VPL, $instance );
 }
 
@@ -473,13 +530,15 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
                 'edit' => 3
         ) ), navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $node = $vplnode->create( $strexecutionoptions, new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms )
-                                  , navigation_node::TYPE_SETTING );
+        $urlexecutionoptions = new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms );
+        $node = $vplnode->create( $strexecutionoptions, $urlexecutionoptions, navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $node = $vplnode->create( $strrequestedfiles, new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms )
-                                  , navigation_node::TYPE_SETTING );
+        $urlrequiredfiles = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
+        $node = $vplnode->create( $strrequestedfiles, $urlrequiredfiles, navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $advance = $vplnode->create( get_string( 'advancedsettings' ), null, navigation_node::TYPE_CONTAINER );
+        $urlexecutionfiles = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
+        $stradvancedsettings = get_string( 'advancedsettings' );
+        $advance = $vplnode->create( $stradvancedsettings, $urlexecutionfiles, navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $advance, $fkn );
         $strexecutionlimits = get_string( 'maxresourcelimits', VPL );
         $strexecutionfiles = get_string( 'executionfiles', VPL );
@@ -507,7 +566,8 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
             $advance->add( $strsetjails, new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms )
                        , navigation_node::TYPE_SETTING );
         }
-        $testact = $vplnode->create( get_string( 'test', VPL ), null, navigation_node::TYPE_CONTAINER );
+        $testact = $vplnode->create( get_string( 'test', VPL ), new moodle_url( '/mod/vpl/forms/submissionview.php', $parms),
+                    navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $testact, $fkn );
         $strdescription = get_string( 'description', VPL );
         $strsubmission = get_string( 'submission', VPL );

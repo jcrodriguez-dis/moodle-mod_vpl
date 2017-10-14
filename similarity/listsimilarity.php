@@ -60,7 +60,7 @@ $filelist = $vpl->get_required_fgm()->getFileList();
 $num = 0;
 foreach ($filelist as $filename) {
     if (isset( $fromform->{'file' . $num} )) {
-        $filesselected [$filename] = true;
+        $filesselected [ basename($filename) ] = true;
     }
     $num ++;
 }
