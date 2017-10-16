@@ -1484,7 +1484,7 @@ void Evaluation::loadTestCases(string fname) {
 	const char *PROGRAMARGS_TAG = "programarguments=";
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
 	const char *VARIATION_TAG = "variation=";
-	const char *NOREDUCTIONEVALUATIONS_TAG = "noreductionevaluations=";
+	const char *FREEEVALUATIONS_TAG = "freeevaluations=";
 	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
 	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
@@ -1586,7 +1586,7 @@ void Evaluation::loadTestCases(string fname) {
 					reductionbyevaluation = atof(value.c_str());
 					reductionbyevaluationpc = false;
 				}
-			} else if (tag == NOREDUCTIONEVALUATIONS_TAG) {
+			} else if (tag == FREEEVALUATIONS_TAG) {
 				value=Tools::trim(value);
 			    noreductionevaluations =  atoi(value.c_str());
 			} else if (tag == EXPECTEDEXITCODE_TAG) {
