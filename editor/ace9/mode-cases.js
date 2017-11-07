@@ -20,7 +20,11 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             } ];
             var endNumber = [ {
                 token : "constant.numeric",
-                regex : "[ \\t]*[0-9]+[ \\t]$",
+                regex : "[ \\t]*[0-9]+[ \\t]*$",
+                next : "start"
+            }, {
+                token : "text",
+                regex : ".*$",
                 next : "start"
             } ];
             var endNumberPercent = [ {
@@ -45,17 +49,17 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             }, {
                 caseInsensitive : true,
                 token : "variable",
-                regex : rkey("fail message|program to run|program arguments"),
+                regex : rkey("fail message|program to run|program arguments|variation"),
                 next : endText
             }, {
                 caseInsensitive : true,
                 token : "variable",
-                regex : rkey("(grade reduction|reduction by evaluation)"),
+                regex : rkey("(grade reduction)"),
                 next : endNumberPercent
             }, {
                 caseInsensitive : true,
                 token : "variable",
-                regex : rkey("(expected exit code|free evaluations)"),
+                regex : rkey("(expected exit code)"),
                 next : endNumber
             }, {
                 caseInsensitive : true,
@@ -66,10 +70,10 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
 
             var CasesHighlightRules = function() {
                 this.createKeywordMapper({
-                    keyword:"Case =|Input =|Output =" +
-                    		"|Grade reduction =|Fail message =" +
-                    		"|Reduction by evaluation =|Expected exit code =" +
-                    		"|Free evaluations =|Program to run =|Program arguments ="},
+                    keyword:"|Variation =|Program arguments =" +
+                    		"|Program to run =|Expected exit code =" +
+                    		"|Fail message =|Grade reduction =" +
+                    		"|Output =|Input =|Case ="},
                         "identifier", 0);
                 this.$rules = {
                     "start" : [ base, {
