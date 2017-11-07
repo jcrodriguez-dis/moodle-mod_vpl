@@ -133,7 +133,10 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'maxexeprocesses',
                 'jailservers',
                 'emailteachers',
-                'worktype'
+                'worktype',
+                'timemodified',
+                'freeevaluations',
+                'reductionbyevaluation'
         ) );
         $filefields = array ('name', 'content', 'encoding');
         $idfield = array ('id');
@@ -169,7 +172,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                 'dategraded',
                 'grade',
                 'mailed',
-                'highlight'
+                'highlight',
+                'nevaluations',
+                'groupid'
         ) );
         $submissionfiles = new backup_nested_element( 'submission_files' );
         $submissionfile = new backup_nested_filegroup( 'submission_file', $idfield,  $filefields);
@@ -222,6 +227,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $asignedvariation->annotate_ids( 'user', 'userid' );
         $submission->annotate_ids( 'user', 'userid' );
         $submission->annotate_ids( 'user', 'grader' );
+        $submission->annotate_ids( 'group', 'groupid' );
         // Define file annotations.
         $vpl->annotate_files( 'mod_vpl', 'intro', null );
         return $this->prepare_activity_structure( $vpl );

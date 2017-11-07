@@ -126,6 +126,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $data->vpl = $this->get_new_parentid ( 'vpl' );
         $data->userid = $this->get_mappingid ( 'user', $data->userid );
         $data->grader = $this->get_mappingid ( 'user', $data->grader );
+        $data->groupid = $this->get_mappingid ( 'group', $data->groupid );
         $newitemid = $DB->insert_record ( 'vpl_submissions', $data );
         $this->set_mapping ( 'submission', $oldid, $newitemid );
     }
