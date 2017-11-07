@@ -204,21 +204,47 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
-    // Include 3.2 and before.
-    $vpl32n = 2016111812 + 1;
-    if ($oldversion < $vpl32n) {
 
-        // Define field id to be added to vpl.
+    $vpl33 = 2017100112;
+    if ($oldversion < $vpl33) {
+        // Define field nevaluations to be added to vpl_submissions.
+        $table = new xmldb_table('vpl_submissions');
+        $field = new xmldb_field('nevaluations', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'highlight');
+
+        // Conditionally launch add field nevaluations.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'nevaluations');
+
+        // Conditionally launch add field groupid.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        // Define field nevaluations to be added to vpl_submissions.
         $table = new xmldb_table('vpl');
-        $field = new xmldb_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null, null);
+        $field = new xmldb_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'emailteachers');
+        // Conditionally launch add field nevaluations.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
 
-        // Conditionally launch add field id.
+        $field = new xmldb_field('freeevaluations', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'timemodified');
+        // Conditionally launch add field nevaluations.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $field = new xmldb_field('reductionbyevaluation', XMLDB_TYPE_CHAR, '10', null, null, null, '0', 'freeevaluations');
+        // Conditionally launch add field groupid.
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
 
         // Vpl savepoint reached.
-        upgrade_mod_savepoint(true, $vpl32n, 'vpl');
+        upgrade_mod_savepoint(true, $vpl33, 'vpl');
     }
     return true;
 }
