@@ -96,7 +96,7 @@ if ($fromform = $mform->get_data()) {
         if ( $vpl->update() ) {
             vpl_notice( get_string( 'optionssaved', VPL ) );
         } else {
-            vpl_error( get_string( 'optionsnotsaved', VPL ) );
+            vpl_notice( get_string( 'optionsnotsaved', VPL ), 'error' );
         }
     }
 }
