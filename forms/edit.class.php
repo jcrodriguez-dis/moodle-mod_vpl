@@ -97,6 +97,12 @@ class mod_vpl_edit{
             $compilationexecution = $submission->get_CE_for_editor();
         } else {
             $files = self::get_requested_files( $vpl );
+            $compilationexecution = new stdClass();
+            $compilationexecution->nevaluations = 0;
+            $vplinstance = $vpl->get_instance();
+            $compilationexecution->freeevaluations = $vplinstance->freeevaluations;
+            $compilationexecution->reductionbyevaluation = $vplinstance->reductionbyevaluation;
+
         }
         return $files;
     }
@@ -121,10 +127,18 @@ class mod_vpl_edit{
         if ($subreg) {
             $submission = new mod_vpl_submission( $vpl, $subreg );
             $fgp = $submission->get_submitted_fgm();
-            $response->id .= $subreg->id;
-            $response->comments .= $subreg->comments;
+            $response->id = $subreg->id;
+            $response->comments = $subreg->comments;
             $response->files = array_merge($response->files, $fgp->getallfiles());
             $response->compilationexecution = $submission->get_CE_for_editor();
+        } else {
+            $compilationexecution = new stdClass();
+            $compilationexecution->grade = '';
+            $compilationexecution->nevaluations = 0;
+            $vplinstance = $vpl->get_instance();
+            $compilationexecution->freeevaluations = $vplinstance->freeevaluations;
+            $compilationexecution->reductionbyevaluation = $vplinstance->reductionbyevaluation;
+            $response->compilationexecution = $compilationexecution;
         }
         return $response;
     }
