@@ -66,10 +66,10 @@ if (! $mform->is_cancelled() && $fromform = $mform->get_data()) {
         if ( $vpl->update() ) {
             vpl_notice( get_string( 'saved', VPL ) );
         } else {
-            vpl_error( get_string( 'notsaved', VPL ) );
+            vpl_notice( get_string( 'optionsnotsaved', VPL ), 'error' );
         }
     } else {
-        vpl_error( get_string( 'notsaved', VPL ) );
+        vpl_notice( get_string( 'optionsnotsaved', VPL ), 'error' );
     }
 }
 $data = new stdClass();

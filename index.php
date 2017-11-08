@@ -93,7 +93,8 @@ foreach (array (
 echo $OUTPUT->url_select( $urls, $urlindex [$instanceselection], array () );
 
 if (! $cms = get_coursemodules_in_course( VPL, $course->id, "m.shortdescription, m.startdate, m.duedate" )) {
-    notice( $strnopls, vpl_abs_href( '/course/view.php', 'id', $course->id ) );
+    vpl_redirect( vpl_abs_href( '/course/view.php', 'id', $course->id ),
+                  $strnopls);
     die();
 }
 $ovpls = get_all_instances_in_course( VPL, $course );
@@ -270,14 +271,14 @@ foreach ($vpls as $vpl) {
             if ($subinstance) { // Submitted.
                 $submission = new mod_vpl_submission( $vpl, $subinstance );
                 if ($subinstance->dategraded > 0 && $vpl->get_visiblegrade()) {
-                    $text = $submission->print_grade_core();
+                    $text = $submission->get_grade_core();
                 } else {
                     $result = $submission->getCE();
                     $text = '';
                     if ($result ['executed'] !== 0) {
                         $prograde = $submission->proposedGrade( $result ['execution'] );
                         if ($prograde > '') {
-                            $text = get_string( 'proposedgrade', VPL, $submission->print_grade_core( $prograde ) );
+                            $text = get_string( 'proposedgrade', VPL, $submission->get_grade_core( $prograde ) );
                         }
                     } else {
                         $text = get_string( 'nograde' );

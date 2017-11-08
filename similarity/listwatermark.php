@@ -113,6 +113,7 @@ foreach ($list as $userinfo) {
 }
 if ($usernumber > 0) {
     echo html_writer::table( $table );
+} else {
+    vpl_notice( get_string( 'nowatermark', VPL, $nwm ) );
 }
-echo $OUTPUT->box( get_string( 'nowatermark', VPL, $nwm ) );
 $vpl->print_footer();
