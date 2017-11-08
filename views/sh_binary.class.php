@@ -29,6 +29,7 @@ require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 
 class vpl_sh_binary extends vpl_sh_base {
     public function print_file($name, $data) {
+        echo "<h4>" . s( $name ) . '</h4>';
         echo get_string( 'binaryfile', VPL );
     }
 }
