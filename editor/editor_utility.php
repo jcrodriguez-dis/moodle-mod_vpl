@@ -117,6 +117,10 @@ class vpl_editor_util {
         style="display: none;">
         <ol id="vpl_sort_list"></ol>
     </div>
+    <div id="vpl_ide_dialog_multidelete" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset id="vpl_multidelete_list"></fieldset>
+    </div>
     <div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset>
@@ -220,6 +224,7 @@ class vpl_editor_util {
                 'copy',
                 'create_new_file',
                 'cut',
+                'description',
                 'debug',
                 'debugging',
                 'delete',
@@ -265,7 +270,8 @@ class vpl_editor_util {
                 'sureresetfiles',
                 'timeleft',
                 'timeout',
-                'undo'
+                'undo',
+                'multidelete'
         );
         $words = array (
                 'cancel',
@@ -277,7 +283,10 @@ class vpl_editor_util {
                 'ok',
                 'required',
                 'sort',
-                'warning'
+                'warning',
+                'deleteselected',
+                'selectall',
+                'deselectall',
         );
         $list = Array ();
         foreach ($vplwords as $word) {
@@ -287,6 +296,8 @@ class vpl_editor_util {
             $list [$word] = get_string( $word );
         }
         $list ['close'] = get_string( 'closebuttontitle' );
+        $list ['more'] = get_string( 'showmore', 'form' );
+        $list ['less'] = get_string( 'showless', 'form' );
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
