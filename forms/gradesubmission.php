@@ -66,19 +66,20 @@ if ($submissionid) {
     $subinstance = $vpl->last_user_submission( $userid );
 }
 // Check consistence.
+$link = vpl_mod_href( 'view.php', 'id', $id, 'userid', $userid );
 if (! $subinstance) {
     vpl_grade_header( $vpl, $inpopup );
-    notice( get_string( 'nosubmission', VPL ), vpl_mod_href( 'view.php', 'id', $id, 'userid', $userid ) );
+    vpl_redirect( $link, get_string( 'nosubmission', VPL ), 'error');
 }
 $submissionid = $subinstance->id;
 
 if ($vpl->is_inconsistent_user( $subinstance->userid, $userid )) {
     vpl_grade_header( $vpl, $inpopup );
-    print_error( 'vpl submission user inconsistence' );
+    vpl_redirect( $link, 'vpl submission user inconsistence', 'error' );
 }
 if ($vpl->get_instance()->id != $subinstance->vpl) {
     vpl_grade_header( $vpl, $inpopup );
-    print_error( 'vpl submission vpl inconsistence' );
+    vpl_redirect( $link, 'vpl submission vpl inconsistence', 'error' );
 }
 $submission = new mod_vpl_submission( $vpl, $subinstance );
 if ($inpopup) {
@@ -94,7 +95,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
     } else {
         $href = 'gradesubmission.php';
     }
-    $gradeform = new mod_vpl_grade_form( $href, $vpl );
+    $gradeform = new mod_vpl_grade_form( $href, $submission);
     if ($gradeform->is_cancelled()) { // Grading canceled.
         vpl_inmediate_redirect( $link );
     } else if ($fromform = $gradeform->get_data()) { // Grade (new or update).
@@ -122,8 +123,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         }
         vpl_grade_header( $vpl, $inpopup );
         if (! isset( $fromform->grade ) && ! isset( $fromform->savenext )) {
-            print_error( 'badinput' );
-            die();
+            vpl_redirect( $link, get_string( 'badinput' ), 'error' );
         }
 
         if ($submission->is_graded()) {
@@ -132,7 +132,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             $action = 'grade';
         }
         if (! $submission->set_grade( $fromform )) {
-            vpl_redirect( $link, get_string( 'gradenotsaved', VPL ), 5 );
+            vpl_redirect( $link, get_string( 'gradenotsaved', VPL ), 'error' );
         }
         if ($action == 'grade') {
             \mod_vpl\event\submission_graded::log( $submission );
@@ -142,7 +142,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
 
         if ($inpopup) {
             // Change grade info at parent window.
-            $text = $submission->print_grade_core();
+            $text = $submission->get_grade_core();
             $grader = fullname( $submission->get_grader( $USER->id ) );
             $gradedon = userdate( $submission->get_instance()->dategraded );
 
@@ -157,7 +157,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
                 $jscript .= 'window.close();';
             }
         } else {
-            vpl_redirect( $link, get_string( 'graded', VPL ), 2 );
+            vpl_redirect( $link, get_string( 'graded', VPL ), 'success' );
         }
         $vpl->print_footer();
         echo vpl_include_js( $jscript );

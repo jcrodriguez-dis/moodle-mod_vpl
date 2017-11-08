@@ -28,13 +28,15 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/form.class.php');
+require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
 class mod_vpl_grade_form extends vpl_form {
-    protected $vpl;
+    protected $submission;
     protected function get_scale_selection() {
         global $DB;
-        $vplinstance = $this->vpl->get_instance();
-        $scaleid = $this->vpl->get_grade();
+        $vpl = $this->submission->get_vpl();
+        $vplinstance = $vpl->get_instance();
+        $scaleid = $vpl->get_grade();
         $options = array ();
         $options [- 1] = get_string( 'nograde' );
         if ($scaleid > 0) {
@@ -51,32 +53,42 @@ class mod_vpl_grade_form extends vpl_form {
         }
         return $options;
     }
-    public function __construct($page, & $vpl) {
-        $this->vpl = & $vpl;
+    public function __construct($page, $submission) {
+        $this->submission = $submission;
         parent::__construct( $page );
     }
     protected function definition() {
         global $CFG, $OUTPUT;
+        $vpl = $this->submission->get_vpl();
+        $vplinstance = $vpl->get_instance();
+        $instance = $this->submission->get_instance();
         $id = required_param( 'id', PARAM_INT );
         $userid = optional_param( 'userid', null, PARAM_INT );
         $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
         $this->addHidden( 'id', $id );
         $this->addHidden( 'userid', $userid );
-        $submissionid = optional_param( 'submissionid', 0, PARAM_INT );
-        if ($submissionid > 0) {
-            $this->addHidden( 'submissionid', $submissionid );
-        }
+        $this->addHidden( 'submissionid', $instance->id );
         $this->addHidden( 'inpopup', $inpopup );
-        $vplinstance = $this->vpl->get_instance();
         // TODO Improve grade form (recalculate grade).
         // Show assesment criteria.
         // Show others evaluation.
         // Type value => introduce value.
-        $grade = $this->vpl->get_grade();
+        $grade = $vpl->get_grade();
         if ($grade != 0) {
             $this->addHTML( s( get_string( 'grade' ) . ' ' ) );
             if ($grade > 0) {
                 $this->addText( 'grade', '', 6 );
+                $this->submission->grade_reduction($reduction, $percent);
+                if ($reduction > 0) {
+                    $value = $reduction;
+                    if ($percent) {
+                        $value = (100 - ( $value * 100 ) );
+                        $value = format_float($value, 2, true, true) . '%';
+                    } else {
+                        $value = format_float($value, 2, true, true);
+                    }
+                    $this->addHTML( ' -' . $value . ' ' );
+                }
             } else {
                 $this->addSelect( 'grade', $this->get_scale_selection() );
             }
@@ -126,7 +138,7 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addHTML( '<br />' );
         }
         if (! empty( $CFG->enableoutcomes )) {
-            $gradinginfo = grade_get_grades( $this->vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
+            $gradinginfo = grade_get_grades( $vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
             if (! empty( $gradinginfo->outcomes )) {
                 $this->addHTML( '<table border="0">' );
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
