@@ -44,10 +44,10 @@ if ($copy) {
 }
 $vpl->prepare_page( 'forms/edit.php', $pageparms );
 if (! $vpl->is_visible()) {
-    notice( get_string( 'notavailable' ) );
+    vpl_redirect('?id=' . $id, get_string( 'notavailable' ), 'error' );
 }
 if (! $vpl->is_submit_able()) {
-    print_error( 'notavailable' );
+    vpl_redirect('?id=' . $id, get_string( 'notavailable' ), 'error' );
 }
 if (! $userid || $userid == $USER->id) { // Edit own submission.
     $userid = $USER->id;
@@ -87,6 +87,8 @@ $options ['debug'] = ($instance->debug || $manager);
 $options ['evaluate'] = ($instance->evaluate || $manager);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
+$options ['description'] = $vpl->get_fulldescription();
+$options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
 if ( $subid && $lastsub ) {

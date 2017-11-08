@@ -36,5 +36,5 @@ try {
     $filegroup->download_files( $vpl->get_printable_name() );
     die();
 } catch ( Exception $e ) {
-    notice( $e->getMessage() );
+    vpl_redirect(´´, $e->getMessage(), 'error' );
 }

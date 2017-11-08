@@ -93,6 +93,6 @@ try {
             'id' => $id
     ) );
     $vpl->print_header( get_string( 'download', VPL ) );
-    echo $OUTPUT->box( $e->getMessage() );
+    print_error($e->getMessage());
     $vpl->print_footer();
 }
