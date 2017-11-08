@@ -147,7 +147,7 @@ class file_group_process{
      * @param array $files
      * @return bool (added==true)
      */
-    public function addallfiles($files) {
+    public function addallfiles($files, $otherdir = false) {
         ignore_user_abort( true );
         $filelist = $this->getFileList();
         $filehash = array();
@@ -161,7 +161,16 @@ class file_group_process{
             if ($data === null) {
                 $data = '';
             }
-            $path = $this->dir . self::encodeFileName( $filename );
+            $fnencode = self::encodeFileName( $filename );
+            $path = $this->dir . $fnencode;
+            if ( $otherdir != false ) {
+                $otherpath = $otherdir . $fnencode;
+                if (file_exists( $otherpath)
+                        && $data == file_get_contents( $otherpath )
+                        && link($otherpath, $path) ) {
+                    continue;
+                }
+            }
             $fd = vpl_fopen( $path );
             fwrite( $fd, $data );
             fclose( $fd );
