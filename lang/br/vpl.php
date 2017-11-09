@@ -12,7 +12,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.e
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 $string ['about'] = 'Sobre';
 $string ['acceptcertificates'] = 'Aceitar certificados auto assinados';
