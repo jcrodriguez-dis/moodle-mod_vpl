@@ -54,9 +54,15 @@
         return width;
     };
     VPL_Util.sanitizeHTML = function(t) {
+        if ( typeof t == 'undefined' || t.replace('/^\s+|\s+$/g','') == '') {
+            return '';
+        }
         return $JQVPL('<div>' + t + '</div>').html();
     };
     VPL_Util.sanitizeText = function(s) {
+        if ( typeof s == 'undefined' || s.replace('/^\s+|\s+$/g','') == '') {
+            return '';
+        }
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
 
@@ -438,7 +444,7 @@
             delayedActions[fn] = setTimeout(function() {
                 func(arg1, arg2);
                 delayedActions[fn] = false;
-            }, 100);
+            }, 50);
         };
         VPL_Util.longDelay = function(func, arg1, arg2) {
             var fn = functionName(func);
@@ -448,7 +454,7 @@
             delayedActions[fn] = setTimeout(function() {
                 func(arg1, arg2);
                 delayedActions[fn] = false;
-            }, 1000);
+            }, 200);
         };
     })();
     VPL_Util.iconModified = function() {
@@ -481,6 +487,7 @@
             'new' : 'file',
             'rename' : 'pencil',
             'delete' : 'trash',
+            'multidelete' : 'trash|list',
             'close' : 'remove',
             'comments' : 'commenting',
             'import' : 'upload',
@@ -497,7 +504,7 @@
             'fullscreen' : 'expand',
             'regularscreen' : 'compress',
             'save' : 'save',
-            'sort' : 'sort-amount-asc',
+            'sort' : 'list-ol',
             'run' : 'rocket',
             'debug' : 'bug',
             'evaluate' : 'check-square-o',
@@ -513,9 +520,12 @@
             'timeleft' : 'clock-o',
             'copy' : 'copy',
             'paste' : 'paste',
+            'more' : 'plus-square',
+            'less' : 'minus-square',
             'resize' : 'arrows-alt',
             'graphic' : 'picture-o',
-            'send' : 'send'
+            'send' : 'send',
+            'user' : 'user'
         };
         VPL_Util.gen_icon = function(icon, size) {
             if (!menu_icons[icon]) {
@@ -527,8 +537,12 @@
             } else {
                 classes += size;
             }
-            classes += ' fa-' + menu_icons[icon];
-            return "<i class='" + classes + "'></i>";
+            var icons = menu_icons[icon].split('|');
+            var ret = '';
+            for(var i = 0; i < icons.length; i++) {
+                ret += "<i class='" + classes + ' fa-' + icons[i] + "'></i>";
+            }
+            return ret;
         };
     })();
     // UI operations.
@@ -812,10 +826,7 @@
             'compilation' : function(content) {
                 if (externalActions.setResult) {
                     externalActions.setResult({
-                        'grade' : '',
                         'compilation' : content,
-                        'evaluation' : '',
-                        'execution' : '',
                     }, false);
                 }
             },
@@ -906,6 +917,9 @@
         return deferred;
     };
     VPL_Util.processResult = function(text, filenames, sh, noFormat, folding) {
+        if ( typeof text == 'undefined' || text.replace('/^\s+|\s+$/gm','') == '' ) {
+            return '';
+        }
         function escReg(t) {
             return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
         }
