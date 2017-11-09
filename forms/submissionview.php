@@ -49,7 +49,7 @@ try {
     }
     if (! $vpl->is_visible()) {
         \mod_vpl\event\vpl_security::log( $vpl );
-        notice( get_string( 'notavailable' ) );
+        vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
     }
     $course = $vpl->get_course();
     $instance = $vpl->get_instance();
@@ -121,5 +121,5 @@ try {
     \mod_vpl\event\submission_viewed::log( $submission );
     vpl_sh_factory::syntaxhighlight();
 } catch ( Exception $e ) {
-    print_error( 'Exception '.s($e) );
+    print_error( $e->getMessage() );
 }
