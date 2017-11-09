@@ -65,6 +65,7 @@ class vpl_editor_util {
         } else {
             $options ['theme'] = 'chrome';
         }
+        $options ['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
         $joptions = json_encode( $options );
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
@@ -120,6 +121,11 @@ class vpl_editor_util {
     <div id="vpl_ide_dialog_multidelete" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset id="vpl_multidelete_list"></fieldset>
+    </div>
+    <div id="vpl_ide_dialog_fontsize" class="vpl_ide_dialog"
+        style="display: none;">
+        <div class="vpl_fontsize_slider_value"></div>
+        <div class="vpl_fontsize_slider"></div>
     </div>
     <div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
         style="display: none;">
@@ -286,7 +292,7 @@ class vpl_editor_util {
                 'warning',
                 'deleteselected',
                 'selectall',
-                'deselectall',
+                'deselectall'
         );
         $list = Array ();
         foreach ($vplwords as $word) {
@@ -298,6 +304,7 @@ class vpl_editor_util {
         $list ['close'] = get_string( 'closebuttontitle' );
         $list ['more'] = get_string( 'showmore', 'form' );
         $list ['less'] = get_string( 'showless', 'form' );
+        $list ['fontsize'] = get_string( 'fontsize', 'editor' );
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {

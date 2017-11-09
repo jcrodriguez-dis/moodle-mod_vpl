@@ -525,7 +525,8 @@
             'resize' : 'arrows-alt',
             'graphic' : 'picture-o',
             'send' : 'send',
-            'user' : 'user'
+            'user' : 'user',
+            'fontsize' : 'text-height'
         };
         VPL_Util.gen_icon = function(icon, size) {
             if (!menu_icons[icon]) {

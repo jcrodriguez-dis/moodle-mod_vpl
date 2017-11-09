@@ -319,6 +319,7 @@
                     enableBasicAutocompletion : true,
                     enableSnippets : true,
                 });
+                editor.setFontSize(file_manager.getFontSize());
                 editor.setTheme("ace/theme/" + file_manager.getTheme());
                 this.setFileName(fileName);
                 editor.setValue(value);

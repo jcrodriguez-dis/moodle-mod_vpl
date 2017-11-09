@@ -87,7 +87,8 @@
                 return options[op];
             }
             options.console = isOptionAllowed('run') || isOptionAllowed('debug');
-
+            options.fontSize || (options.fontSize = 12);
+            options.fontSize = parseInt(options.fontSize);
             function dragoverHandler(e) {
                 if (restrictedEdit) {
                     e.originalEvent.dataTransfer.dropEffect = 'none';
@@ -287,6 +288,15 @@
                             return;
                         }
                     }
+                };
+                this.setFontSize = function(size) {
+                    options.fontSize = size;
+                    for (var i = 0; i < files.length; i++) {
+                        files[i].setFontSize(size);
+                    }
+                };
+                this.getFontSize = function() {
+                    return options.fontSize;
                 };
                 this.addFile = function(file, replace, ok, showError) {
                     if ((typeof file.name != 'string') || !VPL_Util.validPath(file.name)) {
@@ -1052,6 +1062,43 @@
                 maxHeight : 400,
                 maxWidth : 400
             }));
+            var dialog_fontsize = $JQVPL('#vpl_ide_dialog_fontsize');
+            var fontsize_slider = $JQVPL('#vpl_ide_dialog_fontsize .vpl_fontsize_slider');
+            var dialogFontFizeButtons = {};
+            dialogFontFizeButtons[str('ok')] = function() {
+                var value = fontsize_slider.slider( "value");
+                file_manager.setFontSize(value);
+                $JQVPL(this).dialog('close');
+                $JQVPL.ajax({
+                    async : true,
+                    type : "POST",
+                    url : '../editor/userpreferences.json.php',
+                    'data' : JSON.stringify({fontSize:value}),
+                    contentType : "application/json; charset=utf-8",
+                    dataType : "json"
+                });
+            };
+            dialogFontFizeButtons[str('cancel')] = function() {
+                file_manager.setFontSize(fontsize_slider.data( "vpl_fontsize" ));
+                $JQVPL(this).dialog('close');
+            };
+            dialog_fontsize.dialog($JQVPL.extend({}, dialogbase_options, {
+                title : str('fontsize'),
+                buttons : dialogFontFizeButtons,
+                open : function() {
+                    fontsize_slider.data( "vpl_fontsize" , file_manager.getFontSize() );
+                    fontsize_slider.slider('value', file_manager.getFontSize());
+                },
+            }));
+            fontsize_slider.slider({
+                min: 1,
+                max: 48,
+                change: function() {
+                    var value = fontsize_slider.slider( "value");
+                    file_manager.setFontSize( value );
+                    dialog_fontsize.find('.vpl_fontsize_slider_value').text( value );
+                }
+            })
             var terminal = new VPL_Terminal('vpl_dialog_terminal', 'vpl_terminal', str);
             var VNCClient = new VPL_VNC_Client('vpl_dialog_vnc', str);
             var lastConsole = terminal;
@@ -1166,6 +1213,12 @@
                 name:'multidelete',
                 originalAction: function() {
                     dialog_multidelete.dialog('open');
+                }
+            });
+            menuButtons.add({
+                name:'fontsize',
+                originalAction: function() {
+                    dialog_fontsize.dialog('open');
                 }
             });
             menuButtons.add({
@@ -1449,6 +1502,7 @@
             menu_html += menuButtons.getHTML('resetfiles');
             menu_html += menuButtons.getHTML('sort');
             menu_html += menuButtons.getHTML('multidelete');
+            menu_html += menuButtons.getHTML('fontsize');
             menu_html += "</span> ";
             // TODO print still not implemented.
             menu_html += "<span id='vpl_ide_edit'>";
