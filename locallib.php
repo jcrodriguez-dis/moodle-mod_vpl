@@ -367,33 +367,22 @@ function vpl_url_add_param($url, $parm, $value) {
 /**
  * Print a message and redirect
  *
- * @param $message string
- *            to be print
  * @param $link URL
  *            to redirect to
- * @param $wait int
- *            time to wait in seconds
+ * @param $message string
+ *            to be print
+ * @param $type string
+ *            type of message (success,info,warning,error). default = info
  * @return void
  */
-function vpl_redirect($link, $message, $wait = 4) {
+function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
     global $OUTPUT;
+    global $CFG;
     if (! mod_vpl::header_is_out()) {
         echo $OUTPUT->header();
     }
-    static $idcount = 0;
-    $idcount ++;
-    $text = '<div class="redirectmessage">' . s( $message ) . '<br/></div>';
-    $text .= '<div class="continuebutton"><a id="vpl_red' . $idcount . '" href="';
-    $text .= $link . '">' . get_string( 'continue' ) . '</a></div>';
-    $deco = urldecode( $link );
-    $deco = html_entity_decode( $deco );
-    if ($wait == 0) {
-        echo vpl_include_js( 'window.location.replace("' . $deco . '");' );
-    } else {
-        $js = 'var vpl_jump=function (){window.location.replace("' . $deco . '");};';
-        echo vpl_include_js( $js . "setTimeout('vpl_jump()',$wait*1000);" );
-    }
-    echo $text;
+    echo $OUTPUT->notification($message, $type);
+    echo $OUTPUT->continue_button($link);
     echo $OUTPUT->footer();
     die();
 }
@@ -406,7 +395,20 @@ function vpl_redirect($link, $message, $wait = 4) {
  * @return void
  */
 function vpl_inmediate_redirect($url) {
-    vpl_redirect( $url, '', 0 );
+    global $OUTPUT;
+    if (! mod_vpl::header_is_out()) {
+        echo $OUTPUT->header();
+    }
+    static $idcount = 0;
+    $idcount ++;
+    $text = '<div class="continuebutton"><a id="vpl_red' . $idcount . '" href="';
+    $text .= $url. '">' . get_string( 'continue' ) . '</a></div>';
+    $deco = urldecode( $url);
+    $deco = html_entity_decode( $deco );
+    echo vpl_include_js( 'window.location.replace("' . $deco . '");' );
+    echo $text;
+    echo $OUTPUT->footer();
+    die();
 }
 function vpl_include_jsfile($file, $defer = true) {
     global $PAGE;
@@ -610,12 +612,10 @@ function vpl_detect_newline(&$data) {
         return "\n"; // Default Unix.
     }
 }
-function vpl_notice($text, $classes = 'generalbox') {
+
+function vpl_notice($text, $type = 'success') {
     global $OUTPUT;
-    echo $OUTPUT->box( $text, $classes, 'vpl.hide' );
-}
-function vpl_error($text, $classes = '') {
-    vpl_notice( $text, 'errorbox' );
+    echo $OUTPUT->notification( $text, $type );
 }
 
 /**
