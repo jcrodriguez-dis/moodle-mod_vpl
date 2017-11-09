@@ -55,6 +55,17 @@
                 $JQVPL('#vpl_ide_' + button).attr('title', title);
                 $JQVPL('#vpl_ide_' + button + ' i').replaceWith(VPL_Util.gen_icon(icon));
             };
+            this.setExtracontent = function(button, html) {
+                if (self.noAdded(button)) {
+                    return;
+                }
+                var cl = 'bt_extrahtml';
+                var btag = $JQVPL('#vpl_ide_' + button + ' i');
+                if (btag.find('.' + cl).length == 0) {
+                    btag.append(' <span class="' + cl + '"><span>');
+                }
+                btag.find('.' + cl).html(html);
+            };
             this.add = function(button) {
                 if (typeof button === 'string') {
                     var name = button;
