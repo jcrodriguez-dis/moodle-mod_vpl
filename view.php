@@ -37,7 +37,7 @@ $vpl->require_capability( VPL_VIEW_CAPABILITY );
 $id = $vpl->get_course_module()->id;
 
 if (! $vpl->is_visible()) {
-    notice( get_string( 'notavailable' ) );
+    vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
     die;
 }
 if (! $vpl->has_capability( VPL_MANAGE_CAPABILITY ) && ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
