@@ -54,4 +54,12 @@ class vpl_running_processes {
                 'userid' => $userid
         ) );
     }
+    static public function lanched_processes($courseid) {
+        global $DB;
+        $sql = 'SELECT {vpl_running_processes}.* FROM {vpl_running_processes}';
+        $sql .= ' INNER JOIN {vpl} ON {vpl_running_processes}.vpl = {vpl}.id';
+        $sql .= ' WHERE {vpl}.course = ?;';
+        $param = array ( $courseid );
+        return $DB->get_records_sql( $sql, $param );
+    }
 }
