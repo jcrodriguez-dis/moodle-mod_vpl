@@ -45,7 +45,7 @@ if ($userid) {
     ) );
 }
 if (! $vpl->is_submit_able()) {
-    notice( get_string( 'notavailable' ) );
+    vpl_redirect( '?id=' . $id, get_string( 'notavailable' ));
 }
 if (! $userid || $userid == $USER->id) { // Make own submission.
     $userid = $USER->id;
@@ -70,7 +70,8 @@ if ($fromform = $mform->get_data()) {
     $rawpostsize = strlen( file_get_contents( "php://input" ) );
     if ($_SERVER ['CONTENT_LENGTH'] != $rawpostsize) {
         $error = "NOT SAVED (Http POST error: CONTENT_LENGTH expected " . $_SERVER ['CONTENT_LENGTH'] . " found $rawpostsize)";
-        notice( $error, vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ), $vpl->get_course() );
+        vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
+                    $error, 'error' );
         die();
     }
     $rfn = $vpl->get_required_fgm();
@@ -101,12 +102,15 @@ if ($fromform = $mform->get_data()) {
 
         // If evaluate on submission.
         if ($instance->evaluate && $instance->evaluateonsubmission) {
-            notice( get_string( 'saved', VPL ), vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid ) );
+            vpl_redirect( vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid ),
+                          get_string( 'saved', VPL ));
         }
-        notice( get_string( 'saved', VPL ), vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ) );
+        vpl_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ),
+                      get_string( 'saved', VPL ));
     } else {
-        echo $OUTPUT->box( get_string( 'notsaved', VPL ) );
-        notice( $errormessage, vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ), $vpl->get_course() );
+        vpl_notice( get_string( 'notsaved', VPL ) );
+        vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
+                      $errormessage);
     }
 }
 
