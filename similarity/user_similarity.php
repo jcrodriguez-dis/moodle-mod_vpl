@@ -190,7 +190,7 @@ foreach ($bars as $bar) {
 if (count( $table->data )) {
     echo html_writer::table( $table );
 } else {
-    echo $OUTPUT->box( get_string( 'noresults' ) );
+    vpl_notice( get_string( 'noresults' ) );
 }
 if (count( $relatedusers ) > 0) {
     arsort( $relatedusers );
