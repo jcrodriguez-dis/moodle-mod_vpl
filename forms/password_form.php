@@ -29,6 +29,10 @@ global $CFG;
 
 require_once($CFG->libdir.'/formslib.php');
 class mod_vpl_password_form extends moodleform {
+    public function __construct($page, & $vpl) {
+        $this->vpl = & $vpl;
+        parent::__construct( $page );
+    }
     protected function definition() {
         global $SESSION;
         $mform = & $this->_form;
@@ -52,9 +56,6 @@ class mod_vpl_password_form extends moodleform {
         $mform->addElement( 'password', 'password', get_string( 'password' ) );
         $mform->setType( 'password', PARAM_TEXT );
         $mform->setDefault( 'password', '' );
-        if (isset( $SESSION->vpl_attempt_number )) {
-            $mform->addElement( 'static', 'attempt_number', '', get_string( 'attemptnumber', VPL, $SESSION->vpl_attempt_number ) );
-        }
-        $this->add_action_buttons();
+        $this->add_action_buttons(false, get_string('continue'));
     }
 }
