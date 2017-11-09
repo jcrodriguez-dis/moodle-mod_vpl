@@ -80,7 +80,7 @@ function vpl_grade_item_update($instance, $grades=null) {
  */
 
 function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
-    global $CFG;
+    global $CFG, $USER;
     require_once($CFG->libdir.'/gradelib.php');
     require_once(dirname( __FILE__ ) . '/vpl_submission_CE.class.php');
 
@@ -106,10 +106,14 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
             $feedback = $subc->result_to_html($subc->get_grade_comments(), false);
             $grade = new stdClass();
             $grade->userid = $sub->userid;
-            $grade->rawgrade = $sub->grade;
+            $grade->rawgrade = $subc->reduce_grade($sub->grade);
             $grade->feedback = $feedback;
             $grade->feedbackformat = FORMAT_HTML;
-            $grade->usermodified = $sub->grader;
+            if ( $sub->grader > 0 ) {
+                $grade->usermodified = $sub->grader;
+            } else {
+                $grade->usermodified = $USER->id;
+            }
             $grade->dategraded = $sub->dategraded;
             $grade->datesubmitted = $sub->datesubmitted;
             $grades[$grade->userid] = $grade;
@@ -288,7 +292,7 @@ function vpl_user_outline($course, $user, $mod, $instance) {
             $info = get_string( 'submission', VPL, count( $subs ) );
         }
         if ($subinstance->dategraded) {
-            $info .= '<br />' . get_string( 'grade' ) . ': ' . $submission->print_grade_core();
+            $info .= '<br />' . get_string( 'grade' ) . ': ' . $submission->get_grade_core();
         }
         $url = vpl_mod_href( 'forms/submissionview.php', 'id', $vpl->get_course_module()->id, 'userid', $user->id );
         $return->info = '<a href="' . $url . '">' . $info . '</a>';
