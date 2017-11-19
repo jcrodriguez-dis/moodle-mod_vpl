@@ -30,15 +30,13 @@ $outcome = new stdClass();
 $outcome->success = false;
 $outcome->error = '';
 try {
-    if (! isloggedin()) {
-        throw new Exception( get_string( 'loggedinnot' ) );
-    }
+    require_login();
     $rawdata = file_get_contents( "php://input" );
     $actiondata = json_decode( $rawdata );
     if ( isset($actiondata->fontSize) ) {
-        $fontSize = (int) $actiondata->fontSize;
-        $fontSize = min(max(1, $actiondata->fontSize), 48);
-        set_user_preference('vpl_editor_fontsize', $fontSize);
+        $fontsize = (int) $actiondata->fontSize;
+        $fontsize = min(max(1, $actiondata->fontSize), 48);
+        set_user_preference('vpl_editor_fontsize', $fontsize);
         $outcome->success = true;
     }
 } catch ( Exception $e ) {

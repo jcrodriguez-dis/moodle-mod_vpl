@@ -1082,6 +1082,9 @@
                 file_manager.setFontSize(fontsize_slider.data( "vpl_fontsize" ));
                 $JQVPL(this).dialog('close');
             };
+            dialogFontFizeButtons[str('reset')] = function() {
+                fontsize_slider.slider('value', 12);
+            };
             dialog_fontsize.dialog($JQVPL.extend({}, dialogbase_options, {
                 title : str('fontsize'),
                 buttons : dialogFontFizeButtons,

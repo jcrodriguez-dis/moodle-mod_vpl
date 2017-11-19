@@ -292,7 +292,8 @@ class vpl_editor_util {
                 'warning',
                 'deleteselected',
                 'selectall',
-                'deselectall'
+                'deselectall',
+                'reset'
         );
         $list = Array ();
         foreach ($vplwords as $word) {
