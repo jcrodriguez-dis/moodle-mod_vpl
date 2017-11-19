@@ -301,7 +301,6 @@ public:
 class Evaluation {
 	int maxtime;
 	float grademin, grademax;
-	int nevaluations;
 	string variation;
 	bool noGrade;
 	float grade;
@@ -312,9 +311,6 @@ class Evaluation {
 	char titlesGR[MAXCOMMENTS + 1][MAXCOMMENTSTITLELENGTH + 1];
 	volatile int ncomments;
 	volatile bool stopping;
-	int noreductionevaluations;
-	float reductionbyevaluation;
-	bool reductionbyevaluationpc;
 	static Evaluation *singlenton;
 	Evaluation();
 
@@ -1428,9 +1424,6 @@ Evaluation::Evaluation() {
 	nerrors = 0;
 	nruns = 0;
 	noGrade = true;
-	noreductionevaluations = 0;
-	reductionbyevaluation = 0;
-	reductionbyevaluationpc = false;
 }
 
 Evaluation* Evaluation::getSinglenton() {
@@ -1484,8 +1477,6 @@ void Evaluation::loadTestCases(string fname) {
 	const char *PROGRAMARGS_TAG = "programarguments=";
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
 	const char *VARIATION_TAG = "variation=";
-	const char *FREEEVALUATIONS_TAG = "freeevaluations=";
-	const char *REDUCTIONBYEVALUATION_TAG = "reductionbyevaluation=";
 	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
 		regular, ininput, inoutput
@@ -1575,20 +1566,6 @@ void Evaluation::loadTestCases(string fname) {
 				}else{
 					caso.setGradeReduction( atof(value.c_str()) );
 				}
-			} else if (tag == REDUCTIONBYEVALUATION_TAG) {
-				value=Tools::trim(value);
-				reductionbyevaluation = 0;
-				// A percent value?
-				if(value.size() > 1 && value[value.size() - 1] == '%' ) {
-					reductionbyevaluation = atof(value.c_str());
-					reductionbyevaluationpc = true;
-				}else{
-					reductionbyevaluation = atof(value.c_str());
-					reductionbyevaluationpc = false;
-				}
-			} else if (tag == FREEEVALUATIONS_TAG) {
-				value=Tools::trim(value);
-			    noreductionevaluations =  atoi(value.c_str());
 			} else if (tag == EXPECTEDEXITCODE_TAG) {
 				caso.setExpectedExitCode( atoi(value.c_str()) );
 			} else if (tag == PROGRAMTORUN_TAG) {
@@ -1633,7 +1610,6 @@ bool Evaluation::loadParams() {
 	grademin= (int) Tools::getenv("VPL_GRADEMIN", 0.0);
 	grademax = (int) Tools::getenv("VPL_GRADEMAX", 10);
 	maxtime = (int) Tools::getenv("VPL_MAXTIME", 20);
-	nevaluations = (int) Tools::getenv("VPL_NEVALUATIONS", 0.0);
 	variation = Tools::toLower(Tools::trim(Tools::getenv("VPL_VARIATION","")));
 	noGrade = grademin >= grademax;
 	return true;
@@ -1733,29 +1709,6 @@ void Evaluation::outputEvaluation() {
 			printf("\n--|>\n");
 		}
 		if ( ! noGrade ) {
-			if ( nevaluations > 0 ) {
-				printf("\n<|--\n");
-				if ( noreductionevaluations > 0 && reductionbyevaluation > 0 ) {
-					printf("-Grade reductions by evaluations\n");
-					printf("%d evaluations done. %d evaluations granted without grade reduction\n", nevaluations, noreductionevaluations);
-					printf("Grade reduction by evaluation %5.2f%s\n",reductionbyevaluation, (reductionbyevaluationpc ? "%":""));
-				} else {
-					printf("%d evaluations\n", nevaluations);
-				}
-				if ( noreductionevaluations < nevaluations && reductionbyevaluation > 0 ) {
-					float calcgrade = grade;
-					for( int i = 0; i < (nevaluations - noreductionevaluations); i++ ) {
-						if ( reductionbyevaluationpc ) {
-							calcgrade -= calcgrade * reductionbyevaluation / 100;
-						} else {
-							calcgrade -= reductionbyevaluation;
-						}
-					}
-					printf("Grade reduction %5.2f\n", (grade-calcgrade));
-					grade = calcgrade;
-				}
-				printf("\n--|>\n");
-			}
 			char buf[100];
 			sprintf(buf, "%5.2f", grade);
 			int len = strlen(buf);
