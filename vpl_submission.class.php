@@ -97,6 +97,22 @@ class mod_vpl_submission {
         return $this->vpl;
     }
     /**
+     * Return the proper userid
+     *
+     * @return user id
+     */
+    public function get_userid() {
+        if ($this->vpl->is_group_activity()) {
+            $users = $this->vpl->get_group_members($this->instance->groupid);
+            if ( count($users) == 0 ) {
+                return $this->instance->userid;
+            }
+            $user = reset( $users );
+            return $user->id;
+        }
+        return $this->instance->userid;
+    }
+    /**
      * get path to data submission directory
      *
      * @return string submission data directory
@@ -218,7 +234,7 @@ class mod_vpl_submission {
         ignore_user_abort( true );
         if ($this->vpl->is_group_activity()) {
             $usersid = array ();
-            foreach ($this->vpl->get_usergroup_members( $this->instance->userid ) as $user) {
+            foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
                 $usersid [] = $user->id;
             }
         } else {
@@ -375,7 +391,7 @@ class mod_vpl_submission {
         }
         if ($this->vpl->is_group_activity()) {
             $usersid = array ();
-            foreach ($this->vpl->get_usergroup_members( $this->instance->userid ) as $user) {
+            foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
                 $usersid [] = $user->id;
             }
         } else {
@@ -388,7 +404,7 @@ class mod_vpl_submission {
             // Sanitize grade.
             if ($scaleid > 0) {
                  $floatn = unformat_float($info->grade);
-                if ( $floatn !== null and $floatn !== false ) {
+                if ( $floatn !== null && $floatn !== false ) {
                     $info->grade = $floatn;
                 }
             } else {
@@ -433,9 +449,9 @@ class mod_vpl_submission {
             // Other option is checking the grade_item state.
             $vplinstance = $this->vpl->get_instance();
             $gradesaved = grade_get_grades($vplinstance->course, 'mod', 'vpl',
-                    $vplinstance->id, $this->instance->userid);
+                    $vplinstance->id, $usersid[0]);
             try {
-                $dategraded = $gradesaved->items[0]->grades[$this->instance->userid]->dategraded;
+                $dategraded = $gradesaved->items[0]->grades[$usersid[0]]->dategraded;
             } catch (Exception $e) {
                 return false;
             }
@@ -597,10 +613,11 @@ class mod_vpl_submission {
                 if (! function_exists( 'grade_get_grades' )) {
                     require_once($CFG->libdir . '/gradelib.php');
                 }
+                $userid = $this->get_userid();
                 $grades = grade_get_grades($vplinstance->course, 'mod', 'vpl',
-                        $vplinstance->id, $inst->userid);
+                        $vplinstance->id, $userid);
                 try {
-                    $gradeobj = $grades->items[0]->grades[$inst->userid];
+                    $gradeobj = $grades->items[0]->grades[$userid];
                     $gradestr = $gradeobj->str_long_grade;
                     if ( $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                         $gradestr .= $gradeobj->hidden ? (' <b>' . get_string( 'hidden', 'core_grades' )) . '</b>' : '';
@@ -729,14 +746,25 @@ class mod_vpl_submission {
                         'id' => $userid
                 ) );
             if ( $user ) {
-                $OUTPUT->user_picture( $user );
-                echo get_string( 'submittedby', VPL, fullname( $user ) );
-                echo ' ' . $OUTPUT->user_picture( $user );
+                $userinfo = $OUTPUT->user_picture( $user ) . ' '  . fullname( $user );
+                echo get_string( 'submittedby', VPL, $userinfo );
+            }
+            $users = $this->vpl->get_group_members($this->instance->groupid);
+            foreach ($users as $u) {
+                if ( $u->id != $userid ) {
+                    echo '<br>';
+                    break;
+                }
+            }
+            foreach ($users as $u) {
+                if ( $u->id != $userid ) {
+                    echo $OUTPUT->user_picture( $u ) . ' ' . fullname( $u );
+                }
             }
         }
         $commmets = $this->instance->comments;
         if ($commmets > '') {
-            echo '<br />';
+            echo '<br>';
             echo '<h4>' . get_string( 'comments', VPL ) . '</h4>';
             echo $OUTPUT->box( nl2br( s( $commmets ) ) );
         }
