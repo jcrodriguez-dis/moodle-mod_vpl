@@ -87,7 +87,9 @@
                 return options[op];
             }
             options.console = isOptionAllowed('run') || isOptionAllowed('debug');
-            options.fontSize || (options.fontSize = 12);
+            if ( (typeof options.fontSize) == 'undefined' ) {
+                options.fontSize = 12;
+            }
             options.fontSize = parseInt(options.fontSize);
             function dragoverHandler(e) {
                 if (restrictedEdit) {
@@ -652,6 +654,7 @@
                 var hasContent;
                 var grade = VPL_Util.sanitizeText(res.grade);
                 var gradeShow;
+                var formated;
                 gradeShow = self.setResultGrade(grade, res.grade);
                 show = show || gradeShow;
                 formated = VPL_Util.processResult( res.compilation, fileNames, files, true, false );
@@ -1053,7 +1056,6 @@
                         var name = VPL_Util.sanitizeText(files[i].getFileName());
                         var file = $JQVPL('<label><input type="checkbox"> ' + name + '</label>');
                         file.data('fileid', i);
-                        var r = file.data('fileid');
                         list.append(file);
                         list.append('<br>');
                     }
@@ -1101,7 +1103,7 @@
                     file_manager.setFontSize( value );
                     dialog_fontsize.find('.vpl_fontsize_slider_value').text( value );
                 }
-            })
+            });
             var terminal = new VPL_Terminal('vpl_dialog_terminal', 'vpl_terminal', str);
             var VNCClient = new VPL_VNC_Client('vpl_dialog_vnc', str);
             var lastConsole = terminal;
