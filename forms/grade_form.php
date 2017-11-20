@@ -100,7 +100,7 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
         }
         $this->addSubmitButton( 'removegrade', get_string( 'removegrade', VPL ) );
-        $this->addHTML( '<br />' );
+        $this->addHTML( '<br>' );
         // Tranfer files to teacher's work area.
         $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userid, 'privatecopy', 1 );
         $options = array (
