@@ -205,7 +205,7 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
 
-    $vpl33 = 2017100112;
+    $vpl33 = 2017110112;
     if ($oldversion < $vpl33) {
         // Define field nevaluations to be added to vpl_submissions.
         $table = new xmldb_table('vpl_submissions');
@@ -243,6 +243,22 @@ function xmldb_vpl_upgrade($oldversion = 0) {
             $dbman->add_field($table, $field);
         }
 
+        $table = new xmldb_table('vpl_jailservers');
+        $key = new xmldb_key('servers_key', XMLDB_KEY_UNIQUE, array('server'));
+        // Launch drop key servers_key.
+        $dbman->drop_key($table, $key);
+
+        $field = new xmldb_field('serverhash', XMLDB_TYPE_INTEGER, '20', null, null, null, '0', 'nbusy');
+        // Conditionally launch add field serverhash.
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+
+        $index = new xmldb_index('serverhash_idx', XMLDB_INDEX_NOTUNIQUE, array('serverhash'));
+        // Conditionally launch add index serverhash_idx.
+        if (!$dbman->index_exists($table, $index)) {
+            $dbman->add_index($table, $index);
+        }
         // Vpl savepoint reached.
         upgrade_mod_savepoint(true, $vpl33, 'vpl');
     }
