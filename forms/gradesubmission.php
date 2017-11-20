@@ -145,7 +145,6 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             $text = $submission->get_grade_core();
             $grader = fullname( $submission->get_grader( $USER->id ) );
             $gradedon = userdate( $submission->get_instance()->dategraded );
-
             $jscript .= 'VPL.updatesublist(' . $submission->get_instance()->id . ',';
             $jscript .= '\'' . addslashes( $text ) . '\',';
             $jscript .= '\'' . addslashes( $grader ) . '\',';
