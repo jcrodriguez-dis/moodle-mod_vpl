@@ -87,7 +87,7 @@ $options ['debug'] = ($instance->debug || $manager);
 $options ['evaluate'] = ($instance->evaluate || $manager);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
-$options ['description'] = $vpl->get_fulldescription();
+$options ['description'] = $vpl->get_fulldescription_with_basedon();
 $options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
