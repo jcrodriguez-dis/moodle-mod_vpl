@@ -99,8 +99,16 @@ $string ['filesChangedNotSaved'] = "Ficheros modificados pero no guardados";
 $string ['filesNotChanged'] = 'Ficheros no modificados';
 $string ['filestoscan'] = 'Ficheros a procesar';
 $string ['fileupdated'] = "El fichero '{\$a}' ha sido actualizado";
+$string ['finalreduction'] = "Reducción final";
+$string ['finalreduction_help'] = '<b>RF [NE/ER R]</b><br>
+<b>RF</b> Reducción final de la calificación.<br>
+<b>NE</b> Número de evaluaciones automáticas solicitadas por el estudiante.<br>
+<b>ER</b> Evaluaciones sin coste de reducción.<br>
+<b>R</b> Reducción por cada evaluación. Si es un porcentaje, se aplicará sucesivamente.<br>';
 $string ['find'] = "Buscar";
 $string ['find_replace'] = 'Buscar/Reemplazar';
+$string ['freeevaluations'] = 'Evaluaciones sin reducción';
+$string ['freeevaluations_help'] = 'Número de evaluaciones automáticas que se pueden solicitar sin coste de reducción';
 $string ['fulldescription'] = 'Descripción completa';
 $string ['fullscreen'] = 'Pantalla completa';
 $string ['getjails'] = 'Obteniendo servidores de ejecución';
@@ -157,6 +165,8 @@ $string ['minsimlevel'] = 'Nivel de similaridad mínima a mostrar';
 $string ['moduleconfigtitle'] = 'Configuración del módulo VPL';
 $string ['modulename'] = 'Laboratorio virtual de programación';
 $string ['modulenameplural'] = 'Laboratorios virtuales de programación';
+$string ['multidelete'] = 'Borrado múltiple';
+$string ['nevaluations'] = '{$a} evaluaciones automáticas realizadas';
 $string ['new'] = 'Nuevo';
 $string ['new_file_name'] = 'Nombre del fichero nuevo';
 $string ['next'] = 'Siguiente';
