@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/vpl/db" VERSION="20170722" COMMENT="XMLDB file for Moodle mod/vpl"
+<XMLDB PATH="mod/vpl/db" VERSION="20171119" COMMENT="XMLDB file for Moodle mod/vpl"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -73,11 +73,14 @@
         <FIELD NAME="laststrerror" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false" COMMENT="Last error string"/>
         <FIELD NAME="nrequests" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of requests"/>
         <FIELD NAME="nbusy" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of replies &quot;busy&quot;"/>
+        <FIELD NAME="serverhash" TYPE="int" LENGTH="20" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Improves server search"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-        <KEY NAME="servers_key" TYPE="unique" FIELDS="server" COMMENT="key by server"/>
       </KEYS>
+      <INDEXES>
+        <INDEX NAME="serverhash_idx" UNIQUE="false" FIELDS="serverhash"/>
+      </INDEXES>
     </TABLE>
     <TABLE NAME="vpl_variations" COMMENT="Variations to a vpl instance">
       <FIELDS>
