@@ -108,11 +108,19 @@ class vpl_list_util {
     static public function count_graded($vpl) {
         $numsubs = 0;
         $numgraded = 0;
-        $subs = $vpl->all_last_user_submission( 's.dategraded' );
+        $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid' );
+        if ($vpl->is_group_activity()) { // Fixes group activity userid.
+            foreach ($subs as $sub) {
+                $group = $vpl->get_group_members($sub->groupid);
+                if ( count($group) ) {
+                    $user = reset($group);
+                    $sub->userid = $user->id;
+                }
+            }
+        }
         $students = $vpl->get_students();
-        foreach ($students as $student) {
-            if (isset( $subs [$student->id] )) {
-                $sub = $subs [$student->id];
+        foreach ($subs as $sub) {
+            if (isset( $students [$sub->userid] )) {
                 $numsubs ++;
                 if ($sub->dategraded > 0) { // Is graded.
                     $numgraded ++;
