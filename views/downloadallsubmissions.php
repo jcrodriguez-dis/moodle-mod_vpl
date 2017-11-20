@@ -80,7 +80,13 @@ if (! $currentgroup) {
 } else {
     $extraname = ' ' . groups_get_group_name( $currentgroup );
 }
-$list = $vpl->get_students( $currentgroup );
+if ($vpl->is_group_activity()) {
+    $idfiels = 'groupid';
+    $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+} else {
+    $list = $vpl->get_students( $currentgroup );
+    $idfiels = 'userid';
+}
 
 if ($all) {
     $asortedsubmissions = $vpl->all_user_submission();
@@ -89,32 +95,28 @@ if ($all) {
 }
 // Organize information by user id.
 $submissions = array();
-
 foreach ($asortedsubmissions as $instance) {
-    if ( ! isset($submissions[$instance->userid]) ) {
-        $submissions[$instance->userid] = array();
+    if ( ! isset($submissions[$instance->$idfiels]) ) {
+        $submissions[$instance->$idfiels] = array();
     }
-    $submissions[$instance->userid][] = $instance;
+    $submissions[$instance->$idfiels][] = $instance;
 }
 
 // Get all information by user.
 $alldata = array ();
-foreach ($list as $userinfo) {
-    if ($vpl->is_group_activity() && $userinfo->id != $vpl->get_group_leaderid( $userinfo->id )) {
-        continue;
-    }
-    if (! isset( $submissions [$userinfo->id] )) {
+foreach ($list as $uginfo) {
+    if (! isset( $submissions [$uginfo->id] )) {
         continue;
     }
     $data = new stdClass();
-    $data->userinfo = $userinfo;
+    $data->uginfo = $uginfo;
     // When group activity => change leader object lastname to groupname for order porpouse.
     if ($vpl->is_group_activity()) {
-        $data->userinfo->firstname = '';
-        $data->userinfo->lastname = $vpl->fullname( $userinfo, false );
+        $data->uginfo->firstname = 'Group';
+        $data->uginfo->lastname = $uginfo->name;
     }
     $usersubmissions = array();
-    foreach ($submissions [$userinfo->id] as $subinstance) {
+    foreach ($submissions [$uginfo->id] as $subinstance) {
         $usersubmissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
     }
     $data->submissions = $usersubmissions;
@@ -131,7 +133,7 @@ $zipfilename = tempnam( $dir, 'zip' );
 if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
     $ziperrors = '';
     foreach ($alldata as $data) {
-        $user = $data->userinfo;
+        $user = $data->uginfo;
         $zipdirname = vpl_user_zip_dirname( $user->lastname . ' ' . $user->firstname );
         $zipdirname .= ' ' . $user->id;
         // Create directory.
