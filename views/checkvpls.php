@@ -48,9 +48,13 @@ $einfo = array ( 'context' => \context_course::instance( $course->id ),
         'objectid' => $course->id,
         'userid' => $USER->id
 );
-//\mod_vpl\event\vpl_checkvpls::log( $einfo );
-
-$ovpls = get_all_instances_in_course( VPL, $course );
+\mod_vpl\event\vpl_checkvpls::log( $einfo );
+$admin = is_siteadmin();
+if ($admin) {
+    $ovpls = $DB->get_records( VPL, array(), 'id' );
+} else {
+    $ovpls = get_all_instances_in_course( VPL, $course );
+}
 $timenow = time();
 $vpls = array ();
 // Get and select vpls to show.
@@ -59,8 +63,13 @@ foreach ($ovpls as $ovpl) {
     $instance = $vpl->get_instance();
     $vpls[$instance->id] = $vpl;
     if ( $vpl->is_group_activity() ) {
-        //Check groups concistence
-        echo '<h3>' . s($vpl->get_printable_name()) . '</h3>';
+        // Check groups concistence.
+        $title = '';
+        if ($admin) {
+            $title = $vpl->get_course()->shortname . ': ';
+        }
+        $title .= $vpl->get_printable_name();
+        echo '<h5>' . s($title) . '</h5>';
         $groupingid = $vpl->get_course_module()->groupingid;
         $groups = groups_get_all_groups($vpl->get_course()->id, 0, $groupingid);
         $students = $vpl->get_students();
@@ -111,7 +120,6 @@ foreach ($ovpls as $ovpl) {
             if ($DB->count_records_select(VPL_SUBMISSIONS, $select, $params) > 0 ) {
                 echo vpl_notice('Fixing submissions with no group or pre V3.3 data');
                 $vpl->update_group_v32();
-                die();
             }
         }
         echo $OUTPUT->box_end();
