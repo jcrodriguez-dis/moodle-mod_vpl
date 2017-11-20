@@ -53,9 +53,9 @@ flush();
 $course = $vpl->get_course();
 $instance = $vpl->get_instance();
 echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
-$userinfo = $DB->get_record( 'user', array ( 'id' => $userid ) );
-$text = ' ' . $vpl->user_picture( $userinfo );
-$text .= ' ' . fullname( $userinfo );
+$user = $DB->get_record( 'user', array ( 'id' => $userid ) );
+$text = ' ' . $vpl->user_picture( $user );
+$text .= ' ' . fullname( $user );
 echo $OUTPUT->box( $text );
 $ajaxurl = "edit.json.php?id={$id}&userid={$userid}&action=";
 if (optional_param( 'grading', 0, PARAM_INT )) {
