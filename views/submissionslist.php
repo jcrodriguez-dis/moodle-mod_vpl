@@ -428,7 +428,7 @@ foreach ($alldata as $data) {
         }
         $subid = $subinstance->id;
         if ($evaluate == 4 && $nevaluation <= $usernumber) { // Need evaluation.
-            vpl_evaluate( $vpl, $alldata, $user->id, $usernumber, $groupsurl );
+            vpl_evaluate( $vpl, $alldata, $user, $usernumber, $groupsurl );
         }
         if ($subinstance->dategraded > 0) {
             $text = $submission->get_grade_core();
