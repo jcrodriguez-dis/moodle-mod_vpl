@@ -357,24 +357,38 @@ class file_group_process{
         return false;
     }
 
-    static protected $timeout = -1; // 5 seconds for timeout.
+    static protected $outputtextsize = 0; // Total size of text files shown.
+    static protected $outputbinarysize = 0; // Total size of binary files shown.
+    static protected $outputtextlimit = 100000; // Limit of total size of text files shown.
+    static protected $outputbinarylimit = 10000000; // Limit of total size of binary files shown.
     /**
      * Print file group
      */
     public function print_files($ifnoexist = true) {
-        if ( self::$timeout == -1 ) {
-            self::$timeout = time() + 5;
-        }
         $filenames = $this->getFileList();
+        $showbinary = self::$outputbinarysize < self::$outputbinarylimit;
+        $showcode = self::$outputtextsize < self::$outputtextlimit;
         foreach ($filenames as $name) {
             if (file_exists( $this->dir . self::encodeFileName( $name ) )) {
-                if (time() < self::$timeout) {
-                    $printer = vpl_sh_factory::get_sh( $name );
+                if ( vpl_is_binary($name) ) {
+                    if ($showbinary) {
+                        $printer = vpl_sh_factory::get_sh( $name );
+                        $data = $this->getFileData( $name );
+                        $printer->print_file( $name, $data );
+                        self::$outputbinarysize += strlen($data);
+                    } else {
+                        echo '<h4>' . s( $name ) . '</h4>';
+                        echo "[...]";
+                    }
+                } else {
+                    if ($showcode) {
+                        $printer = vpl_sh_factory::get_sh( $name );
+                    } else {
+                        $printer = vpl_sh_factory::get_object('text_nsh');
+                    }
                     $data = $this->getFileData( $name );
                     $printer->print_file( $name, $data );
-                } else {
-                    echo '<h4>' . s( $name ) . '</h4>';
-                    echo "[...]";
+                    self::$outputtextsize += strlen($data);
                 }
             } else if ($ifnoexist) {
                 echo '<h4>' . s( $name ) . '</h4>';

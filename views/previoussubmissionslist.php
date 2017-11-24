@@ -52,6 +52,7 @@ if ($detailed) {
     require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
     vpl_sh_factory::include_js();
 }
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 
 $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
