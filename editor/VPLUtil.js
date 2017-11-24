@@ -1075,28 +1075,27 @@
         }
         return html;
     };
+
     (function() {
         var files = [];
         var results = [];
         var shs = [];
 
-        VPL_Util.addResults = function( tagId, noFormat, folding ){
-            results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
-        };
-        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
-            files.push({
-                'tagId' : tagId,
-                'fileName' : fileName,
-                'theme' : theme,
-                'showln' : showln,
-                'nl' : nl
-             });
-        };
-        VPL_Util.syntaxHighlight = function(){
+        function SubmissionHighlighter(files, results) {
+            var self = this;
+            this.files = files;
+            this.results = results;
+            setTimeout(function() {self.highlight();}, 10);
+        }
+
+        SubmissionHighlighter.prototype.highlight = function(){
+            var self = this;
             if ( typeof ace === 'undefined' ) {
-                setTimeout(VPL_Util.syntaxHighlight, 100);
+                setTimeout(function() {self.highlight();}, 100);
                 return;
             }
+            var files = this.files;
+            var results = this.results;
             var shFiles = [];
             var shFileNames = [];
             for (var i = 0; i < files.length; i++) {
@@ -1131,6 +1130,29 @@
                 tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles,
                                                        results[ri].noFormat, results[ri].folding);
             }
+            for (var si = 0; si < shFiles.length; si++) {
+                shFiles[si].getSession().setUseWorker(false);
+            }
+        }
+
+        VPL_Util.addResults = function( tagId, noFormat, folding ){
+            results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
+        };
+        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
+            files.push({
+                'tagId' : tagId,
+                'fileName' : fileName,
+                'theme' : theme,
+                'showln' : showln,
+                'nl' : nl
+             });
+        };
+        VPL_Util.syntaxHighlight = function(){
+            if ( typeof ace === 'undefined' ) {
+                setTimeout(VPL_Util.syntaxHighlight, 100);
+                return;
+            }
+            new SubmissionHighlighter(files,results);
             files = [];
             results = [];
         };
