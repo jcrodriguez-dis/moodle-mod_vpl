@@ -242,7 +242,7 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         if (!$dbman->field_exists($table, $field)) {
             $dbman->add_field($table, $field);
         }
-
+        $DB->delete_records('vpl_jailservers');
         $table = new xmldb_table('vpl_jailservers');
         $key = new xmldb_key('servers_key', XMLDB_KEY_UNIQUE, array('server'));
         // Launch drop key servers_key.
