@@ -102,6 +102,7 @@ $processestable->align = array (
         'left',
         'left'
 );
+
 $processestable->data = array ();
 $num = 0;
 $processes = vpl_running_processes::lanched_processes($COURSE->id);
@@ -113,6 +114,8 @@ foreach ($processes as $process) {
     ) );
     $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
     if ($response === false) {
+        // Removes zombi process.
+        vpl_running_processes::delete($process->userid, $process->adminticket);
         continue;
     }
     $status = '';
