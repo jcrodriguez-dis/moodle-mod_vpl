@@ -1133,7 +1133,7 @@
             for (var si = 0; si < shFiles.length; si++) {
                 shFiles[si].getSession().setUseWorker(false);
             }
-        }
+        };
 
         VPL_Util.addResults = function( tagId, noFormat, folding ){
             results.push({ 'tagId' : tagId, 'noFormat' : noFormat, 'folding' : folding });
