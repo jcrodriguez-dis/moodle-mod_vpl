@@ -205,7 +205,7 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
 
-    $vpl33 = 2017110112;
+    $vpl33 = 2017112412;
     if ($oldversion < $vpl33) {
         // Define field nevaluations to be added to vpl_submissions.
         $table = new xmldb_table('vpl_submissions');
