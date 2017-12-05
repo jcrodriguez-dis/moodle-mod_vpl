@@ -28,32 +28,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
-class vpl_tokenizer_python extends vpl_tokenizer_base {
-    const REGULAR = 0;
-    const IN_STRING = 1;
-    const IN_CHAR = 2;
-    const IN_MACRO = 3;
-    const IN_COMMENT = 4;
-    const IN_LINECOMMENT = 5;
-    const IN_NUMBER = 6;
+require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+class vpl_tokenizer_python extends vpl_tokenizer_c {
+
     protected static $pythonreserved = null;
-    protected $linenumber;
-    protected $tokens;
-    protected function is_indentifier($text) {
-        if (strlen( $text ) == 0) {
-            return false;
-        }
-        $first = $text [0];
-        return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
-    }
-    protected function is_number($text) {
-        if (strlen( $text ) == 0) {
-            return false;
-        }
-        $first = $text [0];
-        return $first >= '0' && $first <= '9';
-    }
+
     protected function is_text($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -61,6 +40,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         $first = $text [0];
         return $first == '"' || $first == "'";
     }
+
     protected function add_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
@@ -82,6 +62,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
+
     public function __construct() {
         if (self::$pythonreserved === null) {
             self::$pythonreserved = array (
@@ -122,6 +103,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         }
         $this->reserved = &self::$pythonreserved;
     }
+
     public function parse($filedata) {
         $this->tokens = array ();
         $this->linenumber = 1;
@@ -260,32 +242,5 @@ class vpl_tokenizer_python extends vpl_tokenizer_base {
         }
         $this->add_pending( $pending );
         $this->compact_operators();
-    }
-    public function get_tokens() {
-        return $this->tokens;
-    }
-    protected function compact_operators() {
-        $correct = array ();
-        $current = false;
-        foreach ($this->tokens as &$next) {
-            if ($current) {
-                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                    && strpos( '()[]{};', $current->value ) === false) {
-                    $current->value .= $next->value;
-                    $next = false;
-                }
-                $correct [] = $current;
-            }
-            $current = $next;
-        }
-        if ($current) {
-            $correct [] = $current;
-        }
-        $this->tokens = $correct;
-    }
-    public function show_tokens() {
-        foreach ($this->tokens as $token) {
-            $token->show();
-        }
     }
 }

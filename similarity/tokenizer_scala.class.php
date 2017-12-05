@@ -27,55 +27,12 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
-class vpl_tokenizer_scala extends vpl_tokenizer_base {
-    const REGULAR = 0;
-    const IN_STRING = 1;
-    const IN_CHAR = 2;
-    const IN_COMMENT = 3;
-    const IN_LINECOMMENT = 4;
-    const IN_NUMBER = 5;
-    protected static $creserved = null;
-    protected $linenumber;
-    protected $tokens;
-    protected function is_indentifier($text) {
-        if (strlen( $text ) == 0) {
-            return false;
-        }
-        $first = $text {0};
-        return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
-    }
-    protected function is_number($text) {
-        if (strlen( $text ) == 0) {
-            return false;
-        }
-        $first = $text {0};
-        return $first >= '0' && $first <= '9';
-    }
-    protected function add_pending(&$pending) {
-        if ($pending <= ' ') {
-            $pending = '';
-            return;
-        }
-        if ($this->is_indentifier( $pending )) {
-            if (isset( $this->reserved [$pending] )) {
-                $type = vpl_token_type::RESERVED;
-            } else {
-                $type = vpl_token_type::IDENTIFIER;
-            }
-        } else {
-            if ($this->is_number( $pending )) {
-                $type = vpl_token_type::LITERAL;
-            } else {
-                $type = vpl_token_type::OPERATOR;
-            }
-        }
-        $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
-        $pending = '';
-    }
+require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+class vpl_tokenizer_scala extends vpl_tokenizer_c {
+    protected static $sreserved = null;
     public function __construct() {
-        if (self::$creserved === null) {
-            self::$creserved = array (
+        if (self::$sreserved === null) {
+            self::$sreserved = array (
                     'abstract' => true,
                     'case' => true,
                     'catch' => true,
@@ -127,7 +84,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_base {
                     'String' => true
             );
         }
-        $this->reserved = &self::$creserved;
+        $this->reserved = &self::$sreserved;
     }
     public function parse($filedata) {
         $this->tokens = array ();
@@ -261,32 +218,5 @@ class vpl_tokenizer_scala extends vpl_tokenizer_base {
         }
         $this->add_pending( $pending );
         $this->compact_operators();
-    }
-    public function get_tokens() {
-        return $this->tokens;
-    }
-    protected function compact_operators() {
-        $correct = array ();
-        $current = false;
-        foreach ($this->tokens as &$next) {
-            if ($current) {
-                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                    && strpos( '()[]{};', $current->value ) === false) {
-                    $current->value .= $next->value;
-                    $next = false;
-                }
-                $correct [] = $current;
-            }
-            $current = $next;
-        }
-        if ($current) {
-            $correct [] = $current;
-        }
-        $this->tokens = $correct;
-    }
-    public function show_tokens() {
-        foreach ($this->tokens as $token) {
-            $token->show();
-        }
     }
 }
