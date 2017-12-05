@@ -1623,6 +1623,7 @@
                 checkMenuWidth();
                 setInterval(checkMenuWidth, 1000);
             }());
+            file_manager.resetModified();
             VPL_Util.requestAction('load', 'loading', options, options.loadajaxurl)
             .done(function(response) {
                 var allOK = true;
