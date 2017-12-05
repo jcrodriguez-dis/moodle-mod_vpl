@@ -272,11 +272,11 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
         foreach ($this->tokens as &$next) {
             if ($current) {
                 if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                        && strpos( '()[]{};', $current->value ) === false) {
+                        && strpos( '()[]{};', $current->value ) === false && strpos( '()[]{};', $next->value ) === false) {
                             $current->value .= $next->value;
                             $next = false;
-                        }
-                        $correct [] = $current;
+                }
+                $correct [] = $current;
             }
             $current = $next;
         }
