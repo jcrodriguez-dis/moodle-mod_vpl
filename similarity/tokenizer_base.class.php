@@ -25,8 +25,6 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../../../config.php');
-
 class vpl_token_type {
     const RESERVED = 1;
     const IDENTIFIER = 2;

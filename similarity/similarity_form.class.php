@@ -23,7 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
+defined( 'MOODLE_INTERNAL' ) || die();
+
 require_once($CFG->libdir.'/formslib.php');
 global $CFG;
 

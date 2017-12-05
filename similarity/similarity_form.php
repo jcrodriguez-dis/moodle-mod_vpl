@@ -29,6 +29,9 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once($CFG->libdir.'/formslib.php');
 require_once(dirname(__FILE__).'/similarity_form.class.php');
+
+require_login();
+
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
 $vpl->prepare_page( 'similarity/similarity_form.php', array (
