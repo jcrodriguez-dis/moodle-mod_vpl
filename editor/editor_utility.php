@@ -163,7 +163,7 @@ class vpl_editor_util {
                 href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
             <li><a href="http://fontawesome.io">Font Awesome</a> by Dave Gandy</li>
             <li>unzip.js August Lilleaas</li>
-            <li>inflate.js August Lilleaas and Masanao Izumo <iz@onicos.co.jp></li>
+            <li>inflate.js August Lilleaas and Masanao Izumo &lt;iz@onicos.co.jp&gt;</li>
         </ul>
         </div>
     </div>

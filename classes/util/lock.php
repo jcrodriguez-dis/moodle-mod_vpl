@@ -27,7 +27,7 @@ namespace mod_vpl\util;
 defined( 'MOODLE_INTERNAL' ) || die();
 abstract class lock {
     protected $lockfile;
-    public function __construct($dir){
+    public function __construct($dir) {
         $this->lockfile = $dir . '/vpl.lock';
         $ctime = 0;
         $start = time();

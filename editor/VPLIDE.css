@@ -100,7 +100,7 @@ div.vpl_ide_dialog_content {
     text-shadow: none;
 }
 .ui-widget {
-    font-size:12px;
+    font-size: 12px;
 }
 .ui-tabs .ui-tabs-panel {
     padding: 0;
@@ -131,7 +131,7 @@ div.vpl_ide_dialog_content {
 
 .vpl_ide_binary {
     font-size: 300%;
-    line-height:200%;
+    line-height: 200%;
     margin: auto;
     text-align: center;
     z-index: 0;
@@ -255,7 +255,8 @@ img.vpl_ide_file {
 .vpl_clipboard_label1.ui-button-text {
     padding: 0.15em;
 }
-.vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2 {
+.vpl_clipboard .vpl_clipboard_entry1,
+.vpl_clipboard .vpl_clipboard_entry2 {
     height: 50px;
     width: 200px;
 }
