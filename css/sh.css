@@ -7,8 +7,9 @@
     display: inline-block;
 }
 
-.vpl_g, .vpl_g * {
-    font-family:'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+.vpl_g,
+.vpl_g * {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     font-size: 12px;
     line-height: normal;
     white-space: pre;
