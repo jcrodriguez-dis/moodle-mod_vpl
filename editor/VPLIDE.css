@@ -44,7 +44,7 @@
 #vpl_filelist {
     display: none;
     left: 0;
-    position: absolute !important;
+    position: absolute;
     top: 0;
 }
 
@@ -64,7 +64,7 @@
 }
 
 .vpl_ide_tabs {
-    position: absolute !important;
+    position: absolute;
     top: 0;
 }
 
@@ -83,10 +83,10 @@
 .vpl_ide_closeicon {
     color: white;
     text-shadow:
-       1px 0 1px gray,
-       0 1px 1px gray,
-       0 -1px 1px gray,
-       -1px 0 1px gray;
+        1px 0 1px gray,
+        0 1px 1px gray,
+        0 -1px 1px gray,
+        -1px 0 1px gray;
 }
 div.vpl_ide_dialog_content {
     height: 250px;
@@ -100,10 +100,10 @@ div.vpl_ide_dialog_content {
     text-shadow: none;
 }
 .ui-widget {
-    font-size:12px !important;
+    font-size:12px;
 }
 .ui-tabs .ui-tabs-panel {
-    padding: 0 !important;
+    padding: 0;
 }
 /*Resolve problem with essential theme*/
 .vpl_ide_file * {
@@ -152,7 +152,7 @@ img.vpl_ide_file {
 .vpl_ide_results {
     height: 100%;
     min-width: 100px;
-    position: absolute !important;
+    position: absolute;
     right: 0;
     top: 0;
 }
@@ -202,10 +202,10 @@ img.vpl_ide_file {
     font-size: 80%;
 }
 .vpl_ide .ui-dialog-titlebar {
-    padding: 0.15em !important;
+    padding: 0.15em;
 }
 .ace_gutter-tooltip {
-    white-space: pre-wrap !important;
+    white-space: pre-wrap;
 }
 
 .vpl_ide_accordion_c_compilation,
@@ -228,7 +228,7 @@ img.vpl_ide_file {
 }
 
 .vpl_vnc .ui-dialog-content {
-    padding: 0 !important;
+    padding: 0;
 }
 .vpl_noVNC_canvas {
     cursor: none;
@@ -275,17 +275,17 @@ pre.vpl_terminal {
     padding: 2px;
 }
 .vpl_buttonleft_orange {
-    background-color: orange !important;
-    color: white !important;
+    background-color: orange;
+    color: white;
     font-weight: bold;
 }
 .vpl_buttonleft_red {
-    background-color: red !important;
-    color: white !important;
+    background-color: red;
+    color: white;
     font-weight: bold;
 }
 .vpl_buttonleft_black {
-    background-color: black !important;
-    color: white !important;
+    background-color: black;
+    color: white;
     font-weight: bold;
 }

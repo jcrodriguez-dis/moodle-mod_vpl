@@ -1,10 +1,10 @@
 .vpl_sh {
-	direction: ltr;
-	text-align: left;
+    direction: ltr;
+    text-align: left;
 }
 
 .vpl_sh div {
-	display: inline-block;
+    display: inline-block;
 }
 
 .vpl_g, .vpl_g * {
