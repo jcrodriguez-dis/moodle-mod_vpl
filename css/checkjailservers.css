@@ -1,1 +1,4 @@
-.vpl_server_failed {background-color:#FF0000; color: #FFFFFF;}
+.vpl_server_failed {
+	background-color: #ff0000;
+	color: #ffffff;
+}

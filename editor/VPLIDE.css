@@ -82,8 +82,11 @@
 
 .vpl_ide_closeicon {
     color: white;
-    text-shadow: 1px 0 1px gray, 0 1px 1px gray, 0 -1px 1px gray, -1px
-        0 1px gray;
+    text-shadow:
+       1px 0 1px gray,
+       0 1px 1px gray,
+       0 -1px 1px gray,
+       -1px 0 1px gray;
 }
 div.vpl_ide_dialog_content {
     height: 250px;
@@ -104,13 +107,23 @@ div.vpl_ide_dialog_content {
 }
 /*Resolve problem with essential theme*/
 .vpl_ide_file * {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
-        'source-code-pro', monospace;
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
 }
 
 .vpl_ide_file {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
-        'source-code-pro', monospace;
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
     margin: 2px;
     padding: 0;
     z-index: 0;
@@ -188,16 +201,22 @@ img.vpl_ide_file {
 .vpl_ide {
     font-size: 80%;
 }
-.vpl_ide .ui-dialog-titlebar{
+.vpl_ide .ui-dialog-titlebar {
     padding: 0.15em !important;
 }
 .ace_gutter-tooltip {
     white-space: pre-wrap !important;
 }
 
-.vpl_ide_accordion_c_compilation,.vpl_ide_accordion_c_execution {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas',
-        'source-code-pro', monospace;
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_execution {
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
     max-width: 120em;
     white-space: pre;
 }
@@ -236,7 +255,7 @@ img.vpl_ide_file {
 .vpl_clipboard_label1.ui-button-text {
     padding: 0.15em;
 }
-.vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2{
+.vpl_clipboard .vpl_clipboard_entry1, .vpl_clipboard .vpl_clipboard_entry2 {
     height: 50px;
     width: 200px;
 }
@@ -256,17 +275,17 @@ pre.vpl_terminal {
     padding: 2px;
 }
 .vpl_buttonleft_orange {
-    background-color : orange !important;
-    color : white !important;
+    background-color: orange !important;
+    color: white !important;
     font-weight: bold;
 }
 .vpl_buttonleft_red {
-    background-color : red !important;
-    color : white !important;
+    background-color: red !important;
+    color: white !important;
     font-weight: bold;
 }
 .vpl_buttonleft_black {
-    background-color : black !important;
-    color : white !important;
+    background-color: black !important;
+    color: white !important;
     font-weight: bold;
 }
