@@ -18,14 +18,15 @@
  * Class to lock based on directory path
  *
  * @package mod_vpl
- * @copyright 2017 onwards Juan Carlos Rodríguez-del-Pino
+ * @copyright 2017 onwards Juan Carlos Rodrï¿½guez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author Juan Carlos Rodrï¿½guez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 namespace mod_vpl\util;
 
 defined( 'MOODLE_INTERNAL' ) || die();
-abstract class lock {
+
+class lock {
     protected $lockfile;
     public function __construct($dir) {
         $this->lockfile = $dir . '/vpl.lock';
