@@ -70,7 +70,6 @@ class backup_nested_filegroup extends backup_nested_element {
     protected function get_iterator($processor) {
         global $CFG;
 
-        $files = array ();
         switch ($this->get_name()) {
             case 'required_file' :
                 $vplid = $this->find_first_parent_by_name( 'id' )->get_value();
@@ -94,6 +93,64 @@ class backup_nested_filegroup extends backup_nested_element {
     }
 }
 class backup_vpl_activity_structure_step extends backup_activity_structure_step {
+    protected $vplfields = array (
+        'name',
+        'shortdescription',
+        'intro',
+        'introformat',
+        'startdate',
+        'duedate',
+        'maxfiles',
+        'maxfilesize',
+        'requirednet',
+        'password',
+        'grade',
+        'visiblegrade',
+        'usevariations',
+        'variationtitle',
+        'basedon',
+        'basedonname',
+        'run',
+        'debug',
+        'evaluate',
+        'evaluateonsubmission',
+        'automaticgrading',
+        'maxexetime',
+        'restrictededitor',
+        'example',
+        'maxexememory',
+        'maxexefilesize',
+        'maxexeprocesses',
+        'jailservers',
+        'emailteachers',
+        'worktype',
+        'timemodified',
+        'freeevaluations',
+        'reductionbyevaluation'
+    );
+    protected $submissionfields = array (
+        'vpl',
+        'userid',
+        'datesubmitted',
+        'comments',
+        'grader',
+        'dategraded',
+        'grade',
+        'mailed',
+        'highlight',
+        'nevaluations',
+        'groupid'
+    );
+    protected $variationfields =  array (
+        'vpl',
+        'identification',
+        'description'
+    );
+    protected $asignedvariationfields =  array (
+        'userid',
+        'vpl',
+        'variation'
+    );
     protected function define_structure() {
 
         // To know if we are including userinfo.
@@ -101,81 +158,21 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
 
         // Define each element separated.
 
-        $vpl = new backup_nested_element( 'vpl', array (
-                'id'
-        ), array (
-                'name',
-                'shortdescription',
-                'intro',
-                'introformat',
-                'startdate',
-                'duedate',
-                'maxfiles',
-                'maxfilesize',
-                'requirednet',
-                'password',
-                'grade',
-                'visiblegrade',
-                'usevariations',
-                'variationtitle',
-                'basedon',
-                'basedonname',
-                'run',
-                'debug',
-                'evaluate',
-                'evaluateonsubmission',
-                'automaticgrading',
-                'maxexetime',
-                'restrictededitor',
-                'example',
-                'maxexememory',
-                'maxexefilesize',
-                'maxexeprocesses',
-                'jailservers',
-                'emailteachers',
-                'worktype',
-                'timemodified',
-                'freeevaluations',
-                'reductionbyevaluation'
-        ) );
-        $filefields = array ('name', 'content', 'encoding');
         $idfield = array ('id');
+        $filefields = array ('name', 'content', 'encoding');
+        $vpl = new backup_nested_element( 'vpl', $idfield, $this->vplfields);
         $requiredfiles = new backup_nested_element( 'required_files' );
         $requiredfile = new backup_nested_filegroup( 'required_file', $idfield,  $filefields);
         $executionfiles = new backup_nested_element( 'execution_files' );
         $executionfile = new backup_nested_filegroup( 'execution_file', $idfield,  $filefields);
         $variations = new backup_nested_element( 'variations' );
-        $variation = new backup_nested_element( 'variation', array (
-                'id'
-        ), array (
-                'vpl',
-                'identification',
-                'description'
-        ) );
+        $variation = new backup_nested_element( 'variation', $idfield, $this->variationfields );
         $asignedvariations = new backup_nested_element( 'asigned_variations' );
-        $asignedvariation = new backup_nested_element( 'asigned_variation', array (
-                'id'
-        ), array (
-                'userid',
-                'vpl',
-                'variation'
-        ) );
+        $asignedvariation = new backup_nested_element( 'asigned_variation',
+                $idfield,
+                $this->asignedvariationfields );
         $submissions = new backup_nested_element( 'submissions' );
-        $submission = new backup_nested_element( 'submission', array (
-                'id'
-        ), array (
-                'vpl',
-                'userid',
-                'datesubmitted',
-                'comments',
-                'grader',
-                'dategraded',
-                'grade',
-                'mailed',
-                'highlight',
-                'nevaluations',
-                'groupid'
-        ) );
+        $submission = new backup_nested_element( 'submission', $idfield, $this->submissionfields );
         $submissionfiles = new backup_nested_element( 'submission_files' );
         $submissionfile = new backup_nested_filegroup( 'submission_file', $idfield,  $filefields);
         // Build the tree.
@@ -193,32 +190,25 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $submissionfiles->add_child( $submissionfile );
         // Define sources.
         // VPL record with basedonname field.
+        $parmvplid = array ( 'vpl' => backup::VAR_ACTIVITYID );
         $query = 'SELECT s.*, o.name basedonname FROM {vpl} s';
         $query .= ' LEFT join {vpl} o';
         $query .= '   ON s.basedon = o.id';
         $query .= '   WHERE s.id = ?';
-        $vpl->set_source_sql( $query, array (
-                backup::VAR_ACTIVITYID
-        ) );
-        $variation->set_source_table( 'vpl_variations', array (
-                'vpl' => backup::VAR_ACTIVITYID
-        ) );
+        $vpl->set_source_sql( $query, array ( backup::VAR_ACTIVITYID ) );
+        $variation->set_source_table( 'vpl_variations', $parmvplid );
         if ($userinfo) {
-            $asignedvariation->set_source_table( 'vpl_assigned_variations', array (
-                    'vpl' => backup::VAR_ACTIVITYID
-            ) );
+            $asignedvariation->set_source_table( 'vpl_assigned_variations', $parmvplid );
             /*
              * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
-             * $submission->set_source_table('vpl_submissions', array('vpl' => backup::VAR_ACTIVITYID));
+             * $submission->set_source_table('vpl_submissions', $parmvplid);
              */
             $query = 'SELECT s.* FROM {vpl_submissions} s';
             $query .= ' inner join';
             $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
             $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
             $query .= ' on ls.maxid = s.id';
-            $submission->set_source_sql( $query, array (
-                    backup::VAR_ACTIVITYID
-            ) );
+            $submission->set_source_sql( $query, array ( backup::VAR_ACTIVITYID ) );
         }
 
         // Define id annotations.
