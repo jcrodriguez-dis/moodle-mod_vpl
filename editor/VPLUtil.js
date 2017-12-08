@@ -365,6 +365,7 @@
             'json' : 'json',
             'jsp' : 'jsp',
             'jsx' : 'jsx',
+            'kt' : 'kotlin', 'kts' : 'kotlin',
             'm' : 'matlab',
             'md' : 'markdown',
             'less' : 'less',
