@@ -144,44 +144,6 @@ class file_group_process {
     }
 
     /**
-     * Add a new file to the group/Modify the data file
-     *
-     * @param string $filename
-     * @param string $data
-     * @return bool (added==true)
-     */
-    public function addfile($filename, $data = null) {
-        if (! vpl_is_valid_path_name( $filename )) {
-            return false;
-        }
-        ignore_user_abort( true );
-        $filelist = $this->getFileList();
-        foreach ($filelist as $f) {
-            if ($filename == $f) {
-                if ($data !== null) {
-                    $path = $this->dir . self::encodeFileName( $filename );
-                    $fd = vpl_fopen( $path );
-                    fwrite( $fd, $data );
-                    fclose( $fd );
-                }
-                return true;
-            }
-        }
-        if (count( $filelist ) >= $this->maxnumfiles) {
-            return false;
-        }
-        $filelist [] = $filename;
-        $this->setFileList( $filelist );
-        if ($data) {
-            $path = $this->dir . self::encodeFileName( $filename );
-            $fd = vpl_fopen( $path );
-            fwrite( $fd, $data );
-            fclose( $fd );
-        }
-        return true;
-    }
-
-    /**
      * Add new files to the group/Modify the data file
      *
      * @param array $files
@@ -233,69 +195,6 @@ class file_group_process {
             }
         }
         $this->setFileList( array() );
-    }
-
-    /**
-     * Delete a file from groupfile
-     *
-     * @param int $num
-     *            file position
-     * @return bool
-     */
-    public function deletefile($num) {
-        if ($num < $this->numstaticfiles) {
-            return false;
-        }
-        ignore_user_abort( true );
-        $filelist = $this->getFileList();
-        $l = count( $filelist );
-        $ret = false;
-        $filelistmod = array ();
-        for ($i = 0; $i < $l; $i ++) {
-            if ($num == $i) {
-                $fullname = $this->dir . self::encodeFileName( $filelist [$num] );
-                $ret = true;
-                if (file_exists( $fullname )) {
-                    unlink( $fullname );
-                }
-            } else {
-                $filelistmod [] = $filelist [$i];
-            }
-        }
-        if ($ret) {
-            $this->setFileList( $filelistmod );
-        }
-        return $ret;
-    }
-
-    /**
-     * Rename a file
-     *
-     * @param int $num
-     * @param string $filename
-     *            new filename
-     * @return bool (renamed==true)
-     */
-    public function renamefile($num, $filename) {
-        if ($num < $this->numstaticfiles || ! vpl_is_valid_path_name( $filename )) {
-            return false;
-        }
-        ignore_user_abort( true );
-        $filelist = $this->getFileList();
-        if (array_search( $filename, $filelist ) !== false) {
-            return false;
-        }
-        if ($num >= 0 && $num < count( $filelist )) {
-            $path1 = $this->dir . self::encodeFileName( $filelist [$num] );
-            $path2 = $this->dir . self::encodeFileName( $filename );
-            if (file_exists( $path1 )) {
-                rename( $path1, $path2 );
-                $filelist [$num] = $filename;
-                $this->setFileList( $filelist );
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
