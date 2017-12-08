@@ -675,6 +675,7 @@ class mod_vpl {
             }
         }
         $saveduserid = $this->is_group_activity() ? $USER->id : $userid;
+        $lastsub = false;
         $lock = new \mod_vpl\util\lock($this->get_users_data_directory() . '/' . $saveduserid);
         if (($lastsubins = $this->last_user_submission( $userid )) !== false) {
             $lastsub = new mod_vpl_submission( $this, $lastsubins );
@@ -702,11 +703,7 @@ class mod_vpl {
         }
         // Save files.
         $submission = new mod_vpl_submission( $this, $submissionid );
-        if ( $lastsubins == false ) {
-            $submission->set_submitted_file( $files );
-        } else {
-            $submission->set_submitted_file( $files, $lastsub->get_submission_directory() );
-        }
+        $submission->set_submitted_file( $files, $lastsub );
         $submission->remove_grade();
         // If no submitted by grader and not group activity, remove near submmissions.
         if ($USER->id == $userid) {

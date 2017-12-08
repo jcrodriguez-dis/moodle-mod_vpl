@@ -66,7 +66,7 @@ class file_group_process {
      *
      * @return void
      */
-    public static function write_list($filename, $list) {
+    public static function write_list($filename, $list, $otherfln = false) {
         $data = '';
         foreach ($list as $info) {
             if ($info > '') {
@@ -75,6 +75,12 @@ class file_group_process {
                 }
                 $data .= $info;
             }
+        }
+        // Try to reuse other file.
+        if ($otherfln != false && file_exists( $otherfln )
+            && file_get_contents( $otherfln ) === $data
+            && link( $otherfln, $filename) ) {
+            return;
         }
         $fp = vpl_fopen( $filename );
         fwrite( $fp, $data );
@@ -149,7 +155,7 @@ class file_group_process {
      * @param array $files
      * @return bool (added==true)
      */
-    public function addallfiles($files, $otherdir = false) {
+    public function addallfiles($files, $otherdir = false, $otherfln = false) {
         ignore_user_abort( true );
         $filelist = $this->getFileList();
         $filehash = array();
@@ -173,11 +179,11 @@ class file_group_process {
                     continue;
                 }
             }
-            $fd = vpl_fopen( $path );
-            fwrite( $fd, $data );
-            fclose( $fd );
+            $fp = vpl_fopen( $path );
+            fwrite( $fp, $data );
+            fclose( $fp );
         }
-        $this->setFileList( $filelist );
+        $this->setFileList( $filelist, $otherfln);
     }
 
     /**
@@ -230,8 +236,8 @@ class file_group_process {
      *
      * @param string[] $filelist
      */
-    public function setfilelist($filelist) {
-        self::write_list($this->filelistname, $filelist );
+    public function setfilelist($filelist, $otherfln = false) {
+        self::write_list($this->filelistname, $filelist, $otherfln );
     }
 
     /**

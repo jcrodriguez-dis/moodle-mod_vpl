@@ -168,9 +168,15 @@ class mod_vpl_submission {
         $fg = $this->get_submitted_fgm();
         return $fg->getallfiles();
     }
-    public function set_submitted_file($files, $otherdir = false) {
+    public function set_submitted_file($files, $othersub = false) {
         $fg = $this->get_submitted_fgm();
-        $fg->addallfiles($files, $otherdir);
+        if ($othersub != false) {
+            $otherdir = $othersub->get_submission_directory();
+            $otherfln = $othersub->get_submissionfilelistname();
+            $fg->addallfiles( $files, $otherdir, $otherfln);
+        } else {
+            $fg->addallfiles($files);
+        }
     }
     public function is_equal_to(&$files, $comment = '') {
         if ($this->instance->comments != $comment) {
