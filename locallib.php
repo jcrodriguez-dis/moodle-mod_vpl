@@ -120,45 +120,6 @@ function vpl_delete_dir($dirname) {
 }
 
 /**
- * get parsed lines of a file
- *
- * @param $filename string
- * @return array of lines of the file
- */
-function vpl_read_list_from_file($filename) {
-    $ret = array ();
-    if (file_exists( $filename )) {
-        $data = file_get_contents( $filename );
-        if ($data > '') {
-            $nl = vpl_detect_newline( $data );
-            $ret = explode( $nl, $data );
-        }
-    }
-    return $ret;
-}
-
-/**
- * Save an array in a file
- *
- * @param $filename string
- *
- */
-function vpl_write_list_to_file($filename, $list) {
-    $data = '';
-    foreach ($list as $info) {
-        if ($info > '') {
-            if ($data > '') {
-                $data .= "\n";
-            }
-            $data .= $info;
-        }
-    }
-    $fp = vpl_fopen( $filename );
-    fwrite( $fp, $data );
-    fclose( $fp );
-}
-
-/**
  * Outputs a zip file and removes it. Must be called before any other output
  *
  * @param $zipfilename name of the file with the data
@@ -767,7 +728,7 @@ function vpl_truncate_jailservers($instance) {
  * @return string
  */
 function vpl_get_version() {
-    static $version;
+    static $version = '';
     if (! isset( $version )) {
         $plugin = new stdClass();
         require_once(dirname( __FILE__ ) . '/version.php');

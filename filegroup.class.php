@@ -29,7 +29,7 @@ require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once(dirname(__FILE__).'/similarity/watermark.class.php');
 
 
-class file_group_process{
+class file_group_process {
     /**
      * Name of file list
      *
@@ -58,6 +58,46 @@ class file_group_process{
      */
     protected $numstaticfiles;
 
+    /**
+     * Save an array of strings in a file
+     *
+     * @param $filename string
+     * @param $list array of strings
+     *
+     * @return void
+     */
+    public static function write_list($filename, $list) {
+        $data = '';
+        foreach ($list as $info) {
+            if ($info > '') {
+                if ($data > '') {
+                    $data .= "\n";
+                }
+                $data .= $info;
+            }
+        }
+        $fp = vpl_fopen( $filename );
+        fwrite( $fp, $data );
+        fclose( $fp );
+    }
+
+    /**
+     * get parsed lines of a file
+     *
+     * @param $filename string
+     * @return array of lines of the file
+     */
+    public static function read_list($filename) {
+        $ret = array ();
+        if (file_exists( $filename )) {
+            $data = file_get_contents( $filename );
+            if ($data > '') {
+                $nl = vpl_detect_newline( $data );
+                $ret = explode( $nl, $data );
+            }
+        }
+        return $ret;
+    }
     /**
      * Constructor
      *
@@ -264,7 +304,7 @@ class file_group_process{
      * @return string[]
      */
     public function getfilelist() {
-        return vpl_read_list_from_file($this->filelistname);
+        return self::read_list($this->filelistname);
     }
 
     /**
@@ -292,7 +332,7 @@ class file_group_process{
      * @param string[] $filelist
      */
     public function setfilelist($filelist) {
-        vpl_write_list_to_file( $this->filelistname, $filelist );
+        self::write_list($this->filelistname, $filelist );
     }
 
     /**
