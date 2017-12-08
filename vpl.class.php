@@ -105,7 +105,7 @@ class file_group_execution extends file_group_process {
      * @return string[]
      */
     public function getfilekeeplist() {
-        return vpl_read_list_from_file( $this->filelistname . '.keep' );
+        return file_group_process::read_list( $this->filelistname . '.keep' );
     }
 
     /**
@@ -114,7 +114,7 @@ class file_group_execution extends file_group_process {
      * @param string[] $filelist
      */
     public function setfilekeeplist($filelist) {
-        vpl_write_list_to_file( $this->filelistname . '.keep', $filelist );
+        file_group_process::write_list( $this->filelistname . '.keep', $filelist );
     }
 }
 class mod_vpl {
@@ -306,7 +306,7 @@ class mod_vpl {
      * @return array of files required name
      */
     public function get_required_files() {
-        return vpl_read_list_from_file( $this->get_required_files_filename() );
+        return file_group_process::read_list( $this->get_required_files_filename() );
     }
 
     /**
@@ -315,7 +315,7 @@ class mod_vpl {
      *            of required files
      */
     public function set_required_files($files) {
-        vpl_write_list_to_file( $this->get_required_files_filename(), $files );
+        file_group_process::write_list( $this->get_required_files_filename(), $files );
     }
 
     /**
@@ -352,7 +352,7 @@ class mod_vpl {
      * @return array of files execution name
      */
     public function get_execution_files() {
-        return vpl_read_list_from_file( $this->get_execution_files_filename() );
+        return file_group_process::read_list( $this->get_execution_files_filename() );
     }
 
     /**
@@ -674,7 +674,8 @@ class mod_vpl {
                 return false;
             }
         }
-
+        $saveduserid = $this->is_group_activity() ? $USER->id : $userid;
+        $lock = new \mod_vpl\util\lock($this->get_users_data_directory() . '/' . $saveduserid);
         if (($lastsubins = $this->last_user_submission( $userid )) !== false) {
             $lastsub = new mod_vpl_submission( $this, $lastsubins );
             if ($lastsub->is_equal_to( $files, $submittedby . $comments )) {
@@ -685,7 +686,7 @@ class mod_vpl {
         // Create submission record.
         $submissiondata = new stdClass();
         $submissiondata->vpl = $this->get_instance()->id;
-        $submissiondata->userid = $this->is_group_activity() ? $USER->id : $userid;
+        $submissiondata->userid = $saveduserid;
         $submissiondata->datesubmitted = time();
         $submissiondata->comments = $submittedby . $comments;
         if ( $lastsubins !== false ) {
