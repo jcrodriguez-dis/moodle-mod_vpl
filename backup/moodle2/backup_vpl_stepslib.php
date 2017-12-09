@@ -141,12 +141,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'nevaluations',
         'groupid'
     );
-    protected $variationfields =  array (
+    protected $variationfields = array (
         'vpl',
         'identification',
         'description'
     );
-    protected $asignedvariationfields =  array (
+    protected $asignedvariationfields = array (
         'userid',
         'vpl',
         'variation'
