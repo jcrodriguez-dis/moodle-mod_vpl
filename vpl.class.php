@@ -565,26 +565,15 @@ class mod_vpl {
 
     /**
      * Check network restriction and return true o false
-     * @param $netreq Network field may be a combination of ip, netmask and domain comma separated to check.
-     * @param $ip the IP to check
      * @return boolean
      */
-    public function pass_network_check($netreq = null, $ip = null) {
-        if ($netreq === null) {
-            $netreq = $this->instance->requirednet;
-        }
-        $netreq = trim( $netreq );
-        if ($netreq == '') { // No net required.
-            return true;
-        }
-        if ($ip === null) {
-            $ip = getremoteaddr();
-        }
-        return address_in_subnet( $ip, $netreq );
+    public function pass_network_check() {
+        return vpl_check_network( $this->instance->requirednet );
     }
 
     /**
      * Check netword restriction and show error if not passed
+     * @return void
      */
     public function network_check() {
         global $OUTPUT;

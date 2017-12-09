@@ -371,10 +371,27 @@ function vpl_inmediate_redirect($url) {
     echo $OUTPUT->footer();
     die();
 }
+/**
+ * Set JavaScript file from subdir jscript to be load
+ *
+ * @param $file string
+ *            name of file to load
+ * @param $defer boolean
+ *            optional set if the load is inmediate or deffered
+ * @return void
+ */
 function vpl_include_jsfile($file, $defer = true) {
     global $PAGE;
     $PAGE->requires->js( new moodle_url( '/mod/vpl/jscript/' . $file ), ! $defer );
 }
+
+/**
+ * Set JavaScript code to be included
+ *
+ * @param $jscript string
+ *            JavaScript code
+ * @return void
+ */
 function vpl_include_js($jscript) {
     if ($jscript == '') {
         return '';
@@ -706,6 +723,11 @@ function vpl_s() {
     return htmlspecialchars($content, ENT_QUOTES);
 }
 
+/**
+ * Truncate string fields of the VPL table
+ * @param $instance object with the record
+ * @return void
+ */
 function vpl_truncate_vpl($instance) {
     vpl_truncate_string( $instance->name, 255 );
     vpl_truncate_string( $instance->requirednet, 255 );
@@ -713,16 +735,53 @@ function vpl_truncate_vpl($instance) {
     vpl_truncate_string( $instance->variationtitle, 255 );
 }
 
+/**
+ * Truncate string fields of the variations table
+ * @param $instance object with the record
+ * @return void
+ */
 function vpl_truncate_variations($instance) {
     vpl_truncate_string( $instance->identification, 40 );
 }
+
+/**
+ * Truncate string fields of the running_processes table
+ * @param $instance object with the record
+ * @return void
+ */
 function vpl_truncate_running_processes($instance) {
     vpl_truncate_string( $instance->server, 255 );
 }
+
+/**
+ * Truncate string fields of the jailservers table
+ * @param $instance object with the record
+ * @return void
+ */
 function vpl_truncate_jailservers($instance) {
     vpl_truncate_string( $instance->laststrerror, 255 );
     vpl_truncate_string( $instance->server, 255 );
 }
+
+/**
+ * Check if IP is within networks
+ *
+ * @param $networks string with conma separate networks
+ * @param $ip string optional with the IP to check, if omited then remote IP
+ *
+ * @return boolean true found
+ */
+function vpl_check_network($networks, $ip = false) {
+    $networks = trim($networks);
+    if ($networks == '') {
+        return true;
+    }
+    if ($ip === false) {
+        $ip = getremoteaddr();
+    }
+    return address_in_subnet( $ip, $networks );
+}
+
 /**
  * Get version string
  * @return string

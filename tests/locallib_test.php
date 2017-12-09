@@ -146,4 +146,22 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
     }
+    public function test_vpl_check_network() {
+        // Tests exact IPs.
+        $this->assertTrue(vpl_check_network('1.2.3.4', '1.2.3.4'));
+        $this->assertFalse(vpl_check_network('199.193.245.44', '199.193.245.4'));
+        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44', '199.193.245.44'));
+        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44', '1.2.3.4'));
+        $this->assertFalse(vpl_check_network('1.2.3.4, 199.193.245.44', '1.2.3.41'));
+        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44, 77.77.88.99', '77.77.88.99'));
+        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44, 77.77.88.99', '199.193.245.44'));
+        // Tests subnets.
+        $this->assertTrue(vpl_check_network('1.2.3', '1.2.3.4'));
+        $this->assertFalse(vpl_check_network('199.193', '199.194.245.4'));
+        $this->assertTrue(vpl_check_network('1.2, 199.193.245.', '199.193.245.44'));
+        $this->assertTrue(vpl_check_network('1.2, 199.193.245.44', '1.2.3.4'));
+        $this->assertFalse(vpl_check_network('1.2.3., 199.193.245.44', '1.2.33.4'));
+        $this->assertTrue(vpl_check_network('1.2.3, 199.193.245.44, 77.', '77.77.88.99'));
+        $this->assertTrue(vpl_check_network('1.2.3.4, 199., 77.77.88.99', '199.193.245.44'));
+    }
 }
