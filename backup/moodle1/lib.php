@@ -86,23 +86,23 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
                 ) )
         );
     }
-    public function get_data_path() {
+    protected function get_data_path() {
         return $this->converter->get_tempdir_path () . '/moddata/vpl/';
     }
-    public function get_config_path() {
+    protected function get_config_path() {
         return $this->get_data_path () . $this->instanceid . '/config/';
     }
-    public function get_submission_path($userid, $subid) {
+    protected function get_submission_path($userid, $subid) {
         return $this->get_data_path () . $this->instanceid . '/usersdata/' . $userid . '/' . $subid . '/';
     }
-    public function get_fulldescription() {
+    protected function get_fulldescription() {
         $path = $this->get_config_path () . 'fulldescription.html';
         if (file_exists ( $path )) {
             return file_get_contents ( $path );
         }
         return '';
     }
-    private function get_files($base, $dirname) {
+    protected function get_files($base, $dirname) {
         $files = array ();
         $filelst = $dirname . '.lst';
         $extrafiles = array (
@@ -137,7 +137,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         }
         return $files;
     }
-    public function process_execution_files() {
+    protected function process_execution_files() {
         $files = $this->get_files ( $this->get_config_path (), 'execution_files' );
         if (count ( $files ) > 0) {
             $this->xmlwriter->begin_tag ( 'execution_files' );
@@ -147,7 +147,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
             $this->xmlwriter->end_tag ( 'execution_files' );
         }
     }
-    public function process_required_files() {
+    protected function process_required_files() {
         $files = $this->get_files ( $this->get_config_path (), 'required_files' );
         if (count ( $files ) > 0) {
             $this->xmlwriter->begin_tag ( 'required_files' );
