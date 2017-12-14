@@ -150,6 +150,44 @@ class file_group_process {
     }
 
     /**
+     * Add a new file to the group/Modify the data file
+     *
+     * @param string $filename
+     * @param string $data
+     * @return bool (added==true)
+     */
+    public function addfile($filename, $data = null) {
+        if (! vpl_is_valid_path_name( $filename )) {
+            return false;
+        }
+        ignore_user_abort( true );
+        $filelist = $this->getFileList();
+        foreach ($filelist as $f) {
+            if ($filename == $f) {
+                if ($data !== null) {
+                    $path = $this->dir . self::encodeFileName( $filename );
+                    $fd = vpl_fopen( $path );
+                    fwrite( $fd, $data );
+                    fclose( $fd );
+                }
+                return true;
+            }
+        }
+        if (count( $filelist ) >= $this->maxnumfiles) {
+            return false;
+        }
+        $filelist [] = $filename;
+        $this->setFileList( $filelist );
+        if ($data) {
+            $path = $this->dir . self::encodeFileName( $filename );
+            $fd = vpl_fopen( $path );
+            fwrite( $fd, $data );
+            fclose( $fd );
+        }
+        return true;
+    }
+
+    /**
      * Add new files to the group/Modify the data file
      *
      * @param array $files
