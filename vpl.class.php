@@ -497,14 +497,14 @@ class mod_vpl {
     /**
      * Get password
      */
-    public function get_password() {
+    protected function get_password() {
         return trim( $this->instance->password );
     }
 
     /**
      * Get password md5
      */
-    public function get_password_md5() {
+    protected function get_password_md5() {
         return md5( $this->instance->id . (sesskey()) );
     }
 
@@ -546,9 +546,12 @@ class mod_vpl {
     /**
      * Check password restriction
      */
-    public function password_check() {
+    protected function password_check() {
         global $SESSION;
         if (! $this->pass_password_check()) {
+            if ( constant( 'AJAX_SCRIPT' ) ) {
+                throw new Exception( get_string( 'requiredpassword', VPL ) );
+            }
             require_once('forms/password_form.php');
             $this->print_header();
             $mform = new mod_vpl_password_form( $_SERVER ['SCRIPT_NAME'], $this);
@@ -575,14 +578,80 @@ class mod_vpl {
      * Check netword restriction and show error if not passed
      * @return void
      */
-    public function network_check() {
+    protected function network_check() {
         global $OUTPUT;
         if (! $this->pass_network_check()) {
+            $str = get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr();
+            if ( constant( 'AJAX_SCRIPT') ) {
+                throw new Exception( $str );
+            }
             $this->print_header();
-            vpl_notice( get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr(), 'warning');
+            vpl_notice( $str , 'warning');
             $this->print_footer();
             die();
         }
+    }
+
+    /**
+     * Checks if SEB key is valid
+     * @return void
+     */
+    protected function is_sebkey_valid() {
+        global $FULLME;
+        $keys = trim($this->get_instance()->sebkeys);
+        if ( $keys == '') {
+            return true;
+        }
+        if ( ! isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH']) ) {
+            return false;
+        }
+        $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'];
+        foreach (preg_split('/\s+/', $keys) as $testkey) {
+            if (hash('sha256', $FULLME . $testkey) === $key) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Checks SEB restrictions and shows error if not passed
+     * @return void
+     */
+    protected function seb_check() {
+        $inst = $this->get_instance();
+        $fail = $inst->sebrequired > 0;
+        $fail = $fail && strpos($_SERVER['HTTP_USER_AGENT'], 'SEB') === false;
+        $fail = $fail || ! $this->is_sebkey_valid();
+        if ( $fail ) {
+            $str = get_string( 'sebrequired_help', VPL );
+            if ( constant( 'AJAX_SCRIPT') ) {
+                throw new Exception( $str );
+            }
+            $this->print_header();
+            vpl_notice( $str , 'warning');
+            $this->print_footer();
+            die();
+        }
+    }
+
+    /**
+     * Return true if is set to use SEB
+     * @return void
+     */
+    protected function use_seb() {
+        $inst = $this->get_instance();
+        return $inst->sebrequired || $inst->sebkeys > '';
+    }
+
+    /**
+     * Checks all restrictions and shows error if not passed
+     * @return void
+     */
+    public function restrictions_check() {
+        $this->network_check();
+        $this->password_check();
+        $this->seb_check();
     }
 
     /**
@@ -1049,7 +1118,8 @@ class mod_vpl {
         if ($this->is_group_activity()) {
             return print_group_picture( $this->get_usergroup( $user->id ), $this->get_course()->id, false, true );
         } else {
-            return $OUTPUT->user_picture( $user );
+            $options = array('courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb());
+            return $OUTPUT->user_picture( $user, $options);
         }
     }
 
@@ -1283,12 +1353,14 @@ class mod_vpl {
      */
     public function print_footer() {
         global $OUTPUT;
-        $style = "float:right; right:10px; padding:8px; background-color: white;text-align:center;";
-        echo '<div style="' . $style . '">';
-        echo '<a href="http://vpl.dis.ulpgc.es/">';
-        echo 'VPL '. vpl_get_version();
-        echo '</a>';
-        echo '</div>';
+        if (! $this->use_seb() ) {
+            $style = "float:right; right:10px; padding:8px; background-color: white;text-align:center;";
+            echo '<div style="' . $style . '">';
+            echo '<a href="http://vpl.dis.ulpgc.es/">';
+            echo 'VPL '. vpl_get_version();
+            echo '</a>';
+            echo '</div>';
+        }
         echo $OUTPUT->footer();
     }
 
@@ -1335,6 +1407,10 @@ class mod_vpl {
         $PAGE->set_title( $this->get_course()->fullname . ' ' . $tittle );
         $PAGE->set_pagelayout( 'incourse' );
         $PAGE->set_heading( $this->get_course()->fullname );
+        if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            $PAGE->set_popup_notification_allowed(false);
+            $PAGE->set_pagelayout('secure');
+        }
         echo $OUTPUT->header();
         self::$headerisout = true;
     }
@@ -1349,6 +1425,10 @@ class mod_vpl {
         }
         $PAGE->set_title( $this->get_course()->fullname . ' ' . $tittle );
         $PAGE->set_pagelayout( 'popup' );
+        if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            $PAGE->set_popup_notification_allowed(false);
+            $PAGE->set_pagelayout('secure');
+        }
         echo $OUTPUT->header();
         self::$headerisout = true;
     }
@@ -1643,6 +1723,13 @@ class mod_vpl {
         return $html;
     }
 
+    /**
+     * Print one VPL setting
+     * @param string $str setting string i18n to get descriptoin
+     * @param string $value setting value, default null
+     * @param boolean $raw if true $str if raw string, default false
+     * @param boolean $newline if true print new line after setting, default false
+     */
     public function print_restriction($str, $value = null, $raw = false, $newline = true) {
         echo $this->str_restriction($str, $value, $raw);
         if ( $newline ) {
@@ -1739,7 +1826,13 @@ class mod_vpl {
                 $this->print_restriction( get_string( 'password' ), $stryes, true );
             }
             if (trim( $this->instance->requirednet ) > '') {
-                $this->print_restriction( 'requirednet', s( $this->instance->requirednet ) );
+                $this->print_restriction( 'requirednet', s( $this->instance->requirednet ));
+            }
+            if ( $this->instance->sebrequired > 0) {
+                $this->print_restriction('sebrequired', $stryes );
+            }
+            if (trim( $this->instance->sebkeys ) > '') {
+                $this->print_restriction('sebkeys', $stryes );
             }
             if ($this->instance->restrictededitor) {
                 $this->print_restriction( 'restrictededitor', $stryes );

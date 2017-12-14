@@ -96,6 +96,18 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setType( 'requirednet', PARAM_TEXT );
         $mform->setDefault( 'requirednet', '' );
         $mform->setAdvanced( 'requirednet' );
+        $mform->addElement( 'selectyesno', 'sebrequired', get_string( 'sebrequired', VPL ) );
+        $mform->setDefault( 'sebrequired', 0 );
+        $mform->addHelpButton('sebrequired', 'sebrequired', VPL);
+        $mform->setAdvanced( 'sebrequired' );
+        $mform->addElement( 'textarea', 'sebkeys', get_string( 'sebkeys', VPL ), array (
+                'cols' => 66,
+                'rows' => 2
+        ) );
+        $mform->setType( 'sebkeys', PARAM_TEXT);
+        $mform->setDefault( 'sebkeys', '' );
+        $mform->addHelpButton('sebkeys', 'sebkeys', VPL);
+        $mform->setAdvanced( 'sebkeys' );
         // Grade.
         $this->standard_grading_coursemodule_elements();
         $mform->addElement( 'text', 'reductionbyevaluation', get_string( 'reductionbyevaluation', VPL ));
