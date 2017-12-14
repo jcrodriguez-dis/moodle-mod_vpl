@@ -31,8 +31,7 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 try {
     $vpl = new mod_vpl( $id );
-    $vpl->password_check();
-    $vpl->network_check();
+    $vpl->restrictions_check();
     if (! $vpl->is_visible()) {
         vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
     } else {

@@ -55,8 +55,7 @@ if (! $userid || $userid == $USER->id) { // Edit own submission.
 } else { // Edit other user submission.
     $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 }
-$vpl->network_check();
-$vpl->password_check();
+$vpl->restrictions_check();
 
 $instance = $vpl->get_instance();
 $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);

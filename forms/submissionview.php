@@ -83,8 +83,7 @@ if ($subinstance != null && $subinstance->vpl != $vpl->get_instance()->id) {
     print_error( 'invalidcourseid' );
 }
 if ($USER->id == $userid) {
-    $vpl->network_check();
-    $vpl->password_check();
+    $vpl->restrictions_check();
 }
 // Print header.
 vpl_sh_factory::include_js();

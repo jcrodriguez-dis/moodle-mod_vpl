@@ -61,12 +61,7 @@ try {
     if (! $userid || $userid == $USER->id) { // Make load own submission.
         $userid = $USER->id;
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-        if (! $vpl->pass_network_check()) {
-            throw new Exception( get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr() );
-        }
-        if (! $vpl->pass_password_check()) {
-            throw new Exception( get_string( 'requiredpassword', VPL ) );
-        }
+        $vpl->restrictions_check();
     } else { // Make other user submission.
         $vpl->require_capability( VPL_MANAGE_CAPABILITY );
     }

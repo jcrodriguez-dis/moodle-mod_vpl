@@ -53,8 +53,7 @@ if (! $userid || $userid == $USER->id) { // Make own submission.
         $vpl->require_capability( VPL_MANAGE_CAPABILITY );
     }
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-    $vpl->network_check();
-    $vpl->password_check();
+    $vpl->restrictions_check();
 } else { // Make other user submission.
     $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 }

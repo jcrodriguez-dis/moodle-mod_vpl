@@ -44,8 +44,7 @@ if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // 
     $vpl->require_capability( VPL_GRADE_CAPABILITY );
 }
 if ($USER->id == $userid) {
-    $vpl->network_check();
-    $vpl->password_check();
+    $vpl->restrictions_check();
 }
 // Display page.
 $vpl->print_header( get_string( 'evaluation', VPL ) );

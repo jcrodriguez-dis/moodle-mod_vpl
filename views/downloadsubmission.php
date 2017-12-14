@@ -65,7 +65,7 @@ try {
         } else {
             $subinstance = $vpl->last_user_submission( $userid );
         }
-        $vpl->password_check();
+        $vpl->restrictions_check();
     }
 
     // Check consistence.
