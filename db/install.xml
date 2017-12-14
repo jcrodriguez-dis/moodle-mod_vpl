@@ -4,46 +4,51 @@
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
   <TABLES>
-    <TABLE NAME="vpl" COMMENT="vpl assignment definition">
-      <FIELDS>
-        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
-        <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
-        <FIELD NAME="shortdescription" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Short assignment description"/>
-        <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Full description"/>
-        <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Intro format"/>
-        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date the vpl will be avaliable"/>
-        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="After this date this vpl instance will not be available"/>
-        <FIELD NAME="maxfiles" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of files"/>
-        <FIELD NAME="maxfilesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of bytes per file"/>
-        <FIELD NAME="requirednet" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Allowed submissions from"/>
-        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Password required to submit"/>
-        <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Grade scale or max"/>
-        <FIELD NAME="visiblegrade" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="0 visible grade no, 1 yes"/>
-        <FIELD NAME="usevariations" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Boolean to set if use variations or not in this vpl"/>
-        <FIELD NAME="variationtitle" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Variation tittle, is show with the variation description"/>
-        <FIELD NAME="basedon" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optionally, set the VPL id from this will be based on"/>
-        <FIELD NAME="run" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let the student Run the program intertive (0=no, 1=yes)"/>
-        <FIELD NAME="debug" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let to the student debug the program"/>
-        <FIELD NAME="evaluate" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let the student get feedback from the teacher tests"/>
-        <FIELD NAME="evaluateonsubmission" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Evaluate the assigment when it is submitted or saved in editor"/>
-        <FIELD NAME="automaticgrading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Use automatic evaluation results as final grade and comments"/>
-        <FIELD NAME="maxexetime" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum time in seconds to run, debug or evaluate the program"/>
-        <FIELD NAME="restrictededitor" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Submission by means of restricted Code Editor that disable external paste."/>
-        <FIELD NAME="example" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="This activity has no submission, act as program example."/>
-        <FIELD NAME="maxexememory" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum memory in bytes allocable to run, debug or evaluate"/>
-        <FIELD NAME="maxexefilesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum size in bytes for every file created running, debugging or evaluating"/>
-        <FIELD NAME="maxexeprocesses" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of processes can be running simultaneously"/>
-        <FIELD NAME="jailservers" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of jail servers"/>
-        <FIELD NAME="emailteachers" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
-        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this VPL instance was last modified"/>
-        <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of automatic evaluations that do not reduce final score"/>
-        <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reduce final score by a value or percentage for each automatic evaluation"/>
-      </FIELDS>
-      <KEYS>
-        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
-      </KEYS>
-    </TABLE>
+	<TABLE NAME="vpl" COMMENT="vpl assignment definition">
+	  <FIELDS>
+	    <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+	    <FIELD NAME="course" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+	    <FIELD NAME="name" TYPE="char" LENGTH="255" NOTNULL="true" SEQUENCE="false"/>
+	    <FIELD NAME="shortdescription" TYPE="text" NOTNULL="true" SEQUENCE="false" COMMENT="Short assignment description"/>
+	    <FIELD NAME="intro" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Full description"/>
+	    <FIELD NAME="introformat" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Intro format"/>
+	    <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Date the vpl will be avaliable"/>
+	    <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="After this date this vpl instance will not be available"/>
+	    <FIELD NAME="maxfiles" TYPE="int" LENGTH="4" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of files"/>
+	    <FIELD NAME="maxfilesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of bytes per file"/>
+	    <FIELD NAME="requirednet" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Allowed submissions from"/>
+	    <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Password required to submit"/>
+	    <FIELD NAME="grade" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Grade scale or max"/>
+	    <FIELD NAME="visiblegrade" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="1" SEQUENCE="false" COMMENT="0 visible grade no, 1 yes"/>
+	    <FIELD NAME="usevariations" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Boolean to set if use variations or not in this vpl"/>
+	    <FIELD NAME="variationtitle" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Variation tittle, is show with the variation description"/>
+	    <FIELD NAME="basedon" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Optionally, set the VPL id from this will be based on"/>
+	    <FIELD NAME="run" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let the student Run the program intertive (0=no, 1=yes)"/>
+	    <FIELD NAME="debug" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let to the student debug the program"/>
+	    <FIELD NAME="evaluate" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let the student get feedback from the teacher tests"/>
+	    <FIELD NAME="evaluateonsubmission" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Evaluate the assigment when it is submitted or saved in editor"/>
+	    <FIELD NAME="automaticgrading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Use automatic evaluation results as final grade and comments"/>
+	    <FIELD NAME="maxexetime" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum time in seconds to run, debug or evaluate the program"/>
+	    <FIELD NAME="restrictededitor" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Submission by means of restricted Code Editor that disable external paste."/>
+	    <FIELD NAME="example" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="This activity has no submission, act as program example."/>
+	    <FIELD NAME="maxexememory" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum memory in bytes allocable to run, debug or evaluate"/>
+	    <FIELD NAME="maxexefilesize" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum size in bytes for every file created running, debugging or evaluating"/>
+	    <FIELD NAME="maxexeprocesses" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum number of processes can be running simultaneously"/>
+	    <FIELD NAME="jailservers" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of jail servers"/>
+        <FIELD NAME="worktype" TYPE="int" LENGTH="4" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Type of work 0=individual, 1=group"/>
+	    <FIELD NAME="emailteachers" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+	    <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this VPL instance was last modified"/>
+	    <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of automatic evaluations that do not reduce final score"/>
+	    <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reduce final score by a value or percentage for each automatic evaluation"/>
+	    <FIELD NAME="sebrequired" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Safe Exam Browser required"/>
+	    <FIELD NAME="sebkeys" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Safe Exam Browser keys, one by line"/>
+	    <FIELD NAME="runscript" TYPE="char" LENGTH="63" NOTNULL="false" SEQUENCE="false" COMMENT="Name of script to run code"/>
+	    <FIELD NAME="debugscript" TYPE="char" LENGTH="63" NOTNULL="false" SEQUENCE="false" COMMENT="Name of script to debug code"/>
+	  </FIELDS>
+	  <KEYS>
+	    <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+	  </KEYS>
+	</TABLE>
     <TABLE NAME="vpl_submissions" COMMENT="Information about submission and grade">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
