@@ -29,6 +29,10 @@ defined( 'MOODLE_INTERNAL' ) || die();
 class lock {
     protected $lockfile;
     public function __construct($dir) {
+        global $CFG;
+        if ( ! file_exists ($dir) ) {
+            mkdir($dir, $CFG->directorypermissions, true);
+        }
         $this->lockfile = $dir . '/vpl.lock';
         $ctime = 0;
         $start = time();
