@@ -207,7 +207,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
             $query .= ' inner join';
             $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
             $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
-            $query .= ' on ls.maxid = s.id';
+            $query .= ' on ls.maxid = s.id ORDER BY s.id';
             $submission->set_source_sql( $query, array ( backup::VAR_ACTIVITYID ) );
         }
 
