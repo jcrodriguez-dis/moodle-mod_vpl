@@ -34,6 +34,41 @@ class mod_vpl_executionoptions_form extends moodleform {
         $this->vpl = $vpl;
         parent::__construct( $page );
     }
+    protected function get_scriptdescription($filename) {
+        $data = file_get_contents($filename);
+        if ($data === false ) {
+            return '';
+        }
+        $result = preg_match('/@vpl_script_description (.*)$/im', $data, $matches);
+        if ( $result ){
+            return ' - ' . $matches[1];
+        }
+        return '';
+    }
+    protected function get_dirlist($dir, $endwith) {
+        $avoid = array('all' => 1, 'default' => 1);
+        $el = strlen($endwith);
+        $dirlist = scandir($dir);
+        $list = array();
+        foreach ($dirlist as $file) {
+            if ( substr($file, - $el) == $endwith) {
+                $name = substr($file, 0, - $el);
+                if ( ! isset( $avoid[$name] ) ) {
+                    $list[$name] = $name . $this->get_scriptdescription($dir . '/' . $file);
+                }
+            }
+        }
+        return $list;
+    }
+
+    protected function get_runlist() {
+        return $this->get_dirlist('../jail/default_scripts', '_run.sh');
+    }
+
+    protected function get_debuglist() {
+        return $this->get_dirlist('../jail/default_scripts', '_debug.sh');
+    }
+
     protected function definition() {
         $mform = & $this->_form;
         $id = $this->vpl->get_course_module()->id;
@@ -57,6 +92,20 @@ class mod_vpl_executionoptions_form extends moodleform {
         $basedonlist [0] = get_string( 'select' );
         $mform->addElement( 'select', 'basedon', $strbasedon, $basedonlist );
         $mform->setDefault( 'basedon', $instance->basedon );
+
+        $strautodetect = get_string('autodetect', VPL);
+        $strrunscript = get_string('runscript', VPL);
+        $runlist = array_merge(array('' => $strautodetect), $this->get_runlist());
+        $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
+        $mform->setDefault( 'runscript', $instance->runscript );
+        $mform->addHelpButton('runscript', 'runscript', VPL);
+
+        $strdebugscript = get_string('debugscript', VPL);
+        $debuglist = array_merge(array('' => $strautodetect), $this->get_debuglist());
+        $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
+        $mform->setDefault( 'debugscript', $instance->debugscript );
+        $mform->addHelpButton('debugscript', 'debugscript', VPL);
+
         $mform->addElement( 'selectyesno', 'run', get_string( 'run', VPL ) );
         $mform->setDefault( 'run', $instance->run );
         $mform->addElement( 'selectyesno', 'debug', get_string( 'debug', VPL ) );
@@ -93,6 +142,8 @@ if ($fromform = $mform->get_data()) {
         $instance = $vpl->get_instance();
         \mod_vpl\event\vpl_execution_options_updated::log( $vpl );
         $instance->basedon = $fromform->basedon;
+        $instance->runscript = $fromform->runscript;
+        $instance->debugscript = $fromform->debugscript;
         $instance->run = $fromform->run;
         $instance->debug = $fromform->debug;
         $instance->evaluate = $fromform->evaluate;
