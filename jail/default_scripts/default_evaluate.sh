@@ -38,8 +38,9 @@ else
 		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
 		if [ ! -f .vpl_tester ] ; then
 			echo "Error compiling evaluation program"
+			exit 1
 		else
-			echo "#!/bin/bash" >> vpl_execution
+			cat vpl_environment.sh >> vpl_execution
 			echo "./.vpl_tester" >> vpl_execution
 		fi
 	else
