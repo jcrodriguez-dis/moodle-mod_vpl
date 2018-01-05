@@ -1,5 +1,5 @@
 #!/bin/bash
-echo "export VPL_VALGRIND=1" >> common_script.sh
+echo "export VPL_VALGRIND=1" >> vpl_environment.sh
 cat > vpl_execution << "ENDOFSCRIPT"
 #!/bin/bash
 read A
