@@ -84,8 +84,8 @@ $settings->add(
         new admin_setting_configtext( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ),
                 $defaultdefaultexeprocesses, PARAM_INT, 4 ) );
 $settings->add( new admin_setting_heading( 'heading2', '', get_string( 'jail_servers_config', VPL ) ) );
-$default = "#This server is only for test use.\n";
-$default .= "Install your own Jail server and remove the following line as soon as possible.\n";
+$default = "# This server is only for test use.\n";
+$default .= "# Install your own Jail server and remove the following line as soon as possible.\n";
 $default .= 'http://demojail.dis.ulpgc.es';
 $settings->add(
         new admin_setting_configtextarea( $prefix . 'jail_servers', get_string( 'jail_servers', VPL ),
