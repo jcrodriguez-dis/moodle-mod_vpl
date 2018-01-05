@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#@vpl_script_description Using default g++ with math and util libs
+#@vpl_script_description Using g++ C++11 ISO standard with math and util libs
 #load common script and check programs
 . common_script.sh
 check_program g++
@@ -16,5 +16,5 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files cpp C
-#compile
-g++ -fno-diagnostics-color -o vpl_execution $2 $SOURCE_FILES -lm -lutil
+# compile
+g++ -std=c++11 -pedantic -fno-diagnostics-color -o vpl_execution $2 $SOURCE_FILES -lm -lutil

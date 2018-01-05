@@ -5,7 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using "perl -d" with first file
+# load common script and check programs
 . common_script.sh
 check_program perl
 cat common_script.sh > vpl_execution

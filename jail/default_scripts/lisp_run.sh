@@ -4,6 +4,8 @@
 #Athors: 
 #   Juan Vega Rodríguez; github: jdvr
 #
+
+# @vpl_script_description Using clisp with the first file
 . common_script.sh
 check_program clisp
 if [ "$1" == "version" ] ; then

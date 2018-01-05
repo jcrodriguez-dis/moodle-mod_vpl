@@ -5,14 +5,15 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using gvhdl
+# load common script and check programs
 . common_script.sh
 check_program gvhdl
 if [ "$1" == "version" ] ; then
 	exit
 fi
 get_source_files vhdl vhd
-#compile
+# compile
 gvhdl $SOURCE_FILES
 
 NAME=${VPL_SUBFILE0%.*}

@@ -5,7 +5,8 @@
 #         Juan Vega Rodriguez
 #         Miguel Viera González
 
-#load common script and check programs
+# @vpl_script_description Using gdc with math and util libs
+# load common script and check programs
 . common_script.sh
 check_program gdc
 if [ "$1" == "version" ] ; then

@@ -6,6 +6,7 @@
 #         Juan Vega Rodriguez
 #         Miguel Viera González
 
+#@vpl_script_description Using default Clojure
 #load common script and check programs
 
 . common_script.sh
@@ -15,7 +16,8 @@ if [ "$1" == "version" ] ; then
 	echo "clojure --eval \"(clojure-version)\"" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+
 cat common_script.sh > vpl_execution
 echo "clojure $VPL_SUBFILE0 \$@" >>vpl_execution
 chmod +x vpl_execution

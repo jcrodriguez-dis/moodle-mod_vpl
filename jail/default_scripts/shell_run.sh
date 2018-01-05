@@ -5,7 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using default /bin/bash
+# load common script and check programs
 . common_script.sh
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution

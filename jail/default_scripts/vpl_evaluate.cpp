@@ -506,6 +506,7 @@ const char* Tools::getenv(const char* name, const char* defaultvalue) {
 	const char* value = ::getenv(name);
 	if ( value == NULL ) {
 		value = defaultvalue;
+		printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
 	}
 }
 
@@ -514,6 +515,8 @@ double Tools::getenv(const char* name, double defaultvalue) {
 	double value = defaultvalue;
 	if ( svalue != NULL ) {
 		Tools::convert2(svalue, value);
+	} else {
+		printf("Warning: using default value '%lf' for '%s'\n", defaultvalue, name);
 	}
 	return value;
 }
@@ -1607,8 +1610,8 @@ void Evaluation::loadTestCases(string fname) {
 }
 
 bool Evaluation::loadParams() {
-	grademin= (int) Tools::getenv("VPL_GRADEMIN", 0.0);
-	grademax = (int) Tools::getenv("VPL_GRADEMAX", 10);
+	grademin= Tools::getenv("VPL_GRADEMIN", 0.0);
+	grademax = Tools::getenv("VPL_GRADEMAX", 10);
 	maxtime = (int) Tools::getenv("VPL_MAXTIME", 20);
 	variation = Tools::toLower(Tools::trim(Tools::getenv("VPL_VARIATION","")));
 	noGrade = grademin >= grademax;

@@ -5,7 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load VPL environment vars
+# @vpl_script_description Using gfortran
+# load VPL environment vars
 . common_script.sh
 check_program gfortran
 get_source_files f f77

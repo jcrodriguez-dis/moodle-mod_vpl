@@ -5,7 +5,8 @@
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
 
-#load common script and check programs
+# @vpl_script_description Using "hugs +98" with the first file
+# load common script and check programs
 . common_script.sh
 check_program hugs
 

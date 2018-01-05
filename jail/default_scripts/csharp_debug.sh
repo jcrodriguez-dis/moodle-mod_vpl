@@ -5,6 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+#@vpl_script_description Debug using gdb
 #load common script and check programs
 . common_script.sh
 export MONO_ENV_OPTIONS=--gc=sgen

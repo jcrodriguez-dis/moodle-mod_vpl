@@ -5,13 +5,15 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using GDB or ddd if available
+# load common script and check programs
 . common_script.sh
 check_program gcc
 get_source_files c
-#compile
-gcc -fno-diagnostics-color -o vpl_program -g -O0 $SOURCE_FILES -lm -lutil
-if [ -f vpl_program ] ; then
+# compile
+. vpl_run.sh n "-g -O0"
+if [ -f vpl_execution ] ; then
+	mv vpl_execution vpl_program
 	cat common_script.sh > vpl_execution
 	chmod +x vpl_execution
 	if [ "$(command -v ddd)" == "" ] ; then
@@ -19,9 +21,9 @@ if [ -f vpl_program ] ; then
 		echo "gdb vpl_program" >> vpl_execution
 	else
 		echo "ddd --quiet vpl_program &>/dev/null" >> vpl_execution
-		mkdir .ddd
-		mkdir .ddd/sessions
-		mkdir .ddd/themes
+		mkdir .ddd &>/dev/null
+		mkdir .ddd/sessions &>/dev/null
+		mkdir .ddd/themes &>/dev/null
 		cat >.ddd/init <<END_OF_FILE
 Ddd*splashScreen: off
 Ddd*startupTips: off

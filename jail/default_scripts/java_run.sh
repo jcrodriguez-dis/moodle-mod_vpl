@@ -23,7 +23,8 @@ function hasMain {
 	cat -v $FILE | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
 }
 
-#load common script and check programs
+# @vpl_script_description Using default javac, run JUnit if detected
+# load common script and check programs
 . common_script.sh
 
 check_program javac
@@ -39,14 +40,14 @@ if [ -f $JUNIT4 ] ; then
 	export CLASSPATH=$CLASSPATH:$JUNIT4
 fi
 get_source_files java
-#compile all .java files
+# compile all .java files
 
-javac -Xlint:deprecation $SOURCE_FILES
+javac -Xlint:deprecation $2 $SOURCE_FILES
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
-#Search main procedure class
+# Search main procedure class
 MAINCLASS=
 for FILENAME in $SOURCE_FILES
 do
@@ -67,7 +68,7 @@ if [ "$MAINCLASS" = "" ] ; then
 	done
 fi
 if [ "$MAINCLASS" = "" ] ; then
-#Search for junit4 test classes
+# Search for junit4 test classes
 	TESTCLASS=
 	for FILENAME in $SOURCE_FILES
 	do

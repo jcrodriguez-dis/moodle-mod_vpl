@@ -13,7 +13,8 @@ function getClassName {
 	echo "$CLASSNAME"
 }
 
-#load common script and check programs
+# @vpl_script_description Using jdb or ddd if detected
+# load common script and check programs
 . common_script.sh
 check_program javac
 check_program java

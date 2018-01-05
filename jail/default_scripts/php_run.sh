@@ -5,7 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using "php -n -f" with the first file or on serve if index.php exists
+# load common script and check programs
 . common_script.sh
 check_program php5 php
 PHP=$PROGRAM

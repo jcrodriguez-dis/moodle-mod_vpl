@@ -6,7 +6,8 @@
 #         Juan Vega Rodriguez
 #         Miguel Viera González
 
-#load common script and check programs
+# @vpl_script_description Using lua with the first file
+# load common script and check programs
 
 . common_script.sh
 check_program lua

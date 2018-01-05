@@ -4,7 +4,9 @@
 # Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
-#load common script and check programs
+
+# @vpl_script_description Using GCC with math and util libs
+# load common script and check programs
 . common_script.sh
 check_program gcc
 if [ "$1" == "version" ] ; then
@@ -14,5 +16,5 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files c
-#compile
-eval gcc -fno-diagnostics-color -o vpl_execution $SOURCE_FILES -lm -lutil 
+# compile
+eval gcc -fno-diagnostics-color -o vpl_execution $2 $SOURCE_FILES -lm -lutil 

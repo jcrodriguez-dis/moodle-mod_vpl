@@ -5,7 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using mcs
+# load common script and check programs
 . common_script.sh
 check_program mcs
 check_program mono
@@ -16,9 +17,9 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files cs
-#compile
+# compile
 export MONO_ENV_OPTIONS=--gc=sgen
-mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono/2.0 $SOURCE_FILES
+mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono $SOURCE_FILES
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
