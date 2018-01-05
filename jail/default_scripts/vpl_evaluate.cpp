@@ -506,7 +506,9 @@ const char* Tools::getenv(const char* name, const char* defaultvalue) {
 	const char* value = ::getenv(name);
 	if ( value == NULL ) {
 		value = defaultvalue;
-		printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
+		if ( defaultvalue[0] ) {
+		    printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
+		}
 	}
 }
 
