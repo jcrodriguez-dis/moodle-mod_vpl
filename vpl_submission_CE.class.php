@@ -153,7 +153,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                     if ($filename == "." || $filename == "..") {
                         continue;
                     }
-                    if (substr( $filename, - 7 ) == '_run.sh' || substr( $filename, - 9 ) == '_hello.sh') {
+                    if (substr( $filename, - 7 ) == '_run.sh' ||
+                        substr( $filename, - 9 ) == '_hello.sh' ||
+                        substr( $filename, - 9 ) == '_debug.sh' ) {
                         $ret [$filename] = file_get_contents( $path . $filename );
                     }
                 }
