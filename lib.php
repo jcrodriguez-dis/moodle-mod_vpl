@@ -220,17 +220,34 @@ function vpl_update_instance($instance) {
  * @param int $id instance Id
  * @return boolean OK
  */
-function vpl_delete_instance($id) {
-    global $DB;
-    $vpl = new mod_vpl( false, $id );
-    $res = $vpl->delete_all();
+function vpl_delete_instance( $id ) {
+    global $DB, $CFG;
+    // Delete all data files.
+    $instance = $DB->get_record( VPL, array ( "id" => $id ) );
+    if ( $instance === false ) {
+        return false;
+    }
+    vpl_delete_dir( $CFG->dataroot . '/vpl_data/' . $id );
+    // Delete grade_item.
+    vpl_delete_grade_item( $instance );
+    // Delete event.
+    $DB->delete_records( 'event',
+            array (
+                    'modulename' => VPL,
+                    'instance' => $id
+            ) );
+    // Delete all submissions records.
+    $DB->delete_records( 'vpl_submissions', array ( 'vpl' => $id ) );
+    // Delete vpl record.
+    $DB->delete_records( VPL, array ( 'id' => $id ) );
+
     // Locate related VPLs and reset its basedon $id to 0.
-    $related = $DB->get_records_select( VPL, 'basedon = ?', array ( $id ), 'id', 'id,basedon' );
+    $related = $DB->get_records_select( VPL, 'basedon = ?', array ( $id ) );
     foreach ($related as $other) {
         $other->basedon = 0;
         $DB->update_record( VPL, $other );
     }
-    return $res;
+    return true;
 }
 
 /**
