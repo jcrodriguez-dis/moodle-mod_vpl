@@ -33,6 +33,10 @@ function initTest {
 	cp $CASESDIR/$1_vpl_test_evaluate.sh $TESTDIR/vpl_test_evaluate.sh
 	cat > $TESTDIR/vpl_environment.sh << ENDOFSCRIPT
 #!/bin/bash
+export VPL_GRADEMIN=0
+export VPL_GRADEMAX=10
+export VPL_NEVALUATIONS=0
+export VPL_VARIATION=
 
 ENDOFSCRIPT
 
