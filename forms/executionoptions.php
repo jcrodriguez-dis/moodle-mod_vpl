@@ -40,7 +40,7 @@ class mod_vpl_executionoptions_form extends moodleform {
             return '';
         }
         $result = preg_match('/@vpl_script_description (.*)$/im', $data, $matches);
-        if ( $result ){
+        if ( $result ) {
             return ' - ' . $matches[1];
         }
         return '';
