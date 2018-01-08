@@ -1,6 +1,6 @@
 /**
  * VPL builtin program for submissions evaluation
- * @Copyright (C) 2017 Juan Carlos Rodríguez-del-Pino
+ * @Copyright (C) 2018 Juan Carlos Rodríguez-del-Pino
  * @License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -55,8 +55,6 @@ public:
 	static const char* getenv(const char* name, const char* defaultvalue);
 	static double getenv(const char* name, double defaultvalue);
 };
-
-
 
 /**
  * Class Stop Declaration
@@ -506,9 +504,7 @@ const char* Tools::getenv(const char* name, const char* defaultvalue) {
 	const char* value = ::getenv(name);
 	if ( value == NULL ) {
 		value = defaultvalue;
-		if ( defaultvalue[0] ) {
-		    printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
-		}
+	    printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
 	}
 }
 
