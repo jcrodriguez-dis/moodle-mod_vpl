@@ -304,9 +304,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $info .= 'export VPL_SUBFILES="' . $filenames . "\"\n";
         // Add identifications of variations if exist.
+        $info .= vpl_bash_export( 'VPL_VARIATION', '' );
         $varids = $vpl->get_variation_identification( $this->instance->userid );
         foreach ($varids as $id => $varid) {
             $info .= vpl_bash_export( 'VPL_VARIATION' . $id, $varid );
+            $info .= vpl_bash_export( 'VPL_VARIATION', $varid );
         }
         for ($i = 0; $i <= $type; $i ++) {
             $script = self::$scriptlist [$i];
