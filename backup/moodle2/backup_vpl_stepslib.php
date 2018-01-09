@@ -126,7 +126,11 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'worktype',
         'timemodified',
         'freeevaluations',
-        'reductionbyevaluation'
+        'reductionbyevaluation',
+        'sebrequired',
+        'sebkeys',
+	    'runscript',
+	    'debugscript'
     );
     protected $submissionfields = array (
         'vpl',
