@@ -11,7 +11,7 @@
 check_program g++
 get_source_files cpp C
 # compile
-. run_vpl.sh n "-g -O0"
+. vpl_run.sh n "-g -O0"
 if [ -f vpl_execution ] ; then
 	mv vpl_execution vpl_program
 	cat common_script.sh > vpl_execution
