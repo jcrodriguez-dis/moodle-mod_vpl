@@ -34,11 +34,13 @@ function get_source_files {
 	    fi
 	done
 	local file_name
-	for file_name in "$SOURCE_FILES"
-	do
-		SOURCE_FILE0="$file_name"
-		return 0
-	done
+    if [ "$SOURCE_FILES_LINE" != "" -o "$1" == "b64" ] ; then
+		for file_name in "$SOURCE_FILES"
+		do
+			SOURCE_FILE0="$file_name"
+			return 0
+		done
+	fi
 	echo "To run this type of program you need some file with extension \"$@\""
 	exit 0;
 }
