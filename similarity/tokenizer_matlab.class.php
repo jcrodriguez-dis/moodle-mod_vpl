@@ -284,30 +284,30 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                         break;
                     } else if ($current == "'" && ($lastnospace == self::LF
                             || $lastnospace == '' || strpos( "[,;'(=", $lastnospace ) !== false)) {
-                                $state = self::IN_STRING;
-                                $this->string_delimiter = "'";
-                                $this->add_pending( $pending );
-                                $pending = "''";
-                                $this->add_pending( $pending );
-                                break;
-                            } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier( $pending )) {
-                                $state = self::IN_NUMBER;
-                                $this->add_pending( $pending );
-                                $pending = $current;
-                                break;
-                            }
-                            if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
-                                    || $current == '_' || ord( $current ) > 127) {
-                                        $pending .= $current;
-                                    } else {
-                                        // TODO check level without { }.
-                                        $this->add_pending( $pending );
-                                        if ($current == self::LF) {
-                                            $this->linenumber ++;
-                                        } else {
-                                            $this->add_pending( $current );
-                                        }
-                                    }
+                        $state = self::IN_STRING;
+                        $this->string_delimiter = "'";
+                        $this->add_pending( $pending );
+                        $pending = "''";
+                        $this->add_pending( $pending );
+                        break;
+                    } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier( $pending )) {
+                        $state = self::IN_NUMBER;
+                        $this->add_pending( $pending );
+                        $pending = $current;
+                        break;
+                    }
+                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                            || $current == '_' || ord( $current ) > 127) {
+                        $pending .= $current;
+                    } else {
+                        // TODO check level without { }.
+                        $this->add_pending( $pending );
+                        if ($current == self::LF) {
+                            $this->linenumber ++;
+                        } else {
+                            $this->add_pending( $current );
+                        }
+                    }
             }
         }
 
