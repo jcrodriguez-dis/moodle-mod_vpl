@@ -129,8 +129,8 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'reductionbyevaluation',
         'sebrequired',
         'sebkeys',
-	    'runscript',
-	    'debugscript'
+        'runscript',
+        'debugscript'
     );
     protected $submissionfields = array (
         'vpl',
