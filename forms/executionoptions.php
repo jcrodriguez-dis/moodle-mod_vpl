@@ -41,12 +41,12 @@ class mod_vpl_executionoptions_form extends moodleform {
         }
         $result = preg_match('/@vpl_script_description (.*)$/im', $data, $matches);
         if ( $result ) {
-            return ' - ' . $matches[1];
+            return ': ' . $matches[1];
         }
         return '';
     }
     protected function get_dirlist($dir, $endwith) {
-        $avoid = array('all' => 1, 'default' => 1);
+        $avoid = array('default' => 1);
         $el = strlen($endwith);
         $dirlist = scandir($dir);
         $list = array();
@@ -54,7 +54,7 @@ class mod_vpl_executionoptions_form extends moodleform {
             if ( substr($file, - $el) == $endwith) {
                 $name = substr($file, 0, - $el);
                 if ( ! isset( $avoid[$name] ) ) {
-                    $list[$name] = $name . $this->get_scriptdescription($dir . '/' . $file);
+                    $list[$name] = strtoupper($name) . $this->get_scriptdescription($dir . '/' . $file);
                 }
             }
         }
