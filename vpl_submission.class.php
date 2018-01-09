@@ -616,6 +616,10 @@ class mod_vpl_submission {
             if ($scaleid == 0) {
                 return get_string( 'nograde' );
             } else if ($grade == null) {
+                // If group activity don't retrieve grade from gradebook.
+                if ( $this->vpl->is_group_activity() ) {
+                    return format_float($this->get_instance()->grade, 2, true, true);
+                }
                 if (! function_exists( 'grade_get_grades' )) {
                     require_once($CFG->libdir . '/gradelib.php');
                 }
