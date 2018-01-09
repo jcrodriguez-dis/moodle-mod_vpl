@@ -5,6 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+# @vpl_script_description Run a GUI "hello world" program of all programming languages available
+
 cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
 NG=0
@@ -50,7 +52,7 @@ do
 		LANGEG="$LANGEG $LANGUAGE"
 	fi
     if [ -f ./$DEBUGSCRIPT ] ; then
-    	cp $RUNSCRIPT run_vpl.sh
+    	cp $RUNSCRIPT vpl_run.sh
 		eval ./$DEBUGSCRIPT batch &>>.curerror
 		if [ -f vpl_wexecution ] ; then
 			let "NG=NG+1"

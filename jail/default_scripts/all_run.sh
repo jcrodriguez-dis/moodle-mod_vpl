@@ -5,6 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+# @vpl_script_description Run a "hello world" program of all programming languages available
+
 cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
 NG=0
