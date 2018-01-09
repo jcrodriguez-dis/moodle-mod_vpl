@@ -1735,7 +1735,7 @@ class mod_vpl {
         if ( $newline ) {
             echo '<br>';
         } else {
-            echo ' ';
+            echo '. ';
         }
     }
 
@@ -1759,7 +1759,6 @@ class mod_vpl {
      */
     public function print_submission_restriction() {
         global $CFG, $USER;
-        // TODO print_submission_restriction.
         $filegroup = $this->get_required_fgm();
         $files = $filegroup->getfilelist();
         if (count( $files )) {
@@ -1779,14 +1778,15 @@ class mod_vpl {
             $link .= '</a>)';
             $this->print_restriction( 'requestedfiles', $text . $link );
         }
-        if (count( $files ) != $this->instance->maxfiles) {
+        $instance = $this->get_instance();
+        if (count( $files ) != $instance->maxfiles) {
             $this->print_restriction( 'maxfiles' );
         }
-        if ($this->instance->maxfilesize) {
+        if ($instance->maxfilesize) {
             $mfs = $this->get_maxfilesize();
             $this->print_restriction( 'maxfilesize', vpl_conv_size_to_string( $mfs ) );
         }
-        $worktype = $this->instance->worktype;
+        $worktype = $instance->worktype;
         $values = array (
                 0 => get_string( 'individualwork', VPL ),
                 1 => get_string( 'groupwork', VPL )
@@ -1796,7 +1796,7 @@ class mod_vpl {
         } else {
             $this->print_restriction( 'worktype', $values [$worktype] );
         }
-        if ($this->instance->example) {
+        if ($instance->example) {
             $this->print_restriction( 'isexample', $stryes );
         }
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
@@ -1822,27 +1822,27 @@ class mod_vpl {
         }
         $this->print_gradereduction();
         if ($grader) {
-            if (trim( $this->instance->password ) > '') {
+            if (trim( $instance->password ) > '') {
                 $this->print_restriction( get_string( 'password' ), $stryes, true );
             }
-            if (trim( $this->instance->requirednet ) > '') {
-                $this->print_restriction( 'requirednet', s( $this->instance->requirednet ));
+            if (trim( $instance->requirednet ) > '') {
+                $this->print_restriction( 'requirednet', s( $instance->requirednet ));
             }
-            if ( $this->instance->sebrequired > 0) {
+            if ( $instance->sebrequired > 0) {
                 $this->print_restriction('sebrequired', $stryes );
             }
-            if (trim( $this->instance->sebkeys ) > '') {
+            if (trim( $instance->sebkeys ) > '') {
                 $this->print_restriction('sebkeys', $stryes );
             }
-            if ($this->instance->restrictededitor) {
+            if ($instance->restrictededitor) {
                 $this->print_restriction( 'restrictededitor', $stryes );
             }
             if (! $this->get_course_module()->visible) {
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
             }
-            if ($this->instance->basedon) {
+            if ($instance->basedon) {
                 try {
-                    $basedon = new mod_vpl( null, $this->instance->basedon );
+                    $basedon = new mod_vpl( null, $instance->basedon );
                     $link = '<a href="';
                     $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
                     $link .= '">';
@@ -1857,29 +1857,35 @@ class mod_vpl {
                     $strno,
                     $stryes
             );
-            $this->print_restriction( 'run', $noyes [$this->instance->run], false, false );
-            if ($this->instance->debug) {
+            $this->print_restriction( 'run', $noyes [$instance->run], false, false );
+            if ($instance->runscript) {
+                $this->print_restriction( 'runscript', strtoupper($instance->runscript), false, false );
+            }
+            if ($instance->debug) {
                 $this->print_restriction( 'debug', $noyes [1], false, false );
             }
-            $this->print_restriction( 'evaluate', $noyes [$this->instance->evaluate], false,
-                    ! ($this->instance->evaluate && $this->instance->evaluateonsubmission) );
-            if ($this->instance->evaluate && $this->instance->evaluateonsubmission) {
+            if ($instance->debugscript) {
+                $this->print_restriction( 'debugscript', strtoupper($instance->debugscript), false, false );
+            }
+            $this->print_restriction( 'evaluate', $noyes [$instance->evaluate], false,
+                    ! ($instance->evaluate && $instance->evaluateonsubmission) );
+            if ($instance->evaluate && $instance->evaluateonsubmission) {
                 $this->print_restriction( 'evaluateonsubmission', $noyes [1] );
             }
-            if ($this->instance->automaticgrading) {
+            if ($instance->automaticgrading) {
                 $this->print_restriction( 'automaticgrading', $noyes [1], false, false );
             }
-            if ($this->instance->maxexetime) {
-                $this->print_restriction( 'maxexetime', $this->instance->maxexetime . ' s', false, false );
+            if ($instance->maxexetime) {
+                $this->print_restriction( 'maxexetime', $instance->maxexetime . ' s', false, false );
             }
-            if ($this->instance->maxexememory) {
-                $this->print_restriction( 'maxexememory', vpl_conv_size_to_string( $this->instance->maxexememory ), false, false );
+            if ($instance->maxexememory) {
+                $this->print_restriction( 'maxexememory', vpl_conv_size_to_string( $instance->maxexememory ), false, false );
             }
-            if ($this->instance->maxexefilesize) {
-                $this->print_restriction( 'maxexefilesize', vpl_conv_size_to_string( $this->instance->maxexefilesize ), false,
+            if ($instance->maxexefilesize) {
+                $this->print_restriction( 'maxexefilesize', vpl_conv_size_to_string( $instance->maxexefilesize ), false,
                         false );
             }
-            if ($this->instance->maxexeprocesses) {
+            if ($instance->maxexeprocesses) {
                 $this->print_restriction( 'maxexeprocesses', null, false, false );
             }
         }
