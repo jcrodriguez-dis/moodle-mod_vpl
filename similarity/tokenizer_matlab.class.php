@@ -80,7 +80,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
     public function __construct() {
         if (self::$creserved === null) {
             self::$creserved = array ( // Source MATLAB Quick Reference Author: Jialong He.
-                    /* ﻿Managing Commands and Functions. */
+                    /* Managing Commands and Functions. */
                     "addpath" => true,
                     "doc" => true,
                     "docopt" => true,
@@ -165,7 +165,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     "keyboard" => true,
                     "menu" => true,
                     "pause" => true,
-                    /*﻿ Object-Oriented Programming. */
+                    /* Object-Oriented Programming. */
                     "class" => true,
                     "double" => true,
                     "inferiorto" => true,
@@ -255,7 +255,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                 case self::IN_NUMBER :
                     // Bug fixed 'e' => 'E'd by Lang Michael: michael.lang.ima10@fh-joanneum.at.
                     if (($current >= '0' && $current <= '9') ||
-                         $current == '.' || $current == 'E' || $current == 'e') {
+                    $current == '.' || $current == 'E' || $current == 'e') {
                         $pending .= $current;
                         continue;
                     }
@@ -283,31 +283,31 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                         $this->add_pending( $pending );
                         break;
                     } else if ($current == "'" && ($lastnospace == self::LF
-                              || $lastnospace == '' || strpos( "[,;'(=", $lastnospace ) !== false)) {
-                        $state = self::IN_STRING;
-                        $this->string_delimiter = "'";
-                        $this->add_pending( $pending );
-                        $pending = "''";
-                        $this->add_pending( $pending );
-                        break;
-                    } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier( $pending )) {
-                        $state = self::IN_NUMBER;
-                        $this->add_pending( $pending );
-                        $pending = $current;
-                        break;
-                    }
-                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
-                        || $current == '_' || ord( $current ) > 127) {
-                        $pending .= $current;
-                    } else {
-                        // TODO check level without { }.
-                        $this->add_pending( $pending );
-                        if ($current == self::LF) {
-                            $this->linenumber ++;
-                        } else {
-                            $this->add_pending( $current );
-                        }
-                    }
+                            || $lastnospace == '' || strpos( "[,;'(=", $lastnospace ) !== false)) {
+                                $state = self::IN_STRING;
+                                $this->string_delimiter = "'";
+                                $this->add_pending( $pending );
+                                $pending = "''";
+                                $this->add_pending( $pending );
+                                break;
+                            } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier( $pending )) {
+                                $state = self::IN_NUMBER;
+                                $this->add_pending( $pending );
+                                $pending = $current;
+                                break;
+                            }
+                            if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                                    || $current == '_' || ord( $current ) > 127) {
+                                        $pending .= $current;
+                                    } else {
+                                        // TODO check level without { }.
+                                        $this->add_pending( $pending );
+                                        if ($current == self::LF) {
+                                            $this->linenumber ++;
+                                        } else {
+                                            $this->add_pending( $current );
+                                        }
+                                    }
             }
         }
 
