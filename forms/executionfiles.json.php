@@ -70,6 +70,12 @@ try {
         case 'retrieve' :
             $outcome->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
             break;
+        case 'cancel' :
+            $outcome->response = mod_vpl_edit::cancel( $vpl, $userid );
+            break;
+        case 'getjails' :
+            $outcome->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
+            break;
         default :
             throw new Exception( 'ajax action error: ' + $action);
     }
