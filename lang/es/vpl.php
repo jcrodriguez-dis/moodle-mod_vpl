@@ -295,6 +295,24 @@ $string ['always_use_wss'] = 'Siempre usar protocolo websocket cifrado (wss)';
 $string ['always_use_ws'] = 'Siempre usar protocolo websocket sin cifrado (ws)';
 $string ['depends_on_https'] = 'Usar wss o ws dependiendo de si se usa http o https';
 
+$string ['basic'] = 'Básico';
+$string ['intermediate'] = 'Intermedio';
+$string ['advanced'] = 'Avanzado';
+$string ['variables'] = 'Variables';
+$string ['operatorsvalues'] = 'Operadores/valores';
+$string ['control'] = 'Control';
+$string ['inputoutput'] = 'Entrada/salida';
+$string ['functions'] = 'Funciones';
+$string ['lists'] = 'Listas';
+$string ['math'] = 'Matemáticas';
+$string ['text'] = 'Texto';
+$string ['start'] = 'Ejecutar';
+$string ['startanimate'] = 'Ejecutar animado';
+$string ['stop'] = 'Parar';
+$string ['pause'] = 'Pausar';
+$string ['resume'] = 'Continuar';
+$string ['step'] = 'Un paso';
+
 // Added without order.
 $string ['check_jail_servers_help'] = '<p>Esta página comprueba y muestra el estado de los servidores de ejecución usados por esta actividad.</p>';
 $string ['executionfiles_help'] = '<h2>Introducción</h2>

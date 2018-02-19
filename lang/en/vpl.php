@@ -127,6 +127,10 @@ $string ['graderemoved'] = 'The grade has been removed';
 $string ['groupwork'] = 'Group work';
 $string ['inconsistentgroup'] = 'You are not member of only one group (0 o >1)';
 $string ['incorrect_file_name'] = 'Incorrect file name';
+$string ['indicator:cognitivedepth'] = 'VPL cognitive';
+$string ['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in an VPL activity.';
+$string ['indicator:socialbreadth'] = 'VPL social';
+$string ['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in an VPL activity.';
 $string ['individualwork'] = 'Individual work';
 $string ['instanceselection'] = 'VPL selection';
 $string ['isexample'] = 'This activity acts as example';
@@ -294,6 +298,24 @@ $string ['websocket_protocol_description'] = 'Type of WebSocket protocol (ws:// 
 $string ['always_use_wss'] = 'Always use encrypted (wss) websocket protocol';
 $string ['always_use_ws'] = 'Always use unencrypted (ws) websocket protocol';
 $string ['depends_on_https'] = 'Use ws or wss depending on if using http or https';
+
+$string ['basic'] = 'Basic';
+$string ['intermediate'] = 'Intermediate';
+$string ['advanced'] = 'Advanced';
+$string ['variables'] = 'Variables';
+$string ['operatorsvalues'] = 'Operators/Values';
+$string ['control'] = 'Control';
+$string ['inputoutput'] = 'Input/Output';
+$string ['functions'] = 'Functions';
+$string ['lists'] = 'Lists';
+$string ['math'] = 'Math';
+$string ['text'] = 'Text';
+$string ['start'] = 'Start';
+$string ['startanimate'] = 'Start animate';
+$string ['stop'] = 'Stop';
+$string ['pause'] = 'Pause';
+$string ['resume'] = 'Resume';
+$string ['step'] = 'Step';
 
 $string ['check_jail_servers_help'] = "<p>This page check and show the status of execution servers used
 for this activity.</p>";
