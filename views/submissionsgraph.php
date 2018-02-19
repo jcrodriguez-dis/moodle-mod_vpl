@@ -23,94 +23,80 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname( __FILE__ ) . '/../../../config.php');
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/vpl_graph.class.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 
-require_login();
-
-$id = required_param( 'id', PARAM_INT );
-$userid = required_param( 'userid', PARAM_INT );
-$type = optional_param( 'type', 0, PARAM_INT );
-$vpl = new mod_vpl( $id );
-$course = $vpl->get_course();
-$vpl->require_capability( VPL_GRADE_CAPABILITY );
-// No log.
-$subsn = array ();
-$series = array ();
-$names = array ();
-$submissionslist = $vpl->user_submissions( $userid );
-if (count( $submissionslist ) > 0) {
-    $submissionslist = array_reverse( $submissionslist );
-    // Create submissions object.
-    $subs = array ();
-    foreach ($submissionslist as $submission) {
-        $subs [] = new mod_vpl_submission( $vpl, $submission );
-    }
-    foreach ($subs as $sub) {
-        $filesarray = $sub->get_submitted_fgm()->getfilelist();
-        foreach ($filesarray as $name) {
-            if (! in_array( $name, $names, true )) {
-                $names [] = $name;
-                $series [$name] = array ();
+function vpl_submissions_graph($vpl, $userid) {
+    global $DB;
+    $course = $vpl->get_course();
+    // No log.
+    $subsn = array ();
+    $series = array ();
+    $names = array ();
+    $submissionslist = $vpl->user_submissions( $userid );
+    if (count( $submissionslist ) > 0) {
+        $submissionslist = array_reverse( $submissionslist );
+        // Create submissions object.
+        $subs = array ();
+        foreach ($submissionslist as $submission) {
+            $subs [] = new mod_vpl_submission( $vpl, $submission );
+        }
+        foreach ($subs as $sub) {
+            $filesarray = $sub->get_submitted_fgm()->getfilelist();
+            foreach ($filesarray as $name) {
+                if (! in_array( $name, $names, true )) {
+                    $names [] = $name;
+                    $series [$name] = array ();
+                }
             }
         }
-    }
-    // Initial value.
-    $subsn [] = 0;
-    foreach ($names as $name) {
-        $series [$name] [] = 0;
-    }
-    $subshowl = ( int ) (count( $subs ) / 20);
-    if ($subshowl < 1) {
-        $subshow = 1;
-    } else {
-        $subshow = 5;
-        while ( true ) {
-            if ($subshow >= $subshowl) {
-                break;
-            }
-            $subshow *= 2;
-            if ($subshow >= $subshowl) {
-                break;
-            }
-            $subshow = ( int ) (2.5 * $subshow);
-            if ($subshow >= $subshowl) {
-                break;
-            }
-            $subshow *= 2;
-            if ($subshow >= $subshowl) {
-                break;
+        // Initial value.
+        $subshowl = ( int ) (count( $subs ) / 20);
+        if ($subshowl < 1) {
+            $subshow = 1;
+        } else {
+            $subshow = 5;
+            while ( true ) {
+                if ($subshow >= $subshowl) {
+                    break;
+                }
+                $subshow *= 2;
+                if ($subshow >= $subshowl) {
+                    break;
+                }
+                $subshow = ( int ) (2.5 * $subshow);
+                if ($subshow >= $subshowl) {
+                    break;
+                }
+                $subshow *= 2;
+                if ($subshow >= $subshowl) {
+                    break;
+                }
             }
         }
-    }
-    $nsub = 1;
-    foreach ($subs as $sub) {
-        $subsn [] = $nsub % $subshow == 0 ? $nsub : '';
-        $nsub ++;
-        $filesarray = $sub->get_submitted_files();
-        $files = array ();
-        // Used to give stack format last bar has less size.
-        $totalsize = 0;
-        foreach ($filesarray as $name => $data) {
-            $size = strlen( $data );
-            $files [$name] = $size;
-            $totalsize += $size;
-        }
-        foreach ($names as $name) {
-            if (isset( $files [$name] )) {
-                $series [$name] [] = $totalsize;
-                $totalsize -= $files [$name];
-            } else {
-                $series [$name] [] = $totalsize;
+        $nsub = 1;
+        foreach ($subs as $sub) {
+            $subsn [] = $nsub % $subshow == 0 ? $nsub : '';
+            $filesarray = $sub->get_submitted_files();
+            $files = array ();
+            foreach ($filesarray as $name => $data) {
+                $size = strlen( $data );
+                $files [$name] = $size;
             }
+            foreach ($names as $name) {
+                if (isset( $files [$name] )) {
+                    $series [$name] [$nsub - 1] = $files [$name];
+                } else {
+                    $series [$name] [$nsub - 1] = null;
+                }
+            }
+            $nsub ++;
         }
     }
+    $user = $DB->get_record( 'user', array (
+            'id' => $userid
+    ) );
+    vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false )
+                   , get_string( 'submissions', VPL ) , get_string( "sizeb" ), $subsn, $series, $names );
 }
-$user = $DB->get_record( 'user', array (
-        'id' => $userid
-) );
-vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false )
-               , get_string( 'submissions', VPL ) , get_string( "sizeb" ), $subsn, $series, $names );
