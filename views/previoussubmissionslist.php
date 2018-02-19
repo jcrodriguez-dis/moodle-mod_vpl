@@ -27,6 +27,8 @@ require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
+require_once(dirname(__FILE__).'/workinggraph.php');
+require_once(dirname(__FILE__).'/submissionsgraph.php');
 
 require_login();
 
@@ -93,15 +95,9 @@ foreach ($submissionslist as $submission) {
 }
 
 echo '<div class="clearer"> </div>';
-echo '<div style="text-align: center">';
-echo '<img src="' . vpl_rel_url( 'submissionsgraph.php', 'id', $id, 'userid', $userid ) . '" alt="files size evolution" />';
-echo '</div>';
-echo '<div class="clearer"> </div>';
-echo '<div class="clearer"> </div>';
-echo '<div style="text-align: center">';
-echo '<img src="' . vpl_rel_url( 'workinggraph.php', 'id', $id, 'userid', $userid ) . '" alt="workingperiods" />';
-echo '</div>';
-echo '<div class="clearer"> </div>';
+vpl_submissions_graph($vpl, $userid);
+vpl_working_periods_graph($vpl, $userid);
+
 echo html_writer::table( $table );
 echo '<div style="text-align:center">';
 $urlbase = $CFG->wwwroot . '/mod/vpl/views/previoussubmissionslist.php?id=' . $id . '&userid=' . $userid . '&detailed=';

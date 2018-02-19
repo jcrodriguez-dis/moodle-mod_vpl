@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__).'/workinggraph.php');
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
@@ -38,8 +39,5 @@ $instance = $vpl->get_instance();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 
 $vpl->print_header_simple();
-echo '<div class="clearer"> </div>';
-echo '<div style="text-align: center">';
-echo '<img src="' . vpl_rel_url( 'workinggraph.php', 'id', $id, 'userid', - 1 ) . '" alt="Working periods" />';
-echo '</div>';
+vpl_working_periods_graph($vpl, -1);
 $vpl->print_footer_simple();
