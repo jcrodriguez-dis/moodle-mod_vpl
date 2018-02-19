@@ -1392,8 +1392,7 @@ class mod_vpl {
     /**
      * print header
      *
-     * @param $info title
-     *            and last nav option
+     * @param $info string title and last nav option
      */
     public function print_header($info = '') {
         global $COURSE, $PAGE, $OUTPUT;
@@ -1441,7 +1440,7 @@ class mod_vpl {
     public function print_heading_with_help($action) {
         global $OUTPUT;
         $title = get_string( $action, VPL ) . ': ' . $this->get_printable_name();
-        echo $OUTPUT->heading_with_help( $title, $action, 'vpl', 'icon' );
+        echo $OUTPUT->heading_with_help( vpl_get_awesome_icon($action) . $title, $action, 'vpl');
         self::$headerisout = true;
     }
 
@@ -1540,14 +1539,14 @@ class mod_vpl {
         $tabs = array ();
         $baseurl = $CFG->wwwroot . '/mod/' . VPL . '/';
         $href = vpl_mod_href( 'view.php', 'id', $cmid, 'userid', $userid );
-        $viewtab = new tabobject( 'view.php', $href, $strdescription, $strdescription );
+        $viewtab = vpl_create_tabobject('view.php', $href, 'description' );
         if ($level2) {
             if ($viewer) {
                 $maintabs [] = $viewtab;
             }
             $strsubmissionslist = get_string( 'submissionslist', VPL );
             $href = vpl_mod_href( 'views/submissionslist.php', 'id', $cmid );
-            $maintabs [] = new tabobject( 'submissionslist.php', $href, $strsubmissionslist, $strsubmissionslist );
+            $maintabs [] = vpl_create_tabobject( 'submissionslist.php', $href, 'submissionslist' );
             // Similarity.
             if ($similarity) {
                 if ($active == 'listwatermark.php' || $active == 'similarity_form.php' || $active == 'listsimilarity.php') {
@@ -1557,12 +1556,20 @@ class mod_vpl {
                 }
                 $strsubmissionslist = get_string( 'similarity', VPL );
                 $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
-                $maintabs [] = new tabobject( $tabname, $href, $strsubmissionslist, $strsubmissionslist );
+                $maintabs [] = vpl_create_tabobject( $tabname, $href, 'similarity' );
             }
             // Test.
             if ($grader || $manager) {
+                if ($active == 'submission.php' || $active == 'edit.php'
+                        || $active == 'submissionview.php' || $active == 'gradesubmission.php'
+                        || $active == 'previoussubmissionslist.php') {
+                            $tabname = $active;
+                } else {
+                    $tabname = 'test';
+                }
+                $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
                 if ($userid == $USER->id) {
-                    $text = get_string( 'test', VPL );
+                    $maintabs [] = vpl_create_tabobject( $tabname, $href, 'test' );
                 } else {
                     $user = $DB->get_record( 'user', array (
                             'id' => $userid
@@ -1573,16 +1580,8 @@ class mod_vpl {
                         $text = get_string( 'user' ) . ' ';
                     }
                     $text .= $this->fullname( $user, false );
+                    $maintabs [] = new tabobject( $tabname, $href, $text, $text );
                 }
-                if ($active == 'submission.php' || $active == 'edit.php'
-                    || $active == 'submissionview.php' || $active == 'gradesubmission.php'
-                    || $active == 'previoussubmissionslist.php') {
-                    $tabname = $active;
-                } else {
-                    $tabname = 'test';
-                }
-                $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
-                $maintabs [] = new tabobject( $tabname, $href, $text, $text );
             }
         }
         switch ($active) {
@@ -1613,7 +1612,7 @@ class mod_vpl {
                     || (! $grader && $submiter && $this->is_submit_able()
                     && ! $this->instance->restrictededitor && ! $example)) {
                     $href = vpl_mod_href( 'forms/submission.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = new tabobject( 'submission.php', $href, $strsubmission, $strsubmission );
+                    $tabs [] = vpl_create_tabobject( 'submission.php', $href, 'submission' );
                 }
                 if ($manager || ($grader && $USER->id == $userid)
                     || (! $grader && $submiter && $this->is_submit_able())) {
@@ -1621,24 +1620,23 @@ class mod_vpl {
                     if ($example && $this->instance->run) {
                         $stredit = get_string( 'run', VPL );
                     }
-                    $tabs [] = new tabobject( 'edit.php', $href, $stredit, $stredit );
+                    $tabs [] = vpl_create_tabobject( 'edit.php', $href, 'edit');
                 }
                 if (! $example) {
                     $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = new tabobject( 'submissionview.php', $href, $strsubmissionview, $strsubmissionview );
+                    $tabs [] = vpl_create_tabobject( 'submissionview.php', $href, 'submissionview');
                     if ($grader && $this->get_grade() != 0 && $subinstance
                         && ($subinstance->dategraded == 0
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
                         $text = get_string( 'grade' );
-                        $tabs [] = new tabobject( 'gradesubmission.php', $href, $text, $text );
+                        $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'moodle' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
                         $strlistprevoiussubmissions = get_string( 'previoussubmissionslist', VPL );
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
-                        $tabs [] = new tabobject( 'previoussubmissionslist.php', $href, $strlistprevoiussubmissions,
-                                $strlistprevoiussubmissions );
+                        $tabs [] = vpl_create_tabobject( 'previoussubmissionslist.php', $href, 'previoussubmissionslist' );
                     }
                 }
                 // Show user picture if this activity require password.
@@ -1678,17 +1676,17 @@ class mod_vpl {
                 if ($similarity) {
                     $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
                     $string = get_string( 'similarity', VPL );
-                    $tabs [] = new tabobject( 'similarity_form.php', $href, $string, $string );
+                    $tabs [] = vpl_create_tabobject( 'similarity_form.php', $href, 'similarity' );
                     if ($active == 'listsimilarity.php') {
                         $string = get_string( 'listsimilarity', VPL );
-                        $tabs [] = new tabobject( 'listsimilarity.php', '', $string, $string );
+                        $tabs [] = vpl_create_tabobject( 'listsimilarity.php', '', 'listsimilarity' );
                     }
                     $plugincfg = get_config('mod_vpl');
                     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
                     if ($watermark) {
                         $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
                         $string = get_string( 'listwatermarks', VPL );
-                        $tabs [] = new tabobject( 'listwatermark.php', $href, $string, $string );
+                        $tabs [] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
                     }
                 }
                 print_tabs( array (
