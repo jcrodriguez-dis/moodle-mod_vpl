@@ -39,6 +39,16 @@ try {
         set_user_preference('vpl_editor_fontsize', $fontsize);
         $outcome->success = true;
     }
+    if ( isset($actiondata->aceTheme) ) {
+        $theme = substr($actiondata->aceTheme, 0, 50);
+        set_user_preference('vpl_acetheme', $theme);
+        $outcome->success = true;
+    }
+    if ( isset($actiondata->blocklyLang) ) {
+        $theme = substr($actiondata->blocklyLang, 0, 10);
+        set_user_preference('vpl_blocklylang', $theme);
+        $outcome->success = true;
+    }
 } catch ( Exception $e ) {
     $outcome->error = $e->getMessage();
 }
