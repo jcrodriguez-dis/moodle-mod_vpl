@@ -672,7 +672,7 @@ class mod_vpl_submission {
      * @return mix string/void
      */
     public function print_grade($detailed = false, $return = false) {
-        global $CFG, $OUTPUT;
+        global $CFG, $OUTPUT, $PAGE;
         $ret = '';
         $inst = $this->instance;
         if ($inst->dategraded > 0) {
@@ -691,7 +691,7 @@ class mod_vpl_submission {
                         $tagid = 'gradercomments' . $this->get_instance()->id;
                         $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br />';
                         $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
-                        $ret .= "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
+                        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
                     }
                 }
             }
@@ -727,7 +727,7 @@ class mod_vpl_submission {
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
-        global $OUTPUT, $DB;
+        global $OUTPUT, $DB, $PAGE;
         $id = $this->vpl->get_course_module()->id;
         $userid = $this->instance->userid;
         $submissionid = $this->instance->id;
@@ -786,7 +786,7 @@ class mod_vpl_submission {
      * @return void
      */
     public function print_ce() {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
         $ce = $this->getce();
         if ($ce ['compilation'] === 0) {
             return;
@@ -806,7 +806,7 @@ class mod_vpl_submission {
                 $div = new vpl_hide_show_div( true );
                 echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br />';
                 echo $div->begin_div( true ) . s($compilation) . $div->end_div( true );
-                echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
+                $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
             }
             if (strlen( $execution ) > 0) {
                 $proposedcomments = $this->proposedcomment( $ce ['execution'] );
@@ -814,7 +814,7 @@ class mod_vpl_submission {
                     $div = new vpl_hide_show_div( true );
                     echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br />";
                     echo $div->begin_div( true ) . s($proposedcomments) . $div->end_div( true );
-                    echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
+                    $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
                 }
             }
             echo $OUTPUT->box_end();
