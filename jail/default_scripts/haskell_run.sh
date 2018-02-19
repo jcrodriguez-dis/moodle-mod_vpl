@@ -14,7 +14,8 @@ if [ "$1" == "version" ] ; then
 	echo "echo | hugs | head -n6" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+get_source_files hs
 cat common_script.sh > vpl_execution
-echo "runhugs +98 $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "runhugs +98 $SOURCE_FILE0 \$@" >>vpl_execution
 chmod +x vpl_execution

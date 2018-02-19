@@ -15,6 +15,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_source_files perl prl
 cat common_script.sh > vpl_execution
-echo "perl -w $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "perl -w $SOURCE_FILE0 \$@" >>vpl_execution
 chmod +x vpl_execution

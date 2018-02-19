@@ -9,6 +9,7 @@
 # load common script and check programs
 . common_script.sh
 check_program python
+get_source_files py
 cat common_script.sh > vpl_execution
-echo "python -m pudb $VPL_SUBFILE0" >>vpl_execution
+echo "python -m pudb $SOURCE_FILE0" >>vpl_execution
 chmod +x vpl_execution

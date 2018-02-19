@@ -11,7 +11,7 @@
 . common_script.sh
 #check_program jgrasp
 get_source_files java
-MAINFILE=$VPL_SUBFILE0
+MAINFILE=$SOURCE_FILE0
 
 for FILENAME in $VPL_SUBFILES
 do

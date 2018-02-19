@@ -16,7 +16,7 @@ get_source_files vhdl vhd
 # compile
 gvhdl $SOURCE_FILES
 
-NAME=${VPL_SUBFILE0%.*}
+NAME=${SOURCE_FILE0%.*}
 if [ -f $NAME ] ; then
 	mv $NAME vpl_execution
 	chmod +x vpl_execution

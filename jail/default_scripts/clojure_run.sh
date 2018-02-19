@@ -17,7 +17,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-
+get_source_files clj
 cat common_script.sh > vpl_execution
-echo "clojure $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "clojure $SOURCE_FILE0 \$@" >>vpl_execution
 chmod +x vpl_execution

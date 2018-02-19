@@ -36,7 +36,7 @@ if [ ! -f vpl_evaluate.sh ] ; then
 		fi
 	done
 fi
-MAIN=$VPL_SUBFILE0
+MAIN=$SOURCE_FILE0
 
 if [ "$(command -v matlab)" == "" ] ; then
 	if [ "$(command -v octave)" == "" ] ; then

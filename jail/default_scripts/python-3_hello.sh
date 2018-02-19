@@ -13,13 +13,11 @@ import Tkinter
 import tkMessageBox
 tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
 END_OF_FILE
-		export VPL_SUBFILE0=vpl_hello3.py
-	else
-		export VPL_SUBFILE0=vpl_hello3.py
 	fi
 else
 cat >vpl_hello3.py <<'END_OF_FILE'
 print ('Hello from the Python3 language!')
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello3.py
 fi
+export VPL_SUBFILE0=vpl_hello3.py
+

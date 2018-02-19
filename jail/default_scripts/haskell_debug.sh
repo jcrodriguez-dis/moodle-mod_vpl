@@ -11,5 +11,5 @@
 check_program hugs
 
 cat common_script.sh > vpl_execution
-echo "hugs +98 $VPL_SUBFILE0" >>vpl_execution
+echo "hugs +98 $SOURCE_FILE0" >>vpl_execution
 chmod +x vpl_execution

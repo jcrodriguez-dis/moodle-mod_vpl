@@ -10,5 +10,5 @@
 . common_script.sh
 check_program perl
 cat common_script.sh > vpl_execution
-echo "perl -d $VPL_SUBFILE0" >>vpl_execution
+echo "perl -d $SOURCE_FILE0" >>vpl_execution
 chmod +x vpl_execution

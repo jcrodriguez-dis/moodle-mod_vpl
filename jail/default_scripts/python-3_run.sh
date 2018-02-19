@@ -15,11 +15,12 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_source_files py
 cat common_script.sh > vpl_execution
 echo "export TERM=ansi" >>vpl_execution
-echo "python3 $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "python3 $SOURCE_FILE0 \$@" >>vpl_execution
 chmod +x vpl_execution
-grep -E "Tkinter" $VPL_SUBFILE0 &> /dev/null
+grep -E "Tkinter" $SOURCE_FILE0 &> /dev/null
 if [ "$?" -eq "0" ]	; then
 	mv vpl_execution vpl_wexecution
 fi

@@ -16,7 +16,8 @@ if [ "$1" == "version" ] ; then
 	echo "go version" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+get_source_files go 
 cat common_script.sh > vpl_execution
-echo "go run $VPL_SUBFILE0 \$@" >> vpl_execution
+echo "go run $SOURCE_FILE0 \$@" >> vpl_execution
 chmod +x vpl_execution
