@@ -27,36 +27,18 @@ defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_editor_util {
     public static function generate_jquery() {
         global $PAGE;
-        $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/font-awesome/css/font-awesome.min.css' ) );
-        $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/jquery/themes/smoothness/jquery-ui.css' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-ui-1.10.4.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
+        $PAGE->requires->jquery();
+        $PAGE->requires->jquery_plugin('ui');
+        $PAGE->requires->jquery_plugin('ui-css');
     }
     public static function generate_requires_evaluation() {
         global $PAGE;
         self::generate_jquery();
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/evaluationMonitor.js' ), true );
     }
-    public static function generate_requires() {
+    public static function generate_requires($options) {
         global $PAGE;
-        self::generate_jquery();
-        $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/xterm/term.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLTerminal.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDE.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDEFile.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLIDEButton.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
-    }
-    public static function print_tag($options) {
+        global $CFG;
         $plugincfg = get_config('mod_vpl');
         $tagid = 'vplide';
         $options ['i18n'] = self::i18n();
@@ -66,7 +48,17 @@ class vpl_editor_util {
             $options ['theme'] = 'chrome';
         }
         $options ['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
-        $joptions = json_encode( $options );
+        $options ['lang'] = $CFG->lang;
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/xterm/term.js' ) );
+        self::generate_jquery();
+        $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', array($tagid, $options));
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
+    }
+    public static function print_tag() {
+        global $CFG;
+        $tagid = 'vplide';
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
@@ -127,6 +119,44 @@ class vpl_editor_util {
         <div class="vpl_fontsize_slider_value"></div>
         <div class="vpl_fontsize_slider"></div>
     </div>
+    <div id="vpl_ide_dialog_acetheme" class="vpl_ide_dialog" style="display: none;">
+        <select>
+           <option value="chrome">Chrome</option>
+           <option value="clouds">Clouds</option>
+           <option value="crimson_editor">Crimson Editor</option>
+           <option value="dawn">Dawn</option>
+           <option value="dreamweaver">Dreamweaver</option>
+           <option value="eclipse">Eclipse</option>
+           <option value="github">GitHub</option>
+           <option value="iplastic">IPlastic</option>
+           <option value="solarized_light">Solarized Light</option>
+           <option value="textmate">TextMate</option>
+           <option value="tomorrow">Tomorrow</option>
+           <option value="xcode">XCode</option>
+           <option value="kuroir">Kuroir</option>
+           <option value="katzenmilch">KatzenMilch</option>
+           <option value="sqlserver">SQL Server</option>
+           <option value="ambiance">Ambiance</option>
+           <option value="chaos">Chaos</option>
+           <option value="clouds_midnight">Clouds Midnight</option>
+           <option value="cobalt">Cobalt</option>
+           <option value="idle_fingers">idle Fingers</option>
+           <option value="kr_theme">krTheme</option>
+           <option value="merbivore">Merbivore</option>
+           <option value="merbivore_soft">Merbivore Soft</option>
+           <option value="mono_industrial">Mono Industrial</option>
+           <option value="monokai">Monokai</option>
+           <option value="pastel_on_dark">Pastel on dark</option>
+           <option value="solarized_dark">Solarized Dark</option>
+           <option value="terminal">Terminal</option>
+           <option value="tomorrow_night">Tomorrow Night</option>
+           <option value="tomorrow_night_blue">Tomorrow Night Blue</option>
+           <option value="tomorrow_night_bright">Tomorrow Night Bright</option>
+           <option value="tomorrow_night_eighties">Tomorrow Night 80s</option>
+           <option value="twilight">Twilight</option>
+           <option value="vibrant_ink">Vibrant Ink</option>
+        </select>
+    </div>
     <div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset>
@@ -138,7 +168,7 @@ class vpl_editor_util {
     </div>
     <div id="vpl_ide_dialog_about" class="vpl_ide_dialog"
         style="display: none;">
-        <div class="vpl_ide_dialog_content">
+        <div>
         <h3>IDE for VPL</h3>
         This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
             target="_blank">Virtual Programming Lab for Moodle</a><br /> Author:
@@ -157,13 +187,10 @@ class vpl_editor_util {
                 VNC client using HTML5 (WebSockets, Canvas). noVNC is Copyright (C)
                 2011 Joel Martin &lt;github@martintribe.org&gt; (<a
                 href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
-            <li><a href="http://jquery.com/" target="_blank">jQuery and JQuery-ui</a>:
-                jQuery is a fast, small, and feature-rich JavaScript library.
-                Copyright The jQuery Foundation. (<a
-                href="../editor/jquery/MIT-LICENSE.txt">licence</a>)</li>
-            <li><a href="http://fontawesome.io">Font Awesome</a> by Dave Gandy</li>
             <li>unzip.js August Lilleaas</li>
             <li>inflate.js August Lilleaas and Masanao Izumo &lt;iz@onicos.co.jp&gt;</li>
+            <li><a href="https://developers.google.com/blockly">Blockly</a> (<a
+                href="../editor/blockly/LICENSE">licence</a>)</li>
         </ul>
         </div>
     </div>
@@ -173,7 +200,7 @@ class vpl_editor_util {
     <div id="vpl_ide_dialog_shortcuts" class="vpl_ide_dialog" style="display: none;" >
         <div class="vpl_ide_dialog_content"></div>
     </div>
-    <div id="vpl_dialog_terminal" style="display: none;">
+    <div id="vpl_dialog_terminal">
         <pre id="vpl_terminal" class="vpl_terminal"></pre>
     </div>
     <div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
@@ -194,18 +221,6 @@ class vpl_editor_util {
          </canvas>
     </div>
 </div>
-<script>
-    INCLUDE_URI="../editor/noVNC/include/";
-    Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
-                       "keysymdef.js", "keyboard.js", "input.js", "display.js",
-                       "jsunzip.js", "rfb.js", "keysym.js"]);
-    $JQVPL(document).ready(function(){
-        $JQVPL("#page-footer").hide();
-        vpl_ide = new VPL_IDE('<?php echo $tagid;?>',<?php echo $joptions;?>);
-        $JQVPL("head").append('<meta name="viewport" content="initial-scale=1">');
-        $JQVPL("head").append('<meta name="viewport" width="device-width">');
-    });
-    </script>
 <?php
     }
     /**
@@ -277,7 +292,24 @@ class vpl_editor_util {
                 'timeleft',
                 'timeout',
                 'undo',
-                'multidelete'
+                'multidelete',
+                'basic',
+                'intermediate',
+                'advanced',
+                'variables',
+                'operatorsvalues',
+                'control',
+                'inputoutput',
+                'functions',
+                'lists',
+                'math',
+                'text',
+                'start',
+                'startanimate',
+                'stop',
+                'pause',
+                'resume',
+                'step'
         );
         $words = array (
                 'cancel',
@@ -309,16 +341,12 @@ class vpl_editor_util {
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
+        global $PAGE;
         $options = Array ();
         $options ['i18n'] = self::i18n();
         $options ['ajaxurl'] = $ajaxurl;
         $options ['nexturl'] = $nexturl;
-        $joptions = json_encode( $options );
-?>
-<script>
-    VPL_Single_Evaluation(<?php echo $joptions;?>);
-</script>
-<?php
+        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', array($options) );
     }
     public static function generate_batch_evaluate_sript($ajaxurls) {
         $options = Array ();
