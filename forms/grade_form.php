@@ -114,27 +114,32 @@ class mod_vpl_grade_form extends vpl_form {
                 'status' => 0,
                 'toolbar' => 0
         );
+        $copyicon = '<i class="fa fa-copy"></i> ';
+
         $action = new popup_action( 'click', $url, 'privatecopy' . ($vplinstance->id), $options );
         $atributes = array('class' => 'btn btn-secondary');
-        $this->addHTML( ' ' . $OUTPUT->action_link( $url, get_string( 'copy', VPL ), $action,  $atributes) );
+        $this->addHTML( ' ' . $OUTPUT->action_link( $url, $copyicon . get_string( 'copy', VPL ), $action,  $atributes) );
 
         if ($vplinstance->evaluate) {
-            // Link to recalculate numeric grade from comments.
+            // Link to evaluate.
+            $evaluateicon = '<i class="fa fa-check-square-o"></i> ';
             $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid, 'grading', 1, 'inpopup', $inpopup );
-            $html = " <a href='$url' $class>" . s( get_string( 'evaluate', VPL ) ) . '</a>';
+            $html = " <a href='$url' $class>" . $evaluateicon . s( get_string( 'evaluate', VPL ) ) . '</a>';
             $this->addHTML( $html );
         }
         // Numeric grade.
         if ($grade > 0) {
             // Link to recalculate numeric grade from comments.
+            $calculateicon = '<i class="fa fa-calculator"></i> ';
             $jscript = 'VPL.calculateGrade(' . $grade . ')';
-            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . s( get_string( 'calculate', VPL ) ) . '</a>';
+            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . $calculateicon . s( get_string( 'calculate', VPL ) ) . '</a>';
             $this->addHTML( $html );
         }
 
         $this->addHTML( '<br />' );
         if ($grade != 0) {
-            $this->addHTML( s( get_string( 'comments', VPL ) ) . '<br />' );
+            $commentsicon = '<i class="fa fa-align-left"></i> ';
+            $this->addHTML( $commentsicon . s( get_string( 'comments', VPL ) ) . '<br />' );
             $this->addTextArea( 'comments', '', 8, 70 );
             $this->addHTML( '<br />' );
         }
