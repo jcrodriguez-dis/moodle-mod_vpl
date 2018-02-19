@@ -28,7 +28,6 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 require_once(dirname(__FILE__).'/../editor/editor_utility.php');
 require_login();
-vpl_editor_util::generate_requires_evaluation();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
@@ -46,6 +45,7 @@ if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // 
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
+vpl_editor_util::generate_requires_evaluation();
 // Display page.
 $vpl->print_header( get_string( 'evaluation', VPL ) );
 flush();
