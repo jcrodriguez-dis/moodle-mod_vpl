@@ -1,4 +1,5 @@
 .vpl_ide_root {
+	font-size: 80%;
     direction: ltr;
     text-align: left;
     width: 100%;
@@ -21,7 +22,10 @@
 .vpl_ide_dialog {
     z-index: 999;
 }
-
+#vpl_ide_dialog_about {
+	width: 400px;
+	height: 260px;
+}
 #vpl_menu .ui-button-text-only .ui-button-text {
     padding: 0.4em;
 }
@@ -100,8 +104,12 @@ div.vpl_ide_dialog_content {
     text-shadow: none;
 }
 .ui-widget {
-    font-size: 12px;
+    font-size: 12px !important;
 }
+.ui-dialog-titlebar {
+	padding: 0 1em 0 1em !important;
+}
+
 .ui-tabs .ui-tabs-panel {
     padding: 0;
 }
@@ -176,7 +184,7 @@ img.vpl_ide_file {
 }
 
 .vpl_ide_progressbaricon {
-    display: block;
+/*    display: block;*/
     margin: 0;
     padding: 0;
     position: absolute;
@@ -187,10 +195,9 @@ img.vpl_ide_file {
     border: 0;
     display: block;
     font-weight: bold;
-    margin: 0;
+    margin: 0 1em 0 1em;
     padding: 0 1em 0 1em;
     text-align: center;
-    width: 100%;
 }
 
 .vpl_icon_repeat {
@@ -239,7 +246,9 @@ img.vpl_ide_file {
 .vpl_vnc .ui-button-text-only .ui-button-text {
     padding: 0.15em;
 }
-
+#vpl_dialog_terminal {
+	display: none;
+}
 .vpl_terminal {
     background-color: black;
     border: 0;
