@@ -26,7 +26,6 @@ require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../editor/editor_utility.php');
-vpl_editor_util::generate_requires();
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
@@ -39,8 +38,6 @@ $vpl->prepare_page( 'forms/testcasesfile.php', array (
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $fgp = $vpl->get_required_fgm();
-$vpl->print_header( get_string( 'testcases', VPL ) );
-$vpl->print_heading_with_help( 'testcases' );
 
 $options = array ();
 $options ['restrictededitor'] = false;
@@ -56,5 +53,8 @@ $options ['maxfiles'] = 1;
 $options ['saved'] = true;
 
 session_write_close();
-vpl_editor_util::print_tag( $options );
+vpl_editor_util::generate_requires( $options );
+$vpl->print_header( get_string( 'testcases', VPL ) );
+$vpl->print_heading_with_help( 'testcases' );
+vpl_editor_util::print_tag();
 $vpl->print_footer_simple();

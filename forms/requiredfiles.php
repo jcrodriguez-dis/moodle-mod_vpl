@@ -29,19 +29,13 @@ require_once(dirname(__FILE__). '/../vpl.class.php');
 require_once(dirname( __FILE__ ). '/edit.class.php');
 require_once(dirname(__FILE__). '/../editor/editor_utility.php');
 
-vpl_editor_util::generate_requires();
-
 require_login();
 $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
 $instance = $vpl->get_instance();
 $vpl->prepare_page( 'forms/requiredfiles.php', array ( 'id' => $id ) );
-
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$fgp = $vpl->get_required_fgm();
-$vpl->print_header( get_string( 'requestedfiles', VPL ) );
-$vpl->print_heading_with_help( 'requestedfiles' );
 
 $options = Array ();
 $options ['restrictededitor'] = false;
@@ -53,12 +47,16 @@ $options ['ajaxurl'] = "requiredfiles.json.php?id={$id}&action=";
 $options ['download'] = "../views/downloadrequiredfiles.php?id={$id}";
 $options ['resetfiles'] = false;
 $options ['minfiles'] = 0;
-$options ['maxfiles'] = $instance->maxfiles;
+$options ['maxfiles'] = 1000;
 $options ['saved'] = true;
 
-session_write_close();
+vpl_editor_util::generate_requires($options);
 
+$vpl->print_header( get_string( 'requestedfiles', VPL ) );
+$vpl->print_heading_with_help( 'requestedfiles' );
+
+session_write_close();
 echo $OUTPUT->box_start();
-vpl_editor_util::print_tag( $options );
+vpl_editor_util::print_tag();
 echo $OUTPUT->box_end();
 $vpl->print_footer_simple();
