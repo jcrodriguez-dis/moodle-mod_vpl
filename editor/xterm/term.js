@@ -1494,12 +1494,22 @@ Terminal.prototype.showCursor = function() {
 
 Terminal.prototype.startBlink = function() {
   if (!this.cursorBlink) return;
+  if (this._blink) return;
   var self = this;
   this._blinker = function() {
     self._cursorBlink();
   };
   this._blink = setInterval(this._blinker, 500);
 };
+
+Terminal.prototype.stopBlink = function() {
+    if (this._blink) {
+        clearInterval(this._blink);
+        delete this._blink;
+        this._blink = false;
+    }
+    this.showCursor();
+ };
 
 Terminal.prototype.refreshBlink = function() {
   if (!this.cursorBlink || !this._blink) return;
