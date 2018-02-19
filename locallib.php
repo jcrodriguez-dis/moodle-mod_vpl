@@ -783,6 +783,36 @@ function vpl_check_network($networks, $ip = false) {
 }
 
 /**
+ * Get awesome icon for action
+ * @param String $id
+ * @return string
+ */
+function vpl_get_awesome_icon($str, $classes = '') {
+    $icon = 'mod_vpl:' . $str;
+    $imap = mod_vpl_get_fontawesome_icon_map();
+    if ( isset( $imap[$icon]) ) {
+        $ficon = $imap[$icon];
+        return '<i class="fa ' . $ficon . $classes . '"></i> ';
+    }
+    return '';
+}
+
+
+/**
+ * Create a new tabobject for navigation
+ * @param String $id
+ * @param string|moodle_url $href
+ * @param string $str to be i18n
+ * @param string $comp component
+ * @return tabobject
+ */
+function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
+    $stri18n = get_string( $str, $comp);
+    $strdescription = vpl_get_awesome_icon($str) . $stri18n;
+    return new tabobject( $id, $href, $strdescription, $stri18n );
+}
+
+/**
  * Get version string
  * @return string
  */
