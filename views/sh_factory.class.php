@@ -30,17 +30,18 @@ class vpl_sh_factory {
     protected static $loaded = false;
     public static function include_js() {
         global $PAGE;
-        self::$loaded = true;
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/jquery/jquery-1.9.1.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPL_jquery_no_conflict.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/VPLUtil.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ), true );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ), true );
+        global $CFG;
+        $opt = new stdClass();
+        $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', array($opt));
     }
     public static function syntaxhighlight() {
-        if ( self::$loaded ) {
-            echo "<script>VPL_Util.syntaxHighlight();VPL_Util.setflEventHandler();</script>";
+        global $PAGE;
+        if ( ! self::$loaded ) {
+            self::include_js();
+            self::$loaded = true;
         }
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlight');
     }
     public static function get_object($type) {
         if (! isset( self::$cache [$type] )) {
