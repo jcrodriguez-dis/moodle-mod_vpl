@@ -37,7 +37,7 @@ class vpl_sh_ace extends vpl_sh_base {
         return 'fileid' . self::$fid;
     }
     public function print_file($filename, $filedata, $showln = true, $nl = 3000, $title = true) {
-        global $OUTPUT;
+        global $OUTPUT, $PAGE;
         if ( array_search($filename, self::$executionfiles) !== false &&
              $filedata == '') {
             return;
@@ -53,13 +53,20 @@ class vpl_sh_ace extends vpl_sh_base {
             echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
         }
         if ( $filedata > '' ) {
-            $code = '<pre class="" style="position:relative" ';
-            $code .= " id='code$tid' >\n";
+
+            $code = '<pre ';
+            $code .= " id='code$tid' style='display:none' >\n";
             $code .= htmlentities( $filedata, ENT_NOQUOTES );
             $code .= '</pre>';
             $sshowline = $showln ? 'true' : 'false';
-            $code .= "<script>VPL_Util.syntaxHighlightFile( '$tid', '$filename', '$theme', $sshowline, $nl);</script>";
             echo $code;
+            $code = '<h4 ';
+            $code .= " id='code${tid}load' style='text-align:center'>";
+            $code .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
+            $code .= '</h4>';
+            echo $code;
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', array($tid, $filename, $theme, $sshowline, $nl));
+
         }
     }
 }
