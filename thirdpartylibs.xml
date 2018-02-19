@@ -8,24 +8,6 @@
         <licenseversion>3</licenseversion>
     </library>
     <library>
-        <location>editor/font-awesome</location>
-        <name>Fonrt-awesome</name>
-        <version>4.5.0</version>
-        <license>Font: SIL OFL 1.1, CSS: MIT License</license>
-    </library>
-    <library>
-        <location>editor/jquery</location>
-        <name>JQuery</name>
-        <version>1.9.1</version>
-        <license>MIT</license>
-    </library>
-    <library>
-        <location>editor/jquery</location>
-        <name>JQuery-UI</name>
-        <version>1.10.4</version>
-        <license>MIT</license>
-    </library>
-    <library>
         <location>editor/noVNC</location>
         <name>noVNC: HTML5 VNC Client</name>
         <license>MPL</license>
@@ -38,7 +20,13 @@
     </library>
     <library>
         <location>editor/zip</location>
-        <name>inflate.js, unzip.js)</name>
+        <name>inflate.js, unzip.js</name>
         <license>MIT</license>
+    </library>
+        <library>
+        <location>editor/blockly</location>
+        <name>Blockly</name>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
     </library>
 </libraries>
