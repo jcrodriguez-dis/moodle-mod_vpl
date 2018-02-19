@@ -85,9 +85,8 @@ if ($subinstance != null && $subinstance->vpl != $vpl->get_instance()->id) {
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
-// Print header.
-vpl_sh_factory::include_js();
 
+// Print header.
 $vpl->print_header( get_string( 'submissionview', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 // Display submission.
