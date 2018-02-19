@@ -70,7 +70,7 @@ class cognitive_depth extends activity_base {
      * @return string[]
      */
     protected function feedback_submitted_events() {
-        return ['\mod_assign\event\assessable_submitted'];
+        return ['\mod_vpl\event\submission_graded', '\mod_vpl\event\submission_grade_updated', '\mod_vpl\event\submission_evaluated'];
     }
 
 }
