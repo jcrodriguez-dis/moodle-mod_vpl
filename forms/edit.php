@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/../editor/editor_utility.php');
-vpl_editor_util::generate_requires();
 
 require_login();
 $id = required_param('id', PARAM_INT);
@@ -125,9 +124,10 @@ session_write_close();
 if ($copy && $grader) {
     $userid = $USER->id;
 }
+vpl_editor_util::generate_requires($options);
 $vpl->print_header( get_string( 'edit', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 echo $OUTPUT->box_start();
-vpl_editor_util::print_tag( $options );
+vpl_editor_util::print_tag();
 echo $OUTPUT->box_end();
 $vpl->print_footer();
