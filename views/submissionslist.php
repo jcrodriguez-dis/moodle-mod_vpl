@@ -374,7 +374,9 @@ if ($showgrades) {
             'right',
             'left'
     );
-
+    $table->size = array (
+            '3em'
+    );
 } else if ($gradeable) {
     $table->head = array (
             '',
@@ -386,6 +388,13 @@ if ($showgrades) {
             $strgrader,
             $strgradedon,
             $OUTPUT->render(vpl_get_listmenu($showgrades, $id))
+    );
+    $table->size = array (
+            '3em',
+            '',
+            '',
+            '',
+            '3em'
     );
     $table->aling = array (
             'right',
@@ -406,6 +415,13 @@ if ($showgrades) {
             $strsubmisions,
             $OUTPUT->render(vpl_get_listmenu($showgrades, $id))
     );
+    $table->size = array (
+            '3em',
+            '',
+            '',
+            '',
+            '3em'
+    );
     $table->aling = array (
             'right',
             'left',
@@ -414,13 +430,7 @@ if ($showgrades) {
             'right'
     );
 }
-$table->size = array (
-        '3em',
-        '',
-        '',
-        '',
-        '3em'
-);
+
 // Sort by sort field.
 usort( $alldata, vpl_submissionlist_order::set_order( $sort, $sortdir != 'up' ) );
 $showphoto = count( $alldata ) < 100;
