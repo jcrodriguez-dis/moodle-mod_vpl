@@ -16,6 +16,7 @@
 
 /**
  * Cognitive depth indicator of VPL.
+ * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
@@ -71,6 +72,19 @@ class cognitive_depth extends activity_base {
      */
     protected function feedback_submitted_events() {
         return ['\mod_vpl\event\submission_graded', '\mod_vpl\event\submission_grade_updated', '\mod_vpl\event\submission_evaluated'];
+    }
+
+    /**
+     * feedback_replied
+     *
+     * @param \cm_info $cm
+     * @param int $contextid
+     * @param int $userid
+     * @param int $after
+     * @return bool
+     */
+    protected function feedback_replied(\cm_info $cm, $contextid, $userid, $after = false) {
+        return false;
     }
 
 }

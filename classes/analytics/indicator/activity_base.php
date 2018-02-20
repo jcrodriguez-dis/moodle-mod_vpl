@@ -16,6 +16,7 @@
 
 /**
  * Activity base class.
+ * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
@@ -52,7 +53,7 @@ abstract class activity_base extends \core_analytics\local\indicator\community_o
      * @return bool
      */
     protected function feedback_check_grades() {
-        return false;
+        return true;
     }
 
     protected function feedback_submitted_events() {

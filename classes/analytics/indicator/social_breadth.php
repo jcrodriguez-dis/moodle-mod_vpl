@@ -16,6 +16,7 @@
 
 /**
  * Social breadth indicator of VPL.
+ * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
@@ -29,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 
 /**
  * Social breadth indicator of VPL.
- *
+ * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
