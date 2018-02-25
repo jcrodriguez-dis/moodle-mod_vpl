@@ -30,6 +30,7 @@ class vpl_editor_util {
         $PAGE->requires->jquery();
         $PAGE->requires->jquery_plugin('ui');
         $PAGE->requires->jquery_plugin('ui-css');
+        $PAGE->requires->jquery_plugin('ui-touch', 'mod_vpl');
     }
     public static function generate_requires_evaluation() {
         global $PAGE;
@@ -48,13 +49,14 @@ class vpl_editor_util {
             $options ['theme'] = 'chrome';
         }
         $options ['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
+        $options ['theme'] = get_user_preferences('vpl_acetheme', $options ['theme']);
         $options ['lang'] = $CFG->lang;
+        self::generate_jquery();
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/xterm/term.js' ) );
-        self::generate_jquery();
+        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ) );
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', array($tagid, $options));
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ), true );
     }
     public static function print_tag() {
         global $CFG;
@@ -187,10 +189,14 @@ class vpl_editor_util {
                 VNC client using HTML5 (WebSockets, Canvas). noVNC is Copyright (C)
                 2011 Joel Martin &lt;github@martintribe.org&gt; (<a
                 href="../editor/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
-            <li>unzip.js August Lilleaas</li>
-            <li>inflate.js August Lilleaas and Masanao Izumo &lt;iz@onicos.co.jp&gt;</li>
-            <li><a href="https://developers.google.com/blockly">Blockly</a> (<a
-                href="../editor/blockly/LICENSE">licence</a>)</li>
+            <li>unzip.js: August Lilleaas</li>
+            <li>inflate.js: August Lilleaas and Masanao Izumo &lt;iz@onicos.co.jp&gt;</li>
+            <li><a href="https://developers.google.com/blockly" target="_blank">Blockly</a>:
+               A library for building visual programming editors
+               (<a href="../editor/blockly/LICENSE" target="_blank">licence</a>)</li>
+            <li><a href="https://github.com/NeilFraser/JS-Interpreter" target="_blank">JS-Interpreter</a>:
+               A sandboxed JavaScript interpreter in JavaScript
+               (<a href="../editor/acorn/LICENSE" target="_blank">licence</a>)</li>
         </ul>
         </div>
     </div>
@@ -338,6 +344,7 @@ class vpl_editor_util {
         $list ['more'] = get_string( 'showmore', 'form' );
         $list ['less'] = get_string( 'showless', 'form' );
         $list ['fontsize'] = get_string( 'fontsize', 'editor' );
+        $list ['theme'] = get_string( 'theme' );
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
