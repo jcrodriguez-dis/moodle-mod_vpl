@@ -33,11 +33,11 @@ define(['jquery',
             var self = this;
             var buttons = {};
 
-            this.noAdded = function(button) {
+            this.notAdded = function(button) {
                 return !buttons[button];
             };
             this.setText = function(button, icon, title) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return;
                 }
                 if (!icon) {
@@ -58,7 +58,7 @@ define(['jquery',
                 $JQVPL('#vpl_ide_' + button + ' i').replaceWith(VPL_Util.gen_icon(icon));
             };
             this.setExtracontent = function(button, html) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return;
                 }
                 var cl = 'bt_extrahtml';
@@ -90,7 +90,7 @@ define(['jquery',
                 if (!button.hasOwnProperty('originalAction')) {
                     button.originalAction = VPL_Util.doNothing;
                 }
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     buttons[button.name] = button;
                 } else {
                     throw "Button already set " + button.name;
@@ -105,7 +105,7 @@ define(['jquery',
                 }
             };
             this.getHTML = function(button) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return '';
                 } else {
                     var html = "<a id='vpl_ide_" + button + "' href='#' title='" + VPL_Util.str(button) + "'>";
@@ -115,15 +115,20 @@ define(['jquery',
             };
 
             this.enable = function(button, active) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return '';
                 }
                 var bw = $JQVPL('#vpl_ide_' + button);
                 buttons[button].active = active;
-                bw.button(active ? 'enable' : 'disable');
+                bw.data("vpl-active", active);
+                if ( ! active ) {
+                    bw.addClass( 'ui-button-disabled ui-state-disabled' );
+                } else {
+                    bw.removeClass( 'ui-button-disabled ui-state-disabled' );
+                }
             };
             this.setAction = function(button, action) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return;
                 }
                 buttons[button].originalAction = action;
@@ -134,13 +139,13 @@ define(['jquery',
                 };
             };
             this.getAction = function(button) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return VPL_Util.doNothing;
                 }
                 return buttons[button].action;
             };
             this.launchAction = function(button) {
-                if (self.noAdded(button)) {
+                if (self.notAdded(button)) {
                     return;
                 }
                 buttons[button].originalAction();
@@ -197,24 +202,28 @@ define(['jquery',
                 return html;
             };
             $JQVPL(menu_element).on("click", "a", function(event) {
-                var button = $JQVPL(this).attr('id');
-                if (typeof button === 'string') {
-                    button = button.replace('vpl_ide_', '');
-                } else {
-                    event.stopPropagation();
-                    return false;
+                if ( $JQVPL(this).data("vpl-active") ) {
+                    var actionid = $JQVPL(this).attr('id');
+                    if (typeof actionid === 'string' && actionid.startsWith('vpl_ide_')) {
+                        actionid = actionid.replace('vpl_ide_', '');
+                    } else {
+                        return;
+                    }
+                    if (self.notAdded(actionid)) {
+                        return;
+                    }
+                    if ( buttons[actionid] && ! buttons[actionid].active ) {
+                        return;
+                    }
+                    var action = self.getAction(actionid);
+                    if (actionid != 'import') {
+                        setTimeout(action, 10);
+                    } else {
+                        action();
+                    }
                 }
-                if (self.noAdded(button)) {
-                    return;
-                }
-                var action = self.getAction(button);
-                if (button != 'import') {
-                    setTimeout(action, 10);
-                } else {
-                    action();
-                    event.stopPropagation();
-                    return false;
-                }
+                event.stopImmediatePropagation();
+                return false;
             });
 
             $JQVPL('body').on('keydown', function(event) {
