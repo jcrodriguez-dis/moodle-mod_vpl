@@ -1624,9 +1624,9 @@ define(['jquery',
             $JQVPL('#vpl_ide_more').button();
             $JQVPL('#vpl_ide_save').button();
             $JQVPL('#vpl_ide_menuextra').hide();
-            $JQVPL('#vpl_ide_file').buttonset();
-            $JQVPL('#vpl_ide_edit').buttonset();
-            $JQVPL('#vpl_ide_mexecution').buttonset();
+            $JQVPL('#vpl_ide_file').controlgroup();
+            $JQVPL('#vpl_ide_edit').controlgroup();
+            $JQVPL('#vpl_ide_mexecution').controlgroup();
             $JQVPL('#vpl_ide_fullscreen').button();
             $JQVPL('#vpl_ide_acetheme').button();
             $JQVPL('#vpl_ide_about').button();
@@ -1634,6 +1634,12 @@ define(['jquery',
             $JQVPL('#vpl_ide_timeleft').button().css('float','right').hide();
             $JQVPL('#vpl_menu .ui-button').css('padding','6px');
             $JQVPL('#vpl_menu .ui-button-text').css('padding','0');
+            var alwaysActive = ['filelist', 'more', 'fullscreen', 'about', 'resetfiles',
+                                'download', 'comments', 'console','import',
+                                'fontsize'];
+            for (var i = 0; i < alwaysActive.length; i++) {
+                menuButtons.enable(alwaysActive[i], true);
+            }
             menuButtons.setExtracontent('user', options.username);
             menuButtons.setTimeLeft(options);
             updateMenu = function() {
@@ -1660,7 +1666,7 @@ define(['jquery',
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
-                menuButtons.enable('acethem', true);
+                menuButtons.enable('acetheme', true);
                 var sel;
                 if (!file || nfiles === 0) {
                     sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
