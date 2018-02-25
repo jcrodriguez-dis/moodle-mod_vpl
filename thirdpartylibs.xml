@@ -23,10 +23,21 @@
         <name>inflate.js, unzip.js</name>
         <license>MIT</license>
     </library>
-        <library>
+    <library>
         <location>editor/blockly</location>
         <name>Blockly</name>
         <license>Apache</license>
         <licenseversion>2.0</licenseversion>
     </library>
+    <library>
+        <location>editor/acorn</location>
+        <name>JS-Interpreter</name>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>jquery</location>
+        <name>jQuery UI Touch Punch</name>
+        <license>Dual licensed under the MIT or GPL Version 2</license>
+    </library>    
 </libraries>
