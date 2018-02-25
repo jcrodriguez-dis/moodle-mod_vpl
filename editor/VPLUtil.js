@@ -808,7 +808,7 @@
         };
         var delegated = false;
         var messageActions = {
-            'message' : function(content) {
+            'message' :function(content) {
                 var parsed = /^([^:]*):?(.*)/i.exec(content);
                 var state = parsed[1];
                 var detail = parsed[2];
@@ -825,14 +825,14 @@
                     pb.setLabel(text);
                 }
             },
-            'compilation' : function(content) {
+            'compilation' :function(content) {
                 if (externalActions.setResult) {
                     externalActions.setResult({
-                        'compilation' : content,
+                        'compilation' :content,
                     }, false);
                 }
             },
-            'retrieve' : function() {
+            'retrieve' :function() {
                 pb.close();
                 delegated = true;
                 VPL_Util.requestAction('retrieve', '', '', externalActions.ajaxurl)
@@ -845,11 +845,11 @@
                     }
                 ).fail(defail);
             },
-            'run' : function(content) {
+            'run' :function(content) {
                 pb.close();
                 externalActions.run(content, coninfo, ws);
             },
-            'close' : function() {
+            'close' :function() {
                 VPL_Util.log('ws close message from jail');
                 ws.close();
                 if (externalActions.close) {
@@ -898,9 +898,11 @@
             if (externalActions.getConsole) {
                 externalActions.getConsole().disconnect();
             }
-            pb.close();
-            if ( ! delegated && deferred.state() != 'rejected' ) {
-                deferred.resolve();
+            if ( !ws.notOpen ) {
+                pb.close();
+                if ( ! delegated && deferred.state() != 'rejected' ) {
+                    deferred.resolve();
+                }
             }
         };
 

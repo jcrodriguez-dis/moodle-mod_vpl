@@ -35,21 +35,25 @@
                 next : options.next
             });
         }
+        var action;
         var executionActions = {
             'ajaxurl' : options.ajaxurl,
             'run' : showErrorMessage,
             'getLastAction' : function() {
-                return '';
+                action();
             },
         };
-        VPL_Util.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
-        .done(
-            function(response) {
-                VPL_Util.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
-                .done(options.next)
-                .fail(showErrorMessage);
-            }
-        )
-        .fail(showErrorMessage);
+        action = function() {
+            VPL_Util.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
+            .done(
+                    function(response) {
+                        VPL_Util.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
+                        .done(options.next)
+                        .fail(showErrorMessage);
+                    }
+            )
+            .fail(showErrorMessage);
+        };
+        action();
     };
 })();
