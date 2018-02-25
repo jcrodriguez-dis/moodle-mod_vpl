@@ -858,6 +858,7 @@ define(['jquery',
             this.setContent = function(c) {
                 value = c;
                 if (opened) {
+                    this.workspacePlayground.clear();
                     var xml = Blockly.Xml.textToDom(c);
                     Blockly.Xml.domToWorkspace(xml, this.workspacePlayground);
                 }
