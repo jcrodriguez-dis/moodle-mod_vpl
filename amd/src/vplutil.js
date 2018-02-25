@@ -579,7 +579,9 @@ define(['jquery',
         }
         titleButtons.html(html);
         for (var ih = 0; ih < handler.length; ih++) {
-            title.find('#vpl_' + type + '_' + buttons[ih]).button().click(handler[ih]);
+            var button = title.find('#vpl_' + type + '_' + buttons[ih]); 
+            button.button().click(handler[ih]);
+            button.css('padding','6px');
         }
         titleButtons.on('focus','*', function(){$JQVPL(this).blur();});
         return titleText;
