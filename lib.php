@@ -42,7 +42,7 @@ function vpl_grade_item_update($instance, $grades=null) {
     require_once($CFG->libdir.'/gradelib.php');
 
     $params = array('itemname' => $instance->name);
-    $itemdetails ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
+    $params ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
     if ( isset($instance->cmidnumber) ) {
         $params['idnumber'] = $instance->cmidnumber;
     }
