@@ -1,11 +1,11 @@
 #vpl_grade_view {
-	position: relative;
-	display: flex;
+    position: relative;
+    display: flex;
 }
 #vpl_grade_form {
     width: auto;
 }
-#vpl_grade_form textarea{
+#vpl_grade_form textarea {
     resize: both;
     margin: 0 1em;
 }
