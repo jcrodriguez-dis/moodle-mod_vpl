@@ -1,15 +1,18 @@
 #vpl_grade_view {
-    height: 220px;
+	position: relative;
+	display: flex;
 }
 #vpl_grade_form {
-    float: left;
+    width: auto;
+}
+#vpl_grade_form textarea{
+    resize: both;
+    margin: 0 1em;
 }
 #vpl_grade_comments {
-    float: left;
+    height: 10em;
     overflow: auto;
-    width: 40%;
 }
 #vpl_submission_view {
     clear: both;
-    overflow: auto;
 }

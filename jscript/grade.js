@@ -27,33 +27,20 @@
     if (typeof VPL != 'object') {
         VPL = {};
     }
-    VPL.getOffsetY = function(obj) {
-        var offset = 0;
-        var i;
-        for (i = 0; i < 200 && obj != document.body; i++) {
-            offset += obj.offsetTop;
-            obj = obj.offsetParent;
-        }
-        return offset;
-    };
-    /**
-     * resize the submission view div to greatest visible size
-     */
 
+    /**
+     * resize comments view div to greatest visible size
+     */
+    var commentsHeight = 0;
     VPL.resizeSView = function() {
-        var grade_view = window.document.getElementById('vpl_grade_view');
-        var comments_view = window.document.getElementById('vpl_grade_comments');
+        var commentsView = window.document.getElementById('vpl_grade_comments');
         var textarea = window.document.getElementsByTagName('textarea')[0];
-        var form_view = window.document.getElementById('vpl_grade_form');
-        var submission_view = window.document.getElementById('vpl_submission_view');
-        if (grade_view && comments_view && form_view && submission_view && textarea) {
-            textarea.style.resize = "both";
-            form_view.style.width = (textarea.offsetWidth + 8) + 'px';
-            grade_view.style.height = form_view.scrollHeight + 'px';
-            comments_view.style.height = form_view.scrollHeight + 'px';
-            var commentsw = (grade_view.clientWidth - form_view.offsetWidth);
-            commentsw -= comments_view.offsetWidth - comments_view.clientWidth;
-            comments_view.style.width = commentsw + 'px';
+        if (commentsView && textarea) {
+            var newHeight = textarea.offsetTop + textarea.offsetHeight;
+            if ( newHeight != commentsHeight ) {
+                commentsHeight = newHeight;
+                commentsView.style.height = commentsHeight + 'px';
+            }
         }
     };
 
@@ -61,6 +48,7 @@
 
     VPL.resizeSView();
     setInterval(VPL.resizeSView, 1000);
+    
     /**
      * Recalculate numeric grade from the max sustracting grades found at the
      * end of lines. valid grade format: "- text (-grade)"
