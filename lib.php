@@ -41,33 +41,33 @@ function vpl_grade_item_update($instance, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    $params = array('itemname' => $instance->name);
+    $itemdetails = array('itemname' => $instance->name);
     $itemdetails ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
     if ( isset($instance->cmidnumber) ) {
-        $params['idnumber'] = $instance->cmidnumber;
+        $itemdetails['idnumber'] = $instance->cmidnumber;
     }
     if ($instance->grade > 0) {
-        $params['gradetype'] = GRADE_TYPE_VALUE;
-        $params['grademax']  = $instance->grade;
-        $params['grademin']  = 0;
+        $itemdetails['gradetype'] = GRADE_TYPE_VALUE;
+        $itemdetails['grademax']  = $instance->grade;
+        $itemdetails['grademin']  = 0;
 
     } else if ($instance->grade < 0) {
-        $params['gradetype'] = GRADE_TYPE_SCALE;
-        $params['scaleid']   = -$instance->grade;
+        $itemdetails['gradetype'] = GRADE_TYPE_SCALE;
+        $itemdetails['scaleid']   = -$instance->grade;
 
     }
     if ($instance->grade == 0 || $instance->example != 0) {
-        $params['gradetype'] = GRADE_TYPE_NONE;
-        $params['deleted'] = 1;
+        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
+        $itemdetails['deleted'] = 1;
     }
 
     if ($grades === 'reset') {
-        $params['reset'] = true;
+        $itemdetails['reset'] = true;
         $grades = null;
     }
 
     return grade_update('mod/vpl', $instance->course, 'mod', 'vpl',
-                        $instance->id, 0, $grades, $params);
+                        $instance->id, 0, $grades, $itemdetails);
 }
 
 /**
