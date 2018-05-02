@@ -132,7 +132,8 @@ class mod_vpl_grade_form extends vpl_form {
             // Link to recalculate numeric grade from comments.
             $calculateicon = '<i class="fa fa-calculator"></i> ';
             $jscript = 'VPL.calculateGrade(' . $grade . ')';
-            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . $calculateicon . s( get_string( 'calculate', VPL ) ) . '</a>';
+            $atext = $calculateicon . s( get_string( 'calculate', VPL ) );
+            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . $atext . '</a>';
             $this->addHTML( $html );
         }
 

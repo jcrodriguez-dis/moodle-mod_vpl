@@ -588,9 +588,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         } else {
             $fkn = null;
         }
-        $parms = array (
-                'id' =>$cmid
-        );
+        $parms = array ( 'id' => $cmid );
         $url = new moodle_url( '/mod/vpl/forms/testcasesfile.php', $parms );
         $node = vpl_navi_node_create($vplnode, 'testcases', $url);
         $vplnode->add_node( $node, $fkn );

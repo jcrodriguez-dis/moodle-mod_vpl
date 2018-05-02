@@ -454,7 +454,7 @@ foreach ($alldata as $data) {
         $user = $data->userinfo;
     }
     $gradecomments = '';
-    $linkparms =  array('id' => $id, 'userid' => $user->id);
+    $linkparms = array('id' => $id, 'userid' => $user->id);
     if ($data->submission == null) {
         $text = get_string( 'nosubmission', VPL );
         $hrefview = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );

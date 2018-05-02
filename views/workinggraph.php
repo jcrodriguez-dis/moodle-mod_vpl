@@ -140,7 +140,10 @@ function vpl_working_periods_graph($vpl, $userid) {
         $user = $DB->get_record( 'user', array (
                 'id' => $userid
         ) );
-        $title = sprintf( "%s: %s - %s", get_string( 'workingperiods', VPL ), $vpl->fullname( $user, false ), get_string( 'numhours', '', sprintf( '%3.2f', $hours ) ) );
+        $title = sprintf( "%s: %s - %s",
+                get_string( 'workingperiods', VPL ),
+                $vpl->fullname( $user, false ),
+                get_string( 'numhours', '', sprintf( '%3.2f', $hours ) ) );
         $titlex = get_string( 'workingperiods', VPL ) . ' - ' . $vpl->get_printable_name();
         vpl_graph::draw( $title, $titlex, get_string( 'hours' ), $xdata, $ydata, null, true );
     }

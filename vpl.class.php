@@ -774,13 +774,13 @@ class mod_vpl {
      * Get user submissions, order reverse submission id
      *
      * @param $userid int the user id to retrieve submissions
-     * @param $group_if_ga boolean if group activity get group submissions. default true
+     * @param $groupifga boolean if group activity get group submissions. default true
      * @return FALSE/array of objects
      */
-    public function user_submissions($userid, $group_if_ga = true) {
+    public function user_submissions($userid, $groupifga = true) {
         global $DB;
 
-        if ($group_if_ga && $this->is_group_activity()) {
+        if ($groupifga && $this->is_group_activity()) {
             $group = $this->get_usergroup($userid);
             if ($group) {
                 $select = '(groupid = ?) AND (vpl = ?)';

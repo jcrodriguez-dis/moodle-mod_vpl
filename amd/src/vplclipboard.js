@@ -14,8 +14,8 @@
 //along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Terminal control
- * 
+ * Terminal Clipboard
+ *
  * @package mod_vpl
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
