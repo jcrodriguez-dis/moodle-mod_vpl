@@ -62,7 +62,7 @@ class vpl_editor_util {
         global $CFG;
         $tagid = 'vplide';
 ?>
-<div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root ui-widget">
+<div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
     <div id="vpl_tr" class="vpl_ide_tr">
         <div id="vpl_filelist" style="display: none;">

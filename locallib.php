@@ -69,9 +69,8 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
 /**
  * Open/create a file and its dir
  *
- * @param $filename path
- *            to file
- * @return file descriptor
+ * @param string $filename. Path to the file to open
+ * @return resource file descriptor
  */
 function vpl_fopen($filename) {
     global $CFG;
@@ -122,8 +121,8 @@ function vpl_delete_dir($dirname) {
 /**
  * Outputs a zip file and removes it. Must be called before any other output
  *
- * @param $zipfilename name of the file with the data
- * @param $name of file to be shown, without '.zip'
+ * @param string $zipfilename. Name of the ZIP file with the data
+ * @param string $name of file to be shown, without '.zip'
  *
  */
 function vpl_output_zip($zipfilename, $name) {
@@ -328,12 +327,9 @@ function vpl_url_add_param($url, $parm, $value) {
 /**
  * Print a message and redirect
  *
- * @param $link URL
- *            to redirect to
- * @param $message string
- *            to be print
- * @param $type string
- *            type of message (success,info,warning,error). default = info
+ * @param string $link. The URL to redirect to
+ * @param string $message to be print
+ * @param string $type of message (success, info, warning, error). Default = info
  * @return void
  */
 function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
@@ -351,8 +347,7 @@ function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
 /**
  * Inmediate redirect
  *
- * @param $link URL
- *            to redirect to
+ * @param string $url URL to redirect to
  * @return void
  */
 function vpl_inmediate_redirect($url) {
@@ -406,10 +401,8 @@ function vpl_include_js($jscript) {
 /**
  * Popup message box to show text
  *
- * @param $text text
- *            to show. It use s() to sanitize text
- * @param
- *            $print
+ * @param string $text to show. It use s() to sanitize text
+ * @param boolean $print or not
  * @return void
  */
 function vpl_js_alert($text, $print = true) {
@@ -513,11 +506,9 @@ function vpl_conv_size_to_string($size) {
 /**
  * Return the array key after or equal to value
  *
- * @param
- *            $array
- * @param $value of
- *            key to search
- * @return key found
+ * @param $array
+ * @param string $value of key to search >=
+ * @return string key found
  */
 function vpl_get_array_key($array, $value) {
     foreach ($array as $key => $nothing) {
@@ -531,10 +522,8 @@ function vpl_get_array_key($array, $value) {
 /**
  * Return un array with the format [size in bytes]=> size in text The first element is [0] => select
  *
- * @param $minimum the
- *            initial value
- * @param $maximum the
- *            limit of values generates
+ * @param int $minimum the initial value
+ * @param int $maximum the limit of values generates
  * @return array
  */
 function vpl_get_select_sizes($minimum = 0, $maximum = PHP_INT_MAX) {
@@ -613,10 +602,8 @@ function vpl_rtzeros($value) {
 /**
  * Generate an array with index an values $url.index
  *
- * @param $url url
- *            base
- * @param $array array
- *            of index
+ * @param string $url base
+ * @param $array array of index
  * @return array with index as key and url as value
  */
 function vpl_select_index($url, $array) {
@@ -630,10 +617,8 @@ function vpl_select_index($url, $array) {
 /**
  * Generate an array ready to be use in $OUTPUT->select_url
  *
- * @param $url url
- *            base
- * @param $array array
- *            of values
+ * @param string $url base
+ * @param array $array of values
  * @return array with url as key and text as value
  */
 function vpl_select_array($url, $array) {
@@ -647,10 +632,22 @@ function vpl_fileextension($filename) {
     return pathinfo( $filename, PATHINFO_EXTENSION );
 }
 
+
+/**
+ * Get if filename has image extension
+ * @param string $filename
+ * @return boolean
+ */
 function vpl_is_image($filename) {
     return preg_match( '/^(gif|jpg|jpeg|png|ico)$/i', vpl_fileextension( $filename ) ) == 1;
 }
 
+/**
+ * Get if filename has binary extension or binary data
+ * @param string $filename
+ * @param string &$data file contents
+ * @return boolean
+ */
 function vpl_is_binary($filename, &$data = false) {
     if ( vpl_is_image( $filename ) ) {
         return true;
@@ -665,12 +662,32 @@ function vpl_is_binary($filename, &$data = false) {
     }
     return mb_detect_encoding( $data, 'UTF-8', true ) != 'UTF-8';
 }
+
+/**
+ * Return data encoded to base64
+ * @param string $filename
+ * @param string &$data file contents
+ * @return string
+ */
 function vpl_encode_binary($filename, &$data) {
     return base64_encode( $data );
 }
+
+/**
+ * Return data decoded from base64
+ * @param string $filename
+ * @param string &$data file contents
+ * @return string
+ */
 function vpl_decode_binary($filename, $data) {
     return base64_decode( $data );
 }
+
+/**
+ * Return if path is valid
+ * @param string $path
+ * @return boolean
+ */
 function vpl_is_valid_path_name($path) {
     if (strlen( $path ) > 256) {
         return false;
@@ -683,18 +700,30 @@ function vpl_is_valid_path_name($path) {
     }
     return true;
 }
-function vpl_is_valid_file_name($filename) {
+
+/**
+ * Return if file or directory name is valid
+ * @param string $name
+ * @return boolean
+ */
+function vpl_is_valid_file_name($name) {
     $backtick = chr( 96 ); // Avoid warnning in codecheck.
     $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\\\|\[|\]|[\/\^';
     $regexp .= $backtick . '´]|^\-|^ | $|^\.$|^\.\.$/';
-    if (strlen( $filename ) < 1) {
+    if (strlen( $name ) < 1) {
         return false;
     }
-    if (strlen( $filename ) > 128) {
+    if (strlen( $name ) > 128) {
         return false;
     }
-    return preg_match( $regexp, $filename ) === 0;
+    return preg_match( $regexp, $name ) === 0;
 }
+
+/**
+ * Truncate string to the limit passed
+ * @param string &$string
+ * @param int $limit
+ */
 function vpl_truncate_string(&$string, $limit) {
     if (strlen( $string ) <= $limit) {
         return;

@@ -38,6 +38,7 @@ $course = $vpl->get_course();
 $instance = $vpl->get_instance();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 
-$vpl->print_header_simple();
+$vpl->print_header( get_string( 'timespent', VPL ) );
+$vpl->print_heading_with_help( 'timespent' );
 vpl_working_periods_graph($vpl, -1);
 $vpl->print_footer_simple();

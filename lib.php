@@ -125,8 +125,7 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
 /**
  * Delete grade_item from a vpl instance+id
  *
- * @param $instance vpl
- *            instance
+ * @param Object $instance of vpl DB with id
  */
 function vpl_delete_grade_item($instance) {
     global $CFG;
@@ -138,11 +137,9 @@ function vpl_delete_grade_item($instance) {
 /**
  * Create an event object from a vpl instance+id
  *
- * @param $instance vpl
- *            instance
- * @param $id vpl
- *            instance id
- * @return event object
+ * @param stdClass $instance of vpl DB record
+ * @param int $id vpl DB record id
+ * @return Object with event information
  */
 function vpl_create_event($instance, $id) {
     $event = new stdClass();
@@ -160,8 +157,7 @@ function vpl_create_event($instance, $id) {
 /**
  * Add a new vpl instance and return the id
  *
- * @param
- *            object from the form in mod_form.html
+ * @param Object $instance from the form in mod_form
  * @return int id of the new vpl
  */
 function vpl_add_instance($instance) {
@@ -828,8 +824,7 @@ function vpl_reset_gradebook($courseid, $type = '') {
  * This function is used by the reset_course_userdata function in moodlelib. This function
  * will remove all posts from the specified vpl instance and clean up any related data.
  *
- * @param $data the
- *            data submitted from the reset course.
+ * @param $data stdClass the data submitted from the reset course.
  * @return array status array
  */
 function vpl_reset_userdata($data) {
@@ -866,8 +861,7 @@ function vpl_reset_userdata($data) {
  * Implementation of the function for printing the form elements that control whether
  * the course reset functionality affects the assignment.
  *
- * @param $mform form
- *            passed by reference
+ * @param $mform moodleform passed by reference
  */
 function vpl_reset_course_form_definition(&$mform) {
     $mform->addElement( 'header', 'vplheader', get_string( 'modulenameplural', VPL ) );

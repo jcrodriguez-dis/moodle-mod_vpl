@@ -36,7 +36,7 @@ $vpl->prepare_page( 'views/show_webservice.php', array (
 $vpl->require_capability( VPL_VIEW_CAPABILITY );
 $logurl = vpl_rel_url( 'views/show_webservice.php', 'id', $id );
 if (! $vpl->is_visible()) {
-    \mod_vpl\event\security_webservice::log( $vpl );
+    \mod_vpl\event\vpl_security_webservice::log( $vpl );
     notice( get_string( 'notavailable' ) );
 }
 $vpl->print_header( get_string( 'createtokenforuser', 'core_webservice' ) );

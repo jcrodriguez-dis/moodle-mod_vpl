@@ -227,21 +227,17 @@ class vpl_similarity_preprocess {
      * @var minimum number of tokens needed to accept a file to be compared
      */
     const MINTOKENS = 10;
+
     /**
      * Preprocesses activity, loading activity files into $simil array
      *
-     * @param $simil array
-     *            of file processed objects
-     * @param $vpl activity
-     *            to process
-     * @param $filesselected array
-     *            if set only files selected
-     * @param $allfiles preprocess
-     *            sll files
-     * @param $joinedfiles join
-     *            files as one
-     * @param $SPB Box
-     *            used to show load process
+     * @param array $simil of file processed objects
+     * @param object $vpl of activity to process
+     * @param array $filesselected if set only files selected
+     * @param boolean $allfiles preprocess all files
+     * @param boolean $joinedfiles join files as one
+     * @param $subinstance
+     * @param $toremove $toremove with filenames as keys to remove from comparation
      * @return void
      */
     static public function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles
@@ -334,12 +330,9 @@ class vpl_similarity_preprocess {
     /**
      * Preprocesses user activity, loading user activity files into $simil array
      *
-     * @param $simil array
-     *            of file processed objects
-     * @param $vpl activity
-     *            to process
-     * @param $userid id
-     *            of the user to preprocess
+     * @param array $simil of file processed objects
+     * @param object $vpl activity to process
+     * @param int $userid id of the user to preprocess
      * @return void
      */
     static public function user_activity(&$simil, $vpl, $userid) {
@@ -395,18 +388,12 @@ class vpl_similarity_preprocess {
     /**
      * Preprocesses ZIP file, loading processesed files into $simil array
      *
-     * @param $simil array
-     *            of file processed objects
-     * @param $vpl activity
-     *            to process
-     * @param $filesselected array
-     *            if set only files selected
-     * @param $allfiles preprocess
-     *            sll files
-     * @param $joinedfiles join
-     *            files as one
-     * @param
-     *            $spb
+     * @param array $simil of file processed objects
+     * @param object $vpl activity to process
+     * @param array $filesselected if set only files selected
+     * @param boolean $allfiles preprocess all files
+     * @param boolean $joinedfiles join files as one
+     * @param $spb
      * @return void
      */
     static public function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {

@@ -56,7 +56,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
      *
      * @param $result array
      *            response from server
-     * @return uvoid
+     * @return void
      */
     public function savece($result) {
         // Paranoic removed.

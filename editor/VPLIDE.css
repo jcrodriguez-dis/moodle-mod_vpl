@@ -1,5 +1,4 @@
 .vpl_ide_root {
-	font-size: 80%;
     direction: ltr;
     text-align: left;
     width: 100%;
@@ -23,10 +22,11 @@
     z-index: 999;
 }
 #vpl_ide_dialog_about {
-	width: 400px;
-	height: 260px;
+    width: 400px;
+    height: 260px;
 }
-#vpl_menu .ui-button-text-only .ui-button-text {
+#vpl_menu .ui-button-text-only,
+#vpl_menu .ui-button-text {
     padding: 0.4em;
 }
 
@@ -103,11 +103,22 @@ div.vpl_ide_dialog_content {
     cursor: pointer;
     text-shadow: none;
 }
-.ui-widget {
-    font-size: 12px !important;
+
+.vpl_ide .ui-widget {
+    font-size: 12px;
 }
-.ui-dialog-titlebar {
-	padding: 0 1em 0 1em !important;
+
+.vpl_ide .ui-widget-content {
+    font-size: 12px;
+}
+
+.vpl_ide .ui-dialog-titlebar {
+    font-size: 13px;
+    padding: 0 1em 0 1em;
+}
+
+.vpl_ide .ui-button {
+    font-size: 14px;
 }
 
 .ui-tabs .ui-tabs-panel {
@@ -184,7 +195,6 @@ img.vpl_ide_file {
 }
 
 .vpl_ide_progressbaricon {
-/*    display: block;*/
     margin: 0;
     padding: 0;
     position: absolute;
@@ -206,7 +216,7 @@ img.vpl_ide_file {
 }
 
 .vpl_ide {
-    font-size: 80%;
+    font-size: 12px;
 }
 .vpl_ide .ui-dialog-titlebar {
     padding: 0.15em;
@@ -247,7 +257,7 @@ img.vpl_ide_file {
     padding: 0.15em;
 }
 #vpl_dialog_terminal {
-	display: none;
+    display: none;
 }
 .vpl_terminal {
     background-color: black;

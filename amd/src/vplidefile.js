@@ -325,7 +325,7 @@ define(['jquery',
                     return;
                 }
                 editor.setTheme("ace/theme/" + theme);
-            }
+            };
             this.open = function() {
                 if ( typeof ace === 'undefined' ) {
                     VPL_Util.loadScript(['../editor/ace9/ace.js',
@@ -823,6 +823,10 @@ define(['jquery',
                     return;
                 }
                 opened = true;
+                var horizantalMenu = false;
+                if( /.*[0-9]$/.test(VPL_Util.fileExtension(fileName)) ) {
+                    var horizantalMenu = true;
+                }
                 // Workaround to remove jquery-ui theme background color.
                 $JQVPL(tid).removeClass('ui-widget-content ui-tabs-panel');
                 $JQVPL(tid).addClass('ui-corner-bottom');
@@ -831,6 +835,7 @@ define(['jquery',
                 var options = {
                     toolbox: '<xml><category name=""><block type="math_number"></block></category></xml>',
                     media: '../editor/blockly/media/',
+                    horizontalLayout: horizantalMenu,
                     zoom: {
                         controls: true,
                         wheel: true,

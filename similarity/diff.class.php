@@ -111,14 +111,10 @@ class vpl_diff {
     /**
      * Initialize used matrix
      *
-     * @param $matrix matrix
-     *            to initialize
-     * @param $prev matrix
-     *            to initialize
-     * @param $nl1 number
-     *            of rows
-     * @param $nl2 number
-     *            of columns
+     * @param array $matrix  of arrays to initialize
+     * @param array $prev of arrays to initialize
+     * @param $nl1 number of rows
+     * @param $nl2 number of columns
      * @return void
      */
     static public function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {

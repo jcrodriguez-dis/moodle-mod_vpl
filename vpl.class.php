@@ -204,7 +204,7 @@ class mod_vpl {
 
     /**
      *
-     * @return module db instance
+     * @return Object of module DB instance
      */
     public function get_instance() {
         return $this->instance;
@@ -212,7 +212,7 @@ class mod_vpl {
 
     /**
      *
-     * @return course
+     * @return Object of course DB instance
      *
      */
     public function get_course() {
@@ -221,7 +221,7 @@ class mod_vpl {
 
     /**
      *
-     * @return course_module
+     * @return Object of course_module DB instance
      *
      */
     public function get_course_module() {
@@ -258,7 +258,7 @@ class mod_vpl {
     }
 
     /**
-     * Update a VPL instance including timemodified
+     * Update a VPL instance including timemodified field
      *
      * @return bool true if all OK
      */
@@ -269,8 +269,8 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @return instance data directory
+     * Get data directory path
+     * @return string data directory path
      */
     public function get_data_directory() {
         global $CFG;
@@ -278,8 +278,8 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @return instance config data directory
+     * Get config data directory path
+     * @return string config data directory path
      */
     public function get_users_data_directory() {
         return $this->get_data_directory() . '/usersdata';
@@ -294,16 +294,16 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @return filename to store required files
+     * Get path to filename to store required files
+     * @return string path to filename to store required files
      */
     public function get_required_files_filename() {
         return $this->get_data_directory() . '/required_files.lst';
     }
 
     /**
-     *
-     * @return array of files required name
+     * Get array of files required file names
+     * @return array of strings
      */
     public function get_required_files() {
         return file_group_process::read_list( $this->get_required_files_filename() );
@@ -340,8 +340,8 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @return filename to store execution files
+     * Get path filename to store execution files
+     * @return string path filename to store execution files
      */
     public function get_execution_files_filename() {
         return $this->get_data_directory() . '/execution_files.lst';
@@ -405,9 +405,9 @@ class mod_vpl {
     }
 
     /**
-     * get fulldescription
+     * Get fulldescription
      *
-     * @return fulldescription
+     * @return string fulldescription
      *
      */
     public function get_fulldescription() {
@@ -420,9 +420,9 @@ class mod_vpl {
     }
 
     /**
-     * get fulldescription adding basedon
+     * Get fulldescription adding basedon descriptions
      *
-     * @return fulldescription
+     * @return string fulldescription
      *
      */
     public function get_fulldescription_with_basedon() {
@@ -773,14 +773,14 @@ class mod_vpl {
     /**
      * Get user submissions, order reverse submission id
      *
-     * @param $id user
-     *            id
+     * @param $userid int the user id to retrieve submissions
+     * @param $group_if_ga boolean if group activity get group submissions. default true
      * @return FALSE/array of objects
      */
-    public function user_submissions($userid) {
+    public function user_submissions($userid, $group_if_ga = true) {
         global $DB;
 
-        if ($this->is_group_activity()) {
+        if ($group_if_ga && $this->is_group_activity()) {
             $group = $this->get_usergroup($userid);
             if ($group) {
                 $select = '(groupid = ?) AND (vpl = ?)';
@@ -798,14 +798,13 @@ class mod_vpl {
                     $this->instance->id
             );
         }
-
         return $DB->get_records_select( 'vpl_submissions', $select, $parms, 'id DESC' );
     }
 
     /**
      * Get the last submission of all users
      *
-     * @param $fields fields
+     * @param string $fields conma separeted
      *            to retrieve from submissions table, default s.*. userid is always retrieved
      * @return object array
      */
@@ -830,7 +829,7 @@ class mod_vpl {
     /**
      * Get all saved submission of all users
      *
-     * @param $fields fields
+     * @param string $fields fields conma separeted
      *            to retrieve from submissions table, default s.*
      * @return object array
      */
@@ -843,7 +842,7 @@ class mod_vpl {
     /**
      * Get number of user submissions
      *
-     * @return oject array
+     * @return Array of objects with 'submissions' atribute as number of submissions saved
      */
     public function get_submissions_number() {
         global $DB;
@@ -862,13 +861,12 @@ class mod_vpl {
     }
 
     /**
-     * This is for compatibility to old group scheme
+     * This is for compatibility to old group scheme.
      * Update the submission groupid for VPL version <= 3.2
      *
      * Set the correct groupid when groupid = 0
-     * @param $group integer
-     *     $groupid to set
-     *     if no $groupid => update $groupid of all groups of the activity
+     * @param int $groupid.
+     *     If no $groupid => update $groupid of all groups of the activity
      * @return void
      */
     public function update_group_v32($groupid='') {
@@ -897,10 +895,9 @@ class mod_vpl {
     }
 
     /**
-     * Get last usersubmission
+     * Get last user submission
      *
-     * @param $id user
-     *            id
+     * @param int $userid
      * @return FALSE/object
      *
      */
@@ -1159,8 +1156,7 @@ class mod_vpl {
     /**
      * Get array of graders for this activity and group (optional)
      *
-     * @param $group optional
-     *            parm with group to search for
+     * @param string $group optional parm with group to search for
      * @return array
      */
     public function get_graders($group = '') {
@@ -1172,11 +1168,10 @@ class mod_vpl {
     }
 
     /**
-     * Get array of students for this activity if group is set return only group members
+     * Get array of students for this activity. If group is set return only group members
      *
-     * @param $group optional
-     *            parm with group to search for
-     * @return array
+     * @param string $group optional parm with group to search for
+     * @return array of objects
      */
     public function get_students($group = '') {
         if ( isset( $this->students ) && $group == '') {
@@ -1221,11 +1216,13 @@ class mod_vpl {
      * @return Integer userid
      */
     public function get_group_leaderid($userid) {
-        $leaderid = 0;
+        $leaderid = $userid;
         $group = $this->get_usergroup($userid);
-        foreach ($this->get_usergroup_members( $group->id ) as $user) {
-            if ($user->id < $leaderid || $leaderid == 0) {
-                $leaderid = $user->id;
+        if ($group) {
+            foreach ($this->get_usergroup_members( $group->id ) as $user) {
+                if ($user->id < $leaderid) {
+                    $leaderid = $user->id;
+                }
             }
         }
         return $leaderid;
@@ -1234,7 +1231,7 @@ class mod_vpl {
     /**
      * If is a group activity return the group of the userid
      *
-     * @return group object or false
+     * @return Object/false
      */
     public function get_usergroup($userid) {
         if ($this->is_group_activity()) {
@@ -1447,7 +1444,7 @@ class mod_vpl {
     /**
      * Create tabs to view_description/submit/view_submission/edit
      *
-     * @param $active tab
+     * @param string $path to get the active tab
      *
      */
     public function print_configure_tabs($path) {
@@ -1510,13 +1507,13 @@ class mod_vpl {
     /**
      * Create tabs to view_description/submit/view_submission/edit
      *
-     * @param $active tab
+     * @param string $path to get the active tab
      *
      */
-    public function print_view_tabs($active) {
+    public function print_view_tabs($path) {
         // TODO refactor using functions.
         global $CFG, $USER, $DB, $OUTPUT;
-        $active = basename( $active );
+        $active = basename( $path );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
         $copy = optional_param( 'privatecopy', false, PARAM_INT );

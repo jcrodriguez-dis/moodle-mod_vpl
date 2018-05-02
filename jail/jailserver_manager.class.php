@@ -29,6 +29,8 @@
  *
  */
 
+use core_competency\url;
+
 defined('MOODLE_INTERNAL') || die();
 require_once( __DIR__ . '/../locallib.php');
 

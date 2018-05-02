@@ -1190,7 +1190,6 @@ define(['jquery',
                 },
             }));
             acethemeSelect.on('change', function() {
-                    var value = acethemeSelect.val();
                     file_manager.setTheme(acethemeSelect.val());
             });
             var terminal = new VPL_Terminal('vpl_dialog_terminal', 'vpl_terminal', str);

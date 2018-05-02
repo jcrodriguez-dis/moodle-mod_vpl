@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/vpl_graph.class.php');
 
 function vpl_get_working_periods($vpl, $userid) {
-    $submissionslist = $vpl->user_submissions( $userid );
+    $submissionslist = $vpl->user_submissions( $userid, false);
     if (count( $submissionslist ) == 0) {
         return array ();
     }
@@ -59,7 +59,7 @@ function vpl_get_working_periods($vpl, $userid) {
         }
         if ($intervals > 0) { // First work as average.
             $firstwork = ( float ) ($lastsavetime - $workstart) / $intervals;
-        } // Else use the last $firstwork.
+        } // else use the last $firstwork.
         $workperiods [] = ($lastsavetime - $workstart + $firstwork) / (3600.0);
     }
     return $workperiods;
@@ -77,9 +77,6 @@ function vpl_working_periods_graph($vpl, $userid) {
         // Get all information.
         $alldata = array ();
         foreach ($list as $userinfo) {
-            if ($vpl->is_group_activity() && $userinfo->id != $vpl->get_group_leaderid( $userinfo->id )) {
-                continue;
-            }
             $workingperiods = vpl_get_working_periods( $vpl, $userinfo->id );
             if (count( $workingperiods ) > 0) {
                 $alldata [] = $workingperiods;
