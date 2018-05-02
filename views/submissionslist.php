@@ -48,8 +48,8 @@ class vpl_submissionlist_order {
         if ($adata == $bdata) {
             return self::cpm_userid( $a, $b );
         }
-        if (is_string( $adata ) && function_exists( 'collatorlib::compare' )) {
-            return (collatorlib::compare( $adata, $bdata )) * (self::$ascending);
+        if (is_string( $adata ) && function_exists( 'core_collator::compare' )) {
+            return (core_collator::compare( $adata, $bdata )) * (self::$ascending);
         }
         if ($adata < $bdata) {
             return self::$ascending;

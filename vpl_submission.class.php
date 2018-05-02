@@ -42,6 +42,7 @@ require_once(dirname(__FILE__).'/views/show_hide_div.class.php');
 function vpl_compare_filenamebylengh($f1, $f2) {
     return strlen( $f2 ) - strlen( $f1 );
 }
+
 class mod_vpl_submission {
     protected $vpl;
     protected $instance;
@@ -56,10 +57,8 @@ class mod_vpl_submission {
     /**
      * Constructor
      *
-     * @param $vpl object
-     *            vpl instance
-     * @param $mix submission
-     *            instance object or id
+     * @param mod_vpl $vpl
+     * @param Object/ibt $mix submission DB record instance object or id
      */
     public function __construct(mod_vpl $vpl, $mix = false) {
         global $DB;
@@ -99,7 +98,7 @@ class mod_vpl_submission {
     /**
      * Return the proper userid
      *
-     * @return user id
+     * @return int user id
      */
     public function get_userid() {
         if ($this->vpl->is_group_activity()) {
@@ -297,13 +296,13 @@ class mod_vpl_submission {
     }
 
     /**
-     * get current grade reduction
+     * Get current grade reduction
      *
      * @param & $reduction
      *          value or factor
      * @param & $percent bool
      *          if true then $reduction is factor
-     * @return grade reduction string
+     * @return float grade reduction
      */
     public function grade_reduction(& $reduction, & $percent) {
         $reduction = 0;
@@ -325,9 +324,7 @@ class mod_vpl_submission {
     /**
      * String with the reduction policy
      *
-     * @param $grade
-     *            optional grade value
-     * @return grade reduction string
+     * @return string reduction policy in HTML format
      */
     public function reduce_grade_string() {
         global $OUTPUT;
@@ -355,9 +352,8 @@ class mod_vpl_submission {
     /**
      * Reduce grade based en number of evaluations
      *
-     * @param $grade
-     *            grade value
-     * @return new grade
+     * @param float $grade value
+     * @return float new grade
      */
     public function reduce_grade($grade) {
         $this->grade_reduction($reduction, $percent);
@@ -374,12 +370,9 @@ class mod_vpl_submission {
     /**
      * Set/update grade
      *
-     * @param $info object
-     *            with grade and comments fields
-     * @param $automatic if
-     *            automatic grading (default false)
-     * @return boolean
-     *            true => OK
+     * @param object $info with grade and comments fields
+     * @param boolean $automatic if automatic grading (default false)
+     * @return boolean. true => OK
      */
     public function set_grade($info, $automatic = false) {
         global $USER;
@@ -665,11 +658,9 @@ class mod_vpl_submission {
     /**
      * Print sudmission grade
      *
-     * @param $detailed true
-     *            show detailed grade (default false)
-     * @param $return true
-     *            return string/ false print grade (default false)
-     * @return mix string/void
+     * @param boolean $detailed show detailed grade (default false)
+     * @param boolean $return. Return string/ false print grade (default false)
+     * @return string/void
      */
     public function print_grade($detailed = false, $return = false) {
         global $CFG, $OUTPUT, $PAGE;
@@ -724,6 +715,7 @@ class mod_vpl_submission {
 
     /**
      * Print sudmission info
+     * @param boolean $autolink. Add links. default = false
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
@@ -1061,12 +1053,13 @@ class mod_vpl_submission {
     }
     const COMPILATIONFN = 'compilation.txt';
     const EXECUTIONFN = 'execution.txt';
+
     /**
      * Save Compilation Execution result to files
      *
      * @param $result array
      *            response from server
-     * @return uvoid
+     * @return void
      */
     public function savece($result) {
         global $DB;

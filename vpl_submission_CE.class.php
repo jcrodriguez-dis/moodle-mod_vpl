@@ -101,7 +101,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      *
      * @param $filelist array
      *            of files submitted to check type
-     * @return programming language name
+     * @return string programming language name
      */
     public function get_pln($filelist) {
         foreach ($filelist as $checkfilename) {
@@ -168,10 +168,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Recopile execution data to be send to the jail
      *
-     * @param $already=array(). List
-     *            of based on instances, usefull to avoid infinite recursion
-     * @param $vpl=null. Instance
-     *            to process
+     * @param array $already=array().
+     *            List of based on instances, usefull to avoid infinite recursion
+     * @param mod_vpl $vpl. VPl instance to process. Default = null
      * @return object with files, limits, interactive and other info
      */
     public function prepare_execution($type, &$already = array(), $vpl = null) {

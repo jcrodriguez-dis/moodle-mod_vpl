@@ -29,8 +29,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
     /**
      * Constructor
      *
-     * @param $vpl. vpl
-     *            object instance
+     * @param mod_vpl $vpl. instance of mod_vpl
      */
     public function __construct($vpl) {
         global $USER;
