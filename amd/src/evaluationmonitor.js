@@ -21,16 +21,16 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['mod_vpl/vplutil'],function(VPL_Util) {
+define(['mod_vpl/vplutil'],function(VPLUtil) {
     return {
         init: function(options) {
-            VPL_Util.set_str(options.i18n);
+            VPLUtil.setStr(options.i18n);
             options.next = function() {
                 window.location = options.nexturl;
             };
             function showErrorMessage(message) {
-                VPL_Util.showErrorMessage(message, {
-                    next : options.next
+                VPLUtil.showErrorMessage(message, {
+                    next: options.next
                 });
             }
             var action;
@@ -42,10 +42,10 @@ define(['mod_vpl/vplutil'],function(VPL_Util) {
                     },
             };
             action = function() {
-                VPL_Util.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
+                VPLUtil.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
                 .done(
                         function(response) {
-                            VPL_Util.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
+                            VPLUtil.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
                             .done(options.next)
                             .fail(showErrorMessage);
                         }

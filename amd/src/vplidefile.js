@@ -29,11 +29,11 @@ define(['jquery',
          'jqueryui',
          'mod_vpl/vplutil',
          ],
-         function($JQVPL, jqui , VPL_Util) {
-    if ( typeof VPL_File != 'undefined') {
-        return VPL_File;
+         function($, jqui , VPLUtil) {
+    if ( typeof VPLFile != 'undefined') {
+        return VPLFile;
     }
-    var VPL_File = function(id, name, value, file_manager, vpl_ide) {
+    var VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
         var tid = "#vpl_file" + id;
         var tabnameid = "#vpl_tab_name" + id;
         var fileName = name;
@@ -57,7 +57,7 @@ define(['jquery',
             this.setFileName(fileName);
         };
         this.getTabPos = function() {
-            return file_manager.getTabPos(this);
+            return fileManager.getTabPos(this);
         };
         this.isOpen = function() {
             return opened;
@@ -68,13 +68,13 @@ define(['jquery',
         this.change = function() {
             if (!modified) {
                 modified = true;
-                file_manager.generateFileList();
+                fileManager.generateFileList();
                 this.setFileName(fileName); // TODO update state of filename.
             }
-            VPL_Util.longDelay('setModified', file_manager.setModified);
+            VPLUtil.longDelay('setModified', fileManager.setModified);
         };
         this.setFileName = function(name) {
-            if (!VPL_Util.validPath(name)) {
+            if (!VPLUtil.validPath(name)) {
                 return false;
             }
             if (name != fileName) {
@@ -84,22 +84,22 @@ define(['jquery',
             if (!opened) {
                 return true;
             }
-            var fn = VPL_Util.getFileName(name);
+            var fn = VPLUtil.getFileName(name);
             if (fn.length > 20) {
                 fn = fn.substring(0, 16) + '...';
             }
-            var html = (modified ? VPL_Util.iconModified() : '') + fn;
-            if (this.getTabPos() < file_manager.minNumberOfFiles) {
-                html = html + VPL_Util.iconRequired();
+            var html = (modified ? VPLUtil.iconModified() : '') + fn;
+            if (this.getTabPos() < fileManager.minNumberOfFiles) {
+                html = html + VPLUtil.iconRequired();
             } else {
-                html = html + VPL_Util.iconClose();
+                html = html + VPLUtil.iconClose();
             }
-            $JQVPL(tabnameid + ' a').html(html);
+            $(tabnameid + ' a').html(html);
             if (fn != name) {
-                $JQVPL(tabnameid + ' a').attr('title', name);
+                $(tabnameid + ' a').attr('title', name);
             }
             if (modified) {
-                file_manager.adjustTabsTitles(false);
+                fileManager.adjustTabsTitles(false);
             }
             this.langSelection();
             return true;
@@ -112,15 +112,15 @@ define(['jquery',
         };
 
         this.destroy = function() {
-            $JQVPL(tabnameid).remove();
-            $JQVPL(tid).remove();
+            $(tabnameid).remove();
+            $(tid).remove();
         };
 
         this.adjustSize = function() {
             if (!opened) {
                 return false;
             }
-            var editTag = $JQVPL(tid);
+            var editTag = $(tid);
             var tabs = editTag.parent();
             if (editTag.length === 0) {
                 return;
@@ -129,46 +129,46 @@ define(['jquery',
             var editorWidth = editTag.width();
             var newHeight = tabs.height();
             newHeight -= editTag.position().top;
-            var newWidth = $JQVPL('#vpl_tabs_scroll').width();
+            var newWidth = $('#vpl_tabs_scroll').width();
             if (newHeight != editorHeight || newWidth != editorWidth) {
-                $JQVPL(editTag).height(newHeight);
-                $JQVPL(editTag).width(newWidth);
+                $(editTag).height(newHeight);
+                $(editTag).width(newWidth);
                 return true;
             }
             return false;
         };
-        this.gotoLine = VPL_Util.doNothing;
-        this.setReadOnly = VPL_Util.doNothing;
-        this.focus = VPL_Util.doNothing;
-        this.blur = VPL_Util.doNothing;
-        this.undo = VPL_Util.doNothing;
-        this.redo = VPL_Util.doNothing;
-        this.selectAll = VPL_Util.doNothing;
-        this.open = VPL_Util.doNothing;
-        this.hasUndo = VPL_Util.returnFalse;
-        this.hasRedo = VPL_Util.returnFalse;
-        this.hasSelectAll = VPL_Util.returnFalse;
-        this.hasFind = VPL_Util.returnFalse;
-        this.hasFindReplace = VPL_Util.returnFalse;
-        this.hasNext = VPL_Util.returnFalse;
-        this.find = VPL_Util.doNothing;
-        this.replace = VPL_Util.doNothing;
-        this.next = VPL_Util.doNothing;
+        this.gotoLine = VPLUtil.doNothing;
+        this.setReadOnly = VPLUtil.doNothing;
+        this.focus = VPLUtil.doNothing;
+        this.blur = VPLUtil.doNothing;
+        this.undo = VPLUtil.doNothing;
+        this.redo = VPLUtil.doNothing;
+        this.selectAll = VPLUtil.doNothing;
+        this.open = VPLUtil.doNothing;
+        this.hasUndo = VPLUtil.returnFalse;
+        this.hasRedo = VPLUtil.returnFalse;
+        this.hasSelectAll = VPLUtil.returnFalse;
+        this.hasFind = VPLUtil.returnFalse;
+        this.hasFindReplace = VPLUtil.returnFalse;
+        this.hasNext = VPLUtil.returnFalse;
+        this.find = VPLUtil.doNothing;
+        this.replace = VPLUtil.doNothing;
+        this.next = VPLUtil.doNothing;
         this.getAnnotations = function() {
             return [];
         };
-        this.setAnnotations = VPL_Util.doNothing;
-        this.setFontSize = VPL_Util.doNothing;
-        this.setTheme = VPL_Util.doNothing;
-        this.clearAnnotations = VPL_Util.doNothing;
-        this.langSelection = VPL_Util.doNothing;
+        this.setAnnotations = VPLUtil.doNothing;
+        this.setFontSize = VPLUtil.doNothing;
+        this.setTheme = VPLUtil.doNothing;
+        this.clearAnnotations = VPLUtil.doNothing;
+        this.langSelection = VPLUtil.doNothing;
         this.isBinary = function() {
             return false;
         };
         this.extendToCodeEditor = function() {
             var editor = null;
             var session = null;
-            var readOnly = file_manager.readOnly;
+            var readOnly = fileManager.readOnly;
             this.getContent = function() {
                 if (!opened) {
                     return value;
@@ -219,8 +219,8 @@ define(['jquery',
                 if (!opened) {
                     return;
                 }
-                $JQVPL(tid).removeClass('ui-widget-content ui-tabs-panel');
-                $JQVPL(tid).addClass('ui-corner-bottom');
+                $(tid).removeClass('ui-widget-content ui-tabs-panel');
+                $(tid).addClass('ui-corner-bottom');
                 this.adjustSize();
                 editor.focus();
             };
@@ -263,10 +263,10 @@ define(['jquery',
                 }
                 return session.getUndoManager().hasRedo();
             };
-            this.hasSelectAll = VPL_Util.returnTrue;
-            this.hasFind = VPL_Util.returnTrue;
-            this.hasFindReplace = VPL_Util.returnTrue;
-            this.hasNext = VPL_Util.returnTrue;
+            this.hasSelectAll = VPLUtil.returnTrue;
+            this.hasFind = VPLUtil.returnTrue;
+            this.hasFindReplace = VPLUtil.returnTrue;
+            this.hasNext = VPLUtil.returnTrue;
             this.find = function() {
                 if (!opened) {
                     return;
@@ -307,10 +307,10 @@ define(['jquery',
                 if (!opened) {
                     return;
                 }
-                var ext = VPL_Util.fileExtension(fileName);
+                var ext = VPLUtil.fileExtension(fileName);
                 var lang = 'text';
                 if (ext !== '') {
-                    lang = VPL_Util.langType(ext);
+                    lang = VPLUtil.langType(ext);
                 }
                 session.setMode("ace/mode/" + lang);
             };
@@ -328,7 +328,7 @@ define(['jquery',
             };
             this.open = function() {
                 if ( typeof ace === 'undefined' ) {
-                    VPL_Util.loadScript(['../editor/ace9/ace.js',
+                    VPLUtil.loadScript(['../editor/ace9/ace.js',
                         '../editor/ace9/ext-language_tools.js'], function() {self.open();});
                     return;
                 }
@@ -336,8 +336,8 @@ define(['jquery',
                     return false;
                 }
                 // Workaround to remove jquery-ui theme background color.
-                $JQVPL(tid).removeClass('ui-widget-content ui-tabs-panel');
-                $JQVPL(tid).addClass('ui-corner-bottom');
+                $(tid).removeClass('ui-widget-content ui-tabs-panel');
+                $(tid).addClass('ui-corner-bottom');
                 ace.require("ext/language_tools");
                 opened = true;
                 editor = ace.edit("vpl_file" + id);
@@ -346,8 +346,8 @@ define(['jquery',
                     enableBasicAutocompletion : true,
                     enableSnippets : true,
                 });
-                editor.setFontSize(file_manager.getFontSize());
-                editor.setTheme("ace/theme/" + file_manager.getTheme());
+                editor.setFontSize(fileManager.getFontSize());
+                editor.setTheme("ace/theme/" + fileManager.getTheme());
                 this.setFileName(fileName);
                 editor.setValue(value);
                 editor.gotoLine(0, 0);
@@ -360,10 +360,10 @@ define(['jquery',
                 // Code to control Paste and drop under restricted editing.
                 editor.execCommand('replace');
                 function addEventDrop() {
-                    var tag = $JQVPL(tid + ' div.ace_search');
+                    var tag = $(tid + ' div.ace_search');
                     if (tag.length) {
-                        tag.on('drop', file_manager.dropHandler);
-                        var button = $JQVPL('button.ace_searchbtn_close');
+                        tag.on('drop', fileManager.dropHandler);
+                        var button = $('button.ace_searchbtn_close');
                         button.css({
                             marginLeft : "1em",
                             marginRight : "1em"
@@ -381,19 +381,19 @@ define(['jquery',
                 // Save previous onPaste and change for a new one.
                 var prevOnPaste = editor.onPaste;
                 editor.onPaste = function(s) {
-                    if (file_manager.restrictedEdit) {
-                        editor.insert(file_manager.getClipboard());
+                    if (fileManager.restrictedEdit) {
+                        editor.insert(fileManager.getClipboard());
                     } else {
                         prevOnPaste.call(editor, s);
                     }
                 };
                 // Control copy and cut (yes cut also use this) for localClipboard.
                 editor.on('copy', function(t) {
-                    file_manager.setClipboard(t);
+                    fileManager.setClipboard(t);
                 });
-                $JQVPL(tid).on('paste', '*', file_manager.restrictedPaste);
-                $JQVPL(tid + ' div.ace_content').on('drop', file_manager.dropHandler);
-                $JQVPL(tid + ' div.ace_content').on('dragover', file_manager.dragoverHandler);
+                $(tid).on('paste', '*', fileManager.restrictedPaste);
+                $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
+                $(tid + ' div.ace_content').on('dragover', fileManager.dragoverHandler);
                 this.adjustSize();
                 return editor;
             };
@@ -431,7 +431,7 @@ define(['jquery',
                         self.firstFocus = false;
                         Blockly.Events.disable();
                         self.setContent(value);
-                        VPL_Util.adjustBlockly(self.workspacePlayground, 10, 10);
+                        VPLUtil.adjustBlockly(self.workspacePlayground, 10, 10);
                         self.workspacePlayground.scrollX = 0;
                         self.workspacePlayground.scrollY = 0;
                         Blockly.svgResize(self.workspacePlayground);
@@ -439,7 +439,7 @@ define(['jquery',
                         self.adjustSize();
                         Blockly.Events.enable();
                     } else {
-                        VPL_Util.longDelay('focus', self.focus);
+                        VPLUtil.longDelay('focus', self.focus);
                     }
                 }
             };
@@ -447,7 +447,7 @@ define(['jquery',
                 if (!opened || !this.workspacePlayground) {
                     return false;
                 }
-                var editTag = $JQVPL(tid);
+                var editTag = $(tid);
                 if (editTag.length === 0) {
                     return false;
                 }
@@ -455,8 +455,8 @@ define(['jquery',
                 var newHeight = tabs.height();
                 newHeight -= editTag.position().top;
                 editTag.height(newHeight);
-                $JQVPL('#' + this.bdiv).height(newHeight);
-                $JQVPL('#' + this.bdiv).width(editTag.width());
+                $('#' + this.bdiv).height(newHeight);
+                $('#' + this.bdiv).width(editTag.width());
                 Blockly.svgResize(this.workspacePlayground);
                 return false;
             };
@@ -478,7 +478,7 @@ define(['jquery',
             this.executionState = this.STOPSTATE;
             this.goNext = false;
             this.initRun = function(animate) {
-                var ter = vpl_ide.getTerminal();
+                var ter = vplIdeInstance.getTerminal();
                 if (ter.isConnected()) {
                     ter.closeLocal();
                 }
@@ -507,7 +507,7 @@ define(['jquery',
                         if (id == self.breakpoint) {
                             self.executionState = self.STEPSTATE;
                             self.updateRunButtons();
-                            vpl_ide.getTerminal().setMessage(VPL_Util.str('breakpoint'));
+                            vplIdeInstance.getTerminal().setMessage(VPLUtil.str('breakpoint'));
                         }
                         if (self.animateRun || self.executionState == self.STEPSTATE) {
                             self.workspacePlayground.highlightBlock(id);
@@ -538,7 +538,7 @@ define(['jquery',
                 } else if (val != undefined){
                     var type = typeof val;
                     if (type == 'string' ) {
-                        HTML = '"' + VPL_Util.sanitizeText(val) + '"';
+                        HTML = '"' + VPLUtil.sanitizeText(val) + '"';
                     } else if (type == 'boolean') {
                         HTML = "<b>" + val + "</b>";
                     } else if (type == 'object' && val.class === "Array") {
@@ -605,7 +605,7 @@ define(['jquery',
                     }
                 }
                 HTML += '</table>';
-                vpl_ide.setResult({variables:HTML});
+                vplIdeInstance.setResult({variables:HTML});
             };
             this.runLoop = function() {
                 if (! self.interpreter ) {
@@ -624,8 +624,8 @@ define(['jquery',
                 }
                 if ( self.executionState == self.STOPSTATE ) {
                     self.workspacePlayground.highlightBlock(-1);
-                    vpl_ide.getTerminal().closeLocal();
-                    vpl_ide.setResult({variables:''});
+                    vplIdeInstance.getTerminal().closeLocal();
+                    vplIdeInstance.setResult({variables:''});
                     return;
                 }
                 if ( self.executionState == self.RUNSTATE) {
@@ -638,32 +638,32 @@ define(['jquery',
                 self.initRun(false);
                 self.executionState = self.RUNSTATE;
                 self.updateRunButtons();
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('start'));
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('start'));
                 self.runLoop();
             };
             this.startAnimate = function() {
                 self.initRun(true);
                 self.executionState = self.RUNSTATE;
                 self.updateRunButtons();
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('startanimate'));
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('startanimate'));
                 self.runLoop();
             };
             this.stop = function() {
                 self.executionState = self.STOPSTATE;
                 self.updateRunButtons();
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('stop'));
-                vpl_ide.getTerminal().closeLocal();
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('stop'));
+                vplIdeInstance.getTerminal().closeLocal();
                 self.interpreter = false;
-                vpl_ide.setResult({variables:''});
+                vplIdeInstance.setResult({variables:''});
             };
             this.pause = function() {
                 self.executionState = self.STEPSTATE;
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('pause'));
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('pause'));
                 self.updateRunButtons();
             };
             this.resume = function() {
                 self.executionState = self.RUNSTATE;
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('resume'));
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('resume'));
                 self.updateRunButtons();
                 self.runLoop();
             };
@@ -673,7 +673,7 @@ define(['jquery',
                 }
                 self.executionState = self.STEPSTATE;
                 self.updateRunButtons();
-                vpl_ide.getTerminal().setMessage(VPL_Util.str('step'));
+                vplIdeInstance.getTerminal().setMessage(VPLUtil.str('step'));
                 self.runLoop();
             };
             this.hasUndo = function() {
@@ -692,19 +692,19 @@ define(['jquery',
             };
             this.generator = '';
             this.setFileName = function(name) {
-                var reg_ext2 = /\.([^.]+)\.blockly[123]?$/;
-                var reg_fn2 = /(.+)\.blockly[123]?$/;
-                var oldExt = VPL_Util.fileExtension(fileName);
+                var regExt2 = /\.([^.]+)\.blockly[123]?$/;
+                var regFn2 = /(.+)\.blockly[123]?$/;
+                var oldExt = VPLUtil.fileExtension(fileName);
                 self.oldSetFileName(name);
-                var ext2 = reg_ext2.exec(fileName);
-                var fn2 = reg_fn2.exec(fileName);
+                var ext2 = regExt2.exec(fileName);
+                var fn2 = regFn2.exec(fileName);
                 if ( ext2 !== null && fn2 !== null && typeof this.generatorMap[ext2[1]] == 'string' ) {
                     this.generator = this.generatorMap[ext2[1]];
                     this.generatedFilename = fn2[1];
                 } else {
                     this.generator = '';
                 }
-                if (fn2 !== null && oldExt != VPL_Util.fileExtension(fileName)) {
+                if (fn2 !== null && oldExt != VPLUtil.fileExtension(fileName)) {
                     this.setToolbox();
                 }
             };
@@ -716,7 +716,7 @@ define(['jquery',
                 }
                 if ( event.type == 'ui'
                         && event.element == 'category'
-                        && event.newValue == VPL_Util.str('run')) {
+                        && event.newValue == VPLUtil.str('run')) {
                     self.updateRunButtons();
                     return;
                 }
@@ -726,17 +726,17 @@ define(['jquery',
                 self.change();
                 if ( this.generator != '' ) {
                     var code = Blockly[this.generator].workspaceToCode(self.workspacePlayground);
-                    var fid = file_manager.fileNameExists(this.generatedFilename);
+                    var fid = fileManager.fileNameExists(this.generatedFilename);
                     // Try to create generated code file
                     if ( fid == -1 ) {
-                        file_manager.addFile({
+                        fileManager.addFile({
                             name: this.generatedFilename,
                             contents: ''},
-                            false, VPL_Util.doNothing, VPL_Util.doNothing);
-                        fid = file_manager.fileNameExists(this.generatedFilename);
+                            false, VPLUtil.doNothing, VPLUtil.doNothing);
+                        fid = fileManager.fileNameExists(this.generatedFilename);
                     }
                     if ( fid != -1 ) {
-                        var fc = file_manager.getFile(fid);
+                        var fc = fileManager.getFile(fid);
                         fc.setContent(code);
                         fc.change();
                         fc.gotoLine(1);
@@ -747,49 +747,49 @@ define(['jquery',
             this.updateRunButtons = function() {
                 switch (self.executionState) {
                     case self.RUNSTATE: {
-                        $JQVPL('.blocklyStartC').hide();
-                        $JQVPL('.blocklyStartAnimateC').hide();
-                        $JQVPL('.blocklyStopC').show();
-                        $JQVPL('.blocklyPauseC').show();
-                        $JQVPL('.blocklyResumeC').hide();
-                        $JQVPL('.blocklyStepC').hide();
+                        $('.blocklyStartC').hide();
+                        $('.blocklyStartAnimateC').hide();
+                        $('.blocklyStopC').show();
+                        $('.blocklyPauseC').show();
+                        $('.blocklyResumeC').hide();
+                        $('.blocklyStepC').hide();
                         break;
                     }
                     case self.STEPSTATE: {
-                        $JQVPL('.blocklyStartC').hide();
-                        $JQVPL('.blocklyStartAnimateC').hide();
-                        $JQVPL('.blocklyStopC').show();
-                        $JQVPL('.blocklyPauseC').hide();
-                        $JQVPL('.blocklyResumeC').show();
-                        $JQVPL('.blocklyStepC').show();
+                        $('.blocklyStartC').hide();
+                        $('.blocklyStartAnimateC').hide();
+                        $('.blocklyStopC').show();
+                        $('.blocklyPauseC').hide();
+                        $('.blocklyResumeC').show();
+                        $('.blocklyStepC').show();
                         break;
                     }
                     case self.STOPSTATE: {
-                        $JQVPL('.blocklyStartC').show();
-                        $JQVPL('.blocklyStartAnimateC').show();
-                        $JQVPL('.blocklyStopC').hide();
-                        $JQVPL('.blocklyPauseC').hide();
-                        $JQVPL('.blocklyResumeC').hide();
-                        $JQVPL('.blocklyStepC').show();
+                        $('.blocklyStartC').show();
+                        $('.blocklyStartAnimateC').show();
+                        $('.blocklyStopC').hide();
+                        $('.blocklyPauseC').hide();
+                        $('.blocklyResumeC').hide();
+                        $('.blocklyStepC').show();
                         break;
                     }
                 }
             };
             this.setToolbox = function() {
-                var ext = VPL_Util.fileExtension(fileName);
+                var ext = VPLUtil.fileExtension(fileName);
                 var toolboxname = ext + 'Toolbox';
-                if (VPL_File[toolboxname] === false) {
-                    $JQVPL.ajax({
+                if (VPLFile[toolboxname] === false) {
+                    $.ajax({
                         url: '../editor/blocklytoolboxes/' + toolboxname + '.xml',
                         dataType: 'text',
                         success: function(data) {
-                            VPL_File[toolboxname] = VPL_File.blocklyIn18(data);
+                            VPLFile[toolboxname] = VPLFile.blocklyIn18(data);
                             self.setToolbox();
                         },
                     });
                     return;
                 }
-               this.workspacePlayground.updateToolbox(VPL_File[toolboxname]);
+               this.workspacePlayground.updateToolbox(VPLFile[toolboxname]);
                this.workspacePlayground.registerButtonCallback('blocklyStartButton', this.start);
                this.workspacePlayground.registerButtonCallback('blocklyStartAnimateButton', this.startAnimate);
                this.workspacePlayground.registerButtonCallback('blocklyStopButton', this.stop);
@@ -802,8 +802,8 @@ define(['jquery',
                 opened = true;
                 this.setFileName(fileName);
                 opened = false;
-                if ( VPL_File.blocklyNotLoaded ){
-                    VPL_Util.loadScript( [
+                if ( VPLFile.blocklyNotLoaded ){
+                    VPLUtil.loadScript( [
                         '../editor/blockly/blockly_compressed.js',
                         '../editor/blockly/msg/js/en.js',
                         '../editor/blockly/blocks_compressed.js',
@@ -817,21 +817,21 @@ define(['jquery',
                         ]
                             , function() {
                         self.adaptBlockly();
-                        VPL_File.blocklyNotLoaded = false;
+                        VPLFile.blocklyNotLoaded = false;
                         self.open();
                     });
                     return;
                 }
                 opened = true;
                 var horizantalMenu = false;
-                if( /.*[0-9]$/.test(VPL_Util.fileExtension(fileName)) ) {
+                if( /.*[0-9]$/.test(VPLUtil.fileExtension(fileName)) ) {
                     var horizantalMenu = true;
                 }
                 // Workaround to remove jquery-ui theme background color.
-                $JQVPL(tid).removeClass('ui-widget-content ui-tabs-panel');
-                $JQVPL(tid).addClass('ui-corner-bottom');
+                $(tid).removeClass('ui-widget-content ui-tabs-panel');
+                $(tid).addClass('ui-corner-bottom');
                 this.bdiv = 'bkdiv'+ id;
-                $JQVPL(tid).html('<div id="' + this.bdiv + '" style="height: 480px; width: 600px;"></div>');
+                $(tid).html('<div id="' + this.bdiv + '" style="height: 480px; width: 600px;"></div>');
                 var options = {
                     toolbox: '<xml><category name=""><block type="math_number"></block></category></xml>',
                     media: '../editor/blockly/media/',
@@ -857,8 +857,8 @@ define(['jquery',
                     return value;
                 }
                 var xml = Blockly.Xml.workspaceToDom(this.workspacePlayground);
-                var xml_text = Blockly.Xml.domToPrettyText (xml);
-                return xml_text;
+                var xmlText = Blockly.Xml.domToPrettyText (xml);
+                return xmlText;
             };
             this.setContent = function(c) {
                 value = c;
@@ -888,18 +888,18 @@ define(['jquery',
                 this.updateDataURL();
             };
             this.updateDataURL = function() {
-                if(VPL_Util.isImage(fileName)){
-                    var prevalue = 'data:' + VPL_Util.getMIME(fileName) + ';base64,';
-                    $JQVPL(tid).find('img').attr('src', prevalue + value);
+                if(VPLUtil.isImage(fileName)){
+                    var prevalue = 'data:' + VPLUtil.getMIME(fileName) + ';base64,';
+                    $(tid).find('img').attr('src', prevalue + value);
                 } else {
-                    $JQVPL(tid).find('img').attr('src', '');
+                    $(tid).find('img').attr('src', '');
                 }
             };
             this.adjustSize = function() {
                 if (!opened) {
                     return false;
                 }
-                var editTag = $JQVPL(tid);
+                var editTag = $(tid);
                 if (editTag.length === 0) {
                     return;
                 }
@@ -914,11 +914,11 @@ define(['jquery',
             };
             this.open = function() {
                 opened = true;
-                if (VPL_Util.isImage(fileName)) {
-                    $JQVPL(tid).addClass('vpl_ide_img').append('<img />');
+                if (VPLUtil.isImage(fileName)) {
+                    $(tid).addClass('vpl_ide_img').append('<img />');
                     this.updateDataURL();
                 } else {
-                    $JQVPL(tid).addClass('vpl_ide_binary').text(VPL_Util.str('binaryfile'));
+                    $(tid).addClass('vpl_ide_binary').text(VPLUtil.str('binaryfile'));
                 }
                 this.setFileName(fileName);
                 return false;
@@ -928,13 +928,13 @@ define(['jquery',
             };
         };
     };
-    VPL_File.blocklyNotLoaded = true;
-    VPL_File.blocklyToolbox = false;
-    VPL_File.blockly0Toolbox = false;
-    VPL_File.blockly1Toolbox = false;
-    VPL_File.blockly2Toolbox = false;
-    VPL_File.blockly3Toolbox = false;
-    VPL_File.blocklyStrs= [
+    VPLFile.blocklyNotLoaded = true;
+    VPLFile.blocklyToolbox = false;
+    VPLFile.blockly0Toolbox = false;
+    VPLFile.blockly1Toolbox = false;
+    VPLFile.blockly2Toolbox = false;
+    VPLFile.blockly3Toolbox = false;
+    VPLFile.blocklyStrs= [
         'basic',
         'intermediate',
         'advanced',
@@ -954,17 +954,17 @@ define(['jquery',
         'resume',
         'step'
     ];
-    VPL_File.blocklyIn18 = function(data) {
-        var l = VPL_File.blocklyStrs.length;
+    VPLFile.blocklyIn18 = function(data) {
+        var l = VPLFile.blocklyStrs.length;
          for ( var i = 0; i < l; i++) {
-             var str = VPL_File.blocklyStrs[i];
+             var str = VPLFile.blocklyStrs[i];
              var reg = new RegExp('\\[\\[' + str + '\\]\\]', 'g');
-             var rep = VPL_Util.str(str);
+             var rep = VPLUtil.str(str);
              data = data.replace(reg, rep);
          }
          return data;
     };
-    window.VPL_File = VPL_File;
-    return VPL_File;
+    window.VPLFile = VPLFile;
+    return VPLFile;
 
 });

@@ -25,11 +25,11 @@ define(['jquery',
          'jqueryui',
          'mod_vpl/vplutil',
          ],
-         function($JQVPL, jqui, VPL_Util ) {
-    if ( typeof VPL_IDEButtons !== 'undefined' ) {
-        return VPL_IDEButtons;
+         function($, jqui, VPLUtil ) {
+    if ( typeof VPLIDEButtons !== 'undefined' ) {
+        return VPLIDEButtons;
     }
-        var VPL_IDEButtons = function(menu_element, isOptionAllowed) {
+        var VPLIDEButtons = function(menuElement, isOptionAllowed) {
             var self = this;
             var buttons = {};
 
@@ -47,22 +47,22 @@ define(['jquery',
                     title = buttons[button].title;
                 }
                 if (!title) {
-                    title = VPL_Util.str(icon);
+                    title = VPLUtil.str(icon);
                 }
                 buttons[button].icon = icon;
                 buttons[button].title = title;
                 if (buttons[button].hasOwnProperty('key')) {
                     title += ' (' + buttons[button].key + ')';
                 }
-                $JQVPL('#vpl_ide_' + button).attr('title', title);
-                $JQVPL('#vpl_ide_' + button + ' i').replaceWith(VPL_Util.gen_icon(icon));
+                $('#vpl_ide_' + button).attr('title', title);
+                $('#vpl_ide_' + button + ' i').replaceWith(VPLUtil.genIcon(icon));
             };
             this.setExtracontent = function(button, html) {
                 if (self.notAdded(button)) {
                     return;
                 }
                 var cl = 'bt_extrahtml';
-                var btag = $JQVPL('#vpl_ide_' + button + ' i');
+                var btag = $('#vpl_ide_' + button + ' i');
                 if (btag.find('.' + cl).length == 0) {
                     btag.append(' <span class="' + cl + '"><span>');
                 }
@@ -88,7 +88,7 @@ define(['jquery',
                     button.editorName = button.name;
                 }
                 if (!button.hasOwnProperty('originalAction')) {
-                    button.originalAction = VPL_Util.doNothing;
+                    button.originalAction = VPLUtil.doNothing;
                 }
                 if (self.notAdded(button)) {
                     buttons[button.name] = button;
@@ -108,8 +108,8 @@ define(['jquery',
                 if (self.notAdded(button)) {
                     return '';
                 } else {
-                    var html = "<a id='vpl_ide_" + button + "' href='#' title='" + VPL_Util.str(button) + "'>";
-                    html += VPL_Util.gen_icon(button) + "</a>";
+                    var html = "<a id='vpl_ide_" + button + "' href='#' title='" + VPLUtil.str(button) + "'>";
+                    html += VPLUtil.genIcon(button) + "</a>";
                     return html;
                 }
             };
@@ -118,7 +118,7 @@ define(['jquery',
                 if (self.notAdded(button)) {
                     return '';
                 }
-                var bw = $JQVPL('#vpl_ide_' + button);
+                var bw = $('#vpl_ide_' + button);
                 buttons[button].active = active;
                 bw.data("vpl-active", active);
                 if ( ! active ) {
@@ -140,7 +140,7 @@ define(['jquery',
             };
             this.getAction = function(button) {
                 if (self.notAdded(button)) {
-                    return VPL_Util.doNothing;
+                    return VPLUtil.doNothing;
                 }
                 return buttons[button].action;
             };
@@ -183,7 +183,7 @@ define(['jquery',
                 }
                 html += '</ul>';
                 if (editor) {
-                    html += '<h5>' + VPL_Util.str('edit') + '</h5>';
+                    html += '<h5>' + VPLUtil.str('edit') + '</h5>';
                     var commands = editor.commands.commands;
                     var platform = editor.commands.platform;
                     html += '<ul>';
@@ -201,9 +201,9 @@ define(['jquery',
                 }
                 return html;
             };
-            $JQVPL(menu_element).on("click", "a", function(event) {
-                if ( $JQVPL(this).data("vpl-active") ) {
-                    var actionid = $JQVPL(this).attr('id');
+            $(menuElement).on("click", "a", function(event) {
+                if ( $(this).data("vpl-active") ) {
+                    var actionid = $(this).attr('id');
                     if (typeof actionid === 'string' && actionid.startsWith('vpl_ide_')) {
                         actionid = actionid.replace('vpl_ide_', '');
                     } else {
@@ -226,7 +226,7 @@ define(['jquery',
                 return false;
             });
 
-            $JQVPL('body').on('keydown', function(event) {
+            $('body').on('keydown', function(event) {
                 var check = false;
                 var strkey = '';
                 if (event.shiftKey) {
@@ -284,7 +284,7 @@ define(['jquery',
                 var checkt = 1000;
                 var timeLeft = 0;
                 var update = function() {
-                    var now = self.multiple(VPL_Util.getCurrentTime(), precision);
+                    var now = self.multiple(VPLUtil.getCurrentTime(), precision);
                     if (now === lastLap || element === null) {
                         return;
                     }
@@ -299,9 +299,9 @@ define(['jquery',
                     } else if (tl <= 15 * 60) {
                         cssclass = 'vpl_buttonleft_orange';
                     }
-                    var thtml = VPL_Util.gen_icon('timeleft');
+                    var thtml = VPLUtil.genIcon('timeleft');
                     if (show) {
-                        thtml += ' ' + VPL_Util.getTimeLeft(tl);
+                        thtml += ' ' + VPLUtil.getTimeLeft(tl);
                     }
                     element.html(thtml);
                     element.removeClass(cssclases).addClass(cssclass);
@@ -312,13 +312,13 @@ define(['jquery',
                     update();
                 };
                 self.setTimeLeft = function(options) {
-                    element = $JQVPL('#vpl_ide_timeleft span');
+                    element = $('#vpl_ide_timeleft span');
                     if (interval !== false) {
                         clearInterval(interval);
                         interval = false;
                     }
                     if (options.hasOwnProperty('timeLeft')) {
-                        $JQVPL('#vpl_ide_timeleft').show();
+                        $('#vpl_ide_timeleft').show();
                         precision = 5;
                         checkt = 1000;
                         timeLeft = options.timeLeft;
@@ -331,19 +331,19 @@ define(['jquery',
                         }
                         var sync = timeLeft % precision;
                         timeLeft = self.multiple(timeLeft, precision);
-                        start = self.multiple(VPL_Util.getCurrentTime(), precision);
+                        start = self.multiple(VPLUtil.getCurrentTime(), precision);
                         lastLap = start - 1;
                         update();
                         setTimeout( function() {
                             interval = setInterval(update, checkt);
                         }, sync * 1000);
                     } else {
-                        $JQVPL('#vpl_ide_timeleft').hide();
+                        $('#vpl_ide_timeleft').hide();
                     }
                 };
             })();
         };
-        window.VPL_IDEButtons = VPL_IDEButtons;
-        return VPL_IDEButtons;
+        window.VPLIDEButtons = VPLIDEButtons;
+        return VPLIDEButtons;
     }
 );

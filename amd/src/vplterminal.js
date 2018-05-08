@@ -25,25 +25,25 @@
 /* globals Terminal */
 
 define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
-        function($JQVPL, jqui, VPL_Util, VPL_Clipboard) {
-    if ( typeof VPL_Terminal !== 'undefined' ) {
-        return VPL_Terminal;
+        function($, jqui, VPLUtil, VPLClipboard) {
+    if ( typeof VPLTerminal !== 'undefined' ) {
+        return VPLTerminal;
     }
-    var VPL_Terminal = function(dialog_id, terminal_id, str) {
+    var VPLTerminal = function(dialogId, terminalId, str) {
         var self = this;
         var ws = null;
         var onCloseAction = function() {
         };
         var title = '';
         var message = '';
-        var tdialog = $JQVPL('#' + dialog_id);
+        var tdialog = $('#' + dialogId);
         var titleText = '';
         var clipboard = null;
         var cliboardMaxsize = 64000;
         var clipboardData = '';
 
         var terminal;
-        var terminal_tag = $JQVPL('#' + terminal_id);
+        var terminalTag = $('#' + terminalId);
         this.updateTitle = function() {
             var text = title;
             if (message !== '') {
@@ -207,9 +207,9 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
                 terminal.stopBlink();
             }
         };
-        var HTMLUpdateClipboard = VPL_Util.gen_icon('copy', 'sw') + ' ' + str('copy');
-        var HTMLPaste = VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
-        clipboard = new VPL_Clipboard('vpl_dialog_terminal_clipboard', HTMLUpdateClipboard, function() {
+        var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
+        var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
+        clipboard = new VPLClipboard('vpl_dialog_terminal_clipboard', HTMLUpdateClipboard, function() {
             updateClipboard();
             document.execCommand('copy');
         }, HTMLPaste, pasteClipboard);
@@ -228,7 +228,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
             },
             dialogClass : 'vpl_ide vpl_vnc',
             create : function() {
-                titleText = VPL_Util.setTitleBar(tdialog, 'console', 'console', [ 'clipboard', 'keyboard' ], [ openClipboard,
+                titleText = VPLUtil.setTitleBar(tdialog, 'console', 'console', [ 'clipboard', 'keyboard' ], [ openClipboard,
                         function() {
                             terminal.focus();
                         } ]);
@@ -251,7 +251,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
         };
         this.init = function() {
             if ( typeof Terminal === 'undefined' ) {
-                VPL_Util.loadScript(['../../vpl/editor/xterm/term.js'], function() {self.init();});
+                VPLUtil.loadScript(['../../vpl/editor/xterm/term.js'], function() {self.init();});
                 return;
             }
             terminal = new Terminal({
@@ -265,12 +265,12 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
                     ws.send(data);
                 }
             });
-            terminal.open(terminal_tag[0]);
+            terminal.open(terminalTag[0]);
             terminal.reset();
             terminal.stopBlink();
         };
         this.init();
     };
-    window.VPL_Terminal = VPL_Terminal;
-    return VPL_Terminal;
+    window.VPLTerminal = VPLTerminal;
+    return VPLTerminal;
 });

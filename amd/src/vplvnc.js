@@ -25,19 +25,19 @@
 /* globals RFB */
 /* globals Util */
 define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/log'],
-        function($JQVPL, jqui, VPL_Util, VPL_Clipboard, console) {
+        function($, jqui, VPLUtil, VPLClipboard, console) {
     window.INCLUDE_URI="../editor/noVNC/include/";
     Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
                        "keysymdef.js", "keyboard.js", "input.js", "display.js",
                        "jsunzip.js", "rfb.js", "keysym.js"]);
-    var VPL_VNC_Client = function(vnc_dialog_id, str) {
+    var VPLVNCClient = function(VNCDialogId, str) {
         var self = this;
         var rfb;
         var title = '';
         var message = '';
         var lastState = '';
-        var VNCDialog = $JQVPL('#' + vnc_dialog_id);
-        var canvas = $JQVPL('#' + vnc_dialog_id + " canvas");
+        var VNCDialog = $('#' + VNCDialogId);
+        var canvas = $('#' + VNCDialogId + " canvas");
         var onCloseAction = function() {
         };
         var clipboard;
@@ -93,7 +93,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
                 }, 10);
             }
         }
-        if (VPL_Util.isAndroid() && VPL_Util.isFirefox()) {
+        if (VPLUtil.isAndroid() && VPLUtil.isFirefox()) {
             this.send = function(v) {
                 for (var i = 0; i < v.length; i++) {
                     rfb.sendKey(v.charCodeAt(i));
@@ -109,17 +109,17 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
                 inputarea.setSelectionRange(resetValue.length, resetValue.length);
             } catch (ex) {
             }
-            $JQVPL(inputarea).on('change', function() {
+            $(inputarea).on('change', function() {
                 readInput();
                 self.send('\r');
             });
-            $JQVPL(inputarea).on('input', function() {
+            $(inputarea).on('input', function() {
                 readInput();
             });
-            $JQVPL(inputarea).on('keypress', function(e) {
+            $(inputarea).on('keypress', function(e) {
                 e.stopImmediatePropagation();
             });
-            $JQVPL(inputarea).on('focus', function() {
+            $(inputarea).on('focus', function() {
                 inputarea.value = resetValue;
                 lastValue = resetValue;
                 try {
@@ -130,7 +130,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
         }
 
         function keyboardButton() {
-            if ($JQVPL(inputarea).is(':focus')) {
+            if ($(inputarea).is(':focus')) {
                 inputarea.blur();
             } else {
                 inputarea.focus();
@@ -161,9 +161,9 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
             clipboard.setEntry1(clipboard.getEntry1());
             document.execCommand('copy');
         }
-        var HTMLUpdateClipboard = VPL_Util.gen_icon('copy', 'sw') + ' ' + str('copy');
-        var HTMLPaste = VPL_Util.gen_icon('paste', 'sw') + ' ' + str('paste');
-        clipboard = new VPL_Clipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
+        var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
+        var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
+        clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
                 lostFocus);
         canvas.on('click', function(e) {
             if (e.target == canvas[0]) {
@@ -188,7 +188,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
             height : 'auto',
             dialogClass : 'vpl_ide vpl_vnc',
             create : function() {
-                titleText = VPL_Util.setTitleBar(VNCDialog, 'vnc', 'graphic', [ 'clipboard', 'keyboard' ], [ openClipboard,
+                titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', [ 'clipboard', 'keyboard' ], [ openClipboard,
                         keyboardButton ]);
             },
             focus : getFocus,
@@ -248,7 +248,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
             clipboard.setEntry1('');
             onCloseAction = onClose;
             self.show();
-            var target = $JQVPL('#' + vnc_dialog_id + " canvas")[0];
+            var target = $('#' + VNCDialogId + " canvas")[0];
             if (!rfb) {
                 rfb = new RFB({
                     'target' : target,
@@ -301,7 +301,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard', 'core/
             VNCDialog.width('auto');
             VNCDialog.height('auto');
         };
-        self.setCanvasSize($JQVPL(window).width() - 150, $JQVPL(window).height() - 150);
+        self.setCanvasSize($(window).width() - 150, $(window).height() - 150);
     };
-    return VPL_VNC_Client;
+    return VPLVNCClient;
 });

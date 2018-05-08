@@ -35,48 +35,48 @@ define(['jquery',
          'jqueryui',
          'core/log',
          ],
-         function($JQVPL, jqui, log) {
-    if (typeof VPL_Util != 'undefined') {
-        return VPL_Util;
+         function($, jqui, log) {
+    if (typeof VPLUtil != 'undefined') {
+        return VPLUtil;
     }
-    var VPL_Util = {};
-    VPL_Util.doNothing = function() {
+    var VPLUtil = {};
+    VPLUtil.doNothing = function() {
     };
-    VPL_Util.returnFalse = function() {
+    VPLUtil.returnFalse = function() {
         return false;
     };
-    VPL_Util.returnTrue = function() {
+    VPLUtil.returnTrue = function() {
         return true;
     };
     var debugMode = false;
-    VPL_Util.log = function( m, forced) {
+    VPLUtil.log = function( m, forced) {
         if ( debugMode || forced ) {
             log.debug( m );
         }
     };
     // Get scrollBarWidth.
-    VPL_Util.scrollBarWidth = function() {
+    VPLUtil.scrollBarWidth = function() {
         var parent, child, width;
-        parent = $JQVPL('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
+        parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
         child = parent.children();
         width = child.innerWidth() - child.height(99).innerWidth();
         parent.remove();
         return width;
     };
-    VPL_Util.sanitizeHTML = function(t) {
+    VPLUtil.sanitizeHTML = function(t) {
         if ( typeof t == 'undefined' || t.replace('/^\s+|\s+$/g','') == '') {
             return '';
         }
-        return $JQVPL('<div>' + t + '</div>').html();
+        return $('<div>' + t + '</div>').html();
     };
-    VPL_Util.sanitizeText = function(s) {
+    VPLUtil.sanitizeText = function(s) {
         if ( typeof s == 'undefined' || s.replace('/^\s+|\s+$/g','') == '') {
             return '';
         }
         return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     };
 
-    VPL_Util.setProtocol = function(coninfo) {
+    VPLUtil.setProtocol = function(coninfo) {
         var secure;
         switch (coninfo.wsProtocol) {
             case 'always_use_wss':
@@ -95,7 +95,7 @@ define(['jquery',
         coninfo.monitorURL = URLBase + coninfo.monitorPath;
         coninfo.executionURL = URLBase + coninfo.executionPath;
     };
-    VPL_Util.ArrayBuffer2String = function(data) {
+    VPLUtil.ArrayBuffer2String = function(data) {
         var view = new Uint8Array(data);
         var chunks = [];
         var chunkSize = 32000;
@@ -104,7 +104,7 @@ define(['jquery',
         }
         return chunks.join('');
     };
-    VPL_Util.String2ArrayBuffer = function(data) {
+    VPLUtil.String2ArrayBuffer = function(data) {
         var len = data.length;
         var ret = new ArrayBuffer(len);
         var u8 = new Uint8Array(ret);
@@ -115,31 +115,31 @@ define(['jquery',
     };
 
     (function() {
-        var file_unique_id = 0;
-        VPL_Util.getUniqueId = function() {
-            return file_unique_id++;
+        var fileUniqueId = 0;
+        VPLUtil.getUniqueId = function() {
+            return fileUniqueId++;
         };
     })();
     (function() {
-        var reg_ext = /\.([^.]*)$/;
-        var reg_img = /^(gif|jpg|jpeg|png|ico)$/i;
-        var reg_bin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
-        var reg_blk = /^blockly[0123]?$/;
-        VPL_Util.fileExtension = function(fileName) {
-            var res = reg_ext.exec(fileName);
+        var regExt = /\.([^.]*)$/;
+        var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
+        var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
+        var regBlk = /^blockly[0123]?$/;
+        VPLUtil.fileExtension = function(fileName) {
+            var res = regExt.exec(fileName);
             return res !== null ? res[1] : '';
         };
-        VPL_Util.isImage = function(fileName) {
-            return reg_img.test(VPL_Util.fileExtension(fileName));
+        VPLUtil.isImage = function(fileName) {
+            return regImg.test(VPLUtil.fileExtension(fileName));
         };
-        VPL_Util.isBinary = function(fileName) {
-            return VPL_Util.isImage(fileName) || reg_bin.test(VPL_Util.fileExtension(fileName));
+        VPLUtil.isBinary = function(fileName) {
+            return VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName));
         };
-        VPL_Util.isBlockly = function(fileName) {
-            return reg_blk.test(VPL_Util.fileExtension(fileName));
+        VPLUtil.isBlockly = function(fileName) {
+            return regBlk.test(VPLUtil.fileExtension(fileName));
         };
         var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./;
-        VPL_Util.validFileName = function(fileName) {
+        VPLUtil.validFileName = function(fileName) {
             if (fileName.length < 1) {
                 return false;
             }
@@ -149,53 +149,53 @@ define(['jquery',
             return !(regInvalidFileName.test(fileName));
         };
     })();
-    VPL_Util.getCurrentTime = function() {
+    VPLUtil.getCurrentTime = function() {
         return parseInt((new Date()).valueOf() / 1000);
     };
-    VPL_Util.encodeBinary = function(name, data) {
-        if (!VPL_Util.isBinary(name)) {
+    VPLUtil.encodeBinary = function(name, data) {
+        if (!VPLUtil.isBinary(name)) {
             return btoa(unescape(encodeURIComponent(data)));
         }
-        return btoa(VPL_Util.ArrayBuffer2String(data));
+        return btoa(VPLUtil.ArrayBuffer2String(data));
     };
 
-    VPL_Util.decodeBinary = function(name, data) {
+    VPLUtil.decodeBinary = function(name, data) {
         var decoded = atob(data);
-        if (!VPL_Util.isBinary(name)) {
+        if (!VPLUtil.isBinary(name)) {
             return decodeURIComponent(escape(decoded));
         }
-        return VPL_Util.String2ArrayBuffer(decoded);
+        return VPLUtil.String2ArrayBuffer(decoded);
     };
 
-    VPL_Util.validPath = function(path) {
+    VPLUtil.validPath = function(path) {
         if (path.length > 256) {
             return false;
         }
         var dirs = path.split("/");
         for (var i = 0; i < dirs.length; i++) {
-            if (!VPL_Util.validFileName(dirs[i])) {
+            if (!VPLUtil.validFileName(dirs[i])) {
                 return false;
             }
         }
         return true;
     };
-    VPL_Util.getFileName = function(path) {
+    VPLUtil.getFileName = function(path) {
         var dirs = path.split("/");
         return dirs[dirs.length - 1];
     };
-    VPL_Util.dataFromURLData = function(data) {
+    VPLUtil.dataFromURLData = function(data) {
         return data.substr(data.indexOf(',') + 1);
     };
-    VPL_Util.readZipFile = function(data, save, progressBar,end) {
+    VPLUtil.readZipFile = function(data, save, progressBar,end) {
         if (typeof JUnzip == 'undefined') {
-            VPL_Util.loadScript(['../editor/zip/inflate.js',
+            VPLUtil.loadScript(['../editor/zip/inflate.js',
                 '../editor/zip/unzip.js']
             ,function() {
-                VPL_Util.readZipFile(data, save, progressBar, end);
+                VPLUtil.readZipFile(data, save, progressBar, end);
             });
             return;
         }
-        var ab = VPL_Util.ArrayBuffer2String(data);
+        var ab = VPLUtil.ArrayBuffer2String(data);
         var unzipper = new JUnzip(ab);
         if ( ! unzipper.isZipFile()) {
             return;
@@ -224,8 +224,8 @@ define(['jquery',
                 } else if (entry.compressionMethod === 8) {
                     uncompressed = JSInflate.inflate(entry.data);
                 }
-                data = VPL_Util.String2ArrayBuffer(uncompressed);
-                if (VPL_Util.isBinary(fileName)) {
+                data = VPLUtil.String2ArrayBuffer(uncompressed);
+                if (VPLUtil.isBinary(fileName)) {
                     // If binary use as arrayBuffer.
                     if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
                         i = out;
@@ -251,12 +251,12 @@ define(['jquery',
         process(0);
     };
 
-    VPL_Util.readSelectedFiles = function(filesToRead, save, end) {
+    VPLUtil.readSelectedFiles = function(filesToRead, save, end) {
         // Process all File objects.
-        var pb = new VPL_Util.progressBar('import', 'import');
+        var pb = new VPLUtil.progressBar('import', 'import');
         var filePending = 0;
         if ( ! end ) {
-            end = VPL_Util.doNothing;
+            end = VPLUtil.doNothing;
         }
         pb.processFile = function(name) {
             pb.setLabel(name);
@@ -275,20 +275,20 @@ define(['jquery',
             }
             var f = filesToRead[sec];
             pb.processFile(f.name);
-            var binary = VPL_Util.isBinary(f.name);
+            var binary = VPLUtil.isBinary(f.name);
             var reader = new FileReader();
-            var ext = VPL_Util.fileExtension(f.name).toLowerCase();
+            var ext = VPLUtil.fileExtension(f.name).toLowerCase();
             reader.onload = function(e) {
                 var goNext = false;
                 if (binary) {
                     if (ext == 'zip') {
                         try {
-                            VPL_Util.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
+                            VPLUtil.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
                         } catch (ex) {
-                            VPL_Util.showErrorMessage(ex + " : " + f.name);
+                            VPLUtil.showErrorMessage(ex + " : " + f.name);
                         }
                     } else {
-                        var data = VPL_Util.dataFromURLData(e.target.result);
+                        var data = VPLUtil.dataFromURLData(e.target.result);
                         goNext = save({name:f.name, contents:data, encoding:1});
                     }
                 } else{
@@ -321,14 +321,14 @@ define(['jquery',
             'ico' :'image/vnd.microsoft.icon',
             'pdf' :'application/pdf'
         };
-        VPL_Util.getMIME = function(fileName) {
-            var ext = VPL_Util.fileExtension(fileName);
+        VPLUtil.getMIME = function(fileName) {
+            var ext = VPLUtil.fileExtension(fileName);
             if (ext in MIME) {
                 return MIME[ext];
             }
             return 'application/octet-stream';
         };
-        VPL_Util.getTimeLeft = function(timeLeft) {
+        VPLUtil.getTimeLeft = function(timeLeft) {
             var res = '';
             var minute = 60;
             var hour = 60 * minute;
@@ -415,7 +415,7 @@ define(['jquery',
             'xml' :'xml',
             'yaml' :'yaml'
         };
-        VPL_Util.langType = function(ext) {
+        VPLUtil.langType = function(ext) {
             if (ext in maplang) {
                 return maplang[ext];
             }
@@ -424,22 +424,22 @@ define(['jquery',
     })();
     (function() {
         var i18n = {};
-        VPL_Util.str = function(key) {
+        VPLUtil.str = function(key) {
             if (!i18n[key]) {
                 return '{' + key + '}';
             }
             return i18n[key];
         };
-        VPL_Util.set_str = function(newi18n) {
+        VPLUtil.setStr = function(newi18n) {
             for (var key in newi18n) {
                 if ( newi18n.hasOwnProperty(key) ) {
                     i18n[key] = newi18n[key];
                 }
             }
-            VPL_Util.dialogbase_options = {
+            VPLUtil.dialogbaseOptions = {
                 autoOpen :false,
                 width :'auto',
-                closeText :VPL_Util.str('cancel'),
+                closeText :VPLUtil.str('cancel'),
                 modal :true,
                 dialogClass :'vpl_ide vpl_ide_dialog'
             };
@@ -450,7 +450,7 @@ define(['jquery',
         var delayedActions = {};
         var shortTimeout = 20;
         var longTimeout = 100;
-        VPL_Util.delay = function(id, func, arg1, arg2) {
+        VPLUtil.delay = function(id, func, arg1, arg2) {
             if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
                 clearTimeout(delayedActions[id]);
             }
@@ -459,7 +459,7 @@ define(['jquery',
                 delayedActions[id] = false;
             }, shortTimeout);
         };
-        VPL_Util.longDelay = function(id, func, arg1, arg2) {
+        VPLUtil.longDelay = function(id, func, arg1, arg2) {
             if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
                 clearTimeout(delayedActions[id]);
             }
@@ -469,31 +469,31 @@ define(['jquery',
             }, longTimeout);
         };
     })();
-    VPL_Util.iconModified = function() {
-        var html = '<span title="' + VPL_Util.str('modified') + '" class="vpl_ide_charicon">';
+    VPLUtil.iconModified = function() {
+        var html = '<span title="' + VPLUtil.str('modified') + '" class="vpl_ide_charicon">';
         html += '<i class="fa fa-star"></i>' + '</span> ';
         return html;
     };
-    VPL_Util.iconDelete = function() {
-        var html = ' <span title="' + VPL_Util.str('delete') + '" class="vpl_ide_charicon vpl_ide_delicon">';
+    VPLUtil.iconDelete = function() {
+        var html = ' <span title="' + VPLUtil.str('delete') + '" class="vpl_ide_charicon vpl_ide_delicon">';
         html += '<i class="fa fa-trash"></i>' + '</span> ';
         return html;
     };
-    VPL_Util.iconClose = function() {
-        var html = ' <span title="' + VPL_Util.str('closebuttontitle');
+    VPLUtil.iconClose = function() {
+        var html = ' <span title="' + VPLUtil.str('closebuttontitle');
         html += '" class="vpl_ide_charicon vpl_ide_closeicon">' + '<i class="fa fa-remove"></i>' + '</span> ';
         return html;
     };
-    VPL_Util.iconRequired = function() {
-        var html = ' <span title="' + VPL_Util.str('required') + '" class="vpl_ide_charicon">';
+    VPLUtil.iconRequired = function() {
+        var html = ' <span title="' + VPLUtil.str('required') + '" class="vpl_ide_charicon">';
         html += '<i class="fa fa-shield"></i>' + '</span> ';
         return html;
     };
-    VPL_Util.iconFolder = function() {
+    VPLUtil.iconFolder = function() {
         return '<i class="fa fa-folder-open-o"></i>';
     };
     (function() {
-        var menu_icons = {
+        var menuIcons = {
             'filelist' :'folder',
             'filelistclose' :'folder-open',
             'new' :'file',
@@ -541,8 +541,8 @@ define(['jquery',
             'user' :'user',
             'fontsize' :'text-height'
         };
-        VPL_Util.gen_icon = function(icon, size) {
-            if (!menu_icons[icon]) {
+        VPLUtil.genIcon = function(icon, size) {
+            if (!menuIcons[icon]) {
                 return '';
             }
             var classes = 'fa fa-';
@@ -551,7 +551,7 @@ define(['jquery',
             } else {
                 classes += size;
             }
-            var icons = menu_icons[icon].split('|');
+            var icons = menuIcons[icon].split('|');
             var ret = '';
             for(var i = 0; i < icons.length; i++) {
                 ret += "<i class='" + classes + ' fa-' + icons[i] + "'></i>";
@@ -560,14 +560,14 @@ define(['jquery',
         };
     })();
     // UI operations.
-    VPL_Util.setTitleBar = function(dialog, type, icon, buttons, handler) {
-        var title = $JQVPL(dialog).parent().find("span.ui-dialog-title");
+    VPLUtil.setTitleBar = function(dialog, type, icon, buttons, handler) {
+        var title = $(dialog).parent().find("span.ui-dialog-title");
         function genButton(e) {
-            var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPL_Util.str(e) + "'>";
-            html += VPL_Util.gen_icon(e, 'fw') + "</a>";
+            var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPLUtil.str(e) + "'>";
+            html += VPLUtil.genIcon(e, 'fw') + "</a>";
             return html;
         }
-        var html = VPL_Util.gen_icon(icon);
+        var html = VPLUtil.genIcon(icon);
         html += " <span class='" + type + "-title-buttons'></span>";
         html += "<span class='" + type + "-title-text'></span>";
         title.html(html);
@@ -583,20 +583,20 @@ define(['jquery',
             button.button().click(handler[ih]);
             button.css('padding','1px 3px');
         }
-        titleButtons.on('focus','*', function(){$JQVPL(this).blur();});
+        titleButtons.on('focus','*', function(){$(this).blur();});
         return titleText;
     };
-    VPL_Util.progressBar = function(title, message, onUserClose) {
+    VPLUtil.progressBar = function(title, message, onUserClose) {
         var labelHTML = '<span class="vpl_ide_progressbarlabel"></span>';
-        var sppiner = '<div class="vpl_ide_progressbaricon">' + VPL_Util.gen_icon('spinner') + '</div>';
+        var sppiner = '<div class="vpl_ide_progressbaricon">' + VPLUtil.genIcon('spinner') + '</div>';
         var pbHTML = ' <div class="vpl_ide_progressbar">' + sppiner + labelHTML + '</div>';
         var HTML = '<div class="vpl_ide_dialog" style="display:none;">' + pbHTML + '</div>';
-        var dialog = $JQVPL(HTML);
-        $JQVPL('body').append(dialog);
+        var dialog = $(HTML);
+        $('body').append(dialog);
         var progressbar = dialog.find('.vpl_ide_progressbar');
         var label = progressbar.find('.vpl_ide_progressbarlabel');
         dialog.dialog({
-            'title' :VPL_Util.str(title),
+            'title' :VPLUtil.str(title),
             resizable :false,
             autoOpen :false,
             width :200,
@@ -617,14 +617,14 @@ define(['jquery',
             if (dialog) {
                 label.text(t);
                 if (icon) {
-                    label.html(VPL_Util.gen_icon(icon) + ' ' + label.html());
+                    label.html(VPLUtil.genIcon(icon) + ' ' + label.html());
                 }
             }
         };
         this.close = function() {
             if(dialog) {
                 dialog.dialog('destroy');
-                $JQVPL(dialog).remove();
+                $(dialog).remove();
                 dialog = false;
             }
         };
@@ -632,14 +632,14 @@ define(['jquery',
             return dialog === false;
         };
         var titleTag = dialog.siblings().find('.ui-dialog-title');
-        titleTag.html(VPL_Util.gen_icon(title) + ' ' + titleTag.html());
-        this.setLabel(VPL_Util.str(message));
+        titleTag.html(VPLUtil.genIcon(title) + ' ' + titleTag.html());
+        this.setLabel(VPLUtil.str(message));
         dialog.dialog('open');
         dialog.dialog('option', 'height', 'auto');
     };
-    VPL_Util.showMessage = function(message, initialoptions) {
-        var options = $JQVPL.extend({}, initialoptions);
-        var message_dialog = $JQVPL('<div class="vpl_ide_dialog"></div>');
+    VPLUtil.showMessage = function(message, initialoptions) {
+        var options = $.extend({}, initialoptions);
+        var messageDialog = $('<div class="vpl_ide_dialog"></div>');
         if (!options) {
             options = {};
         }
@@ -647,75 +647,75 @@ define(['jquery',
             options.icon = 'info';
         }
         if (!options.title) {
-            options.title = VPL_Util.str('warning');
+            options.title = VPLUtil.str('warning');
         }
-        message_dialog.html(VPL_Util.gen_icon(options.icon) + ' <span class="dmessage">' + message + '</span>');
-        $JQVPL('body').append(message_dialog);
-        var message_buttons = {};
+        messageDialog.html(VPLUtil.genIcon(options.icon) + ' <span class="dmessage">' + message + '</span>');
+        $('body').append(messageDialog);
+        var messageButtons = {};
         if (!options.ok) {
-            message_buttons[VPL_Util.str('ok')] = function() {
-                $JQVPL(this).dialog('close');
+            messageButtons[VPLUtil.str('ok')] = function() {
+                $(this).dialog('close');
             };
         } else {
-            message_buttons[VPL_Util.str('ok')] = function() {
-                $JQVPL(this).dialog('close');
+            messageButtons[VPLUtil.str('ok')] = function() {
+                $(this).dialog('close');
                 options.ok();
             };
-            message_buttons[VPL_Util.str('cancel')] = function() {
-                $JQVPL(this).dialog('close');
+            messageButtons[VPLUtil.str('cancel')] = function() {
+                $(this).dialog('close');
             };
         }
         if (options.next) {
-            message_buttons[VPL_Util.str('next')] = function() {
-                $JQVPL(this).dialog('close');
+            messageButtons[VPLUtil.str('next')] = function() {
+                $(this).dialog('close');
                 options.next();
             };
         }
         if (options.close) {
             options.oldClose = options.close;
         }
-        message_dialog.dialog($JQVPL.extend({}, VPL_Util.dialogbase_options, {
+        messageDialog.dialog($.extend({}, VPLUtil.dialogbaseOptions, {
             title :options.title,
-            buttons :message_buttons,
+            buttons :messageButtons,
             close :function() {
-                $JQVPL(this).remove();
+                $(this).remove();
                 if (options.oldClose) {
                     options.oldClose();
                 }
             }
         }));
-        message_dialog.dialog('open');
-        message_dialog.setMessage = function(men) {
-            $JQVPL(message_dialog).find('.dmessage').html(men);
+        messageDialog.dialog('open');
+        messageDialog.setMessage = function(men) {
+            $(messageDialog).find('.dmessage').html(men);
         };
-        return message_dialog;
+        return messageDialog;
     };
-    VPL_Util.showErrorMessage = function(message, options) {
-        var currentOptions = $JQVPL.extend({}, VPL_Util.dialogbase_options, {
-            title :VPL_Util.str('error'),
+    VPLUtil.showErrorMessage = function(message, options) {
+        var currentOptions = $.extend({}, VPLUtil.dialogbaseOptions, {
+            title :VPLUtil.str('error'),
             icon :'alert'
         });
         if (options) {
-            currentOptions = $JQVPL.extend(currentOptions, options);
+            currentOptions = $.extend(currentOptions, options);
         }
-        return VPL_Util.showMessage(message, currentOptions);
+        return VPLUtil.showMessage(message, currentOptions);
     };
 
-    VPL_Util.requestAction = function(action, title, data, URL) {
-        var deferred = $JQVPL.Deferred();
+    VPLUtil.requestAction = function(action, title, data, URL) {
+        var deferred = $.Deferred();
         var request = null;
         var xhr = false;
         if (title === '') {
             title = 'connecting';
         }
-        var apb = new VPL_Util.progressBar(action, title, function() {
+        var apb = new VPLUtil.progressBar(action, title, function() {
             if (request.readyState != 4) {
                 if ( xhr && xhr.abort ) {
                     xhr.abort();
                 }
             }
         });
-        request = $JQVPL.ajax({
+        request = $.ajax({
             beforeSend :function (jqXHR) {
                 xhr = jqXHR;
                 return true;
@@ -735,32 +735,32 @@ define(['jquery',
                 deferred.resolve(response.response);
             }
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            var message = VPL_Util.str('connection_fail') + ': ' + textStatus;
+            var message = VPLUtil.str('connection_fail') + ': ' + textStatus;
             if ( debugMode ) {
                 message += '<br>' + errorThrown.message;
                 message += '<br>' + jqXHR.responseText.substr(0,80);
             }
-            VPL_Util.log(message);
+            VPLUtil.log(message);
             deferred.reject(message);
         });
         return deferred;
     };
-    VPL_Util.supportWebSocket = function() {
+    VPLUtil.supportWebSocket = function() {
         if ("WebSocket" in window) {
             return true;
         }
         return false;
     };
-    VPL_Util.isAndroid = function() {
+    VPLUtil.isAndroid = function() {
         return window.navigator.userAgent.indexOf('Android') > -1;
     };
-    VPL_Util.isFirefox = function() {
+    VPLUtil.isFirefox = function() {
         return window.navigator.userAgent.indexOf('Firefox') > -1;
     };
-    VPL_Util.isMac = function() {
+    VPLUtil.isMac = function() {
         return window.navigator.userAgent.indexOf('Mac') > -1;
     };
-    VPL_Util.clickServer = function(e) {
+    VPLUtil.clickServer = function(e) {
         var w = 550;
         var h = 450;
         var left = (screen.width / 2) - (w / 2);
@@ -769,23 +769,23 @@ define(['jquery',
             var features = 'toolbar=no, location=no, directories=no, status=no, menubar=no';
             features += ', resizable=yes, scrollbars=yes, copyhistory=no, width=' + w;
             features += ', height=' + h + ', top=' + top + ', left=' + left;
-            var win = window.open($JQVPL(this).attr('href'), '_blank', features);
+            var win = window.open($(this).attr('href'), '_blank', features);
             if (!win) {
                 return true;
             }
         } catch (ex) {
-            VPL_Util.log( ex );
+            VPLUtil.log( ex );
             return true;
         }
         e.preventDefault();
-        $JQVPL(this).parent().hide();
+        $(this).parent().hide();
         return false;
     };
 
-    VPL_Util.acceptCertificates = function(servers, getLastAction) {
+    VPLUtil.acceptCertificates = function(servers, getLastAction) {
         if (servers.length > 0) {
             // Generate links dialog.
-            var html = VPL_Util.str('acceptcertificatesnote');
+            var html = VPLUtil.str('acceptcertificatesnote');
             html += '<ol>';
             for (var i in servers) {
                 if ( servers.hasOwnProperty(i) ) {
@@ -795,7 +795,7 @@ define(['jquery',
                 }
             }
             html += '</ol>';
-            var m = VPL_Util.showMessage(html, {
+            var m = VPLUtil.showMessage(html, {
                 ok :function() {
                     var action = getLastAction();
                     if (action) {
@@ -803,20 +803,20 @@ define(['jquery',
                     }
                 },
                 icon :'unlocked',
-                title :VPL_Util.str('acceptcertificates')
+                title :VPLUtil.str('acceptcertificates')
             });
-            $JQVPL(m).find('a').on('click keypress', VPL_Util.clickServer);
+            $(m).find('a').on('click keypress', VPLUtil.clickServer);
         } else {
-            VPL_Util.log('servers.length == 0');
-            VPL_Util.showErrorMessage(VPL_Util.str('connection_fail'));
+            VPLUtil.log('servers.length == 0');
+            VPLUtil.showErrorMessage(VPLUtil.str('connection_fail'));
         }
     };
 
-    VPL_Util.webSocketMonitor = function(coninfo, title, running, externalActions) {
-        VPL_Util.setProtocol(coninfo);
+    VPLUtil.webSocketMonitor = function(coninfo, title, running, externalActions) {
+        VPLUtil.setProtocol(coninfo);
         var ws = null;
         var pb = null;
-        var deferred = $JQVPL.Deferred();
+        var deferred = $.Deferred();
         var defail = function( m ) {
             deferred.reject( m );
         };
@@ -829,7 +829,7 @@ define(['jquery',
                 if (state == 'running') {
                     state = running;
                 }
-                var text = VPL_Util.str(state);
+                var text = VPLUtil.str(state);
                 if (detail > '') {
                     text += ': ' + detail;
                 }
@@ -849,7 +849,7 @@ define(['jquery',
             'retrieve' :function() {
                 pb.close();
                 delegated = true;
-                VPL_Util.requestAction('retrieve', '', '', externalActions.ajaxurl)
+                VPLUtil.requestAction('retrieve', '', '', externalActions.ajaxurl)
                 .done(
                     function(response) {
                         deferred.resolve();
@@ -864,7 +864,7 @@ define(['jquery',
                 externalActions.run(content, coninfo, ws);
             },
             'close' :function() {
-                VPL_Util.log('ws close message from jail');
+                VPLUtil.log('ws close message from jail');
                 ws.close();
                 if (externalActions.close) {
                     externalActions.close();
@@ -872,40 +872,40 @@ define(['jquery',
             }
         };
         try {
-            if (VPL_Util.supportWebSocket()) {
+            if (VPLUtil.supportWebSocket()) {
                 ws = new WebSocket(coninfo.monitorURL);
             } else {
-                VPL_Util.log('ws not available');
-                deferred.reject(VPL_Util.str('browserupdate'));
+                VPLUtil.log('ws not available');
+                deferred.reject(VPLUtil.str('browserupdate'));
                 return deferred;
             }
         } catch (e) {
-            VPL_Util.log('ws new say ' + e);
+            VPLUtil.log('ws new say ' + e);
             deferred.reject(e.message);
             return deferred;
         }
-        pb = new VPL_Util.progressBar(title, 'connecting', function() {
+        pb = new VPLUtil.progressBar(title, 'connecting', function() {
             deferred.reject('Stopped by user');
             ws.close();
         });
         ws.notOpen = true;
         ws.onopen = function() {
             ws.notOpen = false;
-            pb.setLabel(VPL_Util.str('connected'));
+            pb.setLabel(VPLUtil.str('connected'));
         };
         ws.onerror = function(event) {
-            VPL_Util.log('ws error ' + event);
+            VPLUtil.log('ws error ' + event);
             pb.close();
             if (coninfo.secure && ws.notOpen) {
-                VPL_Util.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
+                VPLUtil.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
                 .done(function(response) {
-                    VPL_Util.acceptCertificates(response.servers, function(){
+                    VPLUtil.acceptCertificates(response.servers, function(){
                         return externalActions.getLastAction();
                     });
                 })
                 .fail(defail);
             } else {
-                deferred.reject(VPL_Util.str('connection_fail'));
+                deferred.reject(VPLUtil.str('connection_fail'));
             }
         };
         ws.onclose = function() {
@@ -929,12 +929,12 @@ define(['jquery',
                     messageActions[action](content);
                 }
             } else {
-                pb.setLabel(VPL_Util.str('error') + ': ' + event.data);
+                pb.setLabel(VPLUtil.str('error') + ': ' + event.data);
             }
         };
         return deferred;
     };
-    VPL_Util.processResult = function(text, filenames, sh, noFormat, folding) {
+    VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
         if ( typeof text == 'undefined' || text.replace('/^\s+|\s+$/gm','') == '' ) {
             return '';
         }
@@ -944,7 +944,7 @@ define(['jquery',
         var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
         var regtit = /^-.*/;
         var regcas = /^\s*\>/;
-        var regWarning = new RegExp('warning|' + escReg(VPL_Util.str('warning')), 'i');
+        var regWarning = new RegExp('warning|' + escReg(VPLUtil.str('warning')), 'i');
         var state = '';
         var html = '';
         var comment = '';
@@ -986,7 +986,7 @@ define(['jquery',
                     anot.push(lastAnotation);
                     var fileName = filenames[i];
                     var href = getHref( i );
-                    var lt = VPL_Util.sanitizeText( fileName );
+                    var lt = VPLUtil.sanitizeText( fileName );
                     var data = 'data-file="' + fileName + '" data-line="' + match[2] + '"';
                     line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + ':$2$3</a>');
                     sh[i].setAnnotations(anot);
@@ -1011,9 +1011,9 @@ define(['jquery',
             }
             var html = '';
             if ( folding ) {
-                html += '<a href="javascript:void(0)" onclick="VPL_Util.show_hide_div(this)">[+]</a>';
+                html += '<a href="javascript:void(0)" onclick="VPLUtil.showHideDiv(this)">[+]</a>';
             }
-            html += '<b class="ui-widget-header ui-corner-all">' + VPL_Util.sanitizeText(line) + '</b><br />';
+            html += '<b class="ui-widget-header ui-corner-all">' + VPLUtil.sanitizeText(line) + '</b><br />';
             html = genFileLinks(html, line);
             return html;
         }
@@ -1024,11 +1024,11 @@ define(['jquery',
             return ret;
         }
         function addComment(rawline) {
-            var line = VPL_Util.sanitizeText(rawline);
+            var line = VPLUtil.sanitizeText(rawline);
             comment += genFileLinks(line, rawline) + '<br />';
         }
         function addCase(rawline) {
-            var line = VPL_Util.sanitizeText(rawline);
+            var line = VPLUtil.sanitizeText(rawline);
             case_ += genFileLinks(line, rawline) + "\n";
         }
         function getCase() {
@@ -1041,13 +1041,13 @@ define(['jquery',
         for (i = 0; i < lines.length; i++) {
             var line = lines[i];
             if ( noFormat ) {
-                html += genFileLinks(VPL_Util.sanitizeText(line), line) + "\n";
+                html += genFileLinks(VPLUtil.sanitizeText(line), line) + "\n";
                 continue;
             }
             var match = regcas.exec(line);
             var regcasv = regcas.test(line);
             if ((match !== null) != regcasv) {
-                VPL_Util.log('error');
+                VPLUtil.log('error');
             }
             if (regtit.test(line)) {
                 switch (state) {
@@ -1094,7 +1094,7 @@ define(['jquery',
     };
     (function() {
         var scriptsLoaded = [];
-        VPL_Util.loadScript = function(scripts, end) {
+        VPLUtil.loadScript = function(scripts, end) {
             if ( scripts.length == 0 ) {
                 end();
                 return;
@@ -1105,33 +1105,33 @@ define(['jquery',
                 scriptsLoaded[scriptURL] = 1;
                 var script = document.createElement('script');
                 script.type = 'text/javascript';
-                script.src = VPL_Util.options.scriptPath + scriptURL;
+                script.src = VPLUtil.options.scriptPath + scriptURL;
                 script.onload = function () {
                     scriptsLoaded[scriptURL] = 2;
-                    VPL_Util.loadScript(scripts, end);
+                    VPLUtil.loadScript(scripts, end);
                 };
                 document.head.appendChild(script);
             } else if ( scriptsLoaded[scriptURL] == 2) {
                 scripts.shift();
-                VPL_Util.loadScript(scripts, end);
+                VPLUtil.loadScript(scripts, end);
             } else {
-                setTimeout(function() {VPL_Util.loadScript(scripts, end);}, 50);
+                setTimeout(function() {VPLUtil.loadScript(scripts, end);}, 50);
             }
         };
-        VPL_Util.isScriptLoading = function(scriptURL) {
+        VPLUtil.isScriptLoading = function(scriptURL) {
             if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
                 return false;
             }
             return scriptsLoaded[scriptURL] == 1;
         };
-        VPL_Util.isScriptLoaded = function(scriptURL) {
+        VPLUtil.isScriptLoaded = function(scriptURL) {
             if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
                 return false;
             }
             return scriptsLoaded[scriptURL] == 2;
         };
     })();
-    VPL_Util.adjustBlockly = function(work, offx, offy) {
+    VPLUtil.adjustBlockly = function(work, offx, offy) {
         var blocks = work.getAllBlocks();
         var miy = 20000;
         var may = -20000;
@@ -1161,16 +1161,16 @@ define(['jquery',
             setTimeout(function() {self.highlight();}, 10);
         }
         SubmissionHighlighter.prototype.highlightBlockly = function(preid) {
-            VPL_Util.loadScript(['../editor/blockly/blockly_compressed.js',
+            VPLUtil.loadScript(['../editor/blockly/blockly_compressed.js',
                 '../editor/blockly/msg/js/en.js',
                 '../editor/blockly/blocks_compressed.js']
             ,function() {
-                var tag = $JQVPL('#' + preid);
+                var tag = $('#' + preid);
                 var c = tag.html();
-                $JQVPL('#' + preid + 'load').remove();
+                $('#' + preid + 'load').remove();
                 tag.html('');
                 tag.show();
-                c = $JQVPL('<div />').html(c).text().replace(/\n/g, "");
+                c = $('<div />').html(c).text().replace(/\n/g, "");
                 var xml = Blockly.Xml.textToDom(c);
                 tag.html('').height(300).width(tag.parent().width());
                 var options = {
@@ -1180,7 +1180,7 @@ define(['jquery',
                 };
                 var work = Blockly.inject(preid, options);
                 Blockly.Xml.domToWorkspace(xml, work);
-                var hg = VPL_Util.adjustBlockly(work, 10, 10);
+                var hg = VPLUtil.adjustBlockly(work, 10, 10);
                 tag.height(hg);
                 tag.width('100%');
                 Blockly.svgResize(work);
@@ -1193,7 +1193,7 @@ define(['jquery',
         SubmissionHighlighter.prototype.highlight = function(){
             var self = this;
             if ( typeof ace === 'undefined' ) {
-                VPL_Util.loadScript(['../editor/ace9/ace.js'], function() {self.highlight();});
+                VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.highlight();});
                 return;
             }
             var files = this.files;
@@ -1203,14 +1203,14 @@ define(['jquery',
             for (var i = 0; i < files.length; i++) {
                 var file = files[i];
                 var preid = 'code' + file.tagId;
-                if ( VPL_Util.isBlockly(file.fileName) ) {
+                if ( VPLUtil.isBlockly(file.fileName) ) {
                     self.highlightBlockly(preid);
                     continue;
                 }
-                var ext = VPL_Util.fileExtension( file.fileName );
-                var lang = VPL_Util.langType(ext);
-                $JQVPL('#' + preid).show();
-                $JQVPL('#' + preid + 'load').remove();
+                var ext = VPLUtil.fileExtension( file.fileName );
+                var lang = VPLUtil.langType(ext);
+                $('#' + preid).show();
+                $('#' + preid + 'load').remove();
                 var sh = ace.edit( preid );
                 sh.setTheme( 'ace/theme/' + file.theme );
                 sh.getSession().setMode( 'ace/mode/' + lang );
@@ -1236,7 +1236,7 @@ define(['jquery',
             for (var ri = 0; ri < results.length; ri++) {
                 var tag = document.getElementById(results[ri].tagId);
                 var text = tag.textContent || tag.innerText;
-                tag.innerHTML = VPL_Util.processResult(text, shFileNames, shFiles,
+                tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
                                                        results[ri].noFormat, results[ri].folding);
             }
             //Wait 1 sec. to remove all ace code ¿exist event to resolve this?
@@ -1244,9 +1244,9 @@ define(['jquery',
                 for (var si = 0; si < shFiles.length; si++) {
                     var editor = shFiles[si];
                     var tag = editor.getTagId();
-                    var odlhtml = $JQVPL('#' + tag).html();
+                    var odlhtml = $('#' + tag).html();
                     editor.destroy();
-                    $JQVPL('#' + tag).html(odlhtml);
+                    $('#' + tag).html(odlhtml);
                 }
                 files = null;
                 results = null;
@@ -1255,10 +1255,10 @@ define(['jquery',
             }, 1000);
         };
 
-        VPL_Util.addResults = function( tagId, noFormat, folding ){
+        VPLUtil.addResults = function( tagId, noFormat, folding ){
             results.push({ 'tagId' :tagId, 'noFormat' :noFormat, 'folding' :folding });
         };
-        VPL_Util.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
+        VPLUtil.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
             files.push({
                 'tagId' :tagId,
                 'fileName' :fileName,
@@ -1267,30 +1267,30 @@ define(['jquery',
                 'nl' :nl
              });
         };
-        VPL_Util.syntaxHighlight = function(){
+        VPLUtil.syntaxHighlight = function(){
             var self = this;
             if ( typeof ace === 'undefined' ) {
-                VPL_Util.loadScript(['../editor/ace9/ace.js'], function() {self.syntaxHighlight();});
+                VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.syntaxHighlight();});
                 return;
             }
             new SubmissionHighlighter(files,results);
             files = [];
             results = [];
         };
-        VPL_Util.flEventHandler = function( event ){
+        VPLUtil.flEventHandler = function( event ){
             var tag = event.target.getAttribute('href').substring(1);
             var line = event.target.getAttribute('data-line');
             var sh = shs[tag];
             sh.gotoLine(line, 0);
             sh.scrollToLine(line, true);
         };
-        VPL_Util.setflEventHandler = function(){
+        VPLUtil.setflEventHandler = function(){
             var links = document.getElementsByClassName("vpl_fl");
             for(var i = 0; i < links.length; i++) {
-                links[i].onclick = VPL_Util.flEventHandler;
+                links[i].onclick = VPLUtil.flEventHandler;
             }
         };
-        VPL_Util.show_hide_div = function (a){
+        VPLUtil.showHideDiv = function (a){
             var text = a;
             var div = a;
             if ( ! div.nextSibling ) {
@@ -1320,12 +1320,12 @@ define(['jquery',
         };
 
     })();
-    VPL_Util.options = {
+    VPLUtil.options = {
         scriptPath :''
     };
-    VPL_Util.init = function(options) {
-        $JQVPL.extend(VPL_Util.options, options);
+    VPLUtil.init = function(options) {
+        $.extend(VPLUtil.options, options);
     };
-    window.VPL_Util = VPL_Util;
-    return VPL_Util;
+    window.VPLUtil = VPLUtil;
+    return VPLUtil;
 });

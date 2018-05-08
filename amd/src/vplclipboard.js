@@ -23,9 +23,9 @@
  */
 
 define(['jquery', 'jqueryui', 'mod_vpl/vplutil'],
-        function($JQVPL, jqui, VPL_Util) {
-    var VPL_Clipboard = function(dialog_id, hlabel1, action1, hlabel2, action2, onFocus) {
-        var tdialog = $JQVPL('#' + dialog_id);
+        function($, jqui, VPLUtil) {
+    var VPLClipboard = function(dialogId, hlabel1, action1, hlabel2, action2, onFocus) {
+        var tdialog = $('#' + dialogId);
         var label1 = tdialog.find('.vpl_clipboard_label1');
         var label2 = tdialog.find('.vpl_clipboard_label2');
         var entry1 = tdialog.find('.vpl_clipboard_entry1');
@@ -39,7 +39,7 @@ define(['jquery', 'jqueryui', 'mod_vpl/vplutil'],
             label2.button().click(action2);
         }
         tdialog.dialog({
-            title : VPL_Util.str('clipboard'),
+            title : VPLUtil.str('clipboard'),
             closeOnEscape : true,
             autoOpen : false,
             width : 'auto',
@@ -70,11 +70,11 @@ define(['jquery', 'jqueryui', 'mod_vpl/vplutil'],
             return entry2.val();
         };
         var titleTag = tdialog.siblings().find('.ui-dialog-title');
-        var clipboardTitle = VPL_Util.gen_icon('clipboard', 'sw');
-        clipboardTitle += ' ' + VPL_Util.str('clipboard');
+        var clipboardTitle = VPLUtil.genIcon('clipboard', 'sw');
+        clipboardTitle += ' ' + VPLUtil.str('clipboard');
         titleTag.html(clipboardTitle);
         tdialog.parent().css('overflow', ''); // Fix problem with JQuery.
     };
 
-    return VPL_Clipboard;
+    return VPLClipboard;
 });

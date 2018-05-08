@@ -34,11 +34,13 @@ require_once(dirname( __FILE__ ) . '/../../vpl.class.php');
  * @see backup_nested_element
  */
 class backup_nested_filegroup extends backup_nested_element {
-   /**
-    * @param string $base directory
-    * @param string $filename name of file
-    * @throws Exception
-    */
+    /**
+     * Read a file a retun as Object encoded if needed
+     * @param string $base directory
+     * @param string $filename name of file
+     * @return Object
+     * @throws Exception
+     */
     private function load_file($base, $filename) {
         $data = file_get_contents( $base . $filename );
         $info = new stdClass();
@@ -55,6 +57,7 @@ class backup_nested_filegroup extends backup_nested_element {
     }
 
     /**
+     * Read files in a directory
      * @param string $base directory
      * @param string $dirname containing files to backup
      * @return backup_array_iterator
@@ -87,6 +90,7 @@ class backup_nested_filegroup extends backup_nested_element {
         }
         return new backup_array_iterator( $files );
     }
+
     /**
      * {@inheritDoc}
      * @see backup_nested_element::get_iterator()
@@ -117,6 +121,7 @@ class backup_nested_filegroup extends backup_nested_element {
         }
     }
 }
+
 /**
  * Povide structure of VPL data
  *
@@ -126,6 +131,7 @@ class backup_nested_filegroup extends backup_nested_element {
  * @see backup_activity_structure_step
  */
 class backup_vpl_activity_structure_step extends backup_activity_structure_step {
+
     /**
      * @var array VPL table fields list
      */
@@ -168,6 +174,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'runscript',
         'debugscript'
     );
+
     /**
      * @var array Submission table fields list
      */
@@ -184,6 +191,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'nevaluations',
         'groupid'
     );
+
     /**
      * @var array Variation table fields list
      */
@@ -192,6 +200,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'identification',
         'description'
     );
+
     /**
      * @var array Asigned Variation table fields list
      */
@@ -200,6 +209,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'vpl',
         'variation'
     );
+
     /**
      * Define the full structure of a VPL instance with user data
      * {@inheritDoc}
