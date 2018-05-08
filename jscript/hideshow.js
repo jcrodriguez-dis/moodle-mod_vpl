@@ -28,16 +28,16 @@
         VPL = {};
     }
 
-    VPL.show_hide_div = function (id){
+    VPL.showHideDiv = function (id){
         var text = window.document.getElementById('sht' + id);
         var div = window.document.getElementById('shd' + id);
         if(text){
-            if(text.innerHTML == '[+]'){
+            if(text.innerHTML == '<i class="fa fa-eye" aria-hidden="true"></i> [+]'){
                 div.style.display = '';
-                text.innerHTML = '[-]';
+                text.innerHTML = '<i class="fa fa-eye-slash" aria-hidden="true"></i> [-]';
             }else{
                 div.style.display = 'none';
-                text.innerHTML = '[+]';
+                text.innerHTML = '<i class="fa fa-eye" aria-hidden="true"></i> [+]';
             }
         }
     };

@@ -40,12 +40,12 @@ class vpl_hide_show_div {
         self::$globalid ++;
     }
     public function generate($return = false) {
-        $html = '<a id="sht' . $this->id . '" href="javascript:void(0);"';
-        $html .= ' onclick="VPL.show_hide_div(' . $this->id . ');">';
+        $html = ' <a id="sht' . $this->id . '" style="cursor:pointer"';
+        $html .= ' onclick="VPL.showHideDiv(' . $this->id . ');">';
         if ($this->show) {
-            $html .= '[-]';
+            $html .= '<i class="fa fa-eye-slash" aria-hidden="true"></i> [-]';
         } else {
-            $html .= '[+]';
+            $html .= '<i class="fa fa-eye" aria-hidden="true"></i> [+]';
         }
         $html .= '</a>';
         if ($return) {
