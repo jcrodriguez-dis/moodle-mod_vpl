@@ -58,7 +58,7 @@ class social_breadth extends activity_base {
 
     /**
      * Returns the indicator breadth level.
-     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      * @return int
      */
     public function get_social_breadth_level(\cm_info $cm) {

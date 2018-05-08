@@ -27,7 +27,11 @@ defined ( 'MOODLE_INTERNAL' ) || die ();
 
 /**
  * VPL conversion handler
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 class moodle1_mod_vpl_handler extends moodle1_mod_handler {
 
     /**
@@ -86,15 +90,33 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
                 ) )
         );
     }
+    /**
+     * Get path to tmp vpl data dir
+     * @return string path to tmp vpl data dir
+     */
     protected function get_data_path() {
         return $this->converter->get_tempdir_path () . '/moddata/vpl/';
     }
+    /**
+     * Get path to instance config dir
+     * @return string path to instance config dir
+     */
     protected function get_config_path() {
         return $this->get_data_path () . $this->instanceid . '/config/';
     }
+    /**
+     * Get path to vpl submission dir
+     * @param int $userid user id
+     * @param int $subid submission id
+     * @return string path to vpl submission dir
+     */
     protected function get_submission_path($userid, $subid) {
         return $this->get_data_path () . $this->instanceid . '/usersdata/' . $userid . '/' . $subid . '/';
     }
+    /**
+     * Get the vpl description
+     * @return string description
+     */
     protected function get_fulldescription() {
         $path = $this->get_config_path () . 'fulldescription.html';
         if (file_exists ( $path )) {
@@ -102,6 +124,12 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         }
         return '';
     }
+    /**
+     * Get config files
+     * @param string $base base directory
+     * @param string $dirname submission directory
+     * @return string[][] array fo array with files as ['name'] and ['content']
+     */
     protected function get_files($base, $dirname) {
         $files = array ();
         $filelst = $dirname . '.lst';
@@ -137,6 +165,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         }
         return $files;
     }
+    /**
+     * Store execution files
+     */
     protected function process_execution_files() {
         $files = $this->get_files ( $this->get_config_path (), 'execution_files' );
         if (count ( $files ) > 0) {
@@ -147,6 +178,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
             $this->xmlwriter->end_tag ( 'execution_files' );
         }
     }
+    /**
+     * Store required files
+     */
     protected function process_required_files() {
         $files = $this->get_files ( $this->get_config_path (), 'required_files' );
         if (count ( $files ) > 0) {
@@ -160,7 +194,8 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
 
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/VPL
-     * data available
+     * data available (VPL INSTANCE)
+     * @param array $data vpl instance as array
      */
     public function process_vpl($data) {
         // Get the course module id and context id.
@@ -198,10 +233,14 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/VARIATIONS/VARIATIONS
      * data available
+     * Start tag
      */
     public function on_vpl_variations_start() {
         $this->xmlwriter->begin_tag ( 'variations' );
     }
+    /**
+     * End tag for variation instance
+     */
     public function on_vpl_variations_end() {
         $this->xmlwriter->end_tag ( 'variations' );
     }
@@ -209,6 +248,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/VARIATIONS/VARIATIONS/VARIATION
      * data available
+     * @parm array $data variant instance
      */
     public function process_vpl_variation($data) {
         $this->write_xml ( 'variation', $data, array (
@@ -223,9 +263,17 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
     public function on_vpl_submissions_start() {
         $this->xmlwriter->begin_tag ( 'submissions' );
     }
+    /**
+     *
+     */
     public function on_vpl_submissions_end() {
         $this->xmlwriter->end_tag ( 'submissions' );
     }
+    /**
+     * Store submitted files
+     * @param int $userid
+     * @param int $subid
+     */
     public function process_submitted_files($userid, $subid) {
         $path = $this->get_submission_path ( $userid, $subid );
         $files = $this->get_files ( $path, 'submitedfiles' );

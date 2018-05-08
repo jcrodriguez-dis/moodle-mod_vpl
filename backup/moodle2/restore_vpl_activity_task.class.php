@@ -22,9 +22,22 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 defined ( 'MOODLE_INTERNAL' ) || die ();
 require_once(dirname( __FILE__ ) . '/restore_vpl_stepslib.php');
+
+/**
+ * Provides support for restore VPL antivities in the moodle2 backup format
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 class restore_vpl_activity_task extends restore_activity_task {
+    /**
+     * @var object save structure step to used later
+     */
     private $structurestep;
     /**
      * Define (add) particular settings this activity can have
@@ -95,6 +108,11 @@ class restore_vpl_activity_task extends restore_activity_task {
         $rules = array ();
         return $rules;
     }
+
+    /**
+     * Tries to get the basedon field, if the "basedon activity" is not in the backup.
+     * This happend when duplicating activity.
+     */
     public function after_restore() {
         global $DB;
         $id = $this->get_activityid ();

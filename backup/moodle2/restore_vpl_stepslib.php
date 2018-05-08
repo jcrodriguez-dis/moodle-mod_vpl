@@ -15,15 +15,34 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Provides support for restore VPL antivities in the moodle2 backup format
  *
  * @package mod_vpl
  * @copyright 2016 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 defined ( 'MOODLE_INTERNAL' ) || die ();
+
+/**
+ * Provides support for restore VPL antivities in the moodle2 backup format
+ *
+ * @copyright 2016 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 class restore_vpl_activity_structure_step extends restore_activity_structure_step {
+
+    /**
+     * @var array of names of VPL basedon activities indexed by id of linked activities
+     */
     protected $basedonnames = array();
+
+    /**
+     * @param Object $data VPL DB instance
+     * @return int|boolean id of basedon activity or false
+     */
     public function get_baseon_by_name($data) {
         global $DB;
         if ( isset($this->basedonnames[$data->id]) ) {
@@ -35,6 +54,11 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         }
         return false;
     }
+
+    /**
+     * {@inheritDoc}
+     * @see restore_structure_step::define_structure()
+     */
     protected function define_structure() {
         $paths = array ();
         $userinfo = $this->get_setting_value ( 'userinfo' );
@@ -55,10 +79,14 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         // Return the paths wrapped into standard activity structure.
         return $this->prepare_activity_structure ( $paths );
     }
+
+    /**
+     * Preprocess and restore a VPL instance
+     * @param array $data
+     */
     protected function process_vpl($data) {
         global $DB;
         $data = ( object ) $data;
-        $oldid = $data->id;
         $data->course = $this->get_courseid ();
         $data->startdate = $this->apply_date_offset ( $data->startdate );
         $data->duedate = $this->apply_date_offset ( $data->duedate );
@@ -73,8 +101,13 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         }
         $this->apply_activity_instance ( $newitemid );
     }
+
+    /**
+     * Restore a file
+     * @param array $data of file [name, enconding, content]
+     * @param string $path path to directory where to save file
+     */
     private function process_groupfile($data, $path) {
-        global $CFG;
         $data = ( object ) $data;
         $filename = $data->name;
         if ( isset($data->encoding) and ($data->encoding == 1) ) {
@@ -89,36 +122,58 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         fwrite ( $fp, $content );
         fclose ( $fp );
     }
+
+    /**
+     * Restore a required file
+     * @param array $data of file [name, enconding, content]
+     */
     protected function process_required_file($data) {
         global $CFG;
         $vplid = $this->get_new_parentid ( 'vpl' );
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
         $this->process_groupfile ( $data, $path );
     }
+
+    /**
+     * Restore un execution file
+     * @param array $data of file [name, encondinf, content]
+     */
     protected function process_execution_file($data) {
         global $CFG;
         $vplid = $this->get_new_parentid ( 'vpl' );
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
         $this->process_groupfile ( $data, $path );
     }
+
+    /**
+     * Restore a variation
+     * @param array $data variation instance
+     */
     protected function process_variation($data) {
         global $DB;
 
         $data = ( object ) $data;
-        $oldid = $data->id;
-
         $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $newitemid = $DB->insert_record ( 'vpl_variations', $data );
+        $DB->insert_record ( 'vpl_variations', $data );
     }
+
+    /**
+     * Restore a variation asigned
+     * @param array $data variation asigned instance
+     */
     protected function process_assigned_variation($data) {
         global $DB;
         $data = ( object ) $data;
-        $oldid = $data->id;
         $data->vpl = $this->get_new_parentid ( 'vpl' );
         $data->variation = $this->get_new_parentid ( 'vpl_variation' );
         $data->userid = $this->get_mappingid ( 'user', $data->userid );
-        $newitemid = $DB->insert_record ( 'vpl_assigned_variations', $data );
+        $DB->insert_record ( 'vpl_assigned_variations', $data );
     }
+
+    /**
+     * Restore a submission
+     * @param array $data submission instance
+     */
     protected function process_submission($data) {
         global $DB;
         $data = ( object ) $data;
@@ -130,6 +185,12 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $newitemid = $DB->insert_record ( 'vpl_submissions', $data );
         $this->set_mapping ( 'submission', $oldid, $newitemid );
     }
+
+    /**
+     * Restore a submission details
+     * @param array $data submissions files
+     * @throws Exception
+     */
     protected function process_submission_file($data) {
         global $DB;
         global $CFG;
@@ -152,6 +213,10 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $this->process_groupfile ( $data, $path );
     }
 
+    /**
+     * {@inheritDoc}
+     * @see restore_structure_step::after_execute()
+     */
     protected function after_execute() {
         $this->add_related_files('mod_vpl', 'intro', null);
     }

@@ -24,7 +24,21 @@
  */
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../vpl.class.php');
+
+/**
+ * Povide backup of group of files
+ *
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @see backup_nested_element
+ */
 class backup_nested_filegroup extends backup_nested_element {
+   /**
+    * @param string $base directory
+    * @param string $filename name of file
+    * @throws Exception
+    */
     private function load_file($base, $filename) {
         $data = file_get_contents( $base . $filename );
         $info = new stdClass();
@@ -39,6 +53,12 @@ class backup_nested_filegroup extends backup_nested_element {
         }
         return $info;
     }
+
+    /**
+     * @param string $base directory
+     * @param string $dirname containing files to backup
+     * @return backup_array_iterator
+     */
     private function get_files($base, $dirname) {
         $files = array ();
         $filelst = $dirname . '.lst';
@@ -67,6 +87,11 @@ class backup_nested_filegroup extends backup_nested_element {
         }
         return new backup_array_iterator( $files );
     }
+    /**
+     * {@inheritDoc}
+     * @see backup_nested_element::get_iterator()
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     protected function get_iterator($processor) {
         global $CFG;
 
@@ -92,7 +117,18 @@ class backup_nested_filegroup extends backup_nested_element {
         }
     }
 }
+/**
+ * Povide structure of VPL data
+ *
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @see backup_activity_structure_step
+ */
 class backup_vpl_activity_structure_step extends backup_activity_structure_step {
+    /**
+     * @var array VPL table fields list
+     */
     protected $vplfields = array (
         'name',
         'shortdescription',
@@ -132,6 +168,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'runscript',
         'debugscript'
     );
+    /**
+     * @var array Submission table fields list
+     */
     protected $submissionfields = array (
         'vpl',
         'userid',
@@ -145,16 +184,27 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'nevaluations',
         'groupid'
     );
+    /**
+     * @var array Variation table fields list
+     */
     protected $variationfields = array (
         'vpl',
         'identification',
         'description'
     );
-    protected $asignedvariationfields = array (
+    /**
+     * @var array Asigned Variation table fields list
+     */
+    protected $asivariationfields = array (
         'userid',
         'vpl',
         'variation'
     );
+    /**
+     * Define the full structure of a VPL instance with user data
+     * {@inheritDoc}
+     * @see backup_structure_step::define_structure()
+     */
     protected function define_structure() {
 
         // To know if we are including userinfo.
@@ -174,7 +224,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $asignedvariations = new backup_nested_element( 'asigned_variations' );
         $asignedvariation = new backup_nested_element( 'asigned_variation',
                 $idfield,
-                $this->asignedvariationfields );
+                $this->asivariationfields );
         $submissions = new backup_nested_element( 'submissions' );
         $submission = new backup_nested_element( 'submission', $idfield, $this->submissionfields );
         $submissionfiles = new backup_nested_element( 'submission_files' );
