@@ -45,6 +45,23 @@ function get_source_files {
 	exit 0;
 }
 
+function get_first_source_file {
+	local ext
+	local FILE
+	for ext in "$@"
+	do
+		for FILE in $VPL_SUBFILES
+		do
+		    if [ "${FILE##*.}" == "$ext" ] ; then
+		        FIRST_SOURCE_FILE="$FILE"
+		        return 0
+	    	fi
+		done
+	done
+	echo "To run this type of program you need some file with extension \"$@\""
+	exit 0;
+}
+
 function check_program {
 	PROGRAM=
 	for check in "$@"
