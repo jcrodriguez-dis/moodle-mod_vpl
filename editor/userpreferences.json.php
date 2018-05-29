@@ -29,6 +29,7 @@ require(__DIR__ . '/../../../config.php');
 $outcome = new stdClass();
 $outcome->success = false;
 $outcome->error = '';
+$outcome->preferences = new stdClass();
 try {
     require_login();
     $rawdata = file_get_contents( "php://input" );
@@ -44,9 +45,21 @@ try {
         set_user_preference('vpl_acetheme', $theme);
         $outcome->success = true;
     }
+    if ( isset($actiondata->terminalTheme) ) {
+        $theme = substr($actiondata->terminalTheme, 0, 10);
+        set_user_preference('vpl_terminaltheme', $theme);
+        $outcome->success = true;
+    }
     if ( isset($actiondata->blocklyLang) ) {
         $theme = substr($actiondata->blocklyLang, 0, 10);
         set_user_preference('vpl_blocklylang', $theme);
+        $outcome->success = true;
+    }
+    if (isset($actiondata->getPreferences)) {
+        $outcome->preferences->fontSize = (int)  get_user_preferences('vpl_editor_fontsize', 12);
+        $outcome->preferences->aceTheme = get_user_preferences('vpl_acetheme', '');
+        $outcome->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
+        $outcome->preferences->blocklyLang = get_user_preferences('vpl_blocklylang', '');
         $outcome->success = true;
     }
 } catch ( Exception $e ) {
