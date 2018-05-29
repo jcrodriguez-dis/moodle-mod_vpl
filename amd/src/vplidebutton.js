@@ -81,6 +81,9 @@ define(['jquery',
                 if (!button.hasOwnProperty('icon')) {
                     button.icon = button.name;
                 }
+                if (!button.hasOwnProperty('title')) {
+                    button.title = VPLUtil.str(button.name);
+                }
                 if (!button.hasOwnProperty('active')) {
                     button.active = true;
                 }
@@ -102,13 +105,23 @@ define(['jquery',
                         bindKey : button.bindKey,
                         exec : button.action
                     };
+                    var platform = "win";
+                    if (navigator.platform.startsWith("Mac")) {
+                        platform = "mac";
+                    }
+                    button.key = button.bindKey[platform];
                 }
             };
             this.getHTML = function(button) {
                 if (self.notAdded(button)) {
                     return '';
                 } else {
-                    var html = "<a id='vpl_ide_" + button + "' href='#' title='" + VPLUtil.str(button) + "'>";
+                    var title = buttons[button].title;
+                    if (buttons[button].hasOwnProperty('key')) {
+                        title += ' (' + buttons[button].key + ')';
+                    }
+
+                    var html = "<a id='vpl_ide_" + button + "' href='#' title='" + title + "'>";
                     html += VPLUtil.genIcon(button) + "</a>";
                     return html;
                 }
