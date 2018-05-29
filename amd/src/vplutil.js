@@ -54,6 +54,26 @@ define(['jquery',
             log.debug( m );
         }
     };
+    VPLUtil.setUserPreferences = function(pref) {
+        $.ajax({
+            async : true,
+            type : "POST",
+            url : '../editor/userpreferences.json.php',
+            'data' : JSON.stringify(pref),
+            contentType : "application/json; charset=utf-8",
+            dataType : "json"
+        });
+    };
+    VPLUtil.getUserPreferences = function(func) {
+        $.ajax({
+            async : true,
+            type : "POST",
+            url : '../editor/userpreferences.json.php',
+            'data' : JSON.stringify({getPreferences: true}),
+            contentType : "application/json; charset=utf-8",
+            dataType : "json"
+        }).done(func);
+    };
     // Get scrollBarWidth.
     VPLUtil.scrollBarWidth = function() {
         var parent, child, width;
@@ -537,7 +557,7 @@ define(['jquery',
             'resize' :'arrows-alt',
             'graphic' :'picture-o',
             'send' :'send',
-            'acetheme' : 'code|paint-brush',
+            'theme' : 'paint-brush',
             'user' :'user',
             'fontsize' :'text-height'
         };

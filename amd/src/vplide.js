@@ -322,6 +322,7 @@ define(['jquery',
                     for (var i = 0; i < files.length; i++) {
                         files[i].setFontSize(size);
                     }
+                    terminal.setFontSize(size);
                 };
                 this.getFontSize = function() {
                     return options.fontSize;
@@ -1163,14 +1164,7 @@ define(['jquery',
             dialogAceThemeButtons[str('ok')] = function() {
                 fileManager.setTheme(acethemeSelect.val());
                 $(this).dialog('close');
-                $.ajax({
-                    async : true,
-                    type : "POST",
-                    url : '../editor/userpreferences.json.php',
-                    'data' : JSON.stringify({aceTheme:acethemeSelect.val()}),
-                    contentType : "application/json; charset=utf-8",
-                    dataType : "json"
-                });
+                VPLUtil.setUserPreferences({aceTheme:acethemeSelect.val()});
             };
             dialogAceThemeButtons[str('cancel')] = function() {
                 fileManager.setTheme(acethemeSelect.data( "acetheme" ));
@@ -1315,7 +1309,7 @@ define(['jquery',
                 }
             });
             menuButtons.add({
-                name:'acetheme',
+                name:'theme',
                 originalAction: function() {
                     dialogAceTheme.dialog('open');
                 }
@@ -1372,7 +1366,7 @@ define(['jquery',
             menuButtons.add({
                 name:'fullscreen',
                 originalAction: function() {
-                    var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer';
+                    var tags = 'header, nav, footer, aside, .dropdown, #page-header, div.navbar, #nav-drawer';
                     tags += ', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         rootObj.removeClass('vpl_ide_root_fullscreen');
@@ -1602,7 +1596,7 @@ define(['jquery',
             menuHtml += menuButtons.getHTML('sort');
             menuHtml += menuButtons.getHTML('multidelete');
             menuHtml += menuButtons.getHTML('fontsize');
-            menuHtml += menuButtons.getHTML('acetheme');
+            menuHtml += menuButtons.getHTML('theme');
             menuHtml += "</span> ";
             // TODO print still not implemented.
             menuHtml += "<span id='vpl_ide_edit'>";
@@ -1665,7 +1659,7 @@ define(['jquery',
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
-                menuButtons.enable('acetheme', true);
+                menuButtons.enable('theme', true);
                 var sel;
                 if (!file || nfiles === 0) {
                     sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
@@ -1759,6 +1753,7 @@ define(['jquery',
                 } else if ( ! options.saved ) {
                     fileManager.setModified();
                 }
+                fileManager.setFontSize(options.fontSize);
             })
             .fail(showErrorMessage);
         };
