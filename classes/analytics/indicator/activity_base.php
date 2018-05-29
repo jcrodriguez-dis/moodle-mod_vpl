@@ -44,7 +44,7 @@ abstract class activity_base extends \core_analytics\local\indicator\community_o
      * @return string[]
      */
     protected function feedback_viewed_events() {
-        return ['\mod_vpl\event\submission_grade_viewed'];
+        return ['\mod_vpl\event\submission_grade_viewed', '\mod_vpl\event\submission_viewed'];
     }
 
     /**
