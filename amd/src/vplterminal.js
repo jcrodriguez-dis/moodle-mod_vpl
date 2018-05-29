@@ -217,6 +217,33 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
             clipboard.hide();
             self.disconnect();
         };
+
+        function setTheme(theme) {
+            var cbase =  "vpl_terminal_theme";
+            var nthemes = 5;
+            tdialog.data('terminal_theme', theme);
+            VPLUtil.setUserPreferences({terminalTheme:theme});
+            for ( var i = 0; i < nthemes; i++) {
+                tdialog.removeClass(cbase + i);
+            }
+            tdialog.addClass(cbase + theme);
+        }
+        function controlDialogSize(){
+            // Reposition if dialog is out of screen.
+            var offset = tdialog.parent().offset();
+            offset.top= offset.top < 0 ? 0: offset.top;
+            offset.left= offset.left < 0 ? 0: offset.left;
+            tdialog.parent().offset(offset);
+            // Resize if dialog is large than screen.
+            var bw = $('body').width();
+            var bh = $('body').height();
+            if( tdialog.width() > bw) {
+                tdialog.width(bw);
+            }
+            if(tdialog.parent().height() > bh) {
+                tdialog.height(bh-tdialog.prev().outerHeight());                    
+            }            
+        }
         tdialog.dialog({
             closeOnEscape : false,
             autoOpen : false,
@@ -224,25 +251,40 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
             height : 'auto',
             resizable : true,
             focus : function() {
+                controlDialogSize();
+                terminal.focus();
+            },
+            focus : function() {
+                controlDialogSize();
                 terminal.focus();
             },
             dialogClass : 'vpl_ide vpl_vnc',
             create : function() {
-                titleText = VPLUtil.setTitleBar(tdialog, 'console', 'console', [ 'clipboard', 'keyboard' ], [ openClipboard,
+                titleText = VPLUtil.setTitleBar(tdialog, 'console', 'console',
+                        [ 'clipboard', 'keyboard', 'theme' ],
+                        [ openClipboard,
                         function() {
                             terminal.focus();
-                        } ]);
+                        },
+                        function() {
+                            var theme = (tdialog.data('terminal_theme') + 1) % 5; // cycle 5 themes from 0 to 4.
+                            setTheme(theme);
+                        }]);
             },
             close : function() {
                 self.closeDialog();
             },
-            resizeStart : function() {
-                var cur = tdialog.find('pre').width();
-                var curin = tdialog.find('pre div').width();
-                if (cur <= curin) {
-                    tdialog.find('pre').width(curin);
-                }
+            resizeStop : function() {
+                tdialog.width(tdialog.parent().width());
+                tdialog.height(tdialog.parent().height()-tdialog.prev().outerHeight());
+                terminal.focus();
             }
+        });
+        this.setFontSize = function(size) {
+            terminalTag.css("font-size", size +"px");
+        };
+        VPLUtil.getUserPreferences(function(data){
+            setTheme(data.preferences.terminalTheme);
         });
         tdialog.css("padding", "1px");
         this.show = function() {
@@ -268,6 +310,27 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
             terminal.open(terminalTag[0]);
             terminal.reset();
             terminal.stopBlink();
+            terminal.setLineCallback(
+                function(line, nlines) {
+                    var height = terminalTag.height();
+                    var offset = tdialog.scrollTop();
+                    var viewHeight = tdialog.innerHeight();
+                    if(viewHeight >= height) {
+                        return;
+                    }
+                    var lineHeight = height / nlines;
+                    var pos = line * lineHeight;
+                    // If cursor in view area return.
+                    if(pos >= offset && pos < (viewHeight + offset - lineHeight)) {
+                        return;
+                    }
+                    if(pos < offset) { // If cursor beforer view area scroll to first view line
+                        tdialog.scrollTop(pos);
+                    } else {
+                        tdialog.scrollTop((pos - viewHeight) + 2 * lineHeight);
+                    }
+                }
+             );
         };
         this.init();
     };
