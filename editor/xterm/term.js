@@ -1477,7 +1477,8 @@ Terminal.prototype.refresh = function(start, end) {
 };
 
 Terminal.prototype._cursorBlink = function() {
-  if (Terminal.focus !== this) return;
+  // JCRdP modification Blink without focus
+  // if (Terminal.focus !== this) return;
   this.cursorState ^= 1;
   this.refresh(this.y, this.y);
 };
@@ -1492,13 +1493,27 @@ Terminal.prototype.showCursor = function() {
   }
 };
 
+// Added by JCRdP, call external function on each blink
+Terminal.prototype.setLineCallback = function(f) {
+    this.lineCallBackFunction = f;
+};
+
+Terminal.prototype.lineCallback = function() {
+    if ( typeof this.lineCallBackFunction == "function" ) {
+        this.lineCallBackFunction(this.y, this.rows);
+    }
+};
+// End of added by JCRdP
+
 Terminal.prototype.startBlink = function() {
   if (!this.cursorBlink) return;
   if (this._blink) return;
   var self = this;
   this._blinker = function() {
     self._cursorBlink();
+    self.lineCallback(); //Added by JCRdP
   };
+  self.lineCallback(); //Added by JCRdP
   this._blink = setInterval(this._blinker, 500);
 };
 
@@ -1508,6 +1523,7 @@ Terminal.prototype.stopBlink = function() {
         delete this._blink;
         this._blink = false;
     }
+    this.lineCallback(); //Added by JCRdP
     this.showCursor();
  };
 
