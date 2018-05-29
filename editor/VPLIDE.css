@@ -1,3 +1,7 @@
+#vpl_results_accordion .vpl_ide_accordion_c_description a {
+    border-style: none;
+}
+
 .vpl_ide_root {
     direction: ltr;
     text-align: left;
@@ -218,7 +222,7 @@ img.vpl_ide_file {
 .vpl_ide {
     font-size: 12px;
 }
-.vpl_ide .ui-dialog-titlebar {
+.vpl_ide div.ui-dialog-titlebar {
     padding: 0.15em;
 }
 .ace_gutter-tooltip {
@@ -266,6 +270,46 @@ img.vpl_ide_file {
     padding: 0;
     z-index: 1000;
 }
+
+.vpl_terminal_theme1 div {
+    background-color: white;
+    color: black;
+}
+
+.vpl_terminal_theme1 .reverse-video {
+    background-color: black;
+    color: white;
+}
+
+.vpl_terminal_theme2 div {
+    background-color: navy;
+    color: yellow;
+}
+
+.vpl_terminal_theme2 .reverse-video {
+    background-color: yellow;
+    color: navy;
+}
+
+.vpl_terminal_theme3 div {
+    background-color: blue;
+    color: white;
+}
+
+.vpl_terminal_theme3 .reverse-video {
+    background-color: white;
+    color: blue;
+}
+.vpl_terminal_theme4 div {
+    background-color: red;
+    color: #0ff;
+}
+
+.vpl_terminal_theme4 .reverse-video {
+    background-color: #0ff;
+    color: red;
+}
+
 .vpl_clipboard {
     display: none;
     z-index: 1010;
@@ -283,14 +327,14 @@ img.vpl_ide_file {
 /*Resolve problem with essential theme*/
 pre.vpl_terminal * {
     border: 0;
-    font: 1em/1.2 monospace;
+    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
     margin: 0;
     padding: 0;
 }
 
 pre.vpl_terminal {
     display: inline-block;
-    font: 1em/1.2 monospace;
+    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
     font-size: 12px;
     padding: 2px;
 }
