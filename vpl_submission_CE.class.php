@@ -54,6 +54,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'lisp' => 'lisp',
             'lsp' => 'lisp',
             'lua' => 'lua',
+            'mod' => 'opl', 
             'sh' => 'shell',
             'pas' => 'pascal',
             'p' => 'pascal',
