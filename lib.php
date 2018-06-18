@@ -552,7 +552,7 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) 
         $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parm );
         $node = vpl_navi_node_create($vplnode, 'submissionview', $url);
         $vplnode->add_node( $node );
-        if ($grader || $similarity) {
+        if ($grader || $similarity || $vpl->get_instance()->allowshowprevious) { 
             $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parm );
             $node = vpl_navi_node_create($vplnode, 'previoussubmissionslist', $url);
             $vplnode->add_node( $node );
