@@ -407,5 +407,13 @@ class file_group_process {
             die();
         }
     }
+    
+    /**
+     * return the directory file
+     * @return string
+     */
+     public function get_dir() {
+        return $this->dir;
+    }
 }
 

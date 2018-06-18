@@ -309,3 +309,7 @@ pre.vpl_terminal {
     color: white;
     font-weight: bold;
 }
+
+.ace-changed {
+    background-color: #aaa;
+}

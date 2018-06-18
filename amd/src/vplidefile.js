@@ -326,6 +326,42 @@ define(['jquery',
                 }
                 editor.setTheme("ace/theme/" + theme);
             };
+
+            this.$_GET = function(param) {
+                var vars = {};
+                window.location.href.replace( location.hash, '' ).replace(
+                    /[?&]+([^=&]+)=?([^&]*)?/gi, // regexp
+                    function( m, key, value ) { // callback
+                            vars[key] = value !== undefined ? value : '';
+                    }
+                );
+
+                if ( param ) {
+                    return vars[param] ? vars[param] : null;
+                }
+                return vars;
+            };
+
+            this.check_difference = function() {
+             $.ajax({
+                        method: "POST",
+                        url: "../similarity/diff_check_requested_files.php",
+                        data: { id : this.$_GET('id'), name: fileName, val : editor.getValue() }
+                      })
+                        .done(function( data ) {
+                            var modified = 'ace-changed'; // css class
+                            var i;
+                            for (i = 0; i < data.length; i++) {
+                              if(data[i].type != "=") {
+                                  editor.session.removeGutterDecoration(data[i].ln2-1, modified);
+                                  editor.session.addGutterDecoration(data[i].ln2-1, modified);
+                              } else {
+                                  editor.session.removeGutterDecoration(data[i].ln2-1, modified);
+                              }
+                            }
+                        });
+            };
+
             this.open = function() {
                 if ( typeof ace === 'undefined' ) {
                     VPLUtil.loadScript(['../editor/ace9/ace.js',
@@ -373,8 +409,12 @@ define(['jquery',
                         setTimeout(addEventDrop, 50);
                     }
                 }
+
+                this.check_difference();
+
                 editor.on('change', function() {
                     self.change();
+                    self.check_difference();
                 });
                 // Try to grant dropHandler installation.
                 setTimeout(addEventDrop, 5);
