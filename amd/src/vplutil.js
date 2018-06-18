@@ -413,6 +413,7 @@ define(['jquery',
             'v' :'verilog',
             'vhd' :'vhdl', 'vhdl' :'vhdl',
             'xml' :'xml',
+            'xsl' : 'xml',
             'yaml' :'yaml'
         };
         VPLUtil.langType = function(ext) {
