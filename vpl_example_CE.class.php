@@ -45,7 +45,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
      */
     public function get_submitted_fgm() {
         if (! $this->submitted_fgm) {
-            $this->submitted_fgm = $this->vpl->get_required_fgm();
+            $this->submitted_fgm = $this->vpl->get_fgm('required');
         }
         return $this->submitted_fgm;
     }

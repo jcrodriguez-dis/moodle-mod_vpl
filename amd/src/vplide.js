@@ -67,6 +67,7 @@ define(['jquery',
                 'evaluate' :true,
                 'import' :true,
                 'resetfiles' :true,
+                'correctedfiles' : true,
                 'sort' :true,
                 'multidelete' :true,
                 'acetheme' :true,
@@ -1419,6 +1420,28 @@ define(['jquery',
                     VPLUtil.delay('updateMenu', updateMenu);
                 }).fail(showErrorMessage);
             }
+
+          function correctedFiles() {
+                VPLUtil.requestAction('correctedfiles', '', {}, options.ajaxurl, function(response) {
+                    var files = response.files;
+                    for (var fileName in files) {
+                        fileManager.addFile(files[fileName], true, VPLUtil.doNothing, showErrorMessage);
+                    }
+                    fileManager.fileListVisibleIfNeeded();
+                    VPLUtil.delay(updateMenu);
+                }, showErrorMessage);
+            }
+
+            menuButtons.add({
+                name:'correctedfiles',
+                originalAction: function() {
+                    showMessage(str('surecorrectedfiles'), {
+                        title : str('correctedfiles'),
+                        ok : correctedFiles
+                    });
+                }
+            });
+
             menuButtons.add({
                 name:'resetfiles',
                 originalAction: function() {
@@ -1428,6 +1451,7 @@ define(['jquery',
                     });
                 }
             });
+
             menuButtons.add({
                 name:'save',
                 originalAction: function() {
@@ -1599,6 +1623,7 @@ define(['jquery',
             menuHtml += menuButtons.getHTML('import');
             menuHtml += menuButtons.getHTML('download');
             menuHtml += menuButtons.getHTML('resetfiles');
+            menuHtml += menuButtons.getHTML('correctedfiles');
             menuHtml += menuButtons.getHTML('sort');
             menuHtml += menuButtons.getHTML('multidelete');
             menuHtml += menuButtons.getHTML('fontsize');

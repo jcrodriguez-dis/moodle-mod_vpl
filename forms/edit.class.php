@@ -84,7 +84,7 @@ class mod_vpl_edit{
     }
 
     public static function get_requested_files($vpl) {
-        $reqfgm = $vpl->get_required_fgm();
+        $reqfgm = $vpl->get_fgm('required'); 
         return $reqfgm->getallfiles();
     }
     public static function get_submitted_files($vpl, $userid, & $compilationexecution) {

@@ -83,7 +83,7 @@ $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'resourcelimits' );
 
 $course = $vpl->get_course();
-$fgp = $vpl->get_execution_fgm();
+$fgp = $vpl->get_fgm('execution'); 
 $mform = new mod_vpl_executionlimits_form( 'executionlimits.php', $vpl );
 if ($fromform = $mform->get_data()) {
     if (isset( $fromform->savelimitoptions )) {

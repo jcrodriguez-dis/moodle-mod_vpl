@@ -24,6 +24,7 @@ $string ['acceptcertificatesnote'] = "<p>You are using an encrypted connection.<
 $string ['addfile'] = 'Add file';
 $string ['advanced'] = 'Advanced';
 $string ['allfiles'] = 'All files';
+$string ['allowshowprevious'] = 'Allow student show previous submissions'; 
 $string ['allsubmissions'] = 'All submissions';
 $string ['anyfile'] = 'Any file';
 $string ['attemptnumber'] = 'Attempt number {$a}';
@@ -49,6 +50,7 @@ $string ['connection_closed'] = 'connection closed';
 $string ['connection_fail'] = 'connection fail';
 $string ['console'] = 'Console';
 $string ['copy'] = 'Copy';
+$string ['correctedfiles'] = 'Corrected files'; 
 $string ['create_new_file'] = 'Create a new file';
 $string ['currentstatus'] = 'Current status';
 $string ['cut'] = 'Cut';
@@ -257,8 +259,10 @@ $string ['submittedby'] = 'Submitted by {$a}';
 $string ['submittedon'] = 'Submitted on';
 $string ['submittedonp'] = 'Submitted on {$a}';
 $string ['sureresetfiles'] = 'Do you want to lost all your work and reset the files to its original state?';
+$string ['surecorrectedfiles'] = 'Do you want to lost all your work and reset the files to its corrected files?';
 $string ['test'] = 'Test activity';
 $string ['testcases'] = 'Test cases';
+$string ['testcasesfiles'] = 'Test cases file'; 
 $string ['timelimited'] = 'Time limited';
 $string ['timeleft'] = 'Time left';
 $string ['timeout'] = 'Timeout';
@@ -319,6 +323,9 @@ $string ['step'] = 'Step';
 
 $string ['check_jail_servers_help'] = "<p>This page check and show the status of execution servers used
 for this activity.</p>";
+$string ['correctedfiles_help'] = '<p>Here you set names and its content up for the corrected files to the max number of files that was set in the basic description of the activity.</p> 
+<p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p> 
+<p>You also can add contents to the corrected files, so these contents will be available for teacher.</p>'; 
 $string ['executionfiles_help'] = '<h2>Introduction</h2>
 <p>Here you set the files that are needed to prepare the execution,
 debug or assessment of a submission. This includes scripting files,
@@ -432,7 +439,7 @@ $string ['modulename_help'] = '<p>VPL is a activity module for Moodle that manag
 </ul>
 <p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab Home Page</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
-$string ['requestedfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p>
+$string ['requiredfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p> 
 <p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p>
 <p>You also can add contents to the requested files, so these contents will be available the first time that they will be opened with the editor, if no previous submission exists.</p>';
 $string ['resourcelimits_help'] = '<p>You can set limits for the execution time, the memory used, the execution files sizes and the number of processes to be executed simultaneously.</p>

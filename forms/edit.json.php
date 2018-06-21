@@ -78,6 +78,11 @@ try {
             $files = mod_vpl_edit::get_requested_files( $vpl );
             $outcome->response->files = mod_vpl_edit::filestoide( $files );
             break;
+        case 'correctedfiles' : 
+            $fgm = $vpl->get_fgm('corrected'); 
+            $files = $fgm->getallfiles(); 
+            $outcome->response->files = mod_vpl_edit::filestoide( $files ); 
+            break; 
         case 'load' :
             if ( $subid && $vpl->has_capability( VPL_MANAGE_CAPABILITY ) ) {
                 $load = mod_vpl_edit::load( $vpl, $userid , $subid);

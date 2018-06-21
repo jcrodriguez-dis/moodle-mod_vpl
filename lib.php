@@ -581,75 +581,98 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     $setjails = has_capability( VPL_SETJAILS_CAPABILITY, $context );
     if ($manager) {
         $userid = optional_param( 'userid', null, PARAM_INT );
+        $strbasic = get_string( 'basic', VPL );
+        $strtestcases = get_string( 'testcases', VPL );
+        $strexecutionoptions = get_string( 'executionoptions', VPL );
+        $menustrexecutionoptions = get_string( 'menuexecutionoptions', VPL );
+        $strrequestedfiles = get_string( 'requestedfiles', VPL );
+        $strcorrectedfiles = get_string( 'correctedfiles', VPL );
+        $strexecution = get_string( 'execution', VPL );
+        $vplindex = get_string( 'modulenameplural', VPL );
         $klist = $vplnode->get_children_key_list();
         if (count( $klist ) > 1) {
             $fkn = $klist [1];
-            $vplnode->get($klist [0])->icon = new pix_icon('a/setting', '');
         } else {
             $fkn = null;
         }
-        $parms = array ( 'id' => $cmid );
-        $url = new moodle_url( '/mod/vpl/forms/testcasesfile.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'testcases', $url);
+        $parms = array (
+                'id' => $PAGE->cm->id
+        );
+        $node = $vplnode->create( $strtestcases, new moodle_url( '/mod/vpl/forms/files.php', array (
+                'id' => $PAGE->cm->id,
+                'type' => 'testcases'
+        ) ), navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $url = new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'executionoptions', $url);
+        $urlexecutionoptions = new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms );
+        $node = $vplnode->create( $strexecutionoptions, $urlexecutionoptions, navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $url = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'requestedfiles', $url);
+        $urlrequiredfiles = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
+        $node = $vplnode->create( $strrequestedfiles, new moodle_url( '/mod/vpl/forms/files.php', array (
+                'id' => $PAGE->cm->id,
+                'type' => 'required'
+        ) )   , navigation_node::TYPE_SETTING );
         $vplnode->add_node( $node, $fkn );
-        $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
-
-        $advance = vpl_navi_node_create($vplnode, 'advancedsettings', $url,
-                navigation_node::TYPE_CONTAINER, 'moodle');
+        $node = $vplnode->create( $strcorrectedfiles, new moodle_url( '/mod/vpl/forms/files.php', array (
+                'id' => $PAGE->cm->id,
+                'type' => 'corrected'
+        ) )  , navigation_node::TYPE_SETTING );
+        $vplnode->add_node( $node, $fkn );
+        $urlexecutionfiles = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
+        $stradvancedsettings = get_string( 'advancedsettings' );
+        $advance = $vplnode->create( $stradvancedsettings, $urlexecutionfiles, navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $advance, $fkn );
-
-        $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
-        $node = vpl_navi_node_create($advance, 'executionfiles', $url);
-        $advance->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms );
-        $node = vpl_navi_node_create($advance, 'maxresourcelimits', $url);
-        $advance->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms );
-        $node = vpl_navi_node_create($advance, 'keepfiles', $url);
-        $advance->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms );
-        $node = vpl_navi_node_create($advance, 'variations', $url);
-        $advance->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms );
-        $node = vpl_navi_node_create($advance, 'check_jail_servers', $url);
-        $advance->add_node( $node );
+        $strexecutionlimits = get_string( 'maxresourcelimits', VPL );
+        $strexecutionfiles = get_string( 'executionfiles', VPL );
+        $menustrexecutionfiles = get_string( 'menuexecutionfiles', VPL );
+        $menustrexecutionlimits = get_string( 'menuresourcelimits', VPL );
+        $strvariations = get_string( 'variations', VPL );
+        $strexecutionkeepfiles = get_string( 'keepfiles', VPL );
+        $strexecutionlimits = get_string( 'maxresourcelimits', VPL );
+        $strcheckjails = get_string( 'check_jail_servers', VPL );
+        $strsetjails = get_string( 'local_jail_servers', VPL );
+        $menustrexecutionkeepfiles = get_string( 'menukeepfiles', VPL );
+        $menustrcheckjails = get_string( 'menucheck_jail_servers', VPL );
+        $menustrsetjails = get_string( 'menulocal_jail_servers', VPL );
+        $advance->add( $strexecutionfiles, new moodle_url( '/mod/vpl/forms/files.php', array (
+                'id' => $PAGE->cm->id,
+                'type' => 'execution'
+        ) )   , navigation_node::TYPE_SETTING );
+        $advance->add( $strexecutionlimits, new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms )
+                       , navigation_node::TYPE_SETTING );
+        $advance->add( $strexecutionkeepfiles, new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms )
+                       , navigation_node::TYPE_SETTING );
+        $advance->add( $strvariations, new moodle_url( '/mod/vpl/forms/variations.php', $parms )
+                       , navigation_node::TYPE_SETTING );
+        $advance->add( $strcheckjails, new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms )
+                       , navigation_node::TYPE_SETTING );
         if ($setjails) {
-            $url = new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms );
-            $node = vpl_navi_node_create($advance, 'local_jail_servers', $url);
-            $advance->add_node( $node );
+            $advance->add( $strsetjails, new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms )
+                       , navigation_node::TYPE_SETTING );
         }
-
-        $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parms);
-        $testact = vpl_navi_node_create($vplnode, 'test', $url, navigation_node::TYPE_CONTAINER);
+        $testact = $vplnode->create( get_string( 'test', VPL ), new moodle_url( '/mod/vpl/forms/submissionview.php', $parms),
+                    navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $testact, $fkn );
         $strdescription = get_string( 'description', VPL );
         $strsubmission = get_string( 'submission', VPL );
         $stredit = get_string( 'edit', VPL );
         $parmsuser = array (
-                'id' => $cmid,
-                'userid' => $userid
+                'id' => $PAGE->cm->id,
+                'userid' => $USER->id
         );
-        $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
-        $node = vpl_navi_node_create($testact, 'submission', $url);
-        $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/edit.php', $parms );
-        $node = vpl_navi_node_create($testact, 'edit', $url);
-        $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
-        $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'moodle');
-        $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parmsuser );
-        $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url);
-        $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/index.php', array ('id' => $PAGE->cm->course));
-        $node = vpl_navi_node_create($testact, 'modulenameplural', $url);
-        $vplnode->add_node( $node, $fkn );
+        $strsubmissionview = get_string( 'submissionview', VPL );
+        $testact->add( $strsubmission, new moodle_url( '/mod/vpl/forms/submission.php', $parms ), navigation_node::TYPE_SETTING );
+        $testact->add( $stredit, new moodle_url( '/mod/vpl/forms/edit.php', $parms ), navigation_node::TYPE_SETTING );
+        $testact->add( $strsubmissionview, new moodle_url( '/mod/vpl/forms/submissionview.php', $parms )
+                       , navigation_node::TYPE_SETTING );
+        $testact->add( get_string( 'grade' ), new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parmsuser )
+                       , navigation_node::TYPE_SETTING );
+        $testact->add( get_string( 'previoussubmissionslist', VPL ), new moodle_url( '/mod/vpl/views/previoussubmissionslist.php'
+                       , $parmsuser )
+                       , navigation_node::TYPE_SETTING );
+        $nodeindex = $vplnode->create( $vplindex, new moodle_url( '/mod/vpl/index.php', array (
+                'id' => $PAGE->cm->course
+        ) ), navigation_node::TYPE_SETTING );
+        $vplnode->add_node( $nodeindex, $fkn );
     }
 }
 

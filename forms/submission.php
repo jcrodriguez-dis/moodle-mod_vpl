@@ -73,7 +73,7 @@ if ($fromform = $mform->get_data()) {
                     $error, 'error' );
         die();
     }
-    $rfn = $vpl->get_required_fgm();
+    $rfn = $vpl->get_fgm('required'); 
     $minfiles = count( $rfn->getFilelist() );
     $files = array ();
     for ($i = 0; $i < $instance->maxfiles; $i ++) {

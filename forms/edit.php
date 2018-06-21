@@ -110,8 +110,10 @@ if ( $subid ) {
     $options ['submissionid'] = $subid;
 }
 
-$reqfgm = $vpl->get_required_fgm();
+$reqfgm = $vpl->get_fgm('required');
 $options ['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
+$corfgm = $vpl->get_fgm('corrected'); 
+$options ['correctedfiles'] = ($corfgm->is_populated() && ! $instance->example && $manager); 
 $options ['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
 $options ['minfiles'] = count( $reqfilelist );

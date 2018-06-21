@@ -109,7 +109,7 @@ class vpl_similarity_form extends moodleform {
         $mform->addElement( 'select', 'maxoutput', get_string( 'maxsimilarityoutput', VPL ), $options );
         $mform->setType( 'maxoutput', PARAM_INT );
         $mform->setDefault( 'maxoutput', $defaultlimit );
-        $filelist = $this->vpl->get_required_fgm()->getFileList();
+        $filelist = $this->vpl->get_fgm('required')->getFileList();
         if (count( $filelist ) > 0) {
             $mform->addElement( 'header', 'headerfilestoprocess', get_string( 'filestoscan', VPL ) );
             $num = 0;

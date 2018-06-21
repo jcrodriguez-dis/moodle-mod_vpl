@@ -140,16 +140,9 @@ class mod_vpl {
     protected $instance;
 
     /**
-     * Internal var array of object to  file group manager 
+     * Internal var array of object to  file group manager
      *
-     * @var araay of object of file group manager 
-     */
-    protected $requiredfgm;
-
-    /**
-     * Internal var object to execution file group manager
-     *
-     * @var object of file group manager
+     * @var araay of object of file group manager
      */
     protected $fgm;
 
@@ -198,12 +191,12 @@ class mod_vpl {
                 $this->instance->cmidnumber = $this->cm->id;
             }
         }
-        $this->fgm = array(); 
+        $this->fgm = array();
     }
 
     /**
      *
-     * @return Object of module DB instance
+     * @return module db instance
      */
     public function get_instance() {
         return $this->instance;
@@ -211,7 +204,7 @@ class mod_vpl {
 
     /**
      *
-     * @return Object of course DB instance
+     * @return course
      *
      */
     public function get_course() {
@@ -220,7 +213,7 @@ class mod_vpl {
 
     /**
      *
-     * @return Object of course_module DB instance
+     * @return course_module
      *
      */
     public function get_course_module() {
@@ -257,7 +250,7 @@ class mod_vpl {
     }
 
     /**
-     * Update a VPL instance including timemodified field
+     * Update a VPL instance including timemodified
      *
      * @return bool true if all OK
      */
@@ -268,8 +261,8 @@ class mod_vpl {
     }
 
     /**
-     * Get data directory path
-     * @return string data directory path
+     *
+     * @return instance data directory
      */
     public function get_data_directory() {
         global $CFG;
@@ -277,61 +270,108 @@ class mod_vpl {
     }
 
     /**
-     * Get config data directory path
-     * @return string config data directory path
+     *
+     * @return instance config data directory
      */
     public function get_users_data_directory() {
         return $this->get_data_directory() . '/usersdata';
     }
 
     /**
-     *
-     * @param $type string 
-     * @return directory to stored initial files 
+     * @param $type string
+     * @return directory to stored initial files
      */
-    public function get_files_directory($type) { 
-        return $this->get_data_directory() . '/'.$type.'_files/'; 
-    } 
-
-    /**
-     * Get path to filename to store required files
-     * @return string path to filename to store required files
-     */
-       public function get_files_filename($type) { 
-        return $this->get_data_directory() . '/'.$type.'_files.lst'; 
-    } 
-
-    /**
-     * Get array of files required file names
-     * @return array of strings
-     */
-    public function get_files($type) { 
-        return vpl_read_list_from_file( $this->get_files_filename($type) ); 
-    } 
-
-    /**
-     *
-     * @param $files array
-     *            of required files
-     */
-       public function set_files($type,$files) { 
-        vpl_write_list_to_file( $this->get_files_filename($type), $files ); 
-    } 
-
-    /**
-     *
-     * @return object file group manager for required files
-     */
-    public function get_fgm($type) { 
-        if (! isset($this->fgm[$type])) { 
-            $this->fgm[$type] = new file_group_process( $this->get_files_filename($type) 
-                                                       , $this->get_files_directory($type) 
-                                                       , $this->instance->maxfiles ); 
-        } 
-        
-        return $this->fgm[$type]; 
+    public function get_files_directory($type) {
+        return $this->get_data_directory() . '/'.$type.'_files/';
     }
 
+    /**
+     * @param $type string
+     * @return filename to store  files
+     */
+    public function get_files_filename($type) {
+        return $this->get_data_directory() . '/'.$type.'_files.lst';
+    }
+
+    /**
+     * @param $type string
+     * @return array of files name
+     */
+<<<<<<< HEAD
+    public function get_required_files() {
+        return file_group_process::read_list( $this->get_required_files_filename() );
+=======
+    public function get_files($type) {
+        return vpl_read_list_from_file( $this->get_files_filename($type) );
+>>>>>>> v3.3dev-corrected_files
+    }
+
+    /**
+     *
+     * @param $type string
+     * @param $files array
+     *            of  files
+     */
+<<<<<<< HEAD
+    public function set_required_files($files) {
+        file_group_process::write_list( $this->get_required_files_filename(), $files );
+=======
+    public function set_files($type,$files) {
+        vpl_write_list_to_file( $this->get_files_filename($type), $files );
+>>>>>>> v3.3dev-corrected_files
+    }
+
+    /**
+     * @param $type string
+     * @return object file group manager for  files
+     */
+    public function get_fgm($type) {
+        if (! isset($this->fgm[$type])) {
+            $this->fgm[$type] = new file_group_process( $this->get_files_filename($type)
+                                                       , $this->get_files_directory($type)
+                                                       , $this->instance->maxfiles );
+        }
+        return $this->fgm[$type];
+    }
+
+<<<<<<< HEAD
+    /**
+     *
+     * @return directory to stored execution files
+     */
+    public function get_execution_files_directory() {
+        return $this->get_data_directory() . '/execution_files/';
+    }
+
+    /**
+     *
+     * @return filename to store execution files
+     */
+    public function get_execution_files_filename() {
+        return $this->get_data_directory() . '/execution_files.lst';
+    }
+
+    /**
+     *
+     * @return array of files execution name
+     */
+    public function get_execution_files() {
+        return file_group_process::read_list( $this->get_execution_files_filename() );
+    }
+
+    /**
+     *
+     * @return object file group manager for execution files
+     */
+    public function get_execution_fgm() {
+        if (! $this->executionfgm) {
+            $this->executionfgm = new file_group_execution( $this->get_execution_files_filename(),
+                    $this->get_execution_files_directory() );
+        }
+        return $this->executionfgm;
+    }
+=======
+>>>>>>> v3.3dev-corrected_files
     // FIXME check and remove function.
     public function set_initial_file($name, $files) {
         $filelist = '';
@@ -371,9 +411,9 @@ class mod_vpl {
     }
 
     /**
-     * Get fulldescription
+     * get fulldescription
      *
-     * @return string fulldescription
+     * @return fulldescription
      *
      */
     public function get_fulldescription() {
@@ -386,9 +426,9 @@ class mod_vpl {
     }
 
     /**
-     * Get fulldescription adding basedon descriptions
+     * get fulldescription adding basedon
      *
-     * @return string fulldescription
+     * @return fulldescription
      *
      */
     public function get_fulldescription_with_basedon() {
@@ -473,7 +513,14 @@ class mod_vpl {
     protected function get_password_md5() {
         return md5( $this->instance->id . (sesskey()) );
     }
-
+    /**
+     * Get is use as base
+     **/
+    function is_use_as_base(){
+        return ($this->instance->usableasbase?true:false);
+    }
+ 
+ 
     /**
      * Check if pass password restriction
      */
@@ -632,7 +679,7 @@ class mod_vpl {
      */
     public function pass_submission_restriction(& $alldata, & $error) {
         $max = $this->get_maxfilesize();
-        $rfn = $this->get_fgm('required'); 
+        $rfn = $this->get_fgm('required');
         $list = $rfn->getFilelist();
         $error = '';
         if (count( $alldata ) > $this->instance->maxfiles) {
@@ -739,14 +786,14 @@ class mod_vpl {
     /**
      * Get user submissions, order reverse submission id
      *
-     * @param $userid int the user id to retrieve submissions
-     * @param $groupifga boolean if group activity get group submissions. default true
+     * @param $id user
+     *            id
      * @return FALSE/array of objects
      */
-    public function user_submissions($userid, $groupifga = true) {
+    public function user_submissions($userid) {
         global $DB;
 
-        if ($groupifga && $this->is_group_activity()) {
+        if ($this->is_group_activity()) {
             $group = $this->get_usergroup($userid);
             if ($group) {
                 $select = '(groupid = ?) AND (vpl = ?)';
@@ -764,13 +811,14 @@ class mod_vpl {
                     $this->instance->id
             );
         }
+
         return $DB->get_records_select( 'vpl_submissions', $select, $parms, 'id DESC' );
     }
 
     /**
      * Get the last submission of all users
      *
-     * @param string $fields conma separeted
+     * @param $fields fields
      *            to retrieve from submissions table, default s.*. userid is always retrieved
      * @return object array
      */
@@ -795,7 +843,7 @@ class mod_vpl {
     /**
      * Get all saved submission of all users
      *
-     * @param string $fields fields conma separeted
+     * @param $fields fields
      *            to retrieve from submissions table, default s.*
      * @return object array
      */
@@ -808,7 +856,7 @@ class mod_vpl {
     /**
      * Get number of user submissions
      *
-     * @return Array of objects with 'submissions' atribute as number of submissions saved
+     * @return oject array
      */
     public function get_submissions_number() {
         global $DB;
@@ -827,12 +875,13 @@ class mod_vpl {
     }
 
     /**
-     * This is for compatibility to old group scheme.
+     * This is for compatibility to old group scheme
      * Update the submission groupid for VPL version <= 3.2
      *
      * Set the correct groupid when groupid = 0
-     * @param int $groupid.
-     *     If no $groupid => update $groupid of all groups of the activity
+     * @param $group integer
+     *     $groupid to set
+     *     if no $groupid => update $groupid of all groups of the activity
      * @return void
      */
     public function update_group_v32($groupid='') {
@@ -861,9 +910,10 @@ class mod_vpl {
     }
 
     /**
-     * Get last user submission
+     * Get last usersubmission
      *
-     * @param int $userid
+     * @param $id user
+     *            id
      * @return FALSE/object
      *
      */
@@ -1122,7 +1172,8 @@ class mod_vpl {
     /**
      * Get array of graders for this activity and group (optional)
      *
-     * @param string $group optional parm with group to search for
+     * @param $group optional
+     *            parm with group to search for
      * @return array
      */
     public function get_graders($group = '') {
@@ -1134,10 +1185,11 @@ class mod_vpl {
     }
 
     /**
-     * Get array of students for this activity. If group is set return only group members
+     * Get array of students for this activity if group is set return only group members
      *
-     * @param string $group optional parm with group to search for
-     * @return array of objects
+     * @param $group optional
+     *            parm with group to search for
+     * @return array
      */
     public function get_students($group = '') {
         if ( isset( $this->students ) && $group == '') {
@@ -1182,13 +1234,11 @@ class mod_vpl {
      * @return Integer userid
      */
     public function get_group_leaderid($userid) {
-        $leaderid = $userid;
+        $leaderid = 0;
         $group = $this->get_usergroup($userid);
-        if ($group) {
-            foreach ($this->get_usergroup_members( $group->id ) as $user) {
-                if ($user->id < $leaderid) {
-                    $leaderid = $user->id;
-                }
+        foreach ($this->get_usergroup_members( $group->id ) as $user) {
+            if ($user->id < $leaderid || $leaderid == 0) {
+                $leaderid = $user->id;
             }
         }
         return $leaderid;
@@ -1197,7 +1247,7 @@ class mod_vpl {
     /**
      * If is a group activity return the group of the userid
      *
-     * @return Object/false
+     * @return group object or false
      */
     public function get_usergroup($userid) {
         if ($this->is_group_activity()) {
@@ -1355,7 +1405,8 @@ class mod_vpl {
     /**
      * print header
      *
-     * @param $info string title and last nav option
+     * @param $info title
+     *            and last nav option
      */
     public function print_header($info = '') {
         global $COURSE, $PAGE, $OUTPUT;
@@ -1403,14 +1454,14 @@ class mod_vpl {
     public function print_heading_with_help($action) {
         global $OUTPUT;
         $title = get_string( $action, VPL ) . ': ' . $this->get_printable_name();
-        echo $OUTPUT->heading_with_help( vpl_get_awesome_icon($action) . $title, $action, 'vpl');
+        echo $OUTPUT->heading_with_help( $title, $action, 'vpl', 'icon' );
         self::$headerisout = true;
     }
 
     /**
      * Create tabs to view_description/submit/view_submission/edit
      *
-     * @param string $path to get the active tab
+     * @param $active tab
      *
      */
     public function print_configure_tabs($path) {
@@ -1473,13 +1524,13 @@ class mod_vpl {
     /**
      * Create tabs to view_description/submit/view_submission/edit
      *
-     * @param string $path to get the active tab
+     * @param $active tab
      *
      */
-    public function print_view_tabs($path) {
+    public function print_view_tabs($active) {
         // TODO refactor using functions.
         global $CFG, $USER, $DB, $OUTPUT;
-        $active = basename( $path );
+        $active = basename( $active );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
         $copy = optional_param( 'privatecopy', false, PARAM_INT );
@@ -1502,14 +1553,14 @@ class mod_vpl {
         $tabs = array ();
         $baseurl = $CFG->wwwroot . '/mod/' . VPL . '/';
         $href = vpl_mod_href( 'view.php', 'id', $cmid, 'userid', $userid );
-        $viewtab = vpl_create_tabobject('view.php', $href, 'description' );
+        $viewtab = new tabobject( 'view.php', $href, $strdescription, $strdescription );
         if ($level2) {
             if ($viewer) {
                 $maintabs [] = $viewtab;
             }
             $strsubmissionslist = get_string( 'submissionslist', VPL );
             $href = vpl_mod_href( 'views/submissionslist.php', 'id', $cmid );
-            $maintabs [] = vpl_create_tabobject( 'submissionslist.php', $href, 'submissionslist' );
+            $maintabs [] = new tabobject( 'submissionslist.php', $href, $strsubmissionslist, $strsubmissionslist );
             // Similarity.
             if ($similarity) {
                 if ($active == 'listwatermark.php' || $active == 'similarity_form.php' || $active == 'listsimilarity.php') {
@@ -1519,20 +1570,12 @@ class mod_vpl {
                 }
                 $strsubmissionslist = get_string( 'similarity', VPL );
                 $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
-                $maintabs [] = vpl_create_tabobject( $tabname, $href, 'similarity' );
+                $maintabs [] = new tabobject( $tabname, $href, $strsubmissionslist, $strsubmissionslist );
             }
             // Test.
             if ($grader || $manager) {
-                if ($active == 'submission.php' || $active == 'edit.php'
-                        || $active == 'submissionview.php' || $active == 'gradesubmission.php'
-                        || $active == 'previoussubmissionslist.php') {
-                            $tabname = $active;
-                } else {
-                    $tabname = 'test';
-                }
-                $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
                 if ($userid == $USER->id) {
-                    $maintabs [] = vpl_create_tabobject( $tabname, $href, 'test' );
+                    $text = get_string( 'test', VPL );
                 } else {
                     $user = $DB->get_record( 'user', array (
                             'id' => $userid
@@ -1543,8 +1586,16 @@ class mod_vpl {
                         $text = get_string( 'user' ) . ' ';
                     }
                     $text .= $this->fullname( $user, false );
-                    $maintabs [] = new tabobject( $tabname, $href, $text, $text );
                 }
+                if ($active == 'submission.php' || $active == 'edit.php'
+                    || $active == 'submissionview.php' || $active == 'gradesubmission.php'
+                    || $active == 'previoussubmissionslist.php') {
+                    $tabname = $active;
+                } else {
+                    $tabname = 'test';
+                }
+                $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
+                $maintabs [] = new tabobject( $tabname, $href, $text, $text );
             }
         }
         switch ($active) {
@@ -1575,7 +1626,7 @@ class mod_vpl {
                     || (! $grader && $submiter && $this->is_submit_able()
                     && ! $this->instance->restrictededitor && ! $example)) {
                     $href = vpl_mod_href( 'forms/submission.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = vpl_create_tabobject( 'submission.php', $href, 'submission' );
+                    $tabs [] = new tabobject( 'submission.php', $href, $strsubmission, $strsubmission );
                 }
                 if ($manager || ($grader && $USER->id == $userid)
                     || (! $grader && $submiter && $this->is_submit_able())) {
@@ -1583,23 +1634,41 @@ class mod_vpl {
                     if ($example && $this->instance->run) {
                         $stredit = get_string( 'run', VPL );
                     }
-                    $tabs [] = vpl_create_tabobject( 'edit.php', $href, 'edit');
+                    $tabs [] = new tabobject( 'edit.php', $href, $stredit, $stredit );
                 }
                 if (! $example) {
                     $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = vpl_create_tabobject( 'submissionview.php', $href, 'submissionview');
+                    $tabs [] = new tabobject( 'submissionview.php', $href, $strsubmissionview, $strsubmissionview );
                     if ($grader && $this->get_grade() != 0 && $subinstance
                         && ($subinstance->dategraded == 0
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
                         $text = get_string( 'grade' );
-                        $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'moodle' );
+                        $tabs [] = new tabobject( 'gradesubmission.php', $href, $text, $text );
                     }
-                     if ($subinstance && ($grader || $similarity|| $this->instance->allowshowprevious)) {
+                    if ($subinstance && ($grader || $similarity|| $this->instance->allowshowprevious)) {
                         $strlistprevoiussubmissions = get_string( 'previoussubmissionslist', VPL );
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
-                        $tabs [] = vpl_create_tabobject( 'previoussubmissionslist.php', $href, 'previoussubmissionslist' );
+                        $tabs [] = new tabobject( 'previoussubmissionslist.php', $href, $strlistprevoiussubmissions,
+                                $strlistprevoiussubmissions );
+                    }
+                }
+                if ($subinstance !== false) {
+                    $gradinginstance = $submission->get_grading_instance();
+                    
+                    if ($gradinginstance) {
+                        $gradingmanager = get_grading_manager($this->get_context(), 'mod_vpl', 'submissions');
+                        if ($gradingmethod = $gradingmanager->get_active_method()) {
+                            $gradingcontroller = $gradingmanager->get_controller($gradingmethod);
+                            $advancedgradingareas = $gradingmanager->get_available_areas();
+                            if ($gradingcontroller->is_form_defined() && ($options = $gradingcontroller->get_options()) && !empty($options['alwaysshowdefinition'])) {
+                                //$node->add(get_string('gradingof', 'gradingform_rubric', get_grading_manager($this->get_areaid())->get_area_title()),
+                                $href =  new moodle_url('/grade/grading/form/'.$gradingmethod.'/preview.php', array('areaid' => $gradingcontroller->get_areaid()));
+                                //$href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
+                                $tabs [] = new tabobject( 'gradingpreview.php', $href, get_string('gradingof', 'gradingform_'.$gradingmethod, $gradingmanager->get_area_title()));
+                            }
+                        }
                     }
                 }
                 // Show user picture if this activity require password.
@@ -1639,17 +1708,17 @@ class mod_vpl {
                 if ($similarity) {
                     $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
                     $string = get_string( 'similarity', VPL );
-                    $tabs [] = vpl_create_tabobject( 'similarity_form.php', $href, 'similarity' );
+                    $tabs [] = new tabobject( 'similarity_form.php', $href, $string, $string );
                     if ($active == 'listsimilarity.php') {
                         $string = get_string( 'listsimilarity', VPL );
-                        $tabs [] = vpl_create_tabobject( 'listsimilarity.php', '', 'listsimilarity' );
+                        $tabs [] = new tabobject( 'listsimilarity.php', '', $string, $string );
                     }
                     $plugincfg = get_config('mod_vpl');
                     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
                     if ($watermark) {
                         $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
                         $string = get_string( 'listwatermarks', VPL );
-                        $tabs [] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
+                        $tabs [] = new tabobject( 'listwatermark.php', $href, $string, $string );
                     }
                 }
                 print_tabs( array (
@@ -1696,7 +1765,7 @@ class mod_vpl {
         if ( $newline ) {
             echo '<br>';
         } else {
-            echo '. ';
+            echo ' ';
         }
     }
 
@@ -1720,7 +1789,8 @@ class mod_vpl {
      */
     public function print_submission_restriction() {
         global $CFG, $USER;
-        $filegroup = $this->get_fgm('required'); 
+        // TODO print_submission_restriction.
+        $filegroup = $this->get_fgm('required');
         $files = $filegroup->getfilelist();
         if (count( $files )) {
             $text = '';
@@ -1733,21 +1803,20 @@ class mod_vpl {
                 $needcomma = true;
             }
             $link = ' (<a href="';
-            $link .= vpl_mod_href( 'views/downloadfiles.php', 'id', $this->get_course_module()->id ,'type','required'); 
+            $link .= vpl_mod_href( 'views/downloadfiles.php', 'id', $this->get_course_module()->id ,'type','required');
             $link .= '">';
             $link .= get_string( 'download', VPL );
             $link .= '</a>)';
-            $this->print_restriction( 'requiredfiles', $text . $link ); 
+            $this->print_restriction( 'requiredfiles', $text . $link );
         }
-        $instance = $this->get_instance();
-        if (count( $files ) != $instance->maxfiles) {
+        if (count( $files ) != $this->instance->maxfiles) {
             $this->print_restriction( 'maxfiles' );
         }
-        if ($instance->maxfilesize) {
+        if ($this->instance->maxfilesize) {
             $mfs = $this->get_maxfilesize();
             $this->print_restriction( 'maxfilesize', vpl_conv_size_to_string( $mfs ) );
         }
-        $worktype = $instance->worktype;
+        $worktype = $this->instance->worktype;
         $values = array (
                 0 => get_string( 'individualwork', VPL ),
                 1 => get_string( 'groupwork', VPL )
@@ -1757,7 +1826,7 @@ class mod_vpl {
         } else {
             $this->print_restriction( 'worktype', $values [$worktype] );
         }
-        if ($instance->example) {
+        if ($this->instance->example) {
             $this->print_restriction( 'isexample', $stryes );
         }
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
@@ -1783,27 +1852,27 @@ class mod_vpl {
         }
         $this->print_gradereduction();
         if ($grader) {
-            if (trim( $instance->password ) > '') {
+            if (trim( $this->instance->password ) > '') {
                 $this->print_restriction( get_string( 'password' ), $stryes, true );
             }
-            if (trim( $instance->requirednet ) > '') {
-                $this->print_restriction( 'requirednet', s( $instance->requirednet ));
+            if (trim( $this->instance->requirednet ) > '') {
+                $this->print_restriction( 'requirednet', s( $this->instance->requirednet ));
             }
-            if ( $instance->sebrequired > 0) {
+            if ( $this->instance->sebrequired > 0) {
                 $this->print_restriction('sebrequired', $stryes );
             }
-            if (trim( $instance->sebkeys ) > '') {
+            if (trim( $this->instance->sebkeys ) > '') {
                 $this->print_restriction('sebkeys', $stryes );
             }
-            if ($instance->restrictededitor) {
+            if ($this->instance->restrictededitor) {
                 $this->print_restriction( 'restrictededitor', $stryes );
             }
             if (! $this->get_course_module()->visible) {
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
             }
-            if ($instance->basedon) {
+            if ($this->instance->basedon) {
                 try {
-                    $basedon = new mod_vpl( null, $instance->basedon );
+                    $basedon = new mod_vpl( null, $this->instance->basedon );
                     $link = '<a href="';
                     $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
                     $link .= '">';
@@ -1818,35 +1887,29 @@ class mod_vpl {
                     $strno,
                     $stryes
             );
-            $this->print_restriction( 'run', $noyes [$instance->run], false, false );
-            if ($instance->runscript) {
-                $this->print_restriction( 'runscript', strtoupper($instance->runscript), false, false );
-            }
-            if ($instance->debug) {
+            $this->print_restriction( 'run', $noyes [$this->instance->run], false, false );
+            if ($this->instance->debug) {
                 $this->print_restriction( 'debug', $noyes [1], false, false );
             }
-            if ($instance->debugscript) {
-                $this->print_restriction( 'debugscript', strtoupper($instance->debugscript), false, false );
-            }
-            $this->print_restriction( 'evaluate', $noyes [$instance->evaluate], false,
-                    ! ($instance->evaluate && $instance->evaluateonsubmission) );
-            if ($instance->evaluate && $instance->evaluateonsubmission) {
+            $this->print_restriction( 'evaluate', $noyes [$this->instance->evaluate], false,
+                    ! ($this->instance->evaluate && $this->instance->evaluateonsubmission) );
+            if ($this->instance->evaluate && $this->instance->evaluateonsubmission) {
                 $this->print_restriction( 'evaluateonsubmission', $noyes [1] );
             }
-            if ($instance->automaticgrading) {
+            if ($this->instance->automaticgrading) {
                 $this->print_restriction( 'automaticgrading', $noyes [1], false, false );
             }
-            if ($instance->maxexetime) {
-                $this->print_restriction( 'maxexetime', $instance->maxexetime . ' s', false, false );
+            if ($this->instance->maxexetime) {
+                $this->print_restriction( 'maxexetime', $this->instance->maxexetime . ' s', false, false );
             }
-            if ($instance->maxexememory) {
-                $this->print_restriction( 'maxexememory', vpl_conv_size_to_string( $instance->maxexememory ), false, false );
+            if ($this->instance->maxexememory) {
+                $this->print_restriction( 'maxexememory', vpl_conv_size_to_string( $this->instance->maxexememory ), false, false );
             }
-            if ($instance->maxexefilesize) {
-                $this->print_restriction( 'maxexefilesize', vpl_conv_size_to_string( $instance->maxexefilesize ), false,
+            if ($this->instance->maxexefilesize) {
+                $this->print_restriction( 'maxexefilesize', vpl_conv_size_to_string( $this->instance->maxexefilesize ), false,
                         false );
             }
-            if ($instance->maxexeprocesses) {
+            if ($this->instance->maxexeprocesses) {
                 $this->print_restriction( 'maxexeprocesses', null, false, false );
             }
         }

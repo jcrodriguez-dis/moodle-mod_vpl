@@ -76,6 +76,9 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->addElement( 'selectyesno', 'restrictededitor', get_string( 'restrictededitor', VPL ) );
         $mform->setDefault( 'restrictededitor', false );
         $mform->setAdvanced( 'restrictededitor' );
+        $mform->addElement( 'selectyesno', 'allowshowprevious', get_string( 'allowshowprevious', VPL ) ); 
+        $mform->setDefault( 'allowshowprevious', false ); 
+        $mform->setAdvanced( 'allowshowprevious' ); 
         $mform->addElement( 'selectyesno', 'example', get_string( 'isexample', VPL ) );
         $mform->setDefault( 'example', false );
         $mform->setAdvanced( 'example' );

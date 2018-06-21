@@ -62,7 +62,7 @@ $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'keepfiles' );
 
 $course = $vpl->get_course();
-$fgp = $vpl->get_execution_fgm();
+$fgp = $vpl->get_fgm('execution');
 $mform = new mod_vpl_executionkeepfiles_form( 'executionkeepfiles.php', $fgp );
 if ($fromform = $mform->get_data()) {
     if (isset( $fromform->savekeepfiles )) {

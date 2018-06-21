@@ -71,7 +71,7 @@ if ($userid && $userid != $USER->id) {
     $vpl->require_capability( VPL_VIEW_CAPABILITY );
     $userid = $USER->id;
     $grader = false;
-    if ($submissionid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+    if ($submissionid && ($vpl->has_capability( VPL_GRADE_CAPABILITY )|| $instance->allowshowprevious) ) {
         $subinstance = $DB->get_record( 'vpl_submissions', array (
                 'id' => $submissionid
         ) );

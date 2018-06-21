@@ -55,7 +55,7 @@ class mod_vpl_submission_form extends moodleform {
 
         // Files upload.
         $instance = $this->vpl->get_instance();
-        $files = $this->vpl->get_required_files();
+        $files = $this->vpl->get_files('required');
         $nfiles = count( $files );
         for ($i = 0; $i < $instance->maxfiles; $i ++) {
             $field = 'file' . $i;

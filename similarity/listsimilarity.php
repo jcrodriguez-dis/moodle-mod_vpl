@@ -56,7 +56,7 @@ if (! ($fromform = $form->get_data())) {
 }
 // Get filelist names to scan.
 $filesselected = array ();
-$filelist = $vpl->get_required_fgm()->getFileList();
+$filelist = $vpl->get_fgm('required')->getFileList(); 
 $num = 0;
 foreach ($filelist as $filename) {
     if (isset( $fromform->{'file' . $num} )) {

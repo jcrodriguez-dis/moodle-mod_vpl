@@ -42,7 +42,9 @@ $vpl->prepare_page( 'views/previoussubmissionslist.php', array (
 ) );
 
 $course = $vpl->get_course();
-$vpl->require_capability( VPL_GRADE_CAPABILITY );
+if($USER->id != $userid || !$vpl->get_instance()->allowshowprevious){ //Not owner 
+    $vpl->require_capability(VPL_GRADE_CAPABILITY); 
+} 
 \mod_vpl\event\submission_previous_upload_viewed::log( array (
         'objectid' => $vpl->get_instance()->id,
         'context' => context_module::instance( $id ),

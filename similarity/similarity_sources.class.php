@@ -307,7 +307,7 @@ class vpl_similarity_preprocess {
         }
         $submissions = $vpl->all_last_user_submission();
         // Get initial content files.
-        $reqf = $vpl->get_required_fgm();
+        $reqf = $vpl->get_fgm('required'); 
         $toremove = self::proccess_files( $reqf, $filesselected, $allfiles, $joinedfiles );
 
         $spb->set_max( count( $list ) );
@@ -342,7 +342,7 @@ class vpl_similarity_preprocess {
         }
         $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
         // Get initial content files.
-        $reqf = $vpl->get_required_fgm();
+        $reqf = $vpl->get_fgm('required');
         $filelist = $reqf->getFileList();
         $toremove = array ();
         foreach ($filelist as $filename) {
