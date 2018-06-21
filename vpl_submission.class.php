@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 /**
  * Submission class definition
  *
@@ -22,7 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
+ 
 /**
  * Module instance files
  * path= vpl_data//vpl_instance#
@@ -37,28 +37,30 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once(dirname(__FILE__).'/views/show_hide_div.class.php');
-
+require_once($CFG->dirroot . '/grade/grading/lib.php');
+ 
 // Non static due to usort error.
 function vpl_compare_filenamebylengh($f1, $f2) {
     return strlen( $f2 ) - strlen( $f1 );
 }
-
 class mod_vpl_submission {
     protected $vpl;
     protected $instance;
-
+ 
     /**
      * Internal var object to submitted file group manager
      *
      * @var object of file group manager
      */
     protected $submittedfgm;
-
+ 
     /**
      * Constructor
      *
-     * @param mod_vpl $vpl
-     * @param Object/ibt $mix submission DB record instance object or id
+     * @param $vpl object
+     *            vpl instance
+     * @param $mix submission
+     *            instance object or id
      */
     public function __construct(mod_vpl $vpl, $mix = false) {
         global $DB;
@@ -77,8 +79,8 @@ class mod_vpl_submission {
         }
         $this->submittedfgm = null;
     }
-
-    /**
+    
+      /**
      * get submission instance
      *
      * @return object submission instance
@@ -86,7 +88,7 @@ class mod_vpl_submission {
     public function get_instance() {
         return $this->instance;
     }
-
+ 
     /**
      * get vpl object related
      *
@@ -98,7 +100,7 @@ class mod_vpl_submission {
     /**
      * Return the proper userid
      *
-     * @return int user id
+     * @return user id
      */
     public function get_userid() {
         if ($this->vpl->is_group_activity()) {
@@ -118,8 +120,8 @@ class mod_vpl_submission {
      */
     public function get_data_directory() {
         return $this->vpl->get_users_data_directory() . '/' . $this->instance->userid . '/' . $this->instance->id . '/';
-    }
-
+    } 
+     
     /**
      * get path to files submission directory
      *
@@ -128,7 +130,7 @@ class mod_vpl_submission {
     public function get_submission_directory() {
         return $this->get_data_directory() . 'submittedfiles/';
     }
-
+ 
     /**
      * get absolute path to name of file with list of submitted files
      *
@@ -137,7 +139,7 @@ class mod_vpl_submission {
     public function get_submissionfilelistname() {
         return $this->get_data_directory() . 'submittedfiles.lst';
     }
-
+ 
     /**
      *
      * @return object file group manager for submitted files
@@ -148,7 +150,7 @@ class mod_vpl_submission {
         }
         return $this->submittedfgm;
     }
-
+ 
     /**
      * get absolute path to the grade comments file name
      *
@@ -157,7 +159,7 @@ class mod_vpl_submission {
     public function get_gradecommentsfilename() {
         return $this->get_data_directory() . 'grade_comments.txt';
     }
-
+     
     /**
      * get submitted files
      *
@@ -200,9 +202,9 @@ class mod_vpl_submission {
                 return false;
             }
         }
-        return true;
+             return true;
     }
-
+ 
     /**
      * Delete submitted files and own record
      *
@@ -217,7 +219,7 @@ class mod_vpl_submission {
                 'id' => $this->instance->id
         ) );
     }
-
+ 
     /**
      * Return if submission has been graded
      *
@@ -226,7 +228,7 @@ class mod_vpl_submission {
     public function is_graded() {
         return $this->instance->dategraded > 0;
     }
-
+ 
     /**
      * Remove grade
      *
@@ -239,7 +241,7 @@ class mod_vpl_submission {
         ignore_user_abort( true );
         if ($this->vpl->is_group_activity()) {
             $usersid = array ();
-            foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
+             foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
                 $usersid [] = $user->id;
             }
         } else {
@@ -282,7 +284,7 @@ class mod_vpl_submission {
             }
         }
         $this->instance->grader = 0;
-        $this->instance->dategraded = 0;
+         $this->instance->dategraded = 0;
         $this->instance->grade = null;
         $fn = $this->get_gradecommentsfilename();
         if (! $DB->update_record( 'vpl_submissions', $this->instance )) {
@@ -294,15 +296,15 @@ class mod_vpl_submission {
         }
         return true;
     }
-
+ 
     /**
-     * Get current grade reduction
+     * get current grade reduction
      *
      * @param & $reduction
      *          value or factor
      * @param & $percent bool
      *          if true then $reduction is factor
-     * @return float grade reduction
+     * @return grade reduction string
      */
     public function grade_reduction(& $reduction, & $percent) {
         $reduction = 0;
@@ -321,10 +323,12 @@ class mod_vpl_submission {
             $reduction = $vplinstance->reductionbyevaluation * $mul;
         }
     }
-    /**
+ /**
      * String with the reduction policy
      *
-     * @return string reduction policy in HTML format
+     * @param $grade
+     *            optional grade value
+     * @return grade reduction string
      */
     public function reduce_grade_string() {
         global $OUTPUT;
@@ -348,14 +352,15 @@ class mod_vpl_submission {
         $html .= $OUTPUT->help_icon('finalreduction', VPL);
         return $html;
     }
-
+ 
     /**
      * Reduce grade based en number of evaluations
      *
-     * @param float $grade value
-     * @return float new grade
+     * @param $grade
+     *            grade value
+     * @return new grade
      */
-    public function reduce_grade($grade) {
+     public function reduce_grade($grade) {
         $this->grade_reduction($reduction, $percent);
         if ($reduction > 0) {
             if ($percent) {
@@ -366,13 +371,16 @@ class mod_vpl_submission {
         }
         return $grade;
     }
-
+ 
     /**
      * Set/update grade
      *
-     * @param object $info with grade and comments fields
-     * @param boolean $automatic if automatic grading (default false)
-     * @return boolean. true => OK
+     * @param $info object
+     *            with grade and comments fields
+     * @param $automatic if
+     *            automatic grading (default false)
+     * @return boolean
+     *            true => OK
      */
     public function set_grade($info, $automatic = false) {
         global $USER;
@@ -394,7 +402,7 @@ class mod_vpl_submission {
                 $usersid [] = $user->id;
             }
         } else {
-            $usersid = array (
+         $usersid = array (
                     $this->instance->userid
             );
         }
@@ -421,6 +429,11 @@ class mod_vpl_submission {
                 unlink( $fn );
             }
             // Update gradebook.
+            $gradinginstance = $this->get_grading_instance();
+            if ($gradinginstance) {
+                $advancedgrading = $gradinginstance->submit_and_get_grade($info->advancedgrading,
+                                                                       $this->instance->id);
+            }
             $grades = array ();
             $gradeinfo = array ();
             // If no grade then don't set rawgrade and feedback.
@@ -429,7 +442,7 @@ class mod_vpl_submission {
                 $gradeinfo ['feedback'] = $this->result_to_html( $comments, false );
                 $gradeinfo ['feedbackformat'] = FORMAT_HTML;
             }
-            if ($this->instance->grader > 0) { // Don't add grader if automatic.
+           if ($this->instance->grader > 0) { // Don't add grader if automatic.
                 $gradeinfo ['usermodified'] = $this->instance->grader;
             } else { // This avoid to use an unexisting userid (0) in the gradebook.
                 $gradeinfo ['usermodified'] = $USER->id;
@@ -472,7 +485,7 @@ class mod_vpl_submission {
                             $outcomes [$oid] = null;
                         }
                     }
-                    $ret = grade_update_outcomes( 'mod/vpl'
+                     $ret = grade_update_outcomes( 'mod/vpl'
                                            , $this->vpl->get_course()->id
                                            , 'mod'
                                            , VPL
@@ -489,7 +502,7 @@ class mod_vpl_submission {
         }
         return true;
     }
-
+ 
     /**
      * Get grade comments
      *
@@ -507,7 +520,7 @@ class mod_vpl_submission {
         }
         return $ret;
     }
-
+ 
     /**
      * is visible this submission instance
      *
@@ -528,7 +541,7 @@ class mod_vpl_submission {
         $ret = $ret || $this->vpl->has_capability( VPL_GRADE_CAPABILITY );
         return $ret;
     }
-
+ 
     /**
      * is possible to grade/update this submission instance
      *
@@ -551,13 +564,13 @@ class mod_vpl_submission {
         }
         return $ret;
     }
-
+ 
     /**
      *
      * @var array of users(graders) objects
      */
     protected static $graders = array ();
-
+ 
     /**
      * Return user from DB with cache (automatic grader info for $id===0)
      *
@@ -592,13 +605,45 @@ class mod_vpl_submission {
         }
         return $graderuser;
     }
-
+    
+     /**
+     * Get an instance of a grading form if advanced grading is enabled.
+     * This is specific to the assignment, marker and student.
+     *
+     * @return mixed gradingform_instance|null $gradinginstance
+     */
+     public function get_grading_instance() {
+        global $CFG, $USER;
+ 
+        $grademenu = make_grades_menu($this->get_instance()->grade);
+        $allowgradedecimals = $this->get_instance()->grade > 0;
+ 
+        $advancedgradingwarning = false;
+        $gradingmanager = get_grading_manager($this->vpl->get_context(), 'mod_vpl', 'submissions');
+        $gradinginstance = null;
+        if ($gradingmethod = $gradingmanager->get_active_method()) {
+            $controller = $gradingmanager->get_controller($gradingmethod);
+            if ($controller->is_form_available()) {
+                $instanceid = optional_param('advancedgradinginstanceid', 0, PARAM_INT);
+                $gradinginstance = $controller->get_or_create_instance($instanceid,
+                                                                       $USER->id,
+                                                                       $this->instance->id);
+            } else {
+                $advancedgradingwarning = $controller->form_unavailable_notification();
+            }
+        }
+        if ($gradinginstance) {
+            $gradinginstance->get_controller()->set_grade_range($grademenu, $allowgradedecimals);
+        }
+        return $gradinginstance;
+    }
+ 
     /**
      * Get core grade @parm optional grade to show
      *
      * @return string
      */
-    public function get_grade_core($grade = null) {
+     public function get_grade_core($grade = null) {
         global $CFG;
         $ret = '';
         $inst = $this->instance;
@@ -609,10 +654,6 @@ class mod_vpl_submission {
             if ($scaleid == 0) {
                 return get_string( 'nograde' );
             } else if ($grade == null) {
-                // If group activity don't retrieve grade from gradebook.
-                if ( $this->vpl->is_group_activity() ) {
-                    return format_float($this->get_instance()->grade, 2, true, true);
-                }
                 if (! function_exists( 'grade_get_grades' )) {
                     require_once($CFG->libdir . '/gradelib.php');
                 }
@@ -654,16 +695,18 @@ class mod_vpl_submission {
         }
         return $ret;
     }
-
+ 
     /**
      * Print sudmission grade
      *
-     * @param boolean $detailed show detailed grade (default false)
-     * @param boolean $return. Return string/ false print grade (default false)
-     * @return string/void
+     * @param $detailed true
+     *            show detailed grade (default false)
+     * @param $return true
+     *            return string/ false print grade (default false)
+     * @return mix string/void
      */
     public function print_grade($detailed = false, $return = false) {
-        global $CFG, $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT,$PAGE,$USER;
         $ret = '';
         $inst = $this->instance;
         if ($inst->dategraded > 0) {
@@ -675,16 +718,30 @@ class mod_vpl_submission {
             if ($this->vpl->get_grade() != 0) {
                 $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), true) . '<br>';
                 if ($detailed) {
-                    $ret .= $this->reduce_grade_string() . '<br>';
+                 $ret .= $this->reduce_grade_string() . '<br>';
                     $feedback = $this->get_grade_comments();
                     if ($feedback) {
                         $div = new vpl_hide_show_div( true );
                         $tagid = 'gradercomments' . $this->get_instance()->id;
                         $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br />';
                         $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
-                        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
+                        $ret .= "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
                     }
                 }
+            }
+            $cangrade = has_capability(VPL_GRADE_CAPABILITY, $this->vpl->get_context());
+            // Only show the grade if it is not hidden in gradebook.
+            $userid = (has_capability( VPL_GRADE_CAPABILITY, $this->vpl->get_context() ) || has_capability(
+                        VPL_MANAGE_CAPABILITY, $this->vpl->get_context() )) ? null : $USER->id;
+            require_once($CFG->libdir . '/gradelib.php');
+            $gradeinfo = grade_get_grades( $this->vpl->get_course()->id, 'mod', 'vpl', $this->vpl->get_instance()->id, $userid );
+            $gradinginstance = $this->get_grading_instance();
+            if ($gradinginstance) {
+                $ret .= $gradinginstance->get_controller()->render_grade($PAGE,
+                                                             $this->instance->id,
+                                                             $gradeinfo,
+                                                             $this->instance->grade,
+                                                             $cangrade);
             }
             if (! empty( $CFG->enableoutcomes )) {
                 // Bypass unknow gradelib not load.
@@ -704,22 +761,21 @@ class mod_vpl_submission {
             }
         }
         if ($return) {
-            return $ret;
+          return $ret;
         } else {
             if ($ret) {
                 echo $OUTPUT->box( $ret );
-
+ 
             }
         }
     }
-
+ 
     /**
      * Print sudmission info
-     * @param boolean $autolink. Add links. default = false
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
-        global $OUTPUT, $DB, $PAGE;
+        global $OUTPUT, $DB;
         $id = $this->vpl->get_course_module()->id;
         $userid = $this->instance->userid;
         $submissionid = $this->instance->id;
@@ -771,14 +827,14 @@ class mod_vpl_submission {
             echo $OUTPUT->box( nl2br( s( $commmets ) ) );
         }
     }
-
+ 
     /**
      * Print compilation and execution
      *
      * @return void
      */
     public function print_ce() {
-        global $OUTPUT, $PAGE;
+        global $OUTPUT;
         $ce = $this->getce();
         if ($ce ['compilation'] === 0) {
             return;
@@ -798,7 +854,7 @@ class mod_vpl_submission {
                 $div = new vpl_hide_show_div( true );
                 echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br />';
                 echo $div->begin_div( true ) . s($compilation) . $div->end_div( true );
-                $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
+                echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
             }
             if (strlen( $execution ) > 0) {
                 $proposedcomments = $this->proposedcomment( $ce ['execution'] );
@@ -806,14 +862,14 @@ class mod_vpl_submission {
                     $div = new vpl_hide_show_div( true );
                     echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br />";
                     echo $div->begin_div( true ) . s($proposedcomments) . $div->end_div( true );
-                    $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
+                    echo "<script>VPL_Util.addResults('{$div->get_div_id()}', false, true);</script>";
                 }
             }
             echo $OUTPUT->box_end();
             $div->end_div();
         }
     }
-
+ 
     /**
      * Print sudmission
      */
@@ -864,7 +920,7 @@ class mod_vpl_submission {
         }
         return $ret;
     }
-
+ 
     /**
      * Add link to file line format filename:linenumber:
      *
@@ -873,7 +929,7 @@ class mod_vpl_submission {
      * @return string text with links
      */
     public function add_filelink($text) {
-        // Format filename:linenumber.
+      // Format filename:linenumber.
         $ret = '';
         $list = $this->get_submitted_fgm()->getFileList();
         usort( $list, 'vpl_compare_filenamebylengh' );
@@ -913,7 +969,7 @@ class mod_vpl_submission {
                 $html .= '</b><br />';
                 $html .= $comment;
             } else {
-                $div = new vpl_hide_show_div( false );
+             $div = new vpl_hide_show_div( false );
                 $html .= $div->generate( true );
                 $html .= '<b>';
                 $html .= s( $title );
@@ -954,7 +1010,7 @@ class mod_vpl_submission {
             }
             // Is title line.
             if (strlen( $line ) > 1 && $line [0] == '-') { // Title.
-                $html .= $this->get_last_comment( $title, $comment, $dropdown );
+             $html .= $this->get_last_comment( $title, $comment, $dropdown );
                 $line = trim( substr( $line, 1 ) );
                 if ($line [strlen( $line ) - 1] == ')') { // Has grade?
                     $posopen = strrpos( $line, '(' );
@@ -995,7 +1051,10 @@ class mod_vpl_submission {
                     $comment .= '</a>';
                 }
                 $comment .= '<br />';
-            } else { // Regular text.
+            } else if (strlen( $line ) > 1 && $line [0] == '#') { // Teacher comment
+             $html .= $this->get_last_comment( $title, $comment, $dropdown );
+                
+            }else{ // Regular text.
                 $comment .= $this->add_filelink( s( $line ) ) . '<br />';
             }
         }
@@ -1028,7 +1087,7 @@ class mod_vpl_submission {
      * @return array of mensajes
      */
     public function filter_feedback(&$list) {
-        $text = $this->get_grade_comments();
+     $text = $this->get_grade_comments();
         $nl = vpl_detect_newline( $text );
         $lines = explode( $nl, $text );
         foreach ($lines as $line) {
@@ -1053,13 +1112,12 @@ class mod_vpl_submission {
     }
     const COMPILATIONFN = 'compilation.txt';
     const EXECUTIONFN = 'execution.txt';
-
     /**
      * Save Compilation Execution result to files
      *
      * @param $result array
      *            response from server
-     * @return void
+     * @return uvoid
      */
     public function savece($result) {
         global $DB;
@@ -1076,7 +1134,7 @@ class mod_vpl_submission {
             $result['executed'] = 1;
             $result['execution'] = '';
         }
-
+ 
         $compfn = $this->get_data_directory() . '/' . self::COMPILATIONFN;
         if (file_exists( $compfn )) {
             unlink( $compfn );
@@ -1094,7 +1152,7 @@ class mod_vpl_submission {
             $DB->update_record(VPL_SUBMISSIONS, $this->instance);
         }
     }
-
+ 
     /**
      * Get Compilation Execution information from files
      *
@@ -1113,7 +1171,7 @@ class mod_vpl_submission {
             $ret ['executed'] = 1;
             $ret ['execution'] = file_get_contents( $execfn );
         } else {
-            $ret ['executed'] = 0;
+         $ret ['executed'] = 0;
         }
         $ret ['nevaluations'] = $this->instance->nevaluations;
         $vplinstance = $this->vpl->get_instance();
@@ -1121,7 +1179,7 @@ class mod_vpl_submission {
         $ret ['reductionbyevaluation'] = $vplinstance->reductionbyevaluation;
         return $ret;
     }
-
+ 
     /**
      * Get compilation, execution and proposed grade from array
      *
@@ -1184,7 +1242,7 @@ class mod_vpl_submission {
         $vplinstance = $this->vpl->get_instance();
         $ce->freeevaluations = $vplinstance->freeevaluations;
         $ce->reductionbyevaluation = $vplinstance->reductionbyevaluation;
-
+ 
         if ($response == null) {
             $response = $this->getce();
         }
@@ -1231,7 +1289,7 @@ class mod_vpl_submission {
         if (strlen( $compilation )) {
             $params .= vpl_param_tag( 'compilation', $compilation );
         }
-        if (strlen( $execution )) {
+            if (strlen( $execution )) {
             $params .= vpl_param_tag( 'evaluation', $execution );
         }
         if (strlen( $grade )) {
@@ -1240,3 +1298,4 @@ class mod_vpl_submission {
         return $params;
     }
 }
+ 

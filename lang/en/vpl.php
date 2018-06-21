@@ -162,6 +162,7 @@ $string ['maxresourcelimits'] = 'Maximum execution resources limits';
 $string ['maxsimilarityoutput'] = 'Maximum output by similarity';
 $string ['menucheck_jail_servers'] = 'Check execution servers';
 $string ['menuexecutionfiles'] = 'Execution files';
+$string ['merge'] = 'Merge grade';
 $string ['menuexecutionoptions'] = 'Options';
 $string ['menukeepfiles'] = 'Files to keep';
 $string ['menulocal_jail_servers'] = 'Local execution servers';

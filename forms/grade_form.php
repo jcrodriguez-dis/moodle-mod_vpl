@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 /**
  * Grade form definition
  *
@@ -22,26 +22,25 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
+ 
 defined( 'MOODLE_INTERNAL' ) || die();
-
+ 
+require_once(dirname(__FILE__).'/../../../config.php');
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/form.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
-
-class mod_vpl_grade_form extends vpl_form {
+ 
+class mod_vpl_grade_form extends moodleform {
+    protected $vpl;
     protected $submission;
     protected function get_scale_selection() {
         global $DB;
-        $vpl = $this->submission->get_vpl();
-        $vplinstance = $vpl->get_instance();
-        $scaleid = $vpl->get_grade();
+        $vplinstance = $this->vpl->get_instance();
+        $scaleid = $this->vpl->get_grade();
         $options = array ();
         $options [- 1] = get_string( 'nograde' );
         if ($scaleid > 0) {
-            for ($i = 0; $i <= $scaleid; $i ++) {
+       for ($i = 0; $i <= $scaleid; $i ++) {
                 $options [$i] = $i . ' / ' . $scaleid;
             }
         } else if ($scaleid < 0) {
@@ -54,54 +53,80 @@ class mod_vpl_grade_form extends vpl_form {
         }
         return $options;
     }
-    public function __construct($page, $submission) {
-        $this->submission = $submission;
+    public function __construct($page, & $vpl,& $submission) {
+        $this->vpl = & $vpl;
+        $this->submission = & $submission;
         parent::__construct( $page );
     }
     protected function definition() {
         global $CFG, $OUTPUT;
-        $vpl = $this->submission->get_vpl();
-        $vplinstance = $vpl->get_instance();
-        $instance = $this->submission->get_instance();
+        $mform = & $this->_form;
         $id = required_param( 'id', PARAM_INT );
         $userid = optional_param( 'userid', null, PARAM_INT );
         $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
-        $this->addHidden( 'id', $id );
-        $this->addHidden( 'userid', $userid );
-        $this->addHidden( 'submissionid', $instance->id );
-        $this->addHidden( 'inpopup', $inpopup );
+        $mform->addElement('hidden', 'id', $id );
+        $mform->setType( 'id', PARAM_INT );
+        $mform->addElement('hidden', 'userid', $userid );
+        $mform->setType( 'userid', PARAM_INT );
+        $submissionid = optional_param( 'submissionid', 0, PARAM_INT );
+        if ($submissionid > 0) {
+            $mform->addElement('hidden', 'submissionid', $submissionid );
+        }
+        $mform->addElement('hidden', 'inpopup', $inpopup );
+        $mform->setType( 'inpopup', PARAM_INT );
+        $vplinstance = $this->vpl->get_instance();
+        $grade = $this->vpl->get_grade();
         // TODO Improve grade form (recalculate grade).
         // Show assesment criteria.
         // Show others evaluation.
         // Type value => introduce value.
-        $grade = $vpl->get_grade();
-        if ($grade != 0) {
-            $this->addHTML( s( get_string( 'grade' ) . ' ' ) );
-            if ($grade > 0) {
-                $this->addText( 'grade', '', 6 );
-                $this->submission->grade_reduction($reduction, $percent);
-                if ($reduction > 0) {
-                    $value = $reduction;
-                    if ($percent) {
-                        $value = (100 - ( $value * 100 ) );
-                        $value = format_float($value, 2, true, true) . '%';
-                    } else {
-                        $value = format_float($value, 2, true, true);
-                    }
-                    $this->addHTML( ' -' . $value . ' ' );
-                }
-            } else {
-                $this->addSelect( 'grade', $this->get_scale_selection() );
+        // Add advanced grading.
+        $gradeid = $this->vpl->get_grade_info();
+          $gradinginstance = $this->submission->get_grading_instance();
+ 
+        if ($gradinginstance) {
+            $res = $this->submission->getCE();
+            if ($res ['executed']) {
+                $graderaw = $this->submission->proposedGrade($res['execution']);
+            }else{
+                $graderaw = 0;
             }
-            $this->addHTML( ' &nbsp;' );
+            $gridscore = $gradinginstance->get_controller()->get_min_max_score()['maxscore'];
+           
+            $mform->addElement('header','hAdvancedGrading', get_string( 'gradingmanagement','grading') );
+            $mform->addElement('grading',
+                               'advancedgrading',
+                                '',
+                       array('gradinginstance' => $gradinginstance)); 
+            $mform->addElement('hidden','advancedgradinginstanceid', $gradinginstance->get_id());
+            $mform->setType('advancedgradinginstanceid', PARAM_INT);
         }
-        $class = " class='btn btn-secondary'";
-        $this->addSubmitButton( 'save', get_string( 'grade' ) );
-        if ($inpopup) {
-            $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
+        // Numeric grade.
+            if ($grade > 0) {
+                // Link to recalculate numeric grade from comments.
+                $jscript = 'VPL.mergeGrade(' . $grade . ','.$graderaw.','.$gridscore.')';
+                //~ $html = ' <a class="btn btn-default" href="javascript:void(0);" onclick="' . $jscript . '">' . s( get_string( 'merge', VPL ) ) . '</a>';
+                //~ $mform->addElement('html', $html );
+                $mform->addElement('button','btnmerge', get_string( 'merge', VPL ),'onclick="' . $jscript . '"' );
+                //$mform->registerNoSubmitButton('btnmerge');
+            }
+        $mform->addElement('header','hGrade', get_string( 'grade') );
+        //$mform->addElement('html','<div id="vpl_grade_form">');
+            
+        $buttonarray=array();
+        if ($grade != 0) {
+            if ($grade > 0) {
+                $buttonarray[] =& $mform->createElement('text', 'grade', '', 'size="6"' );
+                $mform->setType( 'grade', PARAM_INT );
+            } else {
+                $buttonarray[] =& $mform->createElement('select', 'grade', $this->get_scale_selection() );
+            }
         }
-        $this->addSubmitButton( 'removegrade', get_string( 'removegrade', VPL ) );
-        $this->addHTML( '<br>' );
+        $buttonarray[] =& $mform->createElement('submit', 'save', get_string( 'grade' ) );
+                if ($inpopup) {
+            $buttonarray[] =& $mform->createElement('submit', 'savenext', get_string( 'gradeandnext', VPL ) );
+        }
+        $buttonarray[] =& $mform->createElement('submit', 'removegrade', get_string( 'removegrade', VPL ) );
         // Tranfer files to teacher's work area.
         $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userid, 'privatecopy', 1 );
         $options = array (
@@ -114,50 +139,64 @@ class mod_vpl_grade_form extends vpl_form {
                 'status' => 0,
                 'toolbar' => 0
         );
-        $copyicon = '<i class="fa fa-copy"></i> ';
-
         $action = new popup_action( 'click', $url, 'privatecopy' . ($vplinstance->id), $options );
-        $atributes = array('class' => 'btn btn-secondary');
-        $this->addHTML( ' ' . $OUTPUT->action_link( $url, $copyicon . get_string( 'copy', VPL ), $action,  $atributes) );
-
+        //~ $mform->addElement('html', $OUTPUT->action_link( $url, get_string( 'copy', VPL ), $action,array('class' =>'btn btn-primary') ) );
+        //~ $buttonarray[] =& $mform->createElement('html', $OUTPUT->action_link( $url, get_string( 'copy', VPL ), $action,array('class' =>'btn btn-primary') ) );
+        $buttonarray[] =& $mform->createElement('button', 'copy',get_string( 'copy', VPL ),'onclick="windows.open(' .  $url. ');"' );
+ 
         if ($vplinstance->evaluate) {
-            // Link to evaluate.
-            $evaluateicon = '<i class="fa fa-check-square-o"></i> ';
+            // Link to recalculate numeric grade from comments.
             $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid, 'grading', 1, 'inpopup', $inpopup );
-            $html = " <a href='$url' $class>" . $evaluateicon . s( get_string( 'evaluate', VPL ) ) . '</a>';
-            $this->addHTML( $html );
+            $html = ' <a class="btn btn-primary" href="' . $url . '">' . s( get_string( 'evaluate', VPL ) ) . '</a>';
+            //~ $mform->addElement('html', $html );
+            $buttonarray[] =& $mform->createElement('button', 'evaluate',get_string( 'evaluate', VPL ),'onclick="windows.open(' . $url . ');"');
         }
         // Numeric grade.
         if ($grade > 0) {
             // Link to recalculate numeric grade from comments.
-            $calculateicon = '<i class="fa fa-calculator"></i> ';
             $jscript = 'VPL.calculateGrade(' . $grade . ')';
-            $atext = $calculateicon . s( get_string( 'calculate', VPL ) );
-            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . $atext . '</a>';
-            $this->addHTML( $html );
+ 
+            $html = ' <a class="btn btn-primary" href="javascript:void(0);" onclick="' . $jscript . '">' . s( get_string( 'calculate', VPL ) ) . '</a>';
+            //~ $mform->addElement('html', $html );
+            $buttonarray[] =& $mform->createElement('button', 'calculate',get_string( 'calculate', VPL ),'onclick="' . $jscript . '"' );
         }
-
-        $this->addHTML( '<br />' );
+        $mform->addGroup($buttonarray, 'buttonar', get_string('grades'), array(' '), false);
+        //$mform->addElement('html', '</div>' );
+        $textarray=array();
         if ($grade != 0) {
-            $commentsicon = '<i class="fa fa-align-left"></i> ';
-            $this->addHTML( $commentsicon . s( get_string( 'comments', VPL ) ) . '<br />' );
-            $this->addTextArea( 'comments', '', 8, 70 );
-            $this->addHTML( '<br />' );
+            //$mform->addElement('html','</br><b>'.s( get_string( 'comments', VPL )).'</b></br>' );
+            $textarray[] =& $mform->createElement('textarea', 'comments', get_string( 'comments', VPL ), 'rows="18" cols="70"' );
         }
+         
+ 
+        //$output = '<div id="vpl_grade_comments">';
+        $comments = $this->vpl->get_grading_help();
+        if ($comments > '') {
+            $output .= $OUTPUT->box_start();
+            $output .= '<b>' . s(get_string( 'listofcomments', VPL )) . '</b><hr />';
+            $output .= $comments;
+            $output .= $OUTPUT->box_end();
+        }
+        //$output .= '</div>';
+        
+        $textarray[] =& $mform->createElement('static', $comments);
+        $mform->addGroup($textarray, 'textar', get_string( 'comments', VPL ), array(' '), false);
+       
+        
         if (! empty( $CFG->enableoutcomes )) {
             $gradinginfo = grade_get_grades( $vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
             if (! empty( $gradinginfo->outcomes )) {
-                $this->addHTML( '<table border="0">' );
+                $mform->addElement('html', '<table border="0">' );
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
-                    $this->addHTML( '<tr><td align="right">' );
+                    $mform->addElement('html', '<tr><td align="right">' );
                     $options = make_grades_menu( - $outcome->scaleid );
                     $options [0] = get_string( 'nooutcome', 'grades' );
-                    $this->addHTML( s( $outcome->name ) );
-                    $this->addHTML( '</td><td>' );
-                    $this->addSelect( 'outcome_grade_' . $oid, $options, $outcome->grades [$userid]->grade );
-                    $this->addHTML( '</td></tr>' );
+                    $mform->addElement('html', s( $outcome->name ) );
+                    $mform->addElement('html', '</td><td>' );
+                    $mform->addElement('select', 'outcome_grade_' . $oid, $options, $outcome->grades [$userid]->grade );
+                    $mform->addElement('html', '</td></tr>' );
                 }
-                $this->addHTML( '</table>' );
+                $mform->addElement('html', '</table>' );
             }
         }
     }
@@ -168,3 +207,4 @@ class mod_vpl_grade_form extends vpl_form {
         echo $OUTPUT->box_end();
     }
 }
+ 
