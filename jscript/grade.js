@@ -81,7 +81,7 @@
             return;
         }
         comment = '-' + comment;
-        var form1 = window.document.getElementById('form1');
+        var form1 = window.document.getElementById('mform1'); 
         var field = form1.comments;
         var text = field.value;
         if (text.indexOf(comment, 0) >= 0) { /* Comment already in form */

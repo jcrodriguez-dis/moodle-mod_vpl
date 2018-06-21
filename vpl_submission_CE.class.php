@@ -202,7 +202,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data->debugscript = $vplinstance->debugscript;
         }
         // Execution files.
-        $sfg = $vpl->get_execution_fgm();
+        $sfg = $vpl->get_fgm('execution'); 
         $list = $sfg->getFileList();
         foreach ($list as $filename) {
             // Skip unneeded script.
