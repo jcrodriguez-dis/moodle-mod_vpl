@@ -58,7 +58,7 @@ class mod_vpl_submission {
      * Constructor
      *
      * @param mod_vpl $vpl
-     * @param Object/ibt $mix submission DB record instance object or id
+     * @param Object/id $mix submission DB record instance object or record id
      */
     public function __construct(mod_vpl $vpl, $mix = false) {
         global $DB;
