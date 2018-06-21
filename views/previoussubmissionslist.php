@@ -13,7 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
-
+ 
 /**
  * List previous submissions for a vpl and user
  *
@@ -22,16 +22,14 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
+ 
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/workinggraph.php');
-require_once(dirname(__FILE__).'/submissionsgraph.php');
-
+ 
 require_login();
-
+ 
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
 $detailed = abs( optional_param( 'detailed', 0, PARAM_INT ) ) % 2;
@@ -40,9 +38,11 @@ $vpl->prepare_page( 'views/previoussubmissionslist.php', array (
         'id' => $id,
         'userid' => $userid
 ) );
-
+ 
 $course = $vpl->get_course();
-$vpl->require_capability( VPL_GRADE_CAPABILITY );
+if($USER->id != $userid || !$vpl->get_instance()->allowshowprevious){ //Not owner
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
+    }
 \mod_vpl\event\submission_previous_upload_viewed::log( array (
         'objectid' => $vpl->get_instance()->id,
         'context' => context_module::instance( $id ),
@@ -55,10 +55,10 @@ if ($detailed) {
     vpl_sh_factory::include_js();
 }
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
-
+ 
 $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
-
+ 
 $table = new html_table();
 $table->head = array (
         '#',
@@ -85,7 +85,7 @@ foreach ($submissionslist as $submission) {
         $link = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid, 'submissionid', $submission->id );
     }
     $date = '<a href="' . $link . '">' . userdate( $submission->datesubmitted ) . '</a>';
-    $sub = new mod_vpl_submission( $vpl, $submission );
+      $sub = new mod_vpl_submission( $vpl, $submission );
     $submissions [] = $sub;
     $table->data [] = array (
             $nsub --,
@@ -93,11 +93,17 @@ foreach ($submissionslist as $submission) {
             s( $sub->get_detail() )
     );
 }
-
+ 
 echo '<div class="clearer"> </div>';
-vpl_submissions_graph($vpl, $userid);
-vpl_working_periods_graph($vpl, $userid);
-
+echo '<div style="text-align: center">';
+echo '<img src="' . vpl_rel_url( 'submissionsgraph.php', 'id', $id, 'userid', $userid ) . '" alt="files size evolution" />';
+echo '</div>';
+echo '<div class="clearer"> </div>';
+echo '<div class="clearer"> </div>';
+echo '<div style="text-align: center">';
+echo '<img src="' . vpl_rel_url( 'workinggraph.php', 'id', $id, 'userid', $userid ) . '" alt="workingperiods" />';
+echo '</div>';
+echo '<div class="clearer"> </div>';
 echo html_writer::table( $table );
 echo '<div style="text-align:center">';
 $urlbase = $CFG->wwwroot . '/mod/vpl/views/previoussubmissionslist.php?id=' . $id . '&userid=' . $userid . '&detailed=';
@@ -114,7 +120,7 @@ if ($detailed) {
     $nsub = count( $submissionslist );
     foreach ($submissions as $index => $sub) {
         echo '<hr><h2><a name="f' . $nsub . '"># ' . $nsub . '</a></h2>';
-
+ 
         $nsub --;
         $sub->print_submission();
     }
