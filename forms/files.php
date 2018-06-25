@@ -29,7 +29,7 @@ require_once(dirname(__FILE__). '/../vpl.class.php');
 //require_once(dirname( __FILE__ ). '/edit.class.php');
 require_once(dirname(__FILE__). '/../editor/editor_utility.php');
 
-vpl_editor_util::generate_requires();
+
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
@@ -57,9 +57,7 @@ $options ['minfiles'] = 0;
 $options ['maxfiles'] = ($type=='execution')?1000:$instance->maxfiles;
 $options ['saved'] = true;
 
-
-
-
+vpl_editor_util::generate_requires($options);
 
 // Get files.
 if ($type=='testcases'){
