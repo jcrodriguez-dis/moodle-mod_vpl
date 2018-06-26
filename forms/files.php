@@ -69,7 +69,7 @@ if ($type=='testcases'){
     $fgm = $vpl->get_fgm($type);
 }
 if ($type=='execution'){
-    $options ['minfiles'] = $fgp->get_numstaticfiles();
+    $options ['minfiles'] = $vpl->get_fgm('execution')->get_numstaticfiles();
 }
 
 $files = Array();

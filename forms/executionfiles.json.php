@@ -53,13 +53,13 @@ try {
     switch ($action) {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
-            $fgm = $vpl->get_execution_fgm();
+            $fgm = $vpl->get_fgm('execution');
             $fgm->deleteallfiles();
             $fgm->addallfiles($postfiles);
             $vpl->update();
             break;
         case 'load' :
-            $fgm = $vpl->get_execution_fgm();
+            $fgm = $vpl->get_fgm('execution');
             $outcome->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
             break;
         case 'run' :
