@@ -1691,6 +1691,7 @@ define(['jquery',
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('acetheme', true);
+                menuButtons.enable('correctedfiles', options.correctedfiles);
                 var sel;
                 if (!file || nfiles === 0) {
                     sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
