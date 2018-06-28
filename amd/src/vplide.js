@@ -1422,14 +1422,15 @@ define(['jquery',
             }
 
           function correctedFiles() {
-                VPLUtil.requestAction('correctedfiles', '', {}, options.ajaxurl, function(response) {
+                VPLUtil.requestAction('correctedfiles', '', {}, options.ajaxurl)
+                .done( function(response) {
                     var files = response.files;
                     for (var fileName in files) {
                         fileManager.addFile(files[fileName], true, VPLUtil.doNothing, showErrorMessage);
                     }
                     fileManager.fileListVisibleIfNeeded();
-                    VPLUtil.delay(updateMenu);
-                }, showErrorMessage);
+                    //VPLUtil.delay(updateMenu);
+                 }).fail(showErrorMessage);
             }
 
             menuButtons.add({
