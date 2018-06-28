@@ -40,8 +40,7 @@ $instance = $vpl->get_instance();
 $vpl->prepare_page( 'forms/files.php', array ( 'id' => $id ,'type' =>$type ) );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$vpl->print_header( get_string( $type.'files', VPL ) );
-$vpl->print_heading_with_help( $type.'files' );
+
 
 $options = Array ();
 $options ['restrictededitor'] = false;
@@ -58,6 +57,9 @@ $options ['maxfiles'] = ($type=='execution')?1000:$instance->maxfiles;
 $options ['saved'] = true;
 
 vpl_editor_util::generate_requires($options);
+
+$vpl->print_header( get_string( $type.'files', VPL ) );
+$vpl->print_heading_with_help( $type.'files' );
 
 // Get files.
 if ($type=='testcases'){

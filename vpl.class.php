@@ -306,7 +306,7 @@ class mod_vpl {
      * @return array of strings
      */
     public function get_files($type) { 
-        return vpl_read_list_from_file( $this->get_files_filename($type) ); 
+        return  file_group_process::read_list( $this->get_files_filename($type) ); 
     } 
 
     /**
@@ -315,7 +315,7 @@ class mod_vpl {
      *            of required files
      */
        public function set_files($type,$files) { 
-        vpl_write_list_to_file( $this->get_files_filename($type), $files ); 
+         file_group_process::write_list( $this->get_files_filename($type), $files ); 
     } 
 
     /**
