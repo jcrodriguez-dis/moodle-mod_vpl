@@ -107,7 +107,7 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
                         ws.writeBuffer += event.data;
                     } else {
                         ws.writeBuffer = event.data;
-                        setTimeout(ws.writeIt, 0);
+                        setTimeout(ws.writeIt, 35);
                     }
                 };
                 ws.onopen = function() {
