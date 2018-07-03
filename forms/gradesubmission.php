@@ -165,7 +165,6 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         // Show grade form.
         vpl_grade_header( $vpl, $inpopup );
 
-        \mod_vpl\event\submission_grade_viewed::log($submission);
         $data = new stdClass();
         $data->id = $vpl->get_course_module()->id;
         $data->userid = $subinstance->userid;
