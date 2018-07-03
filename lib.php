@@ -400,7 +400,7 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
     if ($detail) {
         $modname = $modnames[$activity->type];
         echo '<div class="title">';
-        echo '<img src="' . $OUTPUT->pix_url('icon', 'vpl') . '" ' . 'class="icon" alt="' . $modname . '">';
+        echo $OUTPUT->image_icon('icon', $modname, VPL);
         echo '<a href="' . $CFG->wwwroot . '/mod/vpl/view.php?id=' . $activity->cmid . '">';
         echo $activity->name;
         echo '</a>';
@@ -843,7 +843,7 @@ function vpl_reset_userdata($data) {
                         'vpl' => $instance->id
                 ) );
                 // Delete submission files.
-                fulldelete( $CFG->dataroot . '/vpl_data/' . $data->courseid . '/' . $instance->id . '/usersdata' );
+                fulldelete( $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata' );
                 $status [] = array (
                         'component' => $componentstr,
                         'item' => get_string( 'resetvpl', VPL, $instance->name ),
