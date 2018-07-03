@@ -153,7 +153,7 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
             $cecg['usercomments'] = $instance->comments;
             $cecg['grade'] = $instance->grade;
             if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
-                $cecg['gradecomments'] + $cecg['usercomments'] + $cecg['grade'] > '') {
+                $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > '') {
                 $zipsubdirname = $zipdirname . $date . '.ceg/';
                 if ( $cecg['compilation'] !== 0 ) {
                     $zip->addFromString( $zipsubdirname. 'compilation' . '.txt', $cecg['compilation']);
