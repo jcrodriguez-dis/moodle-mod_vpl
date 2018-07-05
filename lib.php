@@ -506,9 +506,15 @@ function mod_vpl_get_fontawesome_icon_map() {
  * @param string $comp component by default VPL
  * @return navigation_node
  */
-function vpl_navi_node_create($vplnode, $str, $url, $type = navigation_node::TYPE_SETTING, $comp = 'mod_vpl' ) {
+function vpl_navi_node_create(navigation_node $vplnode, $str, $url, $type = navigation_node::NODETYPE_LEAF , $comp = 'mod_vpl' ) {
     $stri18n = get_string($str, $comp);
-    return $vplnode->create( $stri18n, $url, $type, null, null, new pix_icon( $str, '', 'mod_vpl') );
+    $node = $vplnode->create( $stri18n, $url, $type, null, null, new pix_icon( $str, '', 'mod_vpl') );
+    if ( $type == navigation_node::TYPE_CONTAINER ) {
+        $node->collapse = true;
+        $node->forceopen = false;
+    }
+    $node->mainnavonly = true;
+    return $node;
 }
 
 function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) {
@@ -545,7 +551,7 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) 
     }
     if (! $example) {
         if ($grader && $USER->id != $userid) {
-            $url = new moodle_url( '/mod/vpl/forms/edit.php', $parm);
+            $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parm);
             $node = vpl_navi_node_create($vplnode, 'grade', $url, navigation_node::TYPE_SETTING, 'moodle');
             $vplnode->add_node( $node );
         }
