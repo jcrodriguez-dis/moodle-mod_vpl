@@ -63,7 +63,7 @@ try {
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $vpl->restrictions_check();
     } else { // Make other user submission.
-        $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+        $vpl->require_capability( VPL_GRADE_CAPABILITY );
     }
     $instance = $vpl->get_instance();
     switch ($action) {
@@ -72,14 +72,20 @@ try {
             if (! isset($actiondata->comments) ) {
                 $actiondata->comments = '';
             }
-            mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments );
+            if ($userid != $USER->id) {
+                $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+            }
+            $outcome->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments );
             break;
         case 'resetfiles' :
             $files = mod_vpl_edit::get_requested_files( $vpl );
             $outcome->response->files = mod_vpl_edit::filestoide( $files );
             break;
         case 'load' :
-            if ( $subid && $vpl->has_capability( VPL_MANAGE_CAPABILITY ) ) {
+            if (! isset($actiondata->submissionid) ) {
+                $subid = $actiondata->submissionid;
+            }
+            if ( $subid && $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) {
                 $load = mod_vpl_edit::load( $vpl, $userid , $subid);
             } else {
                 $load = mod_vpl_edit::load( $vpl, $userid );
