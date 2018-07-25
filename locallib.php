@@ -79,10 +79,15 @@ function vpl_fopen($filename) {
     if (! file_exists( $filename )) { // Exists file?
         $dir = dirname( $filename );
         if (! file_exists( $dir )) { // Create dir?
-            mkdir( $dir, $CFG->directorypermissions, true );
+            if(! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+                throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
+            }
         }
     }
     $fp = fopen( $filename, 'wb+' );
+    if ($fp === false) {
+        throw new file_exception('storedfileproblem', 'Error creating file in VPL');
+    }
     return $fp;
 }
 
