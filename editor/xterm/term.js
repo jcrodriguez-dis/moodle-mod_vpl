@@ -441,7 +441,7 @@ Terminal.defaults = {
   cursorBlink: true,
   visualBell: false,
   popOnBell: false,
-  scrollback: 1000,
+  scrollback: 500,
   screenKeys: false,
   debug: false,
   useStyle: false
@@ -1280,6 +1280,7 @@ Terminal.prototype.destroy = function() {
   if (this._blink) {
     clearInterval(this._blink);
     delete this._blink;
+    this._blink = false;
   }
 
   this.readable = false;
@@ -1498,6 +1499,9 @@ Terminal.prototype.startBlink = function() {
   this._blinker = function() {
     self._cursorBlink();
   };
+  if (this._blink) { // JCRdP 1/6/18
+      clearInterval(this._blink);
+  }
   this._blink = setInterval(this._blinker, 500);
 };
 
