@@ -92,9 +92,10 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
     var tdialog = $JQVPL('#' + dialog_id);
     var titleText = '';
     var clipboard = null;
-    var cliboardMaxsize = 64000;
+    var cliboardMaxsize = 80 * 500;
     var clipboardData = '';
     var textWritten = '';
+    var maxBuffer = 80 * 500;
 
     var terminal = new Terminal({
         cols : 80,
@@ -126,8 +127,8 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
     };
     function receiveClipboard(data) {
         clipboardData += data;
-        if (clipboardData.length > cliboardMaxsize) {
-            var from = clipboardData.length - cliboardMaxsize / 2;
+        if (clipboardData.length > 2 * cliboardMaxsize) {
+            var from = clipboardData.length - cliboardMaxsize;
             clipboardData = clipboardData.substr(from);
         }
     }
@@ -158,16 +159,22 @@ VPL_Terminal = function(dialog_id, terminal_id, str) {
             ws = new WebSocket(server);
             ws.writeBuffer = '';
             ws.writeIt = function() {
+                if (ws.writeBuffer.length > maxBuffer) {
+                    var from = ws.writeBuffer.length - maxBuffer;
+                    ws.writeBuffer = ws.writeBuffer.substr(from);
+                }
                 terminal.write(ws.writeBuffer);
                 receiveClipboard(ws.writeBuffer);
                 ws.writeBuffer = '';
             };
             ws.onmessage = function(event) {
-                if (ws.writeBuffer.length > 0) {
-                    ws.writeBuffer += event.data;
-                } else {
-                    ws.writeBuffer = event.data;
-                    setTimeout(ws.writeIt, 0);
+                if (ws.writeBuffer.length == 0) {
+                    setTimeout(ws.writeIt, 35);
+                }
+                ws.writeBuffer += event.data;
+                if (ws.writeBuffer.length > 2 * maxBuffer) {
+                    var from = ws.writeBuffer.length - maxBuffer;
+                    ws.writeBuffer = ws.writeBuffer.substr(from);
                 }
             };
             ws.onopen = function() {
