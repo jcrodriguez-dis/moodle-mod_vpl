@@ -805,7 +805,7 @@ function vpl_reset_userdata($data) {
                         'vpl' => $instance->id
                 ) );
                 // Delete submission files.
-                fulldelete( $CFG->dataroot . '/vpl_data/' . $data->courseid . '/' . $instance->id . '/usersdata' );
+                fulldelete( $CFG->dataroot . '/vpl_data/' . $instance->id . '/usersdata' );
                 $status [] = array (
                         'component' => $componentstr,
                         'item' => get_string( 'resetvpl', VPL, $instance->name ),
