@@ -34,6 +34,7 @@ class vpl_filetype {
             'js' => 'c', // JavaScript as C.
             'C' => 'cpp',
             'cpp' => 'cpp',
+            'php' => 'cpp',
             'cs' => 'cpp', // C# as C++.
             'ads' => 'ada',
             'adb' => 'ada',
