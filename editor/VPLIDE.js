@@ -1278,7 +1278,7 @@
             menuButtons.add({
                 name:'fullscreen',
                 originalAction: function() {
-                    var tags = 'header, footer, aside, #page-header, div.navbar, #nav-drawer';
+                    var tags = 'header, nav, footer, aside, .dropdown, #page-header, div.navbar, #nav-drawer';
                     tags += ', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         root_obj.removeClass('vpl_ide_root_fullscreen');
