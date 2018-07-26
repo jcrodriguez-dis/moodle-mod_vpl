@@ -9,7 +9,6 @@
 # load VPL environment vars
 . common_script.sh
 check_program gfortran
-get_source_files f f77
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "gfortran --version | head -n2" >> vpl_execution
@@ -17,4 +16,5 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 #compile
+get_source_files f f77
 gfortran -o vpl_execution $SOURCE_FILES

@@ -17,6 +17,6 @@ if [ "$1" == "version" ] ; then
     echo "cat .aux | head -n2" >> vpl_execution
     chmod +x vpl_execution
 else
-    get_source_files adb
-    gnat make -gnatW8 -q -o vpl_execution "$SOURCE_FILE0"
+    get_first_source_file adb
+    gnat make -gnatW8 -q -o vpl_execution "$FIRST_SOURCE_FILE"
 fi

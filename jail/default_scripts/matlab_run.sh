@@ -9,13 +9,12 @@
 # load common script and check programs
 
 . common_script.sh
+check_program matlab octave
 if [ "$1" == "version" ] ; then
-	if [ "$(command -v matlab)" == "" ] ; then
-		if [ "$(command -v octave)" != "" ] ; then
-			echo "#!/bin/bash" > vpl_execution
-			echo "octave --version | head -n2" >> vpl_execution
-			chmod +x vpl_execution
-		fi
+	if [ "$PROGRAM" == "octave" ] ; then
+		echo "#!/bin/bash" > vpl_execution
+		echo "octave --no-window-system --version | head -n2" >> vpl_execution
+		chmod +x vpl_execution
 	else
 		echo "#!/bin/bash" > vpl_execution
 		echo "matlab --version | head -n2" >> vpl_execution
@@ -25,6 +24,7 @@ if [ "$1" == "version" ] ; then
 fi
 exec 2>&1
 get_source_files m
+get_first_source_file m
 X11=
 if [ ! -f vpl_evaluate.sh ] ; then
 	for FILENAME in $SOURCE_FILES
@@ -36,18 +36,17 @@ if [ ! -f vpl_evaluate.sh ] ; then
 		fi
 	done
 fi
-MAIN=$VPL_SUBFILE0
-
-if [ "$(command -v matlab)" == "" ] ; then
-	if [ "$(command -v octave)" == "" ] ; then
-		echo "The jail-server need to install "Octave" or "Matlab" to run this type of program"
-		exit 0;
-	else
-		cat common_script.sh > vpl_execution
-		chmod +x vpl_execution
-		if [ "$X11" == "" ] ; then
-			echo "octave --no-window-system -q" >> vpl_execution
+MAIN=$FIRST_SOURCE_FILE
+if [ "$PROGRAM" == "octave" ] ; then
+	cat common_script.sh > vpl_execution
+	chmod +x vpl_execution
+	if [ "$X11" == "" ] ; then
+		if [ "$1" == "batch" ] ; then
+			echo "octave-cli $FIRST_SOURCE_FILE" >> vpl_execution
 		else
+			echo "octave --no-window-system -q --persist $FIRST_SOURCE_FILE" >> vpl_execution
+		fi
+	else
 cat > .octaverc << "END_SCRIPT"
 can_use_graphics_toolkit = exist("graphics_toolkit","file") | exist("graphics_toolkit","builtin");
 if can_use_graphics_toolkit
@@ -55,15 +54,14 @@ if can_use_graphics_toolkit
 endif
 
 END_SCRIPT
-			check_program xterm
-			if [ "$1" == "batch" ] ; then
-				echo "xterm -e octave -q --no-gui" >> vpl_execution
-			else
-				echo "xterm -e octave -q --no-gui --persist" >> vpl_execution
-			fi
-			mv vpl_execution vpl_wexecution
+		check_program x-terminal-emulator
+		if [ "$1" == "batch" ] ; then
+			echo "x-terminal-emulator -e octave -q --no-gui $FIRST_SOURCE_FILE" >> vpl_execution
+		else
+			echo "x-terminal-emulator -e octave -q --no-gui --persist $FIRST_SOURCE_FILE" >> vpl_execution
 		fi
-		cat $MAIN >> .octaverc
+		mv vpl_execution vpl_wexecution
+		#cat $MAIN >> .octaverc
 	fi
 else
 	PROGNAME=$(basename $MAIN .m)
@@ -73,8 +71,8 @@ else
 	if [ "$X11" == "" ] ; then
 		echo "matlab -nosplash" >> vpl_execution
 	else
-		check_program xterm
-		echo "xterm -e matlab -nosplash" >> vpl_execution
+		check_program x-terminal-emulator
+		echo "x-terminal-emulator -e matlab -nosplash" >> vpl_execution
 		mv vpl_execution vpl_wexecution
 	fi
 fi

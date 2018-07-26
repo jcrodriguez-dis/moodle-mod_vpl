@@ -9,6 +9,7 @@
 # load common script and check programs
 . common_script.sh
 check_program ruby
+get_first_source_file ruby rb
 cat common_script.sh > vpl_execution
-echo "ruby -rdebug $VPL_SUBFILE0" >>vpl_execution
+echo "ruby -rdebug $FIRST_SOURCE_FILE" >>vpl_execution
 chmod +x vpl_execution

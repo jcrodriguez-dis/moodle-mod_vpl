@@ -13,7 +13,7 @@ tkMessageBox.showinfo('VPL','Hello from the Python2 language!')
 END_OF_FILE
 else
 cat >vpl_hello2.py <<'END_OF_FILE'
-print 'Hello from the Python2 language!'
+print ('Hello from the Python2 language!')
 END_OF_FILE
 fi
 export VPL_SUBFILE0=vpl_hello2.py

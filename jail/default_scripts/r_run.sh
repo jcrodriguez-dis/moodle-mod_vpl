@@ -15,19 +15,14 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-get_source_files r R
 #Select first file
-for FILENAME in $SOURCE_FILES
-do
-	SOURCE_FILE=$FILENAME
-	break
-done
+get_first_source_file r R
 #compile
 cat common_script.sh > vpl_wexecution
-cat  $SOURCE_FILE >> .Rprofile
+cat  $FIRST_SOURCE_FILE >> .Rprofile
 if [ "$1" == "batch" ] ; then
-	echo "xterm -e R --vanilla -f $SOURCE_FILE" >>vpl_wexecution
+	echo "x-terminal-emulator -e R --vanilla -f $FIRST_SOURCE_FILE" >>vpl_wexecution
 else
-	echo "xterm -e R -q" >>vpl_wexecution
+	echo "x-terminal-emulator -e R -q" >>vpl_wexecution
 fi
 chmod +x vpl_wexecution

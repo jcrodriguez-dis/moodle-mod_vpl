@@ -16,6 +16,8 @@ LANGGEN=""
 LANGNGEN=""
 LANGEG=""
 FILES=*_hello.sh
+SFDIR=/tmp/.saved$USERID
+mkdir $SFDIR
 touch .guierrors
 for HELLOSCRIPT in $FILES
 do
@@ -32,15 +34,22 @@ do
 	fi
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
-	echo "export SOURCE_FILES=$VPL_SUBFILE0" >> common_script.sh
+	echo "export SOURCE_FILE0=$VPL_SUBFILE0" >> common_script.sh
+	echo "export VPL_SUBFILES=$VPL_SUBFILE0" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
+		if [ -f "$VPL_SUBFILE0" ] ; then
+			mv $VPL_SUBFILE0 $SFDIR
+		fi
 		let "NG=NG+1"
 		LANGGEN="$LANGGEN $LANGUAGE"
 		mv vpl_wexecution $VPLEXE
 		echo -n " Compiled for run with GUI"
 		echo "echo \"Launching $LANGUAGE\"" >> all_execute
-		echo "/bin/bash ./$VPLEXE" >> all_execute		
+		echo "/bin/bash ./$VPLEXE" >> all_execute
+		echo "if [ -f $VPL_SUBFILE0 ] ; then" >> all_execute
+		echo "rm $VPL_SUBFILE0" >> all_execute
+		echo "fi" >> all_execute
 	elif [ -f vpl_execution ] ; then
 		echo -n " Compiled for run with TUI => removed"
 		rm vpl_execution
@@ -72,8 +81,10 @@ done
 echo "echo \"Finsh. Press enter\"" >> all_execute
 echo "read" >> all_execute
 chmod +x all_execute
+mv $SFDIR/* . &>/dev/null
+rmdir $SFDIR
 cat common_script.sh > vpl_wexecution
-echo "xterm -e ./all_execute" >> vpl_wexecution
+echo "x-terminal-emulator -e ./all_execute" >> vpl_wexecution
 chmod +x vpl_wexecution
 if [ "$LANGGEN" != "" ] ; then
 	echo "Generated GUI program(s) for $NG language(s): $LANGGEN"

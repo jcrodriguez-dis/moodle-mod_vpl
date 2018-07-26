@@ -16,12 +16,13 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-erlc $VPL_SUBFILE0 < /dev/null
+get_first_source_file erl
+erlc $FIRST_SOURCE_FILE < /dev/null
 cat common_script.sh > vpl_execution
 if [ "$1" == "batch" ] ; then
-	echo "escript $VPL_SUBFILE0" >>vpl_execution
+	echo "escript $FIRST_SOURCE_FILE" >>vpl_execution
 else
-	echo "escript $VPL_SUBFILE0" >>vpl_execution
+	echo "escript $FIRST_SOURCE_FILE" >>vpl_execution
 	echo "erl" >>vpl_execution
 fi
 

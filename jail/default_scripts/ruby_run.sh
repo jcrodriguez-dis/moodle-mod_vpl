@@ -15,6 +15,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_first_source_file ruby rb
 cat common_script.sh > vpl_execution
-echo "ruby $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "ruby $FIRST_SOURCE_FILE \$@" >>vpl_execution
 chmod +x vpl_execution

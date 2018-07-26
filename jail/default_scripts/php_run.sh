@@ -68,7 +68,8 @@ $BROWSER "127.0.0.1:$PHPPORT"
 END_OF_SCRIPT
     chmod +x vpl_wexecution
 else
+	get_first_source_file php
     cat common_script.sh > vpl_execution
-    echo "$PHP -n -f $VPL_SUBFILE0 \$@" >>vpl_execution
+    echo "$PHP -n -f $FIRST_SOURCE_FILE \$@" >>vpl_execution
     chmod +x vpl_execution
 fi

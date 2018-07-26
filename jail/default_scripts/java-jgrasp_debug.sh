@@ -10,8 +10,8 @@
 
 . common_script.sh
 #check_program jgrasp
-get_source_files java
-MAINFILE=$VPL_SUBFILE0
+get_first_source_file java
+MAINFILE=$FIRST_SOURCE_FILE
 
 for FILENAME in $VPL_SUBFILES
 do
@@ -25,7 +25,7 @@ cat >vplexecution <<FIN
 #!/bin/bash
 cd $HOME
 jgrasp $MAINFILE
-xterm
+x-terminal-emulator
 FIN
 #echo $HOME
 #echo $VPL_SUBFILES

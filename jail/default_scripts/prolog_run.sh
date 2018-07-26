@@ -15,12 +15,13 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-swipl -q -s $VPL_SUBFILE0 -t halt 1 > /dev/null < /dev/null
+get_first_source_file pro pl
+swipl -q -s $FIRST_SOURCE_FILE -t halt 1 > /dev/null < /dev/null
 cat common_script.sh > vpl_execution
 if [ "$1" == "batch" ] ; then
-	echo "swipl -q -L32M -s $VPL_SUBFILE0 -t vpl_hello" >>vpl_execution
+	echo "swipl -q -L32M -s $FIRST_SOURCE_FILE -t vpl_hello" >>vpl_execution
 else
-	echo "swipl -q -L32M -s $VPL_SUBFILE0" >>vpl_execution
+	echo "swipl -q -L32M -s $FIRST_SOURCE_FILE" >>vpl_execution
 fi
 
 chmod +x vpl_execution

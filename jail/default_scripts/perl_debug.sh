@@ -9,6 +9,7 @@
 # load common script and check programs
 . common_script.sh
 check_program perl
+get_first_source_file perl prl
 cat common_script.sh > vpl_execution
-echo "perl -d $VPL_SUBFILE0" >>vpl_execution
+echo "perl -d $FIRST_SOURCE_FILE" >>vpl_execution
 chmod +x vpl_execution

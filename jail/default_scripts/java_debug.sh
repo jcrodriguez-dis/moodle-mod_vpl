@@ -84,10 +84,10 @@ elif [ "$(command -v ddd)" == "" ] ; then
 	do
 		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
 		if [ "$?" -eq "0" ]	; then
-			check_program xterm
+			check_program x-terminal-emulator
 			cat common_script.sh > vpl_wexecution
 			chmod +x vpl_wexecution
-			echo "xterm -e ./.vpl_javadebug" >> vpl_wexecution
+			echo "x-terminal-emulator -e ./.vpl_javadebug" >> vpl_wexecution
 			mv vpl_execution .vpl_javadebug
 			break
 		fi

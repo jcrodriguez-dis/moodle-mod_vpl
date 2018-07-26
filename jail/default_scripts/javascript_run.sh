@@ -14,7 +14,8 @@ if [ "$1" == "version" ] ; then
 	echo "nodejs -v" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+get_first_source_file js
 cat common_script.sh > vpl_execution
-echo "nodejs $VPL_SUBFILE0 \$@" >> vpl_execution
+echo "nodejs $FIRST_SOURCE_FILE \$@" >> vpl_execution
 chmod +x vpl_execution

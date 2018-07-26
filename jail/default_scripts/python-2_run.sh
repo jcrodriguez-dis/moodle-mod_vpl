@@ -15,10 +15,11 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_first_source_file py
 cat common_script.sh > vpl_execution
-echo "python2 $VPL_SUBFILE0 \$@" >>vpl_execution
+echo "python2 $FIRST_SOURCE_FILE \$@" >>vpl_execution
 chmod +x vpl_execution
-grep -E "Tkinter" $VPL_SUBFILE0 &> /dev/null
+grep -E "Tkinter" $FIRST_SOURCE_FILE &> /dev/null
 if [ "$?" -eq "0" ]	; then
 	mv vpl_execution vpl_wexecution
 fi

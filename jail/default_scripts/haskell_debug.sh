@@ -10,6 +10,8 @@
 . common_script.sh
 check_program hugs
 
+get_first_source_file hs
+
 cat common_script.sh > vpl_execution
-echo "hugs +98 $VPL_SUBFILE0" >>vpl_execution
+echo "hugs +98 $FIRST_SOURCE_FILE" >>vpl_execution
 chmod +x vpl_execution

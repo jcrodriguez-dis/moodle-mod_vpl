@@ -13,7 +13,8 @@ if [ "$1" == "version" ] ; then
 	echo "clisp --version | head -n1" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+get_first_source_file lisp lsp
 cat common_script.sh > vpl_execution
-echo "clisp $VPL_SUBFILE0 \$@" >> vpl_execution
+echo "clisp $FIRST_SOURCE_FILE \$@" >> vpl_execution
 chmod +x vpl_execution

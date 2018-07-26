@@ -21,7 +21,8 @@ if [ "$PROPATH" == "" ] ; then
 		gpc -g -O0 -o program $SOURCE_FILES
 	fi
 else
-	fpc -g -oprogram $VPL_SUBFILE0
+	get_first_source_file pas p
+	fpc -g -oprogram $FIRST_SOURCE_FILE
 fi
 
 if [ -f program ] ; then

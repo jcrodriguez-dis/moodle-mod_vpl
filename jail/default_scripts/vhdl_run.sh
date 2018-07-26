@@ -10,13 +10,17 @@
 . common_script.sh
 check_program gvhdl
 if [ "$1" == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "echo -n \"FreeHDL \"" > vpl_execution
+	echo "freehdl-config --version" >> vpl_execution
+	chmod +x vpl_execution
 	exit
 fi
 get_source_files vhdl vhd
 # compile
 gvhdl $SOURCE_FILES
-
-NAME=${VPL_SUBFILE0%.*}
+get_first_source_file vhdl vhd
+NAME=${FIRST_SOURCE_FILE%.*}
 if [ -f $NAME ] ; then
 	mv $NAME vpl_execution
 	chmod +x vpl_execution
