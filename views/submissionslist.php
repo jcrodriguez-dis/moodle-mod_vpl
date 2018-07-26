@@ -258,11 +258,9 @@ if (! $currentgroup) {
     $currentgroup = '';
 }
 if ($vpl->is_group_activity()) {
-    $idfiels = 'groupid';
     $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
 } else {
     $list = $vpl->get_students( $currentgroup );
-    $idfiels = 'userid';
 }
 $submissions = $vpl->all_last_user_submission();
 $submissionsnumber = $vpl->get_submissions_number();
