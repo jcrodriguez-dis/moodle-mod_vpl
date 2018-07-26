@@ -32,6 +32,21 @@ require_once(dirname(__FILE__).'/submissionsgraph.php');
 
 require_login();
 
+function vpl_actions_menu($id, $userid, $subid) {
+    $menu = new action_menu();
+    $linkparms = array('id' => $id, 'userid' => $userid, 'submissionid' => $subid, 'privatecopy' => 1);
+    $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
+    $stri18n = get_string('submissionview', 'mod_vpl');
+    $action = new action_menu_link_secondary($link, new pix_icon('submissionview', '', 'mod_vpl'),  $stri18n);
+    $menu->add($action);
+    $stri18n = get_string('copy', 'mod_vpl');
+    $link = new moodle_url('/mod/vpl/forms/edit.php', $linkparms);
+    $action = new action_menu_link_secondary($link, new pix_icon('copy', '', 'mod_vpl'),  $stri18n);
+    $menu->add($action);
+    return $menu;
+}
+
+
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
 $detailed = abs( optional_param( 'detailed', 0, PARAM_INT ) ) % 2;
@@ -50,11 +65,12 @@ $vpl->require_capability( VPL_GRADE_CAPABILITY );
 ) );
 $strdatesubmitted = get_string( 'datesubmitted', VPL );
 $strdescription = get_string( 'description', VPL );
+$straction = get_string( 'action' );
 if ($detailed) {
     require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
     vpl_sh_factory::include_js();
 }
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
+//$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 
 $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
@@ -63,11 +79,13 @@ $table = new html_table();
 $table->head = array (
         '#',
         $strdatesubmitted,
-        $strdescription
+        $strdescription,
+        $straction
 );
 $table->align = array (
         'right',
         'left',
+        'right',
         'right'
 );
 $table->nowrap = array (
@@ -87,10 +105,12 @@ foreach ($submissionslist as $submission) {
     $date = '<a href="' . $link . '">' . userdate( $submission->datesubmitted ) . '</a>';
     $sub = new mod_vpl_submission( $vpl, $submission );
     $submissions [] = $sub;
+    $actions = vpl_actions_menu($id, $userid, $submission->id);
     $table->data [] = array (
             $nsub --,
             $date,
-            s( $sub->get_detail() )
+            s( $sub->get_detail() ),
+            $OUTPUT->render($actions)
     );
 }
 
