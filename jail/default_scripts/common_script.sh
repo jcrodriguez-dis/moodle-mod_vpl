@@ -48,9 +48,9 @@ function get_source_files {
 function get_first_source_file {
 	local ext
 	local FILE
-	for ext in "$@"
+	for FILE in $VPL_SUBFILES
 	do
-		for FILE in $VPL_SUBFILES
+		for ext in "$@"
 		do
 		    if [ "${FILE##*.}" == "$ext" ] ; then
 		        FIRST_SOURCE_FILE="$FILE"
@@ -70,7 +70,8 @@ function check_program {
 		if [ "$PROPATH" == "" ] ; then
 			continue
 		fi
-		PROGRAM=$PROPATH
+		PROGRAM=$check
+		PROGRAMPATH=$PROPATH
 		return 0
 	done
 	echo "The execution server needs to install \"$1\" to run this type of program"

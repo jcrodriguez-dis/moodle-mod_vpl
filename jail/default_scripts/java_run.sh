@@ -49,7 +49,7 @@ if [ "$?" -ne "0" ] ; then
 fi
 # Search main procedure class
 MAINCLASS=
-for FILENAME in $SOURCE_FILES
+for FILENAME in $VPL_SUBFILES
 do
 	hasMain "$FILENAME"
 	if [ "$?" -eq "0" ]	; then

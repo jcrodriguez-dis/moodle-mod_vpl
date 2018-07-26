@@ -35,6 +35,7 @@ do
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
 	echo "export SOURCE_FILE0=$VPL_SUBFILE0" >> common_script.sh
+	echo "export VPL_SUBFILES=$VPL_SUBFILE0" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		if [ -f "$VPL_SUBFILE0" ] ; then
@@ -83,7 +84,7 @@ chmod +x all_execute
 mv $SFDIR/* . &>/dev/null
 rmdir $SFDIR
 cat common_script.sh > vpl_wexecution
-echo "xterm -e ./all_execute" >> vpl_wexecution
+echo "x-terminal-emulator -e ./all_execute" >> vpl_wexecution
 chmod +x vpl_wexecution
 if [ "$LANGGEN" != "" ] ; then
 	echo "Generated GUI program(s) for $NG language(s): $LANGGEN"

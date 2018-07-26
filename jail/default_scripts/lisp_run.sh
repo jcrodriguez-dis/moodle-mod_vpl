@@ -14,7 +14,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-get_source_files lisp lsp
+get_first_source_file lisp lsp
 cat common_script.sh > vpl_execution
-echo "clisp $SOURCE_FILE0 \$@" >> vpl_execution
+echo "clisp $FIRST_SOURCE_FILE \$@" >> vpl_execution
 chmod +x vpl_execution

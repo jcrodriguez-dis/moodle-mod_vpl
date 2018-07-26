@@ -17,7 +17,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-get_source_files lua
+get_first_source_file lua
 cat common_script.sh > vpl_execution
-echo "lua $SOURCE_FILE0 \$@" >>vpl_execution
+echo "lua $FIRST_SOURCE_FILE \$@" >>vpl_execution
 chmod +x vpl_execution

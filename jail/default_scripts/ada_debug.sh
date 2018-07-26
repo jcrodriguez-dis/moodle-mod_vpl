@@ -10,10 +10,10 @@
 . common_script.sh
 check_program gnat
 check_program gdb
-get_source_files adb
+get_first_source_file adb
 
 # compile
-gnat make -gnat05 -gnatW8 -q -g -o program "$SOURCE_FILE0"
+gnat make -gnat05 -gnatW8 -q -g -o program "$FIRST_SOURCE_FILE"
 if [ -f program ] ; then
 	cat common_script.sh > vpl_execution
 	echo "gdb program" >> vpl_execution

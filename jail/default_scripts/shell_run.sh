@@ -14,6 +14,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_first_source_file sh
 cat common_script.sh > vpl_execution
-cat $VPL_SUBFILE0 >> vpl_execution
+cat $FIRST_SOURCE_FILE >> vpl_execution
 chmod +x vpl_execution

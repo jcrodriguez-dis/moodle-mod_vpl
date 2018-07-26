@@ -25,6 +25,7 @@ do
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
 	echo "export SOURCE_FILE0=$VPL_SUBFILE0" >> common_script.sh
+	echo "export VPL_SUBFILES=$VPL_SUBFILE0" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f "$VPL_SUBFILE0" ] ; then
 		mv $VPL_SUBFILE0 $SFDIR

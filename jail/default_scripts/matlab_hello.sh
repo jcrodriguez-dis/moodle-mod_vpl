@@ -15,7 +15,7 @@ exit();
 END_OF_FILE
 else
 cat >vpl_hello.m <<'END_OF_FILE'
-fprintf("Hello from Matlab/Octave!");quit
+fprintf("Hello from Matlab/Octave!\n");
 END_OF_FILE
 fi
 export VPL_SUBFILE0=vpl_hello.m
