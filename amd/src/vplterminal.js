@@ -241,8 +241,8 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
                 tdialog.width(bw);
             }
             if(tdialog.parent().height() > bh) {
-                tdialog.height(bh-tdialog.prev().outerHeight());                    
-            }            
+                tdialog.height(bh-tdialog.prev().outerHeight());
+            }
         }
         tdialog.dialog({
             closeOnEscape : false,
@@ -250,10 +250,6 @@ define([ 'jquery', 'jqueryui', 'mod_vpl/vplutil', 'mod_vpl/vplclipboard' ],
             width : 'auto',
             height : 'auto',
             resizable : true,
-            focus : function() {
-                controlDialogSize();
-                terminal.focus();
-            },
             focus : function() {
                 controlDialogSize();
                 terminal.focus();
