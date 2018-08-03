@@ -298,10 +298,14 @@ class vpl_similarity_preprocess {
             $groupmode = groups_get_course_groupmode( $vpl->get_course() );
         }
         $currentgroup = groups_get_activity_group( $cm, true );
-        if (! $currentgroup) {
+        if (! $currentgroup ) {
             $currentgroup = '';
         }
-        $list = $vpl->get_students($currentgroup);
+        if ($vpl->is_group_activity()) {
+            $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+        } else {
+            $list = $vpl->get_students( $currentgroup );
+        }
         if (count( $list ) == 0) {
             return;
         }
