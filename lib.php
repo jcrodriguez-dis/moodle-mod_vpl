@@ -529,7 +529,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     $manager = has_capability( VPL_MANAGE_CAPABILITY, $context );
     $setjails = has_capability( VPL_SETJAILS_CAPABILITY, $context );
     if ($manager) {
-        $userid = optional_param( 'userid', null, PARAM_INT );
+        $userid = optional_param( 'userid', $USER->id, PARAM_INT );
         $strbasic = get_string( 'basic', VPL );
         $strtestcases = get_string( 'testcases', VPL );
         $strexecutionoptions = get_string( 'executionoptions', VPL );
@@ -543,9 +543,11 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         } else {
             $fkn = null;
         }
-        $parms = array (
-                'id' => $PAGE->cm->id
-        );
+        if ( $userid != $USER->id ) {
+            $parms = array ( 'id' => $cmid, 'userid' => $userid );
+        } else {
+            $parms = array ( 'id' => $cmid );
+        }
         $node = $vplnode->create( $strtestcases, new moodle_url( '/mod/vpl/forms/testcasesfile.php', array (
                 'id' => $PAGE->cm->id,
                 'edit' => 3
