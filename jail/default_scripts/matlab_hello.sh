@@ -10,6 +10,7 @@ cat >vpl_hello.m <<'END_OF_FILE'
 x = -10:0.1:10;
 plot(x,cos(x));
 title("VPL running Matlab/Octave");
+figure;
 input("Continue");
 exit();
 END_OF_FILE

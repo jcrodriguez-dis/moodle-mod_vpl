@@ -61,7 +61,6 @@ END_SCRIPT
 			echo "x-terminal-emulator -e octave -q --no-gui --persist $FIRST_SOURCE_FILE" >> vpl_execution
 		fi
 		mv vpl_execution vpl_wexecution
-		#cat $MAIN >> .octaverc
 	fi
 else
 	PROGNAME=$(basename $MAIN .m)
