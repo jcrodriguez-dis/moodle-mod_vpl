@@ -27,11 +27,12 @@
     if (typeof VPL != 'object') {
         VPL = {};
     }
+    var commentsHeight = 0;
 
     /**
-     * resize comments view div to greatest visible size
+     * Function resizeSView resizes comments view div to greatest visible size
      */
-    var commentsHeight = 0;
+
     VPL.resizeSView = function() {
         var commentsView = window.document.getElementById('vpl_grade_comments');
         var textarea = window.document.getElementsByTagName('textarea')[0];
@@ -48,9 +49,9 @@
 
     VPL.resizeSView();
     setInterval(VPL.resizeSView, 1000);
-    
+
     /**
-     * Recalculate numeric grade from the max sustracting grades found at the
+     * Recalculates numeric grade from the max sustracting grades found at the
      * end of lines. valid grade format: "- text (-grade)"
      */
     VPL.calculateGrade = function(maxgrade) {
@@ -75,7 +76,7 @@
     };
 
     /**
-     * Add new comment to the form comment string to add
+     * Adds new comment to the form comment string to add
      */
     VPL.addComment = function(comment) {
         if (comment === '') {
@@ -117,6 +118,10 @@
             field.value += comment;
         }
     };
+
+    /**
+     * Removes header and footer of the page
+     */
     VPL.removeHeaderFooter = function() {
         var i;
         var l = window.document.getElementsByTagName('header');
