@@ -1796,13 +1796,13 @@ class mod_vpl {
         } else {
             $this->print_restriction( 'worktype', $values [$worktype] );
         }
+        $stryes = get_string( 'yes' );
+        $strno = get_string( 'no' );
         if ($instance->example) {
-            $this->print_restriction( 'isexample', $stryes );
+            $this->print_restriction( 'isexample', $stryes);
         }
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
         if ($grader) {
-            $stryes = get_string( 'yes' );
-            $strno = get_string( 'no' );
             require_once($CFG->libdir . '/gradelib.php');
             if ($gie = $this->get_grade_info()) {
                 if ($gie->scaleid == 0) {
