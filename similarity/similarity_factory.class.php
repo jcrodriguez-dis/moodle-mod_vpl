@@ -32,6 +32,7 @@ class vpl_filetype {
             'hxx' => 'cpp',
             'c' => 'c',
             'js' => 'c', // JavaScript as C.
+            'cc' => 'cpp',
             'C' => 'cpp',
             'cpp' => 'cpp',
             'php' => 'cpp',
