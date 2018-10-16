@@ -164,4 +164,14 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertTrue(vpl_check_network('1.2.3, 199.193.245.44, 77.', '77.77.88.99'));
         $this->assertTrue(vpl_check_network('1.2.3.4, 199., 77.77.88.99', '199.193.245.44'));
     }
+
+    public function test_vpl_get_max_post_size() {
+        $this->assertEquals(vpl_get_max_post_size_internal('7'), 7);
+        $this->assertEquals(vpl_get_max_post_size_internal('612345'), 612345);
+        $this->assertEquals(vpl_get_max_post_size_internal('135k'), (135*1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('135K'), (135*1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('23m'), (23*1024*1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('7G'), (7*1024*1024*1000));
+        $this->assertEquals(vpl_get_max_post_size_internal('0'), PHP_INT_MAX);
+    }
 }
