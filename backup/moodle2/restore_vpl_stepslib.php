@@ -25,6 +25,8 @@
 
 defined ( 'MOODLE_INTERNAL' ) || die ();
 
+require_once(dirname(__FILE__).'/../../locallib.php');
+
 /**
  * Provides support for restore VPL antivities in the moodle2 backup format
  *
@@ -118,9 +120,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         } else {
             $content = $data->content;
         }
-        $fp = vpl_fopen ( $path . $filename );
-        fwrite ( $fp, $content );
-        fclose ( $fp );
+        vpl_fwrite( $path . $filename, $content );
     }
 
     /**
