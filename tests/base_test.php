@@ -134,6 +134,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
     protected $vplnotavailable = null;
     protected $vplonefile = null;
     protected $vplmultifile = null;
+    protected $vplvariations = null;
     protected $vplteamwork = null;
     protected $vpls = null;
 
@@ -143,12 +144,14 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setup_notavailable_instance();
         $this->setup_onefile_instance();
         $this->setup_multifile_instance();
+        $this->setup_variations_instance();
         $this->setup_vplteamwork_instance();
         $this->vpls = [
                 $this->vpldefault,
                 $this->vplnotavailable,
                 $this->vplonefile,
                 $this->vplmultifile,
+                $this->vplvariations,
                 $this->vplteamwork,
         ];
         return;
@@ -209,6 +212,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'maxfilesize' => 1000,
                 'grade' => 10,
                 'worktype' => 0,
+                'basedon' => $this->vplonefile->get_instance()->id
         );
         $this->vplmultifile = $this->create_instance($parms);
         // Add a submission.
@@ -237,6 +241,57 @@ class mod_vpl_base_testcase extends advanced_testcase {
         }
     }
 
+    protected function setup_variations_instance() {
+        global $DB;
+        $this->setUser($this->editingteachers[0]);
+        $parms = array(
+                'name' => 'Variations',
+                'duedate' => time()+3600,
+                'maxfiles' => 10,
+                'maxfilesize' => 1000,
+                'grade' => 10,
+                'worktype' => 0,
+                'usevariations' => 1,
+                'variationtitle' => 'Variations Title'
+        );
+        $this->vplvariations = $this->create_instance($parms);
+        $instance = $this->vplvariations->get_instance();
+        for( $i = 1; $i < 6; $i++) {
+            $parms = array(
+                    'vpl' => $instance->id,
+                    'identification' => '' . $i,
+                    'description' => 'varriation ' . $i
+            );
+            $DB->insert_record( VPL_VARIATIONS, $parms);
+        }
+        // Add a submission.
+        $this->setUser($this->students[0]);
+        $userid = $this->students[0]->id;
+        $this->vplvariations->get_variation($userid);
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
+        if ($submissionid == 0 || $error != '' ) {
+            $this->fail($error);
+        }
+        // Add other submission.
+        $this->setUser($this->students[1]);
+        $userid = $this->students[1]->id;
+        $this->vplvariations->get_variation($userid);
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
+        if ($submissionid == false || $error != '' ) {
+            $this->fail($error);
+        }
+    }
+
     protected function setup_vplteamwork_instance() {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
@@ -246,6 +301,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'maxfilesize' => 1000,
                 'grade' => 10,
                 'worktype' => 1,
+                'basedon' => $this->vplonefile->get_instance()->id
         );
         $this->vplteamwork = $this->create_instance($parms);
         // Add a submission.
