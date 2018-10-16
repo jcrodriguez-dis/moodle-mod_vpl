@@ -82,9 +82,7 @@ class file_group_process {
             && link( $otherfln, $filename) ) {
             return;
         }
-        $fp = vpl_fopen( $filename );
-        fwrite( $fp, $data );
-        fclose( $fp );
+        vpl_fwrite( $filename, $data );
     }
 
     /**
@@ -166,9 +164,7 @@ class file_group_process {
             if ($filename == $f) {
                 if ($data !== null) {
                     $path = $this->dir . self::encodeFileName( $filename );
-                    $fd = vpl_fopen( $path );
-                    fwrite( $fd, $data );
-                    fclose( $fd );
+                    vpl_fwrite( $path, $data );
                 }
                 return true;
             }
@@ -180,9 +176,7 @@ class file_group_process {
         $this->setFileList( $filelist );
         if ($data) {
             $path = $this->dir . self::encodeFileName( $filename );
-            $fd = vpl_fopen( $path );
-            fwrite( $fd, $data );
-            fclose( $fd );
+            vpl_fwrite( $path, $data );
         }
         return true;
     }
@@ -217,9 +211,7 @@ class file_group_process {
                     continue;
                 }
             }
-            $fp = vpl_fopen( $path );
-            fwrite( $fp, $data );
-            fclose( $fp );
+            vpl_fwrite( $path, $data );
         }
         $this->setFileList( $filelist, $otherfln);
     }
