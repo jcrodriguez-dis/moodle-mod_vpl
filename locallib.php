@@ -37,6 +37,7 @@ define( 'VPL_SIMILARITY_CAPABILITY', 'mod/vpl:similarity' );
 define( 'VPL_ADDINSTANCE_CAPABILITY', 'mod/vpl:addinstance' );
 define( 'VPL_SETJAILS_CAPABILITY', 'mod/vpl:setjails' );
 define( 'VPL_MANAGE_CAPABILITY', 'mod/vpl:manage' );
+define( 'VPL_STARTDATE_RANGE', 300);
 
 require_once(dirname(__FILE__).'/vpl.class.php');
 
@@ -78,7 +79,7 @@ function vpl_fopen($filename) {
     if (! file_exists( $filename )) { // Exists file?
         $dir = dirname( $filename );
         if (! file_exists( $dir )) { // Create dir?
-            if(! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+            if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
                 throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
             }
         }
@@ -457,16 +458,28 @@ function vpl_get_select_time($maximum = null) {
  * @return int max size in bytes
  */
 function vpl_get_max_post_size() {
-    $maxs = trim( ini_get( 'post_max_size' ) );
+    return vpl_get_max_post_size_internal( ini_get( 'post_max_size' ) );
+}
+
+/**
+ * For internal use. Return number of bytes from 0|#|#k|#m|#g format
+ *
+ * @return int number of bytes max, PHP_INT_MAX for '0'
+ */
+function vpl_get_max_post_size_internal($maxs) {
+    $maxs = trim( $maxs );
     $len = strlen( $maxs );
+    $max = ( int ) $maxs;
     $last = strtolower( $maxs [$len - 1] );
-    $max = ( int ) substr( $maxs, 0, $len - 1 );
     if ($last == 'k') {
         $max *= 1024;
     } else if ($last == 'm') {
         $max *= 1024 * 1024;
     } else if ($last == 'g') {
         $max *= 1024 * 1024 * 1000;
+    }
+    if ($maxs === '0') {
+        $max = PHP_INT_MAX;
     }
     return $max;
 }
