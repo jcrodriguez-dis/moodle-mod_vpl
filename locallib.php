@@ -84,11 +84,32 @@ function vpl_fopen($filename) {
             }
         }
     }
+    if ( is_dir($filename) ) {
+        throw new file_exception('storedfileproblem', 'Error open file in VPL, is a directory');
+    }
     $fp = fopen( $filename, 'wb+' );
     if ($fp === false) {
         throw new file_exception('storedfileproblem', 'Error creating file in VPL');
     }
     return $fp;
+}
+
+/**
+ * Open/create a file and its dir and write contents
+ *
+ * @param string $filename. Path to the file to open
+ * @param string $contents. Contents to write into the file
+ * @exception file_exception
+ * @return void
+ */
+function vpl_fwrite($filename, $contents) {
+    global $CFG;
+    $fp = vpl_fopen( $filename );
+    $res = fwrite( $fp, $contents );
+    if ($res === false) {
+        throw new file_exception('storedfileproblem', 'Error writing a file in VPL');
+    }
+    fclose( $fp );
 }
 
 /**
