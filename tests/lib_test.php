@@ -269,17 +269,18 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         $this->setUser($this->editingteachers[0]);
         foreach ( $this->vpls as $vpl ) {
             $instance = $vpl->get_instance();
-            $instance->instance = $instance->id;
+
             $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
             $submissions = $vpl->all_last_user_submission();
             if (count($submissions) > 0) {
                 $this->assertDirectoryExists($directory, $instance->name);
             }
-            $instance = $vpl->get_instance();
-            $instance->instance = $instance->id;
+
             vpl_delete_instance($instance->id);
-            $res = $DB->get_record(VPL, array('id' => $instance->id));
-            $this->assertFalse( $res, $instance->name);
+
+            $res = $DB->count_records(VPL, array('id' => $instance->id));
+            $this->assertEquals( 0, $res, $instance->name);
+
             $tables = [
                     VPL_SUBMISSIONS,
                     VPL_VARIATIONS,
@@ -288,12 +289,17 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             ];
             $parms = array('vpl' => $instance->id);
             foreach( $tables as $table) {
-                $res = $DB->get_records($table, $parms);
-                $this->assertCount( 0, $res, $instance->name);
+                $res = $DB->count_records($table, $parms);
+                $this->assertEquals( 0, $res, $instance->name);
             }
+
+            $res = $DB->count_records(VPL, array('basedon' => $instance->id ));
+            $this->assertEquals( 0, $res, $instance->name);
+
             $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
-            $event = $DB->get_record('event', $sparms );
-            $this->assertFalse($event, $instance->name);
+            $res = $DB->count_records('event', $sparms );
+            $this->assertEquals($res, 0, $instance->name);
+
             $this->assertDirectoryNotExists($directory, $instance->name);
         }
     }
