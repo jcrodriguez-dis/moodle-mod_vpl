@@ -30,15 +30,16 @@ require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 class mod_vpl_locallib_testcase extends advanced_testcase {
+
     public function test_vpl_delete_dir() {
         global $CFG;
         $text = 'Example text';
-        $testdir = $CFG->dirroot . '/mod/vpl/test/tmp';
+        $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         // Dir empty.
         mkdir($testdir, 0777, true);
-        $this->assertTrue( is_dir($testdir) );
+        $this->assertDirectoryIsWritable( $testdir );
         vpl_delete_dir($testdir);
-        $this->assertFalse( is_dir($testdir) );
+        $this->assertDirectoryNotExists( $testdir );
         // Dir complex.
         mkdir($testdir . '/a1/b1/c1', 0777, true);
         file_put_contents ($testdir . '/a1/b1/c1/t1', $text);
@@ -49,10 +50,59 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         file_put_contents ($testdir . '/a1/b2/t1', $text);
         mkdir($testdir . '/a1/b3', 0777, true);
         file_put_contents ($testdir . '/a1/t1', $text);
-        $this->assertTrue( is_dir($testdir) );
+        $this->assertDirectoryIsWritable( $testdir );
         vpl_delete_dir($testdir);
-        $this->assertFalse( is_dir($testdir) );
+        $this->assertDirectoryNotExists( $testdir );
     }
+
+    public function test_vpl_fwrite() {
+        global $CFG;
+        $text = 'Example text';
+        $otext = 'Other text';
+        $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
+        // Dir empty.
+        mkdir($testdir, 0777, true);
+        $fpath = $testdir . '/a1/b1/c1';
+        vpl_fwrite($fpath, $text);
+        $this->assertEquals( $text, file_get_contents($fpath) );
+        vpl_fwrite($fpath, $otext);
+        $this->assertEquals( $otext, file_get_contents($fpath) );
+        $fpath = $testdir . '/aaaaaaaaaaaaaaaa.bbb';
+        vpl_fwrite($fpath, $text);
+        $this->assertEquals( $text, file_get_contents($fpath) );
+        $fpath = $testdir . '/aaaaaaaaaaaaaaaa.bbb';
+        vpl_fwrite($fpath, '');
+        $this->assertEquals( '', file_get_contents($fpath) );
+        $fpath = $testdir . '/nf.bbb';
+        vpl_fwrite($fpath, '');
+        $this->assertEquals( '', file_get_contents($fpath) );
+        $bads = ['/a1/..', '/a1/.', '/', '/a1', '/a1/b1'];
+        foreach ( $bads as $bad) {
+            $fpath = $testdir . $bad;
+            try {
+                $throwexception = false;
+                vpl_fwrite($fpath, $text);
+            } catch (Exception $e) {
+                $throwexception = true;
+            }
+            $this->assertTrue($throwexception, 'Exception expected');
+        }
+        vpl_delete_dir($testdir);
+        // If not Windows checks directories access control.
+        if (DIRECTORY_SEPARATOR !== '\\') {
+            mkdir($testdir, 0111, true);
+            $fpath = $testdir . '/a1/b1/c1';
+            try {
+                $throwexception = false;
+                vpl_fwrite($fpath, $text);
+            } catch (Exception $e) {
+                $throwexception = true;
+            }
+            $this->assertTrue($throwexception, 'Exception expected');
+        }
+        vpl_delete_dir($testdir);
+    }
+
     public function test_vpl_get_set_session_var() {
         global $SESSION;
         $nosession = false;
