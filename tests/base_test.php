@@ -1,0 +1,305 @@
+<?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * Base fixture for unit tests
+ * Code based on mod/assign/tests/base_test.php
+ *
+ * @package mod_vpl
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/mod/vpl/lib.php');
+require_once($CFG->dirroot . '/mod/vpl/locallib.php');
+
+/**
+ * Code based on mod/assign/tests/base_test.php
+ *
+ */
+class mod_vpl_base_testcase extends advanced_testcase {
+    /** @const Default number of students to create */
+    const DEFAULT_STUDENT_COUNT = 7;
+    /** @const Default number of teachers to create */
+    const DEFAULT_TEACHER_COUNT = 2;
+    /** @const Default number of editing teachers to create */
+    const DEFAULT_EDITING_TEACHER_COUNT = 2;
+    /** @const Number of groups to create */
+    const GROUP_COUNT = 4;
+    /** @const Number of groups to create */
+    const GROUPING_COUNT = 2;
+
+    /** @var stdClass $course New course created to hold VPL instances */
+    protected $course = null;
+
+    /** @var array $teachers List of DEFAULT_TEACHER_COUNT teachers in the course*/
+    protected $teachers = null;
+
+    /** @var array $editingteachers List of DEFAULT_EDITING_TEACHER_COUNT editing teachers in the course */
+    protected $editingteachers = null;
+
+    /** @var array $students List of DEFAULT_STUDENT_COUNT students in the course*/
+    protected $students = null;
+
+    /** @var array $groups List of groups in the course */
+    protected $groups = null;
+
+    /** @var array $groupings List of groupings in the course */
+    protected $groupings = null;
+
+    /**
+     * Setup function - we will create a course and add an assign instance to it.
+     */
+    protected function setUp() {
+        global $DB;
+
+        $this->resetAfterTest(true);
+
+        $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
+        $this->teachers = array();
+        for ($i = 0; $i < self::DEFAULT_TEACHER_COUNT; $i++) {
+            array_push($this->teachers, $this->getDataGenerator()->create_user());
+        }
+
+        $this->editingteachers = array();
+        for ($i = 0; $i < self::DEFAULT_EDITING_TEACHER_COUNT; $i++) {
+            array_push($this->editingteachers, $this->getDataGenerator()->create_user());
+        }
+
+        $this->students = array();
+        for ($i = 0; $i < self::DEFAULT_STUDENT_COUNT; $i++) {
+            array_push($this->students, $this->getDataGenerator()->create_user());
+        }
+
+        $this->groups = array();
+        for ($i = 0; $i < self::GROUP_COUNT; $i++) {
+            array_push($this->groups, $this->getDataGenerator()->create_group(array('courseid'=>$this->course->id)));
+        }
+
+        $this->groupings = array();
+        for ($i = 0; $i < self::GROUPING_COUNT; $i++) {
+            array_push($this->groupings, $this->getDataGenerator()->create_grouping(array('courseid'=>$this->course->id)));
+        }
+        $teacherrole = $DB->get_record('role', array('shortname'=>'teacher'));
+        foreach ($this->teachers as $i => $teacher) {
+            $this->getDataGenerator()->enrol_user($teacher->id,
+                    $this->course->id,
+                    $teacherrole->id);
+            groups_add_member($this->groups[$i % self::GROUP_COUNT], $teacher);
+        }
+
+        $editingteacherrole = $DB->get_record('role', array('shortname'=>'editingteacher'));
+        foreach ($this->editingteachers as $i => $editingteacher) {
+            $this->getDataGenerator()->enrol_user($editingteacher->id,
+                    $this->course->id,
+                    $editingteacherrole->id);
+            groups_add_member($this->groups[$i % self::GROUP_COUNT], $editingteacher);
+        }
+
+        $studentrole = $DB->get_record('role', array('shortname'=>'student'));
+        foreach ($this->students as $i => $student) {
+            $this->getDataGenerator()->enrol_user($student->id,
+                    $this->course->id,
+                    $studentrole->id);
+            groups_add_member($this->groups[$i % self::GROUP_COUNT], $student);
+        }
+        foreach ($this->groups as $i => $group) {
+            if($i < count($this->groups) - 1 ) {
+                $parm = array('groupingid' => $this->groupings[0]->id, 'groupid' => $group->id);
+                $this->getDataGenerator()->create_grouping_group($parm);
+            }
+            if($i > count($this->groups) / 2 ) {
+                $parm = array('groupingid' => $this->groupings[1]->id, 'groupid' => $group->id);
+                $this->getDataGenerator()->create_grouping_group($parm);
+            }
+        }
+    }
+
+    protected $vpldefault = null;
+    protected $vplnotavailable = null;
+    protected $vplonefile = null;
+    protected $vplmultifile = null;
+    protected $vplteamwork = null;
+    protected $vpls = null;
+
+    protected function setupinstances() {
+        // Add VPL instances
+        $this->setup_default_instance();
+        $this->setup_notavailable_instance();
+        $this->setup_onefile_instance();
+        $this->setup_multifile_instance();
+        $this->setup_vplteamwork_instance();
+        $this->vpls = [
+                $this->vpldefault,
+                $this->vplnotavailable,
+                $this->vplonefile,
+                $this->vplmultifile,
+                $this->vplteamwork,
+        ];
+        return;
+    }
+
+    protected function setup_default_instance() {
+        $this->setUser($this->editingteachers[0]);
+        $parms = array('name' => 'default');
+        $this->vpldefault = $this->create_instance($parms);
+    }
+
+    protected function setup_notavailable_instance() {
+        $this->setUser($this->editingteachers[0]);
+        $parms = array(
+                'name' => 'not available',
+                'duedate' => time()-60,
+                'maxfiles' => 0,
+                'maxfilesize' => 100,
+                'requirednet' => '1.',
+                'password' => 'hola',
+                'grade' => 15,
+                'visiblegrade' => false,
+                'usevariations' => false,
+                'example' => false,
+                'worktype' => 0,
+        );
+
+        $this->vplnotavailable = $this->create_instance($parms);
+    }
+
+    protected function setup_onefile_instance() {
+        $this->setUser($this->editingteachers[0]);
+        $parms = array(
+                'name' => 'One file',
+                'duedate' => time()+3600,
+                'maxfiles' => 1,
+                'maxfilesize' => 1000,
+                'grade' => 10,
+                'worktype' => 0,
+        );
+        $this->vplonefile = $this->create_instance($parms);
+        // Add a submission.
+        $this->setUser($this->students[0]);
+        $userid = $this->students[0]->id;
+        $files = array('a.c' => "int main(){\nprintf(\"Hola\");\n}");
+        $submissionid = $this->vplonefile->add_submission($userid, $files, '', $error);
+        if ($submissionid == 0 || $error != '' ) {
+            $this->fail($error);
+        }
+    }
+
+    protected function setup_multifile_instance() {
+        $this->setUser($this->editingteachers[0]);
+        $parms = array(
+                'name' => 'Multiple files',
+                'duedate' => time()+3600,
+                'maxfiles' => 10,
+                'maxfilesize' => 1000,
+                'grade' => 10,
+                'worktype' => 0,
+        );
+        $this->vplmultifile = $this->create_instance($parms);
+        // Add a submission.
+        $this->setUser($this->students[0]);
+        $userid = $this->students[0]->id;
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
+        if ($submissionid == 0 || $error != '' ) {
+            $this->fail($error);
+        }
+        // Add other submission.
+        $this->setUser($this->students[1]);
+        $userid = $this->students[1]->id;
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
+        if ($submissionid == false || $error != '' ) {
+            $this->fail($error);
+        }
+    }
+
+    protected function setup_vplteamwork_instance() {
+        $this->setUser($this->editingteachers[0]);
+        $parms = array(
+                'name' => 'Team work',
+                'duedate' => time()+3600,
+                'maxfiles' => 10,
+                'maxfilesize' => 1000,
+                'grade' => 10,
+                'worktype' => 1,
+        );
+        $this->vplteamwork = $this->create_instance($parms);
+        // Add a submission.
+        $this->setUser($this->students[0]);
+        $userid = $this->students[0]->id;
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
+        if ($submissionid == 0 || $error != '' ) {
+            $this->fail($error);
+        }
+        // Add other submission.
+        $this->setUser($this->students[1]);
+        $userid = $this->students[1]->id;
+        $files = array(
+                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                'b.h' => "#define MV 3\n",
+        );
+        $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
+        if ($submissionid == 0 || $error != '' ) {
+            $this->fail($error);
+        }
+    }
+
+    /**
+     * Creates a testable instance of VPL.
+     *
+     * @param array $params Array of parameters to pass to the generator
+     * @return testable_vpl Testable wrapper around the mod_vpl class.
+     */
+    protected function create_instance($params=array()) {
+        $generator = $this->getDataGenerator()->get_plugin_generator('mod_vpl');
+        if (!isset($params['course'])) {
+            $params['course'] = $this->course->id;
+        }
+        $instance = $generator->create_instance($params);
+        $cm = get_coursemodule_from_instance(VPL, $instance->id);
+        return new testable_vpl($cm->id);
+    }
+
+    public function test_create_instance() {
+        $this->assertNotEmpty($this->create_instance());
+    }
+
+}
+
+/**
+ * Class to use instead of mod_vpl.
+ * This derived class of mod_vpl expose protected methods as public to test it.
+ */
+class testable_vpl extends mod_vpl {
+
+}
