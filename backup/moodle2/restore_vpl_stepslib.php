@@ -25,7 +25,7 @@
 
 defined ( 'MOODLE_INTERNAL' ) || die ();
 
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__).'/../locallib.php');
 
 /**
  * Provides support for restore VPL antivities in the moodle2 backup format
