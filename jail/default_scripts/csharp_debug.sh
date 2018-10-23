@@ -11,8 +11,12 @@
 export MONO_ENV_OPTIONS=--gc=sgen
 check_program gdb
 check_program mcs
-#compile
-mcs -debug -out:output.exe *.cs
+get_source_files cs
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+mcs -debug -out:output.exe @.vpl_source_files
+rm .vpl_source_files
 if [ -f output.exe ] ; then
     echo "handle SIGXCPU SIG33 SIG35 SIGPWR nostop noprint" >> .dbinit
 	cat common_script.sh > vpl_execution

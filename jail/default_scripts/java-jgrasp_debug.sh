@@ -27,9 +27,5 @@ cd $HOME
 jgrasp $MAINFILE
 x-terminal-emulator
 FIN
-#echo $HOME
-#echo $VPL_SUBFILES
-#ls .
-#echo $SOURCE_FILES
-#cat < vplexecution
+chmod +x vplexecution
 mv vplexecution vpl_wexecution

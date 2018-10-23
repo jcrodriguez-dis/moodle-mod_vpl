@@ -17,9 +17,12 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files cs
-# compile
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
 export MONO_ENV_OPTIONS=--gc=sgen
-mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono $SOURCE_FILES
+mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono @.vpl_source_files
+rm .vpl_source_files
 if [ -f output.exe ] ; then
 	cat common_script.sh > vpl_execution
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution

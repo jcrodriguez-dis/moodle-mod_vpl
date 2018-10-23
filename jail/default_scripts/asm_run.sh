@@ -17,12 +17,15 @@ if [ "$1" == "version" ] ; then
 fi 
 get_source_files asm
 #compile
-OBJFILES=
+SIFS=$IFS
+IFS=$'\n'
 for FILENAME in $SOURCE_FILES
 do
-	NAME=$(basename "$FILENAME" .asm)
-	nasm -f elf -o $NAME.o $FILENAME
-	OBJFILES="$OBJFILES $NAME.o"
+	nasm -f elf "$FILENAME"
 done
-ld -o vpl_execution $OBJFILES
+IFS=$SIFS
+get_source_files o
+generate_file_of_files .vpl_source_files
+ld -o vpl_execution @.vpl_source_files
+rm .vpl_source_files
 

@@ -11,8 +11,11 @@
 check_program gfortran
 check_program gdb
 get_source_files f f77
-# compile
-gfortran -o program -g -O0 $SOURCE_FILES
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+gfortran -o program -g -O0 @.vpl_source_files
+rm .vpl_source_files
 if [ -f program ] ; then
 	cat common_script.sh > vpl_execution
 	echo "gdb program" >> vpl_execution

@@ -21,8 +21,8 @@ get_source_files vhdl vhd
 gvhdl $SOURCE_FILES
 get_first_source_file vhdl vhd
 NAME=${FIRST_SOURCE_FILE%.*}
-if [ -f $NAME ] ; then
-	mv $NAME vpl_execution
+if [ -f "$NAME" ] ; then
+	mv "$NAME" vpl_execution
 	chmod +x vpl_execution
 else
 	echo "============================================"

@@ -17,5 +17,5 @@ if [ "$1" == "version" ] ; then
 fi
 get_first_source_file perl prl
 cat common_script.sh > vpl_execution
-echo "perl -w $FIRST_SOURCE_FILE \$@" >>vpl_execution
+echo "perl -w \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
 chmod +x vpl_execution

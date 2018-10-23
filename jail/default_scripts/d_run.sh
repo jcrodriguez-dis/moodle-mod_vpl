@@ -16,5 +16,8 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files d
-#compile
-gdc -o vpl_execution -lm -lutil $SOURCE_FILES
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+gdc -o vpl_execution -lm -lutil @.vpl_source_files
+rm .vpl_source_files

@@ -33,27 +33,55 @@ function get_source_files {
 	        SOURCE_FILES=$(echo -en "$SOURCE_FILES\n$source_files_ext_s")
 	    fi
 	done
-	local file_name
-    if [ "$SOURCE_FILES_LINE" != "" -o "$1" == "b64" ] ; then
-		for file_name in "$SOURCE_FILES"
+
+    if [ "$SOURCE_FILES" != "" -o "$1" == "b64" ] ; then
+		local file_name
+		local SIFS=$IFS
+		IFS=$'\n'
+		for file_name in $SOURCE_FILES
 		do
-			SOURCE_FILE0="$file_name"
-			return 0
+			SOURCE_FILE0=$file_name
+			break
 		done
+		IFS=$SIFS
+		return 0
 	fi
+
 	echo "To run this type of program you need some file with extension \"$@\""
 	exit 0;
 }
 
+function generate_file_of_files {
+	if [ -f "$1" ] ; then
+		rm "$1"
+	fi
+	touch $1 
+	local file_name
+	local SIFS=$IFS
+	IFS=$'\n'
+	for file_name in $SOURCE_FILES
+	do
+		echo "\"$file_name\"" >> "$1"
+	done
+	IFS=$SIFS
+}
+
 function get_first_source_file {
 	local ext
-	local FILE
-	for FILE in $VPL_SUBFILES
+	local FILENAME
+	local FILEVAR
+	local i
+	for i in {0..100000}
 	do
+		FILEVAR="VPL_SUBFILE${i}"
+		FILENAME="${!FILEVAR}"
+		if [ "" == "$FILENAME" ] ; then
+			break
+		fi
 		for ext in "$@"
 		do
-		    if [ "${FILE##*.}" == "$ext" ] ; then
-		        FIRST_SOURCE_FILE="$FILE"
+		    if [ "${FILENAME##*.}" == "$ext" ] ; then
+		        FIRST_SOURCE_FILE=$FILENAME
 		        return 0
 	    	fi
 		done
@@ -81,7 +109,7 @@ function check_program {
 #Decode BASE64 files
 get_source_files b64
 SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
+IFS=$'\n'
 for FILENAME in $SOURCE_FILES
 do
 	if [ -f "$FILENAME" ] ; then
