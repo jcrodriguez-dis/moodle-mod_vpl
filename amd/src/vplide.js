@@ -21,20 +21,22 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['jquery',
-         'jqueryui',
-         'mod_vpl/vplutil',
-         'mod_vpl/vplidefile',
-         'mod_vpl/vplidebutton',
-         'mod_vpl/vplterminal',
-         'mod_vpl/vplvnc',
-         ],
-         function($, jqui, VPLUtil, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient ) {
-       if ( typeof VPLIDE !== 'undefined' ) {
-           return VPLIDE;
-       }
-       var vplIdeInstance;
-       var VPLIDE = function(root_id, options) {
+define(
+    [
+        'jquery',
+        'jqueryui',
+        'mod_vpl/vplutil',
+        'mod_vpl/vplidefile',
+        'mod_vpl/vplidebutton',
+        'mod_vpl/vplterminal',
+        'mod_vpl/vplvnc',
+    ],
+    function($, jqui, VPLUtil, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient ) {
+        if ( typeof VPLIDE !== 'undefined' ) {
+            return VPLIDE;
+        }
+        var vplIdeInstance;
+        var VPLIDE = function(root_id, options) {
             var self = this;
             var fileManager;
             var adjustTabsTitles;
@@ -106,7 +108,6 @@ define(['jquery',
                 }
                 e.preventDefault();
             }
-
             function dropHandler(e) {
                 if (restrictedEdit) { // No drop allowed.
                     e.stopImmediatePropagation();
@@ -127,7 +128,6 @@ define(['jquery',
             }
             rootObj.on('drop', dropHandler);
             rootObj.on('dragover', dragoverHandler);
-
             // Control paste.
             function restrictedPaste(e) {
                 if (restrictedEdit) {
@@ -136,7 +136,6 @@ define(['jquery',
                 }
             }
             // Init editor vars.
-
             var menu = $('#vpl_menu');
             var menuButtons = new VPLIDEButtons(menu,isOptionAllowed);
             var tr = $('#vpl_tr');
@@ -149,7 +148,6 @@ define(['jquery',
             var result = $('#vpl_results_accordion');
             fileListContainer.vpl_minWidth = 80;
             result_container.vpl_minWidth = 100;
-
             function avoidSelectGrade(event, ui) {
                 if ("newHeader" in ui) {
                     if (ui.newHeader.hasClass('vpl_ide_accordion_t_grade')) {
@@ -200,7 +198,6 @@ define(['jquery',
                     }
                     return false;
                 }
-
                 this.restrictedPaste = restrictedPaste;
                 this.dropHandler = dropHandler;
                 this.dragoverHandler = dragoverHandler;
@@ -1005,9 +1002,11 @@ define(['jquery',
             aboutDialog.dialog($.extend({}, dialogbaseOptions, {
                 open: function(){
                     var html = menuButtons.getShortcuts(fileManager.currentFile('getEditor'));
-                    aboutDialog.next().find("button").filter(function() {
-                        return $(this).text() == str('shortcuts');
-                      }).button(html != '' ? 'enable' : 'disable');
+                    aboutDialog.next().find("button").filter(
+                        function() {
+                            return $(this).text() == str('shortcuts');
+                        }
+                    ).button(html != '' ? 'enable' : 'disable');
                 },
                 title : str('about'),
                 width : 400,

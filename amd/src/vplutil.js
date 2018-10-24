@@ -31,1325 +31,1336 @@
 /* globals ace */
 
 
-define(['jquery',
-         'jqueryui',
-         'core/log',
-         ],
-         function($, jqui, log) {
-    if (typeof VPLUtil != 'undefined') {
-        return VPLUtil;
-    }
-    var VPLUtil = {};
-    VPLUtil.doNothing = function() {
-    };
-    VPLUtil.returnFalse = function() {
-        return false;
-    };
-    VPLUtil.returnTrue = function() {
-        return true;
-    };
-    var debugMode = false;
-    VPLUtil.log = function( m, forced) {
-        if ( debugMode || forced ) {
-            log.debug( m );
+define(
+    [
+        'jquery',
+        'jqueryui',
+        'core/log',
+    ],
+    function($, jqui, log) {
+        if (typeof VPLUtil != 'undefined') {
+            return VPLUtil;
         }
-    };
-    VPLUtil.setUserPreferences = function(pref) {
-        $.ajax({
-            async : true,
-            type : "POST",
-            url : '../editor/userpreferences.json.php',
-            'data' : JSON.stringify(pref),
-            contentType : "application/json; charset=utf-8",
-            dataType : "json"
-        });
-    };
-    VPLUtil.getUserPreferences = function(func) {
-        $.ajax({
-            async : true,
-            type : "POST",
-            url : '../editor/userpreferences.json.php',
-            'data' : JSON.stringify({getPreferences: true}),
-            contentType : "application/json; charset=utf-8",
-            dataType : "json"
-        }).done(func);
-    };
-    // Get scrollBarWidth.
-    VPLUtil.scrollBarWidth = function() {
-        var parent, child, width;
-        parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
-        child = parent.children();
-        width = child.innerWidth() - child.height(99).innerWidth();
-        parent.remove();
-        return width;
-    };
-    VPLUtil.sanitizeHTML = function(t) {
-        if ( typeof t == 'undefined' || t.replace('/^\s+|\s+$/g','') == '') {
-            return '';
-        }
-        return $('<div>' + t + '</div>').html();
-    };
-    VPLUtil.sanitizeText = function(s) {
-        if ( typeof s == 'undefined' || s.replace('/^\s+|\s+$/g','') == '') {
-            return '';
-        }
-        return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
-    };
-
-    VPLUtil.setProtocol = function(coninfo) {
-        var secure;
-        switch (coninfo.wsProtocol) {
-            case 'always_use_wss':
-                secure = true;
-                break;
-            case 'always_use_ws':
-                secure = false;
-                break;
-            default:
-                secure = window.location.protocol == 'https:';
-        }
-        var URLBase = (secure ? 'wss://' : 'ws://') + coninfo.server;
-        coninfo.secure = secure;
-        coninfo.portToUse = secure ? coninfo.securePort :coninfo.port;
-        URLBase += ':' + coninfo.portToUse + '/';
-        coninfo.monitorURL = URLBase + coninfo.monitorPath;
-        coninfo.executionURL = URLBase + coninfo.executionPath;
-    };
-    VPLUtil.ArrayBuffer2String = function(data) {
-        var view = new Uint8Array(data);
-        var chunks = [];
-        var chunkSize = 32000;
-        for (var i = 0, len = view.length; i < len; i += chunkSize) {
-            chunks.push(String.fromCharCode.apply(String, view.subarray(i, Math.min(i + chunkSize, len))));
-        }
-        return chunks.join('');
-    };
-    VPLUtil.String2ArrayBuffer = function(data) {
-        var len = data.length;
-        var ret = new ArrayBuffer(len);
-        var u8 = new Uint8Array(ret);
-        for (var i = 0; i < len; i++) {
-            u8[i] = data.charCodeAt(i);
-        }
-        return ret;
-    };
-
-    (function() {
-        var fileUniqueId = 0;
-        VPLUtil.getUniqueId = function() {
-            return fileUniqueId++;
+        var VPLUtil = {};
+        VPLUtil.doNothing = function() {
         };
-    })();
-    (function() {
-        var regExt = /\.([^.]*)$/;
-        var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
-        var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
-        var regBlk = /^blockly[0123]?$/;
-        VPLUtil.fileExtension = function(fileName) {
-            var res = regExt.exec(fileName);
-            return res !== null ? res[1] : '';
-        };
-        VPLUtil.isImage = function(fileName) {
-            return regImg.test(VPLUtil.fileExtension(fileName));
-        };
-        VPLUtil.isBinary = function(fileName) {
-            return VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName));
-        };
-        VPLUtil.isBlockly = function(fileName) {
-            return regBlk.test(VPLUtil.fileExtension(fileName));
-        };
-        var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./;
-        VPLUtil.validFileName = function(fileName) {
-            if (fileName.length < 1) {
-                return false;
-            }
-            if (fileName.length > 128) {
-                return false;
-            }
-            return !(regInvalidFileName.test(fileName));
-        };
-    })();
-    VPLUtil.getCurrentTime = function() {
-        return parseInt((new Date()).valueOf() / 1000);
-    };
-    VPLUtil.encodeBinary = function(name, data) {
-        if (!VPLUtil.isBinary(name)) {
-            return btoa(unescape(encodeURIComponent(data)));
-        }
-        return btoa(VPLUtil.ArrayBuffer2String(data));
-    };
-
-    VPLUtil.decodeBinary = function(name, data) {
-        var decoded = atob(data);
-        if (!VPLUtil.isBinary(name)) {
-            return decodeURIComponent(escape(decoded));
-        }
-        return VPLUtil.String2ArrayBuffer(decoded);
-    };
-
-    VPLUtil.validPath = function(path) {
-        if (path.length > 256) {
+        VPLUtil.returnFalse = function() {
             return false;
-        }
-        var dirs = path.split("/");
-        for (var i = 0; i < dirs.length; i++) {
-            if (!VPLUtil.validFileName(dirs[i])) {
+        };
+        VPLUtil.returnTrue = function() {
+            return true;
+        };
+        var debugMode = false;
+        VPLUtil.log = function( m, forced) {
+            if ( debugMode || forced ) {
+                log.debug( m );
+            }
+        };
+        VPLUtil.setUserPreferences = function(pref) {
+            $.ajax({
+                async : true,
+                type : "POST",
+                url : '../editor/userpreferences.json.php',
+                'data' : JSON.stringify(pref),
+                contentType : "application/json; charset=utf-8",
+                dataType : "json"
+            });
+        };
+        VPLUtil.getUserPreferences = function(func) {
+            $.ajax({
+                async : true,
+                type : "POST",
+                url : '../editor/userpreferences.json.php',
+                'data' : JSON.stringify({getPreferences: true}),
+                contentType : "application/json; charset=utf-8",
+                dataType : "json"
+            }).done(func);
+        };
+        // Get scrollBarWidth.
+        VPLUtil.scrollBarWidth = function() {
+            var parent, child, width;
+            parent = $('<div style="width:50px;height:50px;overflow:auto"><div/></div>').appendTo('body');
+            child = parent.children();
+            width = child.innerWidth() - child.height(99).innerWidth();
+            parent.remove();
+            return width;
+        };
+        VPLUtil.sanitizeHTML = function(t) {
+            if ( typeof t == 'undefined' || t.replace('/^\s+|\s+$/g','') == '') {
+                return '';
+            }
+            return $('<div>' + t + '</div>').html();
+        };
+        VPLUtil.sanitizeText = function(s) {
+            if ( typeof s == 'undefined' || s.replace('/^\s+|\s+$/g','') == '') {
+                return '';
+            }
+            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+        };
+
+        VPLUtil.setProtocol = function(coninfo) {
+            var secure;
+            switch (coninfo.wsProtocol) {
+                case 'always_use_wss':
+                    secure = true;
+                    break;
+                case 'always_use_ws':
+                    secure = false;
+                    break;
+                default:
+                    secure = window.location.protocol == 'https:';
+            }
+            var URLBase = (secure ? 'wss://' : 'ws://') + coninfo.server;
+            coninfo.secure = secure;
+            coninfo.portToUse = secure ? coninfo.securePort : coninfo.port;
+            URLBase += ':' + coninfo.portToUse + '/';
+            coninfo.monitorURL = URLBase + coninfo.monitorPath;
+            coninfo.executionURL = URLBase + coninfo.executionPath;
+        };
+        VPLUtil.ArrayBuffer2String = function(data) {
+            var view = new Uint8Array(data);
+            var chunks = [];
+            var chunkSize = 32000;
+            for (var i = 0, len = view.length; i < len; i += chunkSize) {
+                chunks.push(String.fromCharCode.apply(String, view.subarray(i, Math.min(i + chunkSize, len))));
+            }
+            return chunks.join('');
+        };
+        VPLUtil.String2ArrayBuffer = function(data) {
+            var len = data.length;
+            var ret = new ArrayBuffer(len);
+            var u8 = new Uint8Array(ret);
+            for (var i = 0; i < len; i++) {
+                u8[i] = data.charCodeAt(i);
+            }
+            return ret;
+        };
+
+        (function() {
+            var fileUniqueId = 0;
+            VPLUtil.getUniqueId = function() {
+                return fileUniqueId++;
+            };
+        })();
+        (function() {
+            var regExt = /\.([^.]*)$/;
+            var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
+            var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
+            var regBlk = /^blockly[0123]?$/;
+            VPLUtil.fileExtension = function(fileName) {
+                var res = regExt.exec(fileName);
+                return res !== null ? res[1] : '';
+            };
+            VPLUtil.isImage = function(fileName) {
+                return regImg.test(VPLUtil.fileExtension(fileName));
+            };
+            VPLUtil.isBinary = function(fileName) {
+                return VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName));
+            };
+            VPLUtil.isBlockly = function(fileName) {
+                return regBlk.test(VPLUtil.fileExtension(fileName));
+            };
+            var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./;
+            VPLUtil.validFileName = function(fileName) {
+                if (fileName.length < 1) {
+                    return false;
+                }
+                if (fileName.length > 128) {
+                    return false;
+                }
+                return !(regInvalidFileName.test(fileName));
+            };
+        })();
+        VPLUtil.getCurrentTime = function() {
+            return parseInt((new Date()).valueOf() / 1000);
+        };
+        VPLUtil.encodeBinary = function(name, data) {
+            if (!VPLUtil.isBinary(name)) {
+                return btoa(unescape(encodeURIComponent(data)));
+            }
+            return btoa(VPLUtil.ArrayBuffer2String(data));
+        };
+
+        VPLUtil.decodeBinary = function(name, data) {
+            var decoded = atob(data);
+            if (!VPLUtil.isBinary(name)) {
+                return decodeURIComponent(escape(decoded));
+            }
+            return VPLUtil.String2ArrayBuffer(decoded);
+        };
+
+        VPLUtil.validPath = function(path) {
+            if (path.length > 256) {
                 return false;
             }
-        }
-        return true;
-    };
-    VPLUtil.getFileName = function(path) {
-        var dirs = path.split("/");
-        return dirs[dirs.length - 1];
-    };
-    VPLUtil.dataFromURLData = function(data) {
-        return data.substr(data.indexOf(',') + 1);
-    };
-    VPLUtil.readZipFile = function(data, save, progressBar,end) {
-        if (typeof JUnzip == 'undefined') {
-            VPLUtil.loadScript(['../editor/zip/inflate.js',
-                '../editor/zip/unzip.js']
-            ,function() {
-                VPLUtil.readZipFile(data, save, progressBar, end);
-            });
-            return;
-        }
-        var ab = VPLUtil.ArrayBuffer2String(data);
-        var unzipper = new JUnzip(ab);
-        if ( ! unzipper.isZipFile()) {
-            return;
-        }
-        unzipper.readEntries();
-        var out = unzipper.entries.length;
-        function process(i) {
-            if (i >= out || progressBar.isClosed()) {
-                if ( end ) {
-                    end();
+            var dirs = path.split("/");
+            for (var i = 0; i < dirs.length; i++) {
+                if (!VPLUtil.validFileName(dirs[i])) {
+                    return false;
                 }
+            }
+            return true;
+        };
+        VPLUtil.getFileName = function(path) {
+            var dirs = path.split("/");
+            return dirs[dirs.length - 1];
+        };
+        VPLUtil.dataFromURLData = function(data) {
+            return data.substr(data.indexOf(',') + 1);
+        };
+        VPLUtil.readZipFile = function(data, save, progressBar,end) {
+            if (typeof JUnzip == 'undefined') {
+                VPLUtil.loadScript(['../editor/zip/inflate.js',
+                    '../editor/zip/unzip.js']
+                ,function() {
+                    VPLUtil.readZipFile(data, save, progressBar, end);
+                });
                 return;
             }
-            var entry = unzipper.entries[i];
-            var fileName = entry.fileName;
-            var data;
-            // Is directory entry then skip.
-            if (fileName.match(/\/$/)) {
-                process(i + 1);
-            } else {
-                progressBar.processFile(fileName);
-                var uncompressed = '';
-                if (entry.compressionMethod === 0) {
-                    // Plain file.
-                    uncompressed = entry.data;
-                } else if (entry.compressionMethod === 8) {
-                    uncompressed = JSInflate.inflate(entry.data);
-                }
-                data = VPLUtil.String2ArrayBuffer(uncompressed);
-                if (VPLUtil.isBinary(fileName)) {
-                    // If binary use as arrayBuffer.
-                    if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
-                        i = out;
+            var ab = VPLUtil.ArrayBuffer2String(data);
+            var unzipper = new JUnzip(ab);
+            if ( ! unzipper.isZipFile()) {
+                return;
+            }
+            unzipper.readEntries();
+            var out = unzipper.entries.length;
+            function process(i) {
+                if (i >= out || progressBar.isClosed()) {
+                    if ( end ) {
+                        end();
                     }
+                    return;
+                }
+                var entry = unzipper.entries[i];
+                var fileName = entry.fileName;
+                var data;
+                // Is directory entry then skip.
+                if (fileName.match(/\/$/)) {
                     process(i + 1);
-                    progressBar.endFile();
                 } else {
-                    var blob = new Blob([ data ], {
-                        type :'text/plain'
-                    });
-                    var fr = new FileReader();
-                    fr.onload = function(e) {
-                        if ( ! save({name:fileName, contents:e.target.result, encoding:0}) ) {
+                    progressBar.processFile(fileName);
+                    var uncompressed = '';
+                    if (entry.compressionMethod === 0) {
+                        // Plain file.
+                        uncompressed = entry.data;
+                    } else if (entry.compressionMethod === 8) {
+                        uncompressed = JSInflate.inflate(entry.data);
+                    }
+                    data = VPLUtil.String2ArrayBuffer(uncompressed);
+                    if (VPLUtil.isBinary(fileName)) {
+                        // If binary use as arrayBuffer.
+                        if ( ! save({name:fileName, contents:btoa(uncompressed), encoding:1}) ) {
                             i = out;
                         }
                         process(i + 1);
                         progressBar.endFile();
-                    };
-                    fr.readAsText(blob);
-                }
-            }
-        }
-        process(0);
-    };
-
-    VPLUtil.readSelectedFiles = function(filesToRead, save, end) {
-        // Process all File objects.
-        var pb = new VPLUtil.progressBar('import', 'import');
-        var filePending = 0;
-        if ( ! end ) {
-            end = VPLUtil.doNothing;
-        }
-        pb.processFile = function(name) {
-            pb.setLabel(name);
-            filePending++;
-        };
-        pb.endFile = function() {
-            filePending--;
-            if (filePending === 0) {
-                end();
-                pb.close();
-            }
-        };
-        function readSecuencial(sec) {
-            if (sec >= filesToRead.length || pb.isClosed()) {
-                return;
-            }
-            var f = filesToRead[sec];
-            pb.processFile(f.name);
-            var binary = VPLUtil.isBinary(f.name);
-            var reader = new FileReader();
-            var ext = VPLUtil.fileExtension(f.name).toLowerCase();
-            reader.onload = function(e) {
-                var goNext = false;
-                if (binary) {
-                    if (ext == 'zip') {
-                        try {
-                            VPLUtil.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
-                        } catch (ex) {
-                            VPLUtil.showErrorMessage(ex + " : " + f.name);
-                        }
                     } else {
-                        var data = VPLUtil.dataFromURLData(e.target.result);
-                        goNext = save({name:f.name, contents:data, encoding:1});
+                        var blob = new Blob([ data ], {
+                            type :'text/plain'
+                        });
+                        var fr = new FileReader();
+                        fr.onload = function(e) {
+                            if ( ! save({name:fileName, contents:e.target.result, encoding:0}) ) {
+                                i = out;
+                            }
+                            process(i + 1);
+                            progressBar.endFile();
+                        };
+                        fr.readAsText(blob);
                     }
-                } else{
-                    goNext = save({name:f.name, contents:e.target.result, encoding:0});
                 }
-                // Load next file if OK.
-                if ( goNext ) {
-                    readSecuencial(sec + 1);
-                }
-                pb.endFile();
+            }
+            process(0);
+        };
+
+        VPLUtil.readSelectedFiles = function(filesToRead, save, end) {
+            // Process all File objects.
+            var pb = new VPLUtil.progressBar('import', 'import');
+            var filePending = 0;
+            if ( ! end ) {
+                end = VPLUtil.doNothing;
+            }
+            pb.processFile = function(name) {
+                pb.setLabel(name);
+                filePending++;
             };
-            if (binary) {
-                if (ext == 'zip') {
-                    reader.readAsArrayBuffer(f);
-                } else {
-                    reader.readAsDataURL(f);
+            pb.endFile = function() {
+                filePending--;
+                if (filePending === 0) {
+                    end();
+                    pb.close();
                 }
-            } else {
-                reader.readAsText(f);
-            }
-        }
-        readSecuencial(0);
-    };
-    (function() {
-        var MIME = {
-            'gif' :'image/gif',
-            'jpg' :'image/jpeg',
-            'jpeg' :'image/jpeg',
-            'png' :'image/png',
-            'ico' :'image/vnd.microsoft.icon',
-            'pdf' :'application/pdf'
-        };
-        VPLUtil.getMIME = function(fileName) {
-            var ext = VPLUtil.fileExtension(fileName);
-            if (ext in MIME) {
-                return MIME[ext];
-            }
-            return 'application/octet-stream';
-        };
-        VPLUtil.getTimeLeft = function(timeLeft) {
-            var res = '';
-            var minute = 60;
-            var hour = 60 * minute;
-            var day = 24 * hour;
-            if (timeLeft < 0) {
-                res += '-';
-                timeLeft = -timeLeft;
-            }
-            var days = parseInt(timeLeft / day);
-            timeLeft -= days * day;
-            if (days !== 0) {
-                res += days + 'T';
-            }
-            var hours = parseInt(timeLeft / hour);
-            timeLeft -= hours * hour;
-            var minutes = parseInt(timeLeft / minute);
-            timeLeft -= minutes * minute;
-            var seconds = parseInt(timeLeft);
-            res += ('00' + hours).substr(-2) + ':';
-            res += ('00' + minutes).substr(-2);
-            if (days === 0) {
-                res += ':' + ('00' + seconds).substr(-2);
-            }
-            return res;
-        };
-    })();
-    (function() {
-        var maplang = {
-            'abap': 'abap',
-            'abc': 'abc',
-            'ada': 'ada', 'ads': 'ada', 'adb': 'ada',
-            'as': 'actionscript','as3': 'actionscript',
-            'asm': 'assembly_x86',
-            'bash': 'sh',
-            'bat': 'batchfile',
-            'c': 'c_cpp', 'C': 'c_cpp', 'cc': 'c_cpp', 'cpp': 'c_cpp', 'hxx': 'c_cpp', 'h': 'c_cpp',
-            'cases': 'cases',
-            'cbl': 'cobol', 'cob': 'cobol',
-            'coffee': 'coffee',
-            'clj': 'clojure',
-            'cs': 'csharp',
-            'css': 'css',
-            'd': 'd',
-            'dart': 'dart',
-            'e': 'eiffel',
-            'erl': 'erlang', 'hrl': 'erlang',
-            'f': 'fortran', 'f77': 'fortran',
-            'go': 'go',
-            'groovy': 'groovy',
-            'gv': 'dot',
-            'hs': 'haskell',
-            'htm': 'html', 'html': 'html',
-            'hx': 'haxe',
-            'java': 'java',
-            'js': 'javascript',
-            'json': 'json',
-            'jsp': 'jsp',
-            'jsx': 'jsx',
-            'kt': 'kotlin', 'kts': 'kotlin',
-            'm': 'matlab',
-            'md': 'markdown',
-            'less': 'less',
-            'lisp': 'lisp', 'lsp': 'lisp',
-            'lua': 'lua',
-            'pas': 'pascal', 'p': 'pascal',
-            'perl': 'perl', 'prl': 'perl',
-            'php': 'php',
-            'pro': 'prolog', 'pl': 'prolog',
-            'py': 'python',
-            'R': 'r',
-            'r': 'r',
-            'rb': 'ruby', 'ruby': 'ruby',
-            'sass': 'sass',
-            'scala': 'scala',
-            'scm': 'scheme', 's': 'scheme',
-            'scss': 'scss',
-            'sh': 'sh',
-            'swift': 'swift',
-            'sql': 'sql',
-            'svg': 'svg',
-            'tex': 'tex',
-            'tcl': 'tcl',
-            'ts': 'typescript',
-            'twig': 'twig',
-            'vbs': 'vbscript',
-            'v': 'verilog',
-            'vhd': 'vhdl', 'vhdl': 'vhdl',
-            'xml': 'xml',
-            'yaml': 'yaml'
-        };
-        VPLUtil.langType = function(ext) {
-            if (ext in maplang) {
-                return maplang[ext];
-            }
-            return 'plain_text';
-        };
-    })();
-    (function() {
-        var i18n = {};
-        VPLUtil.str = function(key) {
-            if (!i18n[key]) {
-                return '{' + key + '}';
-            }
-            return i18n[key];
-        };
-        VPLUtil.setStr = function(newi18n) {
-            for (var key in newi18n) {
-                if ( newi18n.hasOwnProperty(key) ) {
-                    i18n[key] = newi18n[key];
-                }
-            }
-            VPLUtil.dialogbaseOptions = {
-                autoOpen :false,
-                width :'auto',
-                closeText :VPLUtil.str('cancel'),
-                modal :true,
-                dialogClass :'vpl_ide vpl_ide_dialog'
             };
-
-        };
-    })();
-    (function() {
-        var delayedActions = {};
-        var shortTimeout = 20;
-        var longTimeout = 100;
-        VPLUtil.delay = function(id, func, arg1, arg2) {
-            if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
-                clearTimeout(delayedActions[id]);
-            }
-            delayedActions[id] = setTimeout(function() {
-                func(arg1, arg2);
-                delayedActions[id] = false;
-            }, shortTimeout);
-        };
-        VPLUtil.longDelay = function(id, func, arg1, arg2) {
-            if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
-                clearTimeout(delayedActions[id]);
-            }
-            delayedActions[id] = setTimeout(function() {
-                func(arg1, arg2);
-                delayedActions[id] = false;
-            }, longTimeout);
-        };
-    })();
-    VPLUtil.iconModified = function() {
-        var html = '<span title="' + VPLUtil.str('modified') + '" class="vpl_ide_charicon">';
-        html += '<i class="fa fa-star"></i>' + '</span> ';
-        return html;
-    };
-    VPLUtil.iconDelete = function() {
-        var html = ' <span title="' + VPLUtil.str('delete') + '" class="vpl_ide_charicon vpl_ide_delicon">';
-        html += '<i class="fa fa-trash"></i>' + '</span> ';
-        return html;
-    };
-    VPLUtil.iconClose = function() {
-        var html = ' <span title="' + VPLUtil.str('closebuttontitle');
-        html += '" class="vpl_ide_charicon vpl_ide_closeicon">' + '<i class="fa fa-remove"></i>' + '</span> ';
-        return html;
-    };
-    VPLUtil.iconRequired = function() {
-        var html = ' <span title="' + VPLUtil.str('required') + '" class="vpl_ide_charicon">';
-        html += '<i class="fa fa-shield"></i>' + '</span> ';
-        return html;
-    };
-    VPLUtil.iconFolder = function() {
-        return '<i class="fa fa-folder-open-o"></i>';
-    };
-    (function() {
-        var menuIcons = {
-            'filelist': 'folder',
-            'filelistclose': 'folder-open',
-            'new': 'file',
-            'rename': 'pencil',
-            'delete': 'trash',
-            'multidelete': 'trash|list',
-            'close': 'remove',
-            'comments': 'commenting',
-            'import': 'upload',
-            'print': 'print',
-            'edit': 'edit',
-            'undo': 'undo',
-            'redo': 'repeat',
-            'select_all': 'location-arrow',
-            'find': 'search',
-            'find_replace': 'exchange',
-            'next': 'search-plus',
-            'resetfiles': 'refresh',
-            'download': 'download',
-            'fullscreen': 'expand',
-            'regularscreen': 'compress',
-            'save': 'save',
-            'sort': 'list-ol',
-            'run': 'rocket',
-            'debug': 'bug',
-            'evaluate': 'check-square-o',
-            'console': 'terminal',
-            'about': 'question',
-            'info': 'info-circle',
-            'alert': 'warning',
-            'trash': 'trash',
-            'retrieve': 'download',
-            'spinner': 'refresh fa-spin',
-            'keyboard': 'keyboard-o',
-            'clipboard': 'clipboard',
-            'timeleft': 'clock-o',
-            'copy': 'copy',
-            'paste': 'paste',
-            'more': 'plus-square',
-            'less': 'minus-square',
-            'resize': 'arrows-alt',
-            'graphic': 'picture-o',
-            'send': 'send',
-            'theme':  'paint-brush',
-            'user': 'user',
-            'fontsize': 'text-height'
-        };
-        VPLUtil.genIcon = function(icon, size) {
-            if (!menuIcons[icon]) {
-                return '';
-            }
-            var classes = 'fa fa-';
-            if (!size) {
-                classes += 'lg';
-            } else {
-                classes += size;
-            }
-            var icons = menuIcons[icon].split('|');
-            var ret = '';
-            for(var i = 0; i < icons.length; i++) {
-                ret += "<i class='" + classes + ' fa-' + icons[i] + "'></i>";
-            }
-            return ret;
-        };
-    })();
-    // UI operations.
-    VPLUtil.setTitleBar = function(dialog, type, icon, buttons, handler) {
-        var title = $(dialog).parent().find("span.ui-dialog-title");
-        function genButton(e) {
-            var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPLUtil.str(e) + "'>";
-            html += VPLUtil.genIcon(e, 'fw') + "</a>";
-            return html;
-        }
-        var html = VPLUtil.genIcon(icon);
-        html += " <span class='" + type + "-title-buttons'></span>";
-        html += "<span class='" + type + "-title-text'></span>";
-        title.html(html);
-        var titleButtons = title.find("span." + type + "-title-buttons");
-        var titleText = title.find("span." + type + "-title-text");
-        html = "";
-        for (var i = 0; i < buttons.length; i++) {
-            html += genButton(buttons[i]);
-        }
-        titleButtons.html(html);
-        for (var ih = 0; ih < handler.length; ih++) {
-            var button = title.find('#vpl_' + type + '_' + buttons[ih]);
-            button.button().click(handler[ih]);
-            button.css('padding','1px 3px');
-        }
-        titleButtons.on('focus','*', function(){$(this).blur();});
-        return titleText;
-    };
-    VPLUtil.progressBar = function(title, message, onUserClose) {
-        var labelHTML = '<span class="vpl_ide_progressbarlabel"></span>';
-        var sppiner = '<div class="vpl_ide_progressbaricon">' + VPLUtil.genIcon('spinner') + '</div>';
-        var pbHTML = ' <div class="vpl_ide_progressbar">' + sppiner + labelHTML + '</div>';
-        var HTML = '<div class="vpl_ide_dialog" style="display:none;">' + pbHTML + '</div>';
-        var dialog = $(HTML);
-        $('body').append(dialog);
-        var progressbar = dialog.find('.vpl_ide_progressbar');
-        var label = progressbar.find('.vpl_ide_progressbarlabel');
-        dialog.dialog({
-            'title' :VPLUtil.str(title),
-            resizable :false,
-            autoOpen :false,
-            width :200,
-            height :20,
-            minHeight :20,
-            modal :true,
-            dialogClass :'vpl_ide vpl_ide_dialog',
-            close :function( event ) {
-                if (dialog) {
-                    if (onUserClose && event.originalEvent ) {
-                        onUserClose();
-                    }
-                    onUserClose = false;
-                }
-            }
-        });
-        this.setLabel = function(t, icon) {
-            if (dialog) {
-                label.text(t);
-                if (icon) {
-                    label.html(VPLUtil.genIcon(icon) + ' ' + label.html());
-                }
-            }
-        };
-        this.close = function() {
-            if(dialog) {
-                dialog.dialog('destroy');
-                $(dialog).remove();
-                dialog = false;
-            }
-        };
-        this.isClosed = function() {
-            return dialog === false;
-        };
-        var titleTag = dialog.siblings().find('.ui-dialog-title');
-        titleTag.html(VPLUtil.genIcon(title) + ' ' + titleTag.html());
-        this.setLabel(VPLUtil.str(message));
-        dialog.dialog('open');
-        dialog.dialog('option', 'height', 'auto');
-    };
-    VPLUtil.showMessage = function(message, initialoptions) {
-        var options = $.extend({}, initialoptions);
-        var messageDialog = $('<div class="vpl_ide_dialog"></div>');
-        if (!options) {
-            options = {};
-        }
-        if (!options.icon) {
-            options.icon = 'info';
-        }
-        if (!options.title) {
-            options.title = VPLUtil.str('warning');
-        }
-        messageDialog.html(VPLUtil.genIcon(options.icon) + ' <span class="dmessage">' + message + '</span>');
-        $('body').append(messageDialog);
-        var messageButtons = {};
-        if (!options.ok) {
-            messageButtons[VPLUtil.str('ok')] = function() {
-                $(this).dialog('close');
-            };
-        } else {
-            messageButtons[VPLUtil.str('ok')] = function() {
-                $(this).dialog('close');
-                options.ok();
-            };
-            messageButtons[VPLUtil.str('cancel')] = function() {
-                $(this).dialog('close');
-            };
-        }
-        if (options.next) {
-            messageButtons[VPLUtil.str('next')] = function() {
-                $(this).dialog('close');
-                options.next();
-            };
-        }
-        if (options.close) {
-            options.oldClose = options.close;
-        }
-        messageDialog.dialog($.extend({}, VPLUtil.dialogbaseOptions, {
-            title :options.title,
-            buttons :messageButtons,
-            close :function() {
-                $(this).remove();
-                if (options.oldClose) {
-                    options.oldClose();
-                }
-            }
-        }));
-        messageDialog.dialog('open');
-        messageDialog.setMessage = function(men) {
-            $(messageDialog).find('.dmessage').html(men);
-        };
-        return messageDialog;
-    };
-    VPLUtil.showErrorMessage = function(message, options) {
-        var currentOptions = $.extend({}, VPLUtil.dialogbaseOptions, {
-            title :VPLUtil.str('error'),
-            icon :'alert'
-        });
-        if (options) {
-            currentOptions = $.extend(currentOptions, options);
-        }
-        return VPLUtil.showMessage(message, currentOptions);
-    };
-
-    VPLUtil.requestAction = function(action, title, data, URL) {
-        var deferred = $.Deferred();
-        var request = null;
-        var xhr = false;
-        if (title === '') {
-            title = 'connecting';
-        }
-        var apb = new VPLUtil.progressBar(action, title, function() {
-            if (request.readyState != 4) {
-                if ( xhr && xhr.abort ) {
-                    xhr.abort();
-                }
-            }
-        });
-        request = $.ajax({
-            beforeSend :function (jqXHR) {
-                xhr = jqXHR;
-                return true;
-            },
-            async :true,
-            type :"POST",
-            url :URL + action,
-            'data' :JSON.stringify(data),
-            contentType :"application/json; charset=utf-8",
-            dataType :"json"
-        }).always(function() {
-            apb.close();
-        }).done(function(response) {
-            if (!response.success) {
-                deferred.reject(response.error);
-            } else {
-                deferred.resolve(response.response);
-            }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            var message = VPLUtil.str('connection_fail') + ': ' + textStatus;
-            if ( debugMode ) {
-                message += '<br>' + errorThrown.message;
-                message += '<br>' + jqXHR.responseText.substr(0,80);
-            }
-            VPLUtil.log(message);
-            deferred.reject(message);
-        });
-        return deferred;
-    };
-    VPLUtil.supportWebSocket = function() {
-        if ("WebSocket" in window) {
-            return true;
-        }
-        return false;
-    };
-    VPLUtil.isAndroid = function() {
-        return window.navigator.userAgent.indexOf('Android') > -1;
-    };
-    VPLUtil.isFirefox = function() {
-        return window.navigator.userAgent.indexOf('Firefox') > -1;
-    };
-    VPLUtil.isMac = function() {
-        return window.navigator.userAgent.indexOf('Mac') > -1;
-    };
-    VPLUtil.clickServer = function(e) {
-        var w = 550;
-        var h = 450;
-        var left = (screen.width / 2) - (w / 2);
-        var top = (screen.height / 2) - (h / 2);
-        try {
-            var features = 'toolbar=no, location=no, directories=no, status=no, menubar=no';
-            features += ', resizable=yes, scrollbars=yes, copyhistory=no, width=' + w;
-            features += ', height=' + h + ', top=' + top + ', left=' + left;
-            var win = window.open($(this).attr('href'), '_blank', features);
-            if (!win) {
-                return true;
-            }
-        } catch (ex) {
-            VPLUtil.log( ex );
-            return true;
-        }
-        e.preventDefault();
-        $(this).parent().hide();
-        return false;
-    };
-
-    VPLUtil.acceptCertificates = function(servers, getLastAction) {
-        if (servers.length > 0) {
-            // Generate links dialog.
-            var html = VPLUtil.str('acceptcertificatesnote');
-            html += '<ol>';
-            for (var i in servers) {
-                if ( servers.hasOwnProperty(i) ) {
-                    var n = 1 + i;
-                    html += '<li><a href="' + servers[i] + '" target="_blank">Server ';
-                    html += n + '</a><br /></ul>';
-                }
-            }
-            html += '</ol>';
-            var m = VPLUtil.showMessage(html, {
-                ok :function() {
-                    var action = getLastAction();
-                    if (action) {
-                        action();
-                    }
-                },
-                icon :'unlocked',
-                title :VPLUtil.str('acceptcertificates')
-            });
-            $(m).find('a').on('click keypress', VPLUtil.clickServer);
-        } else {
-            VPLUtil.log('servers.length == 0');
-            VPLUtil.showErrorMessage(VPLUtil.str('connection_fail'));
-        }
-    };
-
-    VPLUtil.webSocketMonitor = function(coninfo, title, running, externalActions) {
-        VPLUtil.setProtocol(coninfo);
-        var ws = null;
-        var pb = null;
-        var deferred = $.Deferred();
-        var defail = function( m ) {
-            deferred.reject( m );
-        };
-        var delegated = false;
-        var messageActions = {
-            'message' :function(content) {
-                var parsed = /^([^:]*):?(.*)/i.exec(content);
-                var state = parsed[1];
-                var detail = parsed[2];
-                if (state == 'running') {
-                    state = running;
-                }
-                var text = VPLUtil.str(state);
-                if (detail > '') {
-                    text += ': ' + detail;
-                }
-                if (externalActions.getConsole && externalActions.getConsole().isOpen()) {
-                    externalActions.getConsole().setMessage(text);
-                } else {
-                    pb.setLabel(text);
-                }
-            },
-            'compilation' :function(content) {
-                if (externalActions.setResult) {
-                    externalActions.setResult({
-                        'compilation' :content,
-                    }, false);
-                }
-            },
-            'retrieve' :function() {
-                pb.close();
-                delegated = true;
-                VPLUtil.requestAction('retrieve', '', '', externalActions.ajaxurl)
-                .done(
-                    function(response) {
-                        deferred.resolve();
-                        if (externalActions.setResult) {
-                            externalActions.setResult(response, true);
-                        }
-                    }
-                ).fail(defail);
-            },
-            'run' :function(content) {
-                pb.close();
-                externalActions.run(content, coninfo, ws);
-            },
-            'close' :function() {
-                VPLUtil.log('ws close message from jail');
-                ws.close();
-                if (externalActions.close) {
-                    externalActions.close();
-                }
-            }
-        };
-        try {
-            if (VPLUtil.supportWebSocket()) {
-                ws = new WebSocket(coninfo.monitorURL);
-            } else {
-                VPLUtil.log('ws not available');
-                deferred.reject(VPLUtil.str('browserupdate'));
-                return deferred;
-            }
-        } catch (e) {
-            VPLUtil.log('ws new say ' + e);
-            deferred.reject(e.message);
-            return deferred;
-        }
-        pb = new VPLUtil.progressBar(title, 'connecting', function() {
-            deferred.reject('Stopped by user');
-            ws.close();
-        });
-        ws.notOpen = true;
-        ws.onopen = function() {
-            ws.notOpen = false;
-            pb.setLabel(VPLUtil.str('connected'));
-        };
-        ws.onerror = function(event) {
-            VPLUtil.log('ws error ' + event);
-            pb.close();
-            if (coninfo.secure && ws.notOpen) {
-                VPLUtil.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
-                .done(function(response) {
-                    VPLUtil.acceptCertificates(response.servers, function(){
-                        return externalActions.getLastAction();
-                    });
-                })
-                .fail(defail);
-            } else {
-                deferred.reject(VPLUtil.str('connection_fail'));
-            }
-        };
-        ws.onclose = function() {
-            if (externalActions.getConsole) {
-                externalActions.getConsole().disconnect();
-            }
-            if ( !ws.notOpen ) {
-                pb.close();
-                if ( ! delegated && deferred.state() != 'rejected' ) {
-                    deferred.resolve();
-                }
-            }
-        };
-
-        ws.onmessage = function(event) {
-            var message = /^([^:]+):/i.exec(event.data);
-            if (message !== null) {
-                var action = message[1];
-                var content = event.data.substr(action.length + 1);
-                if (messageActions[action]) {
-                    messageActions[action](content);
-                }
-            } else {
-                pb.setLabel(VPLUtil.str('error') + ': ' + event.data);
-            }
-        };
-        return deferred;
-    };
-    VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
-        if ( typeof text == 'undefined' || text.replace('/^\s+|\s+$/gm','') == '' ) {
-            return '';
-        }
-        function escReg(t) {
-            return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
-        }
-        var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
-        var regtit = /^-.*/;
-        var regcas = /^\s*\>/;
-        var regWarning = new RegExp('warning|' + escReg(VPLUtil.str('warning')), 'i');
-        var state = '';
-        var html = '';
-        var comment = '';
-        var case_ = '';
-        var lines = text.split(/\r\n|\n|\r/);
-        var regFiles = [];
-        var lastAnotation = false;
-        var lastAnotationFile = false;
-        var afterTitle = false;
-        function getHref( i ) {
-            if ( typeof sh[i].getTagId === 'undefined' ) {
-                return 'href="#" ';
-            } else {
-                return 'href="#' + sh[i].getTagId() + '" ';
-            }
-        }
-        for (var i = 0; i < filenames.length; i++) {
-            var regf = escReg(filenames[i]);
-            var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)([:\,]?(\\d+)?\\)?)";
-            regFiles[i] = new RegExp(reg, '');
-        }
-        function genFileLinks(line, rawline) {
-            var used = false;
-            for (var i = 0; i < regFiles.length; i++) {
-                var reg = regFiles[i];
-                var match;
-                while ((match = reg.exec(line)) !== null) {
-                    var anot = sh[i].getAnnotations();
-                    // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
-                    lastAnotationFile = i;
-                    used = true;
-                    var type = line.search(regWarning) == -1 ? 'error' : 'warning';
-                    lastAnotation = {
-                        row :(match[2] - 1),
-                        column :match[3],
-                        type :type,
-                        text :rawline,
-                    };
-                    anot.push(lastAnotation);
-                    var fileName = filenames[i];
-                    var href = getHref( i );
-                    var lt = VPLUtil.sanitizeText( fileName );
-                    var data = 'data-file="' + fileName + '" data-line="' + match[2] + '"';
-                    line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + ':$2$3</a>');
-                    sh[i].setAnnotations(anot);
-                }
-            }
-            if (!used && lastAnotation) {
-                if (rawline !== '') {
-                    lastAnotation.text += "\n" + rawline;
-                    sh[lastAnotationFile].setAnnotations(sh[lastAnotationFile].getAnnotations());
-                } else {
-                    lastAnotation = false;
-                }
-            }
-            return line;
-        }
-        function getTitle(line) {
-            lastAnotation = false;
-            line = line.substr(1);
-            var end = regtitgra.exec(line);
-            if (end !== null) {
-                line = line.substr(0, line.length - end[0].length);
-            }
-            var html = '';
-            if ( folding ) {
-                html += '<a href="javascript:void(0)" onclick="VPLUtil.showHideDiv(this)">[+]</a>';
-            }
-            html += '<b class="ui-widget-header ui-corner-all">' + VPLUtil.sanitizeText(line) + '</b><br />';
-            html = genFileLinks(html, line);
-            return html;
-        }
-        function getComment() {
-            lastAnotation = false;
-            var ret = comment;
-            comment = '';
-            return ret;
-        }
-        function addComment(rawline) {
-            var line = VPLUtil.sanitizeText(rawline);
-            comment += genFileLinks(line, rawline) + '<br />';
-        }
-        function addCase(rawline) {
-            var line = VPLUtil.sanitizeText(rawline);
-            case_ += genFileLinks(line, rawline) + "\n";
-        }
-        function getCase() {
-            lastAnotation = false;
-            var ret = case_;
-            case_ = '';
-            return '<pre><i>' + ret + '</i></pre>';
-        }
-
-        for (i = 0; i < lines.length; i++) {
-            var line = lines[i];
-            if ( noFormat ) {
-                html += genFileLinks(VPLUtil.sanitizeText(line), line) + "\n";
-                continue;
-            }
-            var match = regcas.exec(line);
-            var regcasv = regcas.test(line);
-            if ((match !== null) != regcasv) {
-                VPLUtil.log('error');
-            }
-            if (regtit.test(line)) {
-                switch (state) {
-                    case 'comment':
-                        html += getComment();
-                        break;
-                    case 'case':
-                        html += getCase();
-                        break;
-                }
-                if ( afterTitle ) {
-                    html += '</div>';
-                }
-                html += getTitle(line);
-                html += folding ? '<div style="display:none">' : '<div>';
-                afterTitle = true;
-                state = '';
-            } else if (regcasv) {
-                if ( state == 'comment' ) {
-                    html += getComment();
-                }
-                addCase(line.substr(match[0].length));
-                state = 'case';
-            } else {
-                if ( state == 'case' ) {
-                    html += getCase();
-                }
-                addComment(line);
-                state = 'comment';
-            }
-        }
-        switch (state) {
-            case 'comment':
-                html += getComment();
-                break;
-            case 'case':
-                html += getCase();
-                break;
-        }
-        if ( afterTitle ) {
-            html += '</div>';
-        }
-        return html;
-    };
-    (function() {
-        var scriptsLoaded = [];
-        VPLUtil.loadScript = function(scripts, end) {
-            if ( scripts.length == 0 ) {
-                end();
-                return;
-            }
-            var scriptURL = scripts[0];
-            if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
-                scripts.shift();
-                scriptsLoaded[scriptURL] = 1;
-                var script = document.createElement('script');
-                script.type = 'text/javascript';
-                script.src = VPLUtil.options.scriptPath + scriptURL;
-                script.onload = function () {
-                    scriptsLoaded[scriptURL] = 2;
-                    VPLUtil.loadScript(scripts, end);
-                };
-                document.head.appendChild(script);
-            } else if ( scriptsLoaded[scriptURL] == 2) {
-                scripts.shift();
-                VPLUtil.loadScript(scripts, end);
-            } else {
-                setTimeout(function() {VPLUtil.loadScript(scripts, end);}, 50);
-            }
-        };
-        VPLUtil.isScriptLoading = function(scriptURL) {
-            if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
-                return false;
-            }
-            return scriptsLoaded[scriptURL] == 1;
-        };
-        VPLUtil.isScriptLoaded = function(scriptURL) {
-            if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
-                return false;
-            }
-            return scriptsLoaded[scriptURL] == 2;
-        };
-    })();
-    VPLUtil.adjustBlockly = function(work, offx, offy) {
-        var blocks = work.getAllBlocks();
-        var miy = 20000;
-        var may = -20000;
-        var mix = 20000;
-        var max = -20000;
-        for ( var i = 0; i < blocks.length; i++){
-            var xy=  blocks[i].getRelativeToSurfaceXY();
-            miy = Math.min(miy, xy.y);
-            may = Math.max(may, xy.y);
-            mix = Math.min(mix, xy.x);
-            max = Math.max(max, xy.x);
-        }
-        blocks = work.getTopBlocks();
-        for ( var i = 0; i < blocks.length; i++){
-            blocks[i].moveBy( offx - mix, offy - miy );
-        }
-        return may - miy + 100 + offy;
-    };
-    (function() {
-        var files = [];
-        var results = [];
-        var shs = [];
-        function SubmissionHighlighter(files, results) {
-            var self = this;
-            this.files = files;
-            this.results = results;
-            setTimeout(function() {self.highlight();}, 10);
-        }
-        SubmissionHighlighter.prototype.highlightBlockly = function(preid) {
-            VPLUtil.loadScript(['../editor/blockly/blockly_compressed.js',
-                '../editor/blockly/msg/js/en.js',
-                '../editor/blockly/blocks_compressed.js']
-            ,function() {
-                var tag = $('#' + preid);
-                var c = tag.html();
-                $('#' + preid + 'load').remove();
-                tag.html('');
-                tag.show();
-                c = $('<div />').html(c).text().replace(/\n/g, "");
-                var xml = Blockly.Xml.textToDom(c);
-                tag.html('').height(300).width(tag.parent().width());
-                var options = {
-                    toolbox :'',
-                    readOnly :true,
-                    media :'../editor/blockly/media/',
-                };
-                var work = Blockly.inject(preid, options);
-                Blockly.Xml.domToWorkspace(xml, work);
-                var hg = VPLUtil.adjustBlockly(work, 10, 10);
-                tag.height(hg);
-                tag.width('100%');
-                Blockly.svgResize(work);
-                Blockly.resizeSvgContents(work);
-                var h = tag.html();
-                work.dispose();
-                tag.html(h);
-            });
-        };
-        SubmissionHighlighter.prototype.highlight = function(){
-            var self = this;
-            if ( typeof ace === 'undefined' ) {
-                VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.highlight();});
-                return;
-            }
-            var files = this.files;
-            var results = this.results;
-            var shFiles = [];
-            var shFileNames = [];
-            for (var i = 0; i < files.length; i++) {
-                var file = files[i];
-                var preid = 'code' + file.tagId;
-                if ( VPLUtil.isBlockly(file.fileName) ) {
-                    self.highlightBlockly(preid);
-                    continue;
-                }
-                var ext = VPLUtil.fileExtension( file.fileName );
-                var lang = VPLUtil.langType(ext);
-                $('#' + preid).show();
-                $('#' + preid + 'load').remove();
-                var sh = ace.edit( preid );
-                sh.setTheme( 'ace/theme/' + file.theme );
-                sh.getSession().setMode( 'ace/mode/' + lang );
-                sh.renderer.setShowGutter( file.showln );
-                sh.setReadOnly( true );
-                sh.setHighlightActiveLine( false );
-                sh.setAutoScrollEditorIntoView( true );
-                sh.setOption('maxLines', file.nl);
-                sh.getAnnotations = function(){
-                    return this.getSession().getAnnotations();
-                };
-                sh.setAnnotations = function(a){
-                    return this.getSession().setAnnotations(a);
-                };
-                sh.getTagId = function(){
-                    return this.vplTagId;
-                };
-                sh.vplTagId = file.tagId;
-                shFiles.push( sh );
-                shFileNames.push( file.fileName );
-                shs[file.tagId] = sh;
-            }
-            for (var ri = 0; ri < results.length; ri++) {
-                var tag = document.getElementById(results[ri].tagId);
-                var text = tag.textContent || tag.innerText;
-                tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
-                                                       results[ri].noFormat, results[ri].folding);
-            }
-            //Wait 1 sec. to remove all ace code ¿exist event to resolve this?
-            setTimeout( function() {
-                for (var si = 0; si < shFiles.length; si++) {
-                    var editor = shFiles[si];
-                    var tag = editor.getTagId();
-                    var odlhtml = $('#' + tag).html();
-                    editor.destroy();
-                    $('#' + tag).html(odlhtml);
-                }
-                files = null;
-                results = null;
-                shFiles = null;
-                shFileNames = null;
-            }, 1000);
-        };
-
-        VPLUtil.addResults = function( tagId, noFormat, folding ){
-            results.push({ 'tagId' :tagId, 'noFormat' :noFormat, 'folding' :folding });
-        };
-        VPLUtil.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
-            files.push({
-                'tagId' :tagId,
-                'fileName' :fileName,
-                'theme' :theme,
-                'showln' :showln,
-                'nl' :nl
-             });
-        };
-        VPLUtil.syntaxHighlight = function(){
-            var self = this;
-            if ( typeof ace === 'undefined' ) {
-                VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.syntaxHighlight();});
-                return;
-            }
-            new SubmissionHighlighter(files,results);
-            files = [];
-            results = [];
-        };
-        VPLUtil.flEventHandler = function( event ){
-            var tag = event.target.getAttribute('href').substring(1);
-            var line = event.target.getAttribute('data-line');
-            var sh = shs[tag];
-            sh.gotoLine(line, 0);
-            sh.scrollToLine(line, true);
-        };
-        VPLUtil.setflEventHandler = function(){
-            var links = document.getElementsByClassName("vpl_fl");
-            for(var i = 0; i < links.length; i++) {
-                links[i].onclick = VPLUtil.flEventHandler;
-            }
-        };
-        VPLUtil.showHideDiv = function (a){
-            var text = a;
-            var div = a;
-            if ( ! div.nextSibling ) {
-                div = div.parentNode;
-            }
-            div = div.nextSibling;
-            while ( div.nodeName != 'DIV' && div.nodeName != 'PRE' ) {
-                div = div.nextSibling;
-                if ( ! div ) {
+            function readSecuencial(sec) {
+                if (sec >= filesToRead.length || pb.isClosed()) {
                     return;
                 }
-            }
-            if(text){
-                if(text.innerHTML == '[+]'){
-                    if ( div.savedDisplay ) {
-                        div.style.display = div.savedDisplay;
-                    } else {
-                        div.style.display = '';
+                var f = filesToRead[sec];
+                pb.processFile(f.name);
+                var binary = VPLUtil.isBinary(f.name);
+                var reader = new FileReader();
+                var ext = VPLUtil.fileExtension(f.name).toLowerCase();
+                reader.onload = function(e) {
+                    var goNext = false;
+                    if (binary) {
+                        if (ext == 'zip') {
+                            try {
+                                VPLUtil.readZipFile(e.target.result, save, pb, function(){readSecuencial(sec + 1);});
+                            } catch (ex) {
+                                VPLUtil.showErrorMessage(ex + " : " + f.name);
+                            }
+                        } else {
+                            var data = VPLUtil.dataFromURLData(e.target.result);
+                            goNext = save({name:f.name, contents:data, encoding:1});
+                        }
+                    } else{
+                        goNext = save({name:f.name, contents:e.target.result, encoding:0});
                     }
-                    text.innerHTML = '[-]';
-                }else{
-                    div.savedDisplay = div.style.display;
-                    div.style.display = 'none';
-                    text.innerHTML = '[+]';
+                    // Load next file if OK.
+                    if ( goNext ) {
+                        readSecuencial(sec + 1);
+                    }
+                    pb.endFile();
+                };
+                if (binary) {
+                    if (ext == 'zip') {
+                        reader.readAsArrayBuffer(f);
+                    } else {
+                        reader.readAsDataURL(f);
+                    }
+                } else {
+                    reader.readAsText(f);
                 }
+            }
+            readSecuencial(0);
+        };
+        (function() {
+            var MIME = {
+                'gif' :'image/gif',
+                'jpg' :'image/jpeg',
+                'jpeg' :'image/jpeg',
+                'png' :'image/png',
+                'ico' :'image/vnd.microsoft.icon',
+                'pdf' :'application/pdf'
+            };
+            VPLUtil.getMIME = function(fileName) {
+                var ext = VPLUtil.fileExtension(fileName);
+                if (ext in MIME) {
+                    return MIME[ext];
+                }
+                return 'application/octet-stream';
+            };
+            VPLUtil.getTimeLeft = function(timeLeft) {
+                var res = '';
+                var minute = 60;
+                var hour = 60 * minute;
+                var day = 24 * hour;
+                if (timeLeft < 0) {
+                    res += '-';
+                    timeLeft = -timeLeft;
+                }
+                var days = parseInt(timeLeft / day);
+                timeLeft -= days * day;
+                if (days !== 0) {
+                    res += days + 'T';
+                }
+                var hours = parseInt(timeLeft / hour);
+                timeLeft -= hours * hour;
+                var minutes = parseInt(timeLeft / minute);
+                timeLeft -= minutes * minute;
+                var seconds = parseInt(timeLeft);
+                res += ('00' + hours).substr(-2) + ':';
+                res += ('00' + minutes).substr(-2);
+                if (days === 0) {
+                    res += ':' + ('00' + seconds).substr(-2);
+                }
+                return res;
+            };
+        })();
+        (function() {
+            var maplang = {
+                'abap': 'abap',
+                'abc': 'abc',
+                'ada': 'ada', 'ads': 'ada', 'adb': 'ada',
+                'as': 'actionscript','as3': 'actionscript',
+                'asm': 'assembly_x86',
+                'bash': 'sh',
+                'bat': 'batchfile',
+                'c': 'c_cpp', 'C': 'c_cpp', 'cc': 'c_cpp', 'cpp': 'c_cpp', 'hxx': 'c_cpp', 'h': 'c_cpp',
+                'cases': 'cases',
+                'cbl': 'cobol', 'cob': 'cobol',
+                'coffee': 'coffee',
+                'clj': 'clojure',
+                'cs': 'csharp',
+                'css': 'css',
+                'd': 'd',
+                'dart': 'dart',
+                'e': 'eiffel',
+                'erl': 'erlang', 'hrl': 'erlang',
+                'f': 'fortran', 'f77': 'fortran',
+                'go': 'go',
+                'groovy': 'groovy',
+                'gv': 'dot',
+                'hs': 'haskell',
+                'htm': 'html', 'html': 'html',
+                'hx': 'haxe',
+                'java': 'java',
+                'js': 'javascript',
+                'json': 'json',
+                'jsp': 'jsp',
+                'jsx': 'jsx',
+                'kt': 'kotlin', 'kts': 'kotlin',
+                'm': 'matlab',
+                'md': 'markdown',
+                'less': 'less',
+                'lisp': 'lisp', 'lsp': 'lisp',
+                'lua': 'lua',
+                'pas': 'pascal', 'p': 'pascal',
+                'perl': 'perl', 'prl': 'perl',
+                'php': 'php',
+                'pro': 'prolog', 'pl': 'prolog',
+                'py': 'python',
+                'R': 'r',
+                'r': 'r',
+                'rb': 'ruby', 'ruby': 'ruby',
+                'sass': 'sass',
+                'scala': 'scala',
+                'scm': 'scheme', 's': 'scheme',
+                'scss': 'scss',
+                'sh': 'sh',
+                'swift': 'swift',
+                'sql': 'sql',
+                'svg': 'svg',
+                'tex': 'tex',
+                'tcl': 'tcl',
+                'ts': 'typescript',
+                'twig': 'twig',
+                'vbs': 'vbscript',
+                'v': 'verilog',
+                'vhd': 'vhdl', 'vhdl': 'vhdl',
+                'xml': 'xml',
+                'yaml': 'yaml'
+            };
+            VPLUtil.langType = function(ext) {
+                if (ext in maplang) {
+                    return maplang[ext];
+                }
+                return 'plain_text';
+            };
+        })();
+        (function() {
+            var i18n = {};
+            VPLUtil.str = function(key) {
+                if (!i18n[key]) {
+                    return '{' + key + '}';
+                }
+                return i18n[key];
+            };
+            VPLUtil.setStr = function(newi18n) {
+                for (var key in newi18n) {
+                    if ( newi18n.hasOwnProperty(key) ) {
+                        i18n[key] = newi18n[key];
+                    }
+                }
+                VPLUtil.dialogbaseOptions = {
+                    autoOpen :false,
+                    width :'auto',
+                    closeText :VPLUtil.str('cancel'),
+                    modal :true,
+                    dialogClass :'vpl_ide vpl_ide_dialog'
+                };
+
+            };
+        })();
+        (function() {
+            var delayedActions = {};
+            var shortTimeout = 20;
+            var longTimeout = 100;
+            VPLUtil.delay = function(id, func, arg1, arg2) {
+                if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
+                    clearTimeout(delayedActions[id]);
+                }
+                delayedActions[id] = setTimeout(function() {
+                    func(arg1, arg2);
+                    delayedActions[id] = false;
+                }, shortTimeout);
+            };
+            VPLUtil.longDelay = function(id, func, arg1, arg2) {
+                if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
+                    clearTimeout(delayedActions[id]);
+                }
+                delayedActions[id] = setTimeout(function() {
+                    func(arg1, arg2);
+                    delayedActions[id] = false;
+                }, longTimeout);
+            };
+        })();
+        VPLUtil.iconModified = function() {
+            var html = '<span title="' + VPLUtil.str('modified') + '" class="vpl_ide_charicon">';
+            html += '<i class="fa fa-star"></i>' + '</span> ';
+            return html;
+        };
+        VPLUtil.iconDelete = function() {
+            var html = ' <span title="' + VPLUtil.str('delete') + '" class="vpl_ide_charicon vpl_ide_delicon">';
+            html += '<i class="fa fa-trash"></i>' + '</span> ';
+            return html;
+        };
+        VPLUtil.iconClose = function() {
+            var html = ' <span title="' + VPLUtil.str('closebuttontitle');
+            html += '" class="vpl_ide_charicon vpl_ide_closeicon">' + '<i class="fa fa-remove"></i>' + '</span> ';
+            return html;
+        };
+        VPLUtil.iconRequired = function() {
+            var html = ' <span title="' + VPLUtil.str('required') + '" class="vpl_ide_charicon">';
+            html += '<i class="fa fa-shield"></i>' + '</span> ';
+            return html;
+        };
+        VPLUtil.iconFolder = function() {
+            return '<i class="fa fa-folder-open-o"></i>';
+        };
+        (function() {
+            var menuIcons = {
+                'filelist': 'folder',
+                'filelistclose': 'folder-open',
+                'new': 'file',
+                'rename': 'pencil',
+                'delete': 'trash',
+                'multidelete': 'trash|list',
+                'close': 'remove',
+                'comments': 'commenting',
+                'import': 'upload',
+                'print': 'print',
+                'edit': 'edit',
+                'undo': 'undo',
+                'redo': 'repeat',
+                'select_all': 'location-arrow',
+                'find': 'search',
+                'find_replace': 'exchange',
+                'next': 'search-plus',
+                'resetfiles': 'refresh',
+                'download': 'download',
+                'fullscreen': 'expand',
+                'regularscreen': 'compress',
+                'save': 'save',
+                'sort': 'list-ol',
+                'run': 'rocket',
+                'debug': 'bug',
+                'evaluate': 'check-square-o',
+                'console': 'terminal',
+                'about': 'question',
+                'info': 'info-circle',
+                'alert': 'warning',
+                'trash': 'trash',
+                'retrieve': 'download',
+                'spinner': 'refresh fa-spin',
+                'keyboard': 'keyboard-o',
+                'clipboard': 'clipboard',
+                'timeleft': 'clock-o',
+                'copy': 'copy',
+                'paste': 'paste',
+                'more': 'plus-square',
+                'less': 'minus-square',
+                'resize': 'arrows-alt',
+                'graphic': 'picture-o',
+                'send': 'send',
+                'theme':  'paint-brush',
+                'user': 'user',
+                'fontsize': 'text-height'
+            };
+            VPLUtil.genIcon = function(icon, size) {
+                if (!menuIcons[icon]) {
+                    return '';
+                }
+                var classes = 'fa fa-';
+                if (!size) {
+                    classes += 'lg';
+                } else {
+                    classes += size;
+                }
+                var icons = menuIcons[icon].split('|');
+                var ret = '';
+                for(var i = 0; i < icons.length; i++) {
+                    ret += "<i class='" + classes + ' fa-' + icons[i] + "'></i>";
+                }
+                return ret;
+            };
+        })();
+        // UI operations.
+        VPLUtil.setTitleBar = function(dialog, type, icon, buttons, handler) {
+            var title = $(dialog).parent().find("span.ui-dialog-title");
+            function genButton(e) {
+                var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPLUtil.str(e) + "'>";
+                html += VPLUtil.genIcon(e, 'fw') + "</a>";
+                return html;
+            }
+            var html = VPLUtil.genIcon(icon);
+            html += " <span class='" + type + "-title-buttons'></span>";
+            html += "<span class='" + type + "-title-text'></span>";
+            title.html(html);
+            var titleButtons = title.find("span." + type + "-title-buttons");
+            var titleText = title.find("span." + type + "-title-text");
+            html = "";
+            for (var i = 0; i < buttons.length; i++) {
+                html += genButton(buttons[i]);
+            }
+            titleButtons.html(html);
+            for (var ih = 0; ih < handler.length; ih++) {
+                var button = title.find('#vpl_' + type + '_' + buttons[ih]);
+                button.button().click(handler[ih]);
+                button.css('padding','1px 3px');
+            }
+            titleButtons.on('focus','*', function(){$(this).blur();});
+            return titleText;
+        };
+        VPLUtil.progressBar = function(title, message, onUserClose) {
+            var labelHTML = '<span class="vpl_ide_progressbarlabel"></span>';
+            var sppiner = '<div class="vpl_ide_progressbaricon">' + VPLUtil.genIcon('spinner') + '</div>';
+            var pbHTML = ' <div class="vpl_ide_progressbar">' + sppiner + labelHTML + '</div>';
+            var HTML = '<div class="vpl_ide_dialog" style="display:none;">' + pbHTML + '</div>';
+            var dialog = $(HTML);
+            $('body').append(dialog);
+            var progressbar = dialog.find('.vpl_ide_progressbar');
+            var label = progressbar.find('.vpl_ide_progressbarlabel');
+            dialog.dialog({
+                'title' :VPLUtil.str(title),
+                resizable :false,
+                autoOpen :false,
+                width :200,
+                height :20,
+                minHeight :20,
+                modal :true,
+                dialogClass :'vpl_ide vpl_ide_dialog',
+                close :function( event ) {
+                    if (dialog) {
+                        if (onUserClose && event.originalEvent ) {
+                            onUserClose();
+                        }
+                        onUserClose = false;
+                    }
+                }
+            });
+            this.setLabel = function(t, icon) {
+                if (dialog) {
+                    label.text(t);
+                    if (icon) {
+                        label.html(VPLUtil.genIcon(icon) + ' ' + label.html());
+                    }
+                }
+            };
+            this.close = function() {
+                if(dialog) {
+                    dialog.dialog('destroy');
+                    $(dialog).remove();
+                    dialog = false;
+                }
+            };
+            this.isClosed = function() {
+                return dialog === false;
+            };
+            var titleTag = dialog.siblings().find('.ui-dialog-title');
+            titleTag.html(VPLUtil.genIcon(title) + ' ' + titleTag.html());
+            this.setLabel(VPLUtil.str(message));
+            dialog.dialog('open');
+            dialog.dialog('option', 'height', 'auto');
+        };
+        VPLUtil.showMessage = function(message, initialoptions) {
+            var options = $.extend({}, initialoptions);
+            var messageDialog = $('<div class="vpl_ide_dialog"></div>');
+            if (!options) {
+                options = {};
+            }
+            if (!options.icon) {
+                options.icon = 'info';
+            }
+            if (!options.title) {
+                options.title = VPLUtil.str('warning');
+            }
+            messageDialog.html(VPLUtil.genIcon(options.icon) + ' <span class="dmessage">' + message + '</span>');
+            $('body').append(messageDialog);
+            var messageButtons = {};
+            if (!options.ok) {
+                messageButtons[VPLUtil.str('ok')] = function() {
+                    $(this).dialog('close');
+                };
+            } else {
+                messageButtons[VPLUtil.str('ok')] = function() {
+                    $(this).dialog('close');
+                    options.ok();
+                };
+                messageButtons[VPLUtil.str('cancel')] = function() {
+                    $(this).dialog('close');
+                };
+            }
+            if (options.next) {
+                messageButtons[VPLUtil.str('next')] = function() {
+                    $(this).dialog('close');
+                    options.next();
+                };
+            }
+            if (options.close) {
+                options.oldClose = options.close;
+            }
+            messageDialog.dialog($.extend({}, VPLUtil.dialogbaseOptions, {
+                title :options.title,
+                buttons :messageButtons,
+                close :function() {
+                    $(this).remove();
+                    if (options.oldClose) {
+                        options.oldClose();
+                    }
+                }
+            }));
+            messageDialog.dialog('open');
+            messageDialog.setMessage = function(men) {
+                $(messageDialog).find('.dmessage').html(men);
+            };
+            return messageDialog;
+        };
+        VPLUtil.showErrorMessage = function(message, options) {
+            var currentOptions = $.extend({}, VPLUtil.dialogbaseOptions, {
+                title :VPLUtil.str('error'),
+                icon :'alert'
+            });
+            if (options) {
+                currentOptions = $.extend(currentOptions, options);
+            }
+            return VPLUtil.showMessage(message, currentOptions);
+        };
+
+        VPLUtil.requestAction = function(action, title, data, URL) {
+            var deferred = $.Deferred();
+            var request = null;
+            var xhr = false;
+            if (title === '') {
+                title = 'connecting';
+            }
+            var apb = new VPLUtil.progressBar(action, title, function() {
+                if (request.readyState != 4) {
+                    if ( xhr && xhr.abort ) {
+                        xhr.abort();
+                    }
+                }
+            });
+            request = $.ajax({
+                beforeSend :function (jqXHR) {
+                    xhr = jqXHR;
+                    return true;
+                },
+                async :true,
+                type :"POST",
+                url :URL + action,
+                'data' :JSON.stringify(data),
+                contentType :"application/json; charset=utf-8",
+                dataType :"json"
+            }).always(function() {
+                apb.close();
+            }).done(function(response) {
+                if (!response.success) {
+                    deferred.reject(response.error);
+                } else {
+                    deferred.resolve(response.response);
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                var message = VPLUtil.str('connection_fail') + ': ' + textStatus;
+                if ( debugMode ) {
+                    message += '<br>' + errorThrown.message;
+                    message += '<br>' + jqXHR.responseText.substr(0,80);
+                }
+                VPLUtil.log(message);
+                deferred.reject(message);
+            });
+            return deferred;
+        };
+        VPLUtil.supportWebSocket = function() {
+            if ("WebSocket" in window) {
+                return true;
+            }
+            return false;
+        };
+        VPLUtil.isAndroid = function() {
+            return window.navigator.userAgent.indexOf('Android') > -1;
+        };
+        VPLUtil.isFirefox = function() {
+            return window.navigator.userAgent.indexOf('Firefox') > -1;
+        };
+        VPLUtil.isMac = function() {
+            return window.navigator.userAgent.indexOf('Mac') > -1;
+        };
+        VPLUtil.clickServer = function(e) {
+            var w = 550;
+            var h = 450;
+            var left = (screen.width / 2) - (w / 2);
+            var top = (screen.height / 2) - (h / 2);
+            try {
+                var features = 'toolbar=no, location=no, directories=no, status=no, menubar=no';
+                features += ', resizable=yes, scrollbars=yes, copyhistory=no, width=' + w;
+                features += ', height=' + h + ', top=' + top + ', left=' + left;
+                var win = window.open($(this).attr('href'), '_blank', features);
+                if (!win) {
+                    return true;
+                }
+            } catch (ex) {
+                VPLUtil.log( ex );
+                return true;
+            }
+            e.preventDefault();
+            $(this).parent().hide();
+            return false;
+        };
+
+        VPLUtil.acceptCertificates = function(servers, getLastAction) {
+            if (servers.length > 0) {
+                // Generate links dialog.
+                var html = VPLUtil.str('acceptcertificatesnote');
+                html += '<ol>';
+                for (var i in servers) {
+                    if ( servers.hasOwnProperty(i) ) {
+                        var n = 1 + i;
+                        html += '<li><a href="' + servers[i] + '" target="_blank">Server ';
+                        html += n + '</a><br /></ul>';
+                    }
+                }
+                html += '</ol>';
+                var m = VPLUtil.showMessage(html, {
+                    ok :function() {
+                        var action = getLastAction();
+                        if (action) {
+                            action();
+                        }
+                    },
+                    icon :'unlocked',
+                    title :VPLUtil.str('acceptcertificates')
+                });
+                $(m).find('a').on('click keypress', VPLUtil.clickServer);
+            } else {
+                VPLUtil.log('servers.length == 0');
+                VPLUtil.showErrorMessage(VPLUtil.str('connection_fail'));
             }
         };
 
-    })();
-    VPLUtil.options = {
-        scriptPath :''
-    };
-    VPLUtil.init = function(options) {
-        $.extend(VPLUtil.options, options);
-    };
-    window.VPLUtil = VPLUtil;
-    return VPLUtil;
-});
+        VPLUtil.webSocketMonitor = function(coninfo, title, running, externalActions) {
+            VPLUtil.setProtocol(coninfo);
+            var ws = null;
+            var pb = null;
+            var deferred = $.Deferred();
+            var defail = function( m ) {
+                deferred.reject( m );
+            };
+            var delegated = false;
+            var messageActions = {
+                'message' :function(content) {
+                    var parsed = /^([^:]*):?(.*)/i.exec(content);
+                    var state = parsed[1];
+                    var detail = parsed[2];
+                    if (state == 'running') {
+                        state = running;
+                    }
+                    var text = VPLUtil.str(state);
+                    if (detail > '') {
+                        text += ': ' + detail;
+                    }
+                    if (externalActions.getConsole && externalActions.getConsole().isOpen()) {
+                        externalActions.getConsole().setMessage(text);
+                    } else {
+                        pb.setLabel(text);
+                    }
+                },
+                'compilation' :function(content) {
+                    if (externalActions.setResult) {
+                        externalActions.setResult({
+                            'compilation' :content,
+                        }, false);
+                    }
+                },
+                'retrieve' :function() {
+                    pb.close();
+                    delegated = true;
+                    VPLUtil.requestAction('retrieve', '', '', externalActions.ajaxurl)
+                    .done(
+                        function(response) {
+                            deferred.resolve();
+                            if (externalActions.setResult) {
+                                externalActions.setResult(response, true);
+                            }
+                        }
+                    ).fail(defail);
+                },
+                'run' :function(content) {
+                    pb.close();
+                    externalActions.run(content, coninfo, ws);
+                },
+                'close' :function() {
+                    VPLUtil.log('ws close message from jail');
+                    ws.close();
+                    if (externalActions.close) {
+                        externalActions.close();
+                    }
+                }
+            };
+            try {
+                if (VPLUtil.supportWebSocket()) {
+                    ws = new WebSocket(coninfo.monitorURL);
+                } else {
+                    VPLUtil.log('ws not available');
+                    deferred.reject(VPLUtil.str('browserupdate'));
+                    return deferred;
+                }
+            } catch (e) {
+                VPLUtil.log('ws new say ' + e);
+                deferred.reject(e.message);
+                return deferred;
+            }
+            pb = new VPLUtil.progressBar(title, 'connecting', function() {
+                deferred.reject('Stopped by user');
+                ws.close();
+            });
+            ws.notOpen = true;
+            ws.onopen = function() {
+                ws.notOpen = false;
+                pb.setLabel(VPLUtil.str('connected'));
+            };
+            ws.onerror = function(event) {
+                VPLUtil.log('ws error ' + event);
+                pb.close();
+                if (coninfo.secure && ws.notOpen) {
+                    VPLUtil.requestAction('getjails', 'retrieve', {}, externalActions.ajaxurl)
+                    .done(function(response) {
+                        VPLUtil.acceptCertificates(response.servers, function(){
+                            return externalActions.getLastAction();
+                        });
+                    })
+                    .fail(defail);
+                } else {
+                    deferred.reject(VPLUtil.str('connection_fail'));
+                }
+            };
+            ws.onclose = function() {
+                if (externalActions.getConsole) {
+                    externalActions.getConsole().disconnect();
+                }
+                if ( !ws.notOpen ) {
+                    pb.close();
+                    if ( ! delegated && deferred.state() != 'rejected' ) {
+                        deferred.resolve();
+                    }
+                }
+            };
+
+            ws.onmessage = function(event) {
+                var message = /^([^:]+):/i.exec(event.data);
+                if (message !== null) {
+                    var action = message[1];
+                    var content = event.data.substr(action.length + 1);
+                    if (messageActions[action]) {
+                        messageActions[action](content);
+                    }
+                } else {
+                    pb.setLabel(VPLUtil.str('error') + ': ' + event.data);
+                }
+            };
+            return deferred;
+        };
+        VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
+            if ( typeof text == 'undefined' || text.replace('/^\s+|\s+$/gm','') == '' ) {
+                return '';
+            }
+            function escReg(t) {
+                return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
+            }
+            var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
+            var regtit = /^-.*/;
+            var regcas = /^\s*\>/;
+            // TODO adds error? use first anotation for icon.
+            var regError = new RegExp('\\[err\\]|error|' + escReg(VPLUtil.str('error')), 'i');
+            var regInformation = new RegExp('\\[info\\]|information', 'i');
+            var regWarning = new RegExp('\\[warn\\]|warning|note|' + escReg(VPLUtil.str('warning')), 'i');
+            var state = '';
+            var html = '';
+            var comment = '';
+            var case_ = '';
+            var lines = text.split(/\r\n|\n|\r/);
+            var regFiles = [];
+            var lastAnotation = false;
+            var lastAnotationFile = false;
+            var afterTitle = false;
+            function getHref( i ) {
+                if ( typeof sh[i].getTagId === 'undefined' ) {
+                    return 'href="#" ';
+                } else {
+                    return 'href="#' + sh[i].getTagId() + '" ';
+                }
+            }
+            for (var i = 0; i < filenames.length; i++) {
+                var regf = escReg(filenames[i]);
+                var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)([:\,]?(\\d+)?\\)?)";
+                regFiles[i] = new RegExp(reg, '');
+            }
+            function genFileLinks(line, rawline) {
+                var used = false;
+                for (var i = 0; i < regFiles.length; i++) {
+                    var reg = regFiles[i];
+                    var match;
+                    while ((match = reg.exec(line)) !== null) {
+                        var anot = sh[i].getAnnotations();
+                        // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
+                        lastAnotationFile = i;
+                        used = true;
+                        var type = 'error';
+                        if ( line.search(regWarning) > -1 ) {
+                            type = 'warning';
+                        } else if ( line.search(regInformation) > -1 ) {
+                            type = 'info';
+                        }
+                        lastAnotation = {
+                            'row': (match[2] - 1),
+                            'column': match[3],
+                            'type': type,
+                            'text': rawline,
+                        };
+                        anot.push(lastAnotation);
+                        var fileName = filenames[i];
+                        var href = getHref( i );
+                        var lt = VPLUtil.sanitizeText( fileName );
+                        var data = 'data-file="' + fileName + '" data-line="' + match[2] + '"';
+                        line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + ':$2$3</a>');
+                        sh[i].setAnnotations(anot);
+                    }
+                }
+                if (!used && lastAnotation) {
+                    if (rawline !== '') {
+                        lastAnotation.text += "\n" + rawline;
+                        sh[lastAnotationFile].setAnnotations(sh[lastAnotationFile].getAnnotations());
+                    } else {
+                        lastAnotation = false;
+                    }
+                }
+                return line;
+            }
+            function getTitle(line) {
+                lastAnotation = false;
+                line = line.substr(1);
+                var end = regtitgra.exec(line);
+                if (end !== null) {
+                    line = line.substr(0, line.length - end[0].length);
+                }
+                var html = '';
+                if ( folding ) {
+                    html += '<a href="javascript:void(0)" onclick="VPLUtil.showHideDiv(this)">[+]</a>';
+                }
+                html += '<b class="ui-widget-header ui-corner-all">' + VPLUtil.sanitizeText(line) + '</b><br />';
+                html = genFileLinks(html, line);
+                return html;
+            }
+            function getComment() {
+                lastAnotation = false;
+                var ret = comment;
+                comment = '';
+                return ret;
+            }
+            function addComment(rawline) {
+                var line = VPLUtil.sanitizeText(rawline);
+                comment += genFileLinks(line, rawline) + '<br />';
+            }
+            function addCase(rawline) {
+                var line = VPLUtil.sanitizeText(rawline);
+                case_ += genFileLinks(line, rawline) + "\n";
+            }
+            function getCase() {
+                lastAnotation = false;
+                var ret = case_;
+                case_ = '';
+                return '<pre><i>' + ret + '</i></pre>';
+            }
+
+            for (i = 0; i < lines.length; i++) {
+                var line = lines[i];
+                if ( noFormat ) {
+                    html += genFileLinks(VPLUtil.sanitizeText(line), line) + "\n";
+                    continue;
+                }
+                var match = regcas.exec(line);
+                var regcasv = regcas.test(line);
+                if ((match !== null) != regcasv) {
+                    VPLUtil.log('error');
+                }
+                if (regtit.test(line)) {
+                    switch (state) {
+                        case 'comment':
+                            html += getComment();
+                            break;
+                        case 'case':
+                            html += getCase();
+                            break;
+                    }
+                    if ( afterTitle ) {
+                        html += '</div>';
+                    }
+                    html += getTitle(line);
+                    html += folding ? '<div style="display:none">' : '<div>';
+                    afterTitle = true;
+                    state = '';
+                } else if (regcasv) {
+                    if ( state == 'comment' ) {
+                        html += getComment();
+                    }
+                    addCase(line.substr(match[0].length));
+                    state = 'case';
+                } else {
+                    if ( state == 'case' ) {
+                        html += getCase();
+                    }
+                    addComment(line);
+                    state = 'comment';
+                }
+            }
+            switch (state) {
+                case 'comment':
+                    html += getComment();
+                    break;
+                case 'case':
+                    html += getCase();
+                    break;
+            }
+            if ( afterTitle ) {
+                html += '</div>';
+            }
+            return html;
+        };
+        (function() {
+            var scriptsLoaded = [];
+            VPLUtil.loadScript = function(scripts, end) {
+                if ( scripts.length == 0 ) {
+                    end();
+                    return;
+                }
+                var scriptURL = scripts[0];
+                if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
+                    scripts.shift();
+                    scriptsLoaded[scriptURL] = 1;
+                    var script = document.createElement('script');
+                    script.type = 'text/javascript';
+                    script.src = VPLUtil.options.scriptPath + scriptURL;
+                    script.onload = function () {
+                        scriptsLoaded[scriptURL] = 2;
+                        VPLUtil.loadScript(scripts, end);
+                    };
+                    document.head.appendChild(script);
+                } else if ( scriptsLoaded[scriptURL] == 2) {
+                    scripts.shift();
+                    VPLUtil.loadScript(scripts, end);
+                } else {
+                    setTimeout(function() {VPLUtil.loadScript(scripts, end);}, 50);
+                }
+            };
+            VPLUtil.isScriptLoading = function(scriptURL) {
+                if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
+                    return false;
+                }
+                return scriptsLoaded[scriptURL] == 1;
+            };
+            VPLUtil.isScriptLoaded = function(scriptURL) {
+                if ( typeof scriptsLoaded[scriptURL] == 'undefined' ) {
+                    return false;
+                }
+                return scriptsLoaded[scriptURL] == 2;
+            };
+        })();
+        VPLUtil.adjustBlockly = function(work, offx, offy) {
+            var blocks = work.getAllBlocks();
+            var miy = 20000;
+            var may = -20000;
+            var mix = 20000;
+            var max = -20000;
+            for (var i = 0; i < blocks.length; i++) {
+                var xy = blocks[i].getRelativeToSurfaceXY();
+                miy = Math.min(miy, xy.y);
+                may = Math.max(may, xy.y);
+                mix = Math.min(mix, xy.x);
+                max = Math.max(max, xy.x);
+            }
+            blocks = work.getTopBlocks();
+            for (var i = 0; i < blocks.length; i++){
+                blocks[i].moveBy( offx - mix, offy - miy );
+            }
+            return may - miy + 100 + offy;
+        };
+        (function() {
+            var files = [];
+            var results = [];
+            var shs = [];
+            function SubmissionHighlighter(files, results) {
+                var self = this;
+                this.files = files;
+                this.results = results;
+                setTimeout(function() {self.highlight();}, 10);
+            }
+            SubmissionHighlighter.prototype.highlightBlockly = function(preid) {
+                VPLUtil.loadScript(['../editor/blockly/blockly_compressed.js',
+                    '../editor/blockly/msg/js/en.js',
+                    '../editor/blockly/blocks_compressed.js']
+                ,function() {
+                    var tag = $('#' + preid);
+                    var c = tag.html();
+                    $('#' + preid + 'load').remove();
+                    tag.html('');
+                    tag.show();
+                    c = $('<div />').html(c).text().replace(/\n/g, "");
+                    var xml = Blockly.Xml.textToDom(c);
+                    tag.html('').height(300).width(tag.parent().width());
+                    var options = {
+                        toolbox :'',
+                        readOnly :true,
+                        media :'../editor/blockly/media/',
+                    };
+                    var work = Blockly.inject(preid, options);
+                    Blockly.Xml.domToWorkspace(xml, work);
+                    var hg = VPLUtil.adjustBlockly(work, 10, 10);
+                    tag.height(hg);
+                    tag.width('100%');
+                    Blockly.svgResize(work);
+                    Blockly.resizeSvgContents(work);
+                    var h = tag.html();
+                    work.dispose();
+                    tag.html(h);
+                });
+            };
+            SubmissionHighlighter.prototype.highlight = function(){
+                var self = this;
+                if ( typeof ace === 'undefined' ) {
+                    VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.highlight();});
+                    return;
+                }
+                var files = this.files;
+                var results = this.results;
+                var shFiles = [];
+                var shFileNames = [];
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    var preid = 'code' + file.tagId;
+                    if ( VPLUtil.isBlockly(file.fileName) ) {
+                        self.highlightBlockly(preid);
+                        continue;
+                    }
+                    var ext = VPLUtil.fileExtension( file.fileName );
+                    var lang = VPLUtil.langType(ext);
+                    $('#' + preid).show();
+                    $('#' + preid + 'load').remove();
+                    var sh = ace.edit( preid );
+                    sh.setTheme( 'ace/theme/' + file.theme );
+                    sh.getSession().setMode( 'ace/mode/' + lang );
+                    sh.renderer.setShowGutter( file.showln );
+                    sh.setReadOnly( true );
+                    sh.setHighlightActiveLine( false );
+                    sh.setAutoScrollEditorIntoView( true );
+                    sh.setOption('maxLines', file.nl);
+                    sh.getAnnotations = function(){
+                        return this.getSession().getAnnotations();
+                    };
+                    sh.setAnnotations = function(a){
+                        return this.getSession().setAnnotations(a);
+                    };
+                    sh.getTagId = function(){
+                        return this.vplTagId;
+                    };
+                    sh.vplTagId = file.tagId;
+                    shFiles.push( sh );
+                    shFileNames.push( file.fileName );
+                    shs[file.tagId] = sh;
+                }
+                for (var ri = 0; ri < results.length; ri++) {
+                    var tag = document.getElementById(results[ri].tagId);
+                    var text = tag.textContent || tag.innerText;
+                    tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
+                                                           results[ri].noFormat, results[ri].folding);
+                }
+                // Wait 1 sec. to remove all ace code ¿exists event to resolve this?
+                setTimeout( function() {
+                    for (var si = 0; si < shFiles.length; si++) {
+                        var editor = shFiles[si];
+                        var tag = editor.getTagId();
+                        var odlhtml = $('#' + tag).html();
+                        editor.destroy();
+                        $('#' + tag).html(odlhtml);
+                    }
+                    files = null;
+                    results = null;
+                    shFiles = null;
+                    shFileNames = null;
+                }, 1000);
+            };
+
+            VPLUtil.addResults = function( tagId, noFormat, folding ){
+                results.push({ 'tagId' :tagId, 'noFormat' :noFormat, 'folding' :folding });
+            };
+            VPLUtil.syntaxHighlightFile = function( tagId, fileName, theme, showln, nl){
+                files.push({
+                    'tagId' :tagId,
+                    'fileName' :fileName,
+                    'theme' :theme,
+                    'showln' :showln,
+                    'nl' :nl
+                 });
+            };
+            VPLUtil.syntaxHighlight = function(){
+                var self = this;
+                if ( typeof ace === 'undefined' ) {
+                    VPLUtil.loadScript(['../editor/ace9/ace.js'], function() {self.syntaxHighlight();});
+                    return;
+                }
+                new SubmissionHighlighter(files,results);
+                files = [];
+                results = [];
+            };
+            VPLUtil.flEventHandler = function( event ){
+                var tag = event.target.getAttribute('href').substring(1);
+                var line = event.target.getAttribute('data-line');
+                var sh = shs[tag];
+                sh.gotoLine(line, 0);
+                sh.scrollToLine(line, true);
+            };
+            VPLUtil.setflEventHandler = function(){
+                var links = document.getElementsByClassName("vpl_fl");
+                for(var i = 0; i < links.length; i++) {
+                    links[i].onclick = VPLUtil.flEventHandler;
+                }
+            };
+            VPLUtil.showHideDiv = function (a){
+                var text = a;
+                var div = a;
+                if ( ! div.nextSibling ) {
+                    div = div.parentNode;
+                }
+                div = div.nextSibling;
+                while ( div.nodeName != 'DIV' && div.nodeName != 'PRE' ) {
+                    div = div.nextSibling;
+                    if ( ! div ) {
+                        return;
+                    }
+                }
+                if(text){
+                    if(text.innerHTML == '[+]'){
+                        if ( div.savedDisplay ) {
+                            div.style.display = div.savedDisplay;
+                        } else {
+                            div.style.display = '';
+                        }
+                        text.innerHTML = '[-]';
+                    }else{
+                        div.savedDisplay = div.style.display;
+                        div.style.display = 'none';
+                        text.innerHTML = '[+]';
+                    }
+                }
+            };
+
+        })();
+        VPLUtil.options = {
+            scriptPath :''
+        };
+        VPLUtil.init = function(options) {
+            $.extend(VPLUtil.options, options);
+        };
+        window.VPLUtil = VPLUtil;
+        return VPLUtil;
+    }
+);

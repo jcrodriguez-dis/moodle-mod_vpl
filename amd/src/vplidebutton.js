@@ -21,14 +21,16 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['jquery',
-         'jqueryui',
-         'mod_vpl/vplutil',
-         ],
-         function($, jqui, VPLUtil ) {
-    if ( typeof VPLIDEButtons !== 'undefined' ) {
-        return VPLIDEButtons;
-    }
+define(
+    [
+        'jquery',
+        'jqueryui',
+        'mod_vpl/vplutil',
+    ],
+    function($, jqui, VPLUtil ) {
+        if ( typeof VPLIDEButtons !== 'undefined' ) {
+            return VPLIDEButtons;
+        }
         var VPLIDEButtons = function(menuElement, isOptionAllowed) {
             var self = this;
             var buttons = {};

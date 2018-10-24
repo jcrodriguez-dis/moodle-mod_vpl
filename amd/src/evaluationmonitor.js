@@ -35,11 +35,11 @@ define(['mod_vpl/vplutil'],function(VPLUtil) {
             }
             var action;
             var executionActions = {
-                    'ajaxurl' : options.ajaxurl,
-                    'run' : showErrorMessage,
-                    'getLastAction' : function() {
-                        action();
-                    },
+                'ajaxurl' : options.ajaxurl,
+                'run' : showErrorMessage,
+                'getLastAction' : function() {
+                    action();
+                },
             };
             action = function() {
                 VPLUtil.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
