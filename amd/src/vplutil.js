@@ -398,7 +398,7 @@ define(
                 'e': 'eiffel',
                 'erl': 'erlang', 'hrl': 'erlang',
                 'f': 'fortran', 'f77': 'fortran',
-                'go': 'go',
+                'go': 'golang',
                 'groovy': 'groovy',
                 'gv': 'dot',
                 'hs': 'haskell',
