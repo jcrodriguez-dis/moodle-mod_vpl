@@ -49,7 +49,7 @@ function vpl_grade_item_update($instance, $grades=null) {
     if ($instance->grade > 0) {
         $itemdetails['gradetype'] = GRADE_TYPE_VALUE;
         $itemdetails['grademax']  = $instance->grade;
-        $itemdetails['grademin']  = 0;
+        $itemdetails['grademin']  = 0; // I don't know if this is correct updating.
 
     } else if ($instance->grade < 0) {
         $itemdetails['gradetype'] = GRADE_TYPE_SCALE;
@@ -218,31 +218,44 @@ function vpl_update_instance($instance) {
  */
 function vpl_delete_instance( $id ) {
     global $DB, $CFG;
-    // Delete all data files.
+
     $instance = $DB->get_record( VPL, array ( "id" => $id ) );
     if ( $instance === false ) {
         return false;
     }
+
+    // Delete all data files.
     vpl_delete_dir( $CFG->dataroot . '/vpl_data/' . $id );
+
     // Delete grade_item.
     vpl_delete_grade_item( $instance );
-    // Delete event.
+
+    // Delete relate event.
     $DB->delete_records( 'event',
             array (
                     'modulename' => VPL,
                     'instance' => $id
             ) );
-    // Delete all submissions records.
-    $DB->delete_records( 'vpl_submissions', array ( 'vpl' => $id ) );
+
+    // Delete all related records.
+    $tables = [
+            VPL_SUBMISSIONS,
+            VPL_VARIATIONS,
+            VPL_ASSIGNED_VARIATIONS
+    ];
+    foreach ($tables as $table) {
+        $DB->delete_records( $table, array ('vpl' => $id) );
+    }
+
+    // Reset basedon $id to 0.
+    $resetbasedon = 'UPDATE {vpl}
+                         set basedon = 0
+                         WHERE basedon = :vplid';
+    $DB->execute($resetbasedon, array ( 'vplid' => $id ));
+
     // Delete vpl record.
     $DB->delete_records( VPL, array ( 'id' => $id ) );
 
-    // Locate related VPLs and reset its basedon $id to 0.
-    $related = $DB->get_records_select( VPL, 'basedon = ?', array ( $id ) );
-    foreach ($related as $other) {
-        $other->basedon = 0;
-        $DB->update_record( VPL, $other );
-    }
     return true;
 }
 
@@ -334,7 +347,7 @@ function vpl_user_complete($course, $user, $mod, $vpl) {
     return true;
 }
 /**
- * Returns all VPL assignments since a given time
+ * Returns all VPL submissions since a given time
  */
 function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
     global $CFG, $USER, $DB;
@@ -586,7 +599,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     $manager = has_capability( VPL_MANAGE_CAPABILITY, $context );
     $setjails = has_capability( VPL_SETJAILS_CAPABILITY, $context );
     if ($manager) {
-        $userid = optional_param( 'userid', null, PARAM_INT );
+        $userid = optional_param( 'userid', $USER->id, PARAM_INT );
         $klist = $vplnode->get_children_key_list();
         if (count( $klist ) > 1) {
             $fkn = $klist [1];
@@ -594,7 +607,11 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         } else {
             $fkn = null;
         }
-        $parms = array ( 'id' => $cmid );
+        if ( $userid != $USER->id ) {
+            $parms = array ( 'id' => $cmid, 'userid' => $userid );
+        } else {
+            $parms = array ( 'id' => $cmid );
+        }
         $url = new moodle_url( '/mod/vpl/forms/testcasesfile.php', $parms );
         $node = vpl_navi_node_create($vplnode, 'testcases', $url);
         $vplnode->add_node( $node, $fkn );
@@ -637,20 +654,18 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $strdescription = get_string( 'description', VPL );
         $strsubmission = get_string( 'submission', VPL );
         $stredit = get_string( 'edit', VPL );
-        $parmsuser = array (
-                'id' => $cmid,
-                'userid' => $userid
-        );
         $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
         $node = vpl_navi_node_create($testact, 'submission', $url);
         $testact->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/edit.php', $parms );
         $node = vpl_navi_node_create($testact, 'edit', $url);
         $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
-        $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'moodle');
-        $testact->add_node( $node );
-        $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parmsuser );
+        if ( $userid != $USER->id ) { // Auto grading has sense?
+            $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
+            $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'moodle');
+            $testact->add_node( $node );
+        }
+        $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parms );
         $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url);
         $testact->add_node( $node );
         $url = new moodle_url( '/mod/vpl/index.php', array ('id' => $PAGE->cm->course));
@@ -672,26 +687,26 @@ function vpl_cron() {
     $now = time();
     $sql = 'SELECT id, startdate, duedate, course, name
     FROM {vpl}
-    WHERE startdate > ?
-      and startdate <= ?
-      and (duedate > ? or duedate = 0)';
+    WHERE startdate >= :initrange
+      and startdate <= :endrange
+      and (duedate > :now or duedate = 0)';
     $parms = array (
-            $now - (2 * 3600),
-            $now,
-            $now
+            'initrange' => $now - VPL_STARTDATE_RANGE,
+            'endrange' => $now + VPL_STARTDATE_RANGE,
+            'now' => $now
     );
     $vpls = $DB->get_records_sql( $sql, $parms );
     foreach ($vpls as $instance) {
         if (! instance_is_visible( VPL, $instance )) {
             $vpl = new mod_vpl( null, $instance->id );
-            echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"';
             $cm = $vpl->get_course_module();
             $rebuilds [$cm->id] = $cm;
         }
     }
     foreach ($rebuilds as $cmid => $cm) {
         set_coursemodule_visible( $cm->id, true );
-        rebuild_course_cache( $cm->course );
+        \core\event\course_module_updated::create_from_cm($cm)->trigger();
+        rebuild_course_cache( $cm->course, true );
     }
     return true;
 }
@@ -705,6 +720,8 @@ function vpl_cron() {
  * @return mixed boolean/array of users
  */
 function vpl_get_participants($vplid) {
+    // TODO checks if this function is obsolete.
+    // TODO teamwork not supported.
     global $CFG, $DB;
     // Locate students.
     $submiters = $DB->get_records_sql( 'SELECT DISTINCT userid
@@ -746,6 +763,7 @@ function vpl_get_participants($vplid) {
         return false;
     }
 }
+
 function vpl_scale_used($vplid, $scaleid) {
     global $DB;
     return $scaleid and $DB->record_exists( VPL, array (
@@ -811,7 +829,7 @@ function vpl_get_post_actions() {
 function vpl_reset_gradebook($courseid, $type = '') {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
-    if ($cms = get_coursemodules_in_course( VPL, $course->id )) {
+    if ($cms = get_coursemodules_in_course( VPL, $courseid )) {
         foreach ($cms as $cmid => $cm) {
             $vpl = new mod_vpl( $cmid );
             $instance = $vpl->get_instance();
@@ -825,8 +843,30 @@ function vpl_reset_gradebook($courseid, $type = '') {
 }
 
 /**
+ * Remove all user data from a vpl instance
+ *
+ * @param int $vplid Id of the VPL instance
+ * @return void
+ */
+function vpl_reset_instance_userdata($vplid) {
+    global $CFG, $DB;
+
+    // Delete submissions records.
+    $DB->delete_records( VPL_SUBMISSIONS, array (
+            'vpl' => $vplid
+    ) );
+    // Delete variations assigned.
+    $DB->delete_records( VPL_ASSIGNED_VARIATIONS, array (
+            'vpl' => $vplid
+    ) );
+
+    // Delete submission, execution and evaluation files.
+    fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata' );
+}
+
+/**
  * This function is used by the reset_course_userdata function in moodlelib. This function
- * will remove all posts from the specified vpl instance and clean up any related data.
+ * will remove all submissions from the specified vpl instance and clean up any related data.
  *
  * @param $data stdClass the data submitted from the reset course.
  * @return array status array
@@ -840,21 +880,17 @@ function vpl_reset_userdata($data) {
             foreach ($cms as $cmid => $cm) { // For each vpl instance in course.
                 $vpl = new mod_vpl( $cmid );
                 $instance = $vpl->get_instance();
-                // Delete submissions records.
-                $DB->delete_records( VPL_SUBMISSIONS, array (
-                        'vpl' => $instance->id
-                ) );
-                // Delete variations assigned.
-                $DB->delete_records( VPL_ASSIGNED_VARIATIONS, array (
-                        'vpl' => $instance->id
-                ) );
-                // Delete submission files.
-                fulldelete( $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata' );
-                $status [] = array (
+                $instancestatus = array (
                         'component' => $componentstr,
                         'item' => get_string( 'resetvpl', VPL, $instance->name ),
                         'error' => false
                 );
+                try {
+                    vpl_reset_instance_userdata($instance->id);
+                } catch (Exception $e) {
+                    $instancestatus['error'] = true;
+                }
+                $status [] = $instancestatus;
             }
         }
     }
@@ -863,7 +899,7 @@ function vpl_reset_userdata($data) {
 
 /**
  * Implementation of the function for printing the form elements that control whether
- * the course reset functionality affects the assignment.
+ * the course reset functionality affects VPL.
  *
  * @param $mform moodleform passed by reference
  */
@@ -881,12 +917,3 @@ function vpl_reset_course_form_defaults($course) {
     );
 }
 
-/*
- * any/all functions defined by the module should be in here. If the modulename is called
- * widget, then the required functions include: Other functions available but not required
- * are: o widget_delete_course() - code to clean up anything that would be leftover after
- * all instances are deleted o widget_process_options() - code to pre-process the form data
- * from module settings o widget_reset_course_form() and widget_delete_userdata() - used to
- * implement Reset course feature. To avoid possible conflict, any module functions should
- * be named starting with widget_ and any constants you define should start with WIDGET_
- */
