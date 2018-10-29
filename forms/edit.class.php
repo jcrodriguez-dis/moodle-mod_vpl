@@ -40,7 +40,8 @@ require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
  */
 class mod_vpl_edit{
     /**
-     * Translate files from IDE to internal format
+     * Translates files from IDE to internal format
+     *
      * @param Object[] $postfiles atributes encoding, name and contents
      * @return string[string] contents indexed by filenames
      */
@@ -57,7 +58,8 @@ class mod_vpl_edit{
     }
 
     /**
-     * Translate files from internal format to IDE format
+     * Translates files from internal format to IDE format
+     *
      * @param string[string] $from contents indexed by filenames
      * @return stdClass[]
      */
@@ -79,7 +81,7 @@ class mod_vpl_edit{
     }
 
     /**
-     * Convert from file internal format to old array of array format
+     * Converts from file internal format to old array of array format
      * @param string[string] $arrayfiles files internal format
      * @return string[][]
      */
@@ -97,6 +99,7 @@ class mod_vpl_edit{
 
     /**
      * Save a submission version
+     *
      * @param mod_vpl $vpl VPL instance
      * @param int $userid
      * @param string[string] $files internal format
@@ -120,7 +123,7 @@ class mod_vpl_edit{
     }
 
     /**
-     * Get initial/requested files of $vpl
+     * Returns initial/requested files of $vpl
      * @param mod_vpl $vpl
      * @return string[string] files internal format
      */
@@ -130,7 +133,7 @@ class mod_vpl_edit{
     }
 
     /**
-     * Get last submitted files of $vpl and userid.
+     * Returns last submitted files of $vpl and userid.
      * If available $compilationexecution will return compilation and execution information.
      * @param mod_vpl $vpl
      * @param int $userid
@@ -158,7 +161,7 @@ class mod_vpl_edit{
     }
 
     /**
-     * Return the last or other submission and compilation execution information
+     * Returns the last or other submission and compilation execution information
      * @param mod_vpl $vpl
      * @param int $userid
      * @param int|boolean $submissionid
@@ -171,13 +174,14 @@ class mod_vpl_edit{
         $response->submissionid = 0;
         $response->comments = '';
         $response->compilationexecution = false;
+        $vplinstance = $vpl->get_instance();
         if ( $submissionid != false ) {
-            //Security checks
-            $parms = array('id' => $submissionid, 'vpl' => $instance->id);
+            // Security checks.
+            $parms = array('id' => $submissionid, 'vpl' => $vplinstance->id);
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
             $res = $DB->get_records('vpl_submissions', $parms);
             if ( count($res) == 1 ) {
-                 $subreg = $res[$subid];
+                 $subreg = $res[$submissionid];
             } else {
                  $subreg = false;
             }
@@ -196,7 +200,6 @@ class mod_vpl_edit{
             $compilationexecution = new stdClass();
             $compilationexecution->grade = '';
             $compilationexecution->nevaluations = 0;
-            $vplinstance = $vpl->get_instance();
             $compilationexecution->freeevaluations = $vplinstance->freeevaluations;
             $compilationexecution->reductionbyevaluation = $vplinstance->reductionbyevaluation;
             $response->compilationexecution = $compilationexecution;
