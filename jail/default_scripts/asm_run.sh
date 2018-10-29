@@ -19,13 +19,14 @@ get_source_files asm
 #compile
 SIFS=$IFS
 IFS=$'\n'
+rm .vpl_object_files 2> /dev/null
+touch .vpl_object_files
 for FILENAME in $SOURCE_FILES
 do
 	nasm -f elf "$FILENAME"
+	echo "\"${FILENAME/%.asm}.o\"" >> .vpl_object_files
 done
+IFS=$'\n'
+ld -o vpl_execution @.vpl_object_files
+rm .vpl_object_files
 IFS=$SIFS
-get_source_files o
-generate_file_of_files .vpl_source_files
-ld -o vpl_execution @.vpl_source_files
-rm .vpl_source_files
-

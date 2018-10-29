@@ -5,12 +5,21 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+mkdir "test cpp" 2> /dev/null
 
-cat >vpl_hello.cpp <<'END_OF_FILE'
-#include <iostream>
+cat > "test cpp/vpl hello.cpp" <<'END_OF_FILE'
+void hello();
 int main(){
-	std::cout << "Hello from the C++ language!" << std::endl;
+	hello();
 	return 0;
 }
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.cpp
+
+cat > "test cpp/hello.cpp" <<'END_OF_FILE'
+#include <iostream>
+void hello(){
+	std::cout << "Hello from the C++ language!" << std::endl;
+}
+END_OF_FILE
+
+export VPL_SUBFILE0="test cpp/vpl hello.cpp"

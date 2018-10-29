@@ -20,9 +20,20 @@ phpinfo();
 END_OF_FILE
 export VPL_SUBFILE0=index.php
 else
-cat >vpl_hello.php <<'END_OF_FILE'
+cat > "vpl hello.php" <<'END_OF_FILE'
 <?php
-echo "Hello from the PHP language!\n";
+require_once "test php/message hello.php";
+hello();
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.php
+mkdir "test php" 2> /dev/null
+
+cat > "test php/message hello.php" <<'END_OF_FILE'
+<?php
+function hello() {
+	echo "Hello from the PHP language!\n";
+}
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.php"
+export VPL_SUBFILE1="test php/message hello.php"
 fi

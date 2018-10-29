@@ -16,7 +16,7 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 
-get_source_files f f77
+get_source_files f for f90 f95 f03
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Compile

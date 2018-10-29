@@ -16,6 +16,15 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_source_files php
+IFS=$'\n'
+for file_name in $SOURCE_FILES
+do
+	php -l "$file_name" > /dev/null
+done
+IFS=$SIFS
+# Remove OKs compilations
+#cat .vpl_perl_errors | egrep -v "OK$"
 check_program x-www-browser firefox
 BROWSER=$PROGRAM
 if [ -f index.php ] ; then

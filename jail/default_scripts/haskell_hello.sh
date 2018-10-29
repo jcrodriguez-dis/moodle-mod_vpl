@@ -5,7 +5,16 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.hs <<'END_OF_FILE'
-main = putStrLn "Hello from the Haskell language!"
+mkdir Message 2>/dev/null
+cat >"vpl hello.hs" <<'END_OF_FILE'
+import Message.Hello
+main = Message.Hello.hello
+
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.hs
+
+cat >"Message/Hello.hs" <<'END_OF_FILE'
+module Message.Hello (hello) where
+hello = putStrLn "Hello from the Haskell language!"
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.hs"

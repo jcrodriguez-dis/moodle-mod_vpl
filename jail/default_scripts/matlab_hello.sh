@@ -5,18 +5,35 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+cat >"vpl hello.m" <<'END_OF_FILE'
+source "matlab test/vpl message.m"
+hello();
+
+END_OF_FILE
+
+mkdir "matlab test" 2> /dev/null
+
 if [ "$1" == "gui" ] ; then
-cat >vpl_hello.m <<'END_OF_FILE'
-x = -10:0.1:10;
-plot(x,cos(x));
-title("VPL running Matlab/Octave");
-figure;
+cat >"matlab test/vpl message.m" <<'END_OF_FILE'
+function hello ()
+	x = -10:0.1:10;
+	plot(x,cos(x));
+	title("VPL running Matlab/Octave");
+	figure;
+endfunction
+END_OF_FILE
+
+cat >> "vpl hello.m" <<'END_OF_FILE'
 input("Continue");
 exit();
 END_OF_FILE
+
 else
-cat >vpl_hello.m <<'END_OF_FILE'
-fprintf("Hello from Matlab/Octave!\n");
+
+cat >"matlab test/vpl message.m" <<'END_OF_FILE'
+function hello ()
+  fprintf("Hello from Matlab/Octave!\n");
+endfunction
 END_OF_FILE
 fi
-export VPL_SUBFILE0=vpl_hello.m
+export VPL_SUBFILE0="vpl hello.m"
