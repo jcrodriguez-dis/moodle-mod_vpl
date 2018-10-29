@@ -52,15 +52,15 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
      */
     public function test_delete_all() {
         global $CFG, $DB;
-        // Get vpls information
+        // Get vpls information.
         $submissions = array();
         $othervpls = array();
-        foreach ( $this->vpls as $vpl) {
+        foreach ($this->vpls as $vpl) {
             $vplid = $vpl->get_instance()->id;
             $submissions[$vplid] = $vpl->all_last_user_submission();
             $othervpls[$vplid] = $vpl;
         }
-        foreach ( $this->vpls as $vpl) {
+        foreach ($this->vpls as $vpl) {
             $vpl->delete_all();
             // Test full delete.
             $instance = $vpl->get_instance();
@@ -68,13 +68,13 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
             $res = $DB->get_record(VPL, array('id' => $instance->id));
             $this->assertFalse( $res, $instance->name);
             $tables = [
-                    VPL_SUBMISSIONS,
-                    VPL_VARIATIONS,
-                    VPL_ASSIGNED_VARIATIONS,
-                    VPL_RUNNING_PROCESSES
+                VPL_SUBMISSIONS,
+                VPL_VARIATIONS,
+                VPL_ASSIGNED_VARIATIONS,
+                VPL_RUNNING_PROCESSES
             ];
             $parms = array('vpl' => $instance->id);
-            foreach( $tables as $table) {
+            foreach ($tables as $table) {
                 $res = $DB->get_records($table, $parms);
                 $this->assertCount( 0, $res, $instance->name);
             }
@@ -82,9 +82,9 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
             $event = $DB->get_record('event', $sparms );
             $this->assertFalse($event, $instance->name);
             $this->assertDirectoryNotExists($directory, $instance->name);
-            // Test rest of the instances not affected
+            // Test rest of the instances not affected.
             unset($othervpls[$instance->id]);
-            foreach($othervpls as $other) {
+            foreach ($othervpls as $other) {
                 $instance = $other->get_instance();
                 $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
                 $res = $DB->get_record(VPL, array('id' => $instance->id));
@@ -94,7 +94,7 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
                 $this->assertEquals( $subsexpected, $subsresult, $instance->name);
                 if (count($subsexpected) > 0) {
                     $this->assertDirectoryExists( $directory, $instance->name);
-                    foreach($subsexpected as $sub) {
+                    foreach ($subsexpected as $sub) {
                         $userid = $sub->userid;
                         $subid = $sub->id;
                         $userdir = $directory . "/usersdata/$userid/$subid/submittedfiles";
@@ -109,11 +109,11 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
      * Method to test mod_vpl::add_submission
      */
     public function test_add_submission() {
-        // Test regular submission
-        // Test equal submission
-        // Test team submission and last user submission
-        // Test team to individual submission
-        // Test overflow remove
+        // Test regular submission.
+        // Test equal submission.
+        // Test team submission and last user submission.
+        // Test team to individual submission.
+        // Test overflow remove.
     }
 
     /**

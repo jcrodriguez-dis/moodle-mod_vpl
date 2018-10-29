@@ -88,14 +88,14 @@ class mod_vpl_base_testcase extends advanced_testcase {
 
         $this->groups = array();
         for ($i = 0; $i < self::GROUP_COUNT; $i++) {
-            array_push($this->groups, $this->getDataGenerator()->create_group(array('courseid'=>$this->course->id)));
+            array_push($this->groups, $this->getDataGenerator()->create_group(array('courseid' => $this->course->id)));
         }
 
         $this->groupings = array();
         for ($i = 0; $i < self::GROUPING_COUNT; $i++) {
-            array_push($this->groupings, $this->getDataGenerator()->create_grouping(array('courseid'=>$this->course->id)));
+            array_push($this->groupings, $this->getDataGenerator()->create_grouping(array('courseid' => $this->course->id)));
         }
-        $teacherrole = $DB->get_record('role', array('shortname'=>'teacher'));
+        $teacherrole = $DB->get_record('role', array('shortname' => 'teacher'));
         foreach ($this->teachers as $i => $teacher) {
             $this->getDataGenerator()->enrol_user($teacher->id,
                     $this->course->id,
@@ -103,7 +103,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $teacher);
         }
 
-        $editingteacherrole = $DB->get_record('role', array('shortname'=>'editingteacher'));
+        $editingteacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
         foreach ($this->editingteachers as $i => $editingteacher) {
             $this->getDataGenerator()->enrol_user($editingteacher->id,
                     $this->course->id,
@@ -111,7 +111,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $editingteacher);
         }
 
-        $studentrole = $DB->get_record('role', array('shortname'=>'student'));
+        $studentrole = $DB->get_record('role', array('shortname' => 'student'));
         foreach ($this->students as $i => $student) {
             $this->getDataGenerator()->enrol_user($student->id,
                     $this->course->id,
@@ -119,11 +119,11 @@ class mod_vpl_base_testcase extends advanced_testcase {
             groups_add_member($this->groups[$i % self::GROUP_COUNT], $student);
         }
         foreach ($this->groups as $i => $group) {
-            if($i < count($this->groups) - 1 ) {
+            if ($i < count($this->groups) - 1 ) {
                 $parm = array('groupingid' => $this->groupings[0]->id, 'groupid' => $group->id);
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
-            if($i > count($this->groups) / 2 ) {
+            if ($i > count($this->groups) / 2 ) {
                 $parm = array('groupingid' => $this->groupings[1]->id, 'groupid' => $group->id);
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
@@ -139,7 +139,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
     protected $vpls = null;
 
     protected function setupinstances() {
-        // Add VPL instances
+        // Add VPL instances.
         $this->setup_default_instance();
         $this->setup_notavailable_instance();
         $this->setup_onefile_instance();
@@ -167,7 +167,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'not available',
-                'duedate' => time()-60,
+                'duedate' => time() - 60,
                 'maxfiles' => 0,
                 'maxfilesize' => 100,
                 'requirednet' => '1.',
@@ -186,7 +186,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'One file',
-                'duedate' => time()+3600,
+                'duedate' => time() + 3600,
                 'maxfiles' => 1,
                 'maxfilesize' => 1000,
                 'grade' => 10,
@@ -207,7 +207,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'Multiple files',
-                'duedate' => time()+3600,
+                'duedate' => time() + 3600,
                 'maxfiles' => 10,
                 'maxfilesize' => 1000,
                 'grade' => 10,
@@ -246,7 +246,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'Variations',
-                'duedate' => time()+3600,
+                'duedate' => time() + 3600,
                 'maxfiles' => 10,
                 'maxfilesize' => 1000,
                 'grade' => 10,
@@ -256,11 +256,11 @@ class mod_vpl_base_testcase extends advanced_testcase {
         );
         $this->vplvariations = $this->create_instance($parms);
         $instance = $this->vplvariations->get_instance();
-        for( $i = 1; $i < 6; $i++) {
+        for ($i = 1; $i < 6; $i++) {
             $parms = array(
-                    'vpl' => $instance->id,
-                    'identification' => '' . $i,
-                    'description' => 'varriation ' . $i
+                'vpl' => $instance->id,
+                'identification' => '' . $i,
+                'description' => 'varriation ' . $i
             );
             $DB->insert_record( VPL_VARIATIONS, $parms);
         }
@@ -296,7 +296,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'Team work',
-                'duedate' => time()+3600,
+                'duedate' => time() + 3600,
                 'maxfiles' => 10,
                 'maxfilesize' => 1000,
                 'grade' => 10,
@@ -347,7 +347,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
     }
 
     public function test_create_instance() {
-        $this->assertNotEmpty($this->create_instance());
+        if (isset($this->course)) { // No fixture => don't check.
+            $this->assertNotEmpty($this->create_instance());
+        }
     }
 
 }

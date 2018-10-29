@@ -52,8 +52,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
      */
     public function test_vpl_grade_item_update() {
         $this->setUser($this->editingteachers[0]);
-        $hide = true;
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             foreach ([false, 0, -1, 8, 12.5] as $testgrade) {
                 if ($testgrade !== false) {
@@ -62,14 +61,14 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                 }
                 $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
                 if ( count($grades->items) > 0 ) {
-                    $grade_info = null;
+                    $gradeinfo = null;
                     foreach ($grades->items as $gi) {
-                        $grade_info = $gi;
+                        $gradeinfo = $gi;
                     }
                     if ($instance->grade > 0) {
-                        $this->assertTrue($grade_info->grademax == $instance->grade, $instance->name);
+                        $this->assertTrue($gradeinfo->grademax == $instance->grade, $instance->name);
                     } else if ($instance->grade < 0) {
-                        $this->assertTrue($grade_info->scaleid == -$instance->grade, $instance->name);
+                        $this->assertTrue($gradeinfo->scaleid == -$instance->grade, $instance->name);
                     } else {
                         $this->fail($instance->name);
                     }
@@ -78,7 +77,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                 }
             }
         }
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $submissions = $vpl->all_last_user_submission();
             if (count($submissions) > 0) {
@@ -87,7 +86,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                         $instance->grade = $testgrademax;
                         $grades = array();
                         $ids = array();
-                        foreach($submissions as $sub) {
+                        foreach ($submissions as $sub) {
                             $grade = new stdClass();
                             $grade->userid = $sub->userid;
                             $grade->rawgrade = $testgrade;
@@ -99,16 +98,13 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                         }
                         $this->assertTrue(vpl_grade_item_update($instance) == 0, $instance->name);
                         $this->assertTrue(vpl_grade_item_update($instance, $grades) == 0, $instance->name);
-                        print_r($instance, $hide);
                         $getgrades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id, $ids);
                         $this->assertTrue(count($getgrades->items) == 1);
                         foreach ($getgrades->items as $gi) {
-                            $grade_info = $gi;
+                            $gradeinfo = $gi;
                         }
-                        print_r($grade_info, $hide);
-                        print_r($grades, $hide);
-                        $this->assertTrue(count($grade_info->grades) == count($grades));
-                        foreach($grade_info->grades as $userid => $grade) {
+                        $this->assertTrue(count($gradeinfo->grades) == count($grades));
+                        foreach ($gradeinfo->grades as $userid => $grade) {
                             $ge = $grades[$userid];
                             $gr = $grade;
                             $this->assertTrue($gr->usermodified == $ge->usermodified);
@@ -129,7 +125,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         $hide = true;
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $submissions = $vpl->all_last_user_submission();
             if (count($submissions) > 0) {
@@ -139,7 +135,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                         $grades = array();
                         $ids = array();
                         // Update submissions with grade information.
-                        foreach($submissions as $sub) {
+                        foreach ($submissions as $sub) {
                             $sub->grade = $testgrade;
                             $sub->grader = $this->editingteachers[0]->id;
                             $sub->dategraded = time();
@@ -158,12 +154,10 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                         $getgrades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id, $ids);
                         $this->assertTrue(count($getgrades->items) == 1);
                         foreach ($getgrades->items as $gi) {
-                            $grade_info = $gi;
+                            $gradeinfo = $gi;
                         }
-                        print_r($grade_info, $hide);
-                        print_r($grades, $hide);
-                        $this->assertTrue(count($grade_info->grades) == count($grades));
-                        foreach($grade_info->grades as $userid => $grade) {
+                        $this->assertTrue(count($gradeinfo->grades) == count($grades));
+                        foreach ($gradeinfo->grades as $userid => $grade) {
                             $ge = $grades[$userid];
                             $gr = $grade;
                             $this->assertTrue($gr->usermodified == $ge->usermodified);
@@ -180,19 +174,19 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
     /**
      * Method to test vpl_delete_grade_item() function
      */
-     public function test_vpl_delete_grade_item() {
+    public function test_vpl_delete_grade_item() {
         $this->setUser($this->editingteachers[0]);
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
             if ( count($grades->items) > 0 ) {
                 vpl_delete_grade_item($instance);
                 $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
-                $grade_info = null;
+                $gradeinfo = null;
                 foreach ($grades->items as $gi) {
-                    $grade_info = $gi;
+                    $gradeinfo = $gi;
                 }
-                $this->assertFalse(isset($grade_info), $instance->name);
+                $this->assertFalse(isset($gradeinfo), $instance->name);
             }
         }
     }
@@ -203,7 +197,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
     public function test_vpl_events() {
         global $DB;
         $this->setUser($this->editingteachers[0]);
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $instance->instance = $instance->id;
             $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
@@ -230,27 +224,25 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
      */
     public function test_vpl_update_instance() {
         global $DB;
-        $hide = true;
         // Events change tested at test_vpl_events.
-        $grades = [-1,0, 7];
+        $grades = [-1, 0, 7];
         $this->setUser($this->editingteachers[0]);
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $instance->instance = $instance->id;
-            foreach ( $grades as $grade ) {
+            foreach ($grades as $grade) {
                 $instance->grade = $grade;
-                print_r($instance, $hide);
                 vpl_update_instance($instance);
                 $getgrades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
                 if ( count($getgrades->items) > 0 ) {
-                    $grade_info = null;
+                    $gradeinfo = null;
                     foreach ($getgrades->items as $gi) {
-                        $grade_info = $gi;
+                        $gradeinfo = $gi;
                     }
                     if ($instance->grade > 0) {
-                        $this->assertTrue($grade_info->grademax == $instance->grade, $instance->name);
+                        $this->assertTrue($gradeinfo->grademax == $instance->grade, $instance->name);
                     } else if ($instance->grade < 0) {
-                        $this->assertTrue($grade_info->scaleid == -$instance->grade, $instance->name);
+                        $this->assertTrue($gradeinfo->scaleid == -$instance->grade, $instance->name);
                     } else {
                         $this->fail($instance->name);
                     }
@@ -267,7 +259,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
     public function test_vpl_delete_instance() {
         global $DB, $CFG;
         $this->setUser($this->editingteachers[0]);
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
 
             $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
@@ -288,7 +280,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                     VPL_RUNNING_PROCESSES
             ];
             $parms = array('vpl' => $instance->id);
-            foreach( $tables as $table) {
+            foreach ($tables as $table) {
                 $res = $DB->count_records($table, $parms);
                 $this->assertEquals( 0, $res, $instance->name);
             }
@@ -318,7 +310,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                 FEATURE_BACKUP_MOODLE2,
                 FEATURE_SHOW_DESCRIPTION,
         ];
-        foreach ( $supp as $feature ) {
+        foreach ($supp as $feature) {
             $this->assertTrue(vpl_supports($feature));
         }
         $nosupp = [
@@ -326,7 +318,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                 FEATURE_COMPLETION_HAS_RULES,
                 FEATURE_ADVANCED_GRADING
         ];
-        foreach ( $nosupp as $feature ) {
+        foreach ($nosupp as $feature) {
             $this->assertFalse(vpl_supports($feature));
         }
         $this->assertNull(vpl_supports('FEATURE_VPL_UNKNOW'));
@@ -339,7 +331,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         global $DB, $CFG;
         $this->setUser($this->editingteachers[0]);
         // Startdate before range.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = (time() - VPL_STARTDATE_RANGE) - 60;
@@ -349,12 +341,12 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertTrue(instance_is_visible( VPL, $instance ) == 0);
         }
         // Startdate on range.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = (time() - VPL_STARTDATE_RANGE) + 60;
@@ -363,12 +355,12 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertEquals(instance_is_visible( VPL, $instance ), 1);
         }
         // Startdate.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = time();
@@ -377,12 +369,12 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertTrue(instance_is_visible( VPL, $instance ) == 1);
         }
         // Startdate almost out of range.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = (time() + VPL_STARTDATE_RANGE) - 60;
@@ -392,12 +384,12 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertTrue(instance_is_visible( VPL, $instance ) == 1);
         }
         // Startdate out of range.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = time() + VPL_STARTDATE_RANGE + 60;
@@ -406,22 +398,22 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertTrue(instance_is_visible( VPL, $instance ) == 0);
         }
         // Duedate out of range.
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - VPL_STARTDATE_RANGE / 2 ;
+            $instance->startdate = time() - VPL_STARTDATE_RANGE / 2;
             $instance->duedate = time() - 1;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
         }
         vpl_cron();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $this->assertTrue(instance_is_visible( VPL, $instance ) == 0);
         }
@@ -434,38 +426,38 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         $instance = $this->vplnotavailable->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertFalse($res);
         $instance = $this->vpldefault->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertFalse($res);
         $instance = $this->vplonefile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(1, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $instance = $this->vplmultifile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(2, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
         $instance = $this->vplmultifile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(2, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
         $instance = $this->vplteamwork->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(2, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
-        // Testing activities with marks
-        foreach ( $this->vpls as $vpl ) {
+        // Testing activities with marks.
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $submissions = $vpl->all_last_user_submission();
             if (count($submissions) > 0) {
                 // Update submissions with grade information.
                 $et = 0;
-                foreach($submissions as $sub) {
+                foreach ($submissions as $sub) {
                     $sub->grade = 5;
                     $sub->grader = $this->editingteachers[$et++]->id;
                     $sub->dategraded = time();
@@ -474,26 +466,26 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             }
         }
         $instance = $this->vplonefile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(2, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->editingteachers[0]->id]);
         $instance = $this->vplmultifile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(4, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
         $this->assertNotEmpty($res[$this->editingteachers[0]->id]);
         $this->assertNotEmpty($res[$this->editingteachers[1]->id]);
         $instance = $this->vplmultifile->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(4, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
         $this->assertNotEmpty($res[$this->editingteachers[0]->id]);
         $this->assertNotEmpty($res[$this->editingteachers[1]->id]);
         $instance = $this->vplteamwork->get_instance();
-        $res =vpl_get_participants($instance->id);
+        $res = vpl_get_participants($instance->id);
         $this->assertCount(4, $res);
         $this->assertNotEmpty($res[$this->students[0]->id]);
         $this->assertNotEmpty($res[$this->students[1]->id]);
@@ -508,12 +500,12 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         foreach ([4, 5, 12.5, 14] as $testgrade) {
-            foreach ( $this->vpls as $vpl ) {
+            foreach ($this->vpls as $vpl) {
                 $instance = $vpl->get_instance();
                 $submissions = $vpl->all_last_user_submission();
                 if (count($submissions) > 0) {
                     // Update submissions with grade information.
-                    foreach($submissions as $sub) {
+                    foreach ($submissions as $sub) {
                         $sub->grade = $testgrade;
                         $sub->grader = $this->editingteachers[0]->id;
                         $sub->dategraded = time();
@@ -532,18 +524,18 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             }
             // Test vpl_reset_gradebook.
             vpl_reset_gradebook($vpl->get_course()->id);
-            foreach ( $this->vpls as $vpl ) {
+            foreach ($this->vpls as $vpl) {
                 $instance = $vpl->get_instance();
                 $submissions = $vpl->all_last_user_submission();
                 if (count($submissions) > 0) {
                     $ids = array();
-                    foreach($submissions as $sub) {
+                    foreach ($submissions as $sub) {
                         $ids[] = $sub->userid;
                     }
                     $getgrades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id, $ids);
                     $grades = $getgrades->items[0]->grades;
                     $this->assertTrue(count($grades) == count($ids));
-                    foreach ( $ids as $userid ) {
+                    foreach ($ids as $userid) {
                         $grade = $grades[$userid];
                         $this->assertTrue($grade->grade == '');
                     }
@@ -558,8 +550,8 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
     public function test_vpl_reset_instance_userdata() {
         global $DB, $CFG;
         $this->setUser($this->editingteachers[0]);
-        // Reset user data from instances
-        foreach ( $this->vpls as $vpl ) {
+        // Reset user data from instances.
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             vpl_reset_instance_userdata($instance->id);
             $parms = array( 'vpl' => $instance->id);
@@ -578,16 +570,16 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
      */
     public function test_vpl_reset_userdata() {
         $nsubs = array();
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $nsubs[$instance->id] = count($vpl->all_user_submission('s.id'));
         }
-        // Reset nothing
+        // Reset nothing.
         $data = new stdClass();
         $data->reset_vpl_submissions = false;
         $status = vpl_reset_userdata($data);
         $this->assertCount(0, $status);
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $count = count($vpl->all_user_submission('s.id'));
             $this->assertEquals($nsubs[$instance->id], $count, $instance->name);
@@ -596,10 +588,10 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         $data->courseid = $this->vpldefault->get_course()->id;
         $status = vpl_reset_userdata($data);
         $this->assertCount(count($this->vpls), $status);
-        foreach ( $status as $st ) {
+        foreach ($status as $st) {
             $this->assertFalse($st['error']);
         }
-        foreach ( $this->vpls as $vpl ) {
+        foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $count = count($vpl->all_user_submission('s.id'));
             $this->assertEquals(0, $count, $instance->name);

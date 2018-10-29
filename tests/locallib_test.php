@@ -77,7 +77,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         vpl_fwrite($fpath, '');
         $this->assertEquals( '', file_get_contents($fpath) );
         $bads = ['/a1/..', '/a1/.', '/', '/a1', '/a1/b1'];
-        foreach ( $bads as $bad) {
+        foreach ($bads as $bad) {
             $fpath = $testdir . $bad;
             try {
                 $throwexception = false;
@@ -218,10 +218,10 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     public function test_vpl_get_max_post_size() {
         $this->assertEquals(vpl_get_max_post_size_internal('7'), 7);
         $this->assertEquals(vpl_get_max_post_size_internal('612345'), 612345);
-        $this->assertEquals(vpl_get_max_post_size_internal('135k'), (135*1024));
-        $this->assertEquals(vpl_get_max_post_size_internal('135K'), (135*1024));
-        $this->assertEquals(vpl_get_max_post_size_internal('23m'), (23*1024*1024));
-        $this->assertEquals(vpl_get_max_post_size_internal('7G'), (7*1024*1024*1000));
+        $this->assertEquals(vpl_get_max_post_size_internal('135k'), (135 * 1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('135K'), (135 * 1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('23m'), (23 * 1024 * 1024));
+        $this->assertEquals(vpl_get_max_post_size_internal('7G'), (7 * 1024 * 1024 * 1000));
         $this->assertEquals(vpl_get_max_post_size_internal('0'), PHP_INT_MAX);
     }
 }

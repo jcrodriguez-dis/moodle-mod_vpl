@@ -42,7 +42,7 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
     /**
      * Method to remove fixture, it is not needed
      */
-    protected function setup() {
+    protected function setUp() {
     }
 
     /**
