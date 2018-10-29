@@ -48,9 +48,18 @@ function vpl_actions_menu($id, $userid, $subid) {
 
 
 $id = required_param( 'id', PARAM_INT );
-$userid = required_param( 'userid', PARAM_INT );
+$userid = optional_param( 'userid', null, PARAM_INT );
 $detailed = abs( optional_param( 'detailed', 0, PARAM_INT ) ) % 2;
 $vpl = new mod_vpl( $id );
+if ( $userid == null ) {
+    if ( $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) { // TODO add VPL course setting check.
+        $userid = $USER->id;
+    } else {
+        vpl_notice( get_string( 'notavailable' ), 'error');
+        die;
+    }
+}
+// TODO add VPL course setting check and user information available.
 $vpl->prepare_page( 'views/previoussubmissionslist.php', array (
         'id' => $id,
         'userid' => $userid
@@ -70,7 +79,6 @@ if ($detailed) {
     require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
     vpl_sh_factory::include_js();
 }
-//$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 
 $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
@@ -86,7 +94,7 @@ $table->align = array (
         'right',
         'left',
         'right',
-        'right'
+        'left'
 );
 $table->nowrap = array (
         true,
