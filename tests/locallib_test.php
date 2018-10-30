@@ -31,6 +31,24 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 class mod_vpl_locallib_testcase extends advanced_testcase {
 
+    protected function setUp() {
+        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
+            $this->assertDirectoryNotExists = function($directory, $message = '') {
+                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
+            $this->assertDirectoryExists = function($directory, $message = '') {
+                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+        if ( ! method_exists ( $this , 'assertDirectoryIsWritable' )) {
+            $this->assertDirectoryIsWritable = function($directory, $message = '') {
+                $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
+            };
+        }
+    }
+
     public function test_vpl_delete_dir() {
         global $CFG;
         $text = 'Example text';

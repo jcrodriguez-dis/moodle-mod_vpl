@@ -43,6 +43,21 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
      * Method to remove fixture, it is not needed
      */
     protected function setUp() {
+        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
+            $this->assertDirectoryNotExists = function($directory, $message = '') {
+                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
+            $this->assertDirectoryExists = function($directory, $message = '') {
+                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+        if ( ! method_exists ( $this , 'assertDirectoryIsWritable' )) {
+            $this->assertDirectoryIsWritable = function($directory, $message = '') {
+                $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
+            };
+        }
     }
 
     /**
