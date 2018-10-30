@@ -82,7 +82,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
             $this->assertDirectoryIsWritable = function($directory, $message = '') {
                 $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
             };
-        }assertDirectoryIsWritable
+        }
 
         $this->resetAfterTest(true);
 
