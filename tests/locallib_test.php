@@ -98,6 +98,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             } catch (Exception $e) {
                 $throwexception = true;
             }
+            chmod($testdir, 0777);
             $this->assertTrue($throwexception, 'Exception expected');
         }
         vpl_delete_dir($testdir);
