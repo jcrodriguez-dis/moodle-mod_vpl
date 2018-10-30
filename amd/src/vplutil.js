@@ -972,8 +972,8 @@ define(
             var regcas = /^\s*\>/;
             // TODO adds error? use first anotation for icon.
             var regError = new RegExp('\\[err\\]|error|' + escReg(VPLUtil.str('error')), 'i');
-            var regInformation = new RegExp('\\[info\\]|information', 'i');
             var regWarning = new RegExp('\\[warn\\]|warning|note|' + escReg(VPLUtil.str('warning')), 'i');
+            var regInformation = new RegExp('\\[info\\]|information', 'i');
             var state = '';
             var html = '';
             var comment = '';
@@ -1005,11 +1005,15 @@ define(
                         // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
                         lastAnotationFile = i;
                         used = true;
-                        var type = 'error';
-                        if ( line.search(regWarning) > -1 ) {
+                        var type;
+                        if ( line.search(regError) > -1) {
+                            type = 'error';
+                        } else if ( line.search(regWarning) > -1 ) {
                             type = 'warning';
                         } else if ( line.search(regInformation) > -1 ) {
                             type = 'info';
+                        } else {
+                            type = 'error';
                         }
                         lastAnotation = {
                             'row': (match[2] - 1),
