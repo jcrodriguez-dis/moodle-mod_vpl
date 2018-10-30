@@ -68,6 +68,17 @@ class mod_vpl_base_testcase extends advanced_testcase {
     protected function setUp() {
         global $DB;
 
+        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
+            $this->assertDirectoryNotExists = function($directory, $message = '') {
+                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
+            $this->assertDirectoryExists = function($directory, $message = '') {
+                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
+            };
+        }
+
         $this->resetAfterTest(true);
 
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
