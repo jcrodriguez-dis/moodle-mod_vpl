@@ -35,7 +35,8 @@
  * path/execution_files/vpl_debug.sh
  * path/execution_files/vpl_evaluate.sh
  *  * Submission info
- * path/usersdata/userid#/submissionid#/submissionfiles/
+ * path/usersdata/userid#/submissionid#/submittedfiles/
+ * path/usersdata/userid#/submissionid#/submittedfiles.lst
  * path/usersdata/userid#/submissionid#/grade_comments.txt
  * path/usersdata/userid#/submissionid#/teachertest.txt
  * path/usersdata/userid#/submissionid#/studenttest.txt
@@ -234,27 +235,7 @@ class mod_vpl {
      * @return bool true if all OK
      */
     public function delete_all() {
-        global $DB;
-        // Delete all data files.
-        vpl_delete_dir( $this->get_data_directory() );
-        // Delete grade_item.
-        vpl_delete_grade_item( $this->instance );
-        // Delete event.
-        $DB->delete_records( 'event',
-                array (
-                        'modulename' => VPL,
-                        'instance' => $this->instance->id
-                ) );
-        // Delete all submissions records.
-        $DB->delete_records( 'vpl_submissions', array (
-                'vpl' => $this->instance->id
-        ) );
-        // Delete vpl record.
-        $DB->delete_records( VPL, array (
-                'id' => $this->instance->id
-        ) );
-        // Allways true.
-        return true;
+        return vpl_delete_instance($this->instance->id);
     }
 
     /**
@@ -377,14 +358,10 @@ class mod_vpl {
                     $filelist .= "\n";
                 }
                 $filelist .= $name;
-                $fp = vpl_fopen( $basepath . $name );
-                fwrite( $fp, $file ['data'] );
-                fclose( $fp );
+                vpl_fwrite( $basepath . $name, $file ['data'] );
             }
         }
-        $fp = vpl_fopen( $this->get_submissionfilelistname() );
-        fwrite( $fp, $filelist );
-        fclose( $fp );
+        vpl_fwrite( $this->get_submissionfilelistname(), $filelist );
     }
 
     /**
@@ -761,7 +738,13 @@ class mod_vpl {
         }
         // Save files.
         $submission = new mod_vpl_submission( $this, $submissionid );
-        $submission->set_submitted_file( $files, $lastsub );
+        try {
+            $submission->set_submitted_file( $files, $lastsub );
+        } catch (file_exception $fe) {
+            $DB->delete_records( VPL_SUBMISSIONS, array ('id' => $submissionid));
+            $error = $fe->getMessage();
+            return false;
+        }
         $submission->remove_grade();
         // If no submitted by grader and not group activity, remove near submmissions.
         if ($USER->id == $userid) {
@@ -1791,13 +1774,13 @@ class mod_vpl {
         } else {
             $this->print_restriction( 'worktype', $values [$worktype] );
         }
+        $stryes = get_string( 'yes' );
+        $strno = get_string( 'no' );
         if ($instance->example) {
             $this->print_restriction( 'isexample', $stryes );
         }
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
         if ($grader) {
-            $stryes = get_string( 'yes' );
-            $strno = get_string( 'no' );
             require_once($CFG->libdir . '/gradelib.php');
             if ($gie = $this->get_grade_info()) {
                 if ($gie->scaleid == 0) {
