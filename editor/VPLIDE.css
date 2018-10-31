@@ -338,20 +338,23 @@ pre.vpl_terminal {
     font-size: 12px;
     padding: 2px;
 }
-/* Support to ways of class setting, jqueryui button may change */ 
-#vpl_ide_timeleft.vpl_buttonleft_orange, .vpl_buttonleft_orange {
+/* Support to ways of class setting, jqueryui button may change */
+#vpl_ide_timeleft.vpl_buttonleft_orange,
+.vpl_buttonleft_orange {
     background-color: orange;
     background-image: none;
     color: white;
     font-weight: bold;
 }
-#vpl_ide_timeleft.vpl_buttonleft_red, .vpl_buttonleft_red {
+#vpl_ide_timeleft.vpl_buttonleft_red,
+.vpl_buttonleft_red {
     background-color: red;
     background-image: none;
     color: white;
     font-weight: bold;
 }
-#vpl_ide_timeleft.vpl_buttonleft_black, .vpl_buttonleft_black {
+#vpl_ide_timeleft.vpl_buttonleft_black,
+.vpl_buttonleft_black {
     background-color: black;
     background-image: none;
     color: white;
