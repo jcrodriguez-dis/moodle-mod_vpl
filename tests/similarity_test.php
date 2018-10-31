@@ -71,12 +71,12 @@ class mod_vpl_similarity_preprocess_testcase extends mod_vpl_base_testcase {
     public function test_create_zip_file() {
         $path = vpl_similarity_preprocess::get_zip_filepath(434, '/asg/z1');
         vpl_similarity_preprocess::create_zip_file(434, '/asg/z1', 'contents');
-        $this->assertFileIsReadable($path);
+        $this->assertTrue(is_readable($path), $path);
         $contents = file_get_contents($path);
         $this->assertEquals($contents, 'contents');
         $path = vpl_similarity_preprocess::get_zip_filepath(0, '1');
         vpl_similarity_preprocess::create_zip_file(0, '1', 'contenido');
-        $this->assertFileIsReadable($path);
+        $this->assertTrue(is_readable($path), $path);
         $contents = file_get_contents($path);
         $this->assertEquals($contents, 'contenido');
     }
