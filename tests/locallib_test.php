@@ -31,33 +31,16 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 class mod_vpl_locallib_testcase extends advanced_testcase {
 
-    protected function setUp() {
-        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
-            $this->assertDirectoryNotExists = function($directory, $message = '') {
-                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
-            $this->assertDirectoryExists = function($directory, $message = '') {
-                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryIsWritable' )) {
-            $this->assertDirectoryIsWritable = function($directory, $message = '') {
-                $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
-            };
-        }
-    }
-
     public function test_vpl_delete_dir() {
         global $CFG;
         $text = 'Example text';
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         // Dir empty.
         mkdir($testdir, 0777, true);
-        $this->assertDirectoryIsWritable( $testdir );
+        $this->assertTrue(is_writable($testdir) && is_dir($testdir));
+
         vpl_delete_dir($testdir);
-        $this->assertDirectoryNotExists( $testdir );
+        $this->assertFalse(file_exists($testdir) && is_dir($testdir));
         // Dir complex.
         mkdir($testdir . '/a1/b1/c1', 0777, true);
         file_put_contents ($testdir . '/a1/b1/c1/t1', $text);
@@ -68,9 +51,9 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         file_put_contents ($testdir . '/a1/b2/t1', $text);
         mkdir($testdir . '/a1/b3', 0777, true);
         file_put_contents ($testdir . '/a1/t1', $text);
-        $this->assertDirectoryIsWritable( $testdir );
+        $this->assertTrue(is_writable($testdir) && is_dir($testdir));
         vpl_delete_dir($testdir);
-        $this->assertDirectoryNotExists( $testdir );
+        $this->assertFalse(file_exists($testdir) && is_dir($testdir),  $testdir);
     }
 
     public function test_vpl_fwrite() {

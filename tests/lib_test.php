@@ -43,21 +43,6 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
      * Method to create lib test fixture
      */
     protected function setUp() {
-        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
-            $this->assertDirectoryNotExists = function($directory, $message = '') {
-                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
-            $this->assertDirectoryExists = function($directory, $message = '') {
-                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryIsWritable' )) {
-            $this->assertDirectoryIsWritable = function($directory, $message = '') {
-                $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
-            };
-        }
         parent::setUp();
         $this->setupinstances();
     }
@@ -280,7 +265,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
             $submissions = $vpl->all_last_user_submission();
             if (count($submissions) > 0) {
-                $this->assertDirectoryExists($directory, $instance->name);
+                $this->assertTrue(file_exists($directory) && is_dir($directory), $instance->name);
             }
 
             vpl_delete_instance($instance->id);
@@ -307,7 +292,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             $res = $DB->count_records('event', $sparms );
             $this->assertEquals($res, 0, $instance->name);
 
-            $this->assertDirectoryNotExists($directory, $instance->name);
+            $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
         }
     }
 
@@ -576,7 +561,7 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             $count = $DB->count_records(VPL_ASSIGNED_VARIATIONS, $parms);
             $this->assertEquals(0, $count, $instance->name);
             $directory = $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata';
-            $this->assertDirectoryNotExists($directory, $instance->name);
+            $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
         }
     }
 

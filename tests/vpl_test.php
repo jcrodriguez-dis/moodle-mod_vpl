@@ -43,21 +43,6 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
      * Method to create test fixture
      */
     protected function setUp() {
-        if ( ! method_exists ( $this , 'assertDirectoryNotExists' )) {
-            $this->assertDirectoryNotExists = function($directory, $message = '') {
-                $this->assertFalse(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryExists' )) {
-            $this->assertDirectoryExists = function($directory, $message = '') {
-                $this->assertTrue(file_exists($directory) && is_dir($directory),  $message);
-            };
-        }
-        if ( ! method_exists ( $this , 'assertDirectoryIsWritable' )) {
-            $this->assertDirectoryIsWritable = function($directory, $message = '') {
-                $this->assertTrue(is_writable($directory) && is_dir($directory),  $message);
-            };
-        }
         parent::setUp();
         $this->setupinstances();
     }
@@ -96,7 +81,7 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
             $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
             $event = $DB->get_record('event', $sparms );
             $this->assertFalse($event, $instance->name);
-            $this->assertDirectoryNotExists($directory, $instance->name);
+            $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
             // Test rest of the instances not affected.
             unset($othervpls[$instance->id]);
             foreach ($othervpls as $other) {
@@ -108,12 +93,12 @@ class mod_vpl_class_testcase extends mod_vpl_base_testcase {
                 $subsresult = $other->all_last_user_submission();
                 $this->assertEquals( $subsexpected, $subsresult, $instance->name);
                 if (count($subsexpected) > 0) {
-                    $this->assertDirectoryExists( $directory, $instance->name);
+                    $this->assertTrue(file_exists($directory) && is_dir($directory), $instance->name);
                     foreach ($subsexpected as $sub) {
                         $userid = $sub->userid;
                         $subid = $sub->id;
                         $userdir = $directory . "/usersdata/$userid/$subid/submittedfiles";
-                        $this->assertDirectoryExists( $userdir, $instance->name);
+                        $this->assertTrue(file_exists($userdir) && is_dir($userdir), $instance->name);
                     }
                 }
             }
