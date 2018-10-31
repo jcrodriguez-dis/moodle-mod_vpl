@@ -35,36 +35,36 @@ define(
             var self = this;
             var buttons = {};
 
-            this.notAdded = function(button) {
-                return !buttons[button];
+            this.notAdded = function(buttonName) {
+                return !buttons[buttonName];
             };
-            this.setText = function(button, icon, title) {
-                if (self.notAdded(button)) {
+            this.setText = function(buttonName, icon, title) {
+                if (self.notAdded(buttonName)) {
                     return;
                 }
                 if (!icon) {
-                    icon = buttons[button].icon;
+                    icon = buttons[buttonName].icon;
                 }
                 if (!title) {
-                    title = buttons[button].title;
+                    title = buttons[buttonName].title;
                 }
                 if (!title) {
                     title = VPLUtil.str(icon);
                 }
-                buttons[button].icon = icon;
-                buttons[button].title = title;
-                if (buttons[button].hasOwnProperty('key')) {
-                    title += ' (' + buttons[button].key + ')';
+                buttons[buttonName].icon = icon;
+                buttons[buttonName].title = title;
+                if (buttons[buttonName].hasOwnProperty('key')) {
+                    title += ' (' + buttons[buttonName].key + ')';
                 }
-                $('#vpl_ide_' + button).attr('title', title);
-                $('#vpl_ide_' + button + ' i').replaceWith(VPLUtil.genIcon(icon));
+                $('#vpl_ide_' + buttonName).attr('title', title);
+                $('#vpl_ide_' + buttonName + ' i').replaceWith(VPLUtil.genIcon(icon));
             };
-            this.setExtracontent = function(button, html) {
-                if (self.notAdded(button)) {
+            this.setExtracontent = function(buttonName, html) {
+                if (self.notAdded(buttonName)) {
                     return;
                 }
                 var cl = 'bt_extrahtml';
-                var btag = $('#vpl_ide_' + button + ' i');
+                var btag = $('#vpl_ide_' + buttonName + ' i');
                 if (btag.find('.' + cl).length == 0) {
                     btag.append(' <span class="' + cl + '"><span>');
                 }
@@ -95,7 +95,7 @@ define(
                 if (!button.hasOwnProperty('originalAction')) {
                     button.originalAction = VPLUtil.doNothing;
                 }
-                if (self.notAdded(button)) {
+                if (self.notAdded(button.name)) {
                     buttons[button.name] = button;
                 } else {
                     throw "Button already set " + button.name;
@@ -114,27 +114,27 @@ define(
                     button.key = button.bindKey[platform];
                 }
             };
-            this.getHTML = function(button) {
-                if (self.notAdded(button)) {
+            this.getHTML = function(buttonName) {
+                if (self.notAdded(buttonName)) {
                     return '';
                 } else {
-                    var title = buttons[button].title;
-                    if (buttons[button].hasOwnProperty('key')) {
-                        title += ' (' + buttons[button].key + ')';
+                    var title = buttons[buttonName].title;
+                    if (buttons[buttonName].hasOwnProperty('key')) {
+                        title += ' (' + buttons[buttonName].key + ')';
                     }
 
-                    var html = "<a id='vpl_ide_" + button + "' href='#' title='" + title + "'>";
-                    html += VPLUtil.genIcon(button) + "</a>";
+                    var html = "<a id='vpl_ide_" + buttonName + "' href='#' title='" + title + "'>";
+                    html += VPLUtil.genIcon(buttonName) + "</a>";
                     return html;
                 }
             };
 
-            this.enable = function(button, active) {
-                if (self.notAdded(button)) {
+            this.enable = function(buttonName, active) {
+                if (self.notAdded(buttonName)) {
                     return '';
                 }
-                var bw = $('#vpl_ide_' + button);
-                buttons[button].active = active;
+                var bw = $('#vpl_ide_' + buttonName);
+                buttons[buttonName].active = active;
                 bw.data("vpl-active", active);
                 if ( ! active ) {
                     bw.addClass( 'ui-button-disabled ui-state-disabled' );
@@ -142,44 +142,44 @@ define(
                     bw.removeClass( 'ui-button-disabled ui-state-disabled' );
                 }
             };
-            this.setAction = function(button, action) {
-                if (self.notAdded(button)) {
+            this.setAction = function(buttonName, action) {
+                if (self.notAdded(buttonName)) {
                     return;
                 }
-                buttons[button].originalAction = action;
-                buttons[button].action = function() {
-                    if (buttons[button].active) {
+                buttons[buttonName].originalAction = action;
+                buttons[buttonName].action = function() {
+                    if (buttons[buttonName].active) {
                         action();
                     }
                 };
             };
-            this.getAction = function(button) {
-                if (self.notAdded(button)) {
+            this.getAction = function(buttonName) {
+                if (self.notAdded(buttonName)) {
                     return VPLUtil.doNothing;
                 }
-                return buttons[button].action;
+                return buttons[buttonName].action;
             };
-            this.launchAction = function(button) {
-                if (self.notAdded(button)) {
+            this.launchAction = function(buttonName) {
+                if (self.notAdded(buttonName)) {
                     return;
                 }
-                buttons[button].originalAction();
+                buttons[buttonName].originalAction();
             };
             this.setGetkeys = function(editor) {
                 if (editor) {
                     var commands = editor.commands.commands;
                     var platform = editor.commands.platform;
-                    for (var button in buttons) {
-                        if ( buttons.hasOwnProperty(button) ) {
-                            var editorName = buttons[button].editorName;
-                            if (commands[editorName] && commands[editorName].bindKey && !buttons[button].Key) {
-                                buttons[button].key = commands[editorName].bindKey[platform];
-                                self.setText(button);
+                    for (var buttonName in buttons) {
+                        if ( buttons.hasOwnProperty(buttonName) ) {
+                            var editorName = buttons[buttonName].editorName;
+                            if (commands[editorName] && commands[editorName].bindKey && !buttons[buttonName].Key) {
+                                buttons[buttonName].key = commands[editorName].bindKey[platform];
+                                self.setText(buttonName);
                             } else {
-                                if (buttons[button].bindKey) {
-                                    if (!buttons[button].hasOwnProperty('key')) {
-                                        buttons[button].key = buttons[button].bindKey[platform];
-                                        self.setText(button);
+                                if (buttons[buttonName].bindKey) {
+                                    if (!buttons[buttonName].hasOwnProperty('key')) {
+                                        buttons[buttonName].key = buttons[buttonName].bindKey[platform];
+                                        self.setText(buttonName);
                                     }
                                 }
                             }
@@ -189,10 +189,10 @@ define(
             };
             this.getShortcuts = function(editor) {
                 var html = '<ul>';
-                for (var button in buttons) {
-                    if (buttons[button].hasOwnProperty('key')) {
+                for (var buttonName in buttons) {
+                    if (buttons[buttonName].hasOwnProperty('key')) {
                         html += '<li>';
-                        html += buttons[button].title + ' (' + buttons[button].key + ')';
+                        html += buttons[buttonName].title + ' (' + buttons[buttonName].key + ')';
                         html += '</li>';
                     }
                 }
@@ -271,12 +271,12 @@ define(
                     }
                 }
                 if (check) {
-                    for (var button in buttons) {
-                        if (buttons[button].hasOwnProperty('key')) {
-                            if (strkey == buttons[button].key.toLowerCase()) {
+                    for (var buttonName in buttons) {
+                        if (buttons[buttonName].hasOwnProperty('key')) {
+                            if (strkey == buttons[buttonName].key.toLowerCase()) {
                                 event.preventDefault();
                                 event.stopImmediatePropagation();
-                                buttons[button].action();
+                                buttons[buttonName].action();
                                 return false;
                             }
                         }
@@ -292,13 +292,24 @@ define(
                 var interval = false;
                 var hour = 60 * 60;
                 var day = hour * 24;
-                var cssclases = 'vpl_buttonleft_orange vpl_buttonleft_red vpl_buttonleft_black';
+                var cssclasses = 'vpl_buttonleft_orange vpl_buttonleft_red vpl_buttonleft_black';
                 var show = false;
                 var element = null;
                 var precision = 5;
                 var checkt = 1000;
                 var timeLeft = 0;
-                var update = function() {
+                var updatePrecision = function(timeLeft) {
+                    precision = 5;
+                    checkt = 1000;
+                    if (timeLeft > hour) {
+                        precision = 60;
+                        checkt = 5000;
+                    } else if (timeLeft > day) {
+                        precision = 5 * 60;
+                        checkt = 5 * 5000;
+                    }
+                };
+                var updateTimeLeft = function() {
                     var now = self.multiple(VPLUtil.getCurrentTime(), precision);
                     if (now === lastLap || element === null) {
                         return;
@@ -313,45 +324,42 @@ define(
                         cssclass = 'vpl_buttonleft_red';
                     } else if (tl <= 15 * 60) {
                         cssclass = 'vpl_buttonleft_orange';
+                    } else {
+                        updatePrecision(tl);
                     }
-                    var thtml = VPLUtil.genIcon('timeleft');
+                    var thtml = '<span class="' + cssclass +'">' + VPLUtil.genIcon('timeleft');
                     if (show) {
                         thtml += ' ' + VPLUtil.getTimeLeft(tl);
                     }
+                    thtml += '</span>';
                     element.html(thtml);
-                    element.removeClass(cssclases).addClass(cssclass);
+                    element.removeClass(cssclasses);
+                    element.addClass(cssclass);
                 };
                 self.toggleTimeLeft = function() {
                     show = !show;
-                    lastLap = false;
-                    update();
+                    lastLap = 0;
+                    updateTimeLeft();
                 };
                 self.setTimeLeft = function(options) {
-                    element = $('#vpl_ide_timeleft span');
+                    element = $('#vpl_ide_timeleft');
                     if (interval !== false) {
                         clearInterval(interval);
                         interval = false;
                     }
                     if (options.hasOwnProperty('timeLeft')) {
-                        $('#vpl_ide_timeleft').show();
-                        precision = 5;
-                        checkt = 1000;
                         timeLeft = options.timeLeft;
-                        if (timeLeft > hour) {
-                            precision = 60;
-                            checkt = 5000;
-                        }
-                        if (timeLeft > day) {
-                            precision = 5 * 60;
-                        }
+                        updatePrecision(timeLeft);
                         var sync = timeLeft % precision;
                         timeLeft = self.multiple(timeLeft, precision);
                         start = self.multiple(VPLUtil.getCurrentTime(), precision);
-                        lastLap = start - 1;
-                        update();
+                        lastLap = start - precision;
                         setTimeout( function() {
-                            interval = setInterval(update, checkt);
+                            interval = setInterval(updateTimeLeft, checkt);
                         }, sync * 1000);
+                        $('#vpl_ide_timeleft').show();
+                        updateTimeLeft();
+
                     } else {
                         $('#vpl_ide_timeleft').hide();
                     }

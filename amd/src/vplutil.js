@@ -371,7 +371,7 @@ define(
                 var seconds = parseInt(timeLeft);
                 res += ('00' + hours).substr(-2) + ':';
                 res += ('00' + minutes).substr(-2);
-                if (days === 0) {
+                if (timeLeft < hour) {
                     res += ':' + ('00' + seconds).substr(-2);
                 }
                 return res;

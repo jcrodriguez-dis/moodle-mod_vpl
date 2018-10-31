@@ -1628,7 +1628,7 @@ define(
             $('#vpl_menu .ui-button-text').css('padding','0');
             var alwaysActive = ['filelist', 'more', 'fullscreen', 'about', 'resetfiles',
                                 'download', 'comments', 'console','import',
-                                'fontsize'];
+                                'fontsize', 'timeleft'];
             for (var i = 0; i < alwaysActive.length; i++) {
                 menuButtons.enable(alwaysActive[i], true);
             }
