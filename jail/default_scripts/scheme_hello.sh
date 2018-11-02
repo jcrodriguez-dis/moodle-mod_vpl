@@ -1,12 +1,24 @@
 #!/bin/bash
 # This file is part of VPL for Moodle
 # Scheme language hello source code
-# Copyright 2015 Juan Carlos Rodríguez-del-Pino
+# Copyright 2018 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.scm <<'END_OF_FILE'
-(display "Hello from the Scheme language!\n")
+# include do not acept spaces in file or directory name
+
+cat > "vpl hello.scm" <<'END_OF_FILE'
+(include "testscheme/vplmessage.scm")
+(hello)
 (exit)
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.scm
+
+mkdir "testscheme" 2> /dev/null
+cat > "testscheme/vplmessage.scm" <<'END_OF_FILE'
+(define (hello)
+    (display "Hello from the Scheme language!\n")
+)
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.scm"
+export VPL_SUBFILE1="testscheme/vplmessage.scm"

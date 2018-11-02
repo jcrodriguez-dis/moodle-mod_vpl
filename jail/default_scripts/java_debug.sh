@@ -73,12 +73,7 @@ cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH:$HOME" >> vpl_execution
 chmod +x vpl_execution
 # is JSwat installed ?
-if [ -f /usr/local/JSwat/bin/JSwat ] ; then
-	echo "export SOURCEPATH=$HOME" >> vpl_execution
-	echo "get_source_files java" >> vpl_execution
-	echo "/usr/local/JSwat/bin/JSwat --laf javax.swing.plaf.nimbus.NimbusLookAndFeel \$SOURCE_FILES" >> vpl_execution
-	mv vpl_execution vpl_wexecution
-elif [ "$(command -v ddd)" == "" ] ; then
+if [ "$(command -v ddd)" == "" ] ; then
 	echo "jdb $MAINCLASS" >> vpl_execution
 	for FILENAME in $SOURCE_FILES
 	do

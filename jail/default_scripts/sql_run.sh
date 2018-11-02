@@ -16,11 +16,14 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+
+DBFILE=vpl.db
+
 #Generate execution script
 cat common_script.sh > vpl_execution
-#remove vpl.db
-echo "if [ -f vpl.db ] ; then" >> vpl_execution
-echo "rm vpl.db" >> vpl_execution
+#remove $DBFILE
+echo "if [ -f $DBFILE ] ; then" >> vpl_execution
+echo "rm $DBFILE" >> vpl_execution
 echo "fi" >> vpl_execution
 
 function vpl_sql_save_files {
@@ -74,7 +77,7 @@ function vpl_sql_add_files {
 			break
 		fi
 		if [ "${FILENAME##*.}" == "sql" ] ; then
-			echo "sqlite3 vpl.db < \"$FILENAME\"" >> vpl_execution
+			echo "sqlite3 $DBFILE < \"$FILENAME\"" >> vpl_execution
 		fi
 	done
 }
@@ -86,7 +89,7 @@ vpl_sql_save_files
 for FILENAME in *
 do
 	if [ "${FILENAME##*.}" == "sql" ] ; then
-		echo "sqlite3 vpl.db < \"$FILENAME\"" >> vpl_execution
+		echo "sqlite3 $DBFILE < \"$FILENAME\"" >> vpl_execution
 	fi
 done
 
@@ -98,7 +101,7 @@ vpl_sql_add_files
 
 #interactive console
 if [ "$1" != "batch" ] ; then
-	echo "sqlite3 vpl.db" >> vpl_execution
+	echo "sqlite3 $DBFILE" >> vpl_execution
 fi
 
 chmod +x vpl_execution

@@ -25,6 +25,8 @@ do
 	VPLEXE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_execute.sh/")
 	VPLDEBEXE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_debexecute.sh/")
 	echo -n "$LANGUAGE:"
+	VPL_SUBFILE0=
+	VPL_SUBFILE1=
 	rm .curerror &>/dev/null
 	. $HELLOSCRIPT gui &>.curerror
 	if [ "$VPL_SUBFILE0" == "" ] ; then
@@ -32,8 +34,9 @@ do
 	fi
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export VPL_SUBFILES=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export VPL_SUBFILES=\"$VPL_SUBFILE0 $VPL_SUBFILE1\"" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		let "NG=NG+1"
@@ -52,7 +55,7 @@ do
 		let "NEG=NEG+1"
 		LANGEG="$LANGEG $LANGUAGE"
 	fi
-    if [ -f ./$DEBUGSCRIPT ] ; then
+    if [ -f "$DEBUGSCRIPT" ] ; then
     	cp $RUNSCRIPT vpl_run.sh
 		eval ./$DEBUGSCRIPT batch &>>.curerror
 		if [ -f vpl_wexecution ] ; then

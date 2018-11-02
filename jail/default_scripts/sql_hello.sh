@@ -5,9 +5,15 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.sql <<'END_OF_FILE'
-SELECT 'Hello from the SQL language!';
-.exit
+cat >"vpl hello.sql" <<'END_OF_FILE'
 
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.sql
+
+mkdir "test sql" 2> /dev/null
+
+cat >"test sql/vpl message.sql" <<'END_OF_FILE'
+SELECT 'Hello from the SQL language!';
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.sql"
+export VPL_SUBFILE1="test sql/vpl message.sql"

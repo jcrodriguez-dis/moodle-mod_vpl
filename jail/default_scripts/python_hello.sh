@@ -5,15 +5,24 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
+cat > "vpl hello.py" <<'END_OF_FILE'
+import message
+message.hello()
+END_OF_FILE
+
 if [ "$1" == "gui" ] ; then
-cat >vpl_hello.py <<'END_OF_FILE'
+cat > "message.py" <<'END_OF_FILE'
 import Tkinter
 import tkMessageBox
-tkMessageBox.showinfo('VPL','Hello from the Python language!')
+def hello():
+	tkMessageBox.showinfo('VPL','Hello from the Python language!')
 END_OF_FILE
 else
-cat >vpl_hello.py <<'END_OF_FILE'
-print ('Hello from the Python language!')
+cat > "message.py" <<'END_OF_FILE'
+def hello():
+	print('Hello from the Python language!')
 END_OF_FILE
 fi
-export VPL_SUBFILE0=vpl_hello.py
+
+export VPL_SUBFILE0="vpl hello.py"
+export VPL_SUBFILE1="message.py"

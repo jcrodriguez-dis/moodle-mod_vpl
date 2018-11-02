@@ -24,4 +24,5 @@ hello() ->
 END_OF_FILE
 
 export VPL_SUBFILE0="test erlang/vpl_hello.erl"
+export VPL_SUBFILE1="test erlang/vpl message.erl"
 

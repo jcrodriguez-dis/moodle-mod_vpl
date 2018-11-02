@@ -8,16 +8,30 @@
 if [ "$1" == "gui" ] ; then
 	Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("Tkinter") else 0)')
 	if [ "$Tk" == "1" ] ; then
-cat >vpl_hello3.py <<'END_OF_FILE'
+cat > "vpl hello3.py" <<'END_OF_FILE'
+import message3
+message3.hello()
+END_OF_FILE
+cat > "message3.py" <<'END_OF_FILE'
 import Tkinter
 import tkMessageBox
-tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
+def hello():
+	tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
 END_OF_FILE
+export VPL_SUBFILE0="vpl hello3.py"
+export VPL_SUBFILE1="message3.py"
 	fi
 else
-cat >vpl_hello3.py <<'END_OF_FILE'
-print ('Hello from the Python3 language!')
+cat > "vpl hello3.py" <<'END_OF_FILE'
+import message3
+message3.hello()
 END_OF_FILE
+cat > "message3.py" <<'END_OF_FILE'
+def hello():
+	print('Hello from the Python3 language!')
+END_OF_FILE
+export VPL_SUBFILE0="vpl hello3.py"
+export VPL_SUBFILE1="message3.py"
 fi
-export VPL_SUBFILE0=vpl_hello3.py
+
 
