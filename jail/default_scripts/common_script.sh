@@ -61,7 +61,11 @@ function generate_file_of_files {
 	IFS=$'\n'
 	for file_name in $SOURCE_FILES
 	do
-		echo "\"$file_name\"" >> "$1"
+		if [ "$2" == "" ] ; then
+			echo "\"$file_name\"" >> "$1"
+		else
+			echo "$file_name" >> "$1"
+		fi
 	done
 	IFS=$SIFS
 }
