@@ -22,9 +22,9 @@ DBFILE=vpl.db
 #Generate execution script
 cat common_script.sh > vpl_execution
 #remove $DBFILE
-echo "if [ -f $DBFILE ] ; then" >> vpl_execution
-echo "rm $DBFILE" >> vpl_execution
-echo "fi" >> vpl_execution
+if [ -f $DBFILE ] ; then
+    rm $DBFILE
+fi
 
 function vpl_sql_save_files {
 	local FILENAME
@@ -86,12 +86,18 @@ function vpl_sql_add_files {
 #save submission files
 vpl_sql_save_files
 
-for FILENAME in *
+# add sh files to avoid zero files problem
+get_source_files sql sh
+
+SAVEIFS=$IFS
+IFS=$'\n'
+for FILENAME in $SOURCE_FILES
 do
 	if [ "${FILENAME##*.}" == "sql" ] ; then
-		echo "sqlite3 $DBFILE < \"$FILENAME\"" >> vpl_execution
+		sqlite3 $DBFILE < "$FILENAME"
 	fi
 done
+IFS=$SAVEIFS
 
 #restore submission files
 vpl_sql_restore_files

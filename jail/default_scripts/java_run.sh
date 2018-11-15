@@ -20,7 +20,9 @@ function getClassFile {
 }
 function hasMain {
 	local FILE=$(getClassFile "$1")
-	cat -v $FILE | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+	if [ -f "$FILE" ] ; then
+		cat -v "$FILE" | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+	fi
 }
 
 # @vpl_script_description Using default javac, run JUnit if detected

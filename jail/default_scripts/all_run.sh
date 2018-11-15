@@ -22,8 +22,9 @@ do
 	. $HELLOSCRIPT &>.curerror
 	cp common_script.sav common_script.sh
 	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export VPL_SUBFILES=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"

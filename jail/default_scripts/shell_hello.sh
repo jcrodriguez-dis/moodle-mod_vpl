@@ -9,6 +9,7 @@ cat >"vpl hello.sh" <<'END_OF_FILE'
 #!/bin/bash
 exec "test shell/vpl message.sh"
 END_OF_FILE
+chmod +x "vpl hello.sh"
 
 mkdir "test shell"
 
@@ -16,6 +17,8 @@ cat >"test shell/vpl message.sh" <<'END_OF_FILE'
 #!/bin/bash
 echo "Hello from the Shell (Bash) language!"
 END_OF_FILE
-ls -l
+
+chmod +x "test shell/vpl message.sh"
+
 export VPL_SUBFILE0="vpl hello.sh"
-export VPL_SUBFILE0="test shell/vpl message.sh"
+export VPL_SUBFILE1="test shell/vpl message.sh"
