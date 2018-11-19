@@ -74,7 +74,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'vhdl' => 'vhdl',
             'r' => 'r',
             'rb' => 'ruby',
-            'ruby' => 'ruby'
+            'ruby' => 'ruby',
+            'ts' => 'typescript'
     );
     private static $scriptname = array (
             'vpl_run.sh' => 'run',
