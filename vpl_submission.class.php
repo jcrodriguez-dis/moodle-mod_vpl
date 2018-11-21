@@ -414,9 +414,7 @@ class mod_vpl_submission {
             $comments = $info->comments;
             $fn = $this->get_gradecommentsfilename();
             if ($comments) {
-                $fp = vpl_fopen( $fn );
-                fwrite( $fp, $comments );
-                fclose( $fp );
+                vpl_fwrite( $fn, $comments );
             } else if (file_exists( $fn )) {
                 unlink( $fn );
             }
