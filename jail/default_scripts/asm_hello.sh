@@ -1,6 +1,13 @@
 #!/bin/bash
 # This file is part of VPL for Moodle
 # Assambler X86 language hello source code
+
+SBITS=X86
+uname -a | grep "x86_64" &> /dev/null
+if [ "$?" == "0" ] ; then
+	SBITS=X86_64
+fi
+
 mkdir "test asm" 2> /dev/null
 cat >"test asm/vpl hello.asm" <<'END_OF_FILE'
 section     .text
@@ -12,7 +19,7 @@ _start:
 
 END_OF_FILE
 
-cat >"test asm/message.asm" <<'END_OF_FILE'
+cat >"test asm/message.asm" <<END_OF_FILE
 ;From http://asm.sourceforge.net/intro/hello.html
 section     .text
 global      hello        ;must be declared for linker (ld)
@@ -31,7 +38,7 @@ hello:                   ;tell linker entry point
 
 section     .data
 
-msg     db  'Hello from Assambler x86 language!',0xa ;our dear string
+msg     db  'Hello from Assambler $SBITS language!',0xa ;our dear string
 len     equ $ - msg             ;length of our dear string
 
 END_OF_FILE

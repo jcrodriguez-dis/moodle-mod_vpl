@@ -14,7 +14,12 @@ if [ "$1" == "version" ] ; then
 	echo "nasm -v" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+PBITS=32
+uname -a | grep "x86_64" &> /dev/null
+if [ "$?" == "0" ] ; then
+	PBITS=64
+fi
 get_source_files asm
 #compile
 SIFS=$IFS
@@ -23,7 +28,7 @@ rm .vpl_object_files 2> /dev/null
 touch .vpl_object_files
 for FILENAME in $SOURCE_FILES
 do
-	nasm -f elf "$FILENAME"
+	nasm -f "elf$PBITS" "$FILENAME"
 	echo "\"${FILENAME/%.asm}.o\"" >> .vpl_object_files
 done
 IFS=$'\n'
