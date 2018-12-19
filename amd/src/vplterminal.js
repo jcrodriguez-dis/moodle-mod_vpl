@@ -44,6 +44,7 @@ define(
             var title = '';
             var message = '';
             var tdialog = $('#' + dialogId);
+            var tIde = $('#vplide');
             var titleText = '';
             var clipboard = null;
             var cliboardMaxsize = 64000;
@@ -200,7 +201,10 @@ define(
                 };
             };
             this.isOpen = function() {
-                return tdialog.dialog("isOpen") === true;
+                return tdialog.dialog("isOpen");
+            };
+            this.close = function() {
+                tdialog.dialog("close");
             };
             this.isConnected = function() {
                 return ws && ws.readyState != ws.CLOSED;
@@ -236,19 +240,20 @@ define(
                 tdialog.addClass(cbase + theme);
             }
             function controlDialogSize(){
-                // Reposition if dialog is out of screen.
+                // Reposition if dialog is out of IDE
+                var ideOffset = tIde.offset();
                 var offset = tdialog.parent().offset();
-                offset.top = offset.top < 0 ? 0 : offset.top;
-                offset.left = offset.left < 0 ? 0 : offset.left;
+                offset.top = offset.top < ideOffset.top ? ideOffset.top : offset.top;
+                offset.left = offset.left < ideOffset.left ? ideOffset.left : offset.left;
                 tdialog.parent().offset(offset);
                 // Resize if dialog is large than screen.
-                var bw = $('body').width();
-                var bh = $('body').height();
+                var bw = tIde.width();
+                var bh = tIde.height();
                 if( tdialog.width() > bw) {
-                    tdialog.width(bw);
+                    tdialog.dialog( "option", "width", bw);
                 }
                 if(tdialog.parent().height() > bh) {
-                    tdialog.height(bh - tdialog.prev().outerHeight());
+                    tdialog.dialog( "option", "height", bh - tdialog.prev().outerHeight());
                 }
             }
             tdialog.dialog({
@@ -257,6 +262,8 @@ define(
                 width : 'auto',
                 height : 'auto',
                 resizable : true,
+                dragStop : controlDialogSize,
+                open : controlDialogSize,
                 focus : function() {
                     controlDialogSize();
                     terminal.focus();
@@ -281,6 +288,7 @@ define(
                 resizeStop : function() {
                     tdialog.width(tdialog.parent().width());
                     tdialog.height(tdialog.parent().height() - tdialog.prev().outerHeight());
+                    controlDialogSize();
                     terminal.focus();
                 }
             });
