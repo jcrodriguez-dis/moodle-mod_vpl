@@ -45,6 +45,7 @@ define(
             var message = '';
             var lastState = '';
             var VNCDialog = $('#' + VNCDialogId);
+            var tIde = $('#vplide');
             var canvas = $('#' + VNCDialogId + " canvas");
             var onCloseAction = function() { };
             var clipboard;
@@ -187,18 +188,39 @@ define(
                     rfb.get_display().viewportChange(0, 0, w, h);
                 }
             };
+            function controlDialogSize(){
+                // Reposition if dialog is out of IDE
+                var ideOffset = tIde.offset();
+                var offset = VNCDialog.parent().offset();
+                offset.top = offset.top < ideOffset.top ? (needResize = true, ideOffset.top) : offset.top;
+                offset.left = offset.left < ideOffset.left ? (needResize = true, ideOffset.left) : offset.left;
+                VNCDialog.parent().offset(offset);
+                // Resize if dialog is large than screen.
+                var bw = tIde.width();
+                var bh = tIde.height();
+                if( VNCDialog.width() > bw) {
+                    needResize = true;
+                    VNCDialog.dialog( "option", "width", bw);
+                }
+                if(VNCDialog.parent().height() > bh) {
+                    needResize = true;
+                    VNCDialog.dialog( "option", "height", bh - VNCDialog.prev().outerHeight());
+                }
+            }
             VNCDialog.dialog({
-                closeOnEscape : false,
-                autoOpen : false,
-                modal : true,
-                width : 'auto',
-                height : 'auto',
-                dialogClass : 'vpl_ide vpl_vnc',
-                create : function() {
+                closeOnEscape: false,
+                autoOpen: false,
+                modal: true,
+                width: 'auto',
+                height: 'auto',
+                dialogClass: 'vpl_ide vpl_vnc',
+                create: function() {
                     titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', [ 'clipboard', 'keyboard' ], [ openClipboard,
                             keyboardButton ]);
                 },
-                focus : getFocus,
+                dragStop: controlDialogSize,
+                focus: getFocus,
+                open : controlDialogSize,
                 beforeClose : function() {
                     if (needResize) {
                         var w = VNCDialog.width();
@@ -211,6 +233,7 @@ define(
                     self.disconnect();
                 },
                 resizeStop : function() {
+                    controlDialogSize();
                     needResize = true;
                 }
             });
@@ -278,6 +301,9 @@ define(
             };
             this.isOpen = function() {
                 return VNCDialog.dialog("isOpen");
+            };
+            this.close = function() {
+                VNCDialog.dialog("close");
             };
             this.isConnected = function() {
                 return rfb && lastState != 'disconnected';
