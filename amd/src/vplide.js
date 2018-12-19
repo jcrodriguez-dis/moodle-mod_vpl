@@ -1448,6 +1448,9 @@ define(
                 'setResult' : self.setResult,
                 'ajaxurl' : options.ajaxurl,
                 'run' : function(type, coninfo, ws) {
+                    if (lastConsole && lastConsole.isOpen()) {
+                        lastConsole.close();
+                    }
                     if (type == 'terminal') {
                         lastConsole = terminal;
                         terminal.connect(coninfo.executionURL, function() {
@@ -1540,7 +1543,11 @@ define(
             menuButtons.add({
                 name:'console',
                 originalAction: function() {
-                    lastConsole.show();
+                    if (lastConsole.isOpen()) {
+                        lastConsole.close();
+                    } else {
+                        lastConsole.show();
+                    }
                 }
             });
             menuButtons.add({ name: 'user' } );
