@@ -359,16 +359,17 @@ define(
                     res += '-';
                     timeLeft = -timeLeft;
                 }
-                var days = parseInt(timeLeft / day);
-                timeLeft -= days * day;
+                var timePending = timeLeft;
+                var days = parseInt(timePending / day);
+                timePending -= days * day;
                 if (days !== 0) {
                     res += days + 'T';
                 }
-                var hours = parseInt(timeLeft / hour);
-                timeLeft -= hours * hour;
-                var minutes = parseInt(timeLeft / minute);
-                timeLeft -= minutes * minute;
-                var seconds = parseInt(timeLeft);
+                var hours = parseInt(timePending / hour);
+                timePending -= hours * hour;
+                var minutes = parseInt(timePending / minute);
+                timePending -= minutes * minute;
+                var seconds = parseInt(timePending);
                 res += ('00' + hours).substr(-2) + ':';
                 res += ('00' + minutes).substr(-2);
                 if (timeLeft < hour) {
@@ -859,10 +860,12 @@ define(
                     if (detail > '') {
                         text += ': ' + detail;
                     }
-                    if (externalActions.getConsole && externalActions.getConsole().isOpen()) {
+                    if (pb != null && !pb.isClosed() ){
+                        pb.setLabel(text);
+                    } else if (externalActions.getConsole && externalActions.getConsole().isOpen()) {
                         externalActions.getConsole().setMessage(text);
                     } else {
-                        pb.setLabel(text);
+                        VPLUtil.log('Error: no dialogo. Message not shown: ' + message);
                     }
                 },
                 'compilation' :function(content) {
