@@ -571,7 +571,7 @@ define(
                         }
                         var pro = properties[proname];
                         if (pro != undefined && !(pro.class === "Function")){
-                            HTML += '<b>' + proname + "</b>: " + self.getVarValue(pro) + "<br>\n";
+                            HTML += '<b>' + proname + "</b>:&nbsp;" + self.getVarValue(pro) + "<br>\n";
                         }
                     }
                     return HTML;
@@ -620,7 +620,7 @@ define(
                         if (self.executionState == self.STOPSTATE){
                             break;
                         }
-                        if ( ! self.interpreter || !self.interpreter.step() ) {
+                        if ( ! self.interpreter || ! self.interpreter.step() ) {
                             self.executionState = self. STOPSTATE;
                             self.updateRunButtons();
                             break;
@@ -633,7 +633,12 @@ define(
                         return;
                     }
                     if ( self.executionState == self.RUNSTATE) {
-                        setTimeout(self.runLoop, 0);
+                        if (self.animateRun) {
+                            setTimeout(self.runLoop, 1000);
+                            self.showStack(self.interpreter);
+                        } else {
+                            setTimeout(self.runLoop, 0);
+                        }
                     } else {
                         self.showStack(self.interpreter);
                     }
