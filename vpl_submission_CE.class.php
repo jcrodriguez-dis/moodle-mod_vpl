@@ -298,7 +298,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $filenames = '';
         $num = 0;
         foreach ($submittedlist as $filename) {
-            $filenames .= $filename . ' ';
+            $filenames .= $filename . "\n";
             $info .= vpl_bash_export( 'VPL_SUBFILE' . $num, $filename );
             $num ++;
         }
