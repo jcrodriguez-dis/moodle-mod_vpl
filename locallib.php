@@ -62,7 +62,7 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
     if (isset( $SESSION->$fullname )) { // Exists var?
         $res = $SESSION->$fullname;
     }
-    $res = optional_param( $parname, $res, PARAM_ALPHA );
+    $res = optional_param( $parname, $res, PARAM_ALPHANUM );
     $SESSION->$fullname = $res;
     return $res;
 }

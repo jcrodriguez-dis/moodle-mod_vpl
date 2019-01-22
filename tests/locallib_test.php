@@ -125,6 +125,10 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertEquals('nada', vpl_get_set_session_var('testvpl2', 'nada'));
         $_POST['testvpl3'] = 'algo';
         $this->assertEquals('algo', vpl_get_set_session_var('testvpl3', 'nada'));
+        $SESSION->vpl_testvpl4 = 'testdata 4';
+        $this->assertEquals('testdata 4', vpl_get_set_session_var('testvpl4', 'nada'));
+        $_POST['testvpl5'] = 'algo 5';
+        $this->assertEquals('algo 5', vpl_get_set_session_var('testvpl5', 'nada'));
         if ( $nopost) {
             unset($_POST);
         } else {
