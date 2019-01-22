@@ -53,9 +53,6 @@ class vpl_list_util {
                 'name' => array (
                         'name'
                 ),
-                'shortdescription' => array (
-                        'shortdescription'
-                ),
                 'startdate' => array (
                         'startdate',
                         'duedate',

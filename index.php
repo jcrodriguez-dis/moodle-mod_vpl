@@ -30,7 +30,6 @@ require_once(dirname(__FILE__).'/vpl_submission.class.php');
 
 $id = required_param( 'id', PARAM_INT ); // Course id.
 
-
 $sort = vpl_get_set_session_var( 'sort', '' );
 $sortdir = vpl_get_set_session_var( 'sortdir', 'down' );
 $instanceselection = vpl_get_set_session_var( 'selection', 'all' );
@@ -45,8 +44,8 @@ $burl = vpl_rel_url( basename( __FILE__ ), 'id', $id );
 $strname = get_string( 'name' ) . ' ';
 $strname .= vpl_list_util::vpl_list_arrow( $burl, 'name', $instanceselection, $sort, $sortdir );
 $strvpls = get_string( 'modulenameplural', VPL );
-$strshortdescription = get_string( 'shortdescription', VPL ) . ' ';
-$strshortdescription .= vpl_list_util::vpl_list_arrow( $burl, 'shortdescription', $instanceselection, $sort, $sortdir );
+$strsection = get_string( 'section' ) . ' ';
+//$strsection .= vpl_list_util::vpl_list_arrow( $burl, 'section', $instanceselection, $sort, $sortdir );
 $strstartdate = get_string( 'startdate', VPL ) . ' ';
 $strstartdate .= vpl_list_util::vpl_list_arrow( $burl, 'startdate', $instanceselection, $sort, $sortdir );
 $strduedate = get_string( 'duedate', VPL ) . ' ';
@@ -72,13 +71,22 @@ $urlbase = new moodle_url( '/mod/vpl/index.php', array (
         'sort' => $sort,
         'sortdir' => $sortdir
 ) );
+
+$activities = get_array_of_activities($COURSE->id);
+$sectionnames = array();
+foreach($activities as $activity) {
+    if ( $activity->mod == 'vpl' ) {
+        $section = $activity->section;
+        $sectionnames[$section] = get_section_name($COURSE->id, $section);
+    }
+}
 $urls = array ();
 $urlindex = array ();
 $urlbase->param( 'selection', 'all' );
 $selected = $urlbase->out( false );
 $urls [$selected] = get_string( 'all' );
 $urlindex ['all'] = $selected;
-foreach (array (
+$filter = array (
         'open',
         'closed',
         'timelimited',
@@ -86,11 +94,22 @@ foreach (array (
         'automaticgrading',
         'manualgrading',
         'examples'
-) as $sel) {
+);
+
+foreach ($filter as $sel) {
     $urlbase->param( 'selection', $sel );
     $urls [$urlbase->out( false )] = get_string( $sel, VPL );
     $urlindex [$sel] = $urlbase->out( false );
 }
+
+foreach ($sectionnames as $section => $sectionname) {
+    if ( empty($urlindex ["sec$section"]) ) {
+        $urlbase->param( 'selection', "sec$section" );
+        $urls [$urlbase->out( false )] = get_string( 'section' ) . ': ' . s($sectionname);
+        $urlindex ["sec$section"] = $urlbase->out( false );
+    }
+}
+
 echo $OUTPUT->url_select( $urls, $urlindex [$instanceselection], array () );
 
 if (! $cms = get_coursemodules_in_course( VPL, $course->id, "m.shortdescription, m.startdate, m.duedate" )) {
@@ -98,6 +117,7 @@ if (! $cms = get_coursemodules_in_course( VPL, $course->id, "m.shortdescription,
                   $strnopls);
     die();
 }
+
 $ovpls = get_all_instances_in_course( VPL, $course );
 $timenow = time();
 $vpls = array ();
@@ -149,6 +169,14 @@ foreach ($ovpls as $ovpl) {
                     $vpls [] = $vpl;
                 }
                 break;
+            default:
+                $cmid = $vpl->get_course_module()->id;
+                if ( ! empty($activities[$cmid])) {
+                    $section = $activities[$cmid]->section;
+                    if ( $instanceselection == "sec$section" ) {
+                        $vpls [] = $vpl;
+                    }
+                }
         }
     }
 }
@@ -194,8 +222,8 @@ $table = new html_table();
 $table->attributes ['class'] = 'generaltable mod_index';
 $table->head = array (
         '#',
-        $strname,
-        $strshortdescription
+        $strsection,
+        $strname
 );
 $table->align = array (
         'left',
@@ -220,16 +248,25 @@ if ($student && ! $nograde) {
     $table->head [] = get_string( 'grade' );
     $table->align [] = 'left';
 }
+
+$baseurlsection = vpl_abs_href( '/course/view.php', 'id', $COURSE->id );
 $table->data = array ();
 $totalsubs = 0;
 $totalgraded = 0;
 foreach ($vpls as $vpl) {
     $instance = $vpl->get_instance();
-    $url = vpl_rel_url( 'view.php', 'id', $vpl->get_course_module()->id );
+    $cmid = $vpl->get_course_module()->id;
+    $url = vpl_rel_url( 'index.php', 'id', $cmid );
+    $section_name = '';
+    $section = '';
+    if ( ! empty($activities[$cmid])) {
+        $section = $activities[$cmid]->section;
+        $section_name = s( $sectionnames[$section] );
+    }
     $row = array (
             count( $table->data ) + 1,
-            "<a href='$url'>{$vpl->get_printable_name()}</a>",
-            s( $instance->shortdescription )
+            "<a href='$baseurlsection#section-$section'>{$section_name}</a>",
+            "<a href='$url'>{$vpl->get_printable_name()}</a>"
     );
     if ($startdate) {
         $row [] = $instance->startdate > 0 ? userdate( $instance->startdate ) : '';
@@ -317,5 +354,7 @@ echo html_writer::table( $table );
 $url = new moodle_url( '/mod/vpl/views/checkvpls.php', array ('id' => $id) );
 $string = get_string( 'checkall' );
 echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
+
+$activities = get_array_of_activities($COURSE->id); //get all sections information from modules
 
 echo $OUTPUT->footer();
