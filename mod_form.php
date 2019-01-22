@@ -59,7 +59,6 @@ class mod_vpl_mod_form extends moodleform_mod {
                 'optional' => true
         ) );
         $mform->setDefault( 'startdate', 0 );
-        $mform->setAdvanced( 'startdate' );
         $mform->addElement( 'date_time_selector', 'duedate', get_string( 'duedate', VPL ), array (
                 'optional' => true
         ) );
