@@ -28,7 +28,7 @@ require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/list_util.class.php');
 require_once(dirname(__FILE__).'/vpl_submission.class.php');
 
-function get_select_instance_filter($urlbase, $instancefilter){
+function get_select_instance_filter($urlbase, $instancefilter) {
     $urls = array ();
     $urlindex = array ();
     $urlbase->param( 'selection', 'none' );
@@ -56,7 +56,7 @@ function get_select_instance_filter($urlbase, $instancefilter){
     return $select;
 }
 
-function get_select_section_filter($urlbase, $sectionnames, $sectionfilter){
+function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     $urls = array ();
     $urlindex = array ();
     $urlbase->param( 'section', 'all' );
