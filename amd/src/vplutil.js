@@ -860,12 +860,12 @@ define(
                     if (detail > '') {
                         text += ': ' + detail;
                     }
-                    if (pb != null && !pb.isClosed() ){
+                    if (pb !== null && !pb.isClosed() ){
                         pb.setLabel(text);
                     } else if (externalActions.getConsole && externalActions.getConsole().isOpen()) {
                         externalActions.getConsole().setMessage(text);
                     } else {
-                        VPLUtil.log('Error: no dialogo. Message not shown: ' + message);
+                        VPLUtil.log('Error: no dialogo. Message not shown: ' + text);
                     }
                 },
                 'compilation' :function(content) {
