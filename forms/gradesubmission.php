@@ -121,11 +121,17 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             }
             die();
         }
-        vpl_grade_header( $vpl, $inpopup );
-        if (! isset( $fromform->grade ) && ! isset( $fromform->savenext )) {
-            vpl_redirect( $link, get_string( 'badinput' ), 'error' );
+        $badgrade = ! isset( $fromform->grade ) && ! isset( $fromform->savenext );
+        if ($vpl->get_instance()->grade < 0) {
+            $badgrade = $badgrade || $fromform->grade == -1;
+        } else {
+            $badgrade = $badgrade || trim($fromform->grade) == '';
+            $badgrade = $badgrade || $fromform->grade > $vpl->get_instance()->grade;
         }
-
+        if ($badgrade) {
+            vpl_redirect( $link, get_string( 'badgrade', 'grades' ), 'error' );
+        }
+        vpl_grade_header( $vpl, $inpopup );
         if ($submission->is_graded()) {
             $action = 'update grade';
         } else {
