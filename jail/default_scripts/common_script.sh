@@ -20,6 +20,9 @@ function get_source_files {
 	SOURCE_FILES_LINE=""
 	for ext in "$@"
 	do
+		if [ "$ext" == "NOERROR" ] ; then
+			break
+		fi
 	    local source_files_ext="$(find . -name "*.$ext" -print | sed 's/^.\///g' | sed 's/ /\\ /g')"
 	    if [ "$SOURCE_FILES_LINE" == "" ] ; then
 	        SOURCE_FILES_LINE="$source_files_ext"
@@ -45,6 +48,9 @@ function get_source_files {
 		done
 		IFS=$SIFS
 		return 0
+	fi
+	if [ "$ext" == "NOERROR" ] ; then
+		return 1
 	fi
 
 	echo "To run this type of program you need some file with extension \"$@\""
@@ -90,12 +96,16 @@ function get_first_source_file {
 	    	fi
 		done
 	done
+	if [ "$ext" == "NOERROR" ] ; then
+		return 1
+	fi
 	echo "To run this type of program you need some file with extension \"$@\""
 	exit 0;
 }
 
 function check_program {
 	PROGRAM=
+	local check
 	for check in "$@"
 	do
 		local PROPATH=$(command -v $check)
@@ -106,9 +116,43 @@ function check_program {
 		PROGRAMPATH=$PROPATH
 		return 0
 	done
+	if [ "$check" == "NOERROR" ] ; then
+		return 1
+	fi
 	echo "The execution server needs to install \"$1\" to run this type of program"
 	exit 0;
 }
+
+function compile_typescript {
+	check_program tsc NOERROR
+	if [ "$PROGRAM" == "" ] ; then
+		return 0
+	fi
+	get_source_files ts NOERROR
+	SAVEIFS=$IFS
+	IFS=$'\n'
+	for FILENAME in $SOURCE_FILES
+	do
+		tsc "$FILENAME" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
+	done
+	IFS=$SAVEIFS
+}
+
+function compile_scss {
+	check_program sass NOERROR
+	if [ "$PROGRAM" == "" ] ; then
+		return 0
+	fi
+	get_source_files scss NOERROR
+	SAVEIFS=$IFS
+	IFS=$'\n'
+	for FILENAME in $SOURCE_FILES
+	do
+		sass "$FILENAME"
+	done
+	IFS=$SAVEIFS
+}
+
 
 #Decode BASE64 files
 get_source_files b64
@@ -128,7 +172,7 @@ SOURCE_FILES=""
 VPL_NS=true
 for FILENAME in $VPL_SUBFILES
 do
-	if [ "$FILENAME" == "pre_vpl_run.sh" ] ; then
+	if [ "$FILENAME" == "pre_vpl_run.sh" ] || [ "$FILENAME" == "pre_vpl_run.sh.b64" ] ; then
 		VPL_NS=false
 		break
 	fi
