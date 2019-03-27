@@ -6,9 +6,11 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 # @vpl_script_description Using "php -n -f" with the first file or on serve if index.php exists
+
 # load common script and check programs
 . common_script.sh
-check_program php5 php
+
+check_program php php5
 PHP=$PROGRAM
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
@@ -16,6 +18,7 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+
 get_source_files php
 IFS=$'\n'
 for file_name in $SOURCE_FILES
@@ -23,11 +26,12 @@ do
 	php -l "$file_name" > /dev/null
 done
 IFS=$SIFS
-# Remove OKs compilations
-#cat .vpl_perl_errors | egrep -v "OK$"
+
 check_program x-www-browser firefox
 BROWSER=$PROGRAM
 if [ -f index.php ] ; then
+	compile_typescript
+	compile_scss
 	PHPCONFIGFILE=$($PHP -i 2>/dev/null | grep "Loaded Configuration File" | sed 's/^[^\/]*//' )
 	if [ "$PHPCONFIGFILE" == "" ] ; then
 		touch .php.ini
