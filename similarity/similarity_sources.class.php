@@ -384,9 +384,7 @@ class vpl_similarity_preprocess {
     }
     static public function create_zip_file($vplid, $zipname, $zipdata) {
         $filename = self::get_zip_filepath( $vplid, $zipname );
-        $fp = vpl_fopen( $filename );
-        fwrite( $fp, $zipdata );
-        fclose( $fp );
+        vpl_fwrite( $filename, $zipdata );
     }
 
     /**
