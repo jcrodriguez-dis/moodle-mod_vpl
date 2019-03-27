@@ -28,7 +28,16 @@ rm .vpl_object_files 2> /dev/null
 touch .vpl_object_files
 for FILENAME in $SOURCE_FILES
 do
-	nasm -f "elf$PBITS" "$FILENAME"
+	BITS=$PBITS
+	grep -i "^\s*bits 64" "$FILENAME" &> /dev/null
+	if [ "$?" == "0" ] ; then
+		BITS=64
+	fi
+	grep -i "^\s*bits 32" "$FILENAME" &> /dev/null
+	if [ "$?" == "0" ] ; then
+		BITS=32
+	fi
+	nasm -f "elf$BITS" "$FILENAME"
 	echo "\"${FILENAME/%.asm}.o\"" >> .vpl_object_files
 done
 IFS=$'\n'
