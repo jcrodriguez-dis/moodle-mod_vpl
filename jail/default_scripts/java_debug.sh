@@ -72,22 +72,11 @@ fi
 cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH:$HOME" >> vpl_execution
 chmod +x vpl_execution
-# is JSwat installed ?
-if [ "$(command -v ddd)" == "" ] ; then
-	echo "jdb $MAINCLASS" >> vpl_execution
-	for FILENAME in $SOURCE_FILES
-	do
-		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
-		if [ "$?" -eq "0" ]	; then
-			check_program x-terminal-emulator
-			cat common_script.sh > vpl_wexecution
-			chmod +x vpl_wexecution
-			echo "x-terminal-emulator -e ./.vpl_javadebug" >> vpl_wexecution
-			mv vpl_execution .vpl_javadebug
-			break
-		fi
-	done
-else
+# is jgrasp installed ?
+if [ "$(command -v jgrasp)" != "" ] ; then
+	echo "jgrasp $MAINCLASS.java" >> vpl_execution
+	mv vpl_execution vpl_wexecution
+elif [ "$(command -v ddd)" != "" ] ; then
 	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
 	mkdir .ddd
 	mkdir .ddd/sessions
@@ -102,4 +91,18 @@ Ddd*saveHistoryOnExit: off
 ! DO NOT ADD ANYTHING BELOW THIS LINE -- DDD WILL OVERWRITE IT
 END_OF_FILE
 	mv vpl_execution vpl_wexecution
+else
+	echo "jdb $MAINCLASS" >> vpl_execution
+	for FILENAME in $SOURCE_FILES
+	do
+		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
+		if [ "$?" -eq "0" ]	; then
+			check_program x-terminal-emulator
+			cat common_script.sh > vpl_wexecution
+			chmod +x vpl_wexecution
+			echo "x-terminal-emulator -e ./.vpl_javadebug" >> vpl_wexecution
+			mv vpl_execution .vpl_javadebug
+			break
+		fi
+	done
 fi
