@@ -6,6 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 cat >"vpl hello.perl" <<'END_OF_FILE'
+use lib '.';
 use Perl_test::Message;
 Perl_test::Message::hello();
 END_OF_FILE
