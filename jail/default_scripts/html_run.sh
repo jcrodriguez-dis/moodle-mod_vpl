@@ -15,6 +15,11 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+
+compile_typescript
+compile_scss
+
+check_program x-www-browser firefox
 get_first_source_file html htm
 # Generate file with source files
 cat > vpl_wexecution <<END_OF_SCRIPT
