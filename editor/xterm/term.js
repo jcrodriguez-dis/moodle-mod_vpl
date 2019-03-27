@@ -723,7 +723,7 @@ Terminal.prototype.fixMobile = function(document) {
       try { inputElement.setSelectionRange(resetValue.length, resetValue.length); }
       catch (err) {}      
   }
-  if (this.isAndroid && this.isFirefox) {
+/*  if (this.isAndroid && this.isFirefox) {
     resetInput();
     on(inputElement, 'change', function() {
         readInput();
@@ -741,7 +741,7 @@ Terminal.prototype.fixMobile = function(document) {
     on(inputElement, 'focus', function() {
         resetInput();
     });
-  }
+  }*/
 };
 
 /**
