@@ -464,16 +464,28 @@ function vpl_get_select_time($maximum = null) {
  * @return int max size in bytes
  */
 function vpl_get_max_post_size() {
-    $maxs = trim( ini_get( 'post_max_size' ) );
+    return vpl_get_max_post_size_internal( ini_get( 'post_max_size' ) );
+}
+
+/**
+ * For internal use. Return number of bytes from 0|#|#k|#m|#g format
+ *
+ * @return int number of bytes max, PHP_INT_MAX for '0'
+ */
+function vpl_get_max_post_size_internal($maxs) {
+    $maxs = trim( $maxs );
     $len = strlen( $maxs );
+    $max = ( int ) $maxs;
     $last = strtolower( $maxs [$len - 1] );
-    $max = ( int ) substr( $maxs, 0, $len - 1 );
     if ($last == 'k') {
         $max *= 1024;
     } else if ($last == 'm') {
         $max *= 1024 * 1024;
     } else if ($last == 'g') {
         $max *= 1024 * 1024 * 1000;
+    }
+    if ($maxs === '0') {
+        $max = PHP_INT_MAX;
     }
     return $max;
 }
