@@ -44,4 +44,4 @@ fi
 
 export VPL_SUBFILE0=Vpl_hello.java
 export VPL_SUBFILE1=message/Hello.java
-
+export VPL_SUBFILES="Vpl_hello.java message/Hello.java"
