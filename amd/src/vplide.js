@@ -709,6 +709,10 @@ define(
                 hasContent = self.setResultTab('execution', formated, res.execution);
                 show = show || hasContent;
                 hasContent = self.setResultTab('description', options.description, options.description);
+                if (hasContent && typeof MathJax == 'object') { // MathJax workaround
+                    var math = result.find(".vpl_ide_accordion_c_description")[0];
+                    MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
+                }
                 show = show || hasContent;
                 if ( show ) {
                     result_container.show();
@@ -1658,9 +1662,9 @@ define(
                 VPLUtil.log('updateMenu', true);
                 var modified = fileManager.isModified();
                 menuButtons.enable('save', modified);
-                menuButtons.enable('run', !modified);
-                menuButtons.enable('debug', !modified);
-                menuButtons.enable('evaluate', !modified);
+                menuButtons.enable('run', (!modified || options.example) && isOptionAllowed('run'));
+                menuButtons.enable('debug', (!modified || options.example) && isOptionAllowed('debug'));
+                menuButtons.enable('evaluate', (!modified || options.example) && isOptionAllowed('evaluate'));
                 menuButtons.enable('download', !modified);
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
