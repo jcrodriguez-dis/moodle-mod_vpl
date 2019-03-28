@@ -21,6 +21,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+/* globals MathJax */
+
 define(
     [
         'jquery',
