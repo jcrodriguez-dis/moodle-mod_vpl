@@ -1,11 +1,11 @@
 #!/bin/bash
 # This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 # Script for running C# language
-# Copyright (C) 2014 Juan Carlos Rodríguez-del-Pino
+# Copyright (C) 2019 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Using mcs
+# @vpl_script_description Using mcs (Mono compiler) and run Nunit if detected (nunit-console)
 # load common script and check programs
 . common_script.sh
 check_program mcs
@@ -17,19 +17,43 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files cs
+OUTPUTFILE=output.exe
 # Generate file with source files
 generate_file_of_files .vpl_source_files
+# Detect NUnit
+NUNITLIBFILE=$(ls /usr/lib/cli/nunit.framework*/nunit.framework.dll | tail -n 1)
+if [ -f "$NUNITLIBFILE" ] ; then
+	NUNITLIB="-r:$NUNITLIBFILE"
+fi
 # Compile
 export MONO_ENV_OPTIONS=--gc=sgen
-mcs -pkg:dotnet -out:output.exe -lib:/usr/lib/mono @.vpl_source_files
-rm .vpl_source_files
-if [ -f output.exe ] ; then
-	cat common_script.sh > vpl_execution
-	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
-	echo "mono output.exe \$@" >> vpl_execution
-	chmod +x vpl_execution
-	grep -E "System\.Windows\.Forms" output.exe &>/dev/null
-	if [ "$?" -eq "0" ]	; then
-		mv vpl_execution vpl_wexecution
+EXECUTABLE=false
+mcs -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -lib:/usr/lib/mono @.vpl_source_files &>.vpl_compilation_message
+if [ -f $OUTPUTFILE ] ; then
+	EXECUTABLE=true
+else
+	# Try to compile as dll
+	OUTPUTFILE=output.dll
+	if [ "$NUNITLIB" != "" ] ; then
+		mcs -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -target:library -lib:/usr/lib/mono @.vpl_source_files &> /dev/null
 	fi
+fi
+rm .vpl_source_files
+if [ -f $OUTPUTFILE ] ; then
+	cat common_script.sh > vpl_execution
+	chmod +x vpl_execution
+	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
+	# Detect NUnit
+	grep -E "nunit\.framework" $OUTPUTFILE &>/dev/null
+	if [ "$?" -eq "0" -a "$NUNITLIB" != "" ]	; then
+		echo "nunit-console -nologo $OUTPUTFILE" >> vpl_execution
+	fi
+	if [ "$EXECUTABLE" == "true" ] ; then
+		echo "mono $OUTPUTFILE \$@" >> vpl_execution
+		grep -E "System\.Windows\.Forms" $OUTPUTFILE &>/dev/null
+		if [ "$?" -eq "0" ]	; then
+			mv vpl_execution vpl_wexecution
+		fi
+	fi
+	cat .vpl_compilation_message
 fi
