@@ -8,8 +8,25 @@
 # @vpl_script_description Using python2 PUDB with the first file
 # load common script and check programs
 . common_script.sh
-check_program python
+check_program python2
+get_first_source_file py
+# Detect if PuDB is installed
+PUDB=$($PROGRAM -c 'import pudb; print(1)' 2>/dev/null)
+if [ "$PUDB" == "1" ] ; then
+	MOD=pudb
+else
+	MOD=pdb
+fi
+
 get_first_source_file py
 cat common_script.sh > vpl_execution
-echo "python -m pudb \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+echo "TERM=ansi" >>vpl_execution
+echo "$PROGRAM -m $MOD \"$FIRST_SOURCE_FILE\"" >>vpl_execution
 chmod +x vpl_execution
+if [ "$PUDB" == "1" ] ; then
+	mv vpl_execution debug_execution
+	cat common_script.sh > vpl_wexecution
+	echo "x-terminal-emulator -e ./debug_execution" >> vpl_wexecution
+	echo "sleep 2h" >> vpl_wexecution
+	chmod +x debug_execution
+fi
