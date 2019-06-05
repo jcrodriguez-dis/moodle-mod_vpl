@@ -5,14 +5,14 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Using mcs (Mono compiler) and run Nunit if detected (nunit-console)
+# @vpl_script_description Using csc or mcs
 # load common script and check programs
 . common_script.sh
-check_program mcs
 check_program mono
+check_program csc mcs
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
-	echo "mcs --version" >> vpl_execution
+	echo "$PROGRAM --version" >> vpl_execution
 	chmod +x vpl_execution
 	exit
 fi 
@@ -28,14 +28,14 @@ fi
 # Compile
 export MONO_ENV_OPTIONS=--gc=sgen
 EXECUTABLE=false
-mcs -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -lib:/usr/lib/mono @.vpl_source_files &>.vpl_compilation_message
+$PROGRAM -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -lib:/usr/lib/mono @.vpl_source_files &>.vpl_compilation_message
 if [ -f $OUTPUTFILE ] ; then
 	EXECUTABLE=true
 else
 	# Try to compile as dll
 	OUTPUTFILE=output.dll
 	if [ "$NUNITLIB" != "" ] ; then
-		mcs -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -target:library -lib:/usr/lib/mono @.vpl_source_files &> /dev/null
+		PROGRAM -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -target:library -lib:/usr/lib/mono @.vpl_source_files &> /dev/null
 	fi
 fi
 rm .vpl_source_files
@@ -45,7 +45,7 @@ if [ -f $OUTPUTFILE ] ; then
 	echo "export MONO_ENV_OPTIONS=--gc=sgen" >> vpl_execution
 	# Detect NUnit
 	grep -E "nunit\.framework" $OUTPUTFILE &>/dev/null
-	if [ "$?" -eq "0" -a "$NUNITLIB" != "" ]	; then
+	if [ "$?" -eq "0" ]	; then
 		echo "nunit-console -nologo $OUTPUTFILE" >> vpl_execution
 	fi
 	if [ "$EXECUTABLE" == "true" ] ; then
