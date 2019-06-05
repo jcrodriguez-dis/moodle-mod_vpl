@@ -88,7 +88,8 @@ echo "echo \"Finsh. Press enter\"" >> all_execute
 echo "read" >> all_execute
 chmod +x all_execute
 cat common_script.sh > vpl_wexecution
-echo "x-terminal-emulator -e ./all_execute" >> vpl_wexecution
+check_program x-terminal-emulator xterm
+echo "$PROGRAM -e ./all_execute" >> vpl_wexecution
 chmod +x vpl_wexecution
 if [ "$LANGGEN" != "" ] ; then
 	echo "Generated GUI program(s) for $NG language(s): $LANGGEN"

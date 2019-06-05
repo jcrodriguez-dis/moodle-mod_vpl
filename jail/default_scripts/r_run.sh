@@ -20,9 +20,10 @@ get_first_source_file r R
 #compile
 cat common_script.sh > vpl_wexecution
 cat  "$FIRST_SOURCE_FILE" >> .Rprofile
+check_program x-terminal-emulator xterm
 if [ "$1" == "batch" ] ; then
-	echo "x-terminal-emulator -e R --vanilla -f \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
+	echo "$PROGRAM -e R --vanilla -f \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
 else
-	echo "x-terminal-emulator -e R -q" >>vpl_wexecution
+	echo "$PROGRAM -e R -q" >>vpl_wexecution
 fi
 chmod +x vpl_wexecution

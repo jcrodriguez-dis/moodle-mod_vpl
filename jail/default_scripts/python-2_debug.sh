@@ -26,7 +26,8 @@ chmod +x vpl_execution
 if [ "$PUDB" == "1" ] ; then
 	mv vpl_execution debug_execution
 	cat common_script.sh > vpl_wexecution
-	echo "x-terminal-emulator -e ./debug_execution" >> vpl_wexecution
+	check_program x-terminal-emulator xterm
+	echo "$PROGRAM -e ./debug_execution" >> vpl_wexecution
 	echo "sleep 2h" >> vpl_wexecution
 	chmod +x debug_execution
 fi

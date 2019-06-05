@@ -21,11 +21,12 @@ do
          break
      fi
 done
+check_program x-terminal-emulator xterm
 cat >vplexecution <<FIN
 #!/bin/bash
 cd $HOME
 jgrasp $MAINFILE
-x-terminal-emulator
+$PROGRAM
 FIN
 chmod +x vplexecution
 mv vplexecution vpl_wexecution
