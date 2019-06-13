@@ -15,7 +15,16 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
+get_source_files perl prl pl pm
+IFS=$'\n'
+for file_name in $SOURCE_FILES
+do
+	perl -c "$file_name" 2>> .vpl_perl_errors
+done
+IFS=$SIFS
+# Remove OKs compilations
+cat .vpl_perl_errors | egrep -v "OK$"
 get_first_source_file perl prl
 cat common_script.sh > vpl_execution
-echo "perl -w $FIRST_SOURCE_FILE \$@" >>vpl_execution
+echo "perl -w \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
 chmod +x vpl_execution

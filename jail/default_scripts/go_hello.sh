@@ -5,11 +5,22 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.go <<'END_OF_FILE'
+mkdir "src" 2> /dev/null
+mkdir "src/message" 2> /dev/null
+
+cat > "src/vpl hello.go" <<'END_OF_FILE'
 package main
-import "fmt"
+import "message"
 func main() {
+    message.Hello()
+}
+END_OF_FILE
+
+cat > "src/message/hello.go" <<'END_OF_FILE'
+package message
+import "fmt"
+func Hello() {
     fmt.Println("Hello from the Go language!")
 }
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.go
+export VPL_SUBFILE0="src/vpl hello.go"

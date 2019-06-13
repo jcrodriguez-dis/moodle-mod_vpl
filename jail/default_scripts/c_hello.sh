@@ -5,11 +5,23 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.c <<'END_OF_FILE'
-#include <stdio.h>
+mkdir "test c" 2> /dev/null
+
+cat > "test c/vpl hello.c" <<'END_OF_FILE'
+void hello();
 int main(){
-	printf("Hello from the C language!\n");
+	hello();
 	return 0;
 }
+
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.c
+cat > "test c/hello.c" <<'END_OF_FILE'
+#include <stdio.h>
+void hello(){
+	printf("Hello from the C language!\n");
+}
+
+END_OF_FILE
+export VPL_SUBFILE0="test c/vpl hello.c"
+export VPL_SUBFILE1="test c/hello.c"
+

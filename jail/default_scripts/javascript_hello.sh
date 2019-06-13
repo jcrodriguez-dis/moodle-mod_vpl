@@ -4,7 +4,20 @@
 # Author  Juan Carlos Rodriguez-del-pino
 #load common script and check programs
 
-cat >vpl_hello.js <<'END_OF_FILE'
-console.log('Hello from the JavaScript language!');
+cat >"vpl hello.js" <<'END_OF_FILE'
+message = require('./javascript test/message.js');
+message.hello();
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.js
+
+mkdir "javascript test" 2>/dev/null
+
+cat >"javascript test/message.js" <<'END_OF_FILE'
+module.exports = { hello:
+	function () {
+		console.log('Hello from the JavaScript language!');
+	}
+};
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.js"
+export VPL_SUBFILE1="javascript test/message.js"

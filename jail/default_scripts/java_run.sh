@@ -20,7 +20,11 @@ function getClassFile {
 }
 function hasMain {
 	local FILE=$(getClassFile "$1")
-	cat -v $FILE | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+	if [ -f "$FILE" ] ; then
+		cat -v "$FILE" | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+	else
+		return 1
+	fi
 }
 
 # @vpl_script_description Using default javac, run JUnit if detected
@@ -67,8 +71,8 @@ if [ "$MAINCLASS" = "" ] ; then
 		fi
 	done
 fi
+# If not main procedure then search for junit4 test classes
 if [ "$MAINCLASS" = "" ] ; then
-# Search for junit4 test classes
 	TESTCLASS=
 	for FILENAME in $SOURCE_FILES
 	do
@@ -79,11 +83,13 @@ if [ "$MAINCLASS" = "" ] ; then
 			break
 		fi
 	done
+	# If no main and no test class then stop
 	if [ "$TESTCLASS" = "" ] ; then
 		echo "Class with \"public static void main(String[] arg)\" method not found"
 		exit 0
 	fi
 fi
+
 cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
 if [ ! "$MAINCLASS" = "" ] ; then
@@ -96,6 +102,11 @@ for FILENAME in $SOURCE_FILES
 do
 	CLASSFILE=$(getClassFile "$FILENAME")
 	grep -E "javax/swing/(JFrame|JDialog|JOptionPane|JApplet)" $CLASSFILE &> /dev/null
+	if [ "$?" -eq "0" ]	; then
+		mv vpl_execution vpl_wexecution
+		break
+	fi
+	grep -E "javafx/application/(Application|Scene)" $CLASSFILE &> /dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 		break

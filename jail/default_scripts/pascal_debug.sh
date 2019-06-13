@@ -15,14 +15,18 @@ PROPATH=$(command -v fpc 2>/dev/null)
 if [ "$PROPATH" == "" ] ; then
 	PROPATH=$(command -v gpc 2>/dev/null)
 	if [ "$PROPATH" == "" ] ; then
-		echo "The jail need to install "GNU Pascal" or "Fre PAscal" to debug this type of program"
+		echo "The jail need to install "GNU Pascal" or "Free Pascal" to debug this type of program"
 		exit 0;
 	else
-		gpc -g -O0 -o program $SOURCE_FILES
+		# Generate file with source files
+		generate_file_of_files .vpl_source_files
+		# Compile
+		gpc -g -O0 -o program @.vpl_source_files -lm
+		rm .vpl_source_files
 	fi
 else
 	get_first_source_file pas p
-	fpc -g -oprogram $FIRST_SOURCE_FILE
+	fpc -g -oprogram "$FIRST_SOURCE_FILE"
 fi
 
 if [ -f program ] ; then

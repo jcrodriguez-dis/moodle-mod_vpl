@@ -35,9 +35,19 @@ if [ "$PROPATH" == "" ] ; then
 		echo "The jail need to install "GNU Pascal" or "Free Pascal" to run this type of program"
 		exit 0;
 	else
-		gpc --automake -o vpl_execution $SOURCE_FILES -lm 
+		# Generate file with source files
+		generate_file_of_files .vpl_source_files
+		# Compile
+		gpc --automake -o vpl_execution @.vpl_source_files -lm &> .vpl_compilation_errors
+		rm .vpl_source_files
 	fi
 else
-	fpc -ovpl_execution $SOURCE_FILES
+	get_first_source_file pas pp p
+	fpc -ovpl_execution "$FIRST_SOURCE_FILE" &> .vpl_compilation_errors
 fi
+if [ ! -f vpl_execution ] ; then
+	cat .vpl_compilation_errors
+fi
+
+
 

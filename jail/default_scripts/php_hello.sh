@@ -5,24 +5,44 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-if [ "$1" == "gui" ] ; then
-cat >index.php <<"END_OF_FILE"
 
+if [ "$1" == "gui" ] ; then
+
+cat >index.php <<"END_OF_FILE"
 <!DOCTYPE html>
 <html><head><title>VPL</title></head>
 <body>
 <?php
-echo "<h1>Hello from the PHP language!</h1>";
+require_once "test php/message hello.php";
+echo "<h1>";
+hello();
+echo "</h1>";
 phpinfo();
 ?>
 </body>
 </html>
 END_OF_FILE
-export VPL_SUBFILE0=index.php
+
+export VPL_SUBFILE0="index.php"
+
 else
-cat >vpl_hello.php <<'END_OF_FILE'
+
+cat > "vpl hello.php" <<'END_OF_FILE'
 <?php
-echo "Hello from the PHP language!\n";
+require_once "test php/message hello.php";
+hello();
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.php
+
+export VPL_SUBFILE0="vpl hello.php"
 fi
+
+mkdir "test php" 2> /dev/null
+
+cat > "test php/message hello.php" <<'END_OF_FILE'
+<?php
+function hello() {
+	echo "Hello from the PHP language!\n";
+}
+END_OF_FILE
+
+export VPL_SUBFILE1="test php/message hello.php"

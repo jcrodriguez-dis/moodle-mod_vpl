@@ -11,20 +11,27 @@
 check_program gvhdl
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
-	echo "echo -n \"FreeHDL \"" > vpl_execution
+	echo "echo -n \"FreeHDL \"" >> vpl_execution
 	echo "freehdl-config --version" >> vpl_execution
 	chmod +x vpl_execution
 	exit
 fi
 get_source_files vhdl vhd
 # compile
-gvhdl $SOURCE_FILES
+gvhdl $SOURCE_FILES &> .vpl_compilation_errors
 get_first_source_file vhdl vhd
 NAME=${FIRST_SOURCE_FILE%.*}
-if [ -f $NAME ] ; then
-	mv $NAME vpl_execution
+if [ -f "$NAME" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	#interactive console
+	if [ "$1" != "batch" ] ; then
+		echo "./$NAME -q" >> vpl_execution
+	else
+		echo "./$NAME -q -cmd \"q\"" >> vpl_execution
+	fi
 	chmod +x vpl_execution
 else
+	cat .vpl_compilation_errors
 	echo "============================================"
 	echo "The first file name is the entity name"
 	echo "Use lowercase in file names"

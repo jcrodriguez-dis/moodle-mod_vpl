@@ -8,16 +8,22 @@
 cat >vpl_hello.vhdl <<'END_OF_FILE'
 entity vpl_hello is
 end entity;
- 
-architecture sim of vpl_hello is
+
+library STD;
+use STD.textio.all;
+
+architecture message of vpl_hello is
 begin
     process is
+    variable hello : line;
     begin
-        report "Hello from VHDL!";
-        wait;
+        write(hello, string'("Hello from VHDL language!"));
+        writeline(output, hello);
     end process;
-end architecture;
-
+end message;
 END_OF_FILE
+# Notes from gvhdl documentation
+# The first VHDL file name determines the name of the simulator executable.
+# The object files as well as the simulator will be created in the current directory.
 export VPL_SUBFILE0=vpl_hello.vhdl
-export VPL_SUBFILES=vpl_hello.vhdl
+

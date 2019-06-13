@@ -5,7 +5,17 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.rb <<'END_OF_FILE'
-print "Hello from the Ruby language!\n"
+cat > "vpl hello.rb" <<'END_OF_FILE'
+require "~/test ruby/vpl message"
+hello
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.rb
+
+mkdir "test ruby" 2> /dev/null
+cat > "test ruby/vpl message.rb" <<'END_OF_FILE'
+def hello  
+  print "Hello from the Ruby language!\n"
+end
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.rb"
+export VPL_SUBFILE1="test ruby/vpl message.rb"

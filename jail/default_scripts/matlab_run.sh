@@ -25,26 +25,29 @@ fi
 exec 2>&1
 get_source_files m
 get_first_source_file m
+SIFS=$IFS
+IFS=$'\n'
 X11=
 if [ ! -f vpl_evaluate.sh ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
-		grep -E "(^|[^A-Za-z0-9])(image|imagesc|figure|plot|contour|contourf|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero)( *)($|[(|;])" $FILENAME &> /dev/null
+		grep -E "(^|[^A-Za-z0-9])(image|imagesc|figure|plot|contour|contourf|polar|pie|errorbar|quiver|compass|semilog|loglog|bar|hist|stairs|stem|scatter|pareto|mesh|surf|sombrero)( *)($|[(|;])" "$FILENAME" &> /dev/null
 		if [ "$?" -eq "0" ] ; then
 			X11=y
 			break
 		fi
 	done
 fi
+IFS=$SIFS
 MAIN=$FIRST_SOURCE_FILE
 if [ "$PROGRAM" == "octave" ] ; then
 	cat common_script.sh > vpl_execution
 	chmod +x vpl_execution
 	if [ "$X11" == "" ] ; then
 		if [ "$1" == "batch" ] ; then
-			echo "octave-cli $FIRST_SOURCE_FILE" >> vpl_execution
+			echo "octave-cli \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		else
-			echo "octave --no-window-system -q --persist $FIRST_SOURCE_FILE" >> vpl_execution
+			echo "octave --no-window-system -q --persist \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		fi
 	else
 cat > .octaverc << "END_SCRIPT"
@@ -56,9 +59,9 @@ endif
 END_SCRIPT
 		check_program x-terminal-emulator
 		if [ "$1" == "batch" ] ; then
-			echo "x-terminal-emulator -e octave -q --no-gui $FIRST_SOURCE_FILE" >> vpl_execution
+			echo "x-terminal-emulator -e octave -q --no-gui \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		else
-			echo "x-terminal-emulator -e octave -q --no-gui --persist $FIRST_SOURCE_FILE" >> vpl_execution
+			echo "x-terminal-emulator -e octave -q --no-gui --persist \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		fi
 		mv vpl_execution vpl_wexecution
 	fi

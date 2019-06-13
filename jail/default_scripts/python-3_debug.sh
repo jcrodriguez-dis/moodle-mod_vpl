@@ -11,5 +11,5 @@
 check_program python3
 get_first_source_file py
 cat common_script.sh > vpl_execution
-echo "python3 -m pdb $FIRST_SOURCE_FILE" >>vpl_execution
+echo "python3 -m pdb \"$FIRST_SOURCE_FILE\"" >>vpl_execution
 chmod +x vpl_execution

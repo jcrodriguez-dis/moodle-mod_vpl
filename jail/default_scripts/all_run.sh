@@ -9,10 +9,18 @@
 
 cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
+. common_script.sh
+#Remove student files
+SAVEIFS=$IFS
+IFS=$'\n'
+for FILENAME in $VPL_SUBFILES
+do
+	rm "$FILENAME"
+done
+IFS=$SAVEIFS
+
 NG=0
 FILES=*_hello.sh
-SFDIR=/tmp/.saved$USERID
-mkdir $SFDIR
 touch .tuierrors
 for HELLOSCRIPT in $FILES
 do
@@ -23,21 +31,19 @@ do
 	rm .curerror &>/dev/null
 	. $HELLOSCRIPT &>.curerror
 	cp common_script.sav common_script.sh
-	echo "export VPL_SUBFILE0=$VPL_SUBFILE0" >> common_script.sh
-	echo "export SOURCE_FILE0=$VPL_SUBFILE0" >> common_script.sh
-	echo "export VPL_SUBFILES=$VPL_SUBFILE0" >> common_script.sh
+	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
+	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
+	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	eval ./$RUNSCRIPT batch &>>.curerror
-	if [ -f "$VPL_SUBFILE0" ] ; then
-		mv $VPL_SUBFILE0 $SFDIR
-	fi
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"
 		mv vpl_execution $VPLEXE
 		echo " Compiled"
 		echo "printf \"%2d %s: \" $NG $LANGUAGE" >> all_execute
 		echo "./$VPLEXE" >> all_execute
-		echo "if [ -f $VPL_SUBFILE0 ] ; then" >> all_execute
-		echo "rm $VPL_SUBFILE0" >> all_execute
+		echo "if [ -f \"$VPL_SUBFILE0\" ] ; then" >> all_execute
+		echo "rm \"$VPL_SUBFILE0\"" >> all_execute
 		echo "fi" >> all_execute
 	else
 		if [ -f vpl_wexecution ] ; then
@@ -52,8 +58,7 @@ do
 		cat .curerror >> .tuierrors
 	fi
 done
-mv $SFDIR/* . &>/dev/null
-rmdir $SFDIR
+
 mv all_execute vpl_execution
 chmod +x vpl_execution
 echo

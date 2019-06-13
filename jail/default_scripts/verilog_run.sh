@@ -16,5 +16,6 @@ if [ "$1" == "version" ] ; then
 	exit
 fi
 get_source_files v
+generate_file_of_files .vpl_source_files NOQUOTE
 #compile
-iverilog -ovpl_execution $SOURCE_FILES
+iverilog -ovpl_execution -f.vpl_source_files

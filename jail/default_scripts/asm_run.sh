@@ -14,15 +14,33 @@ if [ "$1" == "version" ] ; then
 	echo "nasm -v" >> vpl_execution
 	chmod +x vpl_execution
 	exit
-fi 
+fi
+PBITS=32
+uname -a | grep "x86_64" &> /dev/null
+if [ "$?" == "0" ] ; then
+	PBITS=64
+fi
 get_source_files asm
 #compile
-OBJFILES=
+SIFS=$IFS
+IFS=$'\n'
+rm .vpl_object_files 2> /dev/null
+touch .vpl_object_files
 for FILENAME in $SOURCE_FILES
 do
-	NAME=$(basename "$FILENAME" .asm)
-	nasm -f elf -o $NAME.o $FILENAME
-	OBJFILES="$OBJFILES $NAME.o"
+	BITS=$PBITS
+	grep -i "^\s*bits 64" "$FILENAME" &> /dev/null
+	if [ "$?" == "0" ] ; then
+		BITS=64
+	fi
+	grep -i "^\s*bits 32" "$FILENAME" &> /dev/null
+	if [ "$?" == "0" ] ; then
+		BITS=32
+	fi
+	nasm -f "elf$BITS" "$FILENAME"
+	echo "\"${FILENAME/%.asm}.o\"" >> .vpl_object_files
 done
-ld -o vpl_execution $OBJFILES
-
+IFS=$'\n'
+ld -o vpl_execution @.vpl_object_files
+rm .vpl_object_files
+IFS=$SIFS

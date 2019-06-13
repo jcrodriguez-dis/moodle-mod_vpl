@@ -16,5 +16,8 @@ if [ "$1" == "version" ] ; then
 	exit
 fi 
 get_source_files c
-# compile
-eval gcc -fno-diagnostics-color -o vpl_execution $2 $SOURCE_FILES -lm -lutil 
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+eval gcc -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil 
+rm .vpl_source_files

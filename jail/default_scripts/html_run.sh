@@ -8,9 +8,22 @@
 # @vpl_script_description Using "firefox" with the first file
 # load common script and check programs
 . common_script.sh
-check_program firefox
+check_program x-www-browser firefox
+if [ "$1" == "version" ] ; then
+	echo "#!/bin/bash" > vpl_execution
+	echo "$PROGRAM --version | head -n3" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi
+
+compile_typescript
+compile_scss
+
+check_program x-www-browser firefox
+get_first_source_file html htm
+# Generate file with source files
 cat > vpl_wexecution <<END_OF_SCRIPT
 #!/bin/bash
-firefox $VPL_SUBFILE0
+$PROGRAM "$FIRST_SOURCE_FILE"
 END_OF_SCRIPT
 chmod +x vpl_wexecution

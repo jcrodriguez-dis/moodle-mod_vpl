@@ -5,14 +5,16 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.v <<'END_OF_FILE'
+cat >"vpl hello.v" <<'END_OF_FILE'
 module vpl_hello;
-  initial
-  begin
-     $display("Hello from the Verilog language!");
-  end
+    message hello();
 endmodule
-
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.v
-export VPL_SUBFILES=vpl_hello.v
+mkdir "test verilog" 2>/dev/null
+cat >"test verilog/message.v" <<'END_OF_FILE'
+module message;
+  initial $display("Hello from the Verilog language!");
+endmodule
+END_OF_FILE
+export VPL_SUBFILE0="vpl hello.v"
+export VPL_SUBFILE1="test verilog/message.v"

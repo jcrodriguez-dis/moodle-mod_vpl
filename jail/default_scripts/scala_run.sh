@@ -18,18 +18,31 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi
-get_first_source_file scala
-APP=${FIRST_SOURCE_FILE%.*}
-scalac $FIRST_SOURCE_FILE
+get_source_files scala
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+scalac @.vpl_source_files
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
+get_first_source_file scala
+APP=${FIRST_SOURCE_FILE%.*}
 cat common_script.sh > vpl_execution
-echo "scala -nocompdaemon $APP \$@" >> vpl_execution
-chmod +x vpl_execution
-grep -E "scala\.swing\.| swing\.|javax.swing" $FIRST_SOURCE_FILE &> /dev/null
-if [ "$?" -eq "0" ]	; then
-	mv vpl_execution vpl_wexecution
-fi
+echo "scala -nocompdaemon vpl_hello \$@" >> vpl_execution
 
+chmod +x vpl_execution
+SIFS=$IFS
+IFS=$'\n'
+if [ ! -f vpl_evaluate.sh ] ; then
+	for FILENAME in $SOURCE_FILES
+	do
+		grep -E "scala\.swing\.| swing\.|javax.swing" "$FILENAME" &> /dev/null
+		if [ "$?" -eq "0" ]	; then
+			mv vpl_execution vpl_wexecution
+			break
+		fi
+	done
+fi
+IFS=$SIFS

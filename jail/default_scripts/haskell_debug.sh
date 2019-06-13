@@ -8,10 +8,16 @@
 # @vpl_script_description Using "hugs +98" with the first file
 # load common script and check programs
 . common_script.sh
-check_program hugs
 
-get_first_source_file hs
+check_program ghc hugs
 
 cat common_script.sh > vpl_execution
-echo "hugs +98 $FIRST_SOURCE_FILE" >>vpl_execution
+
+get_first_source_file hs lhs
+if [ "$PROGRAM" == "hugs" ] ; then
+	echo "runhugs +98 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+else
+	$PROGRAMPATH -o ghc_execution -prof -fprof-auto -fprof-cafs "$FIRST_SOURCE_FILE"
+	echo "./ghc_execution +RTS -xc \$@" >>vpl_execution
+fi
 chmod +x vpl_execution

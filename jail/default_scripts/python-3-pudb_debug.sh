@@ -11,5 +11,5 @@
 check_program python3
 get_first_source_file py
 cat common_script.sh > vpl_wexecution
-echo "x-terminal-emulator -e python3 -m pudb $FIRST_SOURCE_FILE" >>vpl_wexecution
+echo "x-terminal-emulator -e python3 -m pudb \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
 chmod +x vpl_wexecution

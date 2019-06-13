@@ -15,6 +15,10 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi 
-#compile
-get_source_files f f77
-gfortran -o vpl_execution $SOURCE_FILES
+
+get_source_files f for f90 f95 f03
+# Generate file with source files
+generate_file_of_files .vpl_source_files
+# Compile
+gfortran -o vpl_execution @.vpl_source_files
+rm .vpl_source_files

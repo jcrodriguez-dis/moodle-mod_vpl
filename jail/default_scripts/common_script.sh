@@ -20,6 +20,9 @@ function get_source_files {
 	SOURCE_FILES_LINE=""
 	for ext in "$@"
 	do
+		if [ "$ext" == "NOERROR" ] ; then
+			break
+		fi
 	    local source_files_ext="$(find . -name "*.$ext" -print | sed 's/^.\///g' | sed 's/ /\\ /g')"
 	    if [ "$SOURCE_FILES_LINE" == "" ] ; then
 	        SOURCE_FILES_LINE="$source_files_ext"
@@ -33,37 +36,76 @@ function get_source_files {
 	        SOURCE_FILES=$(echo -en "$SOURCE_FILES\n$source_files_ext_s")
 	    fi
 	done
-	local file_name
-    if [ "$SOURCE_FILES_LINE" != "" -o "$1" == "b64" ] ; then
-		for file_name in "$SOURCE_FILES"
+
+    if [ "$SOURCE_FILES" != "" -o "$1" == "b64" ] ; then
+		local file_name
+		local SIFS=$IFS
+		IFS=$'\n'
+		for file_name in $SOURCE_FILES
 		do
-			SOURCE_FILE0="$file_name"
-			return 0
+			SOURCE_FILE0=$file_name
+			break
 		done
+		IFS=$SIFS
+		return 0
 	fi
+	if [ "$ext" == "NOERROR" ] ; then
+		return 1
+	fi
+
 	echo "To run this type of program you need some file with extension \"$@\""
 	exit 0;
 }
 
+function generate_file_of_files {
+	if [ -f "$1" ] ; then
+		rm "$1"
+	fi
+	touch $1 
+	local file_name
+	local SIFS=$IFS
+	IFS=$'\n'
+	for file_name in $SOURCE_FILES
+	do
+		if [ "$2" == "" ] ; then
+			echo "\"$file_name\"" >> "$1"
+		else
+			echo "$file_name" >> "$1"
+		fi
+	done
+	IFS=$SIFS
+}
+
 function get_first_source_file {
 	local ext
-	local FILE
-	for FILE in $VPL_SUBFILES
+	local FILENAME
+	local FILEVAR
+	local i
+	for i in {0..100000}
 	do
+		FILEVAR="VPL_SUBFILE${i}"
+		FILENAME="${!FILEVAR}"
+		if [ "" == "$FILENAME" ] ; then
+			break
+		fi
 		for ext in "$@"
 		do
-		    if [ "${FILE##*.}" == "$ext" ] ; then
-		        FIRST_SOURCE_FILE="$FILE"
+		    if [ "${FILENAME##*.}" == "$ext" ] ; then
+		        FIRST_SOURCE_FILE=$FILENAME
 		        return 0
 	    	fi
 		done
 	done
+	if [ "$ext" == "NOERROR" ] ; then
+		return 1
+	fi
 	echo "To run this type of program you need some file with extension \"$@\""
 	exit 0;
 }
 
 function check_program {
 	PROGRAM=
+	local check
 	for check in "$@"
 	do
 		local PROPATH=$(command -v $check)
@@ -74,14 +116,48 @@ function check_program {
 		PROGRAMPATH=$PROPATH
 		return 0
 	done
+	if [ "$check" == "NOERROR" ] ; then
+		return 1
+	fi
 	echo "The execution server needs to install \"$1\" to run this type of program"
 	exit 0;
 }
 
+function compile_typescript {
+	check_program tsc NOERROR
+	if [ "$PROGRAM" == "" ] ; then
+		return 0
+	fi
+	get_source_files ts NOERROR
+	SAVEIFS=$IFS
+	IFS=$'\n'
+	for FILENAME in $SOURCE_FILES
+	do
+		tsc "$FILENAME" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
+	done
+	IFS=$SAVEIFS
+}
+
+function compile_scss {
+	check_program sass NOERROR
+	if [ "$PROGRAM" == "" ] ; then
+		return 0
+	fi
+	get_source_files scss NOERROR
+	SAVEIFS=$IFS
+	IFS=$'\n'
+	for FILENAME in $SOURCE_FILES
+	do
+		sass "$FILENAME"
+	done
+	IFS=$SAVEIFS
+}
+
+
 #Decode BASE64 files
 get_source_files b64
 SAVEIFS=$IFS
-IFS=$(echo -en "\n\b")
+IFS=$'\n'
 for FILENAME in $SOURCE_FILES
 do
 	if [ -f "$FILENAME" ] ; then
@@ -96,7 +172,7 @@ SOURCE_FILES=""
 VPL_NS=true
 for FILENAME in $VPL_SUBFILES
 do
-	if [ "$FILENAME" == "pre_vpl_run.sh" ] ; then
+	if [ "$FILENAME" == "pre_vpl_run.sh" ] || [ "$FILENAME" == "pre_vpl_run.sh.b64" ] ; then
 		VPL_NS=false
 		break
 	fi

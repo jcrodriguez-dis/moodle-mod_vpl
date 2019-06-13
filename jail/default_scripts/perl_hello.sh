@@ -5,7 +5,23 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat >vpl_hello.perl <<'END_OF_FILE'
-print "Hello from the Perl language!\n";
+cat >"vpl hello.perl" <<'END_OF_FILE'
+use lib '.';
+use Perl_test::Message;
+Perl_test::Message::hello();
 END_OF_FILE
-export VPL_SUBFILE0=vpl_hello.perl
+
+mkdir "Perl_test" 2> /dev/null
+
+cat >"Perl_test/Message.pm" <<'END_OF_FILE'
+package Perl_test::Message;
+
+sub hello {
+   print "Hello from the Perl language!\n";
+}
+
+1;
+END_OF_FILE
+
+export VPL_SUBFILE0="vpl hello.perl"
+export VPL_SUBFILE1="Perl_test/Message.pm"
