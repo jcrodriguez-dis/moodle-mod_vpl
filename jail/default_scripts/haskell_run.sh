@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
-# @vpl_script_description Using "runhugs +98" with the first file
+# @vpl_script_description Using "ghc or runhugs +98" with the first file
 # load common script and check programs
 . common_script.sh
 check_program ghc hugs
