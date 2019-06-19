@@ -27,10 +27,7 @@
     if (typeof VPL != 'object') {
         VPL = {};
     }
-    
-    /**
-     * resize comments view div to greatest visible size
-     */
+    // Resize comments view div to greatest visible size.
     var commentsHeight = 0;
     VPL.resizeSView = function() {
         var commentsView = window.document.getElementById('vpl_grade_comments');
