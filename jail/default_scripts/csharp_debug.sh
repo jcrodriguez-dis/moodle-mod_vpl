@@ -10,6 +10,9 @@
 . common_script.sh
 export MONO_ENV_OPTIONS=--gc=sgen
 check_program gdb
+if [ "$1" == "version" ] ; then
+	get_program_version --version
+fi
 check_program csc mcs
 get_source_files cs
 # Generate file with source files
