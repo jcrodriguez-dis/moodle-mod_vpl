@@ -25,5 +25,5 @@ if [ "$PROGRAM" == "hugs" ] ; then
 	echo "runhugs +98 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
 	chmod +x vpl_execution
 else
-	$PROGRAMPATH -o vpl_execution "$FIRST_SOURCE_FILE"
+	$PROGRAMPATH -v0 -o vpl_execution "$FIRST_SOURCE_FILE"
 fi
