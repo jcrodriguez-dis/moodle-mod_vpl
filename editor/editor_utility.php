@@ -123,40 +123,43 @@ class vpl_editor_util {
     </div>
     <div id="vpl_ide_dialog_acetheme" class="vpl_ide_dialog" style="display: none;">
         <select>
+           <option value="ambiance">Ambiance</option>
+           <option value="chaos">Chaos</option>
            <option value="chrome">Chrome</option>
            <option value="clouds">Clouds</option>
+           <option value="clouds_midnight">Clouds Midnight</option>
+           <option value="cobalt">Cobalt</option>
            <option value="crimson_editor">Crimson Editor</option>
            <option value="dawn">Dawn</option>
+           <option value="dracula">Dracula</option>
            <option value="dreamweaver">Dreamweaver</option>
            <option value="eclipse">Eclipse</option>
            <option value="github">GitHub</option>
-           <option value="iplastic">IPlastic</option>
-           <option value="solarized_light">Solarized Light</option>
-           <option value="textmate">TextMate</option>
-           <option value="tomorrow">Tomorrow</option>
-           <option value="xcode">XCode</option>
-           <option value="kuroir">Kuroir</option>
-           <option value="katzenmilch">KatzenMilch</option>
-           <option value="sqlserver">SQL Server</option>
-           <option value="ambiance">Ambiance</option>
-           <option value="chaos">Chaos</option>
-           <option value="clouds_midnight">Clouds Midnight</option>
-           <option value="cobalt">Cobalt</option>
+           <option value="gob">Gob</option>
+           <option value="gruvbox">Gruvbox</option>
            <option value="idle_fingers">idle Fingers</option>
-           <option value="kr_theme">krTheme</option>
+           <option value="iplastic">IPlastic</option>
+           <option value="katzenmilch">Katzenmilch</option>
+           <option value="kr_theme">Kr theme</option>
+           <option value="kuroir">Kuroir</option>
            <option value="merbivore">Merbivore</option>
            <option value="merbivore_soft">Merbivore Soft</option>
            <option value="mono_industrial">Mono Industrial</option>
            <option value="monokai">Monokai</option>
            <option value="pastel_on_dark">Pastel on dark</option>
            <option value="solarized_dark">Solarized Dark</option>
+           <option value="solarized_light">Solarized Light</option>
+           <option value="sqlserver">SQL Server</option>
            <option value="terminal">Terminal</option>
+           <option value="textmate">TextMate</option>
+           <option value="tomorrow">Tomorrow</option>
            <option value="tomorrow_night">Tomorrow Night</option>
            <option value="tomorrow_night_blue">Tomorrow Night Blue</option>
            <option value="tomorrow_night_bright">Tomorrow Night Bright</option>
            <option value="tomorrow_night_eighties">Tomorrow Night 80s</option>
            <option value="twilight">Twilight</option>
            <option value="vibrant_ink">Vibrant Ink</option>
+           <option value="xcode">XCode</option>
         </select>
     </div>
     <div id="vpl_ide_dialog_comments" class="vpl_ide_dialog"
