@@ -26,4 +26,5 @@ if [ "$1" == "batch" ] ; then
 else
 	echo "$PROGRAM -e R -q" >>vpl_wexecution
 fi
+echo "wait_end R" >>vpl_wexecution
 chmod +x vpl_wexecution
