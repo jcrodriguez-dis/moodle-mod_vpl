@@ -10,6 +10,10 @@
 . common_script.sh
 check_program gnat
 check_program gdb
+if [ "$1" == "version" ] ; then
+	exit
+fi
+
 get_first_source_file adb
 
 # compile

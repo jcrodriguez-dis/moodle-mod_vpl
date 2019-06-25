@@ -10,6 +10,9 @@
 . common_script.sh
 check_program gfortran
 check_program gdb
+if [ "$1" == "version" ] ; then
+	get_program_version --version
+fi
 get_source_files f f77
 # Generate file with source files
 generate_file_of_files .vpl_source_files
