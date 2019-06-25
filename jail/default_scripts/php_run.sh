@@ -74,10 +74,12 @@ END_OF_PHP
 	   	netstat -tln | grep -q ":$PHPPORT "
 	   	[ "$?" != "0" ] && break
 	done
-	cat > vpl_wexecution <<END_OF_SCRIPT
+	cat common_script.sh > vpl_wexecution
+	cat >> vpl_wexecution <<END_OF_SCRIPT
 #!/bin/bash
 $PHP -c .php.ini -S "127.0.0.1:$PHPPORT" .router.php &
 $BROWSER "127.0.0.1:$PHPPORT"
+wait_end $BROWSER
 END_OF_SCRIPT
     chmod +x vpl_wexecution
 else
