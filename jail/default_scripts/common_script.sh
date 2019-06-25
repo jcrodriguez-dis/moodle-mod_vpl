@@ -17,11 +17,10 @@ rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 
 # Wait until a program ($1 e.g. execution_int) of the current user ends. 
 function wait_end {
-	sleep 5s
 	while :
 	do
 		sleep 1s
-		ps -u $USER | grep $1 &> /dev/null
+		ps -f -u $USER | grep $1 &> /dev/null
 		if [ "$?" != "0" ] ; then
 			return
 		fi
