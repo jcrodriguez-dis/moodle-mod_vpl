@@ -365,11 +365,7 @@ define(
                         var tag = $(tid + ' div.ace_search');
                         if (tag.length) {
                             tag.on('drop', fileManager.dropHandler);
-                            var button = $('button.ace_searchbtn_close');
-                            button.css({
-                                marginLeft : "1em",
-                                marginRight : "1em"
-                            });
+                            var button = $('.ace_searchbtn_close');
                             button.trigger('click');
                         } else {
                             setTimeout(addEventDrop, 50);
