@@ -327,7 +327,7 @@ define(
                     } else {
                         updatePrecision(tl);
                     }
-                    var thtml = '<span class="' + cssclass +'">' + VPLUtil.genIcon('timeleft');
+                    var thtml = '<span class="' + cssclass + '">' + VPLUtil.genIcon('timeleft');
                     if (show) {
                         thtml += ' ' + VPLUtil.getTimeLeft(tl);
                     }
