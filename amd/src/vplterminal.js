@@ -240,12 +240,6 @@ define(
                 tdialog.addClass(cbase + theme);
             }
             function controlDialogSize(){
-                // Reposition if dialog is out of IDE
-                var ideOffset = tIde.offset();
-                var offset = tdialog.parent().offset();
-                offset.top = offset.top < ideOffset.top ? ideOffset.top : offset.top;
-                offset.left = offset.left < ideOffset.left ? ideOffset.left : offset.left;
-                tdialog.parent().offset(offset);
                 // Resize if dialog is large than screen.
                 var bw = tIde.width();
                 var bh = tIde.height();

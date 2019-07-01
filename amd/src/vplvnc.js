@@ -189,12 +189,6 @@ define(
                 }
             };
             function controlDialogSize(){
-                // Reposition if dialog is out of IDE
-                var ideOffset = tIde.offset();
-                var offset = VNCDialog.parent().offset();
-                offset.top = offset.top < ideOffset.top ? (needResize = true, ideOffset.top) : offset.top;
-                offset.left = offset.left < ideOffset.left ? (needResize = true, ideOffset.left) : offset.left;
-                VNCDialog.parent().offset(offset);
                 // Resize if dialog is large than screen.
                 var bw = tIde.width();
                 var bh = tIde.height();
