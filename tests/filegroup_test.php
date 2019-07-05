@@ -135,25 +135,26 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
      */
     public function test_write_list() {
         $filelist = array('algo.txt');
-        file_group_process::write_list($this->gpempty->getfilelistname(),$filelist);
+        file_group_process::write_list($this->gpempty->getfilelistname(), $filelist);
         $this->assertEquals($filelist, file_group_process::read_list($this->gpempty->getfilelistname()));
         $filelist = array();
-        file_group_process::write_list($this->gponefile->getfilelistname(),$filelist);
+        file_group_process::write_list($this->gponefile->getfilelistname(), $filelist);
         $this->assertEquals($filelist, file_group_process::read_list($this->gponefile->getfilelistname()));
-        $filelist = array('first file.txt', 'Second file.txt', 'Third file.txt', 'first file1.txt', 'Second file1.txt', 'Third file1.txt');
-        file_group_process::write_list($this->gpfiles->getfilelistname(),$filelist);
+        $filelist = array('first file.txt', 'Second file.txt', 'Third file.txt', 'first file1.txt',
+                          'Second file1.txt', 'Third file1.txt');
+        file_group_process::write_list($this->gpfiles->getfilelistname(), $filelist);
         $this->assertEquals($filelist, file_group_process::read_list($this->gpfiles->getfilelistname()));
         $filelist = array('a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
                 'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt');
-        file_group_process::write_list($this->gpdirectory->getfilelistname(),$filelist);
+        file_group_process::write_list($this->gpdirectory->getfilelistname(), $filelist);
         $this->assertEquals($filelist, file_group_process::read_list($this->gpdirectory->getfilelistname()));
         $other = array(
                 'aaa/bb/ccc/first file.txt',
                 'aaa/bb/Second file.txt',
                 'aaaThird file.txt'
         );
-        file_group_process::write_list($this->gpdirectory->getfilelistname(),$other);
+        file_group_process::write_list($this->gpdirectory->getfilelistname(), $other);
         $this->assertEquals($other, file_group_process::read_list($this->gpdirectory->getfilelistname()));
     }
 
@@ -174,7 +175,7 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
     }
 
     /**
-     * Method to test file_group_process::addfile
+     * Method to test file_group_process::addfile.
      */
     public function test_addfile() {
         $this->internal_test_one_addfile($this->gpempty, 'a', '', false);
@@ -195,8 +196,8 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
         $this->internal_test_one_addfile($this->gpfiles, 'Second file.txt', 'algo  lkf distinto', true);
     }
 
-   /**
-     * Method to test file_group_process::deleteallfiles
+    /**
+     * Method to test file_group_process::deleteallfiles.
      */
     public function test_deleteallfiles() {
         $this->gpempty->deleteallfiles();
@@ -235,7 +236,7 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
 
     private function internal_test_one_getfiledata($fg, $fgdata) {
         $i = 0;
-        foreach ( $fgdata as $fn => $fd) {
+        foreach ($fgdata as $fn => $fd) {
             $this->assertEquals($fd, $fg->getfiledata($i));
             $this->assertEquals($fd, $fg->getfiledata($fn));
             $i ++;
@@ -246,19 +247,19 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
      * Method to test file_group_process::getfiledata
      */
     public function test_getfiledata() {
-        $this->internal_test_one_getfiledata($this->gponefile,$this->gponefilecontents);
-        $this->internal_test_one_getfiledata($this->gpfiles,$this->gpfilescontents);
-        $this->internal_test_one_getfiledata($this->gpdirectory,$this->gpdirectorycontents);
+        $this->internal_test_one_getfiledata($this->gponefile, $this->gponefilecontents);
+        $this->internal_test_one_getfiledata($this->gpfiles, $this->gpfilescontents);
+        $this->internal_test_one_getfiledata($this->gpdirectory, $this->gpdirectorycontents);
     }
 
     private function internal_test_one_is_populated($fg) {
         $fnl = $fg->getfilelist();
-        foreach ( $fnl as $fn) {
+        foreach ($fnl as $fn) {
             $this->assertTrue($fg->is_populated());
             $this->assertTrue($fg->addfile($fn, ''));
         }
         $this->assertFalse($fg->is_populated());
-        foreach ( $fnl as $fn) {
+        foreach ($fnl as $fn) {
             $fg->addfile($fn, 'algo');
             $this->assertTrue($fg->is_populated());
         }
