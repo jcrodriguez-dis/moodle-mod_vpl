@@ -102,14 +102,19 @@ function vpl_fopen($filename) {
  * @exception file_exception
  * @return void
  */
+
 function vpl_fwrite($filename, $contents) {
     global $CFG;
-    $fp = vpl_fopen( $filename );
-    $res = fwrite( $fp, $contents );
+    if ( is_file($filename) ) {
+        unlink($filename);
+    }
+    $fd = vpl_fopen( $filename );
+    $res = ftruncate ( $fd, 0);
+    $res = $res && (fwrite( $fd, $contents ) !== false);
+    $res = $res && fclose( $fd );
     if ($res === false) {
         throw new file_exception('storedfileproblem', 'Error writing a file in VPL');
     }
-    fclose( $fp );
 }
 
 /**
