@@ -144,7 +144,7 @@ class mod_vpl_submission {
      */
     public function get_submitted_fgm() {
         if (! $this->submittedfgm) {
-            $this->submittedfgm = new file_group_process( $this->get_submissionfilelistname(), $this->get_submission_directory() );
+            $this->submittedfgm = new file_group_process( $this->get_submission_directory() );
         }
         return $this->submittedfgm;
     }
