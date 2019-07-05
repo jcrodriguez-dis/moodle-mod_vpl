@@ -72,9 +72,9 @@ class file_group_execution extends file_group_process {
      * @param string $filelistname
      * @param string $dir
      */
-    public function __construct($filelistname, $dir) {
+    public function __construct($dir) {
         self::$numbasefiles = count( self::$basefiles );
-        parent::__construct( $filelistname, $dir, 1000, self::$numbasefiles );
+        parent::__construct( $dir, 1000, self::$numbasefiles );
     }
 
     /**
@@ -118,6 +118,7 @@ class file_group_execution extends file_group_process {
         file_group_process::write_list( $this->filelistname . '.keep', $filelist );
     }
 }
+
 class mod_vpl {
     /**
      * Internal var for course_module
@@ -287,7 +288,7 @@ class mod_vpl {
      * @return array of strings
      */
     public function get_required_files() {
-        return file_group_process::read_list( $this->get_required_files_filename() );
+        return $this->get_required_fgm()->getfilelist();
     }
 
     /**
@@ -296,7 +297,7 @@ class mod_vpl {
      *            of required files
      */
     public function set_required_files($files) {
-        file_group_process::write_list( $this->get_required_files_filename(), $files );
+        $this->get_required_fgm()->setfilelist($files);
     }
 
     /**
@@ -305,8 +306,7 @@ class mod_vpl {
      */
     public function get_required_fgm() {
         if (! $this->requiredfgm) {
-            $this->requiredfgm = new file_group_process( $this->get_required_files_filename()
-                                                       , $this->get_required_files_directory()
+            $this->requiredfgm = new file_group_process( $this->get_required_files_directory()
                                                        , $this->instance->maxfiles );
         }
         return $this->requiredfgm;
@@ -333,7 +333,7 @@ class mod_vpl {
      * @return array of files execution name
      */
     public function get_execution_files() {
-        return file_group_process::read_list( $this->get_execution_files_filename() );
+        return $this->get_execution_fgm()->getfilelist();
     }
 
     /**
@@ -342,8 +342,7 @@ class mod_vpl {
      */
     public function get_execution_fgm() {
         if (! $this->executionfgm) {
-            $this->executionfgm = new file_group_execution( $this->get_execution_files_filename(),
-                    $this->get_execution_files_directory() );
+            $this->executionfgm = new file_group_execution( $this->get_execution_files_directory() );
         }
         return $this->executionfgm;
     }
