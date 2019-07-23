@@ -56,6 +56,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
     /** @var array $students List of DEFAULT_STUDENT_COUNT students in the course*/
     protected $students = null;
 
+    /** @var array $users List of users in the course*/
+    protected $users = null;
+
     /** @var array $groups List of groups in the course */
     protected $groups = null;
 
@@ -86,6 +89,8 @@ class mod_vpl_base_testcase extends advanced_testcase {
             array_push($this->students, $this->getDataGenerator()->create_user());
         }
 
+        $this->users = array_merge($this->students, $this->teachers, $this->editingteachers);
+
         $this->groups = array();
         for ($i = 0; $i < self::GROUP_COUNT; $i++) {
             array_push($this->groups, $this->getDataGenerator()->create_group(array('courseid' => $this->course->id)));
@@ -100,7 +105,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($teacher->id,
                     $this->course->id,
                     $teacherrole->id);
-            groups_add_member($this->groups[$i % self::GROUP_COUNT], $teacher);
+        }
+        foreach ($this->teachers as $i => $teacher) {
+            groups_add_member($this->groups[2], $teacher);
         }
 
         $editingteacherrole = $DB->get_record('role', array('shortname' => 'editingteacher'));
@@ -108,25 +115,35 @@ class mod_vpl_base_testcase extends advanced_testcase {
             $this->getDataGenerator()->enrol_user($editingteacher->id,
                     $this->course->id,
                     $editingteacherrole->id);
-            groups_add_member($this->groups[$i % self::GROUP_COUNT], $editingteacher);
+        }
+        foreach ($this->editingteachers as $i => $editingteacher) {
+            groups_add_member($this->groups[3], $editingteacher);
         }
 
         $studentrole = $DB->get_record('role', array('shortname' => 'student'));
-        foreach ($this->students as $i => $student) {
+        foreach ($this->students as $student) {
             $this->getDataGenerator()->enrol_user($student->id,
                     $this->course->id,
                     $studentrole->id);
-            groups_add_member($this->groups[$i % self::GROUP_COUNT], $student);
         }
-        foreach ($this->groups as $i => $group) {
-            if ($i < count($this->groups) - 1 ) {
+        $usernum = 0;
+        foreach ($this->students as $student) {
+            $groupselected = $usernum % 2;
+            groups_add_member($this->groups[$groupselected]->id, $student->id);
+            $student->groupasigned = $groupselected;
+            $usernum++;
+        }
+        $groupnum = 0;
+        foreach ($this->groups as $group) {
+            if ($groupnum < 2 ) {
                 $parm = array('groupingid' => $this->groupings[0]->id, 'groupid' => $group->id);
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
-            if ($i > count($this->groups) / 2 ) {
+            if ($groupnum > 0 ) {
                 $parm = array('groupingid' => $this->groupings[1]->id, 'groupid' => $group->id);
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
+            $groupnum++;
         }
     }
 
@@ -167,10 +184,10 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'not available',
-                'duedate' => time() - 60,
-                'maxfiles' => 0,
+                'duedate' => 0,
+                'maxfiles' => 3,
                 'maxfilesize' => 100,
-                'requirednet' => '1.',
+                'requirednet' => '',
                 'password' => 'hola',
                 'grade' => 15,
                 'visiblegrade' => false,
@@ -193,6 +210,8 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'worktype' => 0,
         );
         $this->vplonefile = $this->create_instance($parms);
+        $rqfiles = $this->vplonefile->get_required_fgm();
+        $rqfiles->addallfiles(array('a.c' => "int main(){\n}"));
         // Add a submission.
         $this->setUser($this->students[0]);
         $userid = $this->students[0]->id;
@@ -219,9 +238,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->students[0]);
         $userid = $this->students[0]->id;
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola1\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 4\n",
         );
         $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
@@ -231,9 +250,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->students[1]);
         $userid = $this->students[1]->id;
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 5\n",
         );
         $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
         if ($submissionid == false || $error != '' ) {
@@ -269,9 +288,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $userid = $this->students[0]->id;
         $this->vplvariations->get_variation($userid);
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola3\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 6\n",
         );
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
@@ -282,9 +301,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $userid = $this->students[1]->id;
         $this->vplvariations->get_variation($userid);
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola4\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 7\n",
         );
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
         if ($submissionid == false || $error != '' ) {
@@ -293,6 +312,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
     }
 
     protected function setup_vplteamwork_instance() {
+        global $DB;
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'Team work',
@@ -304,13 +324,18 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'basedon' => $this->vplonefile->get_instance()->id
         );
         $this->vplteamwork = $this->create_instance($parms);
+        $cm = $this->vplteamwork->get_course_module();
+        $param = array('id'=> $cm->id, "groupingid" => $this->groupings[0]->id);
+        $DB->update_record("course_modules", $param);
+        $this->vplteamwork->get_course_module()->groupingid = $this->groupings[0]->id;
+        unset($this->vplteamwork->group_activity);
         // Add a submission.
         $this->setUser($this->students[0]);
         $userid = $this->students[0]->id;
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 8\n",
         );
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
@@ -320,9 +345,9 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->students[1]);
         $userid = $this->students[1]->id;
         $files = array(
-                'a.c' => "int main(){\nprintf(\"Hola\");\n}",
+                'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
-                'b.h' => "#define MV 3\n",
+                'b.h' => "#define MV 9\n",
         );
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
@@ -351,7 +376,6 @@ class mod_vpl_base_testcase extends advanced_testcase {
             $this->assertNotEmpty($this->create_instance());
         }
     }
-
 }
 
 /**
