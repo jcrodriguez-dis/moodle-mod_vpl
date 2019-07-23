@@ -126,7 +126,7 @@ class mod_vpl_webservice extends external_api {
         $oldfiles = $files;
         $files = array();
         foreach ($oldfiles as $file) {
-            $files [ $file->name ] = $file->data;
+            $files [ $file['name'] ] = $file['data'];
         }
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
@@ -207,9 +207,10 @@ class mod_vpl_webservice extends external_api {
             throw new Exception( get_string( 'notavailable' ) );
         }
         $ret = mod_vpl_edit::execute( $vpl, $USER->id, 'evaluate' );
-        return array (
-                'monitorURL' => $ret->monitorURL
-        );
+        if ( empty($ret->monitorURL) ) {
+            throw new Exception( get_string( 'notavailable' ) );
+        }
+        return array ( 'monitorURL' => $ret->monitorURL );
     }
     public static function evaluate_returns() {
         $desc = "URL to the service that monitor the evaluation in the jail server.
