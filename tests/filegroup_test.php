@@ -197,6 +197,16 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
     }
 
     /**
+     * Method to test file_group_process::getallfiles.
+     */
+    public function test_getallfiles() {
+        $this->assertEquals(array(), $this->gpempty->getallfiles());
+        $this->assertEquals($this->gponefilecontents, $this->gponefile->getallfiles());
+        $this->assertEquals($this->gpfilescontents, $this->gpfiles->getallfiles());
+        $this->assertEquals($this->gpdirectorycontents, $this->gpdirectory->getallfiles());
+    }
+
+    /**
      * Method to test file_group_process::deleteallfiles.
      */
     public function test_deleteallfiles() {
