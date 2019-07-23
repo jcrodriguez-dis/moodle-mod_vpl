@@ -17,11 +17,15 @@ rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 
 # Wait until a program ($1 e.g. execution_int) of the current user ends. 
 function wait_end {
+	local PSRESFILE
+	PSRESFILE=.vpl_temp_search_program
 	while :
 	do
 		sleep 1s
-		ps -f -u $USER | grep $1 &> /dev/null
+		ps -f -u $USER > $PSRESFILE
+		grep $1 $PSRESFILE &> /dev/null
 		if [ "$?" != "0" ] ; then
+			rm $PSRESFILE
 			return
 		fi
 	done
