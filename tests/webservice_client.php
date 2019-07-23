@@ -82,11 +82,12 @@ function vpl_call_service($url, $fun, $request = '') {
     curl_setopt( $ch, CURLOPT_URL, $url . $fun );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     curl_setopt( $ch, CURLOPT_POST, 1 );
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
     curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
     if ( @$plugincfg->acceptcertificates ) {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
     }
     $rawresponse = curl_exec( $ch );
     if ($rawresponse === false) {
@@ -100,7 +101,7 @@ function vpl_call_service($url, $fun, $request = '') {
 }
 function vpl_call_print($res) {
     echo '<pre>';
-    p( $res );
+    echo print_r($res, true);
     echo '</pre>';
 }
 
@@ -112,19 +113,25 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $vpl->prepare_page( 'tests/webservice_client.php', array (
         'id' => $id
 ) );
+$basebody = "id=$id";
+
 $vpl->print_header( 'Web service test client' );
 echo '<h1>Web service test client</h1>';
 echo '<h3>Session token generated (or reused)</h3>';
 echo s( vpl_get_webservice_token( $vpl ) );
 $serviceurl = vpl_get_webservice_urlbase( $vpl );
+
 echo '<h3>Base URL for web service</h3>';
-echo s( $serviceurl );
+echo s( print_r($serviceurl, true) );
+
 echo '<h3>Get info from activity</h3>';
-$res = vpl_call_service( $serviceurl, 'mod_vpl_info' );
+$res = vpl_call_service( $serviceurl, 'mod_vpl_info', $basebody);
 vpl_call_print( $res );
+
 echo '<h3>Get last submission</h3>';
-$res = vpl_call_service( $serviceurl, 'mod_vpl_open' );
+$res = vpl_call_service( $serviceurl, 'mod_vpl_open', $basebody);
 vpl_call_print( $res );
+
 echo '<h3>Modify and save last submission</h3>';
 if (isset( $res->files )) {
     $files = $res->files;
@@ -138,21 +145,20 @@ if (count( $files ) == 0) {
     );
 } else {
     foreach ($files as $file) {
-        $file->data = "Modification " . time() . "\n" . $file->data;
+        $file->data = "// time " . time() . "\n" . $file->data;
     }
 }
 $res->files = $files;
-$body = '';
+$body = $basebody;
 foreach ($files as $key => $file) {
-    if ($key > 0) {
-        $body .= '&';
-    }
-    $body .= "files[$key][name]=" . urlencode( $file->name ) . '&';
+    $body .= "&";
+    $body .= "files[$key][name]=" . urlencode( $file->name ) . "&";
     $body .= "files[$key][data]=" . urlencode( $file->data );
 }
-
+//vpl_call_print($body);
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_save', $body );
 vpl_call_print( $newres );
+
 echo '<h3>Reread file to test saved files</h3>';
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_open' );
 if (! isset( $res->files ) or ! isset( $newres->files ) or $res->files != $newres->files) {
