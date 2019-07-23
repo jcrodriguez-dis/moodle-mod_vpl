@@ -943,7 +943,7 @@ function vpl_get_webservice_token($vpl) {
         $DB->delete_records_select( 'external_tokens', $select, array (
                 $now
         ) );
-        // Select unique token.
+        // Generate unique token.
         for ($i = 0; $i < 100; $i ++) {
             $token = md5( uniqid( mt_rand(), true ) );
             $tokenrecord = $DB->get_record( 'external_tokens', array (
