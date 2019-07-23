@@ -113,7 +113,7 @@ foreach ($processes as $process) {
             'encoding' => 'UTF-8'
     ) );
     $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
-    if ($response === false) {
+    if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
         // Removes zombi process.
         vpl_running_processes::delete($process->userid, $process->adminticket);
         continue;
