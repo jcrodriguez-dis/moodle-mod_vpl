@@ -1,6 +1,10 @@
 language: php
 
-sudo: true
+sudo: required
+
+language: php
+
+dist: trusty
 
 addons:
   firefox: "47.0.1"
