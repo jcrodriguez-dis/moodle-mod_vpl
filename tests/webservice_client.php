@@ -93,15 +93,24 @@ function vpl_call_service($url, $fun, $request = '') {
     if ($rawresponse === false) {
         $error = 'request failed: ' . s( curl_error( $ch ) );
         curl_close( $ch );
+        vpl_call_print($fun, $error);
         return $error;
     } else {
         curl_close( $ch );
-        return json_decode( $rawresponse );
+        $res = json_decode( $rawresponse );
+        vpl_call_print($fun, $res);
+        return $res;
     }
 }
-function vpl_call_print($res) {
-    echo '<pre>';
-    echo print_r($res, true);
+function vpl_call_print($fun, $res) {
+    echo "<h4>Funtion $fun esponse</h4>\n";
+    echo "<pre>";
+    if (is_string($res)) {
+        echo s($res);
+    } else {
+        $opt = JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES;
+        echo s(json_encode($res, $opt));
+    }
     echo '</pre>';
 }
 
@@ -122,15 +131,13 @@ echo s( vpl_get_webservice_token( $vpl ) );
 $serviceurl = vpl_get_webservice_urlbase( $vpl );
 
 echo '<h3>Base URL for web service</h3>';
-echo s( print_r($serviceurl, true) );
+echo s( $serviceurl );
 
 echo '<h3>Get info from activity</h3>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_info', $basebody);
-vpl_call_print( $res );
 
 echo '<h3>Get last submission</h3>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_open', $basebody);
-vpl_call_print( $res );
 
 echo '<h3>Modify and save last submission</h3>';
 if (isset( $res->files )) {
@@ -155,9 +162,8 @@ foreach ($files as $key => $file) {
     $body .= "files[$key][name]=" . urlencode( $file->name ) . "&";
     $body .= "files[$key][data]=" . urlencode( $file->data );
 }
-//vpl_call_print($body);
+
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_save', $body );
-vpl_call_print( $newres );
 
 echo '<h3>Reread file to test saved files</h3>';
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_open' );
@@ -166,15 +172,12 @@ if (! isset( $res->files ) or ! isset( $newres->files ) or $res->files != $newre
 } else {
     echo "OK";
 }
-vpl_call_print( $newres );
 
 echo '<h3>Call evaluate (unreliable test)</h3>';
 echo '<h4>It may be unavailable</h4>';
 echo '<h4>The client don\'t use websocket then the jail server may timeout</h4>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_evaluate' );
-vpl_call_print( $res );
 sleep( 5 );
 echo '<h3>Call get result of last evaluation (unreliable test)</h3>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_get_result' );
-vpl_call_print( $res );
 $vpl->print_footer();

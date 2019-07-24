@@ -325,7 +325,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         );
         $this->vplteamwork = $this->create_instance($parms);
         $cm = $this->vplteamwork->get_course_module();
-        $param = array('id'=> $cm->id, "groupingid" => $this->groupings[0]->id);
+        $param = array('id' => $cm->id, "groupingid" => $this->groupings[0]->id);
         $DB->update_record("course_modules", $param);
         $this->vplteamwork->get_course_module()->groupingid = $this->groupings[0]->id;
         unset($this->vplteamwork->group_activity);
