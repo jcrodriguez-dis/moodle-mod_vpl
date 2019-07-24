@@ -44,7 +44,7 @@ install:
   - >
     if [ "$DB" = 'mysqli' ];
     then
-      - moodle-plugin-ci install
+        moodle-plugin-ci install
         sudo mkdir /mnt/ramdisk
         sudo mount -t tmpfs -o size=1024m tmpfs /mnt/ramdisk
         sudo stop mysql
@@ -52,10 +52,10 @@ install:
         sudo ln -s /mnt/ramdisk/mysql /var/lib/mysql
         sudo start mysql
     fi
-- >
+  - >
     if [ "$DB" = 'pgsql' ];
     then
-      - moodle-plugin-ci install
+        moodle-plugin-ci install
         sudo mkdir /mnt/ramdisk
         sudo mount -t tmpfs -o size=1024m tmpfs /mnt/ramdisk
         sudo service postgresql stop
