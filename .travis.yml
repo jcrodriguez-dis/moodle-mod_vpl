@@ -8,6 +8,9 @@ addons:
   apt:
     packages:
       - default-jdk
+      - mysql-server-5.6
+      - mysql-client-core-5.6
+      - mysql-client-5.6
 
 cache:
   directories:
@@ -15,7 +18,7 @@ cache:
     - $HOME/.npm
 
 php:
- - 7.1
+ - 7.1.30
  - 7.2
  
 env:
@@ -39,6 +42,26 @@ before_install:
 install:
   - moodle-plugin-ci install
   - sudo apt-get install g++
+  - >
+    if [ "$DB" = 'mysqli' ];
+    then
+        sudo mkdir /mnt/ramdisk
+        sudo mount -t tmpfs -o size=1024m tmpfs /mnt/ramdisk
+        sudo stop mysql
+        sudo mv /var/lib/mysql /mnt/ramdisk
+        sudo ln -s /mnt/ramdisk/mysql /var/lib/mysql
+        sudo start mysql
+    fi
+- >
+    if [ "$DB" = 'pgsql' ];
+    then
+        sudo mkdir /mnt/ramdisk
+        sudo mount -t tmpfs -o size=1024m tmpfs /mnt/ramdisk
+        sudo service postgresql stop
+        sudo mv /var/lib/postgresql /mnt/ramdisk
+        sudo ln -s /mnt/ramdisk/postgresql /var/lib/postgresql
+        sudo service postgresql start 9.6
+    fi
 
 before_script:
   - chmod +x /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
