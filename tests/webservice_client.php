@@ -103,7 +103,7 @@ function vpl_call_service($url, $fun, $request = '') {
     }
 }
 function vpl_call_print($fun, $res) {
-    echo "<h4>Funtion $fun esponse</h4>\n";
+    echo "<h4>Funtion $fun response</h4>\n";
     echo "<pre>";
     if (is_string($res)) {
         echo s($res);
