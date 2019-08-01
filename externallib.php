@@ -126,7 +126,7 @@ class mod_vpl_webservice extends external_api {
         $oldfiles = $files;
         $files = array();
         foreach ($oldfiles as $file) {
-            $files [ $file->name ] = $file->data;
+            $files [ $file['name'] ] = $file['data'];
         }
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
@@ -203,13 +203,16 @@ class mod_vpl_webservice extends external_api {
         if (! $vpl->is_submit_able()) {
             throw new Exception( get_string( 'notavailable' ) );
         }
-        if ($instance->example or $instance->restrictededitor or ! $instance->evaluate) {
+        if ($instance->example or ! $instance->evaluate) {
             throw new Exception( get_string( 'notavailable' ) );
         }
-        $ret = mod_vpl_edit::execute( $vpl, $USER->id, 'evaluate' );
-        return array (
-                'monitorURL' => $ret->monitorURL
-        );
+        $res = mod_vpl_edit::execute( $vpl, $USER->id, 'evaluate' );
+        if ( empty($res->monitorPath) ) {
+            throw new Exception( get_string( 'notavailable' ) );
+        }
+        $monitorurl = 'ws://' . $res->server . ':' . $res->port . '/' . $res->monitorPath;
+        $smonitorurl = 'wss://' . $res->server . ':' . $res->securePort . '/' . $res->monitorPath;
+        return array ( 'monitorURL' => $monitorurl, 'smonitorURL' => $smonitorurl  );
     }
     public static function evaluate_returns() {
         $desc = "URL to the service that monitor the evaluation in the jail server.
@@ -223,7 +226,8 @@ The jail send information as text in this format:
 'close': the conection is to be closed.
 if the websocket client send something to the server then the evaluation is stopped.";
         return new external_single_structure( array (
-                'monitorURL' => new external_value( PARAM_RAW, $desc )
+                'monitorURL' => new external_value( PARAM_RAW, $desc ),
+                'smonitorURL' => new external_value( PARAM_RAW, $desc ),
         ) );
     }
 
