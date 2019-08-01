@@ -318,11 +318,11 @@ class vpl_diff {
         $shower = vpl_sh_factory::get_sh( $filename1 );
         $shower->print_file( $filename1, $data1, false, count($diff) + 1, false );
         echo '</div>';
-        echo '<div style="float:left; width: 3em"">';
+        echo '<div style="float:left; width: 3em">';
         $shower = vpl_sh_factory::get_sh( 'b.txt' );
         $shower->print_file( 'b.txt', $diffl, false, count($diff) + 1, false );
         echo '</div>';
-        echo '<div style="float:left; text-align: right; width: 3em"">';
+        echo '<div style="float:left; text-align: right; width: 3em">';
         $shower = vpl_sh_factory::get_sh( 'b.txt' );
         $shower->print_file( 'b.txt', $datal2, false, count($diff) + 1, false );
         echo '</div>';
