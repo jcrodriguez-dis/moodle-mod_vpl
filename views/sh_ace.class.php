@@ -58,14 +58,13 @@ class vpl_sh_ace extends vpl_sh_base {
             $code .= " id='code$tid' style='display:none' >\n";
             $code .= htmlentities( $filedata, ENT_NOQUOTES );
             $code .= '</pre>';
-            $sshowline = $showln ? 'true' : 'false';
             echo $code;
             $code = '<h4 ';
             $code .= " id='code${tid}load' style='text-align:center'>";
             $code .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
             $code .= '</h4>';
             echo $code;
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', array($tid, $filename, $theme, $sshowline, $nl));
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', array($tid, $filename, $theme, $showln, $nl));
 
         }
     }
