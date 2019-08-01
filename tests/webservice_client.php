@@ -82,25 +82,35 @@ function vpl_call_service($url, $fun, $request = '') {
     curl_setopt( $ch, CURLOPT_URL, $url . $fun );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     curl_setopt( $ch, CURLOPT_POST, 1 );
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
     curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
     if ( @$plugincfg->acceptcertificates ) {
         curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch, CURLOPT_SSL_VERIFYHOST, false );
     }
     $rawresponse = curl_exec( $ch );
     if ($rawresponse === false) {
         $error = 'request failed: ' . s( curl_error( $ch ) );
         curl_close( $ch );
+        vpl_call_print($fun, $error);
         return $error;
     } else {
         curl_close( $ch );
-        return json_decode( $rawresponse );
+        $res = json_decode( $rawresponse );
+        vpl_call_print($fun, $res);
+        return $res;
     }
 }
-function vpl_call_print($res) {
-    echo '<pre>';
-    p( $res );
+function vpl_call_print($fun, $res) {
+    echo "<h4>Funtion $fun response</h4>\n";
+    echo "<pre>";
+    if (is_string($res)) {
+        echo s($res);
+    } else {
+        $opt = JSON_PRETTY_PRINT | JSON_UNESCAPED_LINE_TERMINATORS | JSON_UNESCAPED_SLASHES;
+        echo s(json_encode($res, $opt));
+    }
     echo '</pre>';
 }
 
@@ -112,19 +122,23 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $vpl->prepare_page( 'tests/webservice_client.php', array (
         'id' => $id
 ) );
+$basebody = "id=$id";
+
 $vpl->print_header( 'Web service test client' );
 echo '<h1>Web service test client</h1>';
 echo '<h3>Session token generated (or reused)</h3>';
 echo s( vpl_get_webservice_token( $vpl ) );
 $serviceurl = vpl_get_webservice_urlbase( $vpl );
+
 echo '<h3>Base URL for web service</h3>';
 echo s( $serviceurl );
+
 echo '<h3>Get info from activity</h3>';
-$res = vpl_call_service( $serviceurl, 'mod_vpl_info' );
-vpl_call_print( $res );
+$res = vpl_call_service( $serviceurl, 'mod_vpl_info', $basebody);
+
 echo '<h3>Get last submission</h3>';
-$res = vpl_call_service( $serviceurl, 'mod_vpl_open' );
-vpl_call_print( $res );
+$res = vpl_call_service( $serviceurl, 'mod_vpl_open', $basebody);
+
 echo '<h3>Modify and save last submission</h3>';
 if (isset( $res->files )) {
     $files = $res->files;
@@ -138,21 +152,19 @@ if (count( $files ) == 0) {
     );
 } else {
     foreach ($files as $file) {
-        $file->data = "Modification " . time() . "\n" . $file->data;
+        $file->data = "// time " . time() . "\n" . $file->data;
     }
 }
 $res->files = $files;
-$body = '';
+$body = $basebody;
 foreach ($files as $key => $file) {
-    if ($key > 0) {
-        $body .= '&';
-    }
-    $body .= "files[$key][name]=" . urlencode( $file->name ) . '&';
+    $body .= "&";
+    $body .= "files[$key][name]=" . urlencode( $file->name ) . "&";
     $body .= "files[$key][data]=" . urlencode( $file->data );
 }
 
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_save', $body );
-vpl_call_print( $newres );
+
 echo '<h3>Reread file to test saved files</h3>';
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_open' );
 if (! isset( $res->files ) or ! isset( $newres->files ) or $res->files != $newres->files) {
@@ -160,15 +172,12 @@ if (! isset( $res->files ) or ! isset( $newres->files ) or $res->files != $newre
 } else {
     echo "OK";
 }
-vpl_call_print( $newres );
 
 echo '<h3>Call evaluate (unreliable test)</h3>';
 echo '<h4>It may be unavailable</h4>';
 echo '<h4>The client don\'t use websocket then the jail server may timeout</h4>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_evaluate' );
-vpl_call_print( $res );
 sleep( 5 );
 echo '<h3>Call get result of last evaluation (unreliable test)</h3>';
 $res = vpl_call_service( $serviceurl, 'mod_vpl_get_result' );
-vpl_call_print( $res );
 $vpl->print_footer();
