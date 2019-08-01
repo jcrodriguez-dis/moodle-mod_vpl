@@ -10,6 +10,9 @@
 . common_script.sh
 
 check_program ghc hugs
+if [ "$1" == "version" ] ; then
+	exit
+fi
 
 cat common_script.sh > vpl_execution
 

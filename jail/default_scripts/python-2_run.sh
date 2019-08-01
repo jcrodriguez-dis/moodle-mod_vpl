@@ -17,6 +17,7 @@ if [ "$1" == "version" ] ; then
 fi
 get_first_source_file py
 cat common_script.sh > vpl_execution
+echo "export TERM=ansi" >>vpl_execution
 echo "python2 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
 chmod +x vpl_execution
 get_source_files py

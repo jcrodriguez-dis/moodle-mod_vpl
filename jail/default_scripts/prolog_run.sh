@@ -10,8 +10,11 @@
 . common_script.sh
 check_program swipl
 if [ "$1" == "version" ] ; then
+	PROLOGVERSIONOUTPUT=.vpl_prolog_version_output
 	echo "#!/bin/bash" > vpl_execution
-	echo "swipl -v" >> vpl_execution
+	echo "swipl -v < /dev/null &> $PROLOGVERSIONOUTPUT" >> vpl_execution
+	echo "head -n2 $PROLOGVERSIONOUTPUT" >> vpl_execution
+	echo "rm $PROLOGVERSIONOUTPUT" >> vpl_execution
 	chmod +x vpl_execution
 	exit
 fi

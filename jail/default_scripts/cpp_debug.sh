@@ -9,6 +9,10 @@
 # load common script and check programs
 . common_script.sh
 check_program g++
+check_program ddd gdb
+if [ "$1" == "version" ] ; then
+	get_program_version --version
+fi
 get_source_files cpp C
 # compile
 . vpl_run.sh n "-g -O0"

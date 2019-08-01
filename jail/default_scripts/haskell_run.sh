@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodriguez-del-Pino
 
-# @vpl_script_description Using "runhugs +98" with the first file
+# @vpl_script_description Using "ghc or runhugs +98" with the first file
 # load common script and check programs
 . common_script.sh
 check_program ghc hugs
@@ -25,5 +25,5 @@ if [ "$PROGRAM" == "hugs" ] ; then
 	echo "runhugs +98 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
 	chmod +x vpl_execution
 else
-	$PROGRAMPATH -o vpl_execution "$FIRST_SOURCE_FILE"
+	$PROGRAMPATH -v0 -o vpl_execution "$FIRST_SOURCE_FILE"
 fi

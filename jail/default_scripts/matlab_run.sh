@@ -49,6 +49,7 @@ if [ "$PROGRAM" == "octave" ] ; then
 		else
 			echo "octave --no-window-system -q --persist \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		fi
+		echo "wait_end octave" >> vpl_execution
 	else
 cat > .octaverc << "END_SCRIPT"
 can_use_graphics_toolkit = exist("graphics_toolkit","file") | exist("graphics_toolkit","builtin");
@@ -57,12 +58,13 @@ if can_use_graphics_toolkit
 endif
 
 END_SCRIPT
-		check_program x-terminal-emulator
+		check_program x-terminal-emulator xterm
 		if [ "$1" == "batch" ] ; then
-			echo "x-terminal-emulator -e octave -q --no-gui \"$FIRST_SOURCE_FILE\"" >> vpl_execution
+			echo "$PROGRAM -e octave -q --no-gui \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		else
-			echo "x-terminal-emulator -e octave -q --no-gui --persist \"$FIRST_SOURCE_FILE\"" >> vpl_execution
+			echo "$PROGRAM -e octave -q --no-gui --persist \"$FIRST_SOURCE_FILE\"" >> vpl_execution
 		fi
+		echo "wait_end octave" >> vpl_execution
 		mv vpl_execution vpl_wexecution
 	fi
 else
@@ -73,8 +75,9 @@ else
 	if [ "$X11" == "" ] ; then
 		echo "matlab -nosplash" >> vpl_execution
 	else
-		check_program x-terminal-emulator
-		echo "x-terminal-emulator -e matlab -nosplash" >> vpl_execution
+		check_program x-terminal-emulator xterm
+		echo "$PROGRAM -e matlab -nosplash" >> vpl_execution
+		echo "wait_end mathlab" >> vpl_execution
 		mv vpl_execution vpl_wexecution
 	fi
 fi

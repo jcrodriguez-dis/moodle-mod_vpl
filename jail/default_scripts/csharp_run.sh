@@ -8,8 +8,8 @@
 # @vpl_script_description Using csc or mcs
 # load common script and check programs
 . common_script.sh
-check_program csc mcs
 check_program mono
+check_program csc mcs
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "$PROGRAM --version" >> vpl_execution

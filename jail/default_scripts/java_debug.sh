@@ -18,6 +18,14 @@ function getClassName {
 . common_script.sh
 check_program javac
 check_program java
+check_program jgrasp ddd jdb
+if [ "$1" == "version" ] ; then
+	if [ "$PROGRAM" == "jgrasp" ] ; then
+		get_program_version unknown
+	else
+		get_program_version --version
+	fi
+fi
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
 	export CLASSPATH=$CLASSPATH:$JUNIT4
@@ -75,6 +83,7 @@ chmod +x vpl_execution
 # is jgrasp installed ?
 if [ "$(command -v jgrasp)" != "" ] ; then
 	echo "jgrasp $MAINCLASS.java" >> vpl_execution
+	echo "wait_end jgrasp" >> vpl_execution
 	mv vpl_execution vpl_wexecution
 elif [ "$(command -v ddd)" != "" ] ; then
 	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
@@ -97,10 +106,10 @@ else
 	do
 		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
 		if [ "$?" -eq "0" ]	; then
-			check_program x-terminal-emulator
+			check_program x-terminal-emulator xterm
 			cat common_script.sh > vpl_wexecution
 			chmod +x vpl_wexecution
-			echo "x-terminal-emulator -e ./.vpl_javadebug" >> vpl_wexecution
+			echo "./.vpl_javadebug" >> vpl_wexecution
 			mv vpl_execution .vpl_javadebug
 			break
 		fi

@@ -10,7 +10,7 @@
 cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
 . common_script.sh
-
+ERRORSREPORT=.vpl_error_report.txt
 #Remove student files
 SAVEIFS=$IFS
 IFS=$'\n'
@@ -19,7 +19,7 @@ do
 	rm "$FILENAME"
 done
 IFS=$SAVEIFS
-
+touch $ERRORSREPORT
 echo "echo \"<|--\"" >> all_execute
 echo "echo \"-System information\"" >> all_execute
 echo "cat /proc/version" >> all_execute
@@ -28,26 +28,30 @@ echo "cat /proc/partitions" >> all_execute
 NG=0
 NNG=0
 NEG=0
-FILES=*_run.sh
+FILES="*_run.sh *_debug.sh"
 rm vpl_evaluate.cpp
 for RUNSCRIPT in $FILES
 do
-	typeset -u LANGUAGE=$(echo "$RUNSCRIPT" | sed -r "s/_run.sh$//")
-	LANGEXE=$(echo "$RUNSCRIPT" | sed -r "s/_run.sh$/_execute.sh/")
+	typeset -u LANGUAGE=$(echo "$RUNSCRIPT" | sed -r "s/_run.sh$//" | sed -r "s/_debug.sh$/ debugger/")
+	LANGEXE=$(echo "$RUNSCRIPT" | sed -r "s/_run.sh$/_execute.sh/" | sed -r "s/_debug.sh$/_dexecute.sh/")
 	if [ "$LANGUAGE" == "VPL" -o "$LANGUAGE" == "ALL" -o "$LANGUAGE" == "DEFAULT" ] ; then
 		continue
 	fi
-	./$RUNSCRIPT version
+	if [ "$LANGUAGE" == "VPL DEBUGGER" -o "$LANGUAGE" == "ALL DEBUGGER" -o "$LANGUAGE" == "DEFAULT DEBUGGER" ] ; then
+		continue
+	fi
+	./$RUNSCRIPT version >> $ERRORSREPORT
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"
 		mv vpl_execution $LANGEXE
 		echo "echo \"-$LANGUAGE\"" >> all_execute
 		echo "./$LANGEXE" >> all_execute
-	elif [ -f vpl_execution ] ; then
+	elif [ -f vpl_wexecution ] ; then
 		let "NNG=NNG+1"
-		echo "Error: generating $LANGUAGE compiler/interpreter version"
+		echo "Error: generating $LANGUAGE compiler/interpreter version" >> $ERRORSREPORT
 	fi
 done
 echo "echo \"--|>\"" >> all_execute
+echo "cat $ERRORSREPORT" >> all_execute
 mv all_execute vpl_execution
 chmod +x vpl_execution

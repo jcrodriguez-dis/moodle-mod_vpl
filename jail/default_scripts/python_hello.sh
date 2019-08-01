@@ -5,24 +5,63 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-cat > "vpl hello.py" <<'END_OF_FILE'
+function generateHelloPython2() {
+	cat > "vpl hello.py" <<'END_OF_FILE'
 import message
 message.hello()
 END_OF_FILE
 
-if [ "$1" == "gui" ] ; then
-cat > "message.py" <<'END_OF_FILE'
+	if [ "$1" == "gui" ] ; then
+		cat > "message.py" <<'END_OF_FILE'
 import Tkinter
 import tkMessageBox
 def hello():
 	tkMessageBox.showinfo('VPL','Hello from the Python language!')
 END_OF_FILE
-else
-cat > "message.py" <<'END_OF_FILE'
+	else
+		cat > "message.py" <<'END_OF_FILE'
 def hello():
 	print('Hello from the Python language!')
 END_OF_FILE
-fi
+	fi
+	export VPL_SUBFILE0="vpl hello.py"
+	export VPL_SUBFILE1="message.py"
+}
+function generateHelloPython3() {
+	if [ "$1" == "gui" ] ; then
+		Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("Tkinter") else 0)')
+		if [ "$Tk" == "1" ] ; then
+			cat > "vpl hello.py" <<'END_OF_FILE'
+import message
+message.hello()
+END_OF_FILE
+			cat > "message.py" <<'END_OF_FILE'
+import Tkinter
+import tkMessageBox
+def hello():
+	tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
+END_OF_FILE
+			export VPL_SUBFILE0="vpl hello.py"
+			export VPL_SUBFILE1="message.py"
+		fi
+	else
+		cat > "vpl hello.py" <<'END_OF_FILE'
+import message
+message.hello()
+END_OF_FILE
+		cat > "message.py" <<'END_OF_FILE'
+def hello():
+	print('Hello from the Python language!')
+END_OF_FILE
+		export VPL_SUBFILE0="vpl hello.py"
+		export VPL_SUBFILE1="message.py"
+	fi
+}
 
-export VPL_SUBFILE0="vpl hello.py"
-export VPL_SUBFILE1="message.py"
+check_program python3 python python2
+PY2=$($PROGRAM --version | grep "Python 2")
+if [ "$PY2" == "" ] ; then
+	generateHelloPython3
+else
+	generateHelloPython2
+fi

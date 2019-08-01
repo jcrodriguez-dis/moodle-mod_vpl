@@ -9,7 +9,10 @@
 # load common script and check programs
 
 . common_script.sh
-#check_program jgrasp
+check_program jgrasp
+if [ "$1" == "version" ] ; then
+	get_program_version unknown
+fi
 get_first_source_file java
 MAINFILE=$FIRST_SOURCE_FILE
 
@@ -21,11 +24,12 @@ do
          break
      fi
 done
-cat >vplexecution <<FIN
-#!/bin/bash
-cd $HOME
+cat common_script.sh > vplexecution
+check_program x-terminal-emulator xterm
+
+cat >>vplexecution <<FIN
 jgrasp $MAINFILE
-x-terminal-emulator
+wait_end jgrasp
 FIN
 chmod +x vplexecution
 mv vplexecution vpl_wexecution

@@ -9,6 +9,9 @@
 # load common script and check programs
 . common_script.sh
 check_program gdb
+if [ "$1" == "version" ] ; then
+	get_program_version --version
+fi
 get_source_files pas p
 #compile
 PROPATH=$(command -v fpc 2>/dev/null)

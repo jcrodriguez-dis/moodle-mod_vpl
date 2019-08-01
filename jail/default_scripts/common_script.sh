@@ -14,6 +14,46 @@ if [ -s vpl_set_locale_error ] ; then
 fi
 rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 #functions
+
+# Wait until a program ($1 e.g. execution_int) of the current user ends. 
+function wait_end {
+	local PSRESFILE
+	PSRESFILE=.vpl_temp_search_program
+	while :
+	do
+		sleep 1s
+		ps -f -u $USER > $PSRESFILE
+		grep $1 $PSRESFILE &> /dev/null
+		if [ "$?" != "0" ] ; then
+			rm $PSRESFILE
+			return
+		fi
+	done
+}
+
+# Adds code to vpl_execution for getting the version of $PROGRAM
+# $1: version command line switch (e.g. -version)
+# $2: number of lines to show. Default 2
+function get_program_version {
+	local nhl
+	if [ "$2" == "" ] ; then
+		nhl=2
+	else
+		nhl=$2
+	fi
+	
+	echo "#!/bin/bash" > vpl_execution
+	if [ "$1" == "unknown" ] ; then
+		echo "echo \"$PROGRAM version unknown\"" >> vpl_execution
+	else
+		echo "$PROGRAM $1 | head -n $nhl" >> vpl_execution
+	fi
+	chmod +x vpl_execution
+	exit
+}
+
+# Populate SOURCE_FILES, SOURCE_FILES_LINE and SOURCE_FILE0 with files
+# of extensions passed. E.g. get_source_files cpp C
 function get_source_files {
 	local ext
 	SOURCE_FILES=""
@@ -57,6 +97,7 @@ function get_source_files {
 	exit 0;
 }
 
+# Take SOURCE_FILES and write at $1 file
 function generate_file_of_files {
 	if [ -f "$1" ] ; then
 		rm "$1"
@@ -76,6 +117,7 @@ function generate_file_of_files {
 	IFS=$SIFS
 }
 
+# Set FIRST_SOURCE_FILE to the first VPL_SUBFILE# with extension in parameters $@
 function get_first_source_file {
 	local ext
 	local FILENAME
@@ -103,6 +145,7 @@ function get_first_source_file {
 	exit 0;
 }
 
+# Check program existence ($@) and set $PROGRAM and PROGRAMPATH
 function check_program {
 	PROGRAM=
 	local check
@@ -123,6 +166,7 @@ function check_program {
 	exit 0;
 }
 
+# Compile 
 function compile_typescript {
 	check_program tsc NOERROR
 	if [ "$PROGRAM" == "" ] ; then

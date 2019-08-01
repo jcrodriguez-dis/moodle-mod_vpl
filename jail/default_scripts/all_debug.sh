@@ -41,6 +41,7 @@ do
 	rm .curerror &>/dev/null
 	. $HELLOSCRIPT gui &>.curerror
 	if [ "$VPL_SUBFILE0" == "" ] ; then
+		echo " No hello program"
 		continue
 	fi
 	cp common_script.sav common_script.sh
@@ -75,7 +76,7 @@ do
 			mv vpl_wexecution $VPLDEBEXE
 			echo -n " Compiled for debug with GUI"
 			echo "echo \"Launching debuger for $LANGUAGE\"" >> all_execute
-			echo "/bin/bash ./$VPLDEBEXE" >> all_execute
+			echo "./$VPLDEBEXE" >> all_execute
 		fi
     fi
     echo
@@ -87,9 +88,7 @@ done
 echo "echo \"Finsh. Press enter\"" >> all_execute
 echo "read" >> all_execute
 chmod +x all_execute
-cat common_script.sh > vpl_wexecution
-echo "x-terminal-emulator -e ./all_execute" >> vpl_wexecution
-chmod +x vpl_wexecution
+mv all_execute vpl_wexecution
 if [ "$LANGGEN" != "" ] ; then
 	echo "Generated GUI program(s) for $NG language(s): $LANGGEN"
 fi
