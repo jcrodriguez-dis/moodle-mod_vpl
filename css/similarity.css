@@ -3,14 +3,18 @@
 .vpl_sim2,
 .vpl_sim3,
 .vpl_sim4,
-.vpl_sim5,
+.vpl_sim5 {
+    color: #fff;
+    font-size: small;
+    height: 3em;
+}
 .vpl_sim6,
 .vpl_sim7,
 .vpl_sim8,
 .vpl_sim9,
 .vpl_sim10,
 .vpl_sim11 {
-    color: #fff;
+    color: #000;
     font-size: small;
     height: 3em;
 }
@@ -19,84 +23,28 @@
     background-color: #f00;
 }
 
-.vpl_sim0 a {
-    color: #fff;
-}
-
-.vpl_sim0 a:hover {
-    color: #0f0;
-}
-
 .vpl_sim1 {
     background-color: #ff1010;
-}
-
-.vpl_sim1 a {
-    color: #fff;
-}
-
-.vpl_sim1 a:hover {
-    color: #0f0;
 }
 
 .vpl_sim2 {
     background-color: #ff2828;
 }
 
-.vpl_sim2 a {
-    color: #fff;
-}
-
-.vpl_sim2 a:hover {
-    color: #0f0;
-}
-
 .vpl_sim3 {
     background-color: #ff4040;
-}
-
-.vpl_sim3 a {
-    color: #fff;
-}
-
-.vpl_sim3 a:hover {
-    color: #0f0;
 }
 
 .vpl_sim4 {
     background-color: #ff5858;
 }
 
-.vpl_sim4 a {
-    color: #fff;
-}
-
-.vpl_sim4 a:hover {
-    color: #0f0;
-}
-
 .vpl_sim5 {
     background-color: #ff7070;
 }
 
-.vpl_sim5 a {
-    color: #fff;
-}
-
-.vpl_sim5 a:hover {
-    color: #0f0;
-}
-
 .vpl_sim6 {
     background-color: #f88;
-}
-
-.vpl_sim6 a {
-    color: #fff;
-}
-
-.vpl_sim6 a:hover {
-    color: #0f0;
 }
 
 .vpl_sim7 {
