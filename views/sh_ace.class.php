@@ -54,7 +54,7 @@ class vpl_sh_ace extends vpl_sh_base {
         }
         if ( $filedata > '' ) {
             $code = '<pre class="" style="position:relative" ';
-            $code .= " id='code$tid' >\n";
+            $code .= " id='code$tid' >";
             $code .= htmlentities( $filedata, ENT_NOQUOTES );
             $code .= '</pre>';
             $sshowline = $showln ? 'true' : 'false';
