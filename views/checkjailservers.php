@@ -62,6 +62,11 @@ $serverstable->align = array (
         'left',
         'right'
 );
+
+$plugin = new stdClass();
+require_once(dirname( __FILE__ ) . '/../version.php');
+$pluginversion = $plugin->version;
+
 $serverstable->data = array ();
 $num = 0;
 $cleanurl = ! $vpl->has_capability( VPL_SETJAILS_CAPABILITY ) || ! $vpl->has_capability( VPL_MANAGE_CAPABILITY );
@@ -109,6 +114,7 @@ $processes = vpl_running_processes::lanched_processes($COURSE->id);
 foreach ($processes as $process) {
     $data = new stdClass();
     $data->adminticket = $process->adminticket;
+    $data->pluginversion = $pluginversion;
     $request = xmlrpc_encode_request( 'running', $data, array (
             'encoding' => 'UTF-8'
     ) );
