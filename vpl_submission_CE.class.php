@@ -344,6 +344,12 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'Inernal server error: PHP XMLRPC requiered' );
         }
+
+        $plugin = new stdClass();
+        require(dirname( __FILE__ ) . '/version.php');
+        $pluginversion = $plugin->version;
+        $data->pluginversion = $pluginversion;
+
         $request = xmlrpc_encode_request( $action, $data, array (
                 'encoding' => 'UTF-8'
         ) );
