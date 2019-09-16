@@ -128,7 +128,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $path = dirname( __FILE__ ) . '/jail/default_scripts/';
         $scripttype = self::$scriptname [$script];
         $field = $scripttype . 'script';
-        if ( $data->$field > '' ) {
+        if ( isset($data->$field) &&  $data->$field > '' ) {
             $pln = $vplinstance->$field;
         }
         $filename = $path . $pln . '_' . $scripttype . '.sh';
