@@ -403,27 +403,30 @@
     })();
     (function() {
         var i18n = {};
-        VPL_Util.str = function(key) {
-            if (!i18n[key]) {
+        var strreg = /\{\\*\$a\\*}/g;
+        VPLUtil.str = function(key, parm) {
+            if ( ! i18n[key] ) {
                 return '{' + key + '}';
             }
-            return i18n[key];
+            if (typeof parm != 'undefined') {
+                return i18n[key].replace(strreg, parm);
+            } else {
+                return i18n[key];
+            }
         };
-        VPL_Util.set_str = function(newi18n) {
+        VPLUtil.setStr = function(newi18n) {
             for (var key in newi18n) {
                 if ( newi18n.hasOwnProperty(key) ) {
                     i18n[key] = newi18n[key];
                 }
             }
-            VPL_Util.dialogbase_options = {
-                autoOpen : false,
-                minHeight : 10,
-                width : 'auto',
-                closeText : VPL_Util.str('cancel'),
-                modal : true,
-                dialogClass : 'vpl_ide vpl_ide_dialog'
+            VPLUtil.dialogbaseOptions = {
+                autoOpen :false,
+                width :'auto',
+                closeText :VPLUtil.str('cancel'),
+                modal :true,
+                dialogClass :'vpl_ide vpl_ide_dialog'
             };
-
         };
     })();
     (function() {
