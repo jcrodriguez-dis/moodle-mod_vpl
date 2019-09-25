@@ -506,6 +506,7 @@ const char* Tools::getenv(const char* name, const char* defaultvalue) {
 		value = defaultvalue;
 	    printf("Warning: using default value '%s' for '%s'\n", defaultvalue, name);
 	}
+	return value; // Fixes bug found by Peter Svec
 }
 
 double Tools::getenv(const char* name, double defaultvalue) {
