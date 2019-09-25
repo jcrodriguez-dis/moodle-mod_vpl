@@ -644,12 +644,12 @@ string NumbersOutput::studentOutputExpected(){
 }
 
 bool NumbersOutput::operator==(const NumbersOutput& o)const{
-	int l=numbers.size();
-	if(o.numbers.size() < l) return false;
-	int offset=0;
+	size_t l=numbers.size();
+	if( o.numbers.size() < l ) return false;
+	int offset = 0;
 	if(startWithAsterisk)
-		offset=o.numbers.size()-l;
-	for(int i=0; i<l; i++)
+		offset = o.numbers.size()-l;
+	for(size_t i = 0; i < l; i++)
 		if(numbers[i] != o.numbers[offset+i])
 			return false;
 	return true;
@@ -710,13 +710,13 @@ bool TextOutput::isAlpha(char c){
 }
 
 TextOutput::TextOutput(const string &text):OutputChecker(text){
-	int l=text.size();
+	size_t l = text.size();
 	string token;
-	for(int i=0; i<l; i++){
-		char c=text[i];
-		if(isAlpha(c)){
-			token+=c;
-		}else if(token.size()>0){
+	for(size_t i = 0; i < l; i++){
+		char c = text[i];
+		if( isAlpha(c) ){
+			token += c;
+		}else if(token.size() > 0){
 			tokens.push_back(Tools::toLower(token));
 			token="";
 		}
@@ -727,10 +727,10 @@ TextOutput::TextOutput(const string &text):OutputChecker(text){
 }
 
 bool TextOutput::operator==(const TextOutput& o) {
-	int l = tokens.size();
+	size_t l = tokens.size();
 	if (o.tokens.size() < l) return false;
 	int offset = o.tokens.size() - l;
-	for (int i = 0; i < l; i++)
+	for (size_t i = 0; i < l; i++)
 		if (tokens[i] != o.tokens[ offset + i ])
 			return false;
 	return true;
@@ -820,7 +820,7 @@ string ExactTextOutput::type(){
 RegularExpressionOutput::RegularExpressionOutput(const string &text, const string &actualCaseDescription):OutputChecker(text) {
 
 	errorCase = actualCaseDescription;
-	int pos = 1;
+	size_t pos = 1;
 	flagI = false;
 	flagM = false;
 	string clean = Tools::trim(text);
@@ -925,7 +925,7 @@ OutputChecker* RegularExpressionOutput::clone() {
 bool RegularExpressionOutput::typeMatch(const string& text) {
 	string clean=Tools::trim(text);
 	if (clean.size() > 2 && clean[0] == '/') {
-		for (int i = 1; i < clean.size(); i++) {
+		for (size_t i = 1; i < clean.size(); i++) {
 			if (clean[i] == '/') {
 				return true;
 			}
@@ -1041,7 +1041,6 @@ void TestCase::cutOutputTooLarge(string &output) {
 void TestCase::readWrite(int fdread, int fdwrite) {
 	const int MAX = 1024* 10 ;
 	//Buffer size to read
-	const int POLLBAD = POLLERR | POLLHUP | POLLNVAL;
 	const int POLLREAD = POLLIN | POLLPRI;
 	//Poll to read from program
 	struct pollfd devices[2];
@@ -1124,7 +1123,7 @@ TestCase::TestCase(const TestCase &o) {
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
 	programInput=o.programInput;
-	for(int i=0; i<o.output.size(); i++){
+	for(size_t i = 0; i < o.output.size(); i++){
 		output.push_back(o.output[i]->clone());
 	}
 	setDefaultCommand();
@@ -1151,17 +1150,17 @@ TestCase& TestCase::operator=(const TestCase &o) {
 	programOutputBefore=o.programOutputBefore;
 	programOutputAfter=o.programOutputAfter;
 	programInput=o.programInput;
-	for(int i=0; i<output.size(); i++)
+	for(size_t i=0; i<output.size(); i++)
 		delete output[i];
 	output.clear();
-	for(int i=0; i<o.output.size(); i++){
+	for(size_t i=0; i<o.output.size(); i++){
 		output.push_back(o.output[i]->clone());
 	}
 	return *this;
 }
 
 TestCase::~TestCase() {
-	for(int i=0; i<output.size();i++)
+	for(size_t i = 0; i < output.size(); i++)
 		delete output[i];
 }
 
@@ -1170,7 +1169,7 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 		string failMessage, string programToRun, string programArgs, int expectedExitCode) {
 	this->id = id;
 	this->input = input;
-	for(int i=0;i<output.size(); i++){
+	for(size_t i = 0; i < output.size(); i++){
 		addOutput(output[i], caseDescription);
 	}
 	this->caseDescription = caseDescription;
@@ -1192,9 +1191,13 @@ TestCase::TestCase(int id, const string &input, const vector<string> &output,
 }
 
 bool TestCase::isCorrectResult() {
-	return correctOutput && !programTimeout && !outputTooLarge
-		  && !executionError || (isExitCodeTested() && correctExitCode);
+	bool correct = correctOutput &&
+			      ! programTimeout &&
+				  ! outputTooLarge &&
+				  ! executionError;
+	return correct || (isExitCodeTested() && correctExitCode);
 }
+
 bool TestCase::isExitCodeTested() {
 	return expectedExitCode != std::numeric_limits<int>::min();
 }
@@ -1410,7 +1413,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 }
 
 bool TestCase::match(string data) {
-	for (int i = 0; i < output.size(); i++)
+	for (size_t i = 0; i < output.size(); i++)
 		if (output[i]->match(data))
 			return true;
 	return false;
@@ -1479,10 +1482,9 @@ void Evaluation::loadTestCases(string fname) {
 	const char *PROGRAMARGS_TAG = "programarguments=";
 	const char *EXPECTEDEXITCODE_TAG = "expectedexitcode=";
 	const char *VARIATION_TAG = "variation=";
-	int expectedExitCode = std::numeric_limits<int>::min();
 	enum {
 		regular, ininput, inoutput
-	} state, newstate;
+	} state;
 	bool inCase = false;
 	vector<string> lines = Tools::splitLines(Tools::readFile(fname));
     remove(fname.c_str());
@@ -1642,8 +1644,8 @@ void Evaluation::runTests() {
 	grade = grademax;
 	float defaultGradeReduction = (grademax - grademin) / testCases.size();
 	int timeout = maxtime / testCases.size();
-	for (int i = 0; i < testCases.size(); i++) {
-		printf("Testing %d/%lu : %s\n", i+1, (unsigned long)testCases.size(), testCases[i].getCaseDescription().c_str());
+	for (size_t i = 0; i < testCases.size(); i++) {
+		printf("Testing %lu/%lu : %s\n", i+1, (unsigned long)testCases.size(), testCases[i].getCaseDescription().c_str());
 		if (timeout <= 1 || Timer::elapsedTime() >= maxtime) {
 			grade = grademin;
 			addFatalError("Global timeout");
