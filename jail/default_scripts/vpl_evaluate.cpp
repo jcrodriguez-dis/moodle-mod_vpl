@@ -1,6 +1,6 @@
 /**
  * VPL builtin program for submissions evaluation
- * @Copyright (C) 2018 Juan Carlos Rodríguez-del-Pino
+ * @Copyright (C) 2019 Juan Carlos Rodríguez-del-Pino
  * @License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -79,7 +79,7 @@ public:
 /**
  * Class I18n Declaration
  */
-class I18n{ // No creo que merezca la pena reducir esta
+class I18n{
 public:
 	void init();
 	const char *get_string(const char *s);
@@ -670,7 +670,7 @@ bool NumbersOutput::typeMatch(const string& text){
 	Number number;
 	for(int i=0; i<l; i++){
 		char c=text[i];
-		//Skip espaces/CR/LF... and *
+		// Skip spaces/CR/LF... and *
 		if(!isspace(c) && c!='*') {
 			str += c;
 		}else if(str.size()>0) {
@@ -784,7 +784,7 @@ bool ExactTextOutput::operator==(const ExactTextOutput& o){
 bool ExactTextOutput::match(const string& output){
 	if(cleanText.size()==0 && output.size()==0) return true;
 	string clean;
-	//Clean output if text last char is alpha
+	// Clean output if text last char is alpha
 	if(cleanText.size()>0 && isAlpha(cleanText[cleanText.size()-1])){
 		clean=Tools::trimRight(output);
 	}else{
@@ -881,7 +881,7 @@ bool RegularExpressionOutput::match (const string& output) {
 		reti = regcomp(&expression, in, REG_EXTENDED);
 	}
 
-	if (reti == 0) { // Compilation was suscesful
+	if (reti == 0) { // Compilation was successful
 
 		const char * out = output.c_str();
 		reti = regexec(&expression, out, 0, NULL, 0);
@@ -893,7 +893,7 @@ bool RegularExpressionOutput::match (const string& output) {
 
 		} else { // Memory Error
 			Evaluation* p_ErrorTest = Evaluation::getSinglenton();
-			string errorType = string("Out of memory error, during maching case ") + string(errorCase);
+			string errorType = string("Out of memory error, during matching case ") + string(errorCase);
 			const char* flagError = errorType.c_str();
 			p_ErrorTest->addFatalError(flagError);
 			p_ErrorTest->outputEvaluation();
@@ -902,7 +902,7 @@ bool RegularExpressionOutput::match (const string& output) {
 
 	} else { // Compilation error
 		size_t length = regerror(reti, &expression, NULL, 0);
-        char bff [length];
+        char* bff = new char[length + 1];
         (void) regerror(reti, &expression, bff, length);
 		Evaluation* p_ErrorTest = Evaluation::getSinglenton();
 		string errorType = string("Regular Expression compilation error")+string (" in case: ")+ string(errorCase) +string (".\n")+ string(bff);
@@ -1040,9 +1040,9 @@ void TestCase::cutOutputTooLarge(string &output) {
 
 void TestCase::readWrite(int fdread, int fdwrite) {
 	const int MAX = 1024* 10 ;
-	//Buffer size to read
+	// Buffer size to read
 	const int POLLREAD = POLLIN | POLLPRI;
-	//Poll to read from program
+	// Poll to read from program
 	struct pollfd devices[2];
 	devices[0].fd = fdread;
 	devices[1].fd = fdwrite;
@@ -1050,11 +1050,11 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 	devices[0].events = POLLREAD;
 	devices[1].events = POLLOUT;
 	int res = poll(devices, programInput.size()>0?2:1, 0);
-	if (res == -1) //Error
+	if (res == -1) // Error
 		return;
-	if (res == 0) //Nothing to do
+	if (res == 0) // Nothing to do
 		return;
-	if (devices[0].revents & POLLREAD) { //Read program output
+	if (devices[0].revents & POLLREAD) { // Read program output
 		int readed = read(fdread, buf, MAX);
 		if (readed > 0) {
 			sizeReaded += readed;
@@ -1067,7 +1067,7 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 			}
 		}
 	}
-	if (programInput.size() > 0 && devices[1].revents & POLLOUT) { //Write to program
+	if (programInput.size() > 0 && devices[1].revents & POLLOUT) { // Write to program
 		int written = write(fdwrite, programInput.c_str(), Tools::nextLine(
 				programInput));
 		if (written > 0) {
@@ -1312,10 +1312,10 @@ void TestCase::splitArgs(string programArgs) {
 	argv[nargs] = NULL;
 }
 
-void TestCase::runTest(time_t timeout) {//timeout in seconds
+void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	time_t start = time(NULL);
-	int pp1[2]; //Send data
-	int pp2[2]; //Receive data
+	int pp1[2]; // Send data
+	int pp2[2]; // Receive data
 	if (pipe(pp1) == -1 || pipe(pp2) == -1) {
 		executionError = true;
 		sprintf(executionErrorReason, "Internal error: pipe error (%s)",
@@ -1335,7 +1335,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 		splitArgs(programArgs);
 	}
 	if ((pid = fork()) == 0) {
-		//Execute
+		// Execute
 		close(pp1[1]);
 		dup2(pp1[0], STDIN_FILENO);
 		close(pp2[0]);
@@ -1359,7 +1359,7 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 	Tools::fdblock(fdwrite, false);
 	Tools::fdblock(fdread, false);
 	programInput = input;
-	if(programInput.size()==0){ //No input
+	if(programInput.size()==0){ // No input
 		close(fdwrite);
 	}
 	programOutputBefore = "";
@@ -1370,19 +1370,19 @@ void TestCase::runTest(time_t timeout) {//timeout in seconds
 	while ((pidr = waitpid(pid, &status, WNOHANG | WUNTRACED)) == 0) {
 		readWrite(fdread, fdwrite);
 		usleep(5000);
-		//TERMSIG or timeout or program output too large?
+		// TERMSIG or timeout or program output too large?
 		if (Stop::isTERMRequested() || (time(NULL) - start) >= timeout
 				|| outputTooLarge) {
 			if ((time(NULL) - start) >= timeout) {
 				programTimeout = true;
 			}
-			kill(pid, SIGTERM); // Send SIGTERM nomral termination
+			kill(pid, SIGTERM); // Send SIGTERM normal termination
 			int otherstatus;
 			usleep(5000);
 			if (waitpid(pid, &otherstatus, WNOHANG | WUNTRACED) == pid) {
 				break;
 			}
-			if (kill(pid, SIGQUIT) == 0) { //Kill
+			if (kill(pid, SIGQUIT) == 0) { // Kill
 				break;
 			}
 		}
@@ -1435,7 +1435,7 @@ Evaluation* Evaluation::getSinglenton() {
 	if (singlenton == NULL) {
 		singlenton = new Evaluation();
 	}
-	return singlenton; //Fix by Jan Derriks
+	return singlenton; // Fixes by Jan Derriks
 }
 
 void Evaluation::deleteSinglenton(){
@@ -1651,7 +1651,7 @@ void Evaluation::runTests() {
 			addFatalError("Global timeout");
 			return;
 		}
-		if (maxtime - Timer::elapsedTime() < timeout) { //Try to run last case
+		if (maxtime - Timer::elapsedTime() < timeout) { // Try to run last case
 			timeout = maxtime - Timer::elapsedTime();
 		}
 		testCases[i].runTest(timeout);
@@ -1708,7 +1708,7 @@ void Evaluation::outputEvaluation() {
 			printf(">+------------------------------+\n");
 			printf(">| %2d %s run/%2d %s passed |\n",
 					nruns, nruns==1?stest[0]:stest[1],
-					passed, passed==1?stest[0]:stest[1]); //Taken from Dominique Thiebaut
+					passed, passed==1?stest[0]:stest[1]); // Taken from Dominique Thiebaut
 			printf(">+------------------------------+\n");
 			printf("\n--|>\n");
 		}
@@ -1752,7 +1752,7 @@ void signalCatcher(int n) {
 }
 
 void setSignalsCatcher() {
-	//Remove as signal controllers as possible
+	// Removes as many signal controllers as possible
 	for(int i=0;i<31; i++)
 		signal(i, nullSignalCatcher);
 	signal(SIGINT, signalCatcher);
