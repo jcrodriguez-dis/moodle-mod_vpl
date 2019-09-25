@@ -451,11 +451,16 @@ define(
         })();
         (function() {
             var i18n = {};
-            VPLUtil.str = function(key) {
-                if (!i18n[key]) {
+            var strreg = /\{\\*\$a\\*}/g;
+            VPLUtil.str = function(key, parm) {
+                if ( ! i18n[key] ) {
                     return '{' + key + '}';
                 }
-                return i18n[key];
+                if (typeof parm != 'undefined') {
+                    return i18n[key].replace(strreg, parm);
+                } else {
+                    return i18n[key];
+                }
             };
             VPLUtil.setStr = function(newi18n) {
                 for (var key in newi18n) {
@@ -470,7 +475,6 @@ define(
                     modal :true,
                     dialogClass :'vpl_ide vpl_ide_dialog'
                 };
-
             };
         })();
         (function() {

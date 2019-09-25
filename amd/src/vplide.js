@@ -343,12 +343,12 @@ define(
                             VPLUtil.delay('updateFileList', self.updateFileList);
                             return file;
                         } else {
-                            showError(str('filenotadded').replace(/\{\$a\}/g, file.name));
+                            showError(str('filenotadded', file.name));
                             return false;
                         }
                     }
                     if (fileNameIncluded(file.name) || twoBlockly('', file.name)) {
-                        showError(str('filenotadded').replace(/\{\$a\}/g, file.name));
+                        showError(str('filenotadded', file.name));
                         return false;
                     }
                     if (files.length >= maxNumberOfFiles) {
@@ -401,7 +401,7 @@ define(
                         }
                         files[pos].setFileName(newname);
                     } catch (e) {
-                        showError(str('filenotrenamed').replace(/\{\$a\}/g, newname) + ': ' + e);
+                        showError(str('filenotrenamed', newname) + ': ' + e);
                         return false;
                     }
                     self.setModified();
@@ -412,11 +412,11 @@ define(
                 this.deleteFile = function(name, ok, showError) {
                     var pos = this.fileNameExists(name);
                     if (pos == -1) {
-                        showError(str('filenotdeleted').replace(/\{\$a\}/g, name));
+                        showError(str('filenotdeleted', name));
                         return false;
                     }
                     if (pos < minNumberOfFiles) {
-                        showError(str('filenotdeleted').replace(/\{\$a\}/g, name));
+                        showError(str('filenotdeleted', name));
                         return false;
                     }
                     self.setModified();
@@ -1252,7 +1252,7 @@ define(
                         return;
                     }
                     var filename = file.getFileName();
-                    var message = str('delete_file_fq').replace(/\{\$a\}/g, filename);
+                    var message = str('delete_file_fq', filename);
                     showMessage(message, {
                         ok : function() {
                             fileManager.deleteFile(filename, showErrorMessage);
