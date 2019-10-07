@@ -404,7 +404,7 @@
     (function() {
         var i18n = {};
         var strreg = /\{\\*\$a\\*}/g;
-        VPLUtil.str = function(key, parm) {
+        VPL_Util.str = function(key, parm) {
             if ( ! i18n[key] ) {
                 return '{' + key + '}';
             }
@@ -414,16 +414,17 @@
                 return i18n[key];
             }
         };
-        VPLUtil.setStr = function(newi18n) {
+        VPL_Util.set_str = function(newi18n) {
             for (var key in newi18n) {
                 if ( newi18n.hasOwnProperty(key) ) {
                     i18n[key] = newi18n[key];
                 }
             }
-            VPLUtil.dialogbaseOptions = {
+            VPL_Util.dialogbase_options = {
                 autoOpen :false,
+                minHeight : 10,
                 width :'auto',
-                closeText :VPLUtil.str('cancel'),
+                closeText :VPL_Util.str('cancel'),
                 modal :true,
                 dialogClass :'vpl_ide vpl_ide_dialog'
             };
