@@ -43,7 +43,7 @@ $defaultmaxexeprocesses = 200;
 $defaultdefaultfilesize = vpl_get_array_key( $listmaxfilesize, 64 * $kbyte );
 $defaultdefaulttime = vpl_get_array_key( $listmaxtime, 4 * $minute );
 $defaultdefaultexefilesize = vpl_get_array_key( $listmaxexefilesize, 64 * $megabyte );
-$defaultdefaultexememory = vpl_get_array_key( $listmaxexememory, 64 * $megabyte );
+$defaultdefaultexememory = vpl_get_array_key( $listmaxexememory, 128 * $megabyte );
 $defaultdefaultexeprocesses = 100;
 $prefix = 'mod_vpl/';
 $settings->add( new admin_setting_heading( 'heading1', '', get_string( 'maxresourcelimits', VPL ) ) );
