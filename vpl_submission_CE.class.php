@@ -236,7 +236,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         // Add jailserver list.
         if ($vpl->get_instance()->jailservers > '') {
-            $data->jailservers .= "\n" . $vpl->get_instance()->jailservers;
+            $data->jailservers = $vpl->get_instance()->jailservers . "\n" . $data->jailservers;
         }
         if ( $vplinstance->runscript > '' ) {
             $data->runscript = $vplinstance->runscript;
