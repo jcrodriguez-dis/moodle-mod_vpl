@@ -11,13 +11,10 @@ cp common_script.sh common_script.sav
 cat common_script.sh > all_execute
 . common_script.sh
 #Remove student files
-SAVEIFS=$IFS
-IFS=$'\n'
 for FILENAME in $VPL_SUBFILES
 do
-	rm "$FILENAME"
+	rm "$FILENAME" &>/dev/null
 done
-IFS=$SAVEIFS
 
 NG=0
 FILES=*_hello.sh
