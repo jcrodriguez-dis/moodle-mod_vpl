@@ -12,13 +12,11 @@ cat common_script.sh > all_execute
 . common_script.sh
 ERRORSREPORT=.vpl_error_report.txt
 #Remove student files
-SAVEIFS=$IFS
-IFS=$'\n'
 for FILENAME in $VPL_SUBFILES
 do
-	rm "$FILENAME"
+	rm "$FILENAME" &>/dev/null
 done
-IFS=$SAVEIFS
+
 touch $ERRORSREPORT
 echo "echo \"<|--\"" >> all_execute
 echo "echo \"-System information\"" >> all_execute
