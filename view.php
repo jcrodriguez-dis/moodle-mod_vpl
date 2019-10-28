@@ -45,6 +45,10 @@ if (! $vpl->has_capability( VPL_MANAGE_CAPABILITY ) && ! $vpl->has_capability( V
     $userid = $USER->id;
 } else {
     $userid = optional_param( 'userid', $USER->id, PARAM_INT );
+    $vpl->prepare_page( 'view.php', array (
+            'id' => $id,
+            'userid' => $userid
+    ) );
 }
 
 \mod_vpl\event\vpl_description_viewed::log( $vpl );
