@@ -151,7 +151,8 @@ $string ['inconsistentgroup'] = 'Sie sind nicht Mitglied nur einer Gruppe (0 o >
 $string ['worktype'] = 'Arbeitstyp';
 $string ['individualwork'] = 'Einzelarbeit';
 $string ['groupwork'] = 'Gruppenarbeit';
-$string ['downloadsubmissions'] = 'Alle Abgaben herunterladen';
+$string ['downloadallsubmissions'] = 'Alle Abgaben herunterladen';
+$string ['downloadsubmissions'] = 'Abgaben herunterladen';
 
 $string ['similarity'] = 'Ähnlichkeit';
 $string ['listwatermarks'] = 'Wasserzeichen-Liste';
