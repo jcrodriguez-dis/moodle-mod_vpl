@@ -969,6 +969,35 @@ class mod_vpl {
     }
 
     /**
+     * Require the current user has any of the capabilities out of $capabilities in this module instance
+     * @param array $capabilities
+     *            capability names
+     * @param bool $alert
+     *            if true show a JavaScript alert message
+     * @return void
+     */
+    public function require_any_capability($capabilities, $alert = false) {
+        $hasany = false;
+        foreach ($capabilities as $capability) {
+            if ($this->has_capability( $capability )) {
+                $hasany = true;
+                break;
+            }
+        }
+        if ($hasany) {
+            return;
+        }
+
+        if ($alert) {
+            global $OUTPUT;
+            echo $OUTPUT->header();
+            vpl_js_alert( get_string( 'notavailable' ) );
+        }
+        $capsstring = join($capabilities, ', ');
+        print_error('nopermissions', '', '', $capsstring);
+    }
+
+    /**
      * Check if the user has the capability of performing $capability in this module instance
      *
      * @param string $capability
@@ -1067,9 +1096,11 @@ class mod_vpl {
     /**
      * this vpl instance admit submission
      *
+     * @param bool $privatecopy
+     *            whether we are dealing with a private copy of a submission
      * @return bool
      */
-    public function is_submit_able() {
+    public function is_submit_able($privatecopy = false) {
         $cm = $this->get_course_module();
         $modinfo = get_fast_modinfo( $cm->course );
         $instance = $this->get_instance();
@@ -1077,6 +1108,8 @@ class mod_vpl {
         $ret = $ret && $this->has_capability( VPL_SUBMIT_CAPABILITY );
         $ret = $ret && $this->is_submission_period();
         $ret = $ret && $modinfo->get_cm( $cm->id )->uservisible;
+        // Grader can always submit private copies.
+        $ret = $ret || ($this->has_capability( VPL_GRADE_CAPABILITY ) && $privatecopy);
         // Manager can always submit.
         $ret = $ret || $this->has_capability( VPL_MANAGE_CAPABILITY );
         return $ret;

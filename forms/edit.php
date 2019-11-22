@@ -46,14 +46,18 @@ $vpl->prepare_page( 'forms/edit.php', $pageparms );
 if (! $vpl->is_visible()) {
     vpl_redirect('?id=' . $id, get_string( 'notavailable' ), 'error' );
 }
-if (! $vpl->is_submit_able()) {
+if (! $vpl->is_submit_able($copy)) {
     vpl_redirect('?id=' . $id, get_string( 'notavailable' ), 'error' );
 }
 if (! $userid || $userid == $USER->id) { // Edit own submission.
     $userid = $USER->id;
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
 } else { // Edit other user submission.
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    if ($copy) {
+        $vpl->require_any_capability( [VPL_GRADE_CAPABILITY, VPL_MANAGE_CAPABILITY] );
+    } else {
+        $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    }
 }
 $vpl->restrictions_check();
 
@@ -89,13 +93,13 @@ $options ['comments'] = ! $options ['example'];
 $options ['description'] = $vpl->get_fulldescription_with_basedon();
 $options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
-$ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
+$ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}" . ($copy ? "&privatecopy={$copy}" : "");
 if ( $subid && $lastsub ) {
     $ajaxurl .= "&subid={$lastsub->id}";
 }
 $options ['ajaxurl'] = $ajaxurl . '&action=';
 if ( $copy ) {
-    $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}";
+    $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}&privatecopy={$copy}";
     if ( $subid && $lastsub ) {
         $loadajaxurl .= "&subid={$lastsub->id}";
     }
