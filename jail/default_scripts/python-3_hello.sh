@@ -13,10 +13,9 @@ import message3
 message3.hello()
 END_OF_FILE
 cat > "message3.py" <<'END_OF_FILE'
-import Tkinter
-import tkMessageBox
+from tkinter import messagebox
 def hello():
-	tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
+	messagebox.showinfo('VPL','Hello from the Python3 language!')
 END_OF_FILE
 export VPL_SUBFILE0="vpl hello3.py"
 export VPL_SUBFILE1="message3.py"
