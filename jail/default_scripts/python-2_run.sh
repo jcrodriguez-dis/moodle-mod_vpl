@@ -24,7 +24,7 @@ get_source_files py
 IFS=$'\n'
 for file_name in $SOURCE_FILES
 do
-	grep -E "Tkinter" "$file_name" &> /dev/null
+	grep -i "Tkinter" "$file_name" &> /dev/null
 	if [ "$?" -eq "0" ]	; then
 		mv vpl_execution vpl_wexecution
 		break
