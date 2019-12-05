@@ -1645,7 +1645,7 @@ void Evaluation::runTests() {
 	float defaultGradeReduction = (grademax - grademin) / testCases.size();
 	int timeout = maxtime / testCases.size();
 	for (size_t i = 0; i < testCases.size(); i++) {
-		printf("Testing %lu/%lu : %s\n", i+1, (unsigned long)testCases.size(), testCases[i].getCaseDescription().c_str());
+		printf("Testing %lu/%lu : %s\n", (unsigned long) i+1, (unsigned long)testCases.size(), testCases[i].getCaseDescription().c_str());
 		if (timeout <= 1 || Timer::elapsedTime() >= maxtime) {
 			grade = grademin;
 			addFatalError("Global timeout");
