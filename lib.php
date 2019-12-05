@@ -46,26 +46,22 @@ function vpl_grade_item_update($instance, $grades=null) {
     if ( isset($instance->cmidnumber) ) {
         $itemdetails['idnumber'] = $instance->cmidnumber;
     }
-    if ($instance->grade > 0) {
+    if ($instance->grade == 0 || $instance->example != 0) {
+        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
+        $itemdetails['deleted'] = 1;
+    } else if ($instance->grade > 0) {
         $itemdetails['gradetype'] = GRADE_TYPE_VALUE;
         $itemdetails['grademax']  = $instance->grade;
         $itemdetails['grademin']  = 0;
 
-    } else if ($instance->grade < 0) {
+    } else {
         $itemdetails['gradetype'] = GRADE_TYPE_SCALE;
         $itemdetails['scaleid']   = -$instance->grade;
+    }
 
-    }
-    if ($instance->grade == 0 || $instance->example != 0) {
-        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
-        $itemdetails['deleted'] = 1;
-    }
     if ($grades === 'reset') {
         $itemdetails['reset'] = true;
         $grades = null;
-    }
-    if ($grades != null) {
-        $itemdetails = null;
     }
     return grade_update('mod/vpl', $instance->course, 'mod', 'vpl',
                         $instance->id, 0, $grades, $itemdetails);
