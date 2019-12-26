@@ -482,6 +482,15 @@ foreach ($alldata as $data) {
                 if ($prograde > '') {
                     $text = get_string( 'proposedgrade', VPL, $submission->get_grade_core( $prograde ) );
                 }
+                if ($showgrades) {
+                    $submission->get_ce_html( $result, $compilation, $execution, $grade, false, true );
+                    if (strlen( $compilation ) + strlen( $execution ) > 0) {
+                        $gradecomments = $OUTPUT->box_start();
+                        $gradecomments .= $compilation;
+                        $gradecomments .= $execution;
+                        $gradecomments .= $OUTPUT->box_end();
+                    }
+                }
             }
             if ($text == '') {
                 $text = get_string( 'nograde' );
