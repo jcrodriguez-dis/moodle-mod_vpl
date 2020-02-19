@@ -391,7 +391,7 @@ class file_group_process {
             mkdir($dir);
         }
         $zipfilename = tempnam( $dir, 'zip' );
-        if ($zip->open( $zipfilename, ZIPARCHIVE::CREATE )) {
+        if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
             foreach ($this->getFileList() as $filename) {
                 $data = $this->getFileData( $filename );
                 if ($watermark) {
