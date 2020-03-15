@@ -378,7 +378,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     }
     public function jailreaction($action, $processinfo = false) {
         if ($processinfo === false) {
-            $processinfo = vpl_running_processes::get( $this->get_instance()->userid );
+            $vplid = $this->vpl->get_instance()->id;
+            $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid);
         }
         if ($processinfo === false) {
             throw new Exception( 'Process not found' );
@@ -486,7 +487,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         return $response ['running'] > 0;
     }
     public function cancelprocess() {
-        $processinfo = vpl_running_processes::get( $this->get_instance()->userid );
+        $vplid = $this->vpl->get_instance()->id;
+        $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid );
         if ($processinfo == null) { // No process to cancel.
             return;
         }
