@@ -31,11 +31,13 @@ defined('MOODLE_INTERNAL') || die();
  */
 class vpl_running_processes {
     const TABLE = 'vpl_running_processes';
-    static public function get($userid) {
+    static public function get($userid, $vplid = false) {
         global $DB;
-        return $DB->get_record( self::TABLE, array (
-                'userid' => $userid
-        ) );
+        $params = array ( 'userid' => $userid);
+        if ( $vplid !== false ) {
+            $params[ 'vpl' ] = $vplid;
+        }
+        return $DB->get_record( self::TABLE, $params );
     }
     static public function set($userid, $server, $vplid, $adminticket) {
         global $DB;
