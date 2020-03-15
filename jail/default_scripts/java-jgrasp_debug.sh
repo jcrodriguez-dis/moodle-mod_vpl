@@ -13,6 +13,13 @@ check_program jgrasp
 if [ "$1" == "version" ] ; then
 	get_program_version unknown
 fi
+get_source_files jar
+for JARFILE in $SOURCE_FILES
+do
+	CLASSPATH=$CLASSPATH:$JARFILE
+done
+export CLASSPATH
+
 get_first_source_file java
 MAINFILE=$FIRST_SOURCE_FILE
 

@@ -39,10 +39,18 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi 
+
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
-	export CLASSPATH=$CLASSPATH:$JUNIT4
+	CLASSPATH=$CLASSPATH:$JUNIT4
 fi
+get_source_files jar
+for JARFILE in $SOURCE_FILES
+do
+	CLASSPATH=$CLASSPATH:$JARFILE
+done
+export CLASSPATH
+
 get_source_files java
 # compile all .java files
 
