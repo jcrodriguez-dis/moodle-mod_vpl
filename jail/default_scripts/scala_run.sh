@@ -30,7 +30,7 @@ fi
 get_first_source_file scala
 APP=${FIRST_SOURCE_FILE%.*}
 cat common_script.sh > vpl_execution
-echo "scala -nocompdaemon vpl_hello \$@" >> vpl_execution
+echo "scala -nocompdaemon $APP \$@" >> vpl_execution
 
 chmod +x vpl_execution
 SIFS=$IFS
