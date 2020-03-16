@@ -305,7 +305,11 @@ class vpl_similarity_preprocess {
         if (! $currentgroup) {
             $currentgroup = '';
         }
-        $list = $vpl->get_students($currentgroup);
+        if ($vpl->is_group_activity()) {
+            $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+        } else {
+            $list = $vpl->get_students( $currentgroup );
+        }
         if (count( $list ) == 0) {
             return;
         }
