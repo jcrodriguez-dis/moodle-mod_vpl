@@ -413,8 +413,7 @@ echo html_writer::table( $table );
 
 if (is_siteadmin() || has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
     $url = new moodle_url( '/mod/vpl/views/checkvpls.php', ['id' => $id] );
-    $string = get_string( 'checkall' );
-    echo html_writer::link($url, $string, ['class' => 'btn btn-secondary']);
+    echo html_writer::link($url, get_string( 'checkgroups', VPL ), ['class' => 'btn btn-secondary']);
 }
 
 echo $OUTPUT->footer();
