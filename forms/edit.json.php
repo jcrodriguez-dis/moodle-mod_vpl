@@ -82,7 +82,7 @@ try {
             $outcome->response->files = mod_vpl_edit::filestoide( $files );
             break;
         case 'load' :
-            if ( ($subid || ($userid != $USER->id)) && $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) {
+            if ( $subid && $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) {
                 $load = mod_vpl_edit::load( $vpl, $userid , $subid);
             } else {
                 $load = mod_vpl_edit::load( $vpl, $userid );
