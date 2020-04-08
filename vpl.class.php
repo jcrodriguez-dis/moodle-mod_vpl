@@ -1077,7 +1077,8 @@ class mod_vpl {
         $ret = $ret && $this->has_capability( VPL_SUBMIT_CAPABILITY );
         $ret = $ret && $this->is_submission_period();
         $ret = $ret && $modinfo->get_cm( $cm->id )->uservisible;
-        // Manager can always submit.
+        // Manager or grader can always submit.
+        $ret = $ret || $this->has_capability( VPL_GRADE_CAPABILITY );
         $ret = $ret || $this->has_capability( VPL_MANAGE_CAPABILITY );
         return $ret;
     }

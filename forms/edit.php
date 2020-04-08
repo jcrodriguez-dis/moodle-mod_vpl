@@ -53,16 +53,15 @@ if (! $userid || $userid == $USER->id) { // Edit own submission.
     $userid = $USER->id;
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
 } else { // Edit other user submission.
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    $vpl->require_capability( VPL_GRADE_CAPABILITY );
 }
 $vpl->restrictions_check();
 
 $instance = $vpl->get_instance();
-$manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
 $grader = $vpl->has_capability(VPL_GRADE_CAPABILITY);
 
-// This code allow to edit previous versions (only managers).
-if ($subid && $vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+// This code allow to edit previous versions.
+if ($subid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
     $parms = array (
             'id' => $subid,
             'vpl' => $instance->id,
@@ -81,9 +80,9 @@ $options = Array();
 $options ['id'] = $id;
 $options ['restrictededitor'] = $instance->restrictededitor && ! $grader;
 $options ['save'] = ! $instance->example;
-$options ['run'] = ($instance->run || $manager);
-$options ['debug'] = ($instance->debug || $manager);
-$options ['evaluate'] = ($instance->evaluate || $manager);
+$options ['run'] = ($instance->run || $grader);
+$options ['debug'] = ($instance->debug || $grader);
+$options ['evaluate'] = ($instance->evaluate || $grader);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
 $options ['description'] = $vpl->get_fulldescription_with_basedon();
