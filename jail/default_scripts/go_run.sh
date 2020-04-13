@@ -19,8 +19,4 @@ if [ "$1" == "version" ] ; then
 fi
 export GOPATH=~/
 get_first_source_file go
-go build "$FIRST_SOURCE_FILE"
-cat common_script.sh > vpl_execution
-echo "export GOPATH=~/" >> vpl_execution
-echo "go run \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
-chmod +x vpl_execution
+go build -o vpl_execution "$FIRST_SOURCE_FILE"
