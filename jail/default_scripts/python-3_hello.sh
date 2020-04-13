@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 if [ "$1" == "gui" ] ; then
-	Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("Tkinter") else 0)')
+	Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("tkinter") else 0)')
 	if [ "$Tk" == "1" ] ; then
 cat > "vpl hello3.py" <<'END_OF_FILE'
 import message3
