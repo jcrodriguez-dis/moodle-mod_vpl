@@ -38,7 +38,13 @@ do
 		mv vpl_execution $VPLEXE
 		echo " Compiled"
 		echo "printf \"%2d %s: \" $NG $LANGUAGE" >> all_execute
-		echo "./$VPLEXE" >> all_execute
+		if [ "$INPUT_TEXT" == "" ] ; then
+			echo "./$VPLEXE" >> all_execute
+		else
+			echo "echo \"$INPUT_TEXT\" | ./$VPLEXE" >> all_execute
+			unset INPUT_TEXT
+		fi
+		
 		echo "if [ -f \"$VPL_SUBFILE0\" ] ; then" >> all_execute
 		echo "rm \"$VPL_SUBFILE0\"" >> all_execute
 		echo "fi" >> all_execute
@@ -51,7 +57,8 @@ do
 		fi
 	fi
 	if [ -s .curerror ] ; then
-		echo "- The compilation of $LANGUAGE has generated the folloging menssages:" >> .tuierrors
+		echo >> .tuierrors
+		echo "$LANGUAGE: The compilation of has generated the folloging menssages:" >> .tuierrors
 		cat .curerror >> .tuierrors
 	fi
 done
