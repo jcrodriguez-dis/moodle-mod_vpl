@@ -19,6 +19,16 @@ rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 function wait_end {
 	local PSRESFILE
 	PSRESFILE=.vpl_temp_search_program
+	#wait start until 5s
+	for I in 1 .. 5
+	do
+		sleep 1s
+		ps -f -u $USER > $PSRESFILE
+		grep $1 $PSRESFILE &> /dev/null
+		if [ "$?" == "0" ] ; then
+			break
+		fi
+	done
 	while :
 	do
 		sleep 1s
