@@ -6,14 +6,13 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 cat > "vpl hello.pro" <<'END_OF_FILE'
-consult('test prolog/message.pro').
-hello.
-vpl_hello:-writeln('Hello from the Prolog language!'),halt.
+vpl_hello:- consult('test prolog/message.pro'), hello.
 END_OF_FILE
 mkdir "test prolog" 2> /dev/null
 cat > "test prolog/message.pro" <<'END_OF_FILE'
-hello:-writeln('Hello from the Prolog language!'),halt.
+hello:- read_line_to_string(user_input, Text), writeln(Text),halt.
 END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.pro"
 export VPL_SUBFILE1="test prolog/message.pro"
+export INPUT_TEXT="Hello from the Prolog language!"

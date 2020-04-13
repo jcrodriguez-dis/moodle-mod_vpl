@@ -32,10 +32,11 @@ cat >"test_scala/Message.scala" <<'END_OF_FILE'
 package test_scala
 object Message {
     def hello() {
-        println("Hello from the Scala language!")
+    	println(scala.io.StdIn.readLine())
     }
 }
 END_OF_FILE
 fi
 export VPL_SUBFILE0="vpl_hello.scala"
 export VPL_SUBFILE1="test_scala/Message.scala"
+export INPUT_TEXT="Hello from the Scala language!"

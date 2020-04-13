@@ -15,10 +15,12 @@ mkdir "test shell"
 
 cat >"test shell/vpl message.sh" <<'END_OF_FILE'
 #!/bin/bash
-echo "Hello from the Shell (Bash) language!"
+read TEXT
+echo $TEXT
 END_OF_FILE
 
 chmod +x "test shell/vpl message.sh"
 
 export VPL_SUBFILE0="vpl hello.sh"
 export VPL_SUBFILE1="test shell/vpl message.sh"
+export INPUT_TEXT="Hello from the Shell (Bash) language!"

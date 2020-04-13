@@ -27,9 +27,10 @@ message3.hello()
 END_OF_FILE
 cat > "message3.py" <<'END_OF_FILE'
 def hello():
-	print('Hello from the Python3 language!')
+	print(input())
 END_OF_FILE
 export VPL_SUBFILE0="vpl hello3.py"
 export VPL_SUBFILE1="message3.py"
+export INPUT_TEXT="Hello from the Python3 language!"
 fi
 

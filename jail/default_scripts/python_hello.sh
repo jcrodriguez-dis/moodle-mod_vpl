@@ -21,11 +21,12 @@ END_OF_FILE
 	else
 		cat > "message.py" <<'END_OF_FILE'
 def hello():
-	print('Hello from the Python language!')
+	print(raw_input())
 END_OF_FILE
 	fi
 	export VPL_SUBFILE0="vpl hello.py"
 	export VPL_SUBFILE1="message.py"
+	export INPUT_TEXT="Hello from the Python language!"
 }
 function generateHelloPython3() {
 	if [ "$1" == "gui" ] ; then
@@ -39,7 +40,7 @@ END_OF_FILE
 import Tkinter
 import tkMessageBox
 def hello():
-	tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
+	tkMessageBox.showinfo('VPL','Hello from the Python language!')
 END_OF_FILE
 			export VPL_SUBFILE0="vpl hello.py"
 			export VPL_SUBFILE1="message.py"
@@ -51,10 +52,11 @@ message.hello()
 END_OF_FILE
 		cat > "message.py" <<'END_OF_FILE'
 def hello():
-	print('Hello from the Python language!')
+	print(input())
 END_OF_FILE
 		export VPL_SUBFILE0="vpl hello.py"
 		export VPL_SUBFILE1="message.py"
+		export INPUT_TEXT="Hello from the Python language!"
 	fi
 }
 

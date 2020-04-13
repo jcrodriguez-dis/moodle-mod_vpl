@@ -32,8 +32,9 @@ else
 
 cat >"matlab test/vpl message.m" <<'END_OF_FILE'
 function hello ()
-  fprintf("Hello from Matlab/Octave!\n");
+    fprintf("%s\n", fgetl(stdin()));
 endfunction
 END_OF_FILE
 fi
 export VPL_SUBFILE0="vpl hello.m"
+export INPUT_TEXT="Hello from Matlab/Octave!"

@@ -16,8 +16,9 @@ mkdir "lisp test" 2> /dev/null
 
 cat >"lisp test/message.lisp" <<'END_OF_FILE'
 (defun hello ()
-	(format t "Hello from the LISP language!")
+	(format t (read-line))
 )
 END_OF_FILE
 export VPL_SUBFILE0="vpl_hello.lisp"
 export VPL_SUBFILE1="lisp test/message.lisp"
+export INPUT_TEXT="Hello from the LISP language!"

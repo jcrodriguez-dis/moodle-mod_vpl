@@ -20,9 +20,9 @@ END_OF_FILE
 
 cat > "test erlang/vpl message.erl" <<'END_OF_FILE'
 hello() ->
-    io:format("Hello from the Erlang language!\n").
+    io:format(io:get_line("")).
 END_OF_FILE
 
 export VPL_SUBFILE0="test erlang/vpl_hello.erl"
 export VPL_SUBFILE1="test erlang/vpl message.erl"
-
+export INPUT_TEXT="Hello from the Erlang language!"

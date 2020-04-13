@@ -12,10 +12,12 @@ END_OF_FILE
 
 mkdir "test ruby" 2> /dev/null
 cat > "test ruby/vpl message.rb" <<'END_OF_FILE'
-def hello  
-  print "Hello from the Ruby language!\n"
+def hello
+    text = $stdin.read
+    print text
 end
 END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.rb"
 export VPL_SUBFILE1="test ruby/vpl message.rb"
+export INPUT_TEXT="Hello from the Ruby language!"

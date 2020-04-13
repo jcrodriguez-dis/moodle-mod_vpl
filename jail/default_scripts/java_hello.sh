@@ -8,7 +8,7 @@
 cat >Vpl_hello.java <<'END_OF_FILE'
 import message.Hello;
 public class Vpl_hello {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
     	Hello.hello();
     }
 }
@@ -34,8 +34,9 @@ mkdir "message" 2> /dev/null
 cat >message/Hello.java <<'END_OF_FILE'
 package message;
 public class Hello {
-    public static void hello() {
-        System.out.println("Hello from the Java language!");
+    public static void hello() throws Exception {
+    	java.util.Scanner reader = new java.util.Scanner(System.in);
+        System.out.println(reader.nextLine());
     }
 }
 END_OF_FILE
@@ -45,3 +46,4 @@ fi
 export VPL_SUBFILE0=Vpl_hello.java
 export VPL_SUBFILE1=message/Hello.java
 export VPL_SUBFILES="Vpl_hello.java message/Hello.java"
+export INPUT_TEXT="Hello from the Java language!"

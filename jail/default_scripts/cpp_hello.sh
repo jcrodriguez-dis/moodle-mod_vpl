@@ -17,9 +17,14 @@ END_OF_FILE
 
 cat > "test cpp/hello.cpp" <<'END_OF_FILE'
 #include <iostream>
+#include <string>
+using namespace std;
 void hello(){
-	std::cout << "Hello from the C++ language!" << std::endl;
+	string text;
+	getline(cin, text);
+	std::cout << text  << std::endl;
 }
 END_OF_FILE
 
 export VPL_SUBFILE0="test cpp/vpl hello.cpp"
+export INPUT_TEXT="Hello from the C++ language!"

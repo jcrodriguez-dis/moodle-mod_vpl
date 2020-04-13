@@ -21,14 +21,24 @@ end message;
 END_OF_FILE
 
 cat > "ada test/message.adb" <<'END_OF_FILE'
+package message is
+    procedure hello;
+end message;
+END_OF_FILE
+
+cat > "ada test/message.adb" <<'END_OF_FILE'
 with ada.text_io;
 use ada.text_io;
 package body message is
     procedure hello is
+    text : String (1 .. 256);
+  	size : Natural;
     begin
-        put_line("Hello from the Ada language!");
+    	get_line(text, size);
+        put_line( text(1 .. size) );
     end hello;
 end message;
 END_OF_FILE
 
 export VPL_SUBFILE0="ada test/vpl_hello.adb"
+export INPUT_TEXT="Hello from the Ada language!"

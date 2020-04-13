@@ -14,9 +14,10 @@ END_OF_FILE
 
 cat > "clojure test/a message.clj" <<'END_OF_FILE'
 (defn hello []
-    (println "Hello from the Clojure language!")
+    (println (read-line))
 )
 END_OF_FILE
 
 export VPL_SUBFILE0="clojure test/vpl hello.clj"
 export VPL_SUBFILE1="clojure test/a message.clj"
+export INPUT_TEXT="Hello from the Clojure language!"

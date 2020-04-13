@@ -16,9 +16,11 @@ END_OF_FILE
 mkdir "testscheme" 2> /dev/null
 cat > "testscheme/vplmessage.scm" <<'END_OF_FILE'
 (define (hello)
-    (display "Hello from the Scheme language!\n")
+    (display (read-line))
+    (newline)
 )
 END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.scm"
 export VPL_SUBFILE1="testscheme/vplmessage.scm"
+export INPUT_TEXT="Hello from the Scheme language!"
