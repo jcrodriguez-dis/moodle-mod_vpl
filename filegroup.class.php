@@ -200,6 +200,7 @@ class file_group_process {
         foreach ($filelist as $f) {
             $filehash [$f] = 1;
         }
+        vpl_create_dir($this->dir);
         foreach ($files as $filename => $data) {
             if ( !isset($filehash[$filename]) ) {
                 $filelist[] = $filename;
