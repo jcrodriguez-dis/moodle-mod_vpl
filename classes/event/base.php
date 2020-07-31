@@ -35,7 +35,7 @@ abstract class base extends \core\event\base {
         if (($this->relateduserid) && $this->relateduserid != $this->userid) {
             $parms ['userid'] = $this->relateduserid;
         }
-        return new \moodle_url( 'mod/vpl/' . $script, $parms );
+        return new \moodle_url( '/mod/vpl/' . $script, $parms );
     }
     public function get_description() {
         return '';

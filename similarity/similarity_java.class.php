@@ -67,44 +67,37 @@ class vpl_similarity_java extends vpl_similarity_c {
                         $ret [] = $token;
                         break;
                     case '++' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '+';
                         $ret [] = $token;
                         break;
                     case '--' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '-';
                         $ret [] = $token;
                         break;
                     case '+=' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '+';
                         $ret [] = $token;
                         break;
                     case '-=' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '-';
                         $ret [] = $token;
                         break;
                     case '*=' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '*';
                         $ret [] = $token;
                         break;
                     case '/=' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '/';
                         $ret [] = $token;
                         break;
                     case '%=' :
-                        $token->value = '=';
-                        $ret [] = $token;
+                        $ret [] = self::clone_token($token, '=');
                         $token->value = '%';
                         $ret [] = $token;
                         break;
