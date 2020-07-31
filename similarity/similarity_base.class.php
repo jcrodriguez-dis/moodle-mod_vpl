@@ -158,10 +158,9 @@ class vpl_similarity_base {
     }
 
     /**
-     * Get similarity 1 among this file and other
+     * Get similarity-1 among this file and other
      *
-     * @param $other the
-     *            other file info object
+     * @param Object $other with the file info
      * @return number 0-100 %
      */
     public function similarity1(&$other) {
@@ -182,10 +181,9 @@ class vpl_similarity_base {
     }
 
     /**
-     * Get similarity 2 among this file and other
+     * Get similarity-2 among this file and other
      *
-     * @param $other the
-     *            other file info object
+     * @param Object $other with the file info
      * @return number 0-100 %
      */
     public function similarity2(&$other) {
@@ -204,10 +202,9 @@ class vpl_similarity_base {
     }
 
     /**
-     * Get similarity 3 among this file and other
+     * Get similarity-3 among this file and other
      *
-     * @param $other the
-     *            other file info object
+     * @param Object $other with the file info
      * @return number 0-100 %
      */
     public function similarity3(&$other) {
@@ -223,6 +220,10 @@ class vpl_similarity_base {
         }
         $dif += $other->get_sizeh() - $taken;
         return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
+    }
+
+    static public function clone_token($token, $value){
+        return new vpl_token($token->type, $value, $token->line);
     }
 }
 
