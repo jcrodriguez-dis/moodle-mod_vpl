@@ -67,6 +67,21 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
 }
 
 /**
+ * Create directory if not exist
+ *
+ * @param $dir string path to directory
+ */
+function vpl_create_dir($dir) {
+    global $CFG;
+    if (! file_exists( $dir )) { // Create dir?
+        if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+            throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
+        }
+    }
+}
+
+
+/**
  * Open/create a file and its dir
  *
  * @param $filename path
@@ -74,15 +89,9 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
  * @return file descriptor
  */
 function vpl_fopen($filename) {
-    global $CFG;
-
     if (! file_exists( $filename )) { // Exists file?
         $dir = dirname( $filename );
-        if (! file_exists( $dir )) { // Create dir?
-            if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
-                throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
-            }
-        }
+        vpl_create_dir($dir);
     }
     $fp = fopen( $filename, 'wb+' );
     if ($fp === false) {
