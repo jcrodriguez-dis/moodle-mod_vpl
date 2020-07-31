@@ -40,7 +40,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text {0};
+        $first = $text[0];
         return $first >= '0' && $first <= '9';
     }
     protected function add_pending(&$rawpending) {
@@ -193,7 +193,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
             }
             if ($current == self::CR) {
                 if ($next == self::LF) {
-                    continue;
+                    break;
                 } else {
                     $this->linenumber ++;
                     $current = self::LF;
@@ -222,11 +222,11 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                 case self::IN_NUMBER :
                     if (($current >= '0' && $current <= '9') || $current == '.' || $current == 'e' || $current == 'e') {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     if (($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')) {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     $this->add_pending( $pending );
                     $state = self::REGULAR;
@@ -240,7 +240,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                             $state = self::IN_LINECOMMENT;
                             $this->add_pending( $pending );
                             $i ++;
-                            continue;
+                            break;
                         }
                     } else if ($current == '"') {
                         $state = self::IN_STRING;

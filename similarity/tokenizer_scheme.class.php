@@ -91,14 +91,14 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text {0};
+        $first = $text[0];
         return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
     }
     protected function is_number($text) {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text {0};
+        $first = $text[0];
         return $first >= '0' && $first <= '9';
     }
     protected function add_parenthesis() {
@@ -167,7 +167,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
                     if (! ctype_alpha( $current ) && $current != '-') {
                         $state = self::IN_REGULAR;
                         $i --;
-                        continue; // Reprocess current char.
+                        break; // Reprocess current char.
                     }
                     break;
                 case self::IN_REGULAR :

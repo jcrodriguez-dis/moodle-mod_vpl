@@ -222,7 +222,7 @@ class vpl_similarity_base {
         return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
     }
 
-    static public function clone_token($token, $value){
+    static public function clone_token($token, $value) {
         return new vpl_token($token->type, $value, $token->line);
     }
 }

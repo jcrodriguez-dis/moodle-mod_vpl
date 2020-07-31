@@ -41,16 +41,16 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text {0};
+        $first = $text[0];
         return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
     }
     protected function is_number($text) {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text {0};
+        $first = $text[0];
         if ($first == '.' && strlen( $text ) > 1) {
-            $first = $text {1};
+            $first = $text[1];
         }
         return $first >= '0' && $first <= '9';
     }
@@ -257,11 +257,11 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     if (($current >= '0' && $current <= '9') ||
                     $current == '.' || $current == 'E' || $current == 'e') {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     if (($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')) {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     $this->add_pending( $pending );
                     $state = self::REGULAR;
