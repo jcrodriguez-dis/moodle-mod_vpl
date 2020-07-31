@@ -614,43 +614,6 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
 }
 
 /**
- * Run periodically to check for vpl visibility update
- *
- * @uses $CFG
- * @return boolean
- *
- */
-function vpl_cron() {
-    global $DB;
-    $rebuilds = array ();
-    $now = time();
-    $sql = 'SELECT id, startdate, duedate, course, name
-    FROM {vpl}
-    WHERE startdate > ?
-      and startdate <= ?
-      and (duedate > ? or duedate = 0)';
-    $parms = array (
-            $now - (2 * 3600),
-            $now,
-            $now
-    );
-    $vpls = $DB->get_records_sql( $sql, $parms );
-    foreach ($vpls as $instance) {
-        if (! instance_is_visible( VPL, $instance )) {
-            $vpl = new mod_vpl( null, $instance->id );
-            echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"';
-            $cm = $vpl->get_course_module();
-            $rebuilds [$cm->id] = $cm;
-        }
-    }
-    foreach ($rebuilds as $cmid => $cm) {
-        set_coursemodule_visible( $cm->id, true );
-        rebuild_course_cache( $cm->course );
-    }
-    return true;
-}
-
-/**
  * Must return an array of user records (all data) who are participants for a given instance
  * of vpl. Must include every user involved in the instance, independient of his role
  * (student, teacher, admin...) See other modules as example.
