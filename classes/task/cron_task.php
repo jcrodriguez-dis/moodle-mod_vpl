@@ -58,15 +58,15 @@ class cron_task extends \core\task\scheduled_task {
         $vpls = $DB->get_records_sql( $sql, $parms );
         foreach ($vpls as $instance) {
             if (! instance_is_visible( VPL, $instance )) {
-                $vpl = new mod_vpl( null, $instance->id );
-                echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"';
+                $vpl = new \mod_vpl( null, $instance->id );
+                echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"' . "\n";
                 $cm = $vpl->get_course_module();
-                $rebuilds [$cm->id] = $cm;
+                set_coursemodule_visible( $cm->id, true );
+                $rebuilds [$cm->course] = $cm->course;
             }
         }
-        foreach ($rebuilds as $cm) {
-            set_coursemodule_visible( $cm->id, true );
-            rebuild_course_cache( $cm->course );
+        foreach ($rebuilds as $courseid) {
+            rebuild_course_cache( $courseid );
         }
         return true;
     }
