@@ -24,6 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/list_util.class.php');
@@ -46,19 +47,18 @@ function vpl_grade_item_update($instance, $grades=null) {
     if ( isset($instance->cmidnumber) ) {
         $itemdetails['idnumber'] = $instance->cmidnumber;
     }
-    if ($instance->grade > 0) {
+    if ($instance->grade == 0 || $instance->example != 0) {
+        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
+        $itemdetails['deleted'] = 1;
+    } else if ($instance->grade > 0) {
         $itemdetails['gradetype'] = GRADE_TYPE_VALUE;
         $itemdetails['grademax']  = $instance->grade;
         $itemdetails['grademin']  = 0; // I don't know if this is correct updating.
 
-    } else if ($instance->grade < 0) {
+    } else {
         $itemdetails['gradetype'] = GRADE_TYPE_SCALE;
         $itemdetails['scaleid']   = -$instance->grade;
 
-    }
-    if ($instance->grade == 0 || $instance->example != 0) {
-        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
-        $itemdetails['deleted'] = 1;
     }
 
     if ($grades === 'reset') {
@@ -672,43 +672,6 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $node = vpl_navi_node_create($testact, 'modulenameplural', $url);
         $vplnode->add_node( $node, $fkn );
     }
-}
-
-/**
- * Run periodically to check for vpl visibility update
- *
- * @uses $CFG
- * @return boolean
- *
- */
-function vpl_cron() {
-    global $DB;
-    $rebuilds = array ();
-    $now = time();
-    $sql = 'SELECT id, startdate, duedate, course, name
-    FROM {vpl}
-    WHERE startdate >= :initrange
-      and startdate <= :endrange
-      and (duedate > :now or duedate = 0)';
-    $parms = array (
-            'initrange' => $now - VPL_STARTDATE_RANGE,
-            'endrange' => $now + VPL_STARTDATE_RANGE,
-            'now' => $now
-    );
-    $vpls = $DB->get_records_sql( $sql, $parms );
-    foreach ($vpls as $instance) {
-        if (! instance_is_visible( VPL, $instance )) {
-            $vpl = new mod_vpl( null, $instance->id );
-            $cm = $vpl->get_course_module();
-            $rebuilds [$cm->id] = $cm;
-        }
-    }
-    foreach ($rebuilds as $cmid => $cm) {
-        set_coursemodule_visible( $cm->id, true );
-        \core\event\course_module_updated::create_from_cm($cm)->trigger();
-        rebuild_course_cache( $cm->course, true );
-    }
-    return true;
 }
 
 /**
