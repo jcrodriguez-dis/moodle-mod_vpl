@@ -39,7 +39,7 @@ public class Message
 {
    public static void hello()
    {
-      System.Console.WriteLine("Hello from the C# language!");
+      System.Console.WriteLine( System.Console.ReadLine() );
    }
 }
 END_OF_FILE
@@ -48,4 +48,4 @@ fi
 
 export VPL_SUBFILE0="test csharp/vpl hello.cs"
 export VPL_SUBFILE1="test csharp/a Message.cs"
-
+export INPUT_TEXT="Hello from the C# language!"

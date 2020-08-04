@@ -14,7 +14,10 @@ END_OF_FILE
 
 cat >"Message/Hello.hs" <<'END_OF_FILE'
 module Message.Hello (hello) where
-hello = putStrLn "Hello from the Haskell language!"
+hello = do
+    text <- getLine
+    putStrLn text
 END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.hs"
+export INPUT_TEXT="Hello from the Haskell language!"

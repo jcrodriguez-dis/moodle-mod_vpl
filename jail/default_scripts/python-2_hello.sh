@@ -19,10 +19,12 @@ def hello():
 END_OF_FILE
 else
 cat > "message2.py" <<'END_OF_FILE'
+import sys
 def hello():
-	print('Hello from the Python2 language!')
+	print(raw_input())
 END_OF_FILE
 fi
 
 export VPL_SUBFILE0="vpl hello2.py"
 export VPL_SUBFILE1="message2.py"
+export INPUT_TEXT="Hello from the Python2 language!"

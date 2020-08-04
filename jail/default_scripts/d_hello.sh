@@ -19,9 +19,10 @@ cat > "test d/vpl message.d" <<'END_OF_FILE'
 module message;
 import std.stdio;
 void hello() {
-    writeln("Hello from the D language!");
+    write(stdin.readln());
 }
 END_OF_FILE
 
 export VPL_SUBFILE0="test d/vpl hello.d"
 export VPL_SUBFILE1="test d/vpl message.d"
+export INPUT_TEXT="Hello from the D language!"

@@ -21,25 +21,25 @@ END_OF_FILE
 	else
 		cat > "message.py" <<'END_OF_FILE'
 def hello():
-	print('Hello from the Python language!')
+	print(raw_input())
 END_OF_FILE
 	fi
 	export VPL_SUBFILE0="vpl hello.py"
 	export VPL_SUBFILE1="message.py"
+	export INPUT_TEXT="Hello from the Python language!"
 }
 function generateHelloPython3() {
 	if [ "$1" == "gui" ] ; then
-		Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("Tkinter") else 0)')
+		Tk=$(python3 -c 'import pkgutil; print(1 if pkgutil.find_loader("tkinter") else 0)')
 		if [ "$Tk" == "1" ] ; then
 			cat > "vpl hello.py" <<'END_OF_FILE'
 import message
 message.hello()
 END_OF_FILE
 			cat > "message.py" <<'END_OF_FILE'
-import Tkinter
-import tkMessageBox
+from tkinter import messagebox
 def hello():
-	tkMessageBox.showinfo('VPL','Hello from the Python3 language!')
+	messagebox.showinfo('VPL','Hello from the Python language!')
 END_OF_FILE
 			export VPL_SUBFILE0="vpl hello.py"
 			export VPL_SUBFILE1="message.py"
@@ -51,17 +51,18 @@ message.hello()
 END_OF_FILE
 		cat > "message.py" <<'END_OF_FILE'
 def hello():
-	print('Hello from the Python language!')
+	print(input())
 END_OF_FILE
 		export VPL_SUBFILE0="vpl hello.py"
 		export VPL_SUBFILE1="message.py"
+		export INPUT_TEXT="Hello from the Python language!"
 	fi
 }
 
 check_program python3 python python2
 PY2=$($PROGRAM --version | grep "Python 2")
 if [ "$PY2" == "" ] ; then
-	generateHelloPython3
+	generateHelloPython3 $1
 else
-	generateHelloPython2
+	generateHelloPython2 $1
 fi

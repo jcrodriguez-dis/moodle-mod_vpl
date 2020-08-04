@@ -55,5 +55,6 @@ if [ -f $OUTPUTFILE ] ; then
 			mv vpl_execution vpl_wexecution
 		fi
 	fi
+else
 	cat .vpl_compilation_message
 fi

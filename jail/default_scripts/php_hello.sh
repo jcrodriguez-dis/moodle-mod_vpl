@@ -41,8 +41,10 @@ mkdir "test php" 2> /dev/null
 cat > "test php/message hello.php" <<'END_OF_FILE'
 <?php
 function hello() {
-	echo "Hello from the PHP language!\n";
+	$text = readline();
+	echo "$text\n";
 }
 END_OF_FILE
 
 export VPL_SUBFILE1="test php/message hello.php"
+export INPUT_TEXT="Hello from the PHP language!"

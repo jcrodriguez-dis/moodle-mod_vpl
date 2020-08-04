@@ -18,9 +18,17 @@ END_OF_FILE
 
 cat > "src/message/hello.go" <<'END_OF_FILE'
 package message
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
 func Hello() {
-    fmt.Println("Hello from the Go language!")
+	reader := bufio.NewReader(os.Stdin)
+    text, _ := reader.ReadString('\n')
+    fmt.Print(text)
 }
 END_OF_FILE
 export VPL_SUBFILE0="src/vpl hello.go"
+export INPUT_TEXT="Hello from the Go language!"

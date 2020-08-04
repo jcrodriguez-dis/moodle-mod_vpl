@@ -15,7 +15,7 @@ mkdir "lua test" 2> /dev/null
 cat >"lua test/vpl message.lua" <<'END_OF_FILE'
 local message = {}
 function message.hello()
-	print("Hello from the Lua language!")
+	print(io.read())
 end
 
 return message
@@ -23,3 +23,4 @@ END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.lua"
 export VPL_SUBFILE1="lua test/vpl message.lua"
+export INPUT_TEXT="Hello from the Lua language!"

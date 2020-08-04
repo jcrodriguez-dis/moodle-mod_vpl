@@ -18,10 +18,12 @@ END_OF_FILE
 cat > "test c/hello.c" <<'END_OF_FILE'
 #include <stdio.h>
 void hello(){
-	printf("Hello from the C language!\n");
+	char text[256];
+	fgets(text, 255, stdin);
+	printf("%s", text);
 }
 
 END_OF_FILE
 export VPL_SUBFILE0="test c/vpl hello.c"
 export VPL_SUBFILE1="test c/hello.c"
-
+export INPUT_TEXT="Hello from the C language!"

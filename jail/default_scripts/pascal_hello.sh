@@ -20,10 +20,13 @@ interface
    procedure hello;
 implementation
    procedure hello;
+   var text: string;
    begin
-      writeln('Hello from the Pascal language!')
+      readln(text);
+      writeln(text);
    end;
 end.
 END_OF_FILE
 export VPL_SUBFILE0=vpl_hello.pas
 export VPL_SUBFILE1=message.pas
+export INPUT_TEXT="Hello from the Pascal language!"

@@ -44,7 +44,7 @@ JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
 	CLASSPATH=$CLASSPATH:$JUNIT4
 fi
-get_source_files jar
+get_source_files jar NOERROR
 for JARFILE in $SOURCE_FILES
 do
 	CLASSPATH=$CLASSPATH:$JARFILE

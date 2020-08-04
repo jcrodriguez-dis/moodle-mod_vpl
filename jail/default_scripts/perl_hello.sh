@@ -17,7 +17,8 @@ cat >"Perl_test/Message.pm" <<'END_OF_FILE'
 package Perl_test::Message;
 
 sub hello {
-   print "Hello from the Perl language!\n";
+   $text = readline(STDIN);
+   print $text;
 }
 
 1;
@@ -25,3 +26,4 @@ END_OF_FILE
 
 export VPL_SUBFILE0="vpl hello.perl"
 export VPL_SUBFILE1="Perl_test/Message.pm"
+export INPUT_TEXT="Hello from the Perl language!"
