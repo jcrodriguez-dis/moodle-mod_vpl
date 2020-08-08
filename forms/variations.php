@@ -28,6 +28,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once($CFG->libdir.'/formslib.php');
 
+
 class mod_vpl_variation_option_form extends moodleform {
     protected function definition() {
         $mform = & $this->_form;
@@ -50,14 +51,15 @@ class mod_vpl_variation_form extends moodleform {
     protected $varid;
     protected $number;
     // Parm $varid = -1 new variation.
-    public function __construct($page, $number, $varid = -1) {
+    public function __construct($page, $number = 0, $varid = 0) {
         $this->number = $number;
         $this->varid = $varid;
         parent::__construct( $page );
     }
     protected function definition() {
+        global $CFG;
         $mform = & $this->_form;
-        if ($this->number >= 0) {
+        if ($this->number > 0) {
             $title = get_string( 'variation', VPL, "{$this->number}" );
         } else {
             $title = get_string( 'add' );
@@ -67,21 +69,21 @@ class mod_vpl_variation_form extends moodleform {
         $mform->setType( 'id', PARAM_INT );
         $mform->addElement( 'hidden', 'varid', $this->varid );
         $mform->setType( 'varid', PARAM_INT );
+
         $mform->addElement( 'text', 'identification', get_string( 'varidentification', VPL ), array (
                 'size' => '20'
         ) );
         $mform->setDefault( 'identification', '' );
-        $mform->setType( 'identification', PARAM_RAW );
-        $mform->addElement( 'textarea', 'description', get_string( 'description', VPL ), array (
-                'cols' => 45,
-                'rows' => 5
-        ) );
-        $mform->setType( 'description', PARAM_CLEANHTML );
-        $mform->setDefault( 'description', '' );
+        $mform->setType( 'identification', PARAM_ALPHANUM );
+        $fieldname = 'description' . $this->varid; // Allows multile editors in page.
+        $mform->addElement('editor', $fieldname, get_string('description', VPL));
+        $mform->setType($fieldname, PARAM_RAW);
+        $mform->setDefault( $fieldname, '' );
+
         $buttongroup = array ();
         $buttongroup [] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
         $buttongroup [] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
-        if ($this->number >= 0) {
+        if ($this->number > 0) {
             $menssage = addslashes( get_string( 'delete' ) );
             $onclick = 'onclick="return confirm(\'' . $menssage . '\')"';
             $buttongroup [] = $mform->createElement( 'submit', 'delete', get_string( 'delete' ), $onclick );
@@ -102,10 +104,10 @@ $href = vpl_mod_href( 'forms/variations.php', 'id', $id );
 $vpl->print_header( get_string( 'variations', VPL ) );
 $vpl->print_heading_with_help( 'variations' );
 // Generate default form and check for action.
-if (optional_param( 'varid', - 13, PARAM_INT ) == - 13) { // No variation saved.
+if (optional_param( 'varid', -13, PARAM_INT ) == -13) { // No variation saved.
     $oform = new mod_vpl_variation_option_form( $href, $vpl );
     if ($oform->is_cancelled()) {
-        vpl_inmediate_redirect( $href ); // Reload page.
+        vpl_redirect( $href, get_string("canceled") );
     } else if ($fromform = $oform->get_data()) {
         vpl_truncate_string( $fromform->variationtitle, 255 );
         $instance = $vpl->get_instance();
@@ -113,14 +115,14 @@ if (optional_param( 'varid', - 13, PARAM_INT ) == - 13) { // No variation saved.
         $instance->variationtitle = $fromform->variationtitle;
         $vpl->update();
         \mod_vpl\event\vpl_variation_updated::log( $vpl );
-        vpl_inmediate_redirect( $href );
+        vpl_redirect( $href, get_string('updated', '', $instance->variationtitle) );
     }
     $vplinstmod = clone $vpl->get_instance();
     $vplinstmod->id = $id;
     $oform->set_data( $vplinstmod );
 }
-
-$mform = new mod_vpl_variation_form( $href, 0 );
+$varid = optional_param( 'varid', 0, PARAM_INT );
+$mform = new mod_vpl_variation_form( $href, 0, $varid );
 if ($mform->is_cancelled()) {
     vpl_inmediate_redirect( $href ); // Reload page.
 } else if ($fromform = $mform->get_data()) {
@@ -137,10 +139,12 @@ if ($mform->is_cancelled()) {
                     'id' => $fromform->varid
             ) );
         }
+        vpl_redirect( $href, get_string('deleted') );
     } else {
-        if ($fromform->varid == - 1) { // New record.
+        if ($fromform->varid <= 0) { // New record.
             $fromform->vpl = $vplid;
             unset( $fromform->id );
+            $fromform->description = $fromform->description0['text'];
             vpl_truncate_variations( $fromform );
             if ($vid = $DB->insert_record( VPL_VARIATIONS, $fromform )) {
                 \mod_vpl\event\variation_added::log( array (
@@ -148,6 +152,7 @@ if ($mform->is_cancelled()) {
                         'context' => $vpl->get_context()
                 ) );
             }
+            vpl_redirect( $href, get_string('saved', VPL) );
         } else { // Update record.
             if ($DB->get_record( VPL_VARIATIONS, array (
                     'id' => $fromform->varid,
@@ -155,20 +160,22 @@ if ($mform->is_cancelled()) {
             ) )) { // Check consistence.
                 $fromform->vpl = $vplid;
                 $fromform->id = $fromform->varid;
+                $fieldname = 'description' . $fromform->varid;
+                $fromform->description = $fromform->{$fieldname}['text'];
                 vpl_truncate_variations( $fromform );
                 $DB->update_record( VPL_VARIATIONS, $fromform );
                 \mod_vpl\event\variation_updated::log( array (
                         'objectid' => $fromform->varid,
                         'context' => $vpl->get_context()
                 ) );
+                vpl_redirect( $href, get_string('updated', '', $fromform->identification) );
             } else {
                 $vpl->print_header( get_string( 'variations', VPL ) );
                 $vpl->print_heading_with_help( 'variations' );
-                print_error( VPL_VARIATIONS . ' record inconsistence', VPL, $href );
+                print_error( VPL_VARIATIONS . ' record inconsistence ' . $id . ' ' . $vplid, VPL, $href );
             }
         }
     }
-    vpl_inmediate_redirect( $href );
 }
 // Display page.
 if (isset( $oform )) {
@@ -186,10 +193,12 @@ foreach ($list as $variation) {
     $aform = new mod_vpl_variation_form( $href, $number, $variation->id );
     $variation->varid = $variation->id;
     $variation->id = $id;
+    $fieldname = 'description' . $variation->varid;
+    $variation->$fieldname = array('text' => $variation->description);
     $aform->set_data( $variation );
     $aform->display();
     $number ++;
 }
-$lastform = new mod_vpl_variation_form( $href, - 1 );
+$lastform = new mod_vpl_variation_form( $href );
 $lastform->display();
 $vpl->print_footer();
