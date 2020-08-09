@@ -26,10 +26,10 @@
 define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
-$outcome = new stdClass();
-$outcome->success = false;
-$outcome->error = '';
-$outcome->preferences = new stdClass();
+$result = (object)[];
+$result->success = false;
+$result->error = '';
+$result->preferences = (object)[];
 try {
     require_login();
     $rawdata = file_get_contents( "php://input" );
@@ -38,32 +38,32 @@ try {
         $fontsize = (int) $actiondata->fontSize;
         $fontsize = min(max(1, $actiondata->fontSize), 48);
         set_user_preference('vpl_editor_fontsize', $fontsize);
-        $outcome->success = true;
+        $result->success = true;
     }
     if ( isset($actiondata->aceTheme) ) {
         $theme = substr($actiondata->aceTheme, 0, 50);
         set_user_preference('vpl_acetheme', $theme);
-        $outcome->success = true;
+        $result->success = true;
     }
     if ( isset($actiondata->terminalTheme) ) {
         $theme = substr($actiondata->terminalTheme, 0, 10);
         set_user_preference('vpl_terminaltheme', $theme);
-        $outcome->success = true;
+        $result->success = true;
     }
     if ( isset($actiondata->blocklyLang) ) {
         $theme = substr($actiondata->blocklyLang, 0, 10);
         set_user_preference('vpl_blocklylang', $theme);
-        $outcome->success = true;
+        $result->success = true;
     }
     if (isset($actiondata->getPreferences)) {
-        $outcome->preferences->fontSize = (int)  get_user_preferences('vpl_editor_fontsize', 12);
-        $outcome->preferences->aceTheme = get_user_preferences('vpl_acetheme', '');
-        $outcome->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
-        $outcome->preferences->blocklyLang = get_user_preferences('vpl_blocklylang', '');
-        $outcome->success = true;
+        $result->preferences->fontSize = (int)  get_user_preferences('vpl_editor_fontsize', 12);
+        $result->preferences->aceTheme = get_user_preferences('vpl_acetheme', '');
+        $result->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
+        $result->preferences->blocklyLang = get_user_preferences('vpl_blocklylang', '');
+        $result->success = true;
     }
 } catch ( Exception $e ) {
-    $outcome->error = $e->getMessage();
+    $result->error = $e->getMessage();
 }
-echo json_encode( $outcome );
+echo json_encode( $result );
 die();
