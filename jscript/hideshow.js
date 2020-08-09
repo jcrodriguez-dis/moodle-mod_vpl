@@ -28,25 +28,25 @@
         VPL = {};
     }
 
-    VPL.showHideDiv = function (id){
+    VPL.showHideDiv = function(id) {
         var text = window.document.getElementById('sht' + id);
         var div = window.document.getElementById('shd' + id);
-        if(text){
-            if(text.innerHTML == '<i class="fa fa-eye" aria-hidden="true"></i> [+]'){
+        if (text) {
+            if (text.innerHTML == '<i class="fa fa-eye" aria-hidden="true"></i> [+]') {
                 div.style.display = '';
                 text.innerHTML = '<i class="fa fa-eye-slash" aria-hidden="true"></i> [-]';
-            }else{
+            } else {
                 div.style.display = 'none';
                 text.innerHTML = '<i class="fa fa-eye" aria-hidden="true"></i> [+]';
             }
         }
     };
-    VPL.hide_later = function (){
+    VPL.hideLater = function() {
         var div = window.document.getElementById('vpl.hide');
-        if(div){
+        if (div) {
             div.style.transition = 'display 2s';
             div.style.display = 'none';
         }
     };
-    setTimeout(VPL.hide_later, 5000);
+    setTimeout(VPL.hideLater, 5000);
 })();

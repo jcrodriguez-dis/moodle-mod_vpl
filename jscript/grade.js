@@ -34,7 +34,7 @@
         var textarea = window.document.getElementsByTagName('textarea')[0];
         if (commentsView && textarea) {
             var newHeight = textarea.offsetTop + textarea.offsetHeight;
-            if ( newHeight != commentsHeight ) {
+            if (newHeight != commentsHeight) {
                 commentsHeight = newHeight;
                 commentsView.style.height = commentsHeight + 'px';
             }
@@ -48,14 +48,16 @@
     /**
      * Recalculate numeric grade from the max sustracting grades found at the
      * end of lines. valid grade format: "- text (-grade)"
+     *
+     * @param {number} maxgrade Sets the maxgrade. Penalizations reduce grade from this value.
      */
     VPL.calculateGrade = function(maxgrade) {
         var form1 = window.document.getElementById('form1');
         var text = form1.comments.value;
         var grade = parseFloat(maxgrade);
-        var regDiscount = /^-.+\(([0-9\.\-]+)\) *$/gm;
+        var regDiscount = /^-.+\(([-][0-9.]+)\) *$/gm;
         var match;
-        while((match = regDiscount.exec(text)) !== null) {
+        while ((match = regDiscount.exec(text)) !== null) {
             var rest = parseFloat(match[1]);
             if (rest < 0) {
                 grade += rest;
@@ -72,6 +74,8 @@
 
     /**
      * Add new comment to the form comment string to add
+     *
+     * @param {string} comment Comment to add
      */
     VPL.addComment = function(comment) {
         if (comment === '') {
@@ -88,26 +92,25 @@
             field.focus();
             var sel = document.selection.createRange();
             sel.text = comment;
-        } /* For Firefox */
-        else if (field.selectionStart || field.selectionStart === 0) {
+        } else if (field.selectionStart || field.selectionStart === 0) { /* For Firefox */
             var startPos = field.selectionStart;
             var endPos = field.selectionEnd;
-            if(startPos != endPos) {
+            if (startPos != endPos) {
                 field.value = text.substring(0, startPos) + comment + text.substring(endPos, text.length);
             } else {
                 var pos = text.substr(startPos).indexOf("\n");
-                if (pos == -1){
+                if (pos == -1) {
                     pos = text.length;
                 } else {
                     pos += startPos;
                 }
-                if ( pos > 0 ) {
+                if (pos > 0) {
                     comment = '\n' + comment;
                 }
                 field.value = text.substring(0, pos) + comment + text.substring(pos, text.length);
             }
         } else { /* Other case */
-            if(text > '' && text.substr(-1) != '\n'){
+            if (text > '' && text.substr(-1) != '\n') {
                 comment = '\n' + comment;
             }
             field.value += comment;

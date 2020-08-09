@@ -23,16 +23,16 @@
 
 /* globals VPL: true */
 
-(function(){
+(function() {
     if (typeof VPL != 'object') {
         VPL = {};
     }
     /**
      * Highlight row
-     * @param subid submission identification
+     * @param {number} subid submission identification
      */
-    VPL.hlrow = function(subid){
-        if(opener === null){
+    VPL.hlrow = function(subid) {
+        if (opener === null) {
             return;
         }
         var ssubid = "" + subid;
@@ -55,10 +55,10 @@
 
     /**
      * Unhighlight row
-     * @param subid submission identification
+     * @param {number} subid submission identification
     */
-    VPL.unhlrow = function(subid){
-        if(opener === null){
+    VPL.unhlrow = function(subid) {
+        if (opener === null) {
             return;
         }
         var ssubid = "" + subid;
@@ -81,10 +81,13 @@
 
     /**
      * Update submission list grade
-     * @param subid submission identification
+     * @param {number} subid Submission identification
+     * @param {string} grade Grade get
+     * @param {string} grader Grader name
+     * @param {string} gradeon Grade date
     */
-    VPL.updatesublist = function(subid, grade, grader, gradeon){
-        if(opener === null){
+    VPL.updatesublist = function(subid, grade, grader, gradeon) {
+        if (opener === null) {
             return;
         }
         var ssubid = "" + subid;
@@ -110,10 +113,10 @@
 
     /**
      * Go to next submission
-     * @param subid submission id
-     * @param url base of next
+     * @param {number} subid submission id
+     * @param {string} url base of next
     */
-    VPL.go_next = function(subid, url){
+    VPL.goNext = function(subid, url) {
         if (opener === null) {
             window.close();
         }
@@ -121,7 +124,7 @@
         var divnext = opener.document.getElementById('n' + ssubid);
         if (divnext) {
             location.replace(url + divnext.innerHTML);
-        }else{
+        } else {
             window.close();
         }
     };
