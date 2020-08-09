@@ -191,6 +191,7 @@ class file_group_process {
         foreach ($filelist as $f) {
             $filehash [$f] = 1;
         }
+        vpl_create_dir($this->dir);
         foreach ($files as $filename => $data) {
             if ( !isset($filehash[$filename]) ) {
                 $filelist[] = $filename;
@@ -335,6 +336,21 @@ class file_group_process {
             }
         }
         return false;
+    }
+
+    /**
+     * Return a version number for the group file
+     *
+     * @return int
+     */
+    public function getversion() {
+        $info = stat($this->dir);
+        if ($info !== FALSE) {
+            return $info['mtime'];
+        } else {
+            return 0;
+        }
+        return ;
     }
 
     static protected $outputtextsize = 0; // Total size of text files shown.
