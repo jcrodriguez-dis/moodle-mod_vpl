@@ -33,12 +33,12 @@ define(
         'mod_vpl/vplterminal',
         'mod_vpl/vplvnc',
     ],
-    function($, jqui, VPLUtil, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient ) {
-        if ( typeof VPLIDE !== 'undefined' ) {
+    function($, jqui, VPLUtil, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient) {
+        if (typeof VPLIDE !== 'undefined') {
             return VPLIDE;
         }
         var vplIdeInstance;
-        var VPLIDE = function(root_id, options) {
+        var VPLIDE = function(rootId, options) {
             var self = this;
             var fileManager;
             var adjustTabsTitles;
@@ -51,33 +51,32 @@ define(
             var readOnly = options.example;
             var fullScreen = false;
             var scrollBarWidth = VPLUtil.scrollBarWidth();
-            VPLUtil.setStr(options.i18n);
             var str = VPLUtil.str;
-            var rootObj = $('#' + root_id);
+            var rootObj = $('#' + rootId);
             $("head").append('<meta name="viewport" content="initial-scale=1">')
                           .append('<meta name="viewport" width="device-width">')
                           .append('<link rel="stylesheet" href="../editor/VPLIDE.css"/>');
             if (typeof rootObj != 'object') {
-                throw "VPL: constructor tag_id not found";
+                throw new Error("VPL: constructor tag_id not found");
             }
             var optionsToCheck = {
-                'new' :true,
-                'rename' :true,
-                'delete' :true,
-                'save' :true,
-                'run' :true,
-                'edit' :true,
-                'debug' :true,
-                'evaluate' :true,
-                'import' :true,
-                'resetfiles' :true,
-                'sort' :true,
-                'multidelete' :true,
-                'acetheme' :true,
-                'console' :true,
-                'comments' :true
+                'new': true,
+                'rename': true,
+                'delete': true,
+                'save': true,
+                'run': true,
+                'edit': true,
+                'debug': true,
+                'evaluate': true,
+                'import': true,
+                'resetfiles': true,
+                'sort': true,
+                'multidelete': true,
+                'acetheme': true,
+                'console': true,
+                'comments': true
             };
-            if ( (typeof options.loadajaxurl) == 'undefined' ) {
+            if ((typeof options.loadajaxurl) == 'undefined') {
                 options.loadajaxurl = options.ajaxurl;
             }
             (function() {
@@ -85,7 +84,7 @@ define(
                 options.new = activateModification;
                 options.rename = activateModification;
                 options.delete = activateModification;
-                options.comments = options.comments && ! options.example;
+                options.comments = options.comments && !options.example;
                 options.acetheme = true;
             })();
             options.sort = (maxNumberOfFiles - minNumberOfFiles >= 2);
@@ -98,7 +97,7 @@ define(
                 return options[op];
             }
             options.console = isOptionAllowed('run') || isOptionAllowed('debug');
-            if ( (typeof options.fontSize) == 'undefined' ) {
+            if ((typeof options.fontSize) == 'undefined') {
                 options.fontSize = 12;
             }
             options.fontSize = parseInt(options.fontSize);
@@ -121,12 +120,13 @@ define(
                     VPLUtil.readSelectedFiles(dt.files, function(file) {
                         return fileManager.addFile(file, true, updateMenu, showErrorMessage);
                     },
-                    function(){
+                    function() {
                         fileManager.fileListVisibleIfNeeded();
                     });
                     e.stopImmediatePropagation();
                     return false;
                 }
+                return true;
             }
             rootObj.on('drop', dropHandler);
             rootObj.on('dragover', dragoverHandler);
@@ -136,26 +136,28 @@ define(
                     e.stopPropagation();
                     return false;
                 }
+                return true;
             }
             // Init editor vars.
             var menu = $('#vpl_menu');
-            var menuButtons = new VPLIDEButtons(menu,isOptionAllowed);
+            var menuButtons = new VPLIDEButtons(menu, isOptionAllowed);
             var tr = $('#vpl_tr');
             var fileListContainer = $('#vpl_filelist');
             var fileList = $('#vpl_filelist_header');
             var fileListContent = $('#vpl_filelist_content');
             var tabsUl = $('#vpl_tabs_ul');
             var tabs = $('#vpl_tabs');
-            var result_container = $('#vpl_results');
+            var resultContainer = $('#vpl_results');
             var result = $('#vpl_results_accordion');
-            fileListContainer.vpl_minWidth = 80;
-            result_container.vpl_minWidth = 100;
+            fileListContainer.vplMinWidth = 80;
+            resultContainer.vplMinWidth = 100;
             function avoidSelectGrade(event, ui) {
                 if ("newHeader" in ui) {
                     if (ui.newHeader.hasClass('vpl_ide_accordion_t_grade')) {
                         return false;
                     }
                 }
+                return true;
             }
             function FileManager() {
                 var tabsUl = $('#vpl_tabs_ul');
@@ -164,6 +166,15 @@ define(
                 var openFiles = [];
                 var modified = true;
                 var self = this;
+                (function() {
+                    var version;
+                    self.setVersion = function(v) {
+                       version = v;
+                    };
+                    self.getVersion = function() {
+                       return version;
+                    };
+                })();
                 this.updateFileList = function() {
                     self.generateFileList();
                 };
@@ -217,16 +228,16 @@ define(
                 };
                 this.getTabPos = function(file) {
                     for (var i = 0; i < openFiles.length; i++) {
-                        if (openFiles[i] == file){
+                        if (openFiles[i] == file) {
                             return i;
                         }
                     }
                     return openFiles.length;
                 };
-                this.getTheme = function(){
+                this.getTheme = function() {
                     return options.theme;
                 };
-                this.setTheme = function(theme){
+                this.setTheme = function(theme) {
                     options.theme = theme;
                     for (var i = 0; i < files.length; i++) {
                         files[i].setTheme(theme);
@@ -248,7 +259,7 @@ define(
                     } else {
                         file = files[pos];
                     }
-                    if (file.isOpen()){
+                    if (file.isOpen()) {
                         return;
                     }
                     var fid = file.getId();
@@ -290,10 +301,10 @@ define(
                     return !files[pos].isOpen();
                 };
                 this.fileListVisible = function(b) {
-                    if (b === fileListContainer.vpl_visible){
+                    if (b === fileListContainer.vplVisible) {
                         return;
                     }
-                    fileListContainer.vpl_visible = b;
+                    fileListContainer.vplVisible = b;
                     if (b) {
                         fileListContainer.show();
                         autoResizeTab();
@@ -303,10 +314,10 @@ define(
                     }
                 };
                 this.isFileListVisible = function() {
-                    return fileListContainer.vpl_visible;
+                    return fileListContainer.vplVisible;
                 };
                 this.fileListVisibleIfNeeded = function() {
-                    if ( this.isFileListVisible() ){
+                    if (this.isFileListVisible()) {
                         return;
                     }
                     for (var i = 0; i < files.length; i++) {
@@ -378,13 +389,13 @@ define(
                 this.renameFile = function(oldname, newname, showError) {
                     var pos = this.fileNameExists(oldname);
                     try {
-                        if (pos == -1){
-                            throw "";
+                        if (pos == -1) {
+                            throw new Error("Internal error: File name not found");
                         }
-                        if (pos < minNumberOfFiles){
-                            throw "";
+                        if (pos < minNumberOfFiles) {
+                            throw new Error("Internal error: Renaming requested filename");
                         }
-                        if (files[pos].getFileName() == newname){
+                        if (files[pos].getFileName() == newname) {
                             return true; // Equals name file.
                         }
                         if (!VPLUtil.validPath(newname) ||
@@ -392,11 +403,11 @@ define(
                                twoBlockly(oldname, newname)) {
                             throw str('incorrect_file_name');
                         }
-                        if ( VPLUtil.isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
+                        if (VPLUtil.isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
                             throw str('incorrect_file_name');
                         }
-                        if ( !VPLUtil.isBlockly(oldname) && VPLUtil.isBlockly(newname) ||
-                             VPLUtil.isBlockly(oldname) && !VPLUtil.isBlockly(newname) ) {
+                        if (!VPLUtil.isBlockly(oldname) && VPLUtil.isBlockly(newname) ||
+                             VPLUtil.isBlockly(oldname) && !VPLUtil.isBlockly(newname)) {
                             throw str('incorrect_file_name');
                         }
                         files[pos].setFileName(newname);
@@ -472,16 +483,16 @@ define(
                 };
                 this.gotoFileLink = function(a) {
                     var tag = $(a);
-                    var fname = tag.data( 'file' );
+                    var fname = tag.data('file');
                     var fpos = -1;
                     if (fname > '') {
-                        fpos = this.fileNameExists( fname );
+                        fpos = this.fileNameExists(fname);
                     } else {
-                        fpos = self.getFilePosById( tag.data( 'fileid' ) );
+                        fpos = self.getFilePosById(tag.data('fileid'));
                     }
                     if (fpos >= 0) {
                         var line = tag.data('line');
-                        if ( typeof line == 'undefined' ) {
+                        if (typeof line == 'undefined') {
                             line = 'c';
                         }
                         self.gotoFile(fpos, line);
@@ -532,29 +543,29 @@ define(
                 };
                 this.getDirectoryStructure = function() {
                     var structure = {
-                        isDir : true,
-                        content : {}
+                        isDir: true,
+                        content: {}
                     };
                     for (var i in files) {
-                        if ( files.hasOwnProperty(i) ) {
+                        if (files.hasOwnProperty(i)) {
                             var file = files[i];
                             var fileName = file.getFileName();
                             var path = fileName.split("/");
                             var curdir = structure;
                             for (var p in path) {
-                                if ( path.hasOwnProperty(p) ) {
+                                if (path.hasOwnProperty(p)) {
                                     var part = path[p];
                                     if (p == path.length - 1) { // File.
                                         curdir.content[part] = {
-                                            isDir : false,
-                                            content : file,
-                                            pos : i
+                                            isDir: false,
+                                            content: file,
+                                            pos: i
                                         };
                                     } else {
                                         if (!curdir.content[part]) { // New dir.
                                             curdir.content[part] = {
-                                                isDir : true,
-                                                content : {}
+                                                isDir: true,
+                                                content: {}
                                             };
                                         }
                                         // Descend Dir.
@@ -567,22 +578,22 @@ define(
                     return structure;
                 };
                 this.generateFileList = function() {
-                    if (!self.isFileListVisible()){
+                    if (!self.isFileListVisible()) {
                         return;
                     }
                     var dirIndent = '<span class="vpl_ide_dirindent"></span>';
-                    function lister(dir,indent,lines) {
+                    function lister(dir, indent, lines) {
                         for (var name in dir.content) {
-                            if ( dir.content.hasOwnProperty(name) ) {
+                            if (dir.content.hasOwnProperty(name)) {
                                 var fd = dir.content[name];
                                 if (fd.isDir) {
-                                    lines.push( indent + VPLUtil.iconFolder() + VPLUtil.sanitizeText(name) );
+                                    lines.push(indent + VPLUtil.iconFolder() + VPLUtil.sanitizeText(name));
                                     lister(fd, indent + dirIndent, lines);
                                 } else {
                                     var file = fd.content;
-                                    var sname = VPLUtil.sanitizeText( name );
-                                    var path = VPLUtil.sanitizeText( file.getFileName() );
-                                    if ( file.isOpen() ) {
+                                    var sname = VPLUtil.sanitizeText(name);
+                                    var path = VPLUtil.sanitizeText(file.getFileName());
+                                    if (file.isOpen()) {
                                         sname = '<b>' + sname + '</b>';
                                     }
                                     var attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
@@ -593,7 +604,7 @@ define(
                                     if (fd.pos < minNumberOfFiles) {
                                         line = line + VPLUtil.iconRequired();
                                     }
-                                    lines.push( indent + line );
+                                    lines.push(indent + line);
                                 }
                             }
                         }
@@ -602,7 +613,7 @@ define(
                     var structure = self.getDirectoryStructure();
                     var lines = [];
                     var html = '';
-                    lister(structure,'',lines);
+                    lister(structure, '', lines);
                     for (var i = 0; i < lines.length; i++) {
                         html += lines[i] + '<br />';
                     }
@@ -612,17 +623,17 @@ define(
                     fileManager.close(fileManager.currentFile());
                 });
                 tabsUl.on('dblclick', 'span.vpl_ide_closeicon', menuButtons.getAction('delete'));
-                tabsUl.on('dblclick', 'a',  menuButtons.getAction('rename'));
-                fileListContent.on('dblclick', 'a',  menuButtons.getAction('rename'));
+                tabsUl.on('dblclick', 'a', menuButtons.getAction('rename'));
+                fileListContent.on('dblclick', 'a', menuButtons.getAction('rename'));
 
             }
             this.updateEvaluationNumber = function(res) {
-                if( typeof res.nevaluations != 'undefined' ) {
+                if (typeof res.nevaluations != 'undefined') {
                     var text = res.nevaluations;
-                    if ( typeof res.reductionbyevaluation != 'undefined'
+                    if (typeof res.reductionbyevaluation != 'undefined'
                          && res.reductionbyevaluation > ''
                          && res.reductionbyevaluation != 0) {
-                        if ( res.freeevaluations != 0 ) {
+                        if (res.freeevaluations != 0) {
                             text = text + '/' + res.freeevaluations;
                         }
                         text = text + ' -' + res.reductionbyevaluation;
@@ -638,7 +649,7 @@ define(
                 var name = 'grade';
                 var titleclass = 'vpl_ide_accordion_t_' + name;
                 var contentclass = 'vpl_ide_accordion_c_' + name;
-                if ( result.find('.' + contentclass).length == 0 ) {
+                if (result.find('.' + contentclass).length == 0) {
                     result.append('<div class="' + titleclass + '"></div>');
                     result.append('<div class="' + contentclass + '"></div>');
                 }
@@ -646,7 +657,7 @@ define(
                     return result.find('h4.' + titleclass).length > 0;
                 }
                 var titleTag = result.find('.' + titleclass);
-                if ( content > '' ) {
+                if (content > '') {
                     titleTag.replaceWith('<h4 class="' + titleclass + '">' + content + '</h4>');
                     return true;
                 } else {
@@ -657,7 +668,7 @@ define(
             this.setResultTab = function(name, content, raw) {
                 var titleclass = 'vpl_ide_accordion_t_' + name;
                 var contentclass = 'vpl_ide_accordion_c_' + name;
-                if ( result.find('.' + contentclass).length == 0 ) {
+                if (result.find('.' + contentclass).length == 0) {
                     result.append('<div class="' + titleclass + '"></div>');
                     result.append('<div class="' + contentclass + '"></div>');
                 }
@@ -667,13 +678,13 @@ define(
                 var titleTag = result.find('.' + titleclass);
                 var contentTag = result.find('.' + contentclass);
                 var HTMLcontent = $('<div>' + content + '</div>');
-                HTMLcontent.find('h4').replaceWith(function () {
+                HTMLcontent.find('h4').replaceWith(function() {
                     return $("<h5>").append($(this).contents());
                 });
-                if ( contentTag.html() == HTMLcontent.html() ) {
+                if (contentTag.html() == HTMLcontent.html()) {
                     return content > '';
                 }
-                if ( content > '' ) {
+                if (content > '') {
                     titleTag.replaceWith('<h4 class="' + titleclass + '">' + str(name) + '</h4>');
                     contentTag.replaceWith('<div class="ui-widget ' + contentclass + '">' + HTMLcontent.html() + '</div>');
                     return true;
@@ -689,7 +700,7 @@ define(
                 var fileNames = [];
                 var i;
                 for (i = 0; i < files.length; i++) {
-                    fileNames [i] = files[i].getFileName();
+                    fileNames[i] = files[i].getFileName();
                     files[i].clearAnnotations();
                 }
                 var show = false;
@@ -701,10 +712,10 @@ define(
                 show = show || gradeShow;
                 hasContent = self.setResultTab('variables', res.variables, res.variables);
                 show = show || hasContent;
-                formated = VPLUtil.processResult( res.compilation, fileNames, files, true, false );
+                formated = VPLUtil.processResult(res.compilation, fileNames, files, true, false);
                 hasContent = self.setResultTab('compilation', formated, res.compilation);
                 show = show || hasContent;
-                formated = VPLUtil.processResult( res.evaluation, fileNames, files, false, false );
+                formated = VPLUtil.processResult(res.evaluation, fileNames, files, false, false);
                 hasContent = self.setResultTab('comments', formated, res.evaluation);
                 show = show || hasContent;
                 formated = VPLUtil.sanitizeText(res.execution);
@@ -713,12 +724,12 @@ define(
                 hasContent = self.setResultTab('description', options.description, options.description);
                 if (hasContent && typeof MathJax == 'object') { // MathJax workaround.
                     var math = result.find(".vpl_ide_accordion_c_description")[0];
-                    MathJax.Hub.Queue(["Typeset",MathJax.Hub,math]);
+                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
                 }
                 show = show || hasContent;
-                if ( show ) {
-                    result_container.show();
-                    result_container.vpl_visible = true;
+                if (show) {
+                    resultContainer.show();
+                    resultContainer.vplVisible = true;
                     result.accordion("refresh");
                     result.accordion('option', 'active', gradeShow ? 1 : 0);
                     for (i = 0; i < files.length; i++) {
@@ -731,39 +742,39 @@ define(
                         }
                     }
                 } else {
-                    result_container.hide();
-                    result_container.vpl_visible = false;
+                    resultContainer.hide();
+                    resultContainer.vplVisible = false;
                 }
                 VPLUtil.delay('autoResizeTab', autoResizeTab);
             };
 
             result.accordion({
-                heightStyle : 'fill',
-                header : 'h4',
+                heightStyle: 'fill',
+                header: 'h4',
                 animate: false,
-                beforeActivate : avoidSelectGrade,
+                beforeActivate: avoidSelectGrade,
             });
-            result_container.width(2 * result_container.vpl_minWidth);
+            resultContainer.width(2 * resultContainer.vplMinWidth);
             result.on('click', 'a', function(event) {
                 event.preventDefault();
                 fileManager.gotoFileLink(event.currentTarget);
             });
-            result_container.vpl_visible = false;
-            result_container.hide();
+            resultContainer.vplVisible = false;
+            resultContainer.hide();
 
             fileListContainer.addClass('ui-tabs ui-widget ui-widget-content ui-corner-all');
             fileList.text(str('filelist'));
             fileList.html(VPLUtil.iconFolder() + fileList.html());
             fileList.addClass("ui-widget-header ui-button-text-only ui-corner-all");
             fileListContent.addClass("ui-widget ui-corner-all");
-            fileListContainer.width(2 * fileListContainer.vpl_minWidth);
+            fileListContainer.width(2 * fileListContainer.vplMinWidth);
             fileListContainer.on('click', 'a', function(event) {
                 event.preventDefault();
                 fileManager.gotoFileLink(event.currentTarget);
             });
-            fileListContainer.vpl_visible = false;
+            fileListContainer.vplVisible = false;
             fileListContainer.hide();
-            tabs.tabs({classes: {"ui-tabs-panel" : null}});
+            tabs.tabs({classes: {"ui-tabs-panel": null}});
             var tabsAir = false;
             function getTabsAir() {
                 if (tabsAir === false) {
@@ -775,45 +786,45 @@ define(
                 var diffLeft = ui.position.left - ui.originalPosition.left;
                 var maxWidth;
                 if (diffLeft !== 0) {
-                    maxWidth = tabs.width() + fileListContainer.width() - fileListContainer.vpl_minWidth;
+                    maxWidth = tabs.width() + fileListContainer.width() - fileListContainer.vplMinWidth;
                     tabs.resizable('option', 'maxWidth', maxWidth);
-                    fileListContainer.width(fileListContainer.vpl_original_width + diffLeft);
+                    fileListContainer.width(fileListContainer.vplOriginalWidth + diffLeft);
                 } else {
-                    maxWidth = tabs.width() + result_container.width() - result_container.vpl_minWidth;
+                    maxWidth = tabs.width() + resultContainer.width() - resultContainer.vplMinWidth;
                     tabs.resizable('option', 'maxWidth', maxWidth);
-                    var diff_width = ui.size.width - ui.originalSize.width;
-                    result_container.width(result_container.vpl_original_width - diff_width);
+                    var diffWidth = ui.size.width - ui.originalSize.width;
+                    resultContainer.width(resultContainer.vplOriginalWidth - diffWidth);
                 }
                 fileManager.currentFile('adjustSize');
             }
             var resizableOptions = {
-                containment : 'parent',
-                resize : resizeTabWidth,
-                start : function() {
+                containment: 'parent',
+                resize: resizeTabWidth,
+                start: function() {
                     $(window).off('resize', autoResizeTab);
                     tabs.resizable('option', 'minWidth', 100);
-                    if (result_container.vpl_visible) {
-                        result_container.vpl_original_width = result_container.width();
+                    if (resultContainer.vplVisible) {
+                        resultContainer.vplOriginalWidth = resultContainer.width();
                     }
-                    if (fileListContainer.vpl_visible) {
-                        fileListContainer.vpl_original_width = fileListContainer.width();
+                    if (fileListContainer.vplVisible) {
+                        fileListContainer.vplOriginalWidth = fileListContainer.width();
                     }
                 },
-                stop : function(e, ui) {
+                stop: function(e, ui) {
                     resizeTabWidth(e, ui);
                     tabs.resizable('option', 'maxWidth', 100000);
                     tabs.resizable('option', 'minWidth', 0);
                     autoResizeTab();
                     $(window).on('resize', autoResizeTab);
                 },
-                handles : ""
+                handles: ""
             };
             tabs.resizable(resizableOptions);
             function updateTabsHandles() {
-                var handles = [ 'e', 'w', 'e', 'e, w' ];
+                var handles = ['e', 'w', 'e', 'e, w'];
                 var index = 0;
-                index += fileListContainer.vpl_visible ? 1 : 0;
-                index += result_container.vpl_visible ? 2 : 0;
+                index += fileListContainer.vplVisible ? 1 : 0;
+                index += resultContainer.vplVisible ? 2 : 0;
                 tabs.resizable('destroy');
                 resizableOptions.handles = handles[index];
                 resizableOptions.disable = index === 0;
@@ -825,16 +836,16 @@ define(
                 if (newHeight < 150) {
                     newHeight = 150;
                 }
-                tr.height( newHeight );
+                tr.height(newHeight);
                 var panelHeight = newHeight - 3 * getTabsAir();
                 tabs.height(panelHeight);
-                if (result_container.vpl_visible) {
-                    result_container.height( panelHeight + getTabsAir());
-                    result.accordion( 'refresh' );
+                if (resultContainer.vplVisible) {
+                    resultContainer.height(panelHeight + getTabsAir());
+                    result.accordion('refresh');
                 }
-                if (fileListContainer.vpl_visible) {
-                    fileListContent.height( panelHeight - (fileList.outerHeight() + getTabsAir()));
-                    fileListContainer.height( panelHeight );
+                if (fileListContainer.vplVisible) {
+                    fileListContent.height(panelHeight - (fileList.outerHeight() + getTabsAir()));
+                    fileListContainer.height(panelHeight);
                 }
             }
             adjustTabsTitles = function(center) {
@@ -855,7 +866,7 @@ define(
                             scroll = 0;
                         }
                         tabsUl.parent().finish().animate({
-                            scrollLeft : scroll
+                            scrollLeft: scroll
                         }, 'slow');
                     }
                 }
@@ -863,13 +874,13 @@ define(
                     tabsUl.width('');
                 }
             };
-            autoResizeTab = function () {
+            autoResizeTab = function() {
                 var oldWidth = tabs.width();
                 var newWidth = menu.width();
                 var planb = false;
                 updateTabsHandles();
                 tr.width(menu.outerWidth());
-                if (fileListContainer.vpl_visible) {
+                if (fileListContainer.vplVisible) {
                     var left = fileListContainer.outerWidth() + tabsAir;
                     oldWidth += left;
                     if (left >= 100) {
@@ -881,8 +892,8 @@ define(
                 } else {
                     tabs.css('left', 0);
                 }
-                if (result_container.vpl_visible) {
-                    var rigth = result_container.outerWidth() + tabsAir;
+                if (resultContainer.vplVisible) {
+                    var rigth = resultContainer.outerWidth() + tabsAir;
                     oldWidth += rigth;
                     newWidth -= rigth;
                     if (newWidth < 100) {
@@ -892,15 +903,15 @@ define(
                 if (planb) {
                     var rel = menu.width() / oldWidth;
                     var wfl = 0;
-                    if (fileListContainer.vpl_visible) {
+                    if (fileListContainer.vplVisible) {
                         wfl = fileListContainer.width() * rel;
                         fileListContainer.width(wfl - tabsAir);
                         wfl += tabsAir;
                         tabs.css('left', wfl);
                     }
                     tabs.width(tabs.width() * rel);
-                    if (result_container.vpl_visible) {
-                        result_container.width(menu.width() - (wfl + tabs.width() + tabsAir));
+                    if (resultContainer.vplVisible) {
+                        resultContainer.width(menu.width() - (wfl + tabs.width() + tabsAir));
                     }
                 } else {
                     tabs.width(newWidth);
@@ -913,33 +924,34 @@ define(
                 fileManager.currentFile('focus');
             }
             var dialogbaseOptions = $.extend({}, {
-                close : focusCurrentFile
+                close: focusCurrentFile
             }, VPLUtil.dialogbaseOptions);
             function showMessage(message, options) {
                 return VPLUtil.showMessage(message, $.extend({}, dialogbaseOptions, options));
             }
             showErrorMessage = function(message) {
                 return VPLUtil.showErrorMessage(message, {
-                    close : focusCurrentFile
+                    close: focusCurrentFile
                 });
             };
 
             var dialogNew = $('#vpl_ide_dialog_new');
             function newFileHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
-                    return;
+                    return false;
                 }
                 dialogNew.dialog('close');
                 var file = {
-                    name:$('#vpl_ide_input_newfilename').val(),
-                    contents:'',
-                    encoding:0
+                    name: $('#vpl_ide_input_newfilename').val(),
+                    contents: '',
+                    encoding: 0
                 };
                 var newfile = fileManager.addFile(file, false, updateMenu, showErrorMessage);
                 if (newfile) {
                     fileManager.open(newfile);
                     tabs.tabs('option', 'active', fileManager.getTabPos(newfile));
                     newfile.focus();
+                    return true;
                 }
                 return false;
             }
@@ -951,8 +963,8 @@ define(
             };
             dialogNew.find('input').on('keypress', newFileHandler);
             dialogNew.dialog($.extend({}, dialogbaseOptions, {
-                title : str('create_new_file'),
-                buttons : dialogButtons
+                title: str('create_new_file'),
+                buttons: dialogButtons
             }));
 
             var dialogRename = $('#vpl_ide_dialog_rename');
@@ -968,20 +980,20 @@ define(
             dialogRename.find('input').on('keypress', renameHandler);
             dialogButtons[str('ok')] = renameHandler;
             dialogRename.dialog($.extend({}, dialogbaseOptions, {
-                open : function() {
+                open: function() {
                     $('#vpl_ide_input_renamefilename').val(fileManager.currentFile('getFileName'));
                 },
-                title : str('rename_file'),
-                buttons : dialogButtons
+                title: str('rename_file'),
+                buttons: dialogButtons
             }));
-            dialogButtons[str('ok')] = function(){
+            dialogButtons[str('ok')] = function() {
                 $(this).dialog('close');
             };
             var dialogComments = $('#vpl_ide_dialog_comments');
             dialogComments.dialog($.extend({}, dialogbaseOptions, {
-                title : str('comments'),
-                width : '40em',
-                buttons : dialogButtons
+                title: str('comments'),
+                width: '40em',
+                buttons: dialogButtons
             }));
             $('#vpl_ide_input_comments').width('30em');
             var aboutDialog = $('#vpl_ide_dialog_about');
@@ -991,14 +1003,14 @@ define(
             };
             var shortcutDialog = $('#vpl_ide_dialog_shortcuts');
             shortcutDialog.dialog($.extend({}, dialogbaseOptions, {
-                open: function(){
+                open: function() {
                     var html = menuButtons.getShortcuts(fileManager.currentFile('getEditor'));
                     $('#vpl_ide_dialog_shortcuts').html(html);
                 },
-                title : str('shortcuts'),
-                width : 400,
+                title: str('shortcuts'),
+                width: 400,
                 height: 300,
-                buttons : OKButtons
+                buttons: OKButtons
             }));
             shortcutDialog.dialog('option', 'height', 300);
             OKButtons[str('shortcuts')] = function() {
@@ -1006,18 +1018,18 @@ define(
                 shortcutDialog.dialog('open');
             };
             aboutDialog.dialog($.extend({}, dialogbaseOptions, {
-                open: function(){
+                open: function() {
                     var html = menuButtons.getShortcuts(fileManager.currentFile('getEditor'));
                     aboutDialog.next().find("button").filter(
                         function() {
                             return $(this).text() == str('shortcuts');
                         }
-                    ).button(html != '' ? 'enable' : 'disable');
+                  ).button(html != '' ? 'enable' : 'disable');
                 },
-                title : str('about'),
-                width : 400,
+                title: str('about'),
+                width: 400,
                 height: 300,
-                buttons : OKButtons
+                buttons: OKButtons
             }));
             aboutDialog.dialog('option', 'height', 300);
             var dialogSort = $('#vpl_ide_dialog_sort');
@@ -1047,9 +1059,9 @@ define(
                 $(this).dialog('close');
             };
             dialogSort.dialog($.extend({}, dialogbaseOptions, {
-                title : str('sort'),
-                buttons : dialogSortButtons,
-                open : function() {
+                title: str('sort'),
+                buttons: dialogSortButtons,
+                open: function() {
                     var list = $('#vpl_sort_list');
                     list.html('');
                     var files = fileManager.getFiles();
@@ -1062,26 +1074,26 @@ define(
                         list.append(file);
                     }
                     list.sortable({
-                        items : "li:not(.ui-state-disabled)",
-                        placeholder : "ui-state-highlight",
-                        start : function(event, ui) {
+                        items: "li:not(.ui-state-disabled)",
+                        placeholder: "ui-state-highlight",
+                        start: function(event, ui) {
                             ui.item.addClass('ui-state-highlight');
                         },
-                        stop : function(event, ui) {
+                        stop: function(event, ui) {
                             ui.item.removeClass('ui-state-highlight');
                         },
                     });
                     list.disableSelection();
                 },
-                maxHeight : 400
+                maxHeight: 400
             }));
             var dialogMultidelete = $('#vpl_ide_dialog_multidelete');
             var dialogMultideleteButtons = {};
             dialogMultideleteButtons[str('selectall')] = function() {
-                $(this).find('input').prop( "checked", true );
+                $(this).find('input').prop("checked", true);
             };
             dialogMultideleteButtons[str('deselectall')] = function() {
-                $(this).find('input').prop( "checked", false );
+                $(this).find('input').prop("checked", false);
             };
             dialogMultideleteButtons[str('deleteselected')] = function() {
                 var files = fileManager.getFiles();
@@ -1089,7 +1101,7 @@ define(
                 var labelList = $('#vpl_multidelete_list label');
                 labelList.each(function() {
                     var label = $(this);
-                    if ( label.find('input').prop('checked') ) {
+                    if (label.find('input').prop('checked')) {
                         var id = label.data('fileid');
                         toDeleteList.push(files[id].getFileName());
                     }
@@ -1105,9 +1117,9 @@ define(
                 $(this).dialog('close');
             };
             dialogMultidelete.dialog($.extend({}, dialogbaseOptions, {
-                title : str('multidelete'),
-                buttons : dialogMultideleteButtons,
-                open : function() {
+                title: str('multidelete'),
+                buttons: dialogMultideleteButtons,
+                open: function() {
                     var list = $('#vpl_multidelete_list');
                     list.html('');
                     var files = fileManager.getFiles();
@@ -1120,37 +1132,37 @@ define(
                     }
                     list.find('label').button();
                 },
-                maxHeight : 400,
-                maxWidth : 400
+                maxHeight: 400,
+                maxWidth: 400
             }));
             var dialogFontsize = $('#vpl_ide_dialog_fontsize');
             var fontsizeSlider = $('#vpl_ide_dialog_fontsize .vpl_fontsize_slider');
             var dialogFontFizeButtons = {};
             dialogFontFizeButtons[str('ok')] = function() {
-                var value = fontsizeSlider.slider( "value");
+                var value = fontsizeSlider.slider("value");
                 fileManager.setFontSize(value);
                 $(this).dialog('close');
                 $.ajax({
-                    async : true,
-                    type : "POST",
-                    url : '../editor/userpreferences.json.php',
-                    'data' : JSON.stringify({fontSize:value}),
-                    contentType : "application/json; charset=utf-8",
-                    dataType : "json"
+                    async: true,
+                    type: "POST",
+                    url: '../editor/userpreferences.json.php',
+                    'data': JSON.stringify({fontSize: value}),
+                    contentType: "application/json; charset=utf-8",
+                    dataType: "json"
                 });
             };
             dialogFontFizeButtons[str('cancel')] = function() {
-                fileManager.setFontSize(fontsizeSlider.data( "vpl_fontsize" ));
+                fileManager.setFontSize(fontsizeSlider.data("vpl_fontsize"));
                 $(this).dialog('close');
             };
             dialogFontFizeButtons[str('reset')] = function() {
                 fontsizeSlider.slider('value', 12);
             };
             dialogFontsize.dialog($.extend({}, dialogbaseOptions, {
-                title : str('fontsize'),
-                buttons : dialogFontFizeButtons,
-                open : function() {
-                    fontsizeSlider.data( "vpl_fontsize" , fileManager.getFontSize() );
+                title: str('fontsize'),
+                buttons: dialogFontFizeButtons,
+                open: function() {
+                    fontsizeSlider.data("vpl_fontsize", fileManager.getFontSize());
                     fontsizeSlider.slider('value', fileManager.getFontSize());
                 },
             }));
@@ -1158,9 +1170,9 @@ define(
                 min: 1,
                 max: 48,
                 change: function() {
-                    var value = fontsizeSlider.slider( "value");
-                    fileManager.setFontSize( value );
-                    dialogFontsize.find('.vpl_fontsize_slider_value').text( value );
+                    var value = fontsizeSlider.slider("value");
+                    fileManager.setFontSize(value);
+                    dialogFontsize.find('.vpl_fontsize_slider_value').text(value);
                 }
             });
             var dialogAceTheme = $('#vpl_ide_dialog_acetheme');
@@ -1169,22 +1181,22 @@ define(
             dialogAceThemeButtons[str('ok')] = function() {
                 fileManager.setTheme(acethemeSelect.val());
                 $(this).dialog('close');
-                VPLUtil.setUserPreferences({aceTheme:acethemeSelect.val()});
+                VPLUtil.setUserPreferences({aceTheme: acethemeSelect.val()});
             };
             dialogAceThemeButtons[str('cancel')] = function() {
-                fileManager.setTheme(acethemeSelect.data( "acetheme" ));
+                fileManager.setTheme(acethemeSelect.data("acetheme"));
                 $(this).dialog('close');
             };
             dialogAceThemeButtons[str('reset')] = function() {
-                acethemeSelect.val(acethemeSelect.data( "acetheme" ));
+                acethemeSelect.val(acethemeSelect.data("acetheme"));
                 fileManager.setTheme(acethemeSelect.val());
             };
             dialogAceTheme.dialog($.extend({}, dialogbaseOptions, {
-                title : str('theme'),
-                buttons : dialogAceThemeButtons,
+                title: str('theme'),
+                buttons: dialogAceThemeButtons,
                 modal: false,
-                open : function() {
-                    acethemeSelect.data( "acetheme", fileManager.getTheme() );
+                open: function() {
+                    acethemeSelect.data("acetheme", fileManager.getTheme());
                     acethemeSelect.val(fileManager.getTheme());
                 },
             }));
@@ -1199,14 +1211,14 @@ define(
                 VPLUtil.readSelectedFiles(this.files, function(file) {
                     return fileManager.addFile(file, true, updateMenu, showErrorMessage);
                 },
-                function(){
+                function() {
                     fileManager.fileListVisibleIfNeeded();
                 });
             };
             fileSelect.on('change', fileSelectHandler);
             // Menu acctions.
             menuButtons.add({
-                name:'filelist',
+                name: 'filelist',
                 originalAction: function() {
                     fileManager.fileListVisible(!fileManager.isFileListVisible());
                     VPLUtil.delay('updateMenu', updateMenu);
@@ -1245,7 +1257,7 @@ define(
                 }
             });
             menuButtons.add({
-                name:'delete',
+                name: 'delete',
                 originalAction: function() {
                     var file = fileManager.currentFile();
                     if (!file) {
@@ -1254,20 +1266,20 @@ define(
                     var filename = file.getFileName();
                     var message = str('delete_file_fq', filename);
                     showMessage(message, {
-                        ok : function() {
+                        ok: function() {
                             fileManager.deleteFile(filename, showErrorMessage);
                         },
-                        title : str('delete_file_q'),
-                        icon : 'trash'
+                        title: str('delete_file_q'),
+                        icon: 'trash'
                     });
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Ctrl-D',
                     mac: 'Ctrl-D'
                 }
             });
             menuButtons.add({
-                name:'close',
+                name: 'close',
                 originalAction: function() {
                     var file = fileManager.currentFile();
                     if (!file) {
@@ -1275,101 +1287,101 @@ define(
                     }
                     fileManager.close(file);
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Alt-W',
                     mac: 'Option-W'
                 }
             });
             menuButtons.add({
-                name:'import',
+                name: 'import',
                 originalAction: function() {
                     fileSelect.val('');
                     fileSelect.trigger('click');
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Ctrl-I',
                     mac: 'Ctrl-I'
                 }
             });
             menuButtons.add({
-                name:'sort',
+                name: 'sort',
                 originalAction: function() {
                     dialogSort.dialog('open');
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Ctrl-O',
                     mac: 'Ctrl-O'
                 }
             });
             menuButtons.add({
-                name:'multidelete',
+                name: 'multidelete',
                 originalAction: function() {
                     dialogMultidelete.dialog('open');
                 }
             });
             menuButtons.add({
-                name:'fontsize',
+                name: 'fontsize',
                 originalAction: function() {
                     dialogFontsize.dialog('open');
                 }
             });
             menuButtons.add({
-                name:'theme',
+                name: 'theme',
                 originalAction: function() {
                     dialogAceTheme.dialog('open');
                 }
             });
             menuButtons.add({
-                name:'print',
+                name: 'print',
                 originalAction: function() {
                     window.print();
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Alt-P',
                     mac: 'Command-P'
                 }
             });
             menuButtons.add({
-                name:'undo',
+                name: 'undo',
                 originalAction: function() {
                     fileManager.currentFile('undo');
                 }
             });
             menuButtons.add({
-                name:'redo',
+                name: 'redo',
                 originalAction: function() {
                     fileManager.currentFile('redo');
                 }
             });
             menuButtons.add({
-                name:'select_all',
-                editorName:'selectall',
+                name: 'select_all',
+                editorName: 'selectall',
                 originalAction: function() {
                     fileManager.currentFile('selectAll');
                 }
             });
             menuButtons.add({
-                name:'find',
+                name: 'find',
                 originalAction: function() {
                     fileManager.currentFile('find');
                 }
             });
             menuButtons.add({
-                name:'find_replace',
-                editorName:'replace',
+                name: 'find_replace',
+                editorName: 'replace',
                 originalAction: function() {
                     fileManager.currentFile('replace');
                 }
             });
             menuButtons.add({
-                name:'next',
-                editorName:'findnext',
+                name: 'next',
+                editorName: 'findnext',
                 originalAction: function() {
                     fileManager.currentFile('next');
                 }
             });
             menuButtons.add({
-                name:'fullscreen',
+                name: 'fullscreen',
                 originalAction: function() {
                     var tags = 'header, nav, footer, aside, .dropdown, #page-header, div.navbar, #nav-drawer';
                     tags += ', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
@@ -1385,7 +1397,7 @@ define(
                         $(tags).hide();
                         rootObj.addClass('vpl_ide_root_fullscreen');
                         menuButtons.setText('fullscreen', 'regularscreen');
-                        if ( options.username ) {
+                        if (options.username) {
                             $('#vpl_ide_user').show();
                         }
                         fullScreen = true;
@@ -1393,13 +1405,13 @@ define(
                     focusCurrentFile();
                     setTimeout(autoResizeTab, 10);
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Alt-F',
                     mac: 'Ctrl-F'
                 }
             });
             menuButtons.add({
-                name:'download',
+                name: 'download',
                 originalAction: function() {
                     window.location = options.download;
                 }
@@ -1407,10 +1419,10 @@ define(
 
             function resetFiles() {
                 VPLUtil.requestAction('resetfiles', '', {}, options.ajaxurl)
-                .done( function(response) {
+                .done(function(response) {
                     var files = response.files;
                     for (var fileName in files) {
-                        if ( files.hasOwnProperty(fileName) ) {
+                        if (files.hasOwnProperty(fileName)) {
                             fileManager.addFile(files[fileName], true, VPLUtil.doNothing, showErrorMessage);
                         }
                     }
@@ -1419,41 +1431,56 @@ define(
                 }).fail(showErrorMessage);
             }
             menuButtons.add({
-                name:'resetfiles',
+                name: 'resetfiles',
                 originalAction: function() {
                     showMessage(str('sureresetfiles'), {
-                        title : str('resetfiles'),
-                        ok : resetFiles
+                        title: str('resetfiles'),
+                        ok: resetFiles
                     });
                 }
             });
             menuButtons.add({
-                name:'save',
+                name: 'save',
                 originalAction: function() {
                     var data = {
                         files: fileManager.getFilesToSave(),
-                        comments: $('#vpl_ide_input_comments').val()
+                        comments: $('#vpl_ide_input_comments').val(),
+                        version: fileManager.getVersion()
                     };
-                    VPLUtil.requestAction('save', 'saving', data, options.ajaxurl)
-                    .done( function(response) {
-                        fileManager.resetModified();
-                        menuButtons.setTimeLeft(response);
-                        VPLUtil.delay('updateMenu', updateMenu);
-                    }).fail(showErrorMessage);
+                    function doSave() {
+                        VPLUtil.requestAction('save', 'saving', data, options.ajaxurl)
+                        .done(function(response) {
+                            if (response.oldversion) {
+                                showMessage(response.question, {
+                                    title: str('save'),
+                                    ok: function() {
+                                        data.version = response.version;
+                                        doSave();
+                                    }
+                                });
+                            } else {
+                                fileManager.resetModified();
+                                fileManager.setVersion(response.version);
+                                menuButtons.setTimeLeft(response);
+                                VPLUtil.delay('updateMenu', updateMenu);
+                            }
+                        }).fail(showErrorMessage);
+                    }
+                    doSave();
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Ctrl-S',
                     mac: 'Command-S'
                 }
             });
 
             var executionActions = {
-                'getConsole' : function() {
+                'getConsole': function() {
                     return lastConsole;
                 },
-                'setResult' : self.setResult,
-                'ajaxurl' : options.ajaxurl,
-                'run' : function(type, coninfo, ws) {
+                'setResult': self.setResult,
+                'ajaxurl': options.ajaxurl,
+                'run': function(type, coninfo, ws) {
                     if (lastConsole && lastConsole.isOpen()) {
                         lastConsole.close();
                     }
@@ -1472,13 +1499,13 @@ define(
                                 });
                     }
                 },
-                'lastAction' : false,
-                'getLastAction' : function() {
+                'lastAction': false,
+                'getLastAction': function() {
                     var ret = this.lastAction;
                     this.lastAction = false;
                     return ret;
                 },
-                'setLastAction' : function(action) {
+                'setLastAction': function(action) {
                     this.lastAction = action;
                 }
             };
@@ -1494,60 +1521,60 @@ define(
                     .fail(showErrorMessage);
                 }
             }
-            function runAction(){
+            function runAction() {
                 executionRequest('run', 'running', {
-                    XGEOMETRY : VNCClient.getCanvasSize()
+                    XGEOMETRY: VNCClient.getCanvasSize()
                 });
             }
             menuButtons.add({
-                name:'run',
+                name: 'run',
                 originalAction: function() {
                     executionActions.setLastAction(runAction);
                     runAction();
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Ctrl-F11',
                     mac: 'Command-U'
                 }
             });
-            function debugAction(){
+            function debugAction() {
                 executionRequest('debug', 'debugging', {
-                    XGEOMETRY : VNCClient.getCanvasSize()
+                    XGEOMETRY: VNCClient.getCanvasSize()
                 });
             }
             menuButtons.add({
-                name:'debug',
+                name: 'debug',
                 originalAction: function() {
                     executionActions.setLastAction(debugAction);
                     debugAction();
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Alt-F11',
                     mac: 'Option-U'
                 }
             });
-            function evaluateAction(){
+            function evaluateAction() {
                 executionRequest('evaluate', 'evaluating');
             }
             menuButtons.add({
-                name:'evaluate',
+                name: 'evaluate',
                 originalAction: function() {
                     executionActions.setLastAction(evaluateAction);
                     evaluateAction();
                 },
-                bindKey:{
+                bindKey: {
                     win: 'Shift-F11',
                     mac: 'Command-Option-U'
                 }
             });
             menuButtons.add({
-                name:'comments',
+                name: 'comments',
                 originalAction: function() {
                     dialogComments.dialog('open');
                 },
             });
             menuButtons.add({
-                name:'console',
+                name: 'console',
                 originalAction: function() {
                     if (lastConsole.isOpen()) {
                         lastConsole.close();
@@ -1556,24 +1583,24 @@ define(
                     }
                 }
             });
-            menuButtons.add({ name: 'user' } );
+            menuButtons.add({name: 'user'});
             menuButtons.add({
-                name:'about',
+                name: 'about',
                 originalAction: function() {
                     aboutDialog.dialog('open');
                 }
             });
             menuButtons.add({
-                name:'timeleft',
+                name: 'timeleft',
                 originalAction: function() {
                     menuButtons.toggleTimeLeft();
                 }
             });
             menuButtons.add({
-                name:'more',
+                name: 'more',
                 originalAction: function() {
                     var tag = $('#vpl_ide_menuextra');
-                    if ( tag.is(":visible") ) {
+                    if (tag.is(":visible")) {
                         menuButtons.setText('more', 'more', VPLUtil.str('more'));
                         tag.hide();
                     } else {
@@ -1635,12 +1662,12 @@ define(
             $('#vpl_ide_fullscreen').button();
             $('#vpl_ide_acetheme').button();
             $('#vpl_ide_about').button();
-            $('#vpl_ide_user').button().css('float','right').hide();
-            $('#vpl_ide_timeleft').button().css('float','right').hide();
-            $('#vpl_menu .ui-button').css('padding','6px');
-            $('#vpl_menu .ui-button-text').css('padding','0');
+            $('#vpl_ide_user').button().css('float', 'right').hide();
+            $('#vpl_ide_timeleft').button().css('float', 'right').hide();
+            $('#vpl_menu .ui-button').css('padding', '6px');
+            $('#vpl_menu .ui-button-text').css('padding', '0');
             var alwaysActive = ['filelist', 'more', 'fullscreen', 'about', 'resetfiles',
-                                'download', 'comments', 'console','import',
+                                'download', 'comments', 'console', 'import',
                                 'fontsize', 'timeleft'];
             for (var i = 0; i < alwaysActive.length; i++) {
                 menuButtons.enable(alwaysActive[i], true);
@@ -1674,7 +1701,7 @@ define(
                 menuButtons.enable('theme', true);
                 var sel;
                 if (!file || nfiles === 0) {
-                    sel = [ 'rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next' ];
+                    sel = ['rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next'];
                     for (i = 0; i < sel.length; i++) {
                         menuButtons.enable(sel[i], false);
                     }
@@ -1707,6 +1734,7 @@ define(
                     if (fileManager.isModified()) {
                         return str('changesNotSaved');
                     }
+                    return '';
                 });
             }
             fileManager = new FileManager();
@@ -1748,11 +1776,11 @@ define(
                 fileManager.generateFileList();
                 tabs.tabs('option', 'active', 0);
 
-                if(response.compilationexecution){
-                    self.setResult(response.compilationexecution,false);
+                if (response.compilationexecution) {
+                    self.setResult(response.compilationexecution, false);
                 }
                 menuButtons.setTimeLeft(response);
-                if( response.comments > '') {
+                if (response.comments > '') {
                     $('#vpl_ide_input_comments').val(response.comments);
                 }
                 if (allOK) {
@@ -1762,17 +1790,18 @@ define(
                 }
                 if (fileManager.length() === 0 && maxNumberOfFiles > 0) {
                     menuButtons.getAction('new')();
-                } else if ( ! options.saved ) {
+                } else if (!options.saved) {
                     fileManager.setModified();
                 }
                 fileManager.setFontSize(options.fontSize);
+                fileManager.setVersion(response.version);
             })
             .fail(showErrorMessage);
         };
         window.VPLIDE = VPLIDE;
         return {
-            init: function(root_id, options) {
-                vplIdeInstance = new VPLIDE(root_id, options);
+            init: function(rootId, options) {
+                vplIdeInstance = new VPLIDE(rootId, options);
             }
         };
     }
