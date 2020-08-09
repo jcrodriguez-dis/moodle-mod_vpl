@@ -32,7 +32,7 @@ define(
         'mod_vpl/vplclipboard'
     ],
     function($, jqui, VPLUtil, VPLClipboard) {
-        if ( typeof VPLTerminal !== 'undefined' ) {
+        if (typeof VPLTerminal !== 'undefined') {
             return VPLTerminal;
         }
         var NTHEMES = 5;
@@ -135,7 +135,7 @@ define(
             };
             this.writeLocal = function(text) {
                 ws.onmessage({
-                    data : text
+                    data: text
                 });
                 return text;
             };
@@ -233,40 +233,40 @@ define(
                 var cbase = "vpl_terminal_theme";
                 var nthemes = 5;
                 tdialog.data('terminal_theme', theme);
-                VPLUtil.setUserPreferences({terminalTheme:theme});
+                VPLUtil.setUserPreferences({terminalTheme: theme});
                 for (var i = 0; i < nthemes; i++) {
                     tdialog.removeClass(cbase + i);
                 }
                 tdialog.addClass(cbase + theme);
             }
-            function controlDialogSize(){
+            function controlDialogSize() {
                 // Resize if dialog is large than screen.
                 var bw = tIde.width();
                 var bh = tIde.height();
-                if( tdialog.width() > bw) {
-                    tdialog.dialog( "option", "width", bw);
+                if (tdialog.width() > bw) {
+                    tdialog.dialog("option", "width", bw);
                 }
-                if(tdialog.parent().height() > bh) {
-                    tdialog.dialog( "option", "height", bh - tdialog.prev().outerHeight());
+                if (tdialog.parent().height() > bh) {
+                    tdialog.dialog("option", "height", bh - tdialog.prev().outerHeight());
                 }
             }
             tdialog.dialog({
-                closeOnEscape : false,
-                autoOpen : false,
-                width : 'auto',
-                height : 'auto',
-                resizable : true,
-                dragStop : controlDialogSize,
-                open : controlDialogSize,
-                focus : function() {
+                closeOnEscape: false,
+                autoOpen: false,
+                width: 'auto',
+                height: 'auto',
+                resizable: true,
+                dragStop: controlDialogSize,
+                open: controlDialogSize,
+                focus: function() {
                     controlDialogSize();
                     terminal.focus();
                 },
-                dialogClass : 'vpl_ide vpl_vnc',
-                create : function() {
+                dialogClass: 'vpl_ide vpl_vnc',
+                create: function() {
                     titleText = VPLUtil.setTitleBar(tdialog, 'console', 'console',
-                            [ 'clipboard', 'keyboard', 'theme' ],
-                            [ openClipboard,
+                            ['clipboard', 'keyboard', 'theme'],
+                            [openClipboard,
                             function() {
                                 terminal.focus();
                             },
@@ -276,10 +276,10 @@ define(
                                 setTheme(theme);
                             }]);
                 },
-                close : function() {
+                close: function() {
                     self.closeDialog();
                 },
-                resizeStop : function() {
+                resizeStop: function() {
                     tdialog.width(tdialog.parent().width());
                     tdialog.height(tdialog.parent().height() - tdialog.prev().outerHeight());
                     controlDialogSize();
@@ -289,7 +289,7 @@ define(
             this.setFontSize = function(size) {
                 terminalTag.css("font-size", size + "px");
             };
-            VPLUtil.getUserPreferences(function(data){
+            VPLUtil.getUserPreferences(function(data) {
                 setTheme(data.preferences.terminalTheme);
             });
             tdialog.css("padding", "1px");
@@ -298,15 +298,17 @@ define(
                 terminal.focus();
             };
             this.init = function() {
-                if ( typeof Terminal === 'undefined' ) {
-                    VPLUtil.loadScript(['../../vpl/editor/xterm/term.js'], function() {self.init();});
+                if (typeof Terminal === 'undefined') {
+                    VPLUtil.loadScript(['../../vpl/editor/xterm/term.js'], function() {
+                                                                               self.init();
+                                                                           });
                     return;
                 }
                 terminal = new Terminal({
-                    cols : 80,
-                    rows : 24,
-                    useStyle : true,
-                    screenKeys : true
+                    cols: 80,
+                    rows: 24,
+                    useStyle: true,
+                    screenKeys: true
                 });
                 terminal.on('data', function(data) {
                     if (ws && ws.readyState == ws.OPEN) {
@@ -321,13 +323,13 @@ define(
                         var height = terminalTag.height();
                         var offset = tdialog.scrollTop();
                         var viewHeight = tdialog.innerHeight();
-                        if(viewHeight >= height) {
+                        if (viewHeight >= height) {
                             return;
                         }
                         var lineHeight = height / nlines;
                         var pos = line * lineHeight;
                         // If cursor in view area return.
-                        if(pos >= offset && pos < (viewHeight + offset - lineHeight)) {
+                        if (pos >= offset && pos < (viewHeight + offset - lineHeight)) {
                             return;
                         }
                         if (pos < offset) { // If cursor beforer view area scroll to first view line.
@@ -336,7 +338,7 @@ define(
                             tdialog.scrollTop((pos - viewHeight) + 2 * lineHeight);
                         }
                     }
-                 );
+                );
             };
             this.init();
         };

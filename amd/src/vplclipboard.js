@@ -39,13 +39,13 @@ define(['jquery', 'jqueryui', 'mod_vpl/vplutil'],
                 label2.button().click(action2);
             }
             tdialog.dialog({
-                title : VPLUtil.str('clipboard'),
-                closeOnEscape : true,
-                autoOpen : false,
-                width : 'auto',
-                height : 'auto',
-                resizable : true,
-                dialogClass : 'vpl_clipboard vpl_ide',
+                title: VPLUtil.str('clipboard'),
+                closeOnEscape: true,
+                autoOpen: false,
+                width: 'auto',
+                height: 'auto',
+                resizable: true,
+                dialogClass: 'vpl_clipboard vpl_ide',
             });
             if (onFocus) {
                 tdialog.on("click", onFocus);

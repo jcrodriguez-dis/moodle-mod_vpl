@@ -31,8 +31,8 @@ define(
         'jqueryui',
         'mod_vpl/vplutil',
     ],
-    function($, jqui , VPLUtil) {
-        if ( typeof VPLFile != 'undefined') {
+    function($, jqui, VPLUtil) {
+        if (typeof VPLFile != 'undefined') {
             return VPLFile;
         }
         var VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
@@ -125,7 +125,7 @@ define(
                 var editTag = $(tid);
                 var tabs = editTag.parent();
                 if (editTag.length === 0) {
-                    return;
+                    return false;
                 }
                 var editorHeight = editTag.height();
                 var editorWidth = editTag.width();
@@ -295,13 +295,13 @@ define(
                 };
                 this.setAnnotations = function(a) {
                     if (!opened) {
-                        return;
+                        return false;
                     }
                     return session.setAnnotations(a);
                 };
                 this.clearAnnotations = function() {
                     if (!opened) {
-                        return;
+                        return false;
                     }
                     return session.clearAnnotations();
                 };
@@ -329,10 +329,13 @@ define(
                     editor.setTheme("ace/theme/" + theme);
                 };
                 this.open = function() {
-                    if ( typeof ace === 'undefined' ) {
+                    if (typeof ace === 'undefined') {
                         VPLUtil.loadScript(['../editor/ace9/ace.js',
-                            '../editor/ace9/ext-language_tools.js'], function() {self.open();});
-                        return;
+                            '../editor/ace9/ext-language_tools.js'],
+                            function() {
+                                self.open();
+                            });
+                        return false;
                     }
                     if (opened) {
                         return false;
@@ -345,8 +348,8 @@ define(
                     editor = ace.edit("vpl_file" + id);
                     session = editor.getSession();
                     editor.setOptions({
-                        enableBasicAutocompletion : true,
-                        enableSnippets : true,
+                        enableBasicAutocompletion: true,
+                        enableSnippets: true,
                     });
                     editor.setFontSize(fileManager.getFontSize());
                     editor.setTheme("ace/theme/" + fileManager.getTheme());
@@ -424,8 +427,8 @@ define(
                 this.firstFocus = true;
                 this.workspacePlayground = false;
                 this.focus = function() {
-                    if ( self.firstFocus ) {
-                        if ( self.workspacePlayground ) {
+                    if (self.firstFocus) {
+                        if (self.workspacePlayground) {
                             self.firstFocus = false;
                             Blockly.Events.disable();
                             self.setContent(value);
@@ -497,7 +500,10 @@ define(
                         wrapper = function(text, callback) {
                             text = text ? text.toString() : '' + text;
                             ter.writeLocal(text);
-                            ter.setDataCallback(function(t) {ter.writeLocal('\n');callback(t);});
+                            ter.setDataCallback(function(t) {
+                                                   ter.writeLocal('\n');
+                                                   callback(t);
+                                                });
                         };
                         interpreter.setProperty(scope, 'prompt',
                             interpreter.createAsyncFunction(wrapper));
@@ -516,7 +522,7 @@ define(
                                 interpreter.createNativeFunction(wrapper));
                     }
                     self.interpreter = new Interpreter(code, initApi);
-                    ter.connectLocal(self.stop,function(){});
+                    ter.connectLocal(self.stop, function() {});
                 };
                 this.reservedWords = {
                     'Infinity': true, 'Array': true, 'Boolean': true,
@@ -527,17 +533,17 @@ define(
                     'SyntaxError': true, 'TypeError': true, 'URIError': true,
                     'alert': true, 'arguments': true, 'constructor': true, 'eval': true,
                     'highlightBlock': true, 'isFinite': true,
-                    'isNaN': true, 'parseFloat': true, 'parseInt' : true, 'prompt': true,
+                    'isNaN': true, 'parseFloat': true, 'parseInt': true, 'prompt': true,
                     'self': true, 'this': true, 'window': true,
                 };
                 this.breakpoint = '';
                 this.getVarValue = function(val) {
                     var HTML = '';
-                    if ( val === null ) {
+                    if (val === null) {
                         HTML = "<b>null</b>";
-                    } else if (val != undefined){
+                    } else if (val != undefined) {
                         var type = typeof val;
-                        if (type == 'string' ) {
+                        if (type == 'string') {
                             HTML = '"' + VPLUtil.sanitizeText(val) + '"';
                         } else if (type == 'boolean') {
                             HTML = "<b>" + val + "</b>";
@@ -546,7 +552,7 @@ define(
                             var ar = val.properties;
                             for (var i = 0; i < ar.length; i++) {
                                 HTML += self.getVarValue(ar[i]);
-                                if ( i != ar.length - 1) {
+                                if (i != ar.length - 1) {
                                     HTML += ', ';
                                 }
                             }
@@ -562,11 +568,11 @@ define(
                 this.getVariables = function(properties) {
                     var HTML = '';
                     for (var proname in properties) {
-                        if ( this.reservedWords[proname] === true) {
+                        if (this.reservedWords[proname] === true) {
                             continue;
                         }
                         var pro = properties[proname];
-                        if (pro != undefined && !(pro.class === "Function")){
+                        if (pro != undefined && !(pro.class === "Function")) {
                             HTML += '<b>' + proname + "</b>:&nbsp;" + self.getVarValue(pro) + "<br>\n";
                         }
                     }
@@ -576,7 +582,7 @@ define(
                     var HTML = '(';
                     for (var i = 0; i < args.length; i++) {
                         HTML += '' + args[i];
-                        if ( i < args.length - 1) {
+                        if (i < args.length - 1) {
                             HTML += ', ';
                         }
                     }
@@ -605,30 +611,30 @@ define(
                         }
                     }
                     HTML += '</table>';
-                    vplIdeInstance.setResult({variables:HTML});
+                    vplIdeInstance.setResult({variables: HTML});
                 };
                 this.runLoop = function() {
-                    if (! self.interpreter ) {
+                    if (!self.interpreter) {
                         return;
                     }
                     self.goNext = true;
                     for (var i = 0; i < 30000 && self.goNext; i++) {
-                        if (self.executionState == self.STOPSTATE){
+                        if (self.executionState == self.STOPSTATE) {
                             break;
                         }
-                        if ( ! self.interpreter || ! self.interpreter.step() ) {
-                            self.executionState = self. STOPSTATE;
+                        if (!self.interpreter || !self.interpreter.step()) {
+                            self.executionState = self.STOPSTATE;
                             self.updateRunButtons();
                             break;
                         }
                     }
-                    if ( self.executionState == self.STOPSTATE ) {
+                    if (self.executionState == self.STOPSTATE) {
                         self.workspacePlayground.highlightBlock(-1);
                         vplIdeInstance.getTerminal().closeLocal();
-                        vplIdeInstance.setResult({variables:''});
+                        vplIdeInstance.setResult({variables: ''});
                         return;
                     }
-                    if ( self.executionState == self.RUNSTATE) {
+                    if (self.executionState == self.RUNSTATE) {
                         if (self.animateRun) {
                             setTimeout(self.runLoop, 1000);
                             self.showStack(self.interpreter);
@@ -659,7 +665,7 @@ define(
                     vplIdeInstance.getTerminal().setMessage(VPLUtil.str('stop'));
                     vplIdeInstance.getTerminal().closeLocal();
                     self.interpreter = false;
-                    vplIdeInstance.setResult({variables:''});
+                    vplIdeInstance.setResult({variables: ''});
                 };
                 this.pause = function() {
                     self.executionState = self.STEPSTATE;
@@ -703,7 +709,7 @@ define(
                     self.oldSetFileName(name);
                     var ext2 = regExt2.exec(fileName);
                     var fn2 = regFn2.exec(fileName);
-                    if ( ext2 !== null && fn2 !== null && typeof this.generatorMap[ext2[1]] == 'string' ) {
+                    if (ext2 !== null && fn2 !== null && typeof this.generatorMap[ext2[1]] == 'string') {
                         this.generator = this.generatorMap[ext2[1]];
                         this.generatedFilename = fn2[1];
                     } else {
@@ -715,32 +721,32 @@ define(
                 };
 
                 this.changeCode = function(event) {
-                    if ( event.type == 'ui' && event.element == 'selected') {
+                    if (event.type == 'ui' && event.element == 'selected') {
                         self.breakpoint = event.newValue;
                         return;
                     }
-                    if ( event.type == 'ui'
+                    if (event.type == 'ui'
                             && event.element == 'category'
                             && event.newValue == VPLUtil.str('run')) {
                         self.updateRunButtons();
                         return;
                     }
-                    if ( ! event.recordUndo ) {
+                    if (!event.recordUndo) {
                         return;
                     }
                     self.change();
-                    if ( this.generator != '' ) {
+                    if (this.generator != '') {
                         var code = Blockly[this.generator].workspaceToCode(self.workspacePlayground);
                         var fid = fileManager.fileNameExists(this.generatedFilename);
                         // Try to create generated code file.
-                        if ( fid == -1 ) {
+                        if (fid == -1) {
                             fileManager.addFile({
                                 name: this.generatedFilename,
                                 contents: ''},
                                 false, VPLUtil.doNothing, VPLUtil.doNothing);
                             fid = fileManager.fileNameExists(this.generatedFilename);
                         }
-                        if ( fid != -1 ) {
+                        if (fid != -1) {
                             var fc = fileManager.getFile(fid);
                             fc.setContent(code);
                             fc.change();
@@ -807,7 +813,7 @@ define(
                     opened = true;
                     this.setFileName(fileName);
                     opened = false;
-                    if ( VPLFile.blocklyNotLoaded ){
+                    if (VPLFile.blocklyNotLoaded) {
                         VPLUtil.loadScript(
                             [
                                 '../editor/blockly/blockly_compressed.js',
@@ -827,12 +833,12 @@ define(
                                 self.open();
                             }
                         );
-                        return;
+                        return false;
                     }
                     opened = true;
                     var horizantalMenu = false;
-                    if( /.*[0-9]$/.test(VPLUtil.fileExtension(fileName)) ) {
-                        var horizantalMenu = true;
+                    if (/.*[0-9]$/.test(VPLUtil.fileExtension(fileName))) {
+                        horizantalMenu = true;
                     }
                     // Workaround to remove jquery-ui theme background color.
                     $(tid).removeClass('ui-widget-content ui-tabs-panel');
@@ -852,8 +858,8 @@ define(
                             scaleSpeed: 1.15
                         }
                     };
-                    this.workspacePlayground = Blockly.inject( this.bdiv, options);
-                    this.workspacePlayground.addChangeListener(function (event) {
+                    this.workspacePlayground = Blockly.inject(this.bdiv, options);
+                    this.workspacePlayground.addChangeListener(function(event) {
                         self.changeCode(event);
                     });
                     this.setToolbox();
@@ -864,7 +870,7 @@ define(
                         return value;
                     }
                     var xml = Blockly.Xml.workspaceToDom(this.workspacePlayground);
-                    var xmlText = Blockly.Xml.domToPrettyText (xml);
+                    var xmlText = Blockly.Xml.domToPrettyText(xml);
                     return xmlText;
                 };
                 this.setContent = function(c) {
@@ -895,7 +901,7 @@ define(
                     this.updateDataURL();
                 };
                 this.updateDataURL = function() {
-                    if(VPLUtil.isImage(fileName)){
+                    if (VPLUtil.isImage(fileName)) {
                         var prevalue = 'data:' + VPLUtil.getMIME(fileName) + ';base64,';
                         $(tid).find('img').attr('src', prevalue + value);
                     } else {
@@ -908,7 +914,7 @@ define(
                     }
                     var editTag = $(tid);
                     if (editTag.length === 0) {
-                        return;
+                        return false;
                     }
                     var tabs = editTag.parent();
                     var newHeight = tabs.height();

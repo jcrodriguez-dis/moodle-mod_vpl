@@ -188,17 +188,17 @@ define(
                     rfb.get_display().viewportChange(0, 0, w, h);
                 }
             };
-            function controlDialogSize(){
+            function controlDialogSize() {
                 // Resize if dialog is large than screen.
                 var bw = tIde.width();
                 var bh = tIde.height();
-                if( VNCDialog.width() > bw) {
+                if (VNCDialog.width() > bw) {
                     needResize = true;
-                    VNCDialog.dialog( "option", "width", bw);
+                    VNCDialog.dialog("option", "width", bw);
                 }
-                if(VNCDialog.parent().height() > bh) {
+                if (VNCDialog.parent().height() > bh) {
                     needResize = true;
-                    VNCDialog.dialog( "option", "height", bh - VNCDialog.prev().outerHeight());
+                    VNCDialog.dialog("option", "height", bh - VNCDialog.prev().outerHeight());
                 }
             }
             VNCDialog.dialog({
@@ -209,13 +209,13 @@ define(
                 height: 'auto',
                 dialogClass: 'vpl_ide vpl_vnc',
                 create: function() {
-                    titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', [ 'clipboard', 'keyboard' ], [ openClipboard,
-                            keyboardButton ]);
+                    titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
+                            keyboardButton]);
                 },
                 dragStop: controlDialogSize,
                 focus: getFocus,
-                open : controlDialogSize,
-                beforeClose : function() {
+                open: controlDialogSize,
+                beforeClose: function() {
                     if (needResize) {
                         var w = VNCDialog.width();
                         var h = VNCDialog.height();
@@ -223,10 +223,10 @@ define(
                         self.setCanvasSize(w, h);
                     }
                 },
-                close : function() {
+                close: function() {
                     self.disconnect();
                 },
-                resizeStop : function() {
+                resizeStop: function() {
                     controlDialogSize();
                     needResize = true;
                 }
@@ -275,16 +275,16 @@ define(
                 var target = $('#' + VNCDialogId + " canvas")[0];
                 if (!rfb) {
                     rfb = new RFB({
-                        'target' : target,
-                        'encrypt' : secure,
-                        'repeaterID' : '',
-                        'true_color' : true,
-                        'local_cursor' : true,
-                        'shared' : false,
-                        'view_only' : false,
-                        'onUpdateState' : updateState,
-                        'onPasswordRequired' : null,
-                        'onClipboard' : receiveClipboard
+                        'target': target,
+                        'encrypt': secure,
+                        'repeaterID': '',
+                        'true_color': true,
+                        'local_cursor': true,
+                        'shared': false,
+                        'view_only': false,
+                        'onUpdateState': updateState,
+                        'onPasswordRequired': null,
+                        'onClipboard': receiveClipboard
                     });
                     rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
                 }

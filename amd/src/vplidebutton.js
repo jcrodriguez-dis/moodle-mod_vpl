@@ -27,8 +27,8 @@ define(
         'jqueryui',
         'mod_vpl/vplutil',
     ],
-    function($, jqui, VPLUtil ) {
-        if ( typeof VPLIDEButtons !== 'undefined' ) {
+    function($, jqui, VPLUtil) {
+        if (typeof VPLIDEButtons !== 'undefined') {
             return VPLIDEButtons;
         }
         var VPLIDEButtons = function(menuElement, isOptionAllowed) {
@@ -74,7 +74,7 @@ define(
                 if (typeof button === 'string') {
                     var name = button;
                     button = {
-                        'name' : name
+                        'name': name
                     };
                 }
                 if (!isOptionAllowed(button.name)) {
@@ -98,14 +98,14 @@ define(
                 if (self.notAdded(button.name)) {
                     buttons[button.name] = button;
                 } else {
-                    throw "Button already set " + button.name;
+                    throw new Error("Button already set " + button.name);
                 }
                 self.setAction(button.name, button.originalAction);
                 if (button.hasOwnProperty('bindKey')) {
                     button.command = {
-                        name : button.editorName,
-                        bindKey : button.bindKey,
-                        exec : button.action
+                        name: button.editorName,
+                        bindKey: button.bindKey,
+                        exec: button.action
                     };
                     var platform = "win";
                     if (navigator.platform.startsWith("Mac")) {
@@ -131,15 +131,15 @@ define(
 
             this.enable = function(buttonName, active) {
                 if (self.notAdded(buttonName)) {
-                    return '';
+                    return;
                 }
                 var bw = $('#vpl_ide_' + buttonName);
                 buttons[buttonName].active = active;
                 bw.data("vpl-active", active);
-                if ( ! active ) {
-                    bw.addClass( 'ui-button-disabled ui-state-disabled' );
+                if (!active) {
+                    bw.addClass('ui-button-disabled ui-state-disabled');
                 } else {
-                    bw.removeClass( 'ui-button-disabled ui-state-disabled' );
+                    bw.removeClass('ui-button-disabled ui-state-disabled');
                 }
             };
             this.setAction = function(buttonName, action) {
@@ -166,22 +166,22 @@ define(
                 buttons[buttonName].originalAction();
             };
             this.setGetkeys = function(editor) {
-                if (editor) {
-                    var commands = editor.commands.commands;
-                    var platform = editor.commands.platform;
-                    for (var buttonName in buttons) {
-                        if ( buttons.hasOwnProperty(buttonName) ) {
-                            var editorName = buttons[buttonName].editorName;
-                            if (commands[editorName] && commands[editorName].bindKey && !buttons[buttonName].Key) {
-                                buttons[buttonName].key = commands[editorName].bindKey[platform];
+                if (!editor) {
+                    return;
+                }
+                var commands = editor.commands.commands;
+                var platform = editor.commands.platform;
+                for (var buttonName in buttons) {
+                    if (buttons.hasOwnProperty(buttonName)) {
+                        var editorName = buttons[buttonName].editorName;
+                        if (commands[editorName] && commands[editorName].bindKey && !buttons[buttonName].Key) {
+                            buttons[buttonName].key = commands[editorName].bindKey[platform];
+                            self.setText(buttonName);
+                        } else {
+                            if (buttons[buttonName].bindKey &&
+                                !buttons[buttonName].hasOwnProperty('key')) {
+                                buttons[buttonName].key = buttons[buttonName].bindKey[platform];
                                 self.setText(buttonName);
-                            } else {
-                                if (buttons[buttonName].bindKey) {
-                                    if (!buttons[buttonName].hasOwnProperty('key')) {
-                                        buttons[buttonName].key = buttons[buttonName].bindKey[platform];
-                                        self.setText(buttonName);
-                                    }
-                                }
                             }
                         }
                     }
@@ -211,24 +211,24 @@ define(
                     }
                     html += '</ul>';
                 }
-                if ( html == '<ul></ul>') {
+                if (html == '<ul></ul>') {
                     return '';
                 }
                 return html;
             };
             $(menuElement).on("click", "a", function(event) {
-                if ( $(this).data("vpl-active") ) {
+                if ($(this).data("vpl-active")) {
                     var actionid = $(this).attr('id');
                     if (typeof actionid === 'string' && actionid.startsWith('vpl_ide_')) {
                         actionid = actionid.replace('vpl_ide_', '');
                     } else {
-                        return;
+                        return true;
                     }
                     if (self.notAdded(actionid)) {
-                        return;
+                        return true;
                     }
-                    if ( buttons[actionid] && ! buttons[actionid].active ) {
-                        return;
+                    if (buttons[actionid] && !buttons[actionid].active) {
+                        return true;
                     }
                     var action = self.getAction(actionid);
                     if (actionid != 'import') {
@@ -282,6 +282,7 @@ define(
                         }
                     }
                 }
+                return true;
             });
             this.multiple = function(v, m) {
                 return v - (v % m);
@@ -354,7 +355,7 @@ define(
                         timeLeft = self.multiple(timeLeft, precision);
                         start = self.multiple(VPLUtil.getCurrentTime(), precision);
                         lastLap = start - precision;
-                        setTimeout( function() {
+                        setTimeout(function() {
                             interval = setInterval(updateTimeLeft, checkt);
                         }, sync * 1000);
                         $('#vpl_ide_timeleft').show();

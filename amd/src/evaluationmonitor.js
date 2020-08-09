@@ -21,13 +21,18 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['mod_vpl/vplutil'],function(VPLUtil) {
+define(['mod_vpl/vplutil'], function(VPLUtil) {
     return {
         init: function(options) {
-            VPLUtil.setStr(options.i18n);
             options.next = function() {
                 window.location = options.nexturl;
             };
+            /**
+             * Show a error message in a modal dialog.
+             * Allows to go next evaluation.
+             *
+             * @param {string} message Message to shohw in dialog.
+             */
             function showErrorMessage(message) {
                 VPLUtil.showErrorMessage(message, {
                     next: options.next
@@ -35,9 +40,9 @@ define(['mod_vpl/vplutil'],function(VPLUtil) {
             }
             var action;
             var executionActions = {
-                'ajaxurl' : options.ajaxurl,
-                'run' : showErrorMessage,
-                'getLastAction' : function() {
+                'ajaxurl': options.ajaxurl,
+                'run': showErrorMessage,
+                'getLastAction': function() {
                     action();
                 },
             };
