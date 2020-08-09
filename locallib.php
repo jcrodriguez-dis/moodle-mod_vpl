@@ -68,28 +68,43 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
 }
 
 /**
- * Open/create a file and its dir
+ * Create directory if not exist
  *
- * @param string $filename. Path to the file to open
- * @return resource file descriptor
+ * @param $dir string path to directory
  */
-function vpl_fopen($filename) {
+function vpl_create_dir($dir) {
     global $CFG;
-
-    if (! file_exists( $filename )) { // Exists file?
-        $dir = dirname( $filename );
-        if (! file_exists( $dir )) { // Create dir?
-            if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
-                throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
-            }
+    if (! file_exists( $dir )) { // Create dir?
+        if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+            throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
         }
     }
-    if ( is_dir($filename) ) {
-        throw new file_exception('storedfileproblem', 'Error open file in VPL, is a directory');
+}
+
+
+/**
+ * Open/create a file and its dir
+ *
+ * @param $filename string path to file
+ * @return Object file descriptor
+ */
+function vpl_fopen($filename) {
+    if (! file_exists( $filename )) { // Exists file?
+        $dir = dirname( $filename );
+        vpl_create_dir($dir);
     }
-    $fp = fopen( $filename, 'wb+' );
+    $fp = fopen( $filename, 'w+b' );
     if ($fp === false) {
-        throw new file_exception('storedfileproblem', 'Error creating file in VPL');
+        $winfile = '';
+        if (DIRECTORY_SEPARATOR == '\\' ) {
+            $namewithext = basename($filename);
+            $name = preg_replace ( '/\..*/', '', $namewithext);
+            if( preg_match( '/(^aux$)|(^con$)|(^prn$)|(^nul$)|(^com\d$)|(^lpt\d$)/i' , $name) == 1) {
+                $winfile = "Windows does not allow the file name '$namewithext'";
+            }
+        }
+        debugging( "Error creating file in VPL '$filename'. $winfile", DEBUG_NORMAL );
+        throw new file_exception('storedfileproblem', "Error creating file in VPL. $winfile");
     }
     return $fp;
 }
@@ -138,7 +153,6 @@ function vpl_delete_dir($dirname) {
                 }
             }
             closedir( $dd );
-            $ret = true;
             foreach ($list as $name) {
                 $ret = vpl_delete_dir( $dirname . '/' . $name ) and $ret;
             }
