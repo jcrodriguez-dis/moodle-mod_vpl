@@ -107,8 +107,20 @@ class mod_vpl_edit{
      * @throws Exception
      * @return int saved record id
      */
-    public static function save($vpl, $userid, & $files, $comments='') {
+    public static function save(mod_vpl $vpl, int $userid, array & $files, string $comments='', int $version = -1) {
         global $USER;
+        $response = new stdClass();
+        $response->oldversion = false;
+        $response->saved = false;
+        if ($version != -1) {
+            $lastsub = $vpl->last_user_submission( $userid );
+            if ($lastsub && $lastsub->id != $version) {
+                $response->oldversion = true;
+                $response->question = get_string('replacenewer', VPL);
+                $response->version = $lastsub->id;
+                return $response;
+            }
+        }
         if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
             $id = $vpl->get_course_module()->id;
             \mod_vpl\event\submission_uploaded::log( array (
@@ -116,7 +128,9 @@ class mod_vpl_edit{
                     'context' => $vpl->get_context(),
                     'relateduserid' => ($USER->id != $userid ? $userid : null)
             ) );
-            return $id;
+            $response->version = $subid;
+            $response->saved = true;
+            return $response;
         } else {
             throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $errormessage );
         }
@@ -171,11 +185,11 @@ class mod_vpl_edit{
         global $DB;
         global $USER;
         $response = new stdClass();
-        $response->submissionid = 0;
+        $response->version = 0;
         $response->comments = '';
         $response->compilationexecution = false;
         $vplinstance = $vpl->get_instance();
-        if ( $submissionid != false ) {
+        if ( $submissionid !== false ) {
             // Security checks.
             $parms = array('id' => $submissionid, 'vpl' => $vplinstance->id);
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
@@ -192,7 +206,7 @@ class mod_vpl_edit{
         if ($subreg) {
             $submission = new mod_vpl_submission( $vpl, $subreg );
             $fgp = $submission->get_submitted_fgm();
-            $response->submissionid = $subreg->id;
+            $response->version = $subreg->id;
             $response->comments = $subreg->comments;
             $response->files = array_merge($response->files, $fgp->getallfiles());
             $response->compilationexecution = $submission->get_CE_for_editor();

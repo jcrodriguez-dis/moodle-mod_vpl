@@ -26,10 +26,13 @@
 define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
-$outcome = new stdClass();
-$outcome->success = true;
-$outcome->response = new stdClass();
-$outcome->error = '';
+
+global $PAGE, $OUTPUT, $USER;
+
+$result = new stdClass();
+$result->success = true;
+$result->response = new stdClass();
+$result->error = '';
 try {
     require_once(dirname( __FILE__ ) . '/edit.class.php');
     if (! isloggedin()) {
@@ -62,27 +65,30 @@ try {
         $userid = $USER->id;
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $vpl->restrictions_check();
-    } else { // Make other user submission.
+    } else { // Access other user submission.
         $vpl->require_capability( VPL_GRADE_CAPABILITY );
     }
     $instance = $vpl->get_instance();
     switch ($action) {
         case 'save' :
-            $files = mod_vpl_edit::filesfromide( $actiondata->files );
-            if (! isset($actiondata->comments) ) {
-                $actiondata->comments = '';
-            }
             if ($userid != $USER->id) {
                 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
             }
-            $outcome->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments );
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            if ( empty($actiondata->comments) ) {
+                $actiondata->comments = '';
+            }
+            if ( empty($actiondata->version) ) {
+                $actiondata->version = -1;
+            }
+            $result->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments, $actiondata->version );
             break;
         case 'resetfiles' :
             $files = mod_vpl_edit::get_requested_files( $vpl );
-            $outcome->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->files = mod_vpl_edit::filestoide( $files );
             break;
         case 'load' :
-            if (! isset($actiondata->submissionid) ) {
+            if ( isset($actiondata->submissionid) ) {
                 $subid = $actiondata->submissionid;
             }
             if ( $subid && $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) {
@@ -91,7 +97,7 @@ try {
                 $load = mod_vpl_edit::load( $vpl, $userid );
             }
             $load->files = mod_vpl_edit::filestoide( $load->files );
-            $outcome->response = $load;
+            $result->response = $load;
             break;
         case 'run' :
         case 'debug' :
@@ -99,16 +105,16 @@ try {
             if (! $instance->$action and ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
-            $outcome->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );
+            $result->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );
             break;
         case 'retrieve' :
-            $outcome->response = mod_vpl_edit::retrieve_result( $vpl, $userid );
+            $result->response = mod_vpl_edit::retrieve_result( $vpl, $userid );
             break;
         case 'cancel' :
-            $outcome->response = mod_vpl_edit::cancel( $vpl, $userid );
+            $result->response = mod_vpl_edit::cancel( $vpl, $userid );
             break;
         case 'getjails' :
-            $outcome->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
+            $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
             break;
         default :
             throw new Exception( 'ajax action error: ' + $action );
@@ -116,11 +122,11 @@ try {
     $timeleft = $instance->duedate - time();
     $hour = 60 * 60;
     if ( $instance->duedate > 0 && $timeleft > -$hour ) {
-        $outcome->response->timeLeft = $timeleft;
+        $result->response->timeLeft = $timeleft;
     }
 } catch ( Exception $e ) {
-    $outcome->success = false;
-    $outcome->error = $e->getMessage();
+    $result->success = false;
+    $result->error = $e->getMessage();
 }
-echo json_encode( $outcome );
+echo json_encode( $result );
 die();

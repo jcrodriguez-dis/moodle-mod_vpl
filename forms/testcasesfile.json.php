@@ -27,10 +27,10 @@ define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
 
-$outcome = new stdClass();
-$outcome->success = true;
-$outcome->response = new stdClass();
-$outcome->error = '';
+$result = new stdClass();
+$result->success = true;
+$result->response = new stdClass();
+$result->error = '';
 try {
     require_once(dirname( __FILE__ ) . '/../locallib.php');
     require_once(dirname( __FILE__ ) . '/../vpl.class.php');
@@ -58,7 +58,15 @@ try {
                 throw new Exception( get_string( 'incorrect_file_name', VPL ) );
             }
             $fgm = $vpl->get_execution_fgm();
+            $oldversion = $fgm->getversion();
+            if ($actiondata->version != 0 && $actiondata->version != $oldversion) {
+                $result->response->question = get_string('replacenewer', VPL);
+                $result->response->oldversion = true;
+                $result->response->version = $oldversion;
+                break;
+            }
             $fgm->addFile( $filename, $postfiles [$filename] );
+            $result->response->version = $fgm->getversion();
             $vpl->update();
             break;
         case 'load' :
@@ -66,14 +74,15 @@ try {
             $fgm = $vpl->get_execution_fgm();
             $files = array();
             $files[$filename] = $fgm->getfiledata($filename);
-            $outcome->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->version = $fgm->getversion();
             break;
         default :
             throw new Exception( 'ajax action error: ' + $action );
     }
 } catch ( Exception $e ) {
-    $outcome->success = false;
-    $outcome->error = $e->getMessage();
+    $result->success = false;
+    $result->error = $e->getMessage();
 }
-echo json_encode( $outcome );
+echo json_encode( $result );
 die();

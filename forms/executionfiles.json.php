@@ -27,10 +27,10 @@ define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
 
-$outcome = new stdClass();
-$outcome->success = true;
-$outcome->response = new stdClass();
-$outcome->error = '';
+$result = new stdClass();
+$result->success = true;
+$result->response = new stdClass();
+$result->error = '';
 try {
     require_once(dirname( __FILE__ ) . '/../locallib.php');
     require_once(dirname( __FILE__ ) . '/../vpl.class.php');
@@ -53,35 +53,45 @@ try {
     switch ($action) {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
+            $result->response->oldversion = false;
             $fgm = $vpl->get_execution_fgm();
+            $oldversion = $fgm->getversion();
+            if ($actiondata->version != 0 && $actiondata->version != $oldversion) {
+                $result->response->question = get_string('replacenewer', VPL);
+                $result->response->oldversion = true;
+                $result->response->version = $oldversion;
+                break;
+            }
             $fgm->deleteallfiles();
             $fgm->addallfiles($postfiles);
+            $result->response->version = $fgm->getversion();
             $vpl->update();
             break;
         case 'load' :
             $fgm = $vpl->get_execution_fgm();
-            $outcome->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
+            $result->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
+            $result->response->version = $fgm->getversion();
             break;
         case 'run' :
         case 'debug' :
         case 'evaluate' :
-            $outcome->response = mod_vpl_edit::execute( $vpl, $USER->id, $action, $actiondata );
+            $result->response = mod_vpl_edit::execute( $vpl, $USER->id, $action, $actiondata );
             break;
         case 'retrieve' :
-            $outcome->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
+            $result->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
             break;
         case 'cancel' :
-            $outcome->response = mod_vpl_edit::cancel( $vpl, $userid );
+            $result->response = mod_vpl_edit::cancel( $vpl, $userid );
             break;
         case 'getjails' :
-            $outcome->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
+            $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
             break;
         default :
             throw new Exception( 'ajax action error: ' + $action);
     }
 } catch ( Exception $e ) {
-    $outcome->success = false;
-    $outcome->error = $e->getMessage();
+    $result->success = false;
+    $result->error = $e->getMessage();
 }
-echo json_encode( $outcome );
+echo json_encode( $result );
 die();
