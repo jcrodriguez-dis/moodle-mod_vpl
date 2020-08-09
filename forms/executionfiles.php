@@ -32,7 +32,6 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
-$instance = $vpl->get_instance();
 $vpl->prepare_page( 'forms/executionfiles.php', array ( 'id' => $id ) );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
@@ -52,15 +51,12 @@ $options ['maxfiles'] = 1000;
 $options ['saved'] = true;
 $options ['minfiles'] = $fgp->get_numstaticfiles();
 
-session_write_close();
-
 vpl_editor_util::generate_requires($options);
 
 $vpl->print_header( get_string( 'executionfiles', VPL ) );
 $vpl->print_heading_with_help( 'executionfiles' );
-echo $OUTPUT->box_start();
 
 vpl_editor_util::print_tag();
+vpl_editor_util::print_js_i18n();
 
-echo $OUTPUT->box_end();
 $vpl->print_footer_simple();

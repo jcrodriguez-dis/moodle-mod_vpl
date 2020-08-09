@@ -28,6 +28,7 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/../editor/editor_utility.php');
 
+global $USER, $DB;
 require_login();
 $id = required_param('id', PARAM_INT);
 $userid = optional_param('userid', false, PARAM_INT);
@@ -52,16 +53,16 @@ if (! $userid || $userid == $USER->id) { // Edit own submission.
     $userid = $USER->id;
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
 } else { // Edit other user submission.
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    $vpl->require_capability( VPL_GRADE_CAPABILITY );
 }
 $vpl->restrictions_check();
 
 $instance = $vpl->get_instance();
-$manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+
 $grader = $vpl->has_capability(VPL_GRADE_CAPABILITY);
 
-// This code allow to edit previous versions (only managers).
-if ($subid && $vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+// This code allow to edit previous versions.
+if ($subid && $grader) {
     $parms = array (
             'id' => $subid,
             'vpl' => $instance->id,
@@ -80,18 +81,15 @@ $options = Array();
 $options ['id'] = $id;
 $options ['restrictededitor'] = $instance->restrictededitor && ! $grader;
 $options ['save'] = ! $instance->example;
-$options ['run'] = ($instance->run || $manager);
-$options ['debug'] = ($instance->debug || $manager);
-$options ['evaluate'] = ($instance->evaluate || $manager);
+$options ['run'] = ($instance->run || $grader);
+$options ['debug'] = ($instance->debug || $grader);
+$options ['evaluate'] = ($instance->evaluate || $grader);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
 $options ['description'] = $vpl->get_fulldescription_with_basedon();
 $options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
-if ( $subid && $lastsub ) {
-    $ajaxurl .= "&subid={$lastsub->id}";
-}
 $options ['ajaxurl'] = $ajaxurl . '&action=';
 if ( $copy ) {
     $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}";
@@ -120,14 +118,15 @@ if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );
     \mod_vpl\event\submission_edited::log( $submission );
 }
-session_write_close();
+
 if ($copy && $grader) {
     $userid = $USER->id;
 }
 vpl_editor_util::generate_requires($options);
 $vpl->print_header( get_string( 'edit', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
-echo $OUTPUT->box_start();
+
 vpl_editor_util::print_tag();
-echo $OUTPUT->box_end();
+vpl_editor_util::print_js_i18n();
+
 $vpl->print_footer();

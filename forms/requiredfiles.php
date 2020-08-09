@@ -33,7 +33,6 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
-$instance = $vpl->get_instance();
 $vpl->prepare_page( 'forms/requiredfiles.php', array ( 'id' => $id ) );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 
@@ -55,8 +54,7 @@ vpl_editor_util::generate_requires($options);
 $vpl->print_header( get_string( 'requestedfiles', VPL ) );
 $vpl->print_heading_with_help( 'requestedfiles' );
 
-session_write_close();
-echo $OUTPUT->box_start();
 vpl_editor_util::print_tag();
-echo $OUTPUT->box_end();
+vpl_editor_util::print_js_i18n();
+
 $vpl->print_footer_simple();
