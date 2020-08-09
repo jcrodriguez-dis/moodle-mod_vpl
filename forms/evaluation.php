@@ -27,6 +27,9 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 require_once(dirname(__FILE__).'/../editor/editor_utility.php');
+
+global $USER, $DB, $OUTPUT;
+
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
@@ -49,8 +52,8 @@ vpl_editor_util::generate_requires_evaluation();
 // Display page.
 $vpl->print_header( get_string( 'evaluation', VPL ) );
 flush();
-$course = $vpl->get_course();
-$instance = $vpl->get_instance();
+vpl_editor_util::print_js_i18n();
+
 echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
 $user = $DB->get_record( 'user', array ( 'id' => $userid ) );
 $text = ' ' . $vpl->user_picture( $user );
