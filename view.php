@@ -30,9 +30,11 @@ global $CFG;
 require_login();
 $id = optional_param( 'id', null, PARAM_INT ); // Course Module ID.
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'view.php', array (
-        'id' => $id
-) );
+$urlparms = array ( 'id' => $id );
+if ( optional_param( 'userid', -1, PARAM_INT ) != -1 ) {
+    $urlparms['userid'] = required_param( 'userid', PARAM_INT );
+}
+$vpl->prepare_page( 'view.php', $urlparms );
 $vpl->require_capability( VPL_VIEW_CAPABILITY );
 $id = $vpl->get_course_module()->id;
 
