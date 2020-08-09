@@ -5,6 +5,15 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 #load VPL environment vars
+if [ "$PROFILE_RUNNED" == "" ] ; then
+	export PROFILE_RUNNED=yes
+	if [ -f /etc/profile ] ; then
+		cp /etc/profile .localvplprofile
+		chmod +x .localvplprofile
+		. .localvplprofile
+		rm .localvplprofile
+	fi
+fi
 . vpl_environment.sh
 #Use current lang
 export LC_ALL=$VPL_LANG 1>/dev/null 2>vpl_set_locale_error
