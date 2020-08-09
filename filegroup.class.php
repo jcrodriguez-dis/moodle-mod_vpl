@@ -345,12 +345,11 @@ class file_group_process {
      */
     public function getversion() {
         $info = stat($this->dir);
-        if ($info !== FALSE) {
+        if ($info !== false) {
             return $info['mtime'];
         } else {
             return 0;
         }
-        return ;
     }
 
     static protected $outputtextsize = 0; // Total size of text files shown.

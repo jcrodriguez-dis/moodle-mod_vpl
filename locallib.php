@@ -99,7 +99,7 @@ function vpl_fopen($filename) {
         if (DIRECTORY_SEPARATOR == '\\' ) {
             $namewithext = basename($filename);
             $name = preg_replace ( '/\..*/', '', $namewithext);
-            if( preg_match( '/(^aux$)|(^con$)|(^prn$)|(^nul$)|(^com\d$)|(^lpt\d$)/i' , $name) == 1) {
+            if (preg_match( '/(^aux$)|(^con$)|(^prn$)|(^nul$)|(^com\d$)|(^lpt\d$)/i' , $name) == 1) {
                 $winfile = "Windows does not allow the file name '$namewithext'";
             }
         }
