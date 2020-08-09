@@ -157,7 +157,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             $jscript .= '\'' . addslashes( $gradedon ) . "');\n";
             if (isset( $fromform->savenext )) {
                 $url = $CFG->wwwroot . '/mod/vpl/forms/gradesubmission.php?id=' . $id . '&inpopup=1&userid=';
-                $jscript .= 'VPL.go_next(\'' . $submission->get_instance()->id . '\',\'' . addslashes( $url ) . '\');';
+                $jscript .= 'VPL.goNext(\'' . $submission->get_instance()->id . '\',\'' . addslashes( $url ) . '\');';
             } else {
                 $jscript .= 'window.close();';
             }
