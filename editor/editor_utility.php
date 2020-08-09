@@ -42,7 +42,6 @@ class vpl_editor_util {
         global $CFG;
         $plugincfg = get_config('mod_vpl');
         $tagid = 'vplide';
-        $options ['i18n'] = self::i18n();
         if ( isset($plugincfg->editor_theme) ) {
             $options ['theme'] = $plugincfg->editor_theme;
         } else {
@@ -58,8 +57,14 @@ class vpl_editor_util {
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ) );
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', array($tagid, $options));
     }
+    public static function print_js_i18n() {
+        ?>
+        <script>
+        window.VPLi18n = <?=json_encode(self::i18n());?>
+        </script>
+        <?php
+    }
     public static function print_tag() {
-        global $CFG;
         $tagid = 'vplide';
 ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root">
