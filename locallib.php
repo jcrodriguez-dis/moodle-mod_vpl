@@ -95,16 +95,18 @@ function vpl_fopen($filename) {
     }
     $fp = fopen( $filename, 'w+b' );
     if ($fp === false) {
-        $winfile = '';
         if (DIRECTORY_SEPARATOR == '\\' ) {
-            $namewithext = basename($filename);
-            $name = preg_replace ( '/\..*/', '', $namewithext);
+            $path_parts = pathinfo($filename);
+            $name = $path_parts['filename'];
             if (preg_match( '/(^aux$)|(^con$)|(^prn$)|(^nul$)|(^com\d$)|(^lpt\d$)/i' , $name) == 1) {
-                $winfile = "Windows does not allow the file name '$namewithext'";
+                $patchedfilename = $path_parts['dirname'] . '\\_n_p_' . $path_parts['basename'];
+                return vpl_fopen($patchedfilename);
             }
         }
-        debugging( "Error creating file in VPL '$filename'. $winfile", DEBUG_NORMAL );
-        throw new file_exception('storedfileproblem', "Error creating file in VPL. $winfile");
+    }
+    if ($fp === false) {
+        debugging( "Error creating file in VPL '$filename'.", DEBUG_NORMAL );
+        throw new file_exception('storedfileproblem', "Error creating file in VPL.");
     }
     return $fp;
 }
@@ -119,7 +121,6 @@ function vpl_fopen($filename) {
  */
 
 function vpl_fwrite($filename, $contents) {
-    global $CFG;
     if ( is_file($filename) ) {
         unlink($filename);
     }
