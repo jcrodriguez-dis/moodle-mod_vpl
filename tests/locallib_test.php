@@ -56,12 +56,70 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertFalse(file_exists($testdir) && is_dir($testdir),  $testdir);
     }
 
+    public function internal_test_vpl_fopen($path, $text = 'Example text') {
+        global $CFG;
+        $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
+        $fpath = $testdir . $path;
+        $fp = vpl_fopen($fpath);
+        $this->assertNotNull( $fp );
+        fwrite($fp, $text);
+        fclose($fp);
+        $this->assertEquals( $text, file_get_contents($fpath) );
+    }
+
+    public function test_vpl_fopen() {
+        global $CFG;
+        $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
+        $this->internal_test_vpl_fopen( '/a1/b1/c1' );
+        $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb' );
+        $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb', 'Other text');
+        $this->internal_test_vpl_fopen( '/nf.bbb' );
+        $bads = ['/a1/..', '/a1/.', '/', '/a1', '/a1/b1'];
+        foreach ($bads as $bad) {
+            try {
+                $throwexception = false;
+                $this->internal_test_vpl_fopen($bad);
+            } catch (Exception $e) {
+                $throwexception = true;
+            }
+            $this->assertTrue($throwexception, 'Exception expected');
+        }
+        if ( DIRECTORY_SEPARATOR == '\\' ) {
+            $bads = ['/a1/aux.java', '/a1/lpt9', '/com5.txt', '/prn', '/a1/con'];
+            foreach ($bads as $bad) {
+                try {
+                    $throwexception = false;
+                    $this->internal_test_vpl_fopen($bad, $text);
+                } catch (Exception $e) {
+                    $throwexception = true;
+                }
+                $this->assertTrue($throwexception, 'Exception expected');
+            }
+        }
+        $this->assertTrue(vpl_delete_dir($testdir));
+        // Windows does not check directories access control.
+        if (DIRECTORY_SEPARATOR !== '\\') {
+            mkdir($testdir, 0111, true);
+            $fpath = $testdir . '/a1/b1/c1';
+            try {
+                $throwexception = false;
+                vpl_fwrite($fpath, $text);
+            } catch (Exception $e) {
+                $throwexception = true;
+            }
+            chmod($testdir, 0777);
+            $this->assertTrue($throwexception, 'Exception expected');
+            $this->assertTrue(vpl_delete_dir($testdir));
+        }
+    }
+
     public function test_vpl_fwrite() {
         global $CFG;
         $text = 'Example text';
         $otext = 'Other text';
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         // Dir empty.
+        vpl_delete_dir($testdir);
         mkdir($testdir, 0777, true);
         $fpath = $testdir . '/a1/b1/c1';
         vpl_fwrite($fpath, $text);

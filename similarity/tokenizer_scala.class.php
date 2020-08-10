@@ -132,7 +132,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                         if ($next == '/') {
                             $i ++;
                             $state = self::REGULAR;
-                            continue;
+                            break;
                         }
                     }
                     break;
@@ -168,11 +168,11 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                 case self::IN_NUMBER :
                     if (($current >= '0' && $current <= '9') || $current == '.' || $current == 'E' || $current == 'e') {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     if (($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')) {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
                     $this->add_pending( $pending );
                     $state = self::REGULAR;
@@ -183,13 +183,13 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                             $state = self::IN_COMMENT;
                             $this->add_pending( $pending );
                             $i ++;
-                            continue;
+                            break;
                         }
                         if ($next == '/') { // Begin line comment.
                             $state = self::IN_LINECOMMENT;
                             $this->add_pending( $pending );
                             $i ++;
-                            continue;
+                            break;
                         }
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
