@@ -1361,7 +1361,7 @@ class mod_vpl {
         $PAGE->set_cm( $this->get_course_module(), $this->get_course(), $this->get_instance() );
         $PAGE->set_context( $this->get_context() );
         if ($url) {
-            $PAGE->set_url( '/mod/vpl/' . $url, parms );
+            $PAGE->set_url( '/mod/vpl/' . $url, $_GET );
         }
     }
 
