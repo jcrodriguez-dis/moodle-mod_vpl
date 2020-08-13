@@ -18,7 +18,7 @@
 /**
  * REST web service entry point. The authentication is done via tokens.
  *
- * @package    webservice_rest
+ * @package    mod_vpl
  * @copyright  2009 Jerome Mouneyrac
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -34,6 +34,7 @@ define('NO_DEBUG_DISPLAY', true);
 define('NO_MOODLE_COOKIES', true);
 
 require('../../config.php');
+global $CFG;
 require_once("$CFG->dirroot/webservice/rest/locallib.php");
 
 if (!webservice_protocol_is_enabled('rest')) {
