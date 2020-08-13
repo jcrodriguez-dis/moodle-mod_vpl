@@ -35,7 +35,7 @@ define('NO_MOODLE_COOKIES', true);
 
 require('../../config.php');
 global $CFG;
-require_once("$CFG->dirroot/webservice/rest/locallib.php");
+require_once("{$CFG->dirroot}/webservice/rest/locallib.php");
 
 if (!webservice_protocol_is_enabled('rest')) {
     debugging('The server died because the web services or the REST protocol are not enable',
