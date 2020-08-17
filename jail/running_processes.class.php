@@ -50,9 +50,9 @@ class vpl_running_processes {
         vpl_truncate_running_processes( $info );
         return $DB->insert_record( self::TABLE, $info );
     }
-    static public function delete($userid, $adminticket=false) {
+    static public function delete($userid, $vplid, $adminticket=false) {
         global $DB;
-        $parms = array('userid' => $userid);
+        $parms = array('userid' => $userid, 'vpl' => $vplid);
         if ($adminticket) {
             $parms['adminticket'] = $adminticket;
         }

@@ -121,7 +121,7 @@ foreach ($processes as $process) {
     $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
     if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
         // Removes zombi tasks.
-        vpl_running_processes::delete($process->userid, $process->adminticket);
+        vpl_running_processes::delete($process->userid, $process->vpl, $process->adminticket);
     }
     $status = '';
     if ( isset($response['running']) && $response['running'] == 1) {

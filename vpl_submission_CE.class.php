@@ -498,6 +498,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             // No matter, consider that the process stopped.
             debugging( "Process in execution server not sttoped or not found", DEBUG_DEVELOPER );
         }
-        vpl_running_processes::delete( $this->get_instance()->userid );
+        vpl_running_processes::delete( $this->get_instance()->userid, $vplid);
     }
 }
