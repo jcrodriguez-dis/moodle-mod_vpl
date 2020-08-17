@@ -46,20 +46,14 @@ try {
         $result->success = true;
     }
     if ( isset($actiondata->terminalTheme) ) {
-        $theme = substr($actiondata->terminalTheme, 0, 10);
-        set_user_preference('vpl_terminaltheme', $theme);
-        $result->success = true;
-    }
-    if ( isset($actiondata->blocklyLang) ) {
-        $theme = substr($actiondata->blocklyLang, 0, 10);
-        set_user_preference('vpl_blocklylang', $theme);
+        $terminaltheme = substr($actiondata->terminalTheme, 0, 10);
+        set_user_preference('vpl_terminaltheme', $terminaltheme);
         $result->success = true;
     }
     if (isset($actiondata->getPreferences)) {
         $result->preferences->fontSize = (int)  get_user_preferences('vpl_editor_fontsize', 12);
         $result->preferences->aceTheme = get_user_preferences('vpl_acetheme', '');
         $result->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
-        $result->preferences->blocklyLang = get_user_preferences('vpl_blocklylang', '');
         $result->success = true;
     }
 } catch ( Exception $e ) {
