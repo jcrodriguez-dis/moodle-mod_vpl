@@ -64,6 +64,13 @@ class vpl_editor_util {
         </script>
         <?php
     }
+    public static function print_js_description($vpl) {
+        ?>
+        <script>
+        window.VPLDescription = <?=json_encode($vpl->get_fulldescription_with_basedon());?>
+        </script>
+        <?php
+    }
     public static function print_tag() {
         $tagid = 'vplide';
 ?>
