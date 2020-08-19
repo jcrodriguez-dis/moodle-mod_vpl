@@ -721,7 +721,7 @@ define(
                 formated = VPLUtil.sanitizeText(res.execution);
                 hasContent = self.setResultTab('execution', formated, res.execution);
                 show = show || hasContent;
-                hasContent = self.setResultTab('description', options.description, options.description);
+                hasContent = self.setResultTab('description', window.VPLDescription, window.VPLDescription);
                 if (hasContent && typeof MathJax == 'object') { // MathJax workaround.
                     var math = result.find(".vpl_ide_accordion_c_description")[0];
                     MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
