@@ -86,7 +86,6 @@ $options ['debug'] = ($instance->debug || $grader);
 $options ['evaluate'] = ($instance->evaluate || $grader);
 $options ['example'] = true && $instance->example;
 $options ['comments'] = ! $options ['example'];
-$options ['description'] = $vpl->get_fulldescription_with_basedon();
 $options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
@@ -128,5 +127,6 @@ $vpl->print_view_tabs( basename( __FILE__ ) );
 
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
+vpl_editor_util::print_js_description($vpl);
 
 $vpl->print_footer();
