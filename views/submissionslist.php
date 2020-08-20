@@ -522,9 +522,12 @@ foreach ($alldata as $data) {
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
             if ($showgrades) {
-                $feedback = $submission->get_grade_comments();
-                if ($feedback) {
-                    $gradecomments = nl2br(s($feedback));
+                $submission->get_ce_html( $result, $compilation, $execution, $dummy, false, true );
+                if (strlen( $compilation ) + strlen( $execution ) > 0) {
+                    $gradecomments = $OUTPUT->box_start();
+                    $gradecomments .= $compilation;
+                    $gradecomments .= $execution;
+                    $gradecomments .= $OUTPUT->box_end();
                 }
             }
         } else {
