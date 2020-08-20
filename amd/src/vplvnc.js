@@ -47,7 +47,7 @@ define(
             var VNCDialog = $('#' + VNCDialogId);
             var tIde = $('#vplide');
             var canvas = $('#' + VNCDialogId + " canvas");
-            var onCloseAction = function() { };
+            var onCloseAction = VPLUtil.doNothing;
             var clipboard;
             var needResize = true;
             var titleText;
@@ -97,6 +97,7 @@ define(
                         try {
                             inputarea.setSelectionRange(resetValue.length, resetValue.length);
                         } catch (err) {
+                            /* Nothing to do. */
                         }
                     }, 10);
                 }
@@ -116,6 +117,7 @@ define(
                 try {
                     inputarea.setSelectionRange(resetValue.length, resetValue.length);
                 } catch (ex) {
+                    /* Nothing to do. */
                 }
                 $(inputarea).on('change', function() {
                     readInput();
@@ -133,6 +135,7 @@ define(
                     try {
                         inputarea.setSelectionRange(resetValue.length, resetValue.length);
                     } catch (e) {
+                        /* Nothing to do. */
                     }
                 });
             }

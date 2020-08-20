@@ -100,9 +100,12 @@ define(
                 if (fn != name) {
                     $(tabnameid + ' a').attr('title', name);
                 }
-                if (modified) {
-                    fileManager.adjustTabsTitles(false);
-                }
+                VPLUtil.afterAll('adjustTabsTitles' + self.id, function() {
+                    fileManager.adjustTabsTitles(true);
+                    VPLUtil.delay(function() {
+                        self.adjustSize();
+                    });
+                });
                 this.langSelection();
                 return true;
             };
@@ -522,7 +525,7 @@ define(
                                 interpreter.createNativeFunction(wrapper));
                     }
                     self.interpreter = new Interpreter(code, initApi);
-                    ter.connectLocal(self.stop, function() {});
+                    ter.connectLocal(self.stop, VPLUtil.doNothing);
                 };
                 this.reservedWords = {
                     'Infinity': true, 'Array': true, 'Boolean': true,
@@ -836,9 +839,9 @@ define(
                         return false;
                     }
                     opened = true;
-                    var horizantalMenu = false;
+                    var horizontalMenu = false;
                     if (/.*[0-9]$/.test(VPLUtil.fileExtension(fileName))) {
-                        horizantalMenu = true;
+                        horizontalMenu = true;
                     }
                     // Workaround to remove jquery-ui theme background color.
                     $(tid).removeClass('ui-widget-content ui-tabs-panel');
@@ -848,7 +851,7 @@ define(
                     var options = {
                         toolbox: '<xml><category name=""><block type="math_number"></block></category></xml>',
                         media: '../editor/blockly/media/',
-                        horizontalLayout: horizantalMenu,
+                        horizontalLayout: horizontalMenu,
                         zoom: {
                             controls: true,
                             wheel: true,
@@ -934,7 +937,6 @@ define(
                         $(tid).addClass('vpl_ide_binary').text(VPLUtil.str('binaryfile'));
                     }
                     this.setFileName(fileName);
-                    return false;
                 };
                 this.close = function() {
                     opened = false;

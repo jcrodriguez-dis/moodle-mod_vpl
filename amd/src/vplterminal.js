@@ -39,8 +39,7 @@ define(
         var VPLTerminal = function(dialogId, terminalId, str) {
             var self = this;
             var ws = null;
-            var onCloseAction = function() {
-            };
+            var onCloseAction = VPLUtil.doNothing;
             var title = '';
             var message = '';
             var tdialog = $('#' + dialogId);

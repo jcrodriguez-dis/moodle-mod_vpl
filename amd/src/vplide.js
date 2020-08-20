@@ -90,12 +90,12 @@ define(
             options.sort = (maxNumberOfFiles - minNumberOfFiles >= 2);
             options.multidelete = options.sort;
             options.import = !restrictedEdit;
-            function isOptionAllowed(op) {
+            var isOptionAllowed = function(op) {
                 if (!optionsToCheck[op]) {
                     return true;
                 }
                 return options[op];
-            }
+            };
             options.console = isOptionAllowed('run') || isOptionAllowed('debug');
             if ((typeof options.fontSize) == 'undefined') {
                 options.fontSize = 12;
@@ -126,7 +126,7 @@ define(
                     e.stopImmediatePropagation();
                     return false;
                 }
-                return true;
+                return false;
             }
             rootObj.on('drop', dropHandler);
             rootObj.on('dragover', dragoverHandler);
@@ -268,8 +268,8 @@ define(
                     menuButtons.setGetkeys(file.open());
                     tabs.tabs('refresh');
                     adjustTabsTitles(false);
-                    VPLUtil.delay('updateMenu', updateMenu);
                     VPLUtil.delay('updateFileList', self.updateFileList);
+                    VPLUtil.delay('updateMenu', updateMenu);
                 };
                 this.close = function(file) {
                     if (!file.isOpen()) {
@@ -304,13 +304,19 @@ define(
                     if (b === fileListContainer.vplVisible) {
                         return;
                     }
-                    fileListContainer.vplVisible = b;
                     if (b) {
-                        fileListContainer.show();
-                        autoResizeTab();
+                        VPLUtil.delay('fileListVisible', function() {
+                            fileListContainer.vplVisible = true;
+                            self.updateFileList();
+                            fileListContainer.show();
+                            autoResizeTab();
+                         });
                     } else {
-                        fileListContainer.hide();
-                        autoResizeTab();
+                        VPLUtil.delay('fileListVisible', function() {
+                            fileListContainer.vplVisible = false;
+                            fileListContainer.hide();
+                            autoResizeTab();
+                         });
                     }
                 };
                 this.isFileListVisible = function() {
@@ -383,7 +389,6 @@ define(
                         self.fileListVisible(true);
                     }
                     ok();
-                    VPLUtil.delay('updateFileList', self.updateFileList);
                     return newfile;
                 };
                 this.renameFile = function(oldname, newname, showError) {
@@ -496,7 +501,9 @@ define(
                             line = 'c';
                         }
                         self.gotoFile(fpos, line);
+                        return true;
                     }
+                    return false;
                 };
                 this.getFilesToSave = function() {
                     var ret = [];
@@ -546,33 +553,36 @@ define(
                         isDir: true,
                         content: {}
                     };
-                    for (var i in files) {
-                        if (files.hasOwnProperty(i)) {
-                            var file = files[i];
-                            var fileName = file.getFileName();
-                            var path = fileName.split("/");
-                            var curdir = structure;
-                            for (var p in path) {
-                                if (path.hasOwnProperty(p)) {
-                                    var part = path[p];
-                                    if (p == path.length - 1) { // File.
+                    function addFilePath(i) {
+                        var file = files[i];
+                        var fileName = file.getFileName();
+                        var path = fileName.split("/");
+                        var curdir = structure;
+                        for (var p in path) {
+                            if (path.hasOwnProperty(p)) {
+                                var part = path[p];
+                                if (p == path.length - 1) { // File.
+                                    curdir.content[part] = {
+                                        isDir: false,
+                                        content: file,
+                                        pos: i
+                                    };
+                                } else {
+                                    if (!curdir.content[part]) { // New dir.
                                         curdir.content[part] = {
-                                            isDir: false,
-                                            content: file,
-                                            pos: i
+                                            isDir: true,
+                                            content: {}
                                         };
-                                    } else {
-                                        if (!curdir.content[part]) { // New dir.
-                                            curdir.content[part] = {
-                                                isDir: true,
-                                                content: {}
-                                            };
-                                        }
-                                        // Descend Dir.
-                                        curdir = curdir.content[part];
                                     }
+                                    // Descend Dir.
+                                    curdir = curdir.content[part];
                                 }
                             }
+                        }
+                    }
+                    for (var i in files) {
+                        if (files.hasOwnProperty(i)) {
+                            addFilePath(i);
                         }
                     }
                     return structure;
@@ -756,8 +766,9 @@ define(
             });
             resultContainer.width(2 * resultContainer.vplMinWidth);
             result.on('click', 'a', function(event) {
-                event.preventDefault();
-                fileManager.gotoFileLink(event.currentTarget);
+                if (fileManager.gotoFileLink(event.currentTarget)) {
+                    event.preventDefault();
+                }
             });
             resultContainer.vplVisible = false;
             resultContainer.hide();
@@ -938,7 +949,7 @@ define(
             var dialogNew = $('#vpl_ide_dialog_new');
             function newFileHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
-                    return false;
+                    return true;
                 }
                 dialogNew.dialog('close');
                 var file = {
@@ -1758,6 +1769,7 @@ define(
             .done(function(response) {
                 var allOK = true;
                 var files = response.files;
+                var showFileList = false;
                 for (var i = 0; i < files.length; i++) {
                     var file = files[i];
                     var r = fileManager.addFile(file, false, updateMenu, showErrorMessage);
@@ -1766,14 +1778,12 @@ define(
                         if (i < minNumberOfFiles || files.length <= 5) {
                             fileManager.open(r);
                         } else {
-                            fileManager.fileListVisible(true);
+                            showFileList = true;
                         }
                     } else {
                         allOK = false;
                     }
                 }
-                VPLUtil.delay('updateMenu', updateMenu);
-                fileManager.generateFileList();
                 tabs.tabs('option', 'active', 0);
 
                 if (response.compilationexecution) {
@@ -1795,6 +1805,12 @@ define(
                 }
                 fileManager.setFontSize(options.fontSize);
                 fileManager.setVersion(response.version);
+                fileManager.fileListVisible(showFileList);
+                VPLUtil.afterAll(function() {
+                    updateMenu();
+                    autoResizeTab();
+                    adjustTabsTitles(true);
+                });
             })
             .fail(showErrorMessage);
         };
