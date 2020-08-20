@@ -1,5 +1,8 @@
-#vpl_results_accordion .vpl_ide_accordion_c_description a {
-    border-style: none;
+#vpl_results_accordion .vpl_ide_accordion_c_description a,
+#vpl_results_accordion .vpl_ide_accordion_c_comments a,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a
+{
+    color: #1177d1; /* Removes Jquery-UI and set Moodle default theme color. */
 }
 
 .vpl_ide_root {
@@ -35,7 +38,6 @@
 }
 
 .vpl_ide_menu {
-    /*font-size: 110%;*/
     min-width: 340px;
     padding: 0.2em;
 }
@@ -178,12 +180,6 @@ img.vpl_ide_file {
     position: absolute;
     right: 0;
     top: 0;
-}
-
-.vpl_ide_results a {
-    border-bottom: solid 1px;
-    padding: 1px 2px;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .vpl_ide_results pre {
