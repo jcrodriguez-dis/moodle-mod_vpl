@@ -38,8 +38,7 @@ define(
             return VPLUtil;
         }
         var VPLUtil = {};
-        VPLUtil.doNothing = function() {
-        };
+        VPLUtil.doNothing = $.noop;
         VPLUtil.returnFalse = function() {
             return false;
         };
@@ -82,13 +81,13 @@ define(
             return width;
         };
         VPLUtil.sanitizeHTML = function(t) {
-            if (typeof t == 'undefined' || t.replace('/^\s+|\s+$/g', '') == '') {
+            if (typeof t == 'undefined' || t.replace(/^\s+$/g, '') == '') {
                 return '';
             }
             return $('<div>' + t + '</div>').html();
         };
         VPLUtil.sanitizeText = function(s) {
-            if (typeof s == 'undefined' || s.replace('/^\s+|\s+$/g', '') == '') {
+            if (typeof s == 'undefined' || s.replace(/^\s+$/g, '') == '') {
                 return '';
             }
             return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -157,7 +156,7 @@ define(
             VPLUtil.isBlockly = function(fileName) {
                 return regBlk.test(VPLUtil.fileExtension(fileName));
             };
-            var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[\/\^`´]|^\-|^ | $|\.\./;
+            var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[/^`´]|^-|^ | $|\.\./;
             VPLUtil.validFileName = function(fileName) {
                 if (fileName.length < 1) {
                     return false;
@@ -480,25 +479,49 @@ define(
         })();
         (function() {
             var delayedActions = {};
+            var afterAllActions = {};
             var shortTimeout = 20;
             var longTimeout = 100;
+            var numberDelayed = 0;
             VPLUtil.delay = function(id, func, arg1, arg2) {
-                if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
+                if (typeof delayedActions[id] != 'undefined') {
                     clearTimeout(delayedActions[id]);
+                    numberDelayed--;
                 }
+                numberDelayed++;
                 delayedActions[id] = setTimeout(function() {
+                    numberDelayed--;
                     func(arg1, arg2);
-                    delayedActions[id] = false;
+                    delete delayedActions[id];
                 }, shortTimeout);
             };
             VPLUtil.longDelay = function(id, func, arg1, arg2) {
-                if (typeof delayedActions[id] == 'undefined' || delayedActions[id] !== false) {
+                if (typeof delayedActions[id] != 'undefined') {
                     clearTimeout(delayedActions[id]);
+                    numberDelayed--;
                 }
+                numberDelayed++;
                 delayedActions[id] = setTimeout(function() {
+                    numberDelayed--;
                     func(arg1, arg2);
-                    delayedActions[id] = false;
+                    delete delayedActions[id];
                 }, longTimeout);
+            };
+            var setAfterTimeout = function(id, func, arg1, arg2) {
+                if (typeof afterAllActions[id] != 'undefined') {
+                    clearTimeout(afterAllActions[id]);
+                }
+                return setTimeout(function() {
+                        if (numberDelayed > 0) {
+                            afterAllActions[id] = setAfterTimeout(id, func, arg1, arg2);
+                        } else {
+                             func(arg1, arg2);
+                             delete afterAllActions[id];
+                        }
+                    }, longTimeout);
+            };
+            VPLUtil.afterAll = function(id, func, arg1, arg2) {
+                afterAllActions[id] = setAfterTimeout(id, func, arg1, arg2);
             };
         })();
         VPLUtil.iconModified = function() {
@@ -683,7 +706,8 @@ define(
             if (!options.title) {
                 options.title = VPLUtil.str('warning');
             }
-            messageDialog.html(VPLUtil.genIcon(options.icon) + ' <span class="dmessage">' + message + '</span>');
+            var contents = ' <span class="dmessage">' + message.replace(/\n/g, '<br>') + '</span>';
+            messageDialog.html(VPLUtil.genIcon(options.icon) + contents);
             $('body').append(messageDialog);
             var messageButtons = {};
             if (!options.ok) {
@@ -720,7 +744,7 @@ define(
             }));
             messageDialog.dialog('open');
             messageDialog.setMessage = function(men) {
-                $(messageDialog).find('.dmessage').html(men);
+                $(messageDialog).find('.dmessage').html(men.replace(/\n/g, '<br>'));
             };
             return messageDialog;
         };
@@ -972,15 +996,15 @@ define(
             return deferred;
         };
         VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
-            if (typeof text == 'undefined' || text.replace('/^\s+|\s+$/gm', '') == '') {
+            if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
                 return '';
             }
             function escReg(t) {
                 return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
             }
-            var regtitgra = /\([-]?[\d]+[\.]?[\d]*\)\s*$/;
+            var regtitgra = /\([-]?[\d]+[.]?[\d]*\)\s*$/;
             var regtit = /^-.*/;
-            var regcas = /^\s*\>/;
+            var regcas = /^\s*>/;
             // TODO adds error? use first anotation for icon.
             var regError = new RegExp('\\[err\\]|error|' + escReg(VPLUtil.str('error')), 'i');
             var regWarning = new RegExp('\\[warn\\]|warning|note|' + escReg(VPLUtil.str('warning')), 'i');
@@ -1004,7 +1028,7 @@ define(
             (function() {
                 for (var i = 0; i < filenames.length; i++) {
                     var regf = escReg(filenames[i]);
-                    var reg = "(^|.* |.*/)" + regf + "[:\(](\\d+)([:\,]?(\\d+)?\\)?)";
+                    var reg = "(^|.* |.*/)" + regf + "[:(](\\d+)([:,]?(\\d+)?\\)?)";
                     regFiles[i] = new RegExp(reg, '');
                 }
             })();
