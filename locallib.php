@@ -37,7 +37,6 @@ define( 'VPL_SIMILARITY_CAPABILITY', 'mod/vpl:similarity' );
 define( 'VPL_ADDINSTANCE_CAPABILITY', 'mod/vpl:addinstance' );
 define( 'VPL_SETJAILS_CAPABILITY', 'mod/vpl:setjails' );
 define( 'VPL_MANAGE_CAPABILITY', 'mod/vpl:manage' );
-define( 'VPL_STARTDATE_RANGE', 300);
 
 require_once(dirname(__FILE__).'/vpl.class.php');
 
