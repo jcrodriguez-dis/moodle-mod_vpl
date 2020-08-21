@@ -127,7 +127,7 @@ div.vpl_ide_dialog_content {
     font-size: 14px;
 }
 
-.ui-tabs .ui-tabs-panel {
+div.vpl_ide_file.ui-tabs-panel {
     padding: 0;
 }
 /*Resolve problem with essential theme*/
