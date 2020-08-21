@@ -26,7 +26,40 @@ namespace mod_vpl\task;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 
+/**
+ * Class cron_task to be used by the task system.
+ * The task switch from hidden to show the activities that reach the startdate.
+ *
+ */
 class cron_task extends \core\task\scheduled_task {
+    /**
+     * @var boolean. The state of verbosity of the task.
+     */
+    private $verbose = true;
+
+    /**
+     * @var integer const. Range of time around the start date
+     */
+    const STARTDATE_RANGE = 300;
+
+    /**
+     * Set the verbose state.
+     * @param $state: bool. Setting the value to true shows the name of the activity
+     * and false no shows.
+     */
+    public function get_startdate_range(): int {
+        return self::STARTDATE_RANGE;
+    }
+
+    /**
+     * Set the verbose state.
+     * @param $state: bool. Setting the value to true shows the name of the activity
+     * and false no shows.
+     */
+    public function set_verbose(bool $state): void {
+        $this->verbose = $state;
+    }
+
     /**
      * Get a descriptive name for this task shown in admin screens.
      *
@@ -51,7 +84,7 @@ class cron_task extends \core\task\scheduled_task {
                           and startdate <= ?
                           and (duedate > ? or duedate = 0)';
         $parms = array (
-                $now - (2 * 3600),
+                $now - self::STARTDATE_RANGE,
                 $now,
                 $now
         );
@@ -59,7 +92,9 @@ class cron_task extends \core\task\scheduled_task {
         foreach ($vpls as $instance) {
             if (! instance_is_visible( VPL, $instance )) {
                 $vpl = new \mod_vpl( null, $instance->id );
-                echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"' . "\n";
+                if ($this->verbose) {
+                    echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"' . "\n";
+                }
                 $cm = $vpl->get_course_module();
                 set_coursemodule_visible( $cm->id, true );
                 $rebuilds [$cm->course] = $cm->course;
