@@ -4,16 +4,17 @@ sudo: required
 
 language: php
 
+addons:
+  postgresql: "9.5"
+  apt:
+    packages:
+      - g++
+
 services:
   - mysql
   - postgresql
   - docker
   
-addons:
-  apt:
-    packages:
-      - g++
-
 cache:
   directories:
     - $HOME/.composer/cache
@@ -21,6 +22,7 @@ cache:
 
 php:
  - 7.2
+ - 7.4
  
 env:
  global:
@@ -32,11 +34,16 @@ env:
   - DB=mysqli
 
 before_install:
+  - phpenv config-rm xdebug.ini
+  - cd ../..
   - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 before_script:
 #  - chmod +x /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
+
+install:
+  - moodle-plugin-ci install
 
 script:
   - moodle-plugin-ci phplint
@@ -47,6 +54,7 @@ script:
   - moodle-plugin-ci validate
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
+#  - moodle-plugin-ci phpdoc
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat
