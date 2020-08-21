@@ -60,8 +60,8 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = (time() - $this->crontask->get_startdate_range()) - 60;
-            $instance->duedate = (time() + $this->crontask->get_startdate_range() + 60);
+            $instance->startdate = time() - $this->crontask->get_startdate_range() - 10;
+            $instance->duedate = time() + $this->crontask->get_startdate_range() + 60;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -81,7 +81,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = (time() - $this->crontask->get_startdate_range()) + 60;
+            $instance->startdate = time() - $this->crontask->get_startdate_range() / 2;
             $this->assertTrue($DB->update_record(VPL, $instance));
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -101,7 +101,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time();
+            $instance->startdate = time() - $this->crontask->get_startdate_range() + 1;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -121,7 +121,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = (time() + $this->crontask->get_startdate_range()) - 60;
+            $instance->startdate = time() - 10;
             $instance->duedate = 0;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
@@ -142,7 +142,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + $this->crontask->get_startdate_range() + 60;
+            $instance->startdate = time() + 1;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -163,7 +163,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
             $instance->startdate = time() - $this->crontask->get_startdate_range() / 2;
-            $instance->duedate = time() - 1;
+            $instance->duedate = time() - 5;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
