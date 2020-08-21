@@ -1,7 +1,6 @@
 #vpl_results_accordion .vpl_ide_accordion_c_description a,
 #vpl_results_accordion .vpl_ide_accordion_c_comments a,
-#vpl_results_accordion .vpl_ide_accordion_c_compilation a
-{
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a {
     color: #1177d1; /* Removes Jquery-UI and set Moodle default theme color. */
 }
 

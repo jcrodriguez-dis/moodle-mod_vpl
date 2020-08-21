@@ -60,14 +60,14 @@ class vpl_editor_util {
     public static function print_js_i18n() {
         ?>
         <script>
-        window.VPLi18n = <?=json_encode(self::i18n());?>
+        window.VPLi18n = <?php echo json_encode(self::i18n());?>;
         </script>
         <?php
     }
     public static function print_js_description($vpl) {
         ?>
         <script>
-        window.VPLDescription = <?=json_encode($vpl->get_fulldescription_with_basedon());?>
+        window.VPLDescription = <?php echo json_encode($vpl->get_fulldescription_with_basedon());?>;
         </script>
         <?php
     }
@@ -78,7 +78,7 @@ class vpl_editor_util {
     <div id="vpl_menu" class="vpl_ide_menu"></div>
     <div id="vpl_tr" class="vpl_ide_tr">
         <div id="vpl_filelist" style="display: none;">
-            <div id="vpl_filelist_header"><?php p(get_string('filelist', VPL))?></div>
+            <div id="vpl_filelist_header"><?php p(get_string('filelist', VPL));?></div>
             <div id="vpl_filelist_content"></div>
         </div>
         <div id="vpl_tabs" class="vpl_ide_tabs">
@@ -94,7 +94,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_newfilename">
-                <?php p(get_string('new_file_name', VPL))?></label> <input
+                <?php p(get_string('new_file_name', VPL));?></label> <input
                 type="text" id="vpl_ide_input_newfilename"
                 name="vpl_ide_input_newfilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br />
@@ -104,7 +104,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_renamefilename">
-                <?php p(get_string('rename'))?></label> <input
+                <?php p(get_string('rename'));?></label> <input
                 type="text" id="vpl_ide_input_renamefilename"
                 name="vpl_ide_input_renamefilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br />
@@ -114,7 +114,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_deletefilename">
-                <?php p(get_string('delete'))?></label> <input
+                <?php p(get_string('delete'));?></label> <input
                 type="text" id="vpl_ide_input_deletefilename"
                 name="vpl_ide_input_deletefilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br />
@@ -178,7 +178,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_comments">
-                <?php p(get_string('comments', VPL))?></label> <textarea
+                <?php p(get_string('comments', VPL));?></label> <textarea
                 id="vpl_ide_input_comments" name="vpl_ide_input_comments"
                 class="ui-widget-content ui-corner-all" autofocus ></textarea>
         </fieldset>
