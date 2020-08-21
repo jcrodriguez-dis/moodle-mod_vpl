@@ -36,7 +36,7 @@ before_install:
   - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
 
 before_script:
-  - chmod +x /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
+#  - chmod +x /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
 
 script:
   - moodle-plugin-ci phplint
@@ -50,4 +50,4 @@ script:
   - moodle-plugin-ci grunt
   - moodle-plugin-ci phpunit
 #  - moodle-plugin-ci behat
-  - /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
+#  - /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
