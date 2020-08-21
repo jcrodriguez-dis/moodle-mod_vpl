@@ -96,10 +96,10 @@ function vpl_fopen($filename) {
     $fp = fopen( $filename, 'w+b' );
     if ($fp === false) {
         if (DIRECTORY_SEPARATOR == '\\' ) {
-            $path_parts = pathinfo($filename);
-            $name = $path_parts['filename'];
+            $pathparts = pathinfo($filename);
+            $name = $pathparts['filename'];
             if (preg_match( '/(^aux$)|(^con$)|(^prn$)|(^nul$)|(^com\d$)|(^lpt\d$)/i' , $name) == 1) {
-                $patchedfilename = $path_parts['dirname'] . '\\_n_p_' . $path_parts['basename'];
+                $patchedfilename = $pathparts['dirname'] . '\\_n_p_' . $pathparts['basename'];
                 return vpl_fopen($patchedfilename);
             }
         }
