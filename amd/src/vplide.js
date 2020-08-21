@@ -1699,7 +1699,6 @@ define(
                 } else {
                     menuButtons.setText('filelist', 'filelist', VPLUtil.str('filelist'));
                 }
-                VPLUtil.log('updateMenu', true);
                 var modified = fileManager.isModified();
                 menuButtons.enable('save', modified);
                 menuButtons.enable('run', (!modified || options.example) && isOptionAllowed('run'));
@@ -1745,7 +1744,7 @@ define(
                     if (fileManager.isModified()) {
                         return str('changesNotSaved');
                     }
-                    return '';
+                    return undefined;
                 });
             }
             fileManager = new FileManager();
@@ -1806,7 +1805,7 @@ define(
                 fileManager.setFontSize(options.fontSize);
                 fileManager.setVersion(response.version);
                 fileManager.fileListVisible(showFileList);
-                VPLUtil.afterAll(function() {
+                VPLUtil.afterAll('AfterLoad', function() {
                     updateMenu();
                     autoResizeTab();
                     adjustTabsTitles(true);
