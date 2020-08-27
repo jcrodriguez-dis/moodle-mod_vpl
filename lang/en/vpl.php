@@ -257,14 +257,14 @@ program test files and data files.</p>
 will resolve the language you use (based on file name extensions) and use a
 predefined script.
 <h2>Automatic evaluation</h2>
-<p>The incorporates features to facilitate the evaluation of student\'s submissions.
+<p>This section incorporates features to facilitate the evaluation of student\'s submissions.
 This feature allows to run the student program and check its output for a given input.
 To set up the evaluation cases you must populate the file &quot;vpl_evaluate.cases&quot;.
 <p>The file "vpl_evaluate.cases" has the following format:
 <ul>
 <li> "<strong>case </strong>= Description of case": Optional. Set an start of test case definition.</li>
 <li> "<strong>input </strong>= text": can use several lines. Ends with other instruction.</li>
-<li> "<strong>output </strong>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact test:
+<li> "<strong>output </strong>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact text:
 <ul>
 <li> <strong>number</strong>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, other text are ignored. Floats are checked with tolerance</li>
 <li> <strong>text</strong>: defined as text without double quote. Only words are checked and the rest of chars are ignored, the comparation is case-insensitive </li>
@@ -386,7 +386,7 @@ $string['testcases_help'] = '<p>This feature allows to run the student program a
 <ul>
 <li> "<strong>case </strong>= Description of case": Optional. Set an start of test case definition.</li>
 <li> "<strong>input </strong>= text": can use several lines. Ends with other instruction.</li>
-<li> "<strong>output </strong>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact test:
+<li> "<strong>output </strong>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact text:
 <ul>
 <li> <strong>number</strong>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, other text are ignored. Floats are checked with tolerance</li>
 <li> <strong>text</strong>: defined as text without double quote. Only words are checked and the rest of chars are ignored, the comparation is case-insensitive </li>
