@@ -87,12 +87,11 @@ define(
             };
             this.change = function() {
                 if (!modified) {
-                    VPLUtil.log("File change", true);
                     this.setModified(true);
                     fileManager.generateFileList();
                     this.showFileName();
+                    VPLUtil.longDelay('setModified', fileManager.setModified);
                 }
-                VPLUtil.longDelay('setModified', fileManager.setModified);
             };
             this.setFileName = function(name) {
                 if (!VPLUtil.validPath(name)) {
@@ -102,7 +101,7 @@ define(
                     fileName = name;
                     self.change();
                 }
-                if (!opened) {
+                if (!this.isOpen()) {
                     return true;
                 }
                 this.showFileName();
