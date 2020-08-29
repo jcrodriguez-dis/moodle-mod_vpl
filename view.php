@@ -25,7 +25,7 @@ require_once(dirname(__FILE__).'/../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/vpl.class.php');
 
-global $CFG;
+global $USER, $PAGE, $OUTPUT;
 
 require_login();
 $id = optional_param( 'id', null, PARAM_INT ); // Course Module ID.
