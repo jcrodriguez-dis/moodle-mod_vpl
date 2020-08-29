@@ -383,6 +383,7 @@ define(
                             newfile.extendToCodeEditor();
                         }
                     }
+                    newfile.setFileName(file.name);
                     files.push(newfile);
                     self.setModified();
                     if (files.length > 5) {
@@ -408,11 +409,10 @@ define(
                                twoBlockly(oldname, newname)) {
                             throw str('incorrect_file_name');
                         }
-                        if (VPLUtil.isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
+                        if (VPLUtil.isBinary(oldname) && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
                             throw str('incorrect_file_name');
                         }
-                        if (!VPLUtil.isBlockly(oldname) && VPLUtil.isBlockly(newname) ||
-                             VPLUtil.isBlockly(oldname) && !VPLUtil.isBlockly(newname)) {
+                        if (VPLUtil.isBlockly(oldname) != VPLUtil.isBlockly(newname)) {
                             throw str('incorrect_file_name');
                         }
                         files[pos].setFileName(newname);
@@ -525,10 +525,8 @@ define(
                     VPLUtil.delay('updateFileList', self.updateFileList);
                 };
                 this.setModified = function() {
-                    if (!modified) {
-                        modified = true;
-                        VPLUtil.delay('updateFileList', self.updateFileList);
-                    }
+                    modified = true;
+                    VPLUtil.delay('updateFileList', self.updateFileList);
                     VPLUtil.delay('updateMenu', updateMenu);
                 };
                 this.isModified = function() {
@@ -625,7 +623,7 @@ define(
                     var html = '';
                     lister(structure, '', lines);
                     for (var i = 0; i < lines.length; i++) {
-                        html += lines[i] + '<br />';
+                        html += lines[i] + '<br>';
                     }
                     fileListContent.html('<div>' + html + '</div>');
                 };
@@ -977,6 +975,7 @@ define(
                 title: str('create_new_file'),
                 buttons: dialogButtons
             }));
+            VPLUtil.setDialogTitleIcon(dialogNew, 'new');
 
             var dialogRename = $('#vpl_ide_dialog_rename');
             function renameHandler(event) {
@@ -997,6 +996,8 @@ define(
                 title: str('rename_file'),
                 buttons: dialogButtons
             }));
+            VPLUtil.setDialogTitleIcon(dialogRename, 'rename');
+
             dialogButtons[str('ok')] = function() {
                 $(this).dialog('close');
             };
@@ -1006,6 +1007,8 @@ define(
                 width: '40em',
                 buttons: dialogButtons
             }));
+            VPLUtil.setDialogTitleIcon(dialogComments, 'comments');
+
             $('#vpl_ide_input_comments').width('30em');
             var aboutDialog = $('#vpl_ide_dialog_about');
             var OKButtons = {};
@@ -1024,6 +1027,8 @@ define(
                 buttons: OKButtons
             }));
             shortcutDialog.dialog('option', 'height', 300);
+            VPLUtil.setDialogTitleIcon(shortcutDialog, 'shortcuts');
+
             OKButtons[str('shortcuts')] = function() {
                 $(this).dialog('close');
                 shortcutDialog.dialog('open');
@@ -1043,6 +1048,8 @@ define(
                 buttons: OKButtons
             }));
             aboutDialog.dialog('option', 'height', 300);
+            VPLUtil.setDialogTitleIcon(aboutDialog, 'about');
+
             var dialogSort = $('#vpl_ide_dialog_sort');
             var dialogSortButtons = {};
             dialogSortButtons[str('ok')] = function() {
@@ -1062,8 +1069,6 @@ define(
                     files[i] = sorted[i];
                 }
                 fileManager.setModified();
-                VPLUtil.delay('updateMenu', updateMenu);
-                VPLUtil.delay('updateFileList', fileManager.updateFileList);
                 $(this).dialog('close');
             };
             dialogSortButtons[str('cancel')] = function() {
@@ -1098,6 +1103,8 @@ define(
                 },
                 maxHeight: 400
             }));
+            VPLUtil.setDialogTitleIcon(dialogSort, 'sort');
+
             var dialogMultidelete = $('#vpl_ide_dialog_multidelete');
             var dialogMultideleteButtons = {};
             dialogMultideleteButtons[str('selectall')] = function() {
@@ -1146,6 +1153,8 @@ define(
                 maxHeight: 400,
                 maxWidth: 400
             }));
+            VPLUtil.setDialogTitleIcon(dialogMultidelete, 'multidelete');
+
             var dialogFontsize = $('#vpl_ide_dialog_fontsize');
             var fontsizeSlider = $('#vpl_ide_dialog_fontsize .vpl_fontsize_slider');
             var dialogFontFizeButtons = {};
@@ -1186,6 +1195,8 @@ define(
                     dialogFontsize.find('.vpl_fontsize_slider_value').text(value);
                 }
             });
+            VPLUtil.setDialogTitleIcon(dialogFontsize, 'fontsize');
+
             var dialogAceTheme = $('#vpl_ide_dialog_acetheme');
             var acethemeSelect = $('#vpl_ide_dialog_acetheme select');
             var dialogAceThemeButtons = {};
@@ -1214,6 +1225,8 @@ define(
             acethemeSelect.on('change', function() {
                     fileManager.setTheme(acethemeSelect.val());
             });
+            VPLUtil.setDialogTitleIcon(dialogAceTheme, 'theme');
+
             var terminal = new VPLTerminal('vpl_dialog_terminal', 'vpl_terminal', str);
             var VNCClient = new VPLVNCClient('vpl_dialog_vnc', str);
             var lastConsole = terminal;
@@ -1446,7 +1459,8 @@ define(
                 originalAction: function() {
                     showMessage(str('sureresetfiles'), {
                         title: str('resetfiles'),
-                        ok: resetFiles
+                        ok: resetFiles,
+                        icon: 'resetfiles'
                     });
                 }
             });
@@ -1461,10 +1475,11 @@ define(
                     function doSave() {
                         VPLUtil.requestAction('save', 'saving', data, options.ajaxurl)
                         .done(function(response) {
-                            if (response.oldversion) {
+                            if (response.requestsconfirmation) {
                                 showMessage(response.question, {
-                                    title: str('save'),
-                                    ok: function() {
+                                    title: str('saving'),
+                                    icon: 'alert',
+                                    yes: function() {
                                         data.version = response.version;
                                         doSave();
                                     }
@@ -1805,7 +1820,7 @@ define(
                 fileManager.setFontSize(options.fontSize);
                 fileManager.setVersion(response.version);
                 fileManager.fileListVisible(showFileList);
-                VPLUtil.afterAll('AfterLoad', function() {
+                VPLUtil.afterAll('AfterLoadFiles', function() {
                     updateMenu();
                     autoResizeTab();
                     adjustTabsTitles(true);
