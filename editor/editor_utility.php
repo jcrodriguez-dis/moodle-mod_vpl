@@ -58,11 +58,15 @@ class vpl_editor_util {
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', array($tagid, $options));
     }
     public static function print_js_i18n() {
+        global $CFG;
         ?>
         <script>
         window.VPLi18n = <?php echo json_encode(self::i18n());?>;
         </script>
         <?php
+        if ($CFG->debugdeveloper) {
+            echo '<script>window.VPLDebugMode = true;</script>';
+        }
     }
     public static function print_js_description($vpl) {
         ?>
@@ -97,7 +101,7 @@ class vpl_editor_util {
                 <?php p(get_string('new_file_name', VPL));?></label> <input
                 type="text" id="vpl_ide_input_newfilename"
                 name="vpl_ide_input_newfilename" value=""
-                class="ui-widget-content ui-corner-all" autofocus /><br />
+                class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
     <div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
@@ -107,7 +111,7 @@ class vpl_editor_util {
                 <?php p(get_string('rename'));?></label> <input
                 type="text" id="vpl_ide_input_renamefilename"
                 name="vpl_ide_input_renamefilename" value=""
-                class="ui-widget-content ui-corner-all" autofocus /><br />
+                class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
     <div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
@@ -117,7 +121,7 @@ class vpl_editor_util {
                 <?php p(get_string('delete'));?></label> <input
                 type="text" id="vpl_ide_input_deletefilename"
                 name="vpl_ide_input_deletefilename" value=""
-                class="ui-widget-content ui-corner-all" autofocus /><br />
+                class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
     <div id="vpl_ide_dialog_sort" class="vpl_ide_dialog"
@@ -188,10 +192,10 @@ class vpl_editor_util {
         <div>
         <h3>IDE for VPL</h3>
         This IDE is part of VPL <a href="http://vpl.dis.ulpgc.es"
-            target="_blank">Virtual Programming Lab for Moodle</a><br /> Author:
-        Juan Carlos Rodríguez del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br />
+            target="_blank">Virtual Programming Lab for Moodle</a><br> Author:
+        Juan Carlos Rodríguez del Pino &lt;jcrodriguez@dis.ulpgc.es&gt;<br>
         Licence: <a href="http://www.gnu.org/copyleft/gpl.html"
-            target="_blank">GNU GPL v3</a><br /> This software uses/includes the
+            target="_blank">GNU GPL v3</a><br> This software uses/includes the
         following software under the corresponding licence:
         <ul>
             <li><a href="http://ace.c9.io" target="_blank">ACE</a>: an embeddable
@@ -225,15 +229,15 @@ class vpl_editor_util {
         <pre id="vpl_terminal" class="vpl_terminal"></pre>
     </div>
     <div id="vpl_dialog_terminal_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
-        <div class="vpl_clipboard_label1"></div><br />
-        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
-        <div class="vpl_clipboard_label2"></div><br />
+        <div class="vpl_clipboard_label1"></div><br>
+        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br>
+        <div class="vpl_clipboard_label2"></div><br>
         <textarea class="vpl_clipboard_entry2"></textarea>
     </div>
     <div id="vpl_dialog_vnc_clipboard" class="vpl_ide_dialog vpl_clipboard" style="display: none;">
-        <div class="vpl_clipboard_label1"></div><br />
-        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br />
-        <div class="vpl_clipboard_label2"></div><br />
+        <div class="vpl_clipboard_label1"></div><br>
+        <textarea readonly="readonly" class="vpl_clipboard_entry1"></textarea><br>
+        <div class="vpl_clipboard_label2"></div><br>
         <textarea class="vpl_clipboard_entry2"></textarea>
     </div>
     <div id="vpl_dialog_vnc" style="display: none;">
@@ -330,7 +334,10 @@ class vpl_editor_util {
                 'stop',
                 'pause',
                 'resume',
-                'step'
+                'step',
+                'breakpoint',
+                'selectbreakpoint',
+                'removebreakpoint'
         );
         $words = array (
                 'cancel',
@@ -338,11 +345,13 @@ class vpl_editor_util {
                 'error',
                 'import',
                 'modified',
+                'no',
                 'notice',
                 'ok',
                 'required',
                 'sort',
                 'warning',
+                'yes',
                 'deleteselected',
                 'selectall',
                 'deselectall',
@@ -365,16 +374,15 @@ class vpl_editor_util {
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
         global $PAGE;
         $options = Array ();
-        $options ['i18n'] = self::i18n();
         $options ['ajaxurl'] = $ajaxurl;
         $options ['nexturl'] = $nexturl;
         $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', array($options) );
     }
     public static function generate_batch_evaluate_sript($ajaxurls) {
         $options = Array ();
-        $options ['i18n'] = self::i18n();
         $options ['ajaxurls'] = $ajaxurls;
         $joptions = json_encode( $options );
+        self::print_js_i18n();
 ?>
 <script>
     VPL_Batch_Evaluation(<?php echo $joptions;?>);
