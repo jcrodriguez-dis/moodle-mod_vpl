@@ -355,3 +355,8 @@ pre.vpl_terminal {
     color: white;
     font-weight: bold;
 }
+
+.vpl_dimmed {
+    opacity: 0.3;
+    filter: alpha(opacity=30);
+}
