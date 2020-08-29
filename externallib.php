@@ -26,7 +26,7 @@
 defined( 'MOODLE_INTERNAL' ) || die();
 
 
-require_once(dirname( __FILE__ ) . '../../lib/externallib.php');
+require_once(dirname( __FILE__ ) . '/../../lib/externallib.php');
 require_once(dirname( __FILE__ ) . '/locallib.php');
 require_once(dirname( __FILE__ ) . '/forms/edit.class.php');
 require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
