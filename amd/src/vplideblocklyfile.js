@@ -34,13 +34,13 @@ define(
         return function() {
             var self = this;
             var vplIdeInstance = this.getVPLIDE();
-            this.firstFocus = true;
-            this.workspacePlayground = false;
+            this.firstContent = true;
+            this.workspaceInstance = false;
             var adaptBlockly = function() {
                 if (typeof Blockly.PHP.workspaceToCodeOld == 'undefined') {
                     Blockly.PHP.workspaceToCodeOld = Blockly.PHP.workspaceToCode;
                     Blockly.PHP.workspaceToCode = function(workspace) {
-                        return "<?\n" + Blockly.PHP.workspaceToCodeOld(workspace);
+                        return "<?php\n" + Blockly.PHP.workspaceToCodeOld(workspace);
                     };
                 }
                 if (typeof Blockly.Python.workspaceToCodeOld == 'undefined') {
@@ -50,26 +50,8 @@ define(
                     };
                 }
             };
-            this.focus = function() {
-                if (self.firstFocus) {
-                    if (self.workspacePlayground) {
-                        self.firstFocus = false;
-                        Blockly.Events.disable();
-                        self.setContent(getContentOld.call(self));
-                        VPLUtil.adjustBlockly(self.workspacePlayground, 10, 10);
-                        self.workspacePlayground.scrollX = 0;
-                        self.workspacePlayground.scrollY = 0;
-                        Blockly.svgResize(self.workspacePlayground);
-                        Blockly.resizeSvgContents(self.workspacePlayground);
-                        self.adjustSize();
-                        Blockly.Events.enable();
-                    } else {
-                        VPLUtil.longDelay('focus', self.focus);
-                    }
-                }
-            };
             this.adjustSize = function() {
-                if (!this.isOpen() || !this.workspacePlayground) {
+                if (!this.isOpen() || !this.workspaceInstance) {
                     return false;
                 }
                 var editTag = $(this.getTId());
@@ -82,17 +64,17 @@ define(
                 editTag.height(newHeight);
                 $('#' + this.bdiv).height(newHeight);
                 $('#' + this.bdiv).width(editTag.width());
-                Blockly.svgResize(this.workspacePlayground);
+                Blockly.svgResize(this.workspaceInstance);
                 return false;
             };
             this.undo = function() {
                 if (this.isOpen()) {
-                    this.workspacePlayground.undo(false);
+                    this.workspaceInstance.undo(false);
                 }
             };
             this.redo = function() {
                 if (this.isOpen()) {
-                    this.workspacePlayground.undo(true);
+                    this.workspaceInstance.undo(true);
                 }
             };
             this.interpreter = false;
@@ -110,19 +92,19 @@ define(
                 this.animateRun = animate;
                 Blockly.JavaScript.STATEMENT_PREFIX = 'highlightBlock(%1);\n';
                 Blockly.JavaScript.addReservedWords('highlightBlock');
-                var code = Blockly.JavaScript.workspaceToCode(self.workspacePlayground);
+                var code = Blockly.JavaScript.workspaceToCode(self.workspaceInstance);
                 var initApi = function(interpreter, scope) {
                     // Add an API function for the alert() block.
-                    var wrapper = function(text) {
-                        text = text ? text.toString() + '\r\n' : text + '\r\n';
+                    var wrapperAlert = function(text) {
+                        text = typeof text != 'string' ? text.toString() + '\r\n' : text + '\r\n';
                         return interpreter.createPrimitive(ter.writeLocal(text));
                     };
                     interpreter.setProperty(scope, 'alert',
-                            interpreter.createNativeFunction(wrapper));
+                            interpreter.createNativeFunction(wrapperAlert));
 
                     // Add an API function for the prompt() block.
-                    wrapper = function(text, callback) {
-                        text = text ? text.toString() : '' + text;
+                    var wrapperPrompt = function(text, callback) {
+                        text = typeof text != 'string' ? text.toString() : '' + text;
                         ter.writeLocal(text);
                         ter.setDataCallback(function(t) {
                                                ter.writeLocal('\n');
@@ -130,20 +112,21 @@ define(
                                             });
                     };
                     interpreter.setProperty(scope, 'prompt',
-                        interpreter.createAsyncFunction(wrapper));
-                    wrapper = function(id) {
-                        if (id == self.breakpoint) {
+                        interpreter.createAsyncFunction(wrapperPrompt));
+
+                    var wrapperHighlightBlock = function(id) {
+                        if (id == self.getBreakpoint()) {
                             self.executionState = self.STEPSTATE;
                             self.updateRunButtons();
                             vplIdeInstance.getTerminal().setMessage(VPLUtil.str('breakpoint'));
                         }
                         if (self.animateRun || self.executionState == self.STEPSTATE) {
-                            self.workspacePlayground.highlightBlock(id);
+                            self.workspaceInstance.highlightBlock(id);
                         }
                         self.goNext = false;
                     };
                     interpreter.setProperty(scope, 'highlightBlock',
-                            interpreter.createNativeFunction(wrapper));
+                            interpreter.createNativeFunction(wrapperHighlightBlock));
                 };
                 self.interpreter = new Interpreter(code, initApi);
                 ter.connectLocal(self.stop, VPLUtil.doNothing);
@@ -160,7 +143,25 @@ define(
                 'isNaN': true, 'parseFloat': true, 'parseInt': true, 'prompt': true,
                 'self': true, 'this': true, 'window': true,
             };
-            this.breakpoint = '';
+            (function() {
+                var breakpoint = null;
+                var lastSelection = null;
+                self.getBreakpoint = function() {
+                    return breakpoint;
+                };
+                self.setBreakpoint = function() {
+                    breakpoint = lastSelection;
+                };
+                self.removeBreakpoint = function() {
+                    breakpoint = null;
+                };
+                self.setLastSelection = function(selection) {
+                    lastSelection = selection;
+                };
+                self.isSelectingBreakpoint = function() {
+                    return breakpoint === null && lastSelection !== null;
+                };
+            })();
             this.getVarValue = function(val) {
                 var HTML = '';
                 if (val === null) {
@@ -197,7 +198,8 @@ define(
                     }
                     var pro = properties[proname];
                     if (pro != undefined && !(pro.class === "Function")) {
-                        HTML += '<b>' + proname + "</b>:&nbsp;" + self.getVarValue(pro) + "<br>\n";
+                        var value = VPLUtil.sanitizeText(self.getVarValue(pro));
+                        HTML += '<b>' + proname + "</b>:&nbsp;" + value + "<br>\n";
                     }
                 }
                 return HTML;
@@ -253,7 +255,7 @@ define(
                     }
                 }
                 if (self.executionState == self.STOPSTATE) {
-                    self.workspacePlayground.highlightBlock(-1);
+                    self.workspaceInstance.highlightBlock(-1);
                     vplIdeInstance.getTerminal().closeLocal();
                     vplIdeInstance.setResult({variables: ''});
                     return;
@@ -270,6 +272,9 @@ define(
                 }
             };
             this.start = function() {
+                if (self.executionState != self.STOPSTATE) {
+                    return;
+                }
                 self.initRun(false);
                 self.executionState = self.RUNSTATE;
                 self.updateRunButtons();
@@ -277,6 +282,9 @@ define(
                 self.runLoop();
             };
             this.startAnimate = function() {
+                if (self.executionState != self.STOPSTATE) {
+                    return;
+                }
                 self.initRun(true);
                 self.executionState = self.RUNSTATE;
                 self.updateRunButtons();
@@ -285,6 +293,7 @@ define(
             };
             this.stop = function() {
                 self.executionState = self.STOPSTATE;
+                self.workspaceInstance.highlightBlock(-1);
                 self.updateRunButtons();
                 vplIdeInstance.getTerminal().setMessage(VPLUtil.str('stop'));
                 vplIdeInstance.getTerminal().closeLocal();
@@ -292,11 +301,17 @@ define(
                 vplIdeInstance.setResult({variables: ''});
             };
             this.pause = function() {
+                if (self.executionState != self.RUNSTATE) {
+                    return;
+                }
                 self.executionState = self.STEPSTATE;
                 vplIdeInstance.getTerminal().setMessage(VPLUtil.str('pause'));
                 self.updateRunButtons();
             };
             this.resume = function() {
+                if (self.executionState != self.STEPSTATE) {
+                    return;
+                }
                 self.executionState = self.RUNSTATE;
                 vplIdeInstance.getTerminal().setMessage(VPLUtil.str('resume'));
                 self.updateRunButtons();
@@ -326,88 +341,148 @@ define(
                 php: 'PHP'
             };
             this.generator = '';
-            this.setFileName = function(name) {
+            this.setFileName = function(newName) {
+                var oldFileName = this.getFileName();
+                var oldExt = VPLUtil.fileExtension(oldFileName);
+                if (!self.oldSetFileName(newName)) {
+                    VPLUtil.log("Blockly setFileName: name no acepted " + newName);
+                    return false;
+                }
+                VPLUtil.log('Blockly set filename ' + newName);
                 var regExt2 = /\.([^.]+)\.blockly[123]?$/;
                 var regFn2 = /(.+)\.blockly[123]?$/;
-                var fileName = this.getFileName();
-                var oldExt = VPLUtil.fileExtension(fileName);
-                self.oldSetFileName(name);
-                var ext2 = regExt2.exec(fileName);
-                var fn2 = regFn2.exec(fileName);
+                var ext2 = regExt2.exec(newName);
+                var fn2 = regFn2.exec(newName);
                 if (ext2 !== null && fn2 !== null && typeof this.generatorMap[ext2[1]] == 'string') {
                     this.generator = this.generatorMap[ext2[1]];
                     this.generatedFilename = fn2[1];
+                    VPLUtil.log('Blockly generator ' + this.generator + ' for filename ' + this.generatedFilename);
+                    this.updateGeneratedCode();
                 } else {
                     this.generator = '';
                 }
-                if (fn2 !== null && oldExt != VPLUtil.fileExtension(fileName)) {
-                    this.setToolbox();
+                if (oldExt != VPLUtil.fileExtension(newName)) {
+                    VPLUtil.log('Blockly extension changed');
+                    VPLUtil.afterAll('reopenBlockly', function() {
+                            VPLUtil.log('reopenBlockly');
+                            self.close();
+                            self.open();
+                        }
+                    );
+                }
+                return true;
+            };
+            this.updateGeneratedCode = function() {
+                if (self.blocklyNotLoaded) {
+                    return;
+                }
+                var fileManager = self.getFileManager();
+                if (self.generator != '') {
+                    VPLUtil.log('Blockly generate ' + self.generator);
+                    var code = Blockly[self.generator].workspaceToCode(self.workspaceInstance);
+                    var fid = fileManager.fileNameExists(self.generatedFilename);
+                    // Try to create generated code file.
+                    if (fid == -1) {
+                        VPLUtil.log("try to create " + self.generatedFilename + " files");
+                        fileManager.addFile({
+                            name: self.generatedFilename,
+                            contents: ''},
+                            false, VPLUtil.doNothing, VPLUtil.doNothing);
+                        fid = fileManager.fileNameExists(self.generatedFilename);
+                    }
+                    if (fid != -1) {
+                        var fileGenerated = fileManager.getFile(fid);
+                        if (fileGenerated.getContent() != code) {
+                            fileGenerated.setContent(code);
+                            fileGenerated.change();
+                            fileGenerated.gotoLine(1);
+                            fileGenerated.setReadOnly(true);
+                        }
+                    }
                 }
             };
-
             this.changeCode = function(event) {
+                VPLUtil.log(event);
                 if (event.type == 'ui' && event.element == 'selected') {
-                    self.breakpoint = event.newValue;
+                    self.setLastSelection(event.newValue);
                     return;
                 }
                 if (event.type == 'ui'
                         && event.element == 'category'
                         && event.newValue == VPLUtil.str('run')) {
-                    self.updateRunButtons();
+                        VPLUtil.longDelay('updateRunButtons', self.updateRunButtons);
                     return;
+                }
+                if (self.firstContent) {
+                    if (event.type == 'finished_loading') {
+                        self.firstContent = false;
+                        self.workspaceInstance.clearUndo();
+                    } else {
+                        return;
+                    }
                 }
                 if (!event.recordUndo) {
                     return;
                 }
+
+                VPLUtil.log('Call change due changeCode');
                 self.change();
-                var fileManager = this.getFileManager();
-                if (this.generator != '') {
-                    var code = Blockly[this.generator].workspaceToCode(self.workspacePlayground);
-                    var fid = fileManager.fileNameExists(this.generatedFilename);
-                    // Try to create generated code file.
-                    if (fid == -1) {
-                        fileManager.addFile({
-                            name: this.generatedFilename,
-                            contents: ''},
-                            false, VPLUtil.doNothing, VPLUtil.doNothing);
-                        fid = fileManager.fileNameExists(this.generatedFilename);
-                    }
-                    if (fid != -1) {
-                        var fc = fileManager.getFile(fid);
-                        fc.setContent(code);
-                        fc.change();
-                        fc.gotoLine(1);
-                        fc.setReadOnly(true);
-                    }
+                if (self.generator != '') {
+                    VPLUtil.afterAll('generate' + self.getFileName(), self.updateGeneratedCode);
                 }
             };
+            var triesUpdateRunButtons = 0;
+            var triesUpdateRunButtonsLimits = 20;
             this.updateRunButtons = function() {
+                if ($('.blocklySelectBreakpointC').length == 0) {
+                    triesUpdateRunButtons++;
+                    if (triesUpdateRunButtons > triesUpdateRunButtonsLimits) {
+                        triesUpdateRunButtons = 0;
+                        VPLUtil.log('Giving up to tries of updateRunButtons');
+                        return;
+                    }
+                    VPLUtil.longDelay('updateRunButtons', self.updateRunButtons);
+                    return;
+                }
+                VPLUtil.log('updateRunButtons');
+                triesUpdateRunButtons = 0;
+                var dimmed = 'vpl_dimmed';
+                if (self.isSelectingBreakpoint()) {
+                    $('.blocklySelectBreakpointC').removeClass(dimmed);
+                } else {
+                    $('.blocklySelectBreakpointC').addClass(dimmed);
+                }
+                if (self.getBreakpoint() === null) {
+                    $('.blocklyRemoveBreakpointC').addClass(dimmed);
+                } else {
+                    $('.blocklyRemoveBreakpointC').removeClass(dimmed);
+                }
                 switch (self.executionState) {
                     case self.RUNSTATE: {
-                        $('.blocklyStartC').hide();
-                        $('.blocklyStartAnimateC').hide();
-                        $('.blocklyStopC').show();
-                        $('.blocklyPauseC').show();
-                        $('.blocklyResumeC').hide();
-                        $('.blocklyStepC').hide();
+                        $('.blocklyStartC').addClass(dimmed);
+                        $('.blocklyStartAnimateC').addClass(dimmed);
+                        $('.blocklyStopC').removeClass(dimmed);
+                        $('.blocklyPauseC').removeClass(dimmed);
+                        $('.blocklyResumeC').addClass(dimmed);
+                        $('.blocklyStepC').addClass(dimmed);
                         break;
                     }
                     case self.STEPSTATE: {
-                        $('.blocklyStartC').hide();
-                        $('.blocklyStartAnimateC').hide();
-                        $('.blocklyStopC').show();
-                        $('.blocklyPauseC').hide();
-                        $('.blocklyResumeC').show();
-                        $('.blocklyStepC').show();
+                        $('.blocklyStartC').addClass(dimmed);
+                        $('.blocklyStartAnimateC').addClass(dimmed);
+                        $('.blocklyStopC').removeClass(dimmed);
+                        $('.blocklyPauseC').addClass(dimmed);
+                        $('.blocklyResumeC').removeClass(dimmed);
+                        $('.blocklyStepC').removeClass(dimmed);
                         break;
                     }
                     case self.STOPSTATE: {
-                        $('.blocklyStartC').show();
-                        $('.blocklyStartAnimateC').show();
-                        $('.blocklyStopC').hide();
-                        $('.blocklyPauseC').hide();
-                        $('.blocklyResumeC').hide();
-                        $('.blocklyStepC').show();
+                        $('.blocklyStartC').removeClass(dimmed);
+                        $('.blocklyStartAnimateC').removeClass(dimmed);
+                        $('.blocklyStopC').addClass(dimmed);
+                        $('.blocklyPauseC').addClass(dimmed);
+                        $('.blocklyResumeC').addClass(dimmed);
+                        $('.blocklyStepC').removeClass(dimmed);
                         break;
                     }
                 }
@@ -426,16 +501,31 @@ define(
                     });
                     return;
                 }
-                this.workspacePlayground.updateToolbox(this[toolboxname]);
-                this.workspacePlayground.registerButtonCallback('blocklyStartButton', this.start);
-                this.workspacePlayground.registerButtonCallback('blocklyStartAnimateButton', this.startAnimate);
-                this.workspacePlayground.registerButtonCallback('blocklyStopButton', this.stop);
-                this.workspacePlayground.registerButtonCallback('blocklyPauseButton', this.pause);
-                this.workspacePlayground.registerButtonCallback('blocklyResumeButton', this.resume);
-                this.workspacePlayground.registerButtonCallback('blocklyStepButton', this.step);
+                var addUpdateButtons = function(func) {
+                    return function() {
+                        func();
+                        self.updateRunButtons();
+                    };
+                };
+                var callBacks = {
+                    'blocklyStartButton': this.start,
+                    'blocklyStartAnimateButton': this.startAnimate,
+                    'blocklyStopButton': this.stop,
+                    'blocklyPauseButton': this.pause,
+                    'blocklyResumeButton': this.resume,
+                    'blocklyStepButton': this.step,
+                    'blocklySelectBreakpointButton': this.setBreakpoint,
+                    'blocklyRemoveBreakpointButton': this.removeBreakpoint,
+                };
+                var wp = this.workspaceInstance;
+                wp.updateToolbox(this[toolboxname]);
+                for (var key in callBacks) {
+                    wp.registerButtonCallback(key, addUpdateButtons(callBacks[key]));
+                }
                 this.adjustSize();
             };
             this.open = function() {
+                this.showFileName();
                 if (self.blocklyNotLoaded) {
                     VPLUtil.loadScript(
                         [
@@ -451,6 +541,7 @@ define(
                             '../editor/acorn/interpreter.js',
                         ],
                         function() {
+                            VPLUtil.log('Blocklyloaded', true);
                             adaptBlockly();
                             self.blocklyNotLoaded = false;
                             self.open();
@@ -458,9 +549,9 @@ define(
                     );
                     return false;
                 }
-                var fileName = this.getFileName();
+                var code = this.getContent();
                 this.setOpen(true);
-                this.setFileName(fileName);
+                var fileName = this.getFileName();
                 var horizontalMenu = false;
                 if (/.*[0-9]$/.test(VPLUtil.fileExtension(fileName))) {
                     horizontalMenu = true;
@@ -472,7 +563,7 @@ define(
                 this.bdiv = 'bkdiv' + this.getId();
                 $(tid).html('<div id="' + this.bdiv + '" style="height: 480px; width: 600px;"></div>');
                 var options = {
-                    toolbox: '<xml><category name=""><block type="math_number"></block></category></xml>',
+                    toolbox: '<xml><category name="" colour="330"><block type="math_number"></block></category></xml>',
                     media: '../editor/blockly/media/',
                     horizontalLayout: horizontalMenu,
                     zoom: {
@@ -481,14 +572,21 @@ define(
                         startScale: 1.0,
                         maxScale: 3,
                         minScale: 0.2,
-                        scaleSpeed: 1.15
+                        scaleSpeed: 0.3
                     }
                 };
-                this.workspacePlayground = Blockly.inject(this.bdiv, options);
-                this.workspacePlayground.addChangeListener(function(event) {
-                    self.changeCode(event);
-                });
+                this.workspaceInstance = Blockly.inject(this.bdiv, options);
                 this.setToolbox();
+                this.firstContent = true;
+                self.workspaceInstance.addChangeListener(self.changeCode);
+                this.setContent(code);
+                VPLUtil.adjustBlockly(self.workspaceInstance, 10, 10);
+                self.workspaceInstance.scrollX = 0;
+                self.workspaceInstance.scrollY = 0;
+                Blockly.svgResize(self.workspaceInstance);
+                Blockly.resizeSvgContents(self.workspaceInstance);
+                self.adjustSize();
+                // Must return false. Do not change it.
                 return false;
             };
             var getContentOld = this.getContent;
@@ -496,7 +594,7 @@ define(
                 if (!this.isOpen()) {
                     return getContentOld.call(this);
                 }
-                var xml = Blockly.Xml.workspaceToDom(this.workspacePlayground);
+                var xml = Blockly.Xml.workspaceToDom(this.workspaceInstance);
                 var xmlText = Blockly.Xml.domToPrettyText(xml);
                 return xmlText;
             };
@@ -504,17 +602,16 @@ define(
             this.setContent = function(c) {
                 setContentOld.call(this, c);
                 if (this.isOpen()) {
-                    this.workspacePlayground.clear();
+                    this.workspaceInstance.clear();
                     var xml = Blockly.Xml.textToDom(c);
-                    Blockly.Xml.domToWorkspace(xml, this.workspacePlayground);
+                    Blockly.Xml.domToWorkspace(xml, this.workspaceInstance);
                 }
             };
             this.close = function() {
                 if (this.isOpen()) {
                     setContentOld.call(this, this.getContent());
-                    this.workspacePlayground.dispose();
-                    this.workspacePlayground = false;
-                    this.firstFocus = true;
+                    this.workspaceInstance.dispose();
+                    this.workspaceInstance = false;
                     this.setOpen(false);
                 }
             };
@@ -542,7 +639,10 @@ define(
                 'stop',
                 'pause',
                 'resume',
-                'step'
+                'step',
+                'breakpoint',
+                'selectbreakpoint',
+                'removebreakpoint'
             ];
             this.blocklyIn18 = function(data) {
                 var l = this.blocklyStrs.length;
