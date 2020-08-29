@@ -20,7 +20,11 @@
  * @copyright 2020 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * Definition of cron task.
+ * @var array $tasks
  */
+
 defined( 'MOODLE_INTERNAL' ) || die();
 
 $tasks = [
