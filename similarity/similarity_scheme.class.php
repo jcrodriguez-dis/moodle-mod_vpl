@@ -32,7 +32,6 @@ class vpl_similarity_scheme extends vpl_similarity_base {
         return 5;
     }
     public function sintax_normalize(&$tokens) {
-        $nsemicolon = 0;
         $ret = array ();
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {

@@ -52,7 +52,7 @@ class vpl_token {
         return self::get_hash( $this->value );
     }
     public function show() {
-        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br />';
+        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br>';
     }
 }
 class vpl_tokenizer_base {

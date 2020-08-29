@@ -110,7 +110,6 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         $state = self::REGULAR;
         $pending = '';
         $firstnospace = '';
-        $lastnospace = '';
         $l = strlen( $filedata );
         $current = '';
         $previous = '';
@@ -128,7 +127,6 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                 $nextnext = '';
             }
             if ($previous == self::LF) {
-                $lastnospace = '';
                 $firstnospace = '';
                 $this->linenumber ++;
             }
@@ -141,9 +139,6 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                 }
             }
             if ($current != ' ' && $current != "\t") { // Keep first and last no space char.
-                if ($current != self::LF) {
-                    $lastnospace = $current;
-                }
                 if ($firstnospace == '') {
                     $firstnospace = $current;
                 }

@@ -139,11 +139,11 @@ class vpl_similarity_base {
         $ret = $this->from->show_info();
         if ($ext) {
             $htmls = vpl_s( self::$valueconverter );
-            $ret .= 'valueconverter=' . $htmls . '<br />';
+            $ret .= 'valueconverter=' . $htmls . '<br>';
             $htmls = vpl_s( $this->vecfrec );
-            $ret .= 'vecfrec=' . $htmls . '<br />';
+            $ret .= 'vecfrec=' . $htmls . '<br>';
             $htmls = vpl_s( $this->hashes );
-            $ret .= 'hashses=' . $htmls . '<br />';
+            $ret .= 'hashses=' . $htmls . '<br>';
         }
         return $ret;
     }

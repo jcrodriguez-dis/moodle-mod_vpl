@@ -37,6 +37,8 @@ ini_set( 'memory_limit', '256M' );
 
 require_login();
 
+global $CFG, $DB, $PAGE, $OUTPUT;
+
 $id = required_param( 'id', PARAM_INT ); // Course id.
 $userid = required_param( 'userid', PARAM_INT );
 $timelimit = 600; // Limit 10 minutes.

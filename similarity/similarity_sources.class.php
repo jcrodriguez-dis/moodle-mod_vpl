@@ -190,7 +190,7 @@ class vpl_file_from_activity extends vpl_file_from_base {
         if ($user) {
             $ret .= '</a> ';
             $sub = new mod_vpl_submission( $vpl, $this->subid );
-            $ret .= $sub->get_grade_core() . '<br />';
+            $ret .= $sub->get_grade_core() . '<br>';
             $ret .= $vpl->user_fullname_picture( $user );
             $link = vpl_mod_href( '/similarity/user_similarity.php', 'id', $vpl->get_course()->id, 'userid', $user->id );
             $ret .= ' (<a href="' . $link . '">';
@@ -357,7 +357,6 @@ class vpl_similarity_preprocess {
                 $toremove [$filename] = $sim;
             }
         }
-        $origin = '';
         $submission = new mod_vpl_submission( $vpl, $subinstance );
         $subf = $submission->get_submitted_fgm();
         $filelist = $subf->getFileList();
@@ -399,7 +398,6 @@ class vpl_similarity_preprocess {
      * @return void
      */
     static public function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
-        global $CFG;
         $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
         if ($ext != 'ZIP') {
             print_error( 'nozipfile' );

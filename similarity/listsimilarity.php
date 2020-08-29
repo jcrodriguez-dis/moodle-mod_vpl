@@ -37,6 +37,8 @@ ini_set('memory_limit', '256M');
 
 require_login();
 
+global $CFG, $OUTPUT, $PAGE;
+
 $id = required_param( 'id', PARAM_INT );
 $timelimit = 600; // 10 minutes.
 $vpl = new mod_vpl( $id );
@@ -76,7 +78,6 @@ if (isset( $fromform->joinedfiles )) {
 }
 
 $usernumber = 0;
-$nwm = 0;
 $simil = array ();
 // Preprocess current VPL instance.
 @set_time_limit( $timelimit );
@@ -165,7 +166,7 @@ if (count( $selected )) {
     echo html_writer::table( $table );
     $clusters->print_clusters();
 } else {
-    echo $OUTPUT->box( get_string( 'noresults' ) );
+    echo $OUTPUT->notification(get_string( 'noresults' ), 'info');
 }
 // Hide progress bars.
 $activityloadbox->hide();

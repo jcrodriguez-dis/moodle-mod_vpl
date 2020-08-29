@@ -126,7 +126,6 @@ class vpl_similarity_form extends moodleform {
             $mform->setType( 'allfiles', PARAM_BOOL );
         }
         $mform->addElement( 'checkbox', 'joinedfiles', get_string( 'joinedfiles', VPL ) );
-        $cid = $this->vpl->get_course()->id;
         $mform->addElement( 'header', 'headerothersources', get_string( 'othersources', VPL ) );
         $mform->addElement( 'select', 'scanactivity', get_string( 'scanactivity', VPL )
                            , $this->list_activities( $this->vpl->get_instance()->id ) );
