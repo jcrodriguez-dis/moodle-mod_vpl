@@ -27,7 +27,6 @@ define(['mod_vpl/vplutil'], function(VPLUtil) {
             options.next = function() {
                 window.location = options.nexturl;
             };
-            
             /**
              * Show a error message in a modal dialog.
              * Allows to go next evaluation.

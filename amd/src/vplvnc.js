@@ -67,41 +67,6 @@ define(
             inputarea.wrap = 'off';
             inputarea.spellcheck = 'false';
             VNCDialog.append(inputarea);
-            var resetValue = "_________________________________________________________";
-            var lastValue = resetValue;
-            function readInput() {
-                var value = inputarea.value;
-                if (value == lastValue && value == resetValue) {
-                    return;
-                }
-                var l = Math.min(value.length, lastValue.length);
-                var mod = 0;
-                for (mod = 0; mod < l; mod++) {
-                    if (value.charAt(mod) != lastValue.charAt(mod)) {
-                        break;
-                    }
-                }
-                for (var i = lastValue.length - 1; i >= value.length; i--) {
-                    self.sendBackspace();
-                }
-                if (mod < value.length) {
-                    self.send(value.substr(mod));
-                }
-                lastValue = value;
-                if (value.length > 500 || value.length === 0) {
-                    inputarea.blur();
-                    setTimeout(function() {
-                        inputarea.focus();
-                        inputarea.value = resetValue;
-                        lastValue = resetValue;
-                        try {
-                            inputarea.setSelectionRange(resetValue.length, resetValue.length);
-                        } catch (err) {
-                            /* Nothing to do. */
-                        }
-                    }, 10);
-                }
-            }
             function keyboardButton() {
                 if ($(inputarea).is(':focus')) {
                     inputarea.blur();
