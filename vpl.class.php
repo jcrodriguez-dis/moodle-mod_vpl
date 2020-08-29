@@ -454,7 +454,7 @@ class mod_vpl {
                 $link = '<a href="javascript:void(0)" onclick="' . $jscript . '">' . $grade . '</a>';
                 $html .= ' (' . $link . ')';
             }
-            $html .= '<br />' . "\n";
+            $html .= '<br>';
             if (isset( $all [$info->count] )) {
                 $all [$info->count] .= '(' . $info->count . ') ' . $html;
             } else {
@@ -653,16 +653,16 @@ class mod_vpl {
         $i = 0;
         foreach ($alldata as $name => $data) {
             if (strlen( $data ) > $max) {
-                $error .= '"' . s( $name ) . '" ' . get_string( 'maxfilesizeexceeded', VPL ) . "<br />";
+                $error .= '"' . s( $name ) . '" ' . get_string( 'maxfilesizeexceeded', VPL ) . "<br>";
             }
             if (! vpl_is_valid_path_name( $name )) {
-                $error .= '"' . s( $name ) . '" ' . get_string( 'incorrect_file_name', VPL ) . "<br />";
+                $error .= '"' . s( $name ) . '" ' . get_string( 'incorrect_file_name', VPL ) . "<br>";
             }
             if ($i < $lr && $list [$i] != $name) {
                 $a = new stdClass();
                 $a->expected = $list [$i];
                 $a->found = $name;
-                $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br />";
+                $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br>";
             }
             $i++;
         }
@@ -1921,17 +1921,17 @@ class mod_vpl {
         ) );
         if (count( $variations ) > 0) {
             $div = new vpl_hide_show_div();
-            echo '<br /><b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br />';
+            echo '<br><b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br>';
             $div->begin_div();
             if (! $this->instance->usevariations) {
-                echo '<b>' . get_string( 'variations_unused', VPL ) . '</b><br />';
+                echo '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
             if ($this->instance->variationtitle) {
-                echo '<b>' . get_string( 'variationtitle', VPL ) . ': ' . s( $this->instance->variationtitle ) . '</b><br />';
+                echo '<b>' . get_string( 'variationtitle', VPL ) . ': ' . s( $this->instance->variationtitle ) . '</b><br>';
             }
             $number = 1;
             foreach ($variations as $variation) {
-                echo '<b>' . get_string( 'variation', VPL, $number ) . '</b><br />';
+                echo '<b>' . get_string( 'variation', VPL, $number ) . '</b><br>';
                 echo $OUTPUT->box( $variation->description );
                 $number ++;
             }
@@ -2009,7 +2009,7 @@ class mod_vpl {
             $variation = $this->get_variation( $userid );
             if ($variation !== false) { // Variations defined.
                 if ($this->instance->variationtitle > '') {
-                    echo '<b>' . format_text( $this->instance->variationtitle, FORMAT_HTML ) . '</b><br />';
+                    echo '<b>' . format_text( $this->instance->variationtitle, FORMAT_HTML ) . '</b><br>';
                 }
                 echo $OUTPUT->box( $variation->description );
             }

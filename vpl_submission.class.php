@@ -669,7 +669,7 @@ class mod_vpl_submission {
             $a = new stdClass();
             $a->date = userdate( $inst->dategraded );
             $a->gradername = fullname( $grader );
-            $ret .= get_string( 'gradedonby', VPL, $a ) . '<br />';
+            $ret .= get_string( 'gradedonby', VPL, $a ) . '<br>';
             if ($this->vpl->get_grade() != 0) {
                 $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), true) . '<br>';
                 if ($detailed) {
@@ -678,7 +678,7 @@ class mod_vpl_submission {
                     if ($feedback) {
                         $div = new vpl_hide_show_div( true );
                         $tagid = 'gradercomments' . $this->get_instance()->id;
-                        $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br />';
+                        $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br>';
                         $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
                         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
                     }
@@ -693,10 +693,10 @@ class mod_vpl_submission {
                                                  , 'vpl', $this->vpl->get_instance()->id
                                                  , $this->instance->userid );
                 if (! empty( $gradinginfo->outcomes )) {
-                    $ret .= '<b>' . get_string( 'outcomes', 'grades' ) . '</b><br />';
+                    $ret .= '<b>' . get_string( 'outcomes', 'grades' ) . '</b><br>';
                     foreach ($gradinginfo->outcomes as $oid => $outcome) {
                         $ret .= s( $outcome->name );
-                        $ret .= ' ' . s( $outcome->grades [$inst->userid]->str_grade ) . '<br />';
+                        $ret .= ' ' . s( $outcome->grades [$inst->userid]->str_grade ) . '<br>';
                     }
                 }
             }
@@ -740,7 +740,7 @@ class mod_vpl_submission {
             echo ' (<a href="' . $url . '">' . get_string( 'evaluate', VPL );
             echo '</a>)';
         }
-        echo '<br />';
+        echo '<br>';
         if ( $this->vpl->is_group_activity() ) {
             $user = $DB->get_record( 'user', array (
                         'id' => $userid
@@ -794,7 +794,7 @@ class mod_vpl_submission {
             $compilation = $ce ['compilation'];
             if (strlen( $compilation ) > 0) {
                 $div = new vpl_hide_show_div( true );
-                echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br />';
+                echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br>';
                 echo $div->begin_div( true ) . s($compilation) . $div->end_div( true );
                 $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
             }
@@ -802,7 +802,7 @@ class mod_vpl_submission {
                 $proposedcomments = $this->proposedcomment( $ce ['execution'] );
                 if (strlen( $execution )) {
                     $div = new vpl_hide_show_div( true );
-                    echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br />";
+                    echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br>";
                     echo $div->begin_div( true ) . s($proposedcomments) . $div->end_div( true );
                     $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
                 }
@@ -908,14 +908,14 @@ class mod_vpl_submission {
             if ($comment == '' || ! $dropdown) {
                 $html .= '<b>';
                 $html .= s( $title );
-                $html .= '</b><br />';
+                $html .= '</b><br>';
                 $html .= $comment;
             } else {
                 $div = new vpl_hide_show_div( false );
                 $html .= $div->generate( true );
                 $html .= '<b>';
                 $html .= s( $title );
-                $html .= '</b><br />';
+                $html .= '</b><br>';
                 $html .= $div->begin_div( true ) . $comment . $div->end_div( true );
             }
         } else if ($comment > '') { // No title comment.
@@ -992,9 +992,9 @@ class mod_vpl_submission {
                     $comment .= s( $clean );
                     $comment .= '</a>';
                 }
-                $comment .= '<br />';
+                $comment .= '<br>';
             } else { // Regular text.
-                $comment .= $this->add_filelink( s( $line ) ) . '<br />';
+                $comment .= $this->add_filelink( s( $line ) ) . '<br>';
             }
         }
         if (strlen( $casetoshow ) > 0) {
@@ -1140,7 +1140,7 @@ class mod_vpl_submission {
         if ($response ['compilation']) {
             $compilation = $this->result_to_html( $response ['compilation'], $dropdown );
             if (strlen( $compilation )) {
-                $compilation = '<b>' . get_string( 'compilation', VPL ) . '</b><br />' . $compilation;
+                $compilation = '<b>' . get_string( 'compilation', VPL ) . '</b><br>' . $compilation;
             }
         }
         if ($response ['executed'] > 0) {
@@ -1149,7 +1149,7 @@ class mod_vpl_submission {
             $proposedgrade = $this->proposedgrade( $rawexecution );
             $execution = $this->result_to_html( $proposedcomments, $dropdown );
             if (strlen( $execution )) {
-                $execution = '<b>' . get_string( 'comments', VPL ) . "</b><br />\n" . $execution;
+                $execution = '<b>' . get_string( 'comments', VPL ) . "</b><br>\n" . $execution;
             }
             if (strlen( $proposedgrade )) {
                 $sgrade = $this->get_grade_core( $proposedgrade );
@@ -1157,15 +1157,15 @@ class mod_vpl_submission {
             }
             // Show raw ejecution if no grade or comments.
             if (strlen( $rawexecution ) > 0 && (strlen( $execution ) + strlen( $proposedgrade ) == 0)) {
-                $execution .= "<br />\n";
-                $execution .= '<b>' . get_string( 'execution', VPL ) . "</b><br />\n";
+                $execution .= "<br>\n";
+                $execution .= '<b>' . get_string( 'execution', VPL ) . "</b><br>\n";
                 $execution .= '<pre>' . s( $rawexecution ) . '</pre>';
             } else if ($returnrawexecution && strlen( $rawexecution ) > 0
                        && ($this->vpl->has_capability( VPL_MANAGE_CAPABILITY ))) {
                 // Show raw ejecution if manager and $returnrawexecution.
                 $div = new vpl_hide_show_div();
-                $execution .= "<br />\n";
-                $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate( true ) . "</b><br />\n";
+                $execution .= "<br>\n";
+                $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate( true ) . "</b><br>\n";
                 $execution .= $div->begin_div( true );
                 $execution .= '<pre>' . s( $rawexecution ) . '</pre>';
                 $execution .= $div->end_div( true );

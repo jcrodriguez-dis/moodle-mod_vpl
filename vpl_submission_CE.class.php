@@ -175,7 +175,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return object with files, limits, interactive and other info
      */
     public function prepare_execution($type, &$already = array(), $vpl = null) {
-        global $CFG, $DB;
+        global $DB;
         $plugincfg = get_config('mod_vpl');
         if ($vpl == null) {
             $vpl = $this->vpl;

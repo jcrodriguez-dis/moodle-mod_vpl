@@ -73,6 +73,8 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     return $select;
 }
 
+global $COURSE, $USER, $DB, $PAGE, $OUTPUT;
+
 $id = required_param( 'id', PARAM_INT ); // Course id.
 
 $sort = vpl_get_set_session_var( 'sort', '' );
@@ -375,7 +377,7 @@ if ($totalsubs > 0) {
     $row [] = $totalgraded;
     $table->data [] = $row;
 }
-echo "<br />";
+echo "<br>";
 echo html_writer::table( $table );
 
 $url = new moodle_url( '/mod/vpl/views/checkvpls.php', array ('id' => $id) );
