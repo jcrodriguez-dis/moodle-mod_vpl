@@ -34,9 +34,6 @@ define(
         'core/log',
     ],
     function($, jqui, log) {
-        if (typeof VPLUtil != 'undefined') {
-            return VPLUtil;
-        }
         var VPLUtil = {};
         VPLUtil.doNothing = $.noop;
         VPLUtil.returnFalse = function() {
@@ -549,9 +546,9 @@ define(
         };
         (function() {
             var menuIcons = {
-                'filelist': 'folder',
-                'filelistclose': 'folder-open',
-                'new': 'file',
+                'filelist': 'folder-o',
+                'filelistclose': 'folder-open-o',
+                'new': 'file-code-o',
                 'rename': 'pencil',
                 'delete': 'trash',
                 'multidelete': 'trash|list',
@@ -571,6 +568,7 @@ define(
                 'fullscreen': 'expand',
                 'regularscreen': 'compress',
                 'save': 'save',
+                'shortcuts': 'flash',
                 'sort': 'list-ol',
                 'run': 'rocket',
                 'debug': 'bug',
@@ -643,6 +641,10 @@ define(
                                           });
             return titleText;
         };
+        VPLUtil.setDialogTitleIcon = function(dialog, icon) {
+            var title = $(dialog).parent().find("span.ui-dialog-title");
+            title.html(VPLUtil.genIcon(icon) + ' ' + title.html());
+        };
         VPLUtil.progressBar = function(title, message, onUserClose) {
             var labelHTML = '<span class="vpl_ide_progressbarlabel"></span>';
             var sppiner = '<div class="vpl_ide_progressbaricon">' + VPLUtil.genIcon('spinner') + '</div>';
@@ -695,57 +697,68 @@ define(
             dialog.dialog('option', 'height', 'auto');
         };
         VPLUtil.showMessage = function(message, initialoptions) {
-            var options = $.extend({}, initialoptions);
-            var messageDialog = $('<div class="vpl_ide_dialog"></div>');
-            if (!options) {
-                options = {};
-            }
-            if (!options.icon) {
-                options.icon = 'info';
+            var options = $.extend({}, VPLUtil.dialogbaseOptions, initialoptions);
+            var messageDialog = $('<div class="vpl_ide_dialog" style="display:none"></div>');
+            var icon = '';
+            var contents = ' <span class="dmessage">' + message.replace(/\n/g, '<br>') + '</span>';
+            messageDialog.html(contents);
+            if (typeof options.icon == 'undefined') {
+                icon = 'info';
+            } else {
+                icon = options.icon;
+                delete options.icon;
             }
             if (!options.title) {
                 options.title = VPLUtil.str('warning');
             }
-            var contents = ' <span class="dmessage">' + message.replace(/\n/g, '<br>') + '</span>';
-            messageDialog.html(VPLUtil.genIcon(options.icon) + contents);
             $('body').append(messageDialog);
             var messageButtons = {};
-            if (!options.ok) {
+            if (typeof initialoptions.ok == 'function') {
                 messageButtons[VPLUtil.str('ok')] = function() {
                     $(this).dialog('close');
-                };
-            } else {
-                messageButtons[VPLUtil.str('ok')] = function() {
-                    $(this).dialog('close');
-                    options.ok();
+                    initialoptions.ok();
                 };
                 messageButtons[VPLUtil.str('cancel')] = function() {
+                    $(this).dialog('close');
+                };
+                delete options.ok;
+            } else if (typeof initialoptions.yes == 'function') {
+                messageButtons[VPLUtil.str('yes')] = function() {
+                    $(this).dialog('close');
+                    initialoptions.yes();
+                };
+                messageButtons[VPLUtil.str('no')] = function() {
+                    $(this).dialog('close');
+                };
+                delete options.yes;
+            } else {
+                messageButtons[VPLUtil.str('close')] = function() {
                     $(this).dialog('close');
                 };
             }
             if (options.next) {
                 messageButtons[VPLUtil.str('next')] = function() {
                     $(this).dialog('close');
-                    options.next();
+                    initialoptions.next();
                 };
             }
-            if (options.close) {
-                options.oldClose = options.close;
-            }
-            messageDialog.dialog($.extend({}, VPLUtil.dialogbaseOptions, {
-                title: options.title,
-                buttons: messageButtons,
-                close: function() {
+            options.close = function() {
                     $(this).remove();
-                    if (options.oldClose) {
-                        options.oldClose();
+                    if (initialoptions.close) {
+                        initialoptions.close();
                     }
-                }
-            }));
-            messageDialog.dialog('open');
+            };
+            options.buttons = messageButtons;
+
+            messageDialog.dialog(options);
+            var titleTag = messageDialog.siblings().find('.ui-dialog-title');
+            titleTag.html(VPLUtil.genIcon(icon) + ' ' + titleTag.html());
+
             messageDialog.setMessage = function(men) {
                 $(messageDialog).find('.dmessage').html(men.replace(/\n/g, '<br>'));
             };
+
+            messageDialog.dialog('open');
             return messageDialog;
         };
         VPLUtil.showErrorMessage = function(message, options) {
@@ -850,7 +863,7 @@ define(
                     if (servers.hasOwnProperty(i)) {
                         var n = 1 + i;
                         html += '<li><a href="' + servers[i] + '" target="_blank">Server ';
-                        html += n + '</a><br /></ul>';
+                        html += n + '</a></li>';
                     }
                 }
                 html += '</ol>';
@@ -1088,7 +1101,7 @@ define(
                 if (folding) {
                     html += '<a href="javascript:void(0)" onclick="VPLUtil.showHideDiv(this)">[+]</a>';
                 }
-                html += '<b class="ui-widget-header ui-corner-all">' + VPLUtil.sanitizeText(line) + '</b><br />';
+                html += '<b class="ui-widget-header ui-corner-all">' + VPLUtil.sanitizeText(line) + '</b><br>';
                 html = genFileLinks(html, line);
                 return html;
             }
@@ -1100,7 +1113,7 @@ define(
             }
             function addComment(rawline) {
                 var line = VPLUtil.sanitizeText(rawline);
-                comment += genFileLinks(line, rawline) + '<br />';
+                comment += genFileLinks(line, rawline) + '<br>';
             }
             function addCase(rawline) {
                 var line = VPLUtil.sanitizeText(rawline);
@@ -1190,6 +1203,7 @@ define(
                     scripts.shift();
                     VPLUtil.loadScript(scripts, end);
                 } else {
+                    VPLUtil.log('Error loading js ' + scriptURL + ' ' + scriptsLoaded[scriptURL]);
                     setTimeout(function() {
                                   VPLUtil.loadScript(scripts, end);
                                }, 50);
@@ -1408,10 +1422,19 @@ define(
         VPLUtil.options = {
             scriptPath: ''
         };
+        if (typeof window.VPLDebugMode != 'undefined') {
+            debugMode = window.VPLDebugMode;
+        }
         VPLUtil.init = function(options) {
+            VPLUtil.options = {
+                scriptPath: ''
+            };
             $.extend(VPLUtil.options, options);
+            if (typeof window.VPLDebugMode != 'undefined') {
+                debugMode = window.VPLDebugMode;
+            }
+            VPLUtil.log(VPLUtil.options);
         };
-        window.VPLUtil = VPLUtil;
         return VPLUtil;
     }
 );
