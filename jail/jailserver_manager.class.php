@@ -29,8 +29,6 @@
  *
  */
 
-use core_competency\url;
-
 defined('MOODLE_INTERNAL') || die();
 require_once( __DIR__ . '/../locallib.php');
 
@@ -38,7 +36,6 @@ class vpl_jailserver_manager {
     const RECHECK = 300; // Optional setable?
     const TABLE = 'vpl_jailservers';
     static public function get_curl($server, $request, $fresh = false) {
-        global $CFG;
         if (! function_exists( 'curl_init' )) {
             throw new Exception( 'PHP cURL required' );
         }
@@ -83,7 +80,6 @@ class vpl_jailserver_manager {
                 }
             } else {
                 $error = 'http error ' . s( strip_tags( $rawresponse ) );
-                $fail = true;
             }
             return false;
         }
@@ -91,10 +87,10 @@ class vpl_jailserver_manager {
     /**
      * Check if the server is tagged as down
      *
-     * @param url $server
+     * @param string $server
      * @return boolean
      */
-    static private function is_checkable($server) {
+    static private function is_checkable(string $server) {
         global $DB;
         $info = $DB->get_record( self::TABLE, array (
                 'serverhash' => self::get_hash($server),
@@ -111,11 +107,11 @@ class vpl_jailserver_manager {
     /**
      * Tag the server as down
      *
-     * @param URL $server
+     * @param string $server
      * @param string $strerror
      * @return void
      */
-    static private function server_fail($server, $strerror) {
+    static private function server_fail(string $server, string $strerror) {
         global $DB;
         if ($strerror == null) {
             $strerror = '';
@@ -149,8 +145,7 @@ class vpl_jailserver_manager {
      *            List of local server in text
      * @return array of servers
      */
-    static public function get_server_list($localserverlisttext) {
-        global $CFG;
+    static public function get_server_list(string $localserverlisttext) {
         $plugincfg = get_config('mod_vpl');
         $nllocal = vpl_detect_newline( $localserverlisttext );
         $nlglobal = vpl_detect_newline( $plugincfg->jail_servers );
@@ -179,9 +174,10 @@ class vpl_jailserver_manager {
      *            List of local server in text
      * @param string $feedback
      *            info about jail servers response
-     * @return URL
+     * @return string
      */
-    static public function get_server($maxmemory, $localserverlisttext = '', &$feedback = null) {
+    static public function get_server(int $maxmemory, string $localserverlisttext = '',
+                                      string &$feedback = null): string {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
         }
@@ -191,6 +187,7 @@ class vpl_jailserver_manager {
         $data->maxmemory = $maxmemory;
         $requestready = xmlrpc_encode_request( 'available', $data, array ( 'encoding' => 'UTF-8' ) );
         $feedback = '';
+        $error = '';
         $planb = array ();
         foreach ($serverlist as $server) {
             if (self::is_checkable( $server )) {
@@ -229,10 +226,12 @@ class vpl_jailserver_manager {
 
     /**
      * Check if a server is located in a private network
+     * Return true ==> private IP
      *
-     * @return true == private
+     * @param string $url to server
+     * @return bool
      */
-    static public function is_private_host($url) {
+    static public function is_private_host(string $url): bool {
         $hostname = parse_url( $url, PHP_URL_HOST );
         if ($hostname === false) {
             return true;
@@ -250,10 +249,10 @@ class vpl_jailserver_manager {
     /**
      * Clear servers table and check for every one again
      *
+     * @param string $localserverlisttext List of local servers
      * @return array of server object with info about server status
      */
-    static public function check_servers($localserverlisttext = '') {
-        global $CFG;
+    static public function check_servers(string $localserverlisttext = ''): array {
         global $DB;
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
@@ -300,9 +299,7 @@ class vpl_jailserver_manager {
      *            List of local server in text
      * @return array of URLs
      */
-    static public function get_https_server_list($localserverlisttext = '') {
-        global $CFG;
-        global $DB;
+    static public function get_https_server_list(string $localserverlisttext = ''): array {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
         }
@@ -311,6 +308,7 @@ class vpl_jailserver_manager {
         $requestready = xmlrpc_encode_request( 'available', $data, array (
                 'encoding' => 'UTF-8'
         ) );
+        $error = '';
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
         $list = array ();
         foreach ($serverlist as $server) {
@@ -334,10 +332,10 @@ class vpl_jailserver_manager {
     /**
      * Get server URL hash
      *
-     * @param url $server
+     * @param string $server $URL to generate hash
      * @return int
      */
-    static private function get_hash($server) {
+    static private function get_hash(string $server): int {
         $md = substr(md5($server), -7);
         return hexdec( $md );
     }
