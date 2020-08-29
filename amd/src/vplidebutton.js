@@ -287,6 +287,7 @@ define(
             this.multiple = function(v, m) {
                 return v - (v % m);
             };
+
             (function() {
                 var start = 0;
                 var lastLap = 0;

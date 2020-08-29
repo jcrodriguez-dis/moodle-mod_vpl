@@ -102,44 +102,6 @@ define(
                     }, 10);
                 }
             }
-            if (VPLUtil.isAndroid() && VPLUtil.isFirefox()) {
-                this.send = function(v) {
-                    for (var i = 0; i < v.length; i++) {
-                        rfb.sendKey(v.charCodeAt(i));
-                    }
-                };
-                this.sendBackspace = function() {
-                    rfb.sendKey(0xff08);
-                };
-
-                inputarea.value = resetValue;
-                inputarea.focus();
-                try {
-                    inputarea.setSelectionRange(resetValue.length, resetValue.length);
-                } catch (ex) {
-                    /* Nothing to do. */
-                }
-                $(inputarea).on('change', function() {
-                    readInput();
-                    self.send('\r');
-                });
-                $(inputarea).on('input', function() {
-                    readInput();
-                });
-                $(inputarea).on('keypress', function(e) {
-                    e.stopImmediatePropagation();
-                });
-                $(inputarea).on('focus', function() {
-                    inputarea.value = resetValue;
-                    lastValue = resetValue;
-                    try {
-                        inputarea.setSelectionRange(resetValue.length, resetValue.length);
-                    } catch (e) {
-                        /* Nothing to do. */
-                    }
-                });
-            }
-
             function keyboardButton() {
                 if ($(inputarea).is(':focus')) {
                     inputarea.blur();

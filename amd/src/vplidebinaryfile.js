@@ -66,6 +66,7 @@ define(
                 return false;
             };
             this.open = function() {
+                this.showFileName();
                 var fileName = this.getFileName();
                 var tid = this.getTId();
                 this.setOpen(true);
@@ -75,7 +76,6 @@ define(
                 } else {
                     $(tid).addClass('vpl_ide_binary').text(VPLUtil.str('binaryfile'));
                 }
-                this.setFileName(fileName);
             };
             this.close = function() {
                 this.setOpen(false);

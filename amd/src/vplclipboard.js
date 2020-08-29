@@ -22,7 +22,12 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['jquery', 'jqueryui', 'mod_vpl/vplutil'],
+define(
+    [
+        'jquery',
+        'jqueryui',
+        'mod_vpl/vplutil'
+    ],
     function($, jqui, VPLUtil) {
         var VPLClipboard = function(dialogId, hlabel1, action1, hlabel2, action2, onFocus) {
             var tdialog = $('#' + dialogId);

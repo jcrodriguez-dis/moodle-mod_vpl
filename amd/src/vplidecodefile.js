@@ -196,6 +196,7 @@ define(
                 editor.setTheme("ace/theme/" + theme);
             };
             this.open = function() {
+                this.showFileName();
                 if (typeof ace === 'undefined') {
                     VPLUtil.loadScript(['../editor/ace9/ace.js',
                         '../editor/ace9/ext-language_tools.js'],
@@ -207,7 +208,6 @@ define(
                 if (this.isOpen()) {
                     return false;
                 }
-                var fileName = this.getFileName();
                 var fileManager = this.getFileManager();
                 var tid = this.getTId();
                 // Workaround to remove jquery-ui theme background color.
@@ -221,16 +221,16 @@ define(
                     enableSnippets: true,
                 });
                 editor.setValue(this.getContent());
-                this.setOpen(true);
                 editor.setFontSize(fileManager.getFontSize());
                 editor.setTheme("ace/theme/" + fileManager.getTheme());
-                this.setFileName(fileName);
                 editor.gotoLine(0, 0);
                 editor.setReadOnly(readOnly);
                 session.setUseSoftTabs(true);
                 session.setTabSize(4);
                 // Avoid undo of editor initial content.
                 session.setUndoManager(new ace.UndoManager());
+                this.setOpen(true);
+                this.langSelection();
                 // Code to control Paste and drop under restricted editing.
                 editor.execCommand('replace');
                 var addEventDrop = function() {

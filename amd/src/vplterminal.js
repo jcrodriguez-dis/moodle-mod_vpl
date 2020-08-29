@@ -220,9 +220,9 @@ define(
             var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
             var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
             clipboard = new VPLClipboard('vpl_dialog_terminal_clipboard', HTMLUpdateClipboard, function() {
-                updateClipboard();
-                document.execCommand('copy');
-            }, HTMLPaste, pasteClipboard);
+                    updateClipboard();
+                    document.execCommand('copy');
+                }, HTMLPaste, pasteClipboard);
             this.closeDialog = function() {
                 clipboard.hide();
                 self.disconnect();
