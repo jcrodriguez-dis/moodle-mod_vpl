@@ -130,7 +130,7 @@ if (! file_exists($dir)) {
 }
 $zipfilename = tempnam( $dir, 'zip' );
 
-if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
+if ($zip->open( $zipfilename, ZipArchive::CREATE )) {
     $ziperrors = '';
     foreach ($alldata as $data) {
         $user = $data->uginfo;
