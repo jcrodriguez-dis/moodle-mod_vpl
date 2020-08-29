@@ -150,6 +150,7 @@ function vpl_evaluate($vpl, $alldata, $userinfo, $nevaluation, $groupsurl) {
         $url = vpl_url_add_param( $groupsurl, 'evaluate', optional_param( 'evaluate', 0, PARAM_INT ) );
         $url = vpl_url_add_param( $url, 'nevaluation', $nevaluation );
         $nexturl = str_replace( '&amp;', '&', urldecode( $url ) );
+        vpl_editor_util::print_js_i18n();
         vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
     } catch ( Exception $e ) {
         vpl_notice( $e->getMessage(), 'error' );
@@ -693,12 +694,12 @@ if (($gradeable || $vpl->get_instance()->evaluate) && $subselection != 'notgrade
     $urlsel->set_label( get_string( 'evaluate', VPL ) );
     echo $OUTPUT->render( $urlsel );
 }
-echo '<br />';
+echo '<br>';
 @ob_flush();
 flush();
 echo html_writer::table( $table );
 if (count( $ngrades ) > 0) {
-    echo '<br />';
+    echo '<br>';
     echo html_writer::table( $tablegraders );
 }
 
