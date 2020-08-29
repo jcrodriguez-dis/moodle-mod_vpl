@@ -79,7 +79,7 @@ class vpl_diff {
         $limit = strlen( $ran1 );
         if ($limit > 0) {
             if ($limit > 3) {
-                $limite = 3;
+                $limit = 3;
             }
             if (strncmp( $ran1, self::removealphanum( $line2 ), $limit ) == 0) {
                 return 2;
@@ -126,12 +126,12 @@ class vpl_diff {
 
         // Update first column.
         for ($i = 0; $i <= $nl1; $i ++) {
-            $matriz [$i] [0] = 0;
+            $matrix [$i] [0] = 0;
             $prev [$i] [0] = - 1;
         }
         // Update first row.
         for ($j = 1; $j <= $nl2; $j ++) {
-            $matriz [0] [$j] = 0;
+            $matrix [0] [$j] = 0;
             $prev [0] [$j] = 1;
         }
     }
@@ -168,6 +168,8 @@ class vpl_diff {
             }
             return $ret;
         }
+        $matrix = [];
+        $prev = [];
         self::initauxiliarmatrices( $matrix, $prev, $nl1, $nl2 );
 
         // Matrix processing.
@@ -296,6 +298,7 @@ class vpl_diff {
             }
         }
         echo '<div style="width: 100%;min-width: 950px; overflow: auto">';
+
         // Header.
         echo '<div style="float:left; width: 445px">';
         echo $htmlheader1;
@@ -303,9 +306,9 @@ class vpl_diff {
         echo '<div style="float:left; width: 445px">';
         echo $htmlheader2;
         echo '</div>';
+
         echo '<div style="clear:both;"></div>';
         // Files.
-        $pre = '<pre clas="vpl_g">';
         echo '<div style="float:left; text-align: right; width: 3em">';
         $shower = vpl_sh_factory::get_sh( 'a.txt' );
         $shower->print_file( 'a.txt', $datal1, false, count($diff) + 1, false );
@@ -314,10 +317,12 @@ class vpl_diff {
         $shower = vpl_sh_factory::get_sh( $filename1 );
         $shower->print_file( $filename1, $data1, false, count($diff) + 1, false );
         echo '</div>';
+
         echo '<div style="float:left; width: 3em">';
         $shower = vpl_sh_factory::get_sh( 'b.txt' );
         $shower->print_file( 'b.txt', $diffl, false, count($diff) + 1, false );
         echo '</div>';
+
         echo '<div style="float:left; text-align: right; width: 3em">';
         $shower = vpl_sh_factory::get_sh( 'b.txt' );
         $shower->print_file( 'b.txt', $datal2, false, count($diff) + 1, false );
@@ -326,6 +331,7 @@ class vpl_diff {
         $shower = vpl_sh_factory::get_sh( $filename2 );
         $shower->print_file( $filename2, $data2, false, count($diff) + 1, false );
         echo '</div>';
+
         echo '</div>';
         echo '<div style="clear:both;"></div>';
         vpl_sh_factory::syntaxhighlight();
@@ -364,7 +370,6 @@ class vpl_diff {
                 \mod_vpl\event\vpl_diff_viewed::log( $submission );
             }
         } else if ($type == 3) {
-            global $CFG;
             $data = '';
             $vplid = required_param( 'vplid' . $f, PARAM_INT );
             $vpl = new mod_vpl( false, $vplid );
