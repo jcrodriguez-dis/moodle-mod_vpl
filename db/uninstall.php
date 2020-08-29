@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined( 'MOODLE_INTERNAL' ) || die();
+
+global $CFG, $DB;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 $ret = true;
 $vpls = $DB->get_records( 'vpl', null, '', 'id' );
