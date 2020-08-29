@@ -61,7 +61,7 @@ class mod_vpl_edit{
      * Translates files from internal format to IDE format
      *
      * @param string[string] $from contents indexed by filenames
-     * @return stdClass[]
+     * @return array of stdClass
      */
     public static function filestoide(& $from) {
         $files = Array ();
@@ -110,19 +110,25 @@ class mod_vpl_edit{
     public static function save(mod_vpl $vpl, int $userid, array & $files, string $comments='', int $version = -1) {
         global $USER;
         $response = new stdClass();
-        $response->oldversion = false;
+        $response->requestsconfirmation = false;
         $response->saved = false;
         if ($version != -1) {
             $lastsub = $vpl->last_user_submission( $userid );
             if ($lastsub && $lastsub->id != $version) {
-                $response->oldversion = true;
+                $response->requestsconfirmation = true;
                 $response->question = get_string('replacenewer', VPL);
                 $response->version = $lastsub->id;
                 return $response;
             }
+            if ($userid != $USER->id) {
+                $response->requestsconfirmation = true;
+                $response->question = get_string('saveforotheruser', VPL);
+                $response->version = -1;
+                return $response;
+            }
         }
+        $errormessage = '';
         if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
-            $id = $vpl->get_course_module()->id;
             \mod_vpl\event\submission_uploaded::log( array (
                     'objectid' => $subid,
                     'context' => $vpl->get_context(),
@@ -183,7 +189,6 @@ class mod_vpl_edit{
      */
     public static function load($vpl, $userid, $submissionid = false) {
         global $DB;
-        global $USER;
         $response = new stdClass();
         $response->version = 0;
         $response->comments = '';

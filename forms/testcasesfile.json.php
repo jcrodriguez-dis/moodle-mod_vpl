@@ -58,10 +58,11 @@ try {
                 throw new Exception( get_string( 'incorrect_file_name', VPL ) );
             }
             $fgm = $vpl->get_execution_fgm();
+            $result->response->requestsconfirmation = false;
             $oldversion = $fgm->getversion();
             if ($actiondata->version != 0 && $actiondata->version != $oldversion) {
                 $result->response->question = get_string('replacenewer', VPL);
-                $result->response->oldversion = true;
+                $result->response->requestsconfirmation = true;
                 $result->response->version = $oldversion;
                 break;
             }

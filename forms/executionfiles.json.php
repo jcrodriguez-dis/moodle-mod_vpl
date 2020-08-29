@@ -27,6 +27,8 @@ define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
 
+global $PAGE, $OUTPUT, $USER;
+
 $result = new stdClass();
 $result->success = true;
 $result->response = new stdClass();
@@ -53,12 +55,12 @@ try {
     switch ($action) {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
-            $result->response->oldversion = false;
+            $result->response->requestsconfirmation = false;
             $fgm = $vpl->get_execution_fgm();
             $oldversion = $fgm->getversion();
             if ($actiondata->version != 0 && $actiondata->version != $oldversion) {
                 $result->response->question = get_string('replacenewer', VPL);
-                $result->response->oldversion = true;
+                $result->response->requestsconfirmation = true;
                 $result->response->version = $oldversion;
                 break;
             }
@@ -81,7 +83,7 @@ try {
             $result->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
             break;
         case 'cancel' :
-            $result->response = mod_vpl_edit::cancel( $vpl, $userid );
+            $result->response = mod_vpl_edit::cancel( $vpl, $USER->id );
             break;
         case 'getjails' :
             $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );

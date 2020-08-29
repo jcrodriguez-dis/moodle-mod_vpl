@@ -52,7 +52,6 @@ vpl_editor_util::generate_requires_evaluation();
 // Display page.
 $vpl->print_header( get_string( 'evaluation', VPL ) );
 flush();
-vpl_editor_util::print_js_i18n();
 
 echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
 $user = $DB->get_record( 'user', array ( 'id' => $userid ) );
@@ -66,5 +65,6 @@ if (optional_param( 'grading', 0, PARAM_INT )) {
 } else {
     $nexturl = "../forms/submissionview.php?id={$id}&userid={$userid}";
 }
+vpl_editor_util::print_js_i18n();
 vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
 $vpl->print_footer();

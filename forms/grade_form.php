@@ -137,12 +137,12 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addHTML( $html );
         }
 
-        $this->addHTML( '<br />' );
+        $this->addHTML( '<br>' );
         if ($grade != 0) {
             $commentsicon = '<i class="fa fa-align-left"></i> ';
-            $this->addHTML( $commentsicon . s( get_string( 'comments', VPL ) ) . '<br />' );
+            $this->addHTML( $commentsicon . s( get_string( 'comments', VPL ) ) . '<br>' );
             $this->addTextArea( 'comments', '', 8, 70 );
-            $this->addHTML( '<br />' );
+            $this->addHTML( '<br>' );
         }
         if (! empty( $CFG->enableoutcomes )) {
             $gradinginfo = grade_get_grades( $vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );

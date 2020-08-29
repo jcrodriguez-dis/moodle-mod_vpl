@@ -56,10 +56,11 @@ try {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
             $fgm = $vpl->get_required_fgm();
+            $result->response->requestsconfirmation = false;
             $oldversion = $fgm->getversion();
             if ($actiondata->version != 0 && $actiondata->version != $oldversion) {
                 $result->response->question = get_string('replacenewer', VPL);
-                $result->response->oldversion = true;
+                $result->response->requestsconfirmation = true;
                 $result->response->version = $oldversion;
                 break;
             }
