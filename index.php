@@ -97,7 +97,6 @@ $strstartdate = get_string( 'startdate', VPL ) . ' ';
 $strstartdate .= vpl_list_util::vpl_list_arrow( $burl, 'startdate', $instancefilter, $sort, $sortdir );
 $strduedate = get_string( 'duedate', VPL ) . ' ';
 $strduedate .= vpl_list_util::vpl_list_arrow( $burl, 'duedate', $instancefilter, $sort, $sortdir );
-$strnopls = get_string( 'novpls', VPL );
 
 $PAGE->set_url( '/mod/vpl/index.php', array ( 'id' => $id ) );
 $PAGE->navbar->add( $strvpls );
@@ -132,12 +131,6 @@ $urlbase->param( 'selection', $instancefilter );
 echo $OUTPUT->render( get_select_section_filter($urlbase, $sectionnames, $sectionfilter) );
 $urlbase->param( 'section', $sectionfilter );
 echo $OUTPUT->render( get_select_instance_filter($urlbase, $instancefilter) );
-
-if (! $cms = get_coursemodules_in_course( VPL, $course->id, "m.shortdescription, m.startdate, m.duedate" )) {
-    vpl_redirect( vpl_abs_href( '/course/view.php', 'id', $course->id ),
-                  $strnopls);
-    die();
-}
 
 $ovpls = get_all_instances_in_course( VPL, $course );
 $timenow = time();

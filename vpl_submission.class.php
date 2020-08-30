@@ -233,7 +233,6 @@ class mod_vpl_submission {
      * @return true if removed and false if not
      */
     public function remove_grade() {
-        global $USER;
         global $CFG;
         global $DB;
         ignore_user_abort( true );
@@ -268,10 +267,7 @@ class mod_vpl_submission {
                                                  , $this->vpl->get_instance()->id
                                                  , $userid );
                 if (! empty( $gradinginfo->outcomes )) {
-                    $outcomes = array ();
-                    foreach ($gradinginfo->outcomes as $oid => $dummy) {
-                        $outcomes [$oid] = null;
-                    }
+                    $outcomes = array_fill_keys(array_keys($gradinginfo->outcomes), null);
                     grade_update_outcomes( 'mod/vpl'
                                           , $this->vpl->get_course()->id
                                           , 'mod'
@@ -332,6 +328,8 @@ class mod_vpl_submission {
         if ( ! ($vplinstance->reductionbyevaluation > 0 ) ) {
             return '';
         }
+        $reduction = 0;
+        $percent = false;
         $this->grade_reduction($reduction, $percent);
         $value = $reduction;
         if ($percent) {
@@ -356,6 +354,8 @@ class mod_vpl_submission {
      * @return float new grade
      */
     public function reduce_grade($grade) {
+        $reduction = 0;
+        $percent = false;
         $this->grade_reduction($reduction, $percent);
         if ($reduction > 0) {
             if ($percent) {
@@ -462,7 +462,7 @@ class mod_vpl_submission {
                                                 , 'vpl', $this->vpl->get_instance()->id, $userid );
                 if (! empty( $gradinginfo->outcomes )) {
                     $outcomes = array ();
-                    foreach ($gradinginfo->outcomes as $oid => $dummy) {
+                    foreach (array_keys($gradinginfo->outcomes) as $oid) {
                         $field = 'outcome_grade_' . $oid;
                         if (isset( $info->$field )) {
                             $outcomes [$oid] = $info->$field;
@@ -513,7 +513,6 @@ class mod_vpl_submission {
      */
     public function is_visible() {
         global $USER;
-        $cm = $this->vpl->get_course_module();
         $instance = $this->instance;
         $ret = $this->vpl->is_visible();
         // Submission owner?
@@ -575,7 +574,7 @@ class mod_vpl_submission {
                 $graderuser = new StdClass();
                 if (function_exists( 'get_all_user_name_fields' )) {
                     $fields = get_all_user_name_fields();
-                    foreach ($fields as $name => $value) {
+                    foreach (array_keys($fields) as $name) {
                         $graderuser->$name = '';
                     }
                 }
@@ -627,7 +626,6 @@ class mod_vpl_submission {
                     }
                     return $gradestr;
                 } catch ( Exception $e ) {
-                    $error = $e;
                     // This try will avoid many checking.
                 }
             }
@@ -678,7 +676,7 @@ class mod_vpl_submission {
                     if ($feedback) {
                         $div = new vpl_hide_show_div( true );
                         $tagid = 'gradercomments' . $this->get_instance()->id;
-                        $ret .= '<b>' . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br>';
+                        $ret .= "<b id='$tagid'>" . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br>';
                         $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
                         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
                     }
@@ -694,7 +692,7 @@ class mod_vpl_submission {
                                                  , $this->instance->userid );
                 if (! empty( $gradinginfo->outcomes )) {
                     $ret .= '<b>' . get_string( 'outcomes', 'grades' ) . '</b><br>';
-                    foreach ($gradinginfo->outcomes as $oid => $outcome) {
+                    foreach ($gradinginfo->outcomes as $outcome) {
                         $ret .= s( $outcome->name );
                         $ret .= ' ' . s( $outcome->grades [$inst->userid]->str_grade ) . '<br>';
                     }
@@ -717,7 +715,7 @@ class mod_vpl_submission {
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
-        global $OUTPUT, $DB, $PAGE;
+        global $OUTPUT, $DB;
         $id = $this->vpl->get_course_module()->id;
         $userid = $this->instance->userid;
         $submissionid = $this->instance->id;
@@ -734,7 +732,6 @@ class mod_vpl_submission {
         echo ' (<a href="' . $url . '">' . get_string( 'download', VPL );
         echo '</a>)';
         // Show evaluation link.
-        $ce = $this->getce();
         if ($this->vpl->get_instance()->evaluate && ! $this->is_graded()) {
             $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid );
             echo ' (<a href="' . $url . '">' . get_string( 'evaluate', VPL );
@@ -781,6 +778,9 @@ class mod_vpl_submission {
         if ($ce ['compilation'] === 0) {
             return;
         }
+        $compilation = '';
+        $execution = '';
+        $grade = '';
         $this->get_ce_html( $ce, $compilation, $execution, $grade, true, true );
         if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
             $div = new vpl_hide_show_div( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
@@ -886,6 +886,7 @@ class mod_vpl_submission {
         // Process lines.
         foreach ($lines as $line) {
             foreach ($regexps as $regexp) {
+                $r = array();
                 if (preg_match( $regexp, $line, $r )) {
                     $line = $r [1] . '<a href="#' . $r [2] . '.' . $r [4] . '">' . $r [2] . ':' . $r [3] . $r [4] . '</a>' . $r [5];
                     break;
@@ -1224,6 +1225,9 @@ class mod_vpl_submission {
     }
     public function get_ce_parms() {
         $response = $this->getce();
+        $compilation = '';
+        $execution = '';
+        $grade = '';
         $this->get_ce_html( $response, $compilation, $execution, $grade, false );
         $params = '';
         if (strlen( $compilation )) {

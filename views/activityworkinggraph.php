@@ -34,8 +34,6 @@ $vpl->prepare_page( 'views/activityworkinggraph.php', array (
         'id' => $id
 ) );
 
-$course = $vpl->get_course();
-$instance = $vpl->get_instance();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 
 $vpl->print_header( get_string( 'timespent', VPL ) );

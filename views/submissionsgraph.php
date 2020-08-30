@@ -29,7 +29,6 @@ require_once(dirname(__FILE__).'/vpl_graph.class.php');
 
 function vpl_submissions_graph($vpl, $userid) {
     global $DB;
-    $course = $vpl->get_course();
     // No log.
     $subsn = array ();
     $series = array ();

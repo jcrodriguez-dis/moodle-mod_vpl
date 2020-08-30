@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined('MOODLE_INTERNAL') || die();
-require_once($CFG->dirroot.'/course/moodleform_mod.php');
+require_once(dirname(__FILE__).'/../../course/moodleform_mod.php');
 require_once(dirname(__FILE__).'/lib.php');
 require_once(dirname(__FILE__).'/vpl.class.php');
 
@@ -33,7 +33,6 @@ class mod_vpl_mod_form extends moodleform_mod {
         $plugincfg = get_config('mod_vpl');
         $mform = & $this->_form;
         $mform->addElement( 'header', 'general', get_string( 'general', 'form' ) );
-        $modname = 'vpl';
         $mform->addElement( 'text', 'name', get_string( 'name' ), array (
                 'size' => '50'
         ) );

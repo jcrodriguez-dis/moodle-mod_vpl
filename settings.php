@@ -21,15 +21,17 @@
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * 
+ * Define the attributes $settings variable.
+ * @var object $settings 
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once($CFG->dirroot . '/mod/vpl/lib.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $kbyte = 1024;
 $megabyte = 1024 * $kbyte;
-$gigabyte = 1024 * $megabyte;
 $minute = 60;
 $listmaxfilesize = vpl_get_select_sizes( 64 * $kbyte, vpl_get_max_post_size() );
 $listmaxtime = vpl_get_select_time( 120 * $minute );

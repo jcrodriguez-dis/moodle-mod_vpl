@@ -28,7 +28,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
-global $CFG, $USER;
+global $CFG;
 
 function vpl_user_zip_dirname( $name ) {
     // Prepare name.
@@ -64,10 +64,8 @@ function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) 
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
-$group = optional_param( 'group', - 1, PARAM_INT );
 $all = optional_param( 'all', 0, PARAM_INT );
 
-$subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
 $vpl = new mod_vpl( $id );
 $cm = $vpl->get_course_module();
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );

@@ -353,6 +353,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $request = xmlrpc_encode_request( $action, $data, array (
                 'encoding' => 'UTF-8'
         ) );
+        $error = '';
         $response = vpl_jailserver_manager::get_response( $server, $request, $error );
         if ($response === false) {
             $manager = $this->vpl->has_capability( VPL_MANAGE_CAPABILITY );

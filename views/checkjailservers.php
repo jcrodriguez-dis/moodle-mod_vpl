@@ -28,6 +28,7 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
 
+global $PAGE, $COURSE, $COURSE, $DB;
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
@@ -39,7 +40,6 @@ $vpl->prepare_page( 'views/checkjailservers.php', array (
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/checkjailservers.css' ) );
-$course = $vpl->get_course();
 $vpl->print_header( get_string( 'check_jail_servers', VPL ) );
 $vpl->print_heading_with_help( 'check_jail_servers' );
 
@@ -118,6 +118,7 @@ foreach ($processes as $process) {
     $request = xmlrpc_encode_request( 'running', $data, array (
             'encoding' => 'UTF-8'
     ) );
+    $error = '';
     $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
     if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
         // Removes zombi tasks.

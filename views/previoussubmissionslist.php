@@ -30,6 +30,8 @@ require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/workinggraph.php');
 require_once(dirname(__FILE__).'/submissionsgraph.php');
 
+global $CFG, $USER, $OUTPUT;
+
 require_login();
 
 function vpl_actions_menu($id, $userid, $subid) {
@@ -65,7 +67,6 @@ $vpl->prepare_page( 'views/previoussubmissionslist.php', array (
         'userid' => $userid
 ) );
 
-$course = $vpl->get_course();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 \mod_vpl\event\submission_previous_upload_viewed::log( array (
         'objectid' => $vpl->get_instance()->id,
@@ -140,7 +141,7 @@ echo $OUTPUT->url_select( array (
 echo '</div>';
 if ($detailed) {
     $nsub = count( $submissionslist );
-    foreach ($submissions as $index => $sub) {
+    foreach ($submissions as $sub) {
         echo '<hr><h2><a name="f' . $nsub . '"># ' . $nsub . '</a></h2>';
 
         $nsub --;

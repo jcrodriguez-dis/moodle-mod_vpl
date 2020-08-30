@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 
+global $OUTPUT;
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
@@ -34,7 +35,6 @@ $vpl->prepare_page( 'views/show_webservice.php', array (
         'id' => $id
 ) );
 $vpl->require_capability( VPL_VIEW_CAPABILITY );
-$logurl = vpl_rel_url( 'views/show_webservice.php', 'id', $id );
 if (! $vpl->is_visible()) {
     \mod_vpl\event\vpl_security_webservice::log( $vpl );
     notice( get_string( 'notavailable' ) );
@@ -44,7 +44,6 @@ $vpl->print_view_tabs( 'view.php' );
 echo '<h1>' . get_string( 'webservice', 'core_webservice' ) . '</h1>';
 echo '<h3>' . get_string( 'createtokenforuserdescription', 'core_webservice' ) . '</h3>';
 $serviceurl = vpl_get_webservice_urlbase( $vpl );
-$rows = ( int ) (strlen( $serviceurl ) / 80 + 2);
 echo $OUTPUT->box( '<div style="white-space: pre-wrap">' . s( $serviceurl ) . '</div>' );
 notice( '', vpl_mod_href( 'view.php', 'id', $id ) );
 $vpl->print_footer();

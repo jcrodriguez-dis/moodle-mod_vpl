@@ -24,6 +24,7 @@
  */
 
 require_once(dirname( __FILE__ ) . '/../../../config.php');
+global $CFG, $USER, $OUTPUT;
 require_once($CFG->dirroot.'/mod/vpl/locallib.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
@@ -145,7 +146,6 @@ function vpl_evaluate($vpl, $alldata, $userinfo, $nevaluation, $groupsurl) {
         $text .= ' <a href="' . $groupsurl . '">' . get_string( 'cancel' ) . '</a>';
         echo $OUTPUT->box( $text );
         $id = $vpl->get_course_module()->id;
-        $userid = $userinfo->id;
         $ajaxurl = "../forms/edit.json.php?id={$id}&userid={$userinfo->id}&action=";
         $url = vpl_url_add_param( $groupsurl, 'evaluate', optional_param( 'evaluate', 0, PARAM_INT ) );
         $url = vpl_url_add_param( $url, 'nevaluation', $nevaluation );
@@ -231,9 +231,7 @@ $vpl->prepare_page( 'views/submissionslist.php', array (
         'id' => $id
 ) );
 
-$course = $vpl->get_course();
 $cm = $vpl->get_course_module();
-$contextmodule = $vpl->get_context();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 \mod_vpl\event\vpl_all_submissions_viewed::log( $vpl );
 
@@ -250,7 +248,6 @@ if (! $groupmode) {
 }
 
 // Get graders.
-$graders = $vpl->get_graders();
 $gradeable = $vpl->get_grade() != 0;
 
 // Get students.
@@ -433,7 +430,7 @@ if ($showgrades) {
 // Sort by sort field.
 usort( $alldata, vpl_submissionlist_order::set_order( $sort, $sortdir != 'up' ) );
 $showphoto = count( $alldata ) < 100;
-$evaluationchoise = 0;
+
 $usernumber = 0;
 $ngrades = array (); // Number of revisions made by teacher.
 $nextids = array (); // Information to get next user in list.
@@ -523,6 +520,9 @@ foreach ($alldata as $data) {
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
             if ($showgrades) {
+                $compilation = '';
+                $execution = '';
+                $dummy = '';
                 $submission->get_ce_html( $result, $compilation, $execution, $dummy, false, true );
                 if (strlen( $compilation ) + strlen( $execution ) > 0) {
                     $gradecomments = $OUTPUT->box_start();

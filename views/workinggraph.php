@@ -73,7 +73,6 @@ function vpl_working_periods_graph($vpl, $userid) {
             $currentgroup = '';
         }
         $list = $vpl->get_students( $currentgroup );
-        $submissions = $vpl->all_last_user_submission();
         // Get all information.
         $alldata = array ();
         foreach ($list as $userinfo) {

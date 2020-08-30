@@ -337,14 +337,11 @@ function vpl_user_complete($course, $user, $mod, $vpl) {
     // Search submisions for $user $instance.
     $vpl = new mod_vpl( null, $vpl->id );
     $sub = $vpl->last_user_submission( $user->id );
-    if (! $sub) {
-        $return = null;
-    } else {
+    if ($sub !== false) {
         $submission = new mod_vpl_submission( $vpl, $sub );
         $submission->print_info( true );
         $submission->print_grade( true );
     }
-    return true;
 }
 /**
  * Returns all VPL submissions since a given time
@@ -651,9 +648,6 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parms);
         $testact = vpl_navi_node_create($vplnode, 'test', $url, navigation_node::TYPE_CONTAINER);
         $vplnode->add_node( $testact, $fkn );
-        $strdescription = get_string( 'description', VPL );
-        $strsubmission = get_string( 'submission', VPL );
-        $stredit = get_string( 'edit', VPL );
         $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
         $node = vpl_navi_node_create($testact, 'submission', $url);
         $testact->add_node( $node );
@@ -793,8 +787,8 @@ function vpl_reset_gradebook($courseid, $type = '') {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
     if ($cms = get_coursemodules_in_course( VPL, $courseid )) {
-        foreach ($cms as $cmid => $cm) {
-            $vpl = new mod_vpl( $cmid );
+        foreach ($cms as $cm) {
+            $vpl = new mod_vpl( $cm->id );
             $instance = $vpl->get_instance();
             $itemdetails = array (
                     'reset' => 1
@@ -835,13 +829,13 @@ function vpl_reset_instance_userdata($vplid) {
  * @return array status array
  */
 function vpl_reset_userdata($data) {
-    global $CFG, $DB;
+    global $CFG;
     $status = array ();
     if ($data->reset_vpl_submissions) {
         $componentstr = get_string( 'modulenameplural', VPL );
         if ($cms = get_coursemodules_in_course( VPL, $data->courseid )) {
-            foreach ($cms as $cmid => $cm) { // For each vpl instance in course.
-                $vpl = new mod_vpl( $cmid );
+            foreach ($cms as $cm) { // For each vpl instance in course.
+                $vpl = new mod_vpl( $cm->id );
                 $instance = $vpl->get_instance();
                 $instancestatus = array (
                         'component' => $componentstr,

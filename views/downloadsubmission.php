@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 
-global $CFG, $USER;
+global $USER, $DB;
 try {
     require_login();
     $id = required_param( 'id', PARAM_INT );
@@ -45,7 +45,6 @@ try {
     if ($userid && $userid != $USER->id) {
         // Grader.
         $vpl->require_capability( VPL_GRADE_CAPABILITY );
-        $grader = true;
         if ($submissionid) {
             $subinstance = $DB->get_record( 'vpl_submissions', array (
                     'id' => $submissionid
@@ -57,7 +56,6 @@ try {
         // Download own submission.
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         $userid = $USER->id;
-        $grader = false;
         if ($submissionid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
             $subinstance = $DB->get_record( 'vpl_submissions', array (
                     'id' => $submissionid

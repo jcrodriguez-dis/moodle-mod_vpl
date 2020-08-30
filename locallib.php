@@ -380,7 +380,6 @@ function vpl_url_add_param($url, $parm, $value) {
  */
 function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
     global $OUTPUT;
-    global $CFG;
     if (! mod_vpl::header_is_out()) {
         echo $OUTPUT->header();
     }
@@ -565,16 +564,22 @@ function vpl_conv_size_to_string($size) {
  * Return the array key after or equal to value
  *
  * @param $array
- * @param string $value of key to search >=
- * @return string key found
+ * @param int $value of key to search >=
+ * @return int key found
  */
-function vpl_get_array_key($array, $value) {
-    foreach ($array as $key => $nothing) {
+function vpl_get_array_key($array, int $value) {
+    reset($array);
+    $last = 0;
+    while ( $key = key($array)) {
         if ($key >= $value) {
+            reset($array);
             return $key;
         }
+        $last = $key;
+        next($array);
     }
-    return $key;
+    reset($array);
+    return $last;
 }
 
 /**
@@ -928,7 +933,7 @@ function vpl_get_webservice_available() {
     return ! empty( $service );
 }
 function vpl_get_webservice_token($vpl) {
-    global $DB, $SESSION, $USER, $CFG;
+    global $DB, $USER, $CFG;
     $now = time();
     if ($USER->id <= 2) {
         return '';

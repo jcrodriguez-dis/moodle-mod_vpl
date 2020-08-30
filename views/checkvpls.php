@@ -28,6 +28,8 @@ require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../list_util.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 
+global $DB, $PAGE, $OUTPUT, $USER;
+
 $id = required_param( 'id', PARAM_INT ); // Course id.
 
 // Check course existence.
@@ -55,13 +57,11 @@ if ($admin) {
 } else {
     $ovpls = get_all_instances_in_course( VPL, $course );
 }
-$timenow = time();
-$vpls = array ();
+
 // Get and select vpls to show.
 foreach ($ovpls as $ovpl) {
     $vpl = new mod_vpl( false, $ovpl->id );
     $instance = $vpl->get_instance();
-    $vpls[$instance->id] = $vpl;
     if ( $vpl->is_group_activity() ) {
         // Check groups concistence.
         $title = '';
