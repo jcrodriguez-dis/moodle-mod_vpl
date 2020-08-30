@@ -18,9 +18,9 @@
  * Unit tests for mod/vpl/locallib.php.
  *
  * @package mod_vpl
- * @copyright  Juan Carlos Rodríguez-del-Pino
+ * @copyright  Juan Carlos RodrÃ­guez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author Juan Carlos RodrÃ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -29,6 +29,10 @@ global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
+/**
+ * Unit tests for mod/vpl/locallib.php functions.
+ * @group mod_vpl
+ */
 class mod_vpl_locallib_testcase extends advanced_testcase {
 
     public function test_vpl_delete_dir() {
@@ -70,6 +74,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     public function test_vpl_fopen() {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
+        $text = 'Any thing is ok! 뭐든 괜찮아!';
         $this->internal_test_vpl_fopen( '/a1/b1/c1' );
         $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb' );
         $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb', 'Other text');
@@ -126,6 +131,18 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->assertEquals( $text, file_get_contents($fpath) );
         vpl_fwrite($fpath, $otext);
         $this->assertEquals( $otext, file_get_contents($fpath) );
+        // Tests if the File System honor chmod.
+        chmod($fpath, 0000);
+        try {
+            if (file_get_contents($fpath) == $otext) {
+                $chmodusefull = false;
+            } else {
+                $chmodusefull = true;
+            }
+        } catch(Exception $e) {
+            $chmodusefull = false;
+        }
+        chmod($fpath, 0777);
         $fpath = $testdir . '/aaaaaaaaaaaaaaaa.bbb';
         vpl_fwrite($fpath, $text);
         $this->assertEquals( $text, file_get_contents($fpath) );
@@ -147,9 +164,11 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             $this->assertTrue($throwexception, 'Exception expected');
         }
         vpl_delete_dir($testdir);
-        // If not Windows checks directories access control.
-        if (DIRECTORY_SEPARATOR !== '\\') {
-            mkdir($testdir, 0111, true);
+        
+        // If the File System honor chmod.
+        if ($chmodusefull) {
+            mkdir($testdir, 0777, true);
+            chmod($testdir, 0000);
             $fpath = $testdir . '/a1/b1/c1';
             try {
                 $throwexception = false;
@@ -159,8 +178,8 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             }
             chmod($testdir, 0777);
             $this->assertTrue($throwexception, 'Exception expected');
+            vpl_delete_dir($testdir);
         }
-        vpl_delete_dir($testdir);
     }
 
     public function test_vpl_get_set_session_var() {
@@ -245,7 +264,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
 
     public function test_vpl_is_valid_file_name() {
         $this->assertTrue(vpl_is_valid_file_name('filename.PNG.png'));
-        $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafsñ fdj kfsdhahfskdh'));
+        $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafsÃ± fdj kfsdhahfskdh'));
         $this->assertTrue(vpl_is_valid_file_name('f'));
         $this->assertTrue(vpl_is_valid_file_name('fj'));
         $this->assertTrue(vpl_is_valid_file_name('.f'));

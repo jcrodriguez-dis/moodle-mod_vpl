@@ -32,13 +32,16 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 
 /**
- * class mod_vpl_lib_testcase
- *
- * Test mod/vpl/lib.php functions.
+ * Unit tests for cron_task class.
+ * 
+ *     (startdate - range)            startdate
+ *  -------------|------------------------|----------------
+ *  before             on range           post range
+ * @group mod_vpl
  */
 class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
     /**
-     * Fixture bject of class \mod_vpl\task\cron_task
+     * Fixture object of class \mod_vpl\task\cron_task
      */
     private $crontask;
     /**
@@ -60,8 +63,8 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - $this->crontask->get_startdate_range() - 10;
-            $instance->duedate = time() + $this->crontask->get_startdate_range() + 60;
+            $instance->startdate = time() + $this->crontask->get_startdate_range() + 5;
+            $instance->duedate = time() + $this->crontask->get_startdate_range() + 100;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -81,7 +84,8 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - $this->crontask->get_startdate_range() / 2;
+            $instance->startdate = time() + $this->crontask->get_startdate_range() / 2;
+            $instance->duedate = 0;
             $this->assertTrue($DB->update_record(VPL, $instance));
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -101,27 +105,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - $this->crontask->get_startdate_range() + 1;
-            $DB->update_record(VPL, $instance);
-            $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
-            rebuild_course_cache( $cm->course, true );
-        }
-        $this->crontask->execute();
-        foreach ($this->vpls as $vpl) {
-            $instance = $vpl->get_instance();
-            $this->assertTrue(instance_is_visible( VPL, $instance ) == 1);
-        }
-    }
-
-    /**
-     * Method to test startdate almost out of range.
-     */
-    public function test_startdate_almost_out_of_range() {
-        global $DB;
-        foreach ($this->vpls as $vpl) {
-            $cm = $vpl->get_course_module();
-            $instance = $vpl->get_instance();
-            $instance->startdate = time() - 10;
+            $instance->startdate = time() + 5;
             $instance->duedate = 0;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
@@ -142,7 +126,8 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + 1;
+            $instance->startdate = time() - 1;
+            $instance->duedate = 0;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));
             rebuild_course_cache( $cm->course, true );
@@ -162,7 +147,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - $this->crontask->get_startdate_range() / 2;
+            $instance->startdate = time() + $this->crontask->get_startdate_range() / 2;
             $instance->duedate = time() - 5;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible( $cm->id, false ));

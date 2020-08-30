@@ -33,9 +33,8 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
 /**
- * class mod_vpl_class_testcase
- *
- * Tests mod/vpl/lib.php functions.
+ * Unit tests for mod_vpl class.
+ * @group mod_vpl
  */
 class mod_vpl_class_testcase extends mod_vpl_base_testcase {
 

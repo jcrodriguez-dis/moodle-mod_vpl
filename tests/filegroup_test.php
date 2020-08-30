@@ -33,9 +33,8 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/filegroup.class.php');
 
 /**
- * class mod_filegroup_class_testcase
- *
- * Tests mod/vpl/filegroup.class.php functions.
+ * Unit tests for file_group_process class.
+ * @group mod_vpl
  */
 class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
     protected $basedir = null;
@@ -122,12 +121,6 @@ class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
                 'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt');
         $this->assertEquals($filelist, file_group_process::read_list($this->gpdirectory->getfilelistname()));
-        $other = array(
-                'aaa/bb/ccc/first file.txt' => "Other first file contents",
-                'aaa/bb/Second file.txt' => "Other second file contents",
-                'aaaThird file.txt' => "Other third  file contents"
-        );
-
     }
 
     /**

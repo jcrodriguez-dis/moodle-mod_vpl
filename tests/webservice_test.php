@@ -33,7 +33,10 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot . '/mod/vpl/externallib.php');
 
-
+/**
+ * Unit tests for webservice.
+ * @group mod_vpl
+ */
 class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
     private function vpl_call_service($url, $fun, $request = '') {
         if (! function_exists( 'curl_init' )) {
@@ -144,6 +147,7 @@ class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
         $this->assertEquals($evaluation, $res['evaluation']);
         $this->assertEquals($grade, $res['grade']);
     }
+
     public function test_vpl_webservice_open() {
         $id = $this->vpldefault->get_course_module()->id;
         foreach ($this->users as $user) {
@@ -211,11 +215,10 @@ class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
         foreach ($files as $name => $data) {
             $filesarray[] = array('name' => $name, 'data' => $data);
         }
-        foreach ($this->users as $user) {
-            $res = mod_vpl_webservice::save($id, $filesarray, $password);
-            $this->internal_test_vpl_webservice_open($id, $files);
-        }
+        mod_vpl_webservice::save($id, $filesarray, $password);
+        $this->internal_test_vpl_webservice_open($id, $files);
     }
+
     public function test_vpl_webservice_save() {
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');

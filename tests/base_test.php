@@ -216,6 +216,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->students[0]);
         $userid = $this->students[0]->id;
         $files = array('a.c' => "int main(){\nprintf(\"Hola\");\n}");
+        $error = '';
         $submissionid = $this->vplonefile->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
             $this->fail($error);
@@ -242,6 +243,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                 'b.h' => "#define MV 4\n",
         );
+        $error = '';
         $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
             $this->fail($error);
@@ -292,6 +294,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                 'b.h' => "#define MV 6\n",
         );
+        $error = '';
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
             $this->fail($error);
@@ -305,6 +308,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                 'b.h' => "#define MV 7\n",
         );
+        $error = '';
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
         if ($submissionid == false || $error != '' ) {
             $this->fail($error);
@@ -337,6 +341,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                 'b.h' => "#define MV 8\n",
         );
+        $error = '';
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
             $this->fail($error);
@@ -349,6 +354,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                 'b.h' => "#define MV 9\n",
         );
+        $error = '';
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
             $this->fail($error);

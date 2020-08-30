@@ -33,9 +33,8 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
 /**
- * class mod_vpl_lib_testcase
- *
- * Test mod/vpl/lib.php functions.
+ * Unit tests for mod/vpl/lib.php functions.
+ * @group mod_vpl
  */
 class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
 
@@ -124,7 +123,6 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
     public function test_vpl_update_grades() {
         global $DB;
         $this->setUser($this->editingteachers[0]);
-        $hide = true;
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $submissions = $vpl->all_last_user_submission();
@@ -223,7 +221,6 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
      * Method to test vpl_update_instance() function
      */
     public function test_vpl_update_instance() {
-        global $DB;
         // Events change tested at test_vpl_events.
         $grades = [-1, 0, 7];
         $this->setUser($this->editingteachers[0]);
