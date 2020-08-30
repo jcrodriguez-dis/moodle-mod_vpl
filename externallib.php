@@ -52,7 +52,7 @@ class mod_vpl_webservice extends external_api {
         ) );
     }
     public static function info($id, $password) {
-        $params = self::validate_parameters( self::info_parameters(), array (
+        self::validate_parameters( self::info_parameters(), array (
                 'id' => $id,
                 'password' => $password
         ) );
@@ -111,7 +111,7 @@ class mod_vpl_webservice extends external_api {
     }
     public static function save($id, $files = array(), $password = '') {
         global $USER;
-        $params = self::validate_parameters( self::save_parameters(), array (
+        self::validate_parameters( self::save_parameters(), array (
                 'id' => $id,
                 'files' => $files,
                 'password' => $password
@@ -148,7 +148,7 @@ class mod_vpl_webservice extends external_api {
     }
     public static function open($id, $password) {
         global $USER;
-        $params = self::validate_parameters( self::open_parameters(), array (
+        self::validate_parameters( self::open_parameters(), array (
                 'id' => $id,
                 'password' => $password
         ) );
@@ -157,6 +157,7 @@ class mod_vpl_webservice extends external_api {
         if (! $vpl->is_visible()) {
             throw new Exception( get_string( 'notavailable' ) );
         }
+        $compilationexecution = new stdClass();
         $files = mod_vpl_edit::get_submitted_files( $vpl, $USER->id, $compilationexecution );
         // Adapt array[name]=content to format array[]=array(name,data).
         $files = mod_vpl_edit::files2object( $files );
@@ -196,7 +197,7 @@ class mod_vpl_webservice extends external_api {
     }
     public static function evaluate($id, $password) {
         global $USER;
-        $params = self::validate_parameters( self::evaluate_parameters(), array (
+        self::validate_parameters( self::evaluate_parameters(), array (
                 'id' => $id,
                 'password' => $password
         ) );
@@ -245,7 +246,7 @@ if the websocket client send something to the server then the evaluation is stop
     }
     public static function get_result($id, $password) {
         global $USER;
-        $params = self::validate_parameters( self::get_result_parameters(), array (
+        self::validate_parameters( self::get_result_parameters(), array (
                 'id' => $id,
                 'password' => $password
         ) );
