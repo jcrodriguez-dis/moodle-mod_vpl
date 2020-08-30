@@ -80,12 +80,11 @@ class cron_task extends \core\task\scheduled_task {
         $rebuilds = array ();
         $now = time();
         $sql = 'SELECT id, startdate, duedate, course, name FROM {vpl}
-                    WHERE startdate > ?
-                          and startdate <= ?
-                          and (duedate > ? or duedate = 0)';
+                    WHERE startdate < ?
+                          and startdate >= ?
+                          and (duedate > startdate or duedate = 0)';
         $parms = array (
-                $now - self::STARTDATE_RANGE,
-                $now,
+                $now + self::STARTDATE_RANGE,
                 $now
         );
         $vpls = $DB->get_records_sql( $sql, $parms );
