@@ -164,7 +164,6 @@ class mod_vpl {
      *            optional module instance id
      */
     public function __construct($id, $a = null) {
-        global $OUTPUT;
         global $DB;
         if ($id) {
             if (! $this->cm = get_coursemodule_from_id( VPL, $id )) {
@@ -445,7 +444,7 @@ class mod_vpl {
             $astext = s( addslashes_js( $text ) );
             $html = '';
             $html .= s( $text );
-            foreach ($info->grades as $grade => $nothing) {
+            foreach (array_keys($info->grades) as $grade) {
                 if ($grade >= 0) { // No grade.
                     $jscript = 'VPL.addComment(\'' . $astext . '\')';
                 } else {
@@ -464,7 +463,7 @@ class mod_vpl {
         // Sort comments by number of occurrences.
         krsort( $all );
         $html = '';
-        foreach ($all as $count => $info) {
+        foreach ($all as $info) {
             $html .= $info;
         }
         // TODO show info about others review with show hidde button.
@@ -555,7 +554,6 @@ class mod_vpl {
      * @return void
      */
     protected function network_check() {
-        global $OUTPUT;
         if (! $this->pass_network_check()) {
             $str = get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr();
             if ( constant( 'AJAX_SCRIPT') ) {
@@ -649,7 +647,6 @@ class mod_vpl {
             $error .= get_string( 'maxfilesexceeded', VPL ) . "\n";
         }
         $lr = count( $list );
-        $lad = count( $alldata );
         $i = 0;
         foreach ($alldata as $name => $data) {
             if (strlen( $data ) > $max) {
@@ -685,10 +682,13 @@ class mod_vpl {
         if (! $this->pass_submission_restriction( $files, $error )) {
             return false;
         }
-        $group = $this->get_usergroup($userid);
-        if ($this->is_group_activity() && $group === false) {
-            $error = get_string( 'notsaved', VPL ) . "\n" . get_string( 'inconsistentgroup', VPL );
-            return false;
+        $group = false;
+        if ($this->is_group_activity()) {
+            $group = $this->get_usergroup($userid);
+            if ($group === false) {
+                $error = get_string( 'notsaved', VPL ) . "\n" . get_string( 'inconsistentgroup', VPL );
+                return false;
+            }
         }
         $submittedby = '';
         if ($USER->id != $userid ) {
@@ -714,6 +714,7 @@ class mod_vpl {
         if (($lastsubins = $this->last_user_submission( $userid )) !== false) {
             $lastsub = new mod_vpl_submission( $this, $lastsubins );
             if ($lastsub->is_equal_to( $files, $submittedby . $comments )) {
+                $lock->__destruct();
                 return $lastsubins->id;
             }
         }
@@ -733,6 +734,7 @@ class mod_vpl {
         $submissionid = $DB->insert_record( 'vpl_submissions', $submissiondata, true );
         if (! $submissionid) {
             $error = get_string( 'notsaved', VPL ) . "\ninserting vpl_submissions record";
+            $lock->__destruct();
             return false;
         }
         // Save files.
@@ -742,6 +744,7 @@ class mod_vpl {
         } catch (file_exception $fe) {
             $DB->delete_records( VPL_SUBMISSIONS, array ('id' => $submissionid));
             $error = $fe->getMessage();
+            $lock->__destruct();
             return false;
         }
         $submission->remove_grade();
@@ -749,6 +752,7 @@ class mod_vpl {
         if ($USER->id == $userid) {
             $this->delete_overflow_submissions( $userid );
         }
+        $lock->__destruct();
         return $submissionid;
     }
 
@@ -1068,7 +1072,6 @@ class mod_vpl {
      * @return bool
      */
     public function is_group_activity() {
-        global $CFG;
         if (! isset( $this->group_activity )) {
             $cm = $this->get_course_module();
             $this->group_activity = $cm->groupingid > 0 && $this->get_instance()->worktype == 1;
@@ -1284,7 +1287,7 @@ class mod_vpl {
      * @return Object or false
      */
     public function get_grade_info() {
-        global $DB, $CFG, $USER;
+        global $CFG, $USER;
         if (! isset( $this->grade_info )) {
             $this->grade_info = false;
             if ($this->get_instance()->grade != 0) { // If 0 then NO GRADE.
@@ -1306,7 +1309,6 @@ class mod_vpl {
      * @return boolean
      */
     public function get_visiblegrade() {
-        global $USER;
         if ($gi = $this->get_grade_info()) {
             if (is_array( $gi->grades )) {
                 $usergi = reset( $gi->grades );
@@ -1374,7 +1376,7 @@ class mod_vpl {
      * @param $info string title and last nav option
      */
     public function print_header($info = '') {
-        global $COURSE, $PAGE, $OUTPUT;
+        global $PAGE, $OUTPUT;
         if (self::$headerisout) {
             return;
         }
@@ -1429,72 +1431,9 @@ class mod_vpl {
      * @param string $path to get the active tab
      *
      */
-    public function print_configure_tabs($path) {
-        global $CFG, $PAGE;
-        $active = basename($path);
-        $strbasic = get_string('basic', VPL);
-        $strfulldescription = get_string('fulldescription', VPL);
-        $strtestcases = get_string('testcases', VPL);
-        $strexecutionoptions = get_string('executionoptions', VPL);
-        $menustrexecutionoptions = get_string('menuexecutionoptions', VPL);
-        $strrequestedfiles = get_string('requestedfiles', VPL);
-        $stradvanced = get_string('advanced', VPL);
-        $strexecution = get_string('execution', VPL);
-        $tabs = array();
-        $tabs[] = new tabobject('edit', vpl_abs_href('/course/modedit.php', 'update', $this->cm->id), $strbasic, $strbasic);
-        $urltestcasesfile = vpl_mod_href('forms/testcasesfile.php', 'id', $this->cm->id, 'edit', 3);
-        $tabs[] = new tabobject('testcasesfile.php', $urltestcasesfile, $strtestcases, $strtestcases);
-        $urlexecutionoptions = vpl_mod_href('forms/executionoptions.php', 'id', $this->cm->id);
-        $tabs[] = new tabobject('executionoptions.php', $urlexecutionoptions, $menustrexecutionoptions, $strexecutionoptions);
-        $urlrequestedfiles = vpl_mod_href('forms/requestedfiles.php', 'id', $this->cm->id);
-        $tabs[] = new tabobject('requiredfiles.php', $urlrequestedfiles, $strrequestedfiles, $strrequestedfiles);
-        if ($active == 'executionfiles.php' || $active == 'executionlimits.php'
-            || $active == 'executionkeepfiles.php' || $active == 'variations.php'
-            || $active == 'local_jail_servers.php' || $active == 'checkjailservers.php') {
-                $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
-                $tabs[] = new tabobject($active, $urlexecutionfiles, $stradvanced, $stradvanced);
-            $strexecutionlimits = get_string('maxresourcelimits', VPL);
-            $strexecutionfiles = get_string('executionfiles', VPL);
-            $menustrexecutionfiles = get_string('menuexecutionfiles', VPL);
-            $menustrexecutionlimits = get_string('menuresourcelimits', VPL);
-            $strvariations = get_string('variations', VPL);
-            $strexecutionkeepfiles = get_string('keepfiles', VPL);
-            $strexecutionlimits = get_string('maxresourcelimits', VPL);
-            $strcheckjails = get_string('check_jail_servers', VPL);
-            $strsetjails = get_string('local_jail_servers', VPL);
-            $menustrexecutionkeepfiles = get_string('menukeepfiles', VPL);
-            $menustrcheckjails = get_string('menucheck_jail_servers', VPL);
-            $menustrsetjails = get_string('menulocal_jail_servers', VPL);
-            $subtabs = array();
-            $urlexecutionfiles = VPL_mod_href('forms/executionfiles.php', 'id', $this->cm->id);
-            $subtabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $menustrexecutionfiles, $strexecutionfiles);
-            $urlexecutionlimits = VPL_mod_href('forms/executionlimits.php', 'id', $this->cm->id);
-            $subtabs[] = new tabobject('executionlimits.php', $urlexecutionlimits, $menustrexecutionlimits, $strexecutionlimits);
-            $urlexecutionkeepfiles = VPL_mod_href('forms/executionkeepfiles.php', 'id', $this->cm->id);
-            $subtabs[] = new tabobject('executionkeepfiles.php', $urlexecutionkeepfiles,
-                                       $menustrexecutionkeepfiles, $strexecutionkeepfiles);
-            $urlvariations = VPL_mod_href('forms/variations.php', 'id', $this->cm->id);
-            $subtabs[] = new tabobject('variations.php', $urlvariations, $strvariations, $strvariations);
-            $urlcheckjailservers = VPL_mod_href('views/checkjailservers.php', 'id', $this->cm->id);
-            $subtabs[] = new tabobject('checkjailservers.php', $urlcheckjailservers, $menustrcheckjails, $strcheckjails);
-            if ($this->has_capability(VPL_SETJAILS_CAPABILITY)) {
-                $urllocaljailservers = VPL_mod_href('forms/local_jail_servers.php', 'id', $this->cm->id);
-                $subtabs[] = new tabobject('local_jail_servers.php', $urllocaljailservers, $menustrsetjails, $strsetjails);
-            }
-        } else {
-            $tabs[] = new tabobject('executionfiles.php', $urlexecutionfiles, $stradvanced, $stradvanced);
-        }
-    }
-
-    /**
-     * Create tabs to view_description/submit/view_submission/edit
-     *
-     * @param string $path to get the active tab
-     *
-     */
     public function print_view_tabs($path) {
         // TODO refactor using functions.
-        global $CFG, $USER, $DB, $OUTPUT;
+        global $USER, $DB;
         $active = basename( $path );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
@@ -1510,20 +1449,14 @@ class mod_vpl {
         }
         $level2 = $grader || $manager || $similarity;
 
-        $strdescription = get_string( 'description', VPL );
-        $strsubmission = get_string( 'submission', VPL );
-        $stredit = get_string( 'edit', VPL );
-        $strsubmissionview = get_string( 'submissionview', VPL );
         $maintabs = array ();
         $tabs = array ();
-        $baseurl = $CFG->wwwroot . '/mod/' . VPL . '/';
         $href = vpl_mod_href( 'view.php', 'id', $cmid, 'userid', $userid );
         $viewtab = vpl_create_tabobject('view.php', $href, 'description' );
         if ($level2) {
             if ($viewer) {
                 $maintabs [] = $viewtab;
             }
-            $strsubmissionslist = get_string( 'submissionslist', VPL );
             $href = vpl_mod_href( 'views/submissionslist.php', 'id', $cmid );
             $maintabs [] = vpl_create_tabobject( 'submissionslist.php', $href, 'submissionslist' );
             // Similarity.
@@ -1533,7 +1466,6 @@ class mod_vpl {
                 } else {
                     $tabname = 'similarity';
                 }
-                $strsubmissionslist = get_string( 'similarity', VPL );
                 $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
                 $maintabs [] = vpl_create_tabobject( $tabname, $href, 'similarity' );
             }
@@ -1581,9 +1513,6 @@ class mod_vpl {
             case 'previoussubmissionslist.php' :
                 require_once('vpl_submission.class.php');
                 $subinstance = $this->last_user_submission( $userid );
-                if ($subinstance !== false) {
-                    $submission = new mod_vpl_submission( $this, $subinstance );
-                }
                 if ($viewer && ! $level2) {
                     $tabs [] = $viewtab;
                 }
@@ -1596,10 +1525,11 @@ class mod_vpl {
                 if ($manager || ($grader && $USER->id == $userid)
                     || (! $grader && $submiter && $this->is_submit_able())) {
                     $href = vpl_mod_href( 'forms/edit.php', 'id', $cmid, 'userid', $userid );
+                    $stredit = 'edit';
                     if ($example && $this->instance->run) {
-                        $stredit = get_string( 'run', VPL );
+                        $stredit = 'run';
                     }
-                    $tabs [] = vpl_create_tabobject( 'edit.php', $href, 'edit');
+                    $tabs [] = vpl_create_tabobject( 'edit.php', $href, $stredit);
                 }
                 if (! $example) {
                     $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
@@ -1613,7 +1543,6 @@ class mod_vpl {
                         $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'moodle' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
-                        $strlistprevoiussubmissions = get_string( 'previoussubmissionslist', VPL );
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
                         $tabs [] = vpl_create_tabobject( 'previoussubmissionslist.php', $href, 'previoussubmissionslist' );
                     }
@@ -1654,17 +1583,14 @@ class mod_vpl {
             case 'listsimilarity.php' :
                 if ($similarity) {
                     $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
-                    $string = get_string( 'similarity', VPL );
                     $tabs [] = vpl_create_tabobject( 'similarity_form.php', $href, 'similarity' );
                     if ($active == 'listsimilarity.php') {
-                        $string = get_string( 'listsimilarity', VPL );
                         $tabs [] = vpl_create_tabobject( 'listsimilarity.php', '', 'listsimilarity' );
                     }
                     $plugincfg = get_config('mod_vpl');
                     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
                     if ($watermark) {
                         $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
-                        $string = get_string( 'listwatermarks', VPL );
                         $tabs [] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
                     }
                 }
