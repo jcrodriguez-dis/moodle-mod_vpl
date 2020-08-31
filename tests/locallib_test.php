@@ -78,7 +78,19 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         $this->internal_test_vpl_fopen( '/a1/b1/c1' );
         $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb' );
         $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb', 'Other text');
-        $this->internal_test_vpl_fopen( '/nf.bbb' );
+        $this->internal_test_vpl_fopen( '/nf.bbb', $text );
+        $fpath = $testdir . '/nf.bbb';
+        chmod($fpath, 0000);
+        try {
+            if (file_get_contents($fpath) == text) {
+                $chmodusefull = false;
+            } else {
+                $chmodusefull = true;
+            }
+        } catch(Exception $e) {
+            $chmodusefull = false;
+        }
+        chmod($fpath, 0777);
         $bads = ['/a1/..', '/a1/.', '/', '/a1', '/a1/b1'];
         foreach ($bads as $bad) {
             try {
@@ -89,22 +101,16 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             }
             $this->assertTrue($throwexception, 'Exception expected');
         }
-        if ( DIRECTORY_SEPARATOR == '\\' ) {
-            $bads = ['/a1/aux.java', '/a1/lpt9', '/com5.txt', '/prn', '/a1/con'];
-            foreach ($bads as $bad) {
-                try {
-                    $throwexception = false;
-                    $this->internal_test_vpl_fopen($bad, $text);
-                } catch (Exception $e) {
-                    $throwexception = true;
-                }
-                $this->assertTrue($throwexception, 'Exception expected');
-            }
+        // Checks patch for Windows filename limits 
+        $bads = ['/a1/aux.java', '/a1/lpt9', '/com5.txt', '/prn', '/a1/con'];
+        foreach ($bads as $bad) {
+            $this->internal_test_vpl_fopen($bad, $text);
         }
         $this->assertTrue(vpl_delete_dir($testdir));
         // Windows does not check directories access control.
-        if (DIRECTORY_SEPARATOR !== '\\') {
-            mkdir($testdir, 0111, true);
+        if ($chmodusefull) {
+            mkdir($testdir, 0777, true);
+            chmod($testdir, 0000);
             $fpath = $testdir . '/a1/b1/c1';
             try {
                 $throwexception = false;
@@ -116,6 +122,20 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             $this->assertTrue($throwexception, 'Exception expected');
             $this->assertTrue(vpl_delete_dir($testdir));
         }
+    }
+    
+    public function tes_vpl_get_array_key() {
+        $array = array(1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f');
+        $this->assertEquals(1, vpl_get_array_key($array, 1));
+        $this->assertEquals(2, vpl_get_array_key($array, 2));
+        $this->assertEquals(5, vpl_get_array_key($array, 3));
+        $this->assertEquals(5, vpl_get_array_key($array, 4));
+        $this->assertEquals(5, vpl_get_array_key($array, 5));
+        $this->assertEquals(1200, vpl_get_array_key($array, 6));
+        $this->assertEquals(1200, vpl_get_array_key($array, 1100));
+        $this->assertEquals(1200, vpl_get_array_key($array, 1200));
+        $this->assertEquals(1500, vpl_get_array_key($array, 1201));
+        $this->assertEquals(1500, vpl_get_array_key($array, 1800));
     }
 
     public function test_vpl_fwrite() {
@@ -264,7 +284,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
 
     public function test_vpl_is_valid_file_name() {
         $this->assertTrue(vpl_is_valid_file_name('filename.PNG.png'));
-        $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafsÃ± fdj kfsdhahfskdh'));
+        $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafs fdj kfsdhahfskdh'));
         $this->assertTrue(vpl_is_valid_file_name('f'));
         $this->assertTrue(vpl_is_valid_file_name('fj'));
         $this->assertTrue(vpl_is_valid_file_name('.f'));
