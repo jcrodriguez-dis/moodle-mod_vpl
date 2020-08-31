@@ -21,15 +21,17 @@
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * 
+ * Define the plugin global var attributes.
+ * @var object $plugin 
  */
 
 
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version = 2018011313;
-$plugin->cron    = 300; // Cron check this plugin every 5 minutes.
-$plugin->requires = 2014051200; // Moodle 2.7!
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.3.2';
+$plugin->requires = 2018051713; // Moodle 3.5!
+$plugin->maturity = MATURITY_ALPHA;
+$plugin->release = '3.3.4';
 
 $plugin->component = 'mod_vpl';
