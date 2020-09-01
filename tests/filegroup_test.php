@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/mod/vpl/filegroup.class.php');
  * Unit tests for file_group_process class.
  * @group mod_vpl
  */
-class mod_vpl_file_group_process_class_testcase extends mod_vpl_base_testcase {
+class mod_vpl_file_group_process_class_testcase extends advanced_testcase {
     protected $basedir = null;
     protected $gpempty = null;
     protected $gponefile = null;
