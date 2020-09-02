@@ -277,4 +277,31 @@ class mod_vpl_file_group_process_class_testcase extends advanced_testcase {
         $this->internal_test_one_is_populated($this->gpfiles);
         $this->internal_test_one_is_populated($this->gpdirectory);
     }
+
+    /**
+     * Test one file_group_process::generate_zip_file
+     * @param file_group_process $fgp
+     * @param array $expectedfiles
+     */
+    protected function internal_test_generate_zip_file(file_group_process $fgp, array $expectedfiles){
+        $zipfilename = $fgp->generate_zip_file();
+        $zip = new ZipArchive();
+        $this->assertTrue($zip->open( $zipfilename ));
+        $zipfiles = array();
+        for ($i = 0; $i < $zip->numFiles; $i ++) {
+            $zipfiles[$zip->getNameIndex( $i )] = $zip->getFromIndex( $i );
+        }
+        $this->assertTrue($zip->close());
+        $this->assertTrue(unlink($zipfilename));
+        $this->assertEquals($expectedfiles, $zipfiles);
+    }
+    /**
+     * Method to test file_group_process::generate_zip_file
+     */
+    public function test_generate_zip_file() {        
+        $this->internal_test_one_is_populated($this->gpempty, array());
+        $this->internal_test_one_is_populated($this->gponefile, $this->gponefilecontents);
+        $this->internal_test_one_is_populated($this->gpfiles, $this->gpfilescontents);
+        $this->internal_test_one_is_populated($this->gpdirectory, $this->gpdirectorycontents);
+    }
 }

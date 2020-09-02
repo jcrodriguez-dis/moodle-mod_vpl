@@ -393,11 +393,11 @@ class file_group_process {
     }
 
     /**
-     * Download files
+     * Generate temporal zip file
      *
-     * @parm $name name of zip file generated
+     * @parm $watermark bool Adds watermark to files
      */
-    public function download_files($name, $watermark = false) {
+    public function generate_zip_file(bool $watermark = false) {
         global $CFG;
         global $USER;
         $zip = new ZipArchive();
@@ -415,6 +415,20 @@ class file_group_process {
                 $zip->addFromString( $filename, $data );
             }
             $zip->close();
+            return $zipfilename;
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * Download files as zip
+     *
+     * @parm $name name of the generated zip file
+     */
+    public function download_files($name, $watermark = false) {
+        $zipfilename = $this->generate_zip_file($watermark);
+        if ($zipfilename !== false) {
             vpl_output_zip($zipfilename, $name);
             die();
         }
