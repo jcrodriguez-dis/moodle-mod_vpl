@@ -420,7 +420,7 @@ class file_group_process {
             return false;
         }
     }
-    
+
     /**
      * Download files as zip
      *

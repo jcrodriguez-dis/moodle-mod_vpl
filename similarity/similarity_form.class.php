@@ -25,8 +25,8 @@
 
 defined( 'MOODLE_INTERNAL' ) || die();
 
-require_once($CFG->libdir.'/formslib.php');
 global $CFG;
+require_once($CFG->libdir.'/formslib.php');
 
 class vpl_similarity_form extends moodleform {
     private $vpl;

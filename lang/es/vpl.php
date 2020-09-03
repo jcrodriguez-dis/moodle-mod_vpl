@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @var array $string
+ */
 $string ['about'] = 'Acerca de';
 $string ['acceptcertificates'] = 'Aceptar certificados auto firmados';
 $string ['acceptcertificates_description'] = 'Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';

@@ -21,9 +21,9 @@
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
- * 
+ *
  * Define the attributes $settings variable.
- * @var object $settings 
+ * @var object $settings
  */
 
 defined('MOODLE_INTERNAL') || die;

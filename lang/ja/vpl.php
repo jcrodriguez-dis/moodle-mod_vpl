@@ -18,6 +18,7 @@
  * English to Japanese translation, 02/2012
  *
  * @author Imaizumi Takashi (Chiba University)
+ * @var array $string
  */
 $string ['VPL_COMPILATIONFAILED'] = 'コンパイルか実行の準備に失敗しました';
 $string ['downloadsubmissions'] = 'すべての提出物をダウンロード';

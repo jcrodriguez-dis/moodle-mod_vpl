@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @var array $string
+ */
 $string ['about'] = 'About';
 $string ['acceptcertificates'] = 'Accept self signed certificates';
 $string ['acceptcertificates_description'] = 'If the execution servers are not using self signed certificates uncheck this option';
@@ -200,6 +203,9 @@ $string ['pluginadministration'] = 'VPL administration';
 $string ['pluginname'] = 'Virtual programming lab';
 $string ['previoussubmissionslist'] = 'Previous submissions list';
 $string ['print'] = 'Print';
+$string ['privacy:metadata:vpl_editor_fontsize'] = 'TODO privacy:metadata:vpl_editor_fontsize';
+$string ['privacy:metadata:vpl_acetheme'] = 'TODO privacy:metadata:vpl_acetheme';
+$string ['privacy:metadata:vpl_terminaltheme'] = 'TODO privacy:metadata:vpl_terminaltheme';
 $string ['proposedgrade'] = 'Proposed grade: {$a}';
 $string ['proxy'] = 'proxy';
 $string ['proxy_description'] = 'Proxy from Moodle to execution servers';

@@ -21,9 +21,9 @@
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
- * 
+ *
  * Define the plugin global var attributes.
- * @var object $plugin 
+ * @var object $plugin
  */
 
 

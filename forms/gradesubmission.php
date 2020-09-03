@@ -39,6 +39,7 @@ function vpl_grade_header($vpl, $inpopup) {
     }
 }
 require_login();
+global $CFG, $PAGE, $DB, $USER, $OUTPUT;
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
 vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
@@ -87,7 +88,7 @@ if ($inpopup) {
 } else {
     $link = vpl_mod_href( 'forms/gradesubmission.php', 'id', $id, 'userid', $userid );
 }
-$linkrel = vpl_rel_url( 'forms/gradesubmission.php', 'id', $id, 'userid', $userid );
+
 // No marked or marked by current user or automatic.
 if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subinstance->grader == 0) {
     if ($inpopup) {

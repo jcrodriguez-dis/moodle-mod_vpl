@@ -20,6 +20,7 @@
  *
  * @author Marcin Kolodziej
  * @author Michal Kedzia
+ * @var array $string
  */
 $string ['vpl'] = 'Wirtualne Laboratorium Programowania';
 $string ['novpls'] = 'Brak zdefiniowanego laboratorium';

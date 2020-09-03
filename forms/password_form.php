@@ -34,7 +34,6 @@ class mod_vpl_password_form extends moodleform {
         parent::__construct( $page );
     }
     protected function definition() {
-        global $SESSION;
         $mform = & $this->_form;
         $mform->addElement( 'header', 'headerpassword', get_string( 'requiredpassword', VPL ) );
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );

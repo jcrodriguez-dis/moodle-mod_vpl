@@ -18,6 +18,7 @@
 /**
  * English to Italian translation, 10/2016
  * @author Andrea Pruccoli (Maggioli Informatica - http://www.maggioli.it/divisioni/maggioli-informatica/)
+ * @var array $string
  */
 
 $string['about'] = 'Informazioni su';

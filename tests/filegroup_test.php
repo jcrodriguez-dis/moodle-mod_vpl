@@ -283,7 +283,7 @@ class mod_vpl_file_group_process_class_testcase extends advanced_testcase {
      * @param file_group_process $fgp
      * @param array $expectedfiles
      */
-    protected function internal_test_generate_zip_file(file_group_process $fgp, array $expectedfiles){
+    protected function internal_test_generate_zip_file(file_group_process $fgp, array $expectedfiles) {
         $zipfilename = $fgp->generate_zip_file();
         $zip = new ZipArchive();
         $this->assertTrue($zip->open( $zipfilename ));
@@ -298,7 +298,7 @@ class mod_vpl_file_group_process_class_testcase extends advanced_testcase {
     /**
      * Method to test file_group_process::generate_zip_file
      */
-    public function test_generate_zip_file() {        
+    public function test_generate_zip_file() {
         $this->internal_test_one_is_populated($this->gpempty, array());
         $this->internal_test_one_is_populated($this->gponefile, $this->gponefilecontents);
         $this->internal_test_one_is_populated($this->gpfiles, $this->gpfilescontents);

@@ -27,6 +27,7 @@ define( 'AJAX_SCRIPT', true );
 
 require(__DIR__ . '/../../../config.php');
 
+global $PAGE, $OUTPUT;
 $result = new stdClass();
 $result->success = true;
 $result->response = new stdClass();

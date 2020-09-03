@@ -29,6 +29,8 @@ require_once(dirname(__FILE__).'/submission_form.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 
+global $USER;
+
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
@@ -73,8 +75,6 @@ if ($fromform = $mform->get_data()) {
                     $error, 'error' );
         die();
     }
-    $rfn = $vpl->get_required_fgm();
-    $minfiles = count( $rfn->getFilelist() );
     $files = array ();
     for ($i = 0; $i < $instance->maxfiles; $i ++) {
         $attribute = 'file' . $i;

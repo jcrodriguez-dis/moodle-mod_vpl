@@ -23,7 +23,11 @@
  * @copyright 2018 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * @var array $plugins
  */
+
+defined('MOODLE_INTERNAL') || die();
 
 $plugins = array(
     'ui-touch' => array('files' => array('jquery.ui.touch-punch.min.js')),

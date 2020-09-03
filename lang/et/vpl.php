@@ -18,6 +18,7 @@
  * Estonian partial translation, 07/2013
  *
  * @author Aivar Annamaa, University of Tartu, Estonia
+ * @var array $string
  */
 $string ['vpl'] = 'Virtual Programming Lab';
 $string ['novpls'] = 'Ühtki VPL harjutust pole defineeritud';

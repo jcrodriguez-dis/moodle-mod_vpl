@@ -265,6 +265,7 @@ class vpl_jailserver_manager {
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
         $feedback = array ();
         foreach ($serverlist as $server) {
+            $status = null;
             $response = self::get_response( $server, $requestready, $status );
             $params = array ( 'serverhash' => self::get_hash($server), 'server' => $server );
             $info = $DB->get_record( self::TABLE, $params);

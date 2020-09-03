@@ -26,6 +26,7 @@
 require_once(dirname( __FILE__ ) . '/../../../config.php');
 require_once(dirname( __FILE__ ) . '/../locallib.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
+global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 class mod_vpl_executionkeepfiles_form extends moodleform {
     protected $fgp;
@@ -61,7 +62,6 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'keepfiles' );
 
-$course = $vpl->get_course();
 $fgp = $vpl->get_execution_fgm();
 $mform = new mod_vpl_executionkeepfiles_form( 'executionkeepfiles.php', $fgp );
 if ($fromform = $mform->get_data()) {

@@ -57,6 +57,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         $l = strlen( $filedata );
         $current = '';
         $previous = '';
+        $endstring = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
             $current = $filedata [$i];

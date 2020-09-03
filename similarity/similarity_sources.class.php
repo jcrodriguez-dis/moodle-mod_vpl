@@ -80,7 +80,7 @@ class vpl_file_from_dir extends vpl_file_from_base {
     static public function get_user_id_from_file($filename) {
         if (count( self::$usersname )) {
             $filename = strtolower( $filename );
-            foreach (self::$usersname as $userid => $userdata) {
+            foreach (array_keys(self::$usersname) as $userid) {
                 if (strpos( $filename, $userid ) !== false) {
                     return $userid;
                 }
@@ -409,7 +409,6 @@ class vpl_similarity_preprocess {
         $spb->set_value( get_string( 'unzipping', VPL ) );
         if ($zip->open( $zipfilename )) {
             $spb->set_max( $zip->numFiles );
-            $i = 1;
             for ($i = 0; $i < $zip->numFiles; $i ++) {
                 $spb->set_value( $i + 1 );
                 $filename = $zip->getNameIndex( $i );

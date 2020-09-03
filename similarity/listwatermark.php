@@ -29,6 +29,8 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/watermark.class.php');
 
+global $CFG, $DB;
+
 require_login();
 
 $id = required_param( 'id', PARAM_INT );

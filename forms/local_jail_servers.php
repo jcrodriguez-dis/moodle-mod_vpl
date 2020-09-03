@@ -26,6 +26,7 @@
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
+global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 
 class mod_vpl_setjails_form extends moodleform {
@@ -56,7 +57,6 @@ $vpl->print_heading_with_help( 'local_jail_servers' );
 
 $mform = new mod_vpl_setjails_form( 'local_jail_servers.php' );
 // Display page.
-$course = $vpl->get_course();
 
 if (! $mform->is_cancelled() && $fromform = $mform->get_data()) {
     if (isset( $fromform->jailservers )) {

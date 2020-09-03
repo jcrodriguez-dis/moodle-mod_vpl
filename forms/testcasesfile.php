@@ -31,13 +31,12 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
-$instance = $vpl->get_instance();
+
 $vpl->prepare_page( 'forms/testcasesfile.php', array (
         'id' => $id
 ) );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$fgp = $vpl->get_required_fgm();
 
 $options = array ();
 $options ['restrictededitor'] = false;

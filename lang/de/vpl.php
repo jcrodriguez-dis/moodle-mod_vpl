@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * @var array $string
+ */
 $string ['vpl'] = 'Virtual Programming Lab';
 $string ['novpls'] = 'Kein virtual programming lab definiert';
 $string ['moduleconfigtitle'] = 'VPL Module Konfiguration';

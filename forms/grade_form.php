@@ -24,7 +24,7 @@
  */
 
 defined( 'MOODLE_INTERNAL' ) || die();
-
+global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
@@ -36,7 +36,6 @@ class mod_vpl_grade_form extends vpl_form {
     protected function get_scale_selection() {
         global $DB;
         $vpl = $this->submission->get_vpl();
-        $vplinstance = $vpl->get_instance();
         $scaleid = $vpl->get_grade();
         $options = array ();
         $options [- 1] = get_string( 'nograde' );
@@ -79,6 +78,8 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addHTML( s( get_string( 'grade' ) . ' ' ) );
             if ($grade > 0) {
                 $this->addText( 'grade', '', 6 );
+                $reduction = 0;
+                $percent = false;
                 $this->submission->grade_reduction($reduction, $percent);
                 if ($reduction > 0) {
                     $value = $reduction;

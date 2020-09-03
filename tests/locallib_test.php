@@ -87,7 +87,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             } else {
                 $chmodusefull = true;
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $chmodusefull = false;
         }
         chmod($fpath, 0777);
@@ -101,7 +101,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             }
             $this->assertTrue($throwexception, 'Exception expected');
         }
-        // Checks patch for Windows filename limits 
+        // Checks patch for Windows filename limits.
         $bads = ['/a1/aux.java', '/a1/lpt9', '/com5.txt', '/prn', '/a1/con'];
         foreach ($bads as $bad) {
             $this->internal_test_vpl_fopen($bad, $text);
@@ -123,7 +123,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             $this->assertTrue(vpl_delete_dir($testdir));
         }
     }
-    
+
     public function tes_vpl_get_array_key() {
         $array = array(1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f');
         $this->assertEquals(1, vpl_get_array_key($array, 1));
@@ -159,7 +159,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             } else {
                 $chmodusefull = true;
             }
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $chmodusefull = false;
         }
         chmod($fpath, 0777);
@@ -184,7 +184,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
             $this->assertTrue($throwexception, 'Exception expected');
         }
         vpl_delete_dir($testdir);
-        
+
         // If the File System honor chmod.
         if ($chmodusefull) {
             mkdir($testdir, 0777, true);

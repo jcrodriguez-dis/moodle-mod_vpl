@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 
 /**
  * Unit tests for cron_task class.
- * 
+ *
  *     (startdate - range)            startdate
  *  -------------|------------------------|----------------
  *  before             on range           post range

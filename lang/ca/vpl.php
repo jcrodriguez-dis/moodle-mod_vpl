@@ -17,6 +17,7 @@
 /**
  * Catalan translation, 06/2013
  * @author Antonio Piedras Morente (Universitat de Barcelona)
+ * @var array $string
  */
 $string ['downloadsubmissions'] = 'Baixa totes les trameses';
 $string ['groupwork'] = 'Treball en grup';

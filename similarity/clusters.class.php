@@ -182,7 +182,7 @@ class vpl_clusters {
         $files = array ();
         $matrix = array ();
         for ($i = 0; $i < $numfiles; $i ++) {
-            $matriz [] = array ();
+            $matrix [] = array ();
         }
         foreach ($cluster as $pair) {
             $files [$pair->first->id] = $pair->first;
@@ -201,7 +201,7 @@ class vpl_clusters {
         }
         asort( $auxorder );
         $firstorder = array ();
-        foreach ($auxorder as $file => $nothing) {
+        foreach (array_keys($auxorder) as $file) {
             $firstorder [] = $file;
         }
         $order = array ();
