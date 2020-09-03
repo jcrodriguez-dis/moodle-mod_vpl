@@ -18,9 +18,9 @@
  * Class to lock based on directory path
  *
  * @package mod_vpl
- * @copyright 2017 onwards Juan Carlos Rodr�guez-del-Pino
+ * @copyright 2017 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodr�guez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 namespace mod_vpl\util;
 
@@ -28,29 +28,38 @@ defined( 'MOODLE_INTERNAL' ) || die();
 
 class lock {
     protected $lockfile;
-    public function __construct($dir) {
+    static public function filename() {
+        return '/vpl.lock';
+    }
+    public function __construct($dir, $timeout = 5) {
         global $CFG;
         if ( ! file_exists ($dir) ) {
             mkdir($dir, $CFG->directorypermissions, true);
         }
-        $this->lockfile = $dir . '/vpl.lock';
+        $this->lockfile = $dir . self::filename();
         $ctime = 0;
         $start = time();
-        while (true) {
-            $fp = fopen($this->lockfile, 'x');
+        $ntries = 0;
+        while ($ntries < 10) {
+            try {
+                $fp = fopen($this->lockfile, 'x');
+            } catch (\Exception $e) {
+                $fp = false;
+            }
             if ( $fp === false ) { // Locked.
                 $time = filectime($this->lockfile);
-                if ( $time != $ctime) { // First time or locker changed.
+                if ( $time !== false && $time != $ctime) { // First time or locker changed.
                     $ctime = $time;
                     $start = time();
                 }
                 usleep(100000);
-                if ($start + 5 < time()) { // Lock timeout => removed.
-                    unlink($this->lockfile);
-                }
-                if ($start + 20 < time()) { // Second lock timeout => removed and return.
-                    unlink($this->lockfile);
-                    return;
+                if ($start + $timeout < time()) { // Lock timeout => removed.
+                    if (file_exists($this->lockfile)) {
+                        unlink($this->lockfile);
+                        $ntries ++;
+                    } else {
+                        continue;
+                    }
                 }
             } else {
                 fclose($fp);
@@ -59,6 +68,8 @@ class lock {
         }
     }
     public function __destruct() {
-        unlink($this->lockfile);
+        if (file_exists($this->lockfile)) {
+            unlink($this->lockfile);
+        }
     }
 }
