@@ -626,7 +626,7 @@ class mod_vpl_submission {
                     }
                     return $gradestr;
                 } catch ( Exception $e ) {
-                    // This try will avoid many checking.
+                    debugging( 'Error getting grade in html format ' . $e->getMessage(), DEBUG_DEVELOPER );
                 }
             }
             if ($grade === null) {
