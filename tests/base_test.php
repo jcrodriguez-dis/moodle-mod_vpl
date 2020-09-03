@@ -76,17 +76,23 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->course = $this->getDataGenerator()->create_course(array('enablecompletion' => 1));
         $this->teachers = array();
         for ($i = 0; $i < self::DEFAULT_TEACHER_COUNT; $i++) {
-            array_push($this->teachers, $this->getDataGenerator()->create_user());
+            $record = new stdClass();
+            $record->username = 'teacher' . $i;
+            array_push($this->teachers, $this->getDataGenerator()->create_user($record));
         }
 
         $this->editingteachers = array();
         for ($i = 0; $i < self::DEFAULT_EDITING_TEACHER_COUNT; $i++) {
-            array_push($this->editingteachers, $this->getDataGenerator()->create_user());
+            $record = new stdClass();
+            $record->username = 'editingteacher' . $i;
+            array_push($this->editingteachers, $this->getDataGenerator()->create_user($record));
         }
 
         $this->students = array();
         for ($i = 0; $i < self::DEFAULT_STUDENT_COUNT; $i++) {
-            array_push($this->students, $this->getDataGenerator()->create_user());
+            $record = new stdClass();
+            $record->username = 'student' . $i;
+            array_push($this->students, $this->getDataGenerator()->create_user($record));
         }
 
         $this->users = array_merge($this->students, $this->teachers, $this->editingteachers);
