@@ -668,59 +668,6 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     }
 }
 
-/**
- * Must return an array of user records (all data) who are participants for a given instance
- * of vpl. Must include every user involved in the instance, independient of his role
- * (student, teacher, admin...) See other modules as example.
- *
- * @param int $vplid ID of an instance of this module
- * @return mixed boolean/array of users
- */
-function vpl_get_participants($vplid) {
-    // TODO checks if this function is obsolete.
-    // TODO teamwork not supported.
-    global $CFG, $DB;
-    // Locate students.
-    $submiters = $DB->get_records_sql( 'SELECT DISTINCT userid
-    FROM {vpl_submissions}
-    WHERE vpl = ?', array (
-            $vplid
-    ) );
-    // Locate graders.
-    $graders = $DB->get_records_sql( 'SELECT DISTINCT grader
-    FROM {vpl_submissions}
-    WHERE vpl = ? AND grader > 0', array (
-            $vplid
-    ) );
-
-    // TODO Refactor to only one query.
-    // Read users records.
-    $participants = array ();
-    foreach ($submiters as $submiter) {
-        $user = $DB->get_record( 'user', array (
-                'id' => $submiter->userid
-        ) );
-        if ($user) {
-            $participants [$user->id] = $user;
-        }
-    }
-    foreach ($graders as $grader) {
-        if ($grader->grader > 0) { // Exist and Not automatic grader.
-            $user = $DB->get_record( 'user', array (
-                    'id' => $grader->grader
-            ) );
-            if ($user) {
-                $participants [$user->id] = $user;
-            }
-        }
-    }
-    if (count( $participants ) > 0) {
-        return $participants;
-    } else {
-        return false;
-    }
-}
-
 function vpl_scale_used($vplid, $scaleid) {
     global $DB;
     return $scaleid and $DB->record_exists( VPL, array (
