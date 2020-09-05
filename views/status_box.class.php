@@ -98,10 +98,7 @@ class vpl_progress_bar extends vpl_status_box {
             if ($percent == 100) {
                 $text = $this->text . ' (' . sprintf( "%5.1f", $percent ) . '%)';
                 $text .= ' ' . get_string( 'numseconds', '', $currenttime - $this->starttime );
-                // TODO check memory_get_usage.
-                if (false && function_exists('memory_get_usage')) {
-                    $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
-                }
+                $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
                 $this->print_text( $text );
             } else {
                 $this->print_text( $this->text . ' (' . sprintf( "%5.1f", $percent ) . '%)' );

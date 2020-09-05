@@ -283,14 +283,12 @@ foreach ($list as $uginfo) {
             if ($subselection == 'gradedbyuser' && $subinstance->grader != $USER->id) {
                 continue;
             }
-            // TODO REUSE showing.
             $subinstance->gradesortable = $subinstance->grade;
         } else {
             $subinstance->grade = null;
             if ($subselection == 'graded' || $subselection == 'gradedbyuser') {
                 continue;
             }
-            // TODO REUSE showing.
             $result = $submission->getCE();
             if ($result ['executed'] !== 0) {
                 $prograde = $submission->proposedGrade( $result ['execution'] );
@@ -454,7 +452,6 @@ foreach ($alldata as $data) {
     if ($data->submission == null) {
         $text = get_string( 'nosubmission', VPL );
         $hrefview = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
-        // TODO clean comment.
         $action = new popup_action( 'click', $hrefview, 'viewsub' . $user->id, $options );
         $subtime = $OUTPUT->action_link( $hrefview, $text, $action );
         $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
@@ -469,7 +466,6 @@ foreach ($alldata as $data) {
         $hrefview = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
         $hrefprev = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
         $hrefgrade = vpl_mod_href( 'forms/gradesubmission.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
-        // TODO clean comment.
         $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
         $actions->add(vpl_get_action_link('submissionview', $link));
         $subtime = $OUTPUT->action_link( $hrefview, userdate( $subinstance->datesubmitted ) );

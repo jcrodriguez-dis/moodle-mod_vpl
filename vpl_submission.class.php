@@ -1195,7 +1195,6 @@ class mod_vpl_submission {
             $evaluation = $this->proposedcomment( $rawexecution );
             $proposedgrade = $this->proposedgrade( $rawexecution );
             $ce->evaluation = $evaluation;
-            // TODO Important what to show to students about grade.
             if (strlen( $proposedgrade ) && $this->vpl->get_instance()->grade) {
                 $sgrade = $this->get_grade_core( $proposedgrade );
                 $ce->grade = get_string( 'proposedgrade', VPL, $sgrade );
