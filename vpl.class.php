@@ -345,22 +345,6 @@ class mod_vpl {
         }
         return $this->executionfgm;
     }
-    // FIXME check and remove function.
-    public function set_initial_file($name, $files) {
-        $filelist = '';
-        $basepath = $this->get_submission_directory();
-        foreach ($files as $file) {
-            $name = basename( $file ['name'] );
-            if ($name > '') {
-                if ($filelist > '') {
-                    $filelist .= "\n";
-                }
-                $filelist .= $name;
-                vpl_fwrite( $basepath . $name, $file ['data'] );
-            }
-        }
-        vpl_fwrite( $this->get_submissionfilelistname(), $filelist );
-    }
 
     /**
      * get instance name with groupping name if available
