@@ -56,10 +56,13 @@ class provider implements \core_privacy\local\metadata\provider,
         $vplfields = [
             'id' => 'privacy:metadata:vpl:id',
             'name' => 'privacy:metadata:vpl:name',
+            'shortdescription' => 'privacy:metadata:vpl:shortdescription',
+            'variation' => 'privacy:metadata:vpl_assigned_variations:variationdescription',
+            'grade' => 'privacy:metadata:vpl:grade',
+            'reductionbyevaluation' => 'privacy:metadata:vpl:reductionbyevaluation',
+            'freeevaluations' => 'privacy:metadata:vpl:freeevaluations',
         ];
         $submisionsfields = [
-            'vpl' => 'privacy:metadata:vpl_assigned_variations:vplid',
-            'user' => 'privacy:metadata:vpl_submissions:user',
             'datesubmitted' => 'privacy:metadata:vpl_submissions:datesubmitted',
             'comments' => 'privacy:metadata:vpl_submissions:studentcomments',
             'nevaluations' => 'privacy:metadata:vpl_submissions:nevaluations',
@@ -68,23 +71,16 @@ class provider implements \core_privacy\local\metadata\provider,
             'gradercomments' => 'privacy:metadata:vpl_submissions:gradercomments',
         ];
         $evaluationfields = [
-            'vpl' => 'privacy:metadata:vpl_assigned_variations:vplid',
-            'grader' => 'privacy:metadata:vpl_submissions:graderid',
             'datesubmitted' => 'privacy:metadata:vpl_submissions:datesubmitted',
+            'comments' => 'privacy:metadata:vpl_submissions:studentcomments',
             'nevaluations' => 'privacy:metadata:vpl_submissions:nevaluations',
             'dategraded' => 'privacy:metadata:vpl_submissions:dategraded',
             'grade' => 'privacy:metadata:vpl_submissions:grade',
             'gradercomments' => 'privacy:metadata:vpl_submissions:gradercomments',
         ];
-        $variationsfields = [
-            'user' => 'privacy:metadata:vpl_assigned_variations:user',
-            'vpl' => 'privacy:metadata:vpl_assigned_variations:vplid',
-            'variation' => 'privacy:metadata:vpl_assigned_variations:variationdescription',
-        ];
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
         $collection->add_database_table('vpl_evaluations', $evaluationfields, 'privacy:metadata:vpl_evaluations');
-        $collection->add_database_table('vpl_assigned_variations', $variationsfields, 'privacy:metadata:vpl_assigned_variations');
         // IDE user preferences.
         $collection->add_user_preference('vpl_editor_fontsize', 'privacy:metadata:vpl_editor_fontsize');
         $collection->add_user_preference('vpl_acetheme', 'privacy:metadata:vpl_acetheme');
@@ -136,6 +132,7 @@ class provider implements \core_privacy\local\metadata\provider,
             $contentwriter = writer::with_context($context);
 
             // Get vpl details object for output.
+            self::add_assigned_variation($vplinstance, $userid);
             $vploutput = self::get_vpl_output($vplinstance);
             $contentwriter->export_data([], $vploutput);
             // Get the vpl submissions related to the user.
@@ -143,11 +140,10 @@ class provider implements \core_privacy\local\metadata\provider,
             $submissions = self::get_vpl_submissions_by_vpl_and_user($vplinstance->id, $userid);
             $zipfilename = get_string('submission', 'vpl') . '.zip';
             $subcontextsecuence = 1;
+            $gracontextsecuence = 1;
             foreach ($submissions as $submissioninstance) {
                 if ($submissioninstance->userid == $userid) {
-                    $subcontext = [
-                        's' . $subcontextsecuence++
-                    ];
+                    $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
                     $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
                     $submissioninstance->gradercomments = $submission->get_grade_comments();
                     $dataoutput = self::get_vpl_submission_output($submissioninstance);
@@ -160,9 +156,7 @@ class provider implements \core_privacy\local\metadata\provider,
                     }
                 }
                 if ($submissioninstance->grader == $userid) {
-                    $subcontext = [
-                        's' . $subcontextsecuence++
-                    ];
+                    $subcontext = [ get_string('privacy:gradepath', 'vpl', $gracontextsecuence++) ];
                     $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
                     $submissioninstance->gradercomments = $submission->get_grade_comments();
                     $dataoutput = self::get_vpl_evaluation_output($submissioninstance);
@@ -561,6 +555,30 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
+     * Helper to join the assigned variation
+     *
+     * @param object $vplinstance Object containing vpl record.
+     * @return object Formatted vpl output object for exporting.
+     */
+    protected static function add_assigned_variation(object $vplinstance, int $userid) {
+        global $DB;
+        
+        $params = [
+            'vplid' => $vplinstance->id,
+            'userid' => $userid,
+        ];
+        
+        $sql = "SELECT v.description
+                  FROM {vpl_variations} v
+                  JOIN {vpl_assigned_variations} av ON v.id = av.variation
+                 WHERE av.vpl = :vplid AND av.userid = :userid";
+        $res = $DB->get_field_sql($sql, $params);
+        If ($res !== false) {
+            $vplinstance->variation = $res;
+        }
+    }
+
+    /**
      * Helper function generate vpl output object for exporting.
      *
      * @param object $vplinstance Object containing vpl record.
@@ -570,7 +588,25 @@ class provider implements \core_privacy\local\metadata\provider,
         $vpl = (object) [
             'id' => $vpldata->id,
             'name' => $vpldata->name,
+            'shortdescription' => $vpldata->shortdescription,
         ];
+        if ($vpldata->grade != 0) { // If 0 then NO GRADE.
+            if ($vpldata->grade > 0) {
+                $vpl->grade = get_string('grademax', 'core_grades')
+                . ': ' . format_float($vpldata->grade, 5, true, true);
+            } else {
+                $vpl->grade = get_string( 'typescale', 'core_grades' );
+            }
+            if ($vpldata->reductionbyevaluation != 0) { // If penalizaions for automatic evaluation requests.
+                $vpl->reductionbyevaluation = $vpldata->reductionbyevaluation;
+                $vpl->freeevaluations = $vpldata->freeevaluations;
+            }
+        } else {
+            $vpl->grade = get_string('nograde');
+        }
+        if (isset($vpldata->variation)) {
+            $vpl->variation = $vpldata->variation;
+        }
         return $vpl;
     }
 
@@ -581,7 +617,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted vpl submission output for exporting.
      */
     protected static function get_vpl_submission_output($submission) {
-        $subfields = array('vpl', 'userid', 'datesubmitted', 'comments', 'nevaluations');
+        $subfields = array('datesubmitted', 'comments', 'nevaluations');
         $gradefields = array('dategraded', 'grade', 'gradercomments');
         $datesfields = array('datesubmitted', 'dategraded');
         $data = new \stdClass();
@@ -598,7 +634,6 @@ class provider implements \core_privacy\local\metadata\provider,
                 $data->$field = transform::datetime($data->$field);
             }
         }
-        $data->user = transform::user($data->userid);
         return $data;
     }
     /**
@@ -608,7 +643,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted vpl evaluation output for exporting.
      */
     protected static function get_vpl_evaluation_output($submission) {
-        $subfields = array('vpl', 'grader', 'datesubmitted', 'nevaluations', 'dategraded', 'grade', 'gradercomments');
+        $subfields = array('datesubmitted', 'comments', 'nevaluations', 'dategraded', 'grade', 'gradercomments');
         $datesfields = array('datesubmitted', 'dategraded');
         $data = new \stdClass();
         foreach ($subfields as $field) {
@@ -619,7 +654,6 @@ class provider implements \core_privacy\local\metadata\provider,
                 $data->$field = transform::datetime($data->$field);
             }
         }
-        $data->grader = transform::user($data->grader);
         return $data;
     }
 }

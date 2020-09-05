@@ -144,6 +144,7 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $gradeinfo->comments = '- Regular done!';
         $this->submission2->set_grade($gradeinfo);
     }
+
     /**
      * Method to test export user data for student.
      */
@@ -155,30 +156,55 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $approved = new \core_privacy\local\request\approved_contextlist($this->students[4], 'mod_vpl', array($context->id));
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
-
-        $sub1instance = $this->submission1->get_instance();
-        $data = $writer->get_data(['s1']);
+        
+        $data = $writer->get_data([]);
         $this->assertInstanceOf('stdClass', $data);
-        $this->assertEquals($this->vplonefile->get_instance()->id, $data->vpl);
+        $this->assertEquals($this->vplonefile->get_instance()->id, $data->id);
+        $this->assertEquals('One file', $data->name);
+        $this->assertEquals('Short description', $data->shortdescription);
+        $gradestr = get_string('grademax', 'core_grades') . ': ' . format_float(10, 5, true, true);
+        $this->assertEquals($gradestr, $data->grade);
+        
+        $sub1instance = $this->submission1->get_instance();
+        $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 1)]);
+        $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals(transform::datetime($sub1instance->datesubmitted), $data->datesubmitted);
-        $this->assertEquals(transform::user($sub1instance->userid), $data->user);
         $this->assertEquals('algo', $data->comments);
         $this->assertEquals(0, $data->nevaluations);
 
         $sub2instance = $this->submission2->get_instance();
-        $data = $writer->get_data(['s2']);
+        $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 2)]);
         $this->assertInstanceOf('stdClass', $data);
-        $this->assertEquals($sub2instance->vpl, $data->vpl);
         $this->assertEquals(transform::datetime($sub2instance->datesubmitted), $data->datesubmitted);
-        $this->assertEquals(transform::user($sub2instance->userid), $data->user);
         $this->assertEquals('', $data->comments);
         $this->assertEquals(0, $data->nevaluations);
         $this->assertEquals(transform::datetime($sub2instance->dategraded), $data->dategraded);
         $this->assertEquals($sub2instance->grade, $data->grade);
         $this->assertEquals('- Regular done!', $data->gradercomments);
 
-        $data = $writer->get_data(['s3']);
+        $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 3)]);
         $this->assertEquals([], $data);
+    }
+
+    /**
+     * Method to test export user data with variation.
+     */
+    public function test_export_user_data_with_variation() {
+        $contexts = $this->provider->get_contexts_for_userid($this->students[2]->id);
+        $context = $this->vplvariations->get_context();
+        $this->assertEquals($context, $contexts->current());
+        $approved = new \core_privacy\local\request\approved_contextlist($this->students[2], 'mod_vpl', array($context->id));
+        $this->provider->export_user_data($approved);
+        $writer = \core_privacy\local\request\writer::with_context($context);
+        
+        $data = $writer->get_data([]);
+        $this->assertInstanceOf('stdClass', $data);
+        $this->assertEquals($this->vplvariations->get_instance()->id, $data->id);
+        $this->assertEquals('Variations', $data->name);
+        $this->assertEquals('', $data->shortdescription);
+        $gradestr = get_string('grademax', 'core_grades') . ': ' . format_float(10, 5, true, true);
+        $this->assertEquals($gradestr, $data->grade);
+        $this->assertTrue(strpos($data->variation, 'variation ') === 0);
     }
 
     /**
@@ -198,12 +224,14 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals($this->vplonefile->get_instance()->id, $data->id);
         $this->assertEquals('One file', $data->name);
-        $data = $writer->get_data(['s1']);
+        $data = $writer->get_data([get_string('privacy:gradepath', 'vpl', 1)]);
         $this->assertInstanceOf('stdClass', $data);
-        $this->assertEquals($this->vplonefile->get_instance()->id, $data->vpl);
-        $this->assertEquals(transform::user($this->teachers[1]->id), $data->grader);
-
-        $data = $writer->get_data(['s2']);
+        $this->assertEquals('', $data->comments);
+        $this->assertEquals(0, $data->nevaluations);
+        $this->assertEquals(7.5, $data->grade);
+        $this->assertEquals('- Regular done!', $data->gradercomments);
+        
+        $data = $writer->get_data([get_string('privacy:gradepath', 'vpl', 2)]);
         $this->assertEquals([], $data);
     }
 
