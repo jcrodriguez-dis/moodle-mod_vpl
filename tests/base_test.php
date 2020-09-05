@@ -209,6 +209,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setUser($this->editingteachers[0]);
         $parms = array(
                 'name' => 'One file',
+                'shortdescription' => 'Short description',
                 'duedate' => time() + 3600,
                 'maxfiles' => 1,
                 'maxfilesize' => 1000,
@@ -287,7 +288,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
             $parms = array(
                 'vpl' => $instance->id,
                 'identification' => '' . $i,
-                'description' => 'varriation ' . $i
+                'description' => 'variation ' . $i
             );
             $DB->insert_record( VPL_VARIATIONS, $parms);
         }
