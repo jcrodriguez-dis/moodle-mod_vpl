@@ -224,14 +224,14 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals($this->vplonefile->get_instance()->id, $data->id);
         $this->assertEquals('One file', $data->name);
-        $data = $writer->get_data([get_string('privacy:gradepath', 'vpl', 1)]);
+        $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 1)]);
         $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals('', $data->comments);
         $this->assertEquals(0, $data->nevaluations);
         $this->assertEquals(7.5, $data->grade);
         $this->assertEquals('- Regular done!', $data->gradercomments);
         
-        $data = $writer->get_data([get_string('privacy:gradepath', 'vpl', 2)]);
+        $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 2)]);
         $this->assertEquals([], $data);
     }
 
