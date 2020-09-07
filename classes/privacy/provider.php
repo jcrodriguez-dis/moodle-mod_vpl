@@ -57,7 +57,7 @@ class provider implements \core_privacy\local\metadata\provider,
             'id' => 'privacy:metadata:vpl:id',
             'name' => 'privacy:metadata:vpl:name',
             'shortdescription' => 'privacy:metadata:vpl:shortdescription',
-            'variation' => 'privacy:metadata:vpl:assignedvariationdescription',
+            'variation' => 'privacy:metadata:vpl_assigned_variations:variationdescription',
             'grade' => 'privacy:metadata:vpl:grade',
             'reductionbyevaluation' => 'privacy:metadata:vpl:reductionbyevaluation',
             'freeevaluations' => 'privacy:metadata:vpl:freeevaluations',
@@ -70,8 +70,17 @@ class provider implements \core_privacy\local\metadata\provider,
             'grade' => 'privacy:metadata:vpl_submissions:grade',
             'gradercomments' => 'privacy:metadata:vpl_submissions:gradercomments',
         ];
+        $evaluationfields = [
+            'datesubmitted' => 'privacy:metadata:vpl_submissions:datesubmitted',
+            'comments' => 'privacy:metadata:vpl_submissions:studentcomments',
+            'nevaluations' => 'privacy:metadata:vpl_submissions:nevaluations',
+            'dategraded' => 'privacy:metadata:vpl_submissions:dategraded',
+            'grade' => 'privacy:metadata:vpl_submissions:grade',
+            'gradercomments' => 'privacy:metadata:vpl_submissions:gradercomments',
+        ];
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
+        $collection->add_database_table('vpl_evaluations', $evaluationfields, 'privacy:metadata:vpl_evaluations');
         // IDE user preferences.
         $collection->add_user_preference('vpl_editor_fontsize', 'privacy:metadata:vpl_editor_fontsize');
         $collection->add_user_preference('vpl_acetheme', 'privacy:metadata:vpl_acetheme');
@@ -131,19 +140,27 @@ class provider implements \core_privacy\local\metadata\provider,
             $submissions = self::get_vpl_submissions_by_vpl_and_user($vplinstance->id, $userid);
             $zipfilename = get_string('submission', 'vpl') . '.zip';
             $subcontextsecuence = 1;
+            $gracontextsecuence = 1;
             foreach ($submissions as $submissioninstance) {
-                $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
-                $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
-                $submissioninstance->gradercomments = $submission->get_grade_comments();
-                $dataoutput = self::get_vpl_submission_output($submissioninstance);
-                $contentwriter->export_data($subcontext, $dataoutput);
                 if ($submissioninstance->userid == $userid) {
+                    $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
+                    $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
+                    $submissioninstance->gradercomments = $submission->get_grade_comments();
+                    $dataoutput = self::get_vpl_submission_output($submissioninstance);
+                    $contentwriter->export_data($subcontext, $dataoutput);
                     $tempfilename = $submission->get_submitted_fgm()->generate_zip_file();
                     if ($tempfilename !== false) {
                         $filecontent = file_get_contents($tempfilename);
                         $contentwriter->export_custom_file($subcontext, $zipfilename, $filecontent);
                         unlink($tempfilename);
                     }
+                }
+                if ($submissioninstance->grader == $userid) {
+                    $subcontext = [ get_string('privacy:gradepath', 'vpl', $gracontextsecuence++) ];
+                    $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
+                    $submissioninstance->gradercomments = $submission->get_grade_comments();
+                    $dataoutput = self::get_vpl_evaluation_output($submissioninstance);
+                    writer::with_context($context)->export_data($subcontext, $dataoutput);
                 }
             }
         }
@@ -611,6 +628,26 @@ class provider implements \core_privacy\local\metadata\provider,
             foreach ($gradefields as $field) {
                 $data->$field = $submission->$field;
             }
+        }
+        foreach ($datesfields as $field) {
+            if (isset($data->$field)) {
+                $data->$field = transform::datetime($data->$field);
+            }
+        }
+        return $data;
+    }
+    /**
+     * Helper function generate vpl evaluation output object for exporting.
+     *
+     * @param object $submission Object containing an instance record of vpl submission.
+     * @return object Formatted vpl evaluation output for exporting.
+     */
+    protected static function get_vpl_evaluation_output($submission) {
+        $subfields = array('datesubmitted', 'comments', 'nevaluations', 'dategraded', 'grade', 'gradercomments');
+        $datesfields = array('datesubmitted', 'dategraded');
+        $data = new \stdClass();
+        foreach ($subfields as $field) {
+            $data->$field = $submission->$field;
         }
         foreach ($datesfields as $field) {
             if (isset($data->$field)) {
