@@ -461,6 +461,6 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
  */
 class testable_provider extends \mod_vpl\privacy\provider {
     public static function get_user_preferences(int $userid): array {
-        return \mod_vpl\privacy\provider::get_user_preferences($userid);
+        return parent::get_user_preferences($userid);
     }
 }
