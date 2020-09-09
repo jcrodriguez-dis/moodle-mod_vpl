@@ -43,7 +43,7 @@ Feature: Create and change VPL activity settings
       | id_freeevaluations | 3 |
     And I log out
  
-  Scenario: A editing teacher sees default VPL setting values
+  Scenario: An editing teacher sees default VPL setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity default"
@@ -99,7 +99,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Run: No"
     And I should not see "Evaluate: No"
 
-  Scenario: A editing teacher sees default VPL full setting values
+  Scenario: An editing teacher sees default VPL full setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     Then I should see "Full description"
