@@ -300,8 +300,8 @@ class provider implements \core_privacy\local\metadata\provider,
 
         // Delete selected submissions.
         $sql = "DELETE
-                  FROM {vpl_submissions} s
-                 WHERE s.vpl = :vplid AND s.userid {$userssql}";
+                  FROM {vpl_submissions}
+                 WHERE vpl = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
         foreach ($userids as $userid) {
             fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata/' . $userid );
@@ -313,8 +313,8 @@ class provider implements \core_privacy\local\metadata\provider,
         $DB->execute($sql, $params + $usersparams);
         // Delete related assigned variations.
         $sql = "DELETE
-                  FROM {vpl_assigned_variations} av
-                 WHERE av.vpl = :vplid AND av.userid {$userssql}";
+                  FROM {vpl_assigned_variations}
+                 WHERE vpl = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
     }
 
@@ -478,8 +478,8 @@ class provider implements \core_privacy\local\metadata\provider,
                    JOIN {vpl} v ON v.id = s.vpl
                    JOIN {course_modules} cm ON cm.instance = v.id
                    JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
-                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule";
-        $sql .= " WHERE (s.userid = :userid OR s.grader = :grader) AND ctx.id {$contextsql}";
+                   JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                  WHERE (s.userid = :userid OR s.grader = :grader) AND ctx.id {$contextsql}";
         $params += $contextparams;
         return $DB->get_records_sql($sql, $params);
     }
@@ -501,14 +501,15 @@ class provider implements \core_privacy\local\metadata\provider,
             'userid' => $userid,
         ];
 
-        $sql = "DELETE FROM {vpl_assigned_variations} av
-                 WHERE av.userid = :userid AND
-                          av.vpl IN (
+        $sql = "DELETE
+                  FROM {vpl_assigned_variations}
+                 WHERE userid = :userid AND
+                          vpl IN (
                        SELECT cm.instance
                          FROM {course_modules} cm
                          JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
-                         JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule";
-        $sql .= "        WHERE ctx.id {$contextsql} )";
+                         JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                        WHERE ctx.id {$contextsql} )";
         $params += $contextparams;
         $DB->execute($sql, $params);
     }
@@ -545,18 +546,16 @@ class provider implements \core_privacy\local\metadata\provider,
      */
     protected static function add_assigned_variation(object $vplinstance, int $userid) {
         global $DB;
-        
         $params = [
             'vplid' => $vplinstance->id,
             'userid' => $userid,
         ];
-        
         $sql = "SELECT v.description
                   FROM {vpl_variations} v
                   JOIN {vpl_assigned_variations} av ON v.id = av.variation
                  WHERE av.vpl = :vplid AND av.userid = :userid";
         $res = $DB->get_field_sql($sql, $params);
-        If ($res !== false) {
+        if ($res !== false) {
             $vplinstance->variation = $res;
         }
     }
