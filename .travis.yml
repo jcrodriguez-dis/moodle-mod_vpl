@@ -27,13 +27,12 @@ php:
  - 7.4
  
 env:
- global:
-  - MOODLE_BRANCH=MOODLE_35_STABLE
-  - MOODLE_BRANCH=master
-
-jobs:
-  - DB=pgsql
-  - DB=mysqli
+  global:
+    - MOODLE_BRANCH=MOODLE_35_STABLE
+    - MOODLE_BRANCH=master
+  jobs:
+    - DB=pgsql
+    - DB=mysqli
 
 before_install:
   - phpenv config-rm xdebug.ini
