@@ -18,8 +18,8 @@ Feature: Create and change VPL activity access settings
       | teacher1 | C1 | editingteacher |
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
-      
-  Scenario: An editing teacher creates a VPL activity that requiere password => teacher access 
+
+  Scenario: An editing teacher creates a VPL activity that requiere password => teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
@@ -28,7 +28,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with password"
     Then I should not see "A password is required"
 
-  Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access 
+  Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
@@ -40,7 +40,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with password"
     Then I should not see "A password is required"
 
-  Scenario: An editing teacher creates a VPL activity that requiere password => student access 
+  Scenario: An editing teacher creates a VPL activity that requiere password => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
@@ -64,7 +64,7 @@ Feature: Create and change VPL activity access settings
     And I press "Continue"
     And I should not see "A password is required"
 
-  Scenario: An editing teacher creates a VPL activity that requiere network => student access 
+  Scenario: An editing teacher creates a VPL activity that requiere network => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
@@ -76,7 +76,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with network"
     Then I should see "Action not allowed from"
 
-  Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access 
+  Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
@@ -87,8 +87,8 @@ Feature: Create and change VPL activity access settings
     And I am on "Course 1" course homepage
     And I follow "VPL with SEB"
     Then I should see "Using SEB browser"
-    
-  Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access 
+
+  Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:

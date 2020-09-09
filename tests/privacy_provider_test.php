@@ -156,7 +156,7 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $approved = new \core_privacy\local\request\approved_contextlist($this->students[4], 'mod_vpl', array($context->id));
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
-        
+
         $data = $writer->get_data([]);
         $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals($this->vplonefile->get_instance()->id, $data->id);
@@ -164,7 +164,7 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $this->assertEquals('Short description', $data->shortdescription);
         $gradestr = get_string('grademax', 'core_grades') . ': ' . format_float(10, 5, true, true);
         $this->assertEquals($gradestr, $data->grade);
-        
+
         $sub1instance = $this->submission1->get_instance();
         $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 1)]);
         $this->assertInstanceOf('stdClass', $data);
@@ -196,7 +196,7 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $approved = new \core_privacy\local\request\approved_contextlist($this->students[2], 'mod_vpl', array($context->id));
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
-        
+
         $data = $writer->get_data([]);
         $this->assertInstanceOf('stdClass', $data);
         $this->assertEquals($this->vplvariations->get_instance()->id, $data->id);
@@ -230,7 +230,7 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $this->assertEquals(0, $data->nevaluations);
         $this->assertEquals(7.5, $data->grade);
         $this->assertEquals('- Regular done!', $data->gradercomments);
-        
+
         $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 2)]);
         $this->assertEquals([], $data);
     }

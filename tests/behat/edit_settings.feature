@@ -29,8 +29,8 @@ Feature: Create and change VPL activity settings
       | id_showdescription | 1 |
       | id_duedate_enabled | "" |
       | id_startdate_enabled | 1 |
-      | id_maxfiles | 13 | 
-      | id_worktype | Group work | 
+      | id_maxfiles | 13 |
+      | id_worktype | Group work |
       | id_restrictededitor | 1 |
       | id_maxfilesize | 16384 |
       | id_password | key |
@@ -42,7 +42,7 @@ Feature: Create and change VPL activity settings
       | id_reductionbyevaluation | 1% |
       | id_freeevaluations | 3 |
     And I log out
- 
+
   Scenario: An editing teacher sees default VPL setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -197,4 +197,3 @@ Feature: Create and change VPL activity settings
     And I should not see "SEB exam Key/s:"
     And I should not see "Run: No"
     And I should not see "Evaluate: No"
- 
