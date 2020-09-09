@@ -62,10 +62,10 @@ Feature: In an VPL activity, editing teacher change options of execution
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity name"
-	And I navigate to "Execution options" in current page administration
-	And I set the following fields to these values:
-	  | id_basedon | VPL base activity |
-	  | id_run | 1 |
+    And I navigate to "Execution options" in current page administration
+    And I set the following fields to these values:
+      | id_basedon | VPL base activity |
+      | id_run | 1 |
       | id_debug | 1 |
       | id_evaluate | 1 |
       | id_evaluateonsubmission | 1 |
@@ -87,10 +87,10 @@ Feature: In an VPL activity, editing teacher change options of execution
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity name"
-	And I navigate to "Execution options" in current page administration
-	And I set the following fields to these values:
-	  | id_basedon | VPL base activity |
-	  | id_run | 1 |
+    And I navigate to "Execution options" in current page administration
+    And I set the following fields to these values:
+      | id_basedon | VPL base activity |
+      | id_run | 1 |
       | id_debug | 1 |
       | id_evaluate | 1 |
       | id_evaluateonsubmission | 1 |

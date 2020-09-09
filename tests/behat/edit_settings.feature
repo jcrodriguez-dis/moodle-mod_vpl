@@ -156,8 +156,8 @@ Feature: Create and change VPL activity settings
     And I am on "Course 1" course homepage
     And I follow "VPL activity full setting"
     And I navigate to "Edit settings" in current page administration
-	And I set the following fields to these values:
-	  | id_name | VPL activity changed setting |
+    And I set the following fields to these values:
+      | id_name | VPL activity changed setting |
       | id_showdescription | "" |
       | id_worktype | Individual work |
       | id_requirednet | |
