@@ -125,7 +125,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
     }
 
     public function tes_vpl_get_array_key() {
-        $array = array(1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f');
+        $array = array(0 => 'nothing', 1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f');
         $this->assertEquals(1, vpl_get_array_key($array, 1));
         $this->assertEquals(2, vpl_get_array_key($array, 2));
         $this->assertEquals(5, vpl_get_array_key($array, 3));

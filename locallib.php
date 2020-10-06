@@ -570,7 +570,7 @@ function vpl_conv_size_to_string($size) {
 function vpl_get_array_key($array, int $value) {
     reset($array);
     $last = 0;
-    while ( $key = key($array)) {
+    while (($key = key($array)) !== null) {
         if ($key >= $value) {
             reset($array);
             return $key;
