@@ -41,7 +41,7 @@ class mod_vpl_submission_class_testcase extends mod_vpl_base_testcase {
     /**
      * Method to create test fixture
      */
-    protected function setup() {
+    protected function setup(): void {
         parent::setup();
         $this->setupinstances();
     }

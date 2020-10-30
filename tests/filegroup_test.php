@@ -48,7 +48,7 @@ class mod_vpl_file_group_process_class_testcase extends advanced_testcase {
     /**
      * Method to create the fixture
      */
-    protected function setUp() {
+    protected function setUp(): void {
         global $CFG;
         $this->basedir = $CFG->dataroot . '/vpl_data/gpt/';
 

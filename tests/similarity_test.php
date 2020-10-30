@@ -43,7 +43,7 @@ class mod_vpl_similarity_preprocess_testcase extends mod_vpl_base_testcase {
     /**
      * Method to create test fixture
      */
-    protected function setUp() {
+    protected function setUp(): void {
         // No fixture => parent::setUp().
     }
 

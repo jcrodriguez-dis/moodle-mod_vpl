@@ -38,7 +38,7 @@ class mod_vpl_util_lock extends advanced_testcase {
     /**
      * Setup function creates test directory
      */
-    protected function setUp() {
+    protected function setUp(): void {
         global $CFG;
         $this->basedir = $CFG->dataroot . '/vpl_data/locktest';
         $this->assertTrue(mkdir($this->basedir, 0777, true));

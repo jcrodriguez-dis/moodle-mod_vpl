@@ -47,7 +47,7 @@ class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
     /**
      * Method to create lib test fixture
      */
-    protected function setUp() {
+    protected function setUp(): void {
         parent::setUp();
         $this->setupinstances();
         $this->crontask = new \mod_vpl\task\cron_task();
