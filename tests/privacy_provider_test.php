@@ -81,8 +81,9 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
     /**
      * Clears the writer singlenton afer each test.
      */
-    public function tearDown() {
+    protected function tearDown(): void {
         writer::reset();
+        parent::tearDown();
     }
 
     protected function check_vpls_contexts(array $vpls, contextlist $contexts, $message) {

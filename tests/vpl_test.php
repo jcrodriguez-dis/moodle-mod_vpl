@@ -36,7 +36,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * Unit tests for mod_vpl class.
  * @group mod_vpl
  */
-class mod_vpl_class_testcase extends mod_vpl_base_testcase {
+class mod_vpl_testcase extends mod_vpl_base_testcase {
 
     /**
      * Method to create test fixture

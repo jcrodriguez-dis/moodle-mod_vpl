@@ -31,7 +31,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
  * Unit tests for \mod_vpl\util\lock class.
  * @group mod_vpl
  */
-class mod_vpl_util_lock extends advanced_testcase {
+class mod_vpl_util_lock_testcase extends advanced_testcase {
 
     private $basedir;
 
@@ -47,7 +47,7 @@ class mod_vpl_util_lock extends advanced_testcase {
     /**
      * Teardown function removes test directory
      */
-    protected function tearDown() {
+    protected function tearDown(): void {
         $this->assertTrue(vpl_delete_dir($this->basedir));
     }
     /**
