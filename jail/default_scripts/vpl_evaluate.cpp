@@ -782,21 +782,20 @@ bool ExactTextOutput::operator==(const ExactTextOutput& o){
 }
 
 bool ExactTextOutput::match(const string& output){
-	if(cleanText.size()==0 && output.size()==0) return true;
-	string clean;
-	// Clean output if text last char is alpha
-	if(cleanText.size()>0 && isAlpha(cleanText[cleanText.size()-1])){
-		clean=Tools::trimRight(output);
-	}else{
-		clean=output;
+	if (cleanText == output) return true;
+	string cleanOutput = output;
+	// Removes last output char if is a newline and the last searched char is not a newline.
+	if (cleanText.size() > 0 && cleanText[cleanText.size()-1] != '\n' ) {
+		if (cleanOutput.size() > 0 && cleanOutput[cleanOutput.size()-1] == '\n' ) {
+			cleanOutput = cleanOutput.substr(0, cleanOutput.size()-1);
+		}
 	}
-	if(startWithAsterix){
-		size_t start=clean.size()-cleanText.size();
-		return cleanText.size()<=clean.size() &&
-				cleanText == clean.substr(start,cleanText.size());
+	if (startWithAsterix && cleanText.size() < cleanOutput.size()) {
+		size_t start = cleanOutput.size() - cleanText.size();
+		return cleanText == cleanOutput.substr(start, cleanText.size());
+	} else {
+		return cleanText == cleanOutput;
 	}
-	else
-		return cleanText==clean;
 }
 
 OutputChecker* ExactTextOutput::clone(){
