@@ -38,7 +38,7 @@ hello:                   ;tell linker entry point
 
 section     .data
 
-msg     db  'Hello from Assambler $SBITS language!',0xa ;our dear string
+msg     db  'Hello from $SBITS Assambler language!',0xa ;our dear string
 len     equ $ - msg             ;length of our dear string
 
 END_OF_FILE
