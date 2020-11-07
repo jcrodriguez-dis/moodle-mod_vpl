@@ -16,26 +16,25 @@ if [ "$1" == "version" ] ; then
 	chmod +x vpl_execution
 	exit
 fi 
+[ "$PROGRAM" == "mcs" ] && export PKGDOTNET="-pkg:dotnet"
 get_source_files cs
 OUTPUTFILE=output.exe
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Detect NUnit
 NUNITLIBFILE=$(ls /usr/lib/cli/nunit.framework*/nunit.framework.dll | tail -n 1)
-if [ -f "$NUNITLIBFILE" ] ; then
-	NUNITLIB="-r:$NUNITLIBFILE"
-fi
+[ -f "$NUNITLIBFILE" ] && export NUNITLIB="-r:$NUNITLIBFILE"
 # Compile
 export MONO_ENV_OPTIONS=--gc=sgen
 EXECUTABLE=false
-$PROGRAM -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -lib:/usr/lib/mono @.vpl_source_files &>.vpl_compilation_message
+$PROGRAM $PKGDOTNET $NUNITLIB -out:$OUTPUTFILE -lib:/usr/lib/mono @.vpl_source_files &>.vpl_compilation_message
 if [ -f $OUTPUTFILE ] ; then
 	EXECUTABLE=true
 else
 	# Try to compile as dll
 	OUTPUTFILE=output.dll
 	if [ "$NUNITLIB" != "" ] ; then
-		PROGRAM -pkg:dotnet $NUNITLIB -out:$OUTPUTFILE -target:library -lib:/usr/lib/mono @.vpl_source_files &> /dev/null
+		PROGRAM $PKGDOTNET $NUNITLIB -out:$OUTPUTFILE -target:library -lib:/usr/lib/mono @.vpl_source_files &> /dev/null
 	fi
 fi
 rm .vpl_source_files
