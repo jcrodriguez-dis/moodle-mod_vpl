@@ -50,7 +50,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'scala' => 'scala',
             'sql' => 'sql',
             'scm' => 'scheme',
-            's' => 'scheme',
+            's' => 'mips',
             'lisp' => 'lisp',
             'lsp' => 'lisp',
             'lua' => 'lua',
