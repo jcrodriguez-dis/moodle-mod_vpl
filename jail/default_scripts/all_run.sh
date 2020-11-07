@@ -38,16 +38,15 @@ do
 		mv vpl_execution $VPLEXE
 		echo " Compiled"
 		echo "printf \"%2d %s: \" $NG $LANGUAGE" >> all_execute
+		echo "[ -f .hello_fail ] && rm .hello_fail"  >> all_execute
 		if [ "$INPUT_TEXT" == "" ] ; then
-			echo "./$VPLEXE" >> all_execute
+			echo "./$VPLEXE 2>.hello_fail" >> all_execute
 		else
-			echo "echo \"$INPUT_TEXT\" | ./$VPLEXE" >> all_execute
+			echo "echo \"$INPUT_TEXT\" | ./$VPLEXE 2>.hello_fail" >> all_execute
 			unset INPUT_TEXT
 		fi
-		
-		echo "if [ -f \"$VPL_SUBFILE0\" ] ; then" >> all_execute
-		echo "rm \"$VPL_SUBFILE0\"" >> all_execute
-		echo "fi" >> all_execute
+		echo "[ -s .hello_fail ] && echo \"Failed\"" >> all_execute
+		echo "[ -f \"$VPL_SUBFILE0\" ] && rm \"$VPL_SUBFILE0\"" >> all_execute
 	else
 		if [ -f vpl_wexecution ] ; then
 			echo " Use debug button to run graphic Hello World!"
