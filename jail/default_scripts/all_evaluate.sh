@@ -43,7 +43,9 @@ do
 		let "NG=NG+1"
 		mv vpl_execution $LANGEXE
 		echo "echo \"-$LANGUAGE\"" >> all_execute
-		echo "./$LANGEXE" >> all_execute
+		echo "[ -f .version_fail ] && rm .version_fail"  >> all_execute
+		echo "./$LANGEXE 2>.version_fail" >> all_execute
+		echo "[ -s .version_fail ] && echo \"Failed\"" >> all_execute	
 	elif [ -f vpl_wexecution ] ; then
 		let "NNG=NNG+1"
 		echo "Error: generating $LANGUAGE compiler/interpreter version" >> $ERRORSREPORT
