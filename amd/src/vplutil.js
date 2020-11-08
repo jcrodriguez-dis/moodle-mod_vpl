@@ -138,7 +138,7 @@ define(
         (function() {
             var regExt = /\.([^.]*)$/;
             var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
-            var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|rtf|doc|docx|odt)$/i;
+            var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt)$/i;
             var regBlk = /^blockly[0123]?$/;
             VPLUtil.fileExtension = function(fileName) {
                 var res = regExt.exec(fileName);
@@ -419,7 +419,7 @@ define(
                 'R': 'r',
                 'r': 'r',
                 'rb': 'ruby', 'ruby': 'ruby',
- 				's': 'assembly_x86',
+                's': 'assembly_x86',
                 'sass': 'sass',
                 'scala': 'scala',
                 'scm': 'scheme',
