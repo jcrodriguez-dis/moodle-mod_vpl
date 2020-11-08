@@ -287,7 +287,7 @@ class vpl_jailserver_manager {
             if (self::is_private_host( $server )) {
                 // TODO implement other way to warning.
                 $message = 'WARNING: not accessible from the internet';
-                $info->server =  "{$info->server}\n[$message]";
+                $info->server = "{$info->server}\n[$message]";
             }
             $feedback [] = $info;
         }
