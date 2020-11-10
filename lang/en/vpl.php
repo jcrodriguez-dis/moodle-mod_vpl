@@ -417,7 +417,8 @@ $string ['requestedfiles_help'] = '<p>Here you set names and its initial content
 $string ['resourcelimits_help'] = '<p>You can set limits for the execution time, the memory used, the execution files sizes and the number of processes to be executed simultaneously.</p>
 <p>These limits are used when running the scripting files vpl_run.sh, vpl_debug.sh and vpl_evaluate.sh and the file vpl_execution built by them.</p>
 <p>If this activity is based on other activity, the limits can be affected by those set in the base activity and its ancestors or in the global configuration of the module.</p>';
-$string ['testcases_help'] = 'This feature allows to run the student program and check its output for a given input. To set up the evaluation cases you must populate the file &quot;vpl_evaluate.cases&quot;.<br>
+//btbu edited; old=testcases_help
+$string['testcases_adv_help'] = 'This feature allows to run the student program and check its output for a given input. To set up the evaluation cases you must populate the file &quot;vpl_evaluate.cases&quot;.<br>
 The file "vpl_evaluate.cases" has the following format:<br>
 <ul>
 <li> "<b>case </b>= Description of case": Set an start of test case definition.</li>
@@ -432,8 +433,24 @@ The file "vpl_evaluate.cases" has the following format:<br>
 <li> "<b>grade reduction</b> = [value|percentage%]" : By default an error reduces student\'s grade (starts with maxgrade) by (grade_range/number of cases) but with this instruction
 you can change the reduction value or percentage.</li>
 </ul>';
+//btbu edited; old=testcases_help
 $string ['variations_help'] = '<p>A set of variations can be defined for an activity. These variations are randomly assigned to the students.</p>
 <p>Here you can indicate if this activity has variations, put a title for the set of variations, and to add the desired variations.</p>
 <p>Each variation has an identification code and a description. The identification code is used by the <b>vpl_enviroment.sh</b> file to pass
 the variation assigned to each student to the script files. The description, formatted in HTML, is shown to the students that have assigned
 the corresponding variation.</p>';
+
+//btbu
+$string['testcases_adv'] = 'Advanced test cases editor';
+$string['testcases_help'] = 'no help yet';
+$string['testcase_name']='testcase name';
+$string['testcase_input']='testcase input';
+$string['testcase_output']='testcase output';
+$string['grade_reduction']='grade reduction';
+$string['wrong_msg']='wrong output';
+$string['use_preset_code']='Does this cases have preset codes';
+$string['testcases_add']='Add a testcase';
+$string['enter_testcase_name']='please enter the testcase name';
+$string['testcase_name_dublicate']='dublicated testcase name';
+$string['no_wrong_msg']='error message would not be shown';
+$string['default']='default';

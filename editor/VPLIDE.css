@@ -89,9 +89,9 @@
         -1px 0 1px gray;
 }
 div.vpl_ide_dialog_content {
-    height: 250px;
+    height: 98%;/*old:250px btbu*/
     overflow: scroll;
-    width: 350px;
+    width: 98%;/*old:350px btbu*/
 }
 
 .vpl_ide_closeicon:hover {
