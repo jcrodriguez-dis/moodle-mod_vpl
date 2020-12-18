@@ -15,10 +15,10 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class for logging of variation added events
+ * Class for logging of assigned variation events
  *
  * @package mod_vpl
- * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino
+ * @copyright 2020 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -26,13 +26,26 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
-class variation_added extends variation_base {
+class variation_assigned extends variation_base {
     protected function init() {
         parent::init();
+        $this->legacyaction = 'assigned variation';
         $this->data ['crud'] = 'c';
-        $this->legacyaction = 'added variation';
     }
     public function get_description() {
-        return $this->get_description_mod( 'added' );
+        return $this->get_description_mod( 'assigned' );
+    }
+    public static function log($vpl, $varid = null, $userid = null) {
+        if (is_array($vpl)) {
+            $info = $vpl;
+        } else {
+            $info = array (
+                'other' => array('vplid' => $vpl->get_instance()->id),
+                'objectid' => $varid,
+                'context' => $vpl->get_context(),
+                'relateduserid' => $userid,
+            );
+        }
+        parent::log( $info );
     }
 }

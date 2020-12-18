@@ -1883,15 +1883,18 @@ class mod_vpl {
             if (! $DB->insert_record( VPL_ASSIGNED_VARIATIONS, $assign )) {
                 print_error( 'vpl variation not assigned' );
             }
+            \mod_vpl\event\variation_assigned::log( $this, $variation->id, $userid);
         } else {
-            if ($varassigned === false || $varassigned->vpl != $this->instance->id) { // Test consistency.
-                // TODO repair inconsistence?
-                print_error( 'vpl assigned variation inconsistency' );
-            }
             $variation = $DB->get_record( VPL_VARIATIONS,
                     array (
                             'id' => $varassigned->variation
                     ) );
+            if ($variation->vpl != $varassigned->vpl) { // Checks consistency.
+                $DB->delete_records(VPL_ASSIGNED_VARIATIONS, array (
+                        'id' => $varassigned->id
+                ) );
+                print_error( 'vpl assigned variation inconsistency' );
+            }
         }
         return $variation;
     }

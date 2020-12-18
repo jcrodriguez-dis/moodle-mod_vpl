@@ -107,8 +107,8 @@ $vpl->print_heading_with_help( 'variations' );
 // Generate default form and check for action.
 if (optional_param( 'varid', -13, PARAM_INT ) == -13) { // No variation saved.
     $oform = new mod_vpl_variation_option_form( $href, $vpl );
-    if ($oform->is_cancelled()) {
-        vpl_redirect( $href, get_string("canceled") );
+    if (isset($_POST['cancel']) ) { //$oform->is_cancelled()) {
+        vpl_redirect( $href, get_string('cancelled'));
     } else if ($fromform = $oform->get_data()) {
         vpl_truncate_string( $fromform->variationtitle, 255 );
         $instance = $vpl->get_instance();
@@ -124,21 +124,20 @@ if (optional_param( 'varid', -13, PARAM_INT ) == -13) { // No variation saved.
 }
 $varid = optional_param( 'varid', 0, PARAM_INT );
 $mform = new mod_vpl_variation_form( $href, 0, $varid );
-if ($mform->is_cancelled()) {
-    vpl_inmediate_redirect( $href ); // Reload page.
+if ( isset($_POST['cancel']) ) {
+    vpl_redirect( $href, get_string('cancelled') ); // Reload page.
 } else if ($fromform = $mform->get_data()) {
-    if (isset( $fromform->delete )) { // Delete variation and its assignned variations to users.
+    if ( isset($_POST['delete']) ) { // Deletes variation and its assignned variations.
         if ($DB->delete_records( VPL_VARIATIONS, array (
                 'id' => $fromform->varid,
                 'vpl' => $vplid
         ) )) {
-            \mod_vpl\event\variation_deleted::log( array (
-                    'objectid' => $fromform->varid,
-                    'context' => $vpl->get_context()
-            ) );
+            \mod_vpl\event\variation_deleted::log( $vpl, $fromform->varid );
             $DB->delete_records( VPL_ASSIGNED_VARIATIONS, array (
-                    'id' => $fromform->varid
+                    'variation' => $fromform->varid
             ) );
+        } else {
+            print_error( VPL_VARIATIONS . ' record not deleted' . $fromform->varid . ' ' . $vplid, VPL, $href );
         }
         vpl_redirect( $href, get_string('deleted') );
     } else {
@@ -148,10 +147,9 @@ if ($mform->is_cancelled()) {
             $fromform->description = $fromform->description0['text'];
             vpl_truncate_variations( $fromform );
             if ($vid = $DB->insert_record( VPL_VARIATIONS, $fromform )) {
-                \mod_vpl\event\variation_added::log( array (
-                        'objectid' => $vid,
-                        'context' => $vpl->get_context()
-                ) );
+                \mod_vpl\event\variation_added::log( $vpl, $vid );
+            } else {
+                print_error( VPL_VARIATIONS . ' record not inserted' . $fromform->varid . ' ' . $vplid, VPL, $href );
             }
             vpl_redirect( $href, get_string('saved', VPL) );
         } else { // Update record.
@@ -165,14 +163,9 @@ if ($mform->is_cancelled()) {
                 $fromform->description = $fromform->{$fieldname}['text'];
                 vpl_truncate_variations( $fromform );
                 $DB->update_record( VPL_VARIATIONS, $fromform );
-                \mod_vpl\event\variation_updated::log( array (
-                        'objectid' => $fromform->varid,
-                        'context' => $vpl->get_context()
-                ) );
+                \mod_vpl\event\variation_updated::log( $vpl, $fromform->varid );
                 vpl_redirect( $href, get_string('updated', '', $fromform->identification) );
             } else {
-                $vpl->print_header( get_string( 'variations', VPL ) );
-                $vpl->print_heading_with_help( 'variations' );
                 print_error( VPL_VARIATIONS . ' record inconsistence ' . $id . ' ' . $vplid, VPL, $href );
             }
         }

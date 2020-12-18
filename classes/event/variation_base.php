@@ -30,16 +30,25 @@ class variation_base extends vpl_base {
     protected function init() {
         parent::init();
         $this->data ['objecttable'] = VPL_VARIATIONS;
-        $this->legacyaction = 'variations form';
     }
-    public function get_description() {
-        return $this->get_description_mod( 'variation' );
-    }
-    public static function log($info) {
-        if (is_array( $info )) {
-            parent::log( $info );
-        } else {
-            throw new \coding_exception( 'Parameter must be an array' );
+    public function get_description_mod($mod) {
+        $desc = 'The user with id ' . $this->userid . ' ' . $mod;
+        $desc .= ' variation with id ' . $this->objectid . ' of VPL activity with id ' . $this->other['vplid'];
+        if ($this->relateduserid) {
+            $desc .= ' for user with id ' . $this->relateduserid;
         }
+        return $desc;
+    }
+    public static function log($vpl, $varid = null) {
+        if (is_array($vpl)) {
+            $info = $vpl;
+        } else {
+            $info = array (
+                'other' => array('vplid' => $vpl->get_instance()->id),
+                'objectid' => $varid,
+                'context' => $vpl->get_context()
+            );
+        }
+        parent::log( $info );
     }
 }

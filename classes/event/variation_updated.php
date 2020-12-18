@@ -30,5 +30,9 @@ class variation_updated extends variation_base {
     protected function init() {
         parent::init();
         $this->data ['crud'] = 'u';
+        $this->legacyaction = 'updated variation';
+    }
+    public function get_description() {
+        return $this->get_description_mod( 'updated' );
     }
 }
