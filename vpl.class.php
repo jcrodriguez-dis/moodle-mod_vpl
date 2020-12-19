@@ -1889,7 +1889,7 @@ class mod_vpl {
                     array (
                             'id' => $varassigned->variation
                     ) );
-            if ($variation->vpl != $varassigned->vpl) { // Checks consistency.
+            if ($variation == false || $variation->vpl != $varassigned->vpl) { // Checks consistency.
                 $DB->delete_records(VPL_ASSIGNED_VARIATIONS, array (
                         'id' => $varassigned->id
                 ) );
