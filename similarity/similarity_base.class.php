@@ -156,7 +156,7 @@ class vpl_similarity_base {
     public function link_parms($t) {
         return $this->from->link_parms( $t );
     }
-
+    
     /**
      * Get similarity-1 among this file and other
      *
@@ -179,7 +179,7 @@ class vpl_similarity_base {
         $dif2 = count( $other->vecfrec ) - $taken;
         return 100 * (1 - (($dif1 + $dif2) / (count( $this->vecfrec ) + count( $other->vecfrec ))));
     }
-
+    
     /**
      * Get similarity-2 among this file and other
      *
@@ -200,7 +200,7 @@ class vpl_similarity_base {
         $dif += $other->get_size() - $taken;
         return 100 * (1 - ($dif / ($this->size + $other->get_size())));
     }
-
+    
     /**
      * Get similarity-3 among this file and other
      *
@@ -221,7 +221,7 @@ class vpl_similarity_base {
         $dif += $other->get_sizeh() - $taken;
         return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
     }
-
+    
     static public function clone_token($token, $value) {
         return new vpl_token($token->type, $value, $token->line);
     }
@@ -274,17 +274,17 @@ class vpl_files_pair {
     }
     public function get_link() {
         global $OUTPUT;
-        $text = '<spam class="vpl_sim' . ( int ) $this->get_level1() . '">';
+        $text = '<span class="vpl_sim' . ( int ) $this->get_level1() . '">';
         $text .= ( int ) $this->s1;
-        $text .= '</spam>';
+        $text .= '</span>';
         $text .= '|';
-        $text .= '<spam class="vpl_sim' . ( int ) $this->get_level2() . '">';
+        $text .= '<span class="vpl_sim' . ( int ) $this->get_level2() . '">';
         $text .= ( int ) $this->s2;
-        $text .= '</spam>';
+        $text .= '</span>';
         $text .= '|';
-        $text .= '<spam class="vpl_sim' . ( int ) $this->get_level3() . '">';
+        $text .= '<span class="vpl_sim' . ( int ) $this->get_level3() . '">';
         $text .= ( int ) $this->s3;
-        $text .= '</spam>';
+        $text .= '</span>';
         if ($this->first->can_access() && $this->second->can_access()) {
             $url = vpl_mod_href( 'similarity/diff.php' );
             foreach ($this->first->link_parms( '1' ) as $parm => $value) {
@@ -294,14 +294,14 @@ class vpl_files_pair {
                 $url = vpl_url_add_param( $url, $parm, $value );
             }
             $options = array (
-                    'height' => 800,
-                    'width' => 900,
-                    'directories' => 0,
-                    'location' => 0,
-                    'menubar' => 0,
-                    'personalbar' => 0,
-                    'status' => 0,
-                    'toolbar' => 0
+                'height' => 800,
+                'width' => 900,
+                'directories' => 0,
+                'location' => 0,
+                'menubar' => 0,
+                'personalbar' => 0,
+                'status' => 0,
+                'toolbar' => 0
             );
             $action = new popup_action( 'click', $url, 'viewdiff' . $this->id, $options );
             $html = $OUTPUT->action_link( $url, $text, $action );
@@ -451,8 +451,8 @@ class vpl_similarity {
                 self::$corder = new vpl_similarity();
             }
             if (! usort( $vec, array (
-                    self::$corder,
-                    'cmp_selected' . $sid
+                self::$corder,
+                'cmp_selected' . $sid
             ) )) {
                 debugging( 'usort error' );
             }
