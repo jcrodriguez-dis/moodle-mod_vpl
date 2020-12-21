@@ -3,7 +3,7 @@
     <library>
         <location>editor/ace9</location>
         <name>ACE (Ajax.org Cloud9 Editor)</name>
-        <version>1.2.2</version>
+        <version>1.4.12</version>
         <license>BSD</license>
         <licenseversion>3</licenseversion>
     </library>
