@@ -138,7 +138,7 @@ define(
             };
 
             this.adjustSize = function() {
-                if (!opened) {
+                if (!this.isOpen()) {
                     return false;
                 }
                 var editTag = $(tid);
@@ -183,9 +183,7 @@ define(
             this.setTheme = VPLUtil.doNothing;
             this.clearAnnotations = VPLUtil.doNothing;
             this.langSelection = VPLUtil.doNothing;
-            this.isBinary = function() {
-                return false;
-            };
+            this.isBinary = VPLUtil.returnFalse;
             // Adds support for current extensions
             this.extendToCodeEditor = codeExtension;
             this.extendToBlockly = blocklyExtension;
