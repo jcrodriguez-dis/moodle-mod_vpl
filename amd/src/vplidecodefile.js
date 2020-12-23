@@ -64,7 +64,7 @@ define(
             var oldAdjustSize = this.adjustSize;
             this.adjustSize = function() {
                 if (oldAdjustSize.call(this)) {
-                    editor.resize();
+                    editor.resize(true);
                     return true;
                 }
                 return false;
@@ -88,9 +88,8 @@ define(
                     return;
                 }
                 var tid = this.getTId();
+                // Workaround to remove JQwery-UI background color.
                 $(tid).removeClass('ui-widget-content ui-tabs-panel');
-                $(tid).addClass('ui-corner-bottom');
-                this.adjustSize();
                 editor.focus();
             };
             this.blur = function() {
@@ -206,13 +205,12 @@ define(
                     return false;
                 }
                 if (this.isOpen()) {
-                    return false;
+                    return editor;
                 }
                 var fileManager = this.getFileManager();
                 var tid = this.getTId();
                 // Workaround to remove jquery-ui theme background color.
                 $(tid).removeClass('ui-widget-content ui-tabs-panel');
-                $(tid).addClass('ui-corner-bottom');
                 ace.require("ext/language_tools");
                 editor = ace.edit("vpl_file" + this.getId());
                 session = editor.getSession();
@@ -223,7 +221,8 @@ define(
                 editor.setValue(this.getContent());
                 editor.setFontSize(fileManager.getFontSize());
                 editor.setTheme("ace/theme/" + fileManager.getTheme());
-                editor.gotoLine(0, 0);
+                editor.$blockScrolling = Infinity;
+                editor.gotoLine(1, 0);
                 editor.setReadOnly(readOnly);
                 session.setUseSoftTabs(true);
                 session.setTabSize(4);
@@ -264,7 +263,10 @@ define(
                 $(tid).on('paste', '*', fileManager.restrictedPaste);
                 $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
                 $(tid + ' div.ace_content').on('dragover', fileManager.dragoverHandler);
+                // Workaround to avoid hidden first line in editor.
+                $(tid).find('div.ace_scroller').css('position', 'static');
                 this.adjustSize();
+                $(tid).find('div.ace_scroller').css('position', 'absolute');
                 return editor;
             };
             this.close = function() {
