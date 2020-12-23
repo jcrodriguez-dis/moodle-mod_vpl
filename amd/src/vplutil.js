@@ -217,6 +217,11 @@ define(
             }
             unzipper.readEntries();
             var out = unzipper.entries.length;
+            /**
+            * Process each entry in the zip file.
+            * Recursive process.
+            * @param {int} i Entry to process.
+            */
             function process(i) {
                 if (i >= out || progressBar.isClosed()) {
                     if (end) {
@@ -284,6 +289,11 @@ define(
                     pb.close();
                 }
             };
+            /**
+            * Read each file in the zip file.
+            * Recursive process.
+            * @param {int} sec secuencial file to read
+            */
             function readSecuencial(sec) {
                 if (sec >= filesToRead.length || pb.isClosed()) {
                     return;
@@ -616,6 +626,11 @@ define(
         // UI operations.
         VPLUtil.setTitleBar = function(dialog, type, icon, buttons, handler) {
             var title = $(dialog).parent().find("span.ui-dialog-title");
+            /**
+            * Generate HTML for a button with icon
+            * @param {string} e name of botton.
+            * @returns {string} Html tag <a> as a button.
+            */
             function genButton(e) {
                 var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPLUtil.str(e) + "'>";
                 html += VPLUtil.genIcon(e, 'fw') + "</a>";
@@ -1336,20 +1351,6 @@ define(
                     tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
                                                            results[ri].noFormat, results[ri].folding);
                 }
-                // Wait 1 sec. to remove all ace code ¿exists event to resolve this?
-                setTimeout(function() {
-                    for (var si = 0; si < shFiles.length; si++) {
-                        var editor = shFiles[si];
-                        var tag = editor.getTagId();
-                        var odlhtml = $('#' + tag).html();
-                        editor.destroy();
-                        $('#' + tag).html(odlhtml);
-                    }
-                    files = null;
-                    results = null;
-                    shFiles = null;
-                    shFileNames = null;
-                }, 1000);
             };
 
             VPLUtil.addResults = function(tagId, noFormat, folding) {
