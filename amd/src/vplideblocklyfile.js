@@ -50,21 +50,22 @@ define(
                     };
                 }
             };
+            var oldAdjustSize = this.adjustSize;
             this.adjustSize = function() {
-                if (!this.isOpen() || !this.workspaceInstance) {
+                if (oldAdjustSize.call(this)) {
+                    var editTag = $(this.getTId());
+                    if (editTag.length === 0) {
+                        return false;
+                    }
+                    var tabs = editTag.parent();
+                    var newHeight = tabs.height();
+                    newHeight -= editTag.position().top;
+                    editTag.height(newHeight);
+                    $('#' + this.bdiv).height(newHeight);
+                    $('#' + this.bdiv).width(editTag.width());
+                    Blockly.svgResize(this.workspaceInstance);
                     return false;
                 }
-                var editTag = $(this.getTId());
-                if (editTag.length === 0) {
-                    return false;
-                }
-                var tabs = editTag.parent();
-                var newHeight = tabs.height();
-                newHeight -= editTag.position().top;
-                editTag.height(newHeight);
-                $('#' + this.bdiv).height(newHeight);
-                $('#' + this.bdiv).width(editTag.width());
-                Blockly.svgResize(this.workspaceInstance);
                 return false;
             };
             this.undo = function() {
@@ -601,7 +602,7 @@ define(
             var setContentOld = this.setContent;
             this.setContent = function(c) {
                 setContentOld.call(this, c);
-                if (this.isOpen()) {
+                if (c.length > 0 && this.isOpen()) {
                     this.workspaceInstance.clear();
                     var xml = Blockly.Xml.textToDom(c);
                     Blockly.Xml.domToWorkspace(xml, this.workspaceInstance);
