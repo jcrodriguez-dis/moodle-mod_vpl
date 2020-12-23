@@ -101,6 +101,10 @@ define(
                 options.fontSize = 12;
             }
             options.fontSize = parseInt(options.fontSize);
+            /**
+            * Handler for dragover event.
+            * @param {object} e event.
+            */
             function dragoverHandler(e) {
                 if (restrictedEdit) {
                     e.originalEvent.dataTransfer.dropEffect = 'none';
@@ -109,6 +113,11 @@ define(
                 }
                 e.preventDefault();
             }
+            /**
+            * Handler for drop event.
+            * @param {object} e event.
+            * @returns {boolean}
+            */
             function dropHandler(e) {
                 if (restrictedEdit) { // No drop allowed.
                     e.stopImmediatePropagation();
@@ -130,7 +139,11 @@ define(
             }
             rootObj.on('drop', dropHandler);
             rootObj.on('dragover', dragoverHandler);
-            // Control paste.
+            /**
+            * Handler for paste limited by restrictedEdit var.
+            * @param {object} e event.
+            * @returns {boolean}
+            */
             function restrictedPaste(e) {
                 if (restrictedEdit) {
                     e.stopPropagation();
@@ -151,6 +164,12 @@ define(
             var result = $('#vpl_results_accordion');
             fileListContainer.vplMinWidth = 80;
             resultContainer.vplMinWidth = 100;
+            /**
+            * Avoids selecting grade.
+            * @param {object} event Unuse.
+            * @param {object} ui UI origen.
+            * @returns {boolean}
+            */
             function avoidSelectGrade(event, ui) {
                 if ("newHeader" in ui) {
                     if (ui.newHeader.hasClass('vpl_ide_accordion_t_grade')) {
@@ -159,8 +178,12 @@ define(
                 }
                 return true;
             }
+            /**
+            * Constructor of FileManager objects
+            */
             function FileManager() {
                 var tabsUl = $('#vpl_tabs_ul');
+                $('#vpl_tabs').tabs();
                 var tabs = $('#vpl_tabs').tabs("widget");
                 var files = [];
                 var openFiles = [];
@@ -187,6 +210,11 @@ define(
                     }
                     return -1;
                 };
+                /**
+                * Checks if name is included in current files names
+                * @param {string} name Name of file
+                * @returns {boolean} if found or not found
+                */
                 function fileNameIncluded(name) {
                     var checkName = name.toLowerCase() + '/';
                     for (var i = 0; i < files.length; i++) {
@@ -198,6 +226,12 @@ define(
                     }
                     return false;
                 }
+                /**
+                * Checks if changing file name results in two blovkly files
+                * @param {string} oldname The old file name
+                * @param {string} newname The new file name
+                * @returns {boolean} if results two two blovkly files
+                */
                 function twoBlockly(oldname, newname) {
                     if (VPLUtil.isBlockly(oldname)) {
                         return false;
@@ -783,7 +817,6 @@ define(
             });
             fileListContainer.vplVisible = false;
             fileListContainer.hide();
-            tabs.tabs({classes: {"ui-tabs-panel": null}});
             var tabsAir = false;
             function getTabsAir() {
                 if (tabsAir === false) {
