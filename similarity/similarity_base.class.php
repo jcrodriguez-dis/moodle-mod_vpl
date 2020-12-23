@@ -156,7 +156,7 @@ class vpl_similarity_base {
     public function link_parms($t) {
         return $this->from->link_parms( $t );
     }
-    
+
     /**
      * Get similarity-1 among this file and other
      *
@@ -179,7 +179,7 @@ class vpl_similarity_base {
         $dif2 = count( $other->vecfrec ) - $taken;
         return 100 * (1 - (($dif1 + $dif2) / (count( $this->vecfrec ) + count( $other->vecfrec ))));
     }
-    
+
     /**
      * Get similarity-2 among this file and other
      *
@@ -200,7 +200,7 @@ class vpl_similarity_base {
         $dif += $other->get_size() - $taken;
         return 100 * (1 - ($dif / ($this->size + $other->get_size())));
     }
-    
+
     /**
      * Get similarity-3 among this file and other
      *
@@ -221,7 +221,7 @@ class vpl_similarity_base {
         $dif += $other->get_sizeh() - $taken;
         return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
     }
-    
+
     static public function clone_token($token, $value) {
         return new vpl_token($token->type, $value, $token->line);
     }

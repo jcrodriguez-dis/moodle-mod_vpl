@@ -107,7 +107,7 @@ $vpl->print_heading_with_help( 'variations' );
 // Generate default form and check for action.
 if (optional_param( 'varid', -13, PARAM_INT ) == -13) { // No variation saved.
     $oform = new mod_vpl_variation_option_form( $href, $vpl );
-    if (isset($_POST['cancel']) ) { //$oform->is_cancelled()) {
+    if (isset($_POST['cancel']) ) {
         vpl_redirect( $href, get_string('cancelled'));
     } else if ($fromform = $oform->get_data()) {
         vpl_truncate_string( $fromform->variationtitle, 255 );
