@@ -151,6 +151,7 @@ div.vpl_ide_file.ui-tabs-panel {
     margin: 2px;
     padding: 0;
     z-index: 0;
+    position: absolute;
 }
 
 .vpl_ide_binary {
