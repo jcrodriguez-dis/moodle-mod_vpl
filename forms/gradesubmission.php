@@ -23,12 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/grade_form.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/grade_form.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/../views/sh_factory.class.php');
+require_once(dirname(__FILE__) . '/../views/workinggraph.php');
 
 function vpl_grade_header($vpl, $inpopup) {
     if ($inpopup) {
@@ -218,6 +219,9 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         echo '</div>';
         echo '<div id="vpl_submission_view">';
         echo '<hr />';
+        $hours = vpl_user_total_working_time($vpl, $userid);
+        echo get_string('numhours', '', sprintf('%3.2f', $hours));
+        echo '<br>';
         $vpl->print_variation( $subinstance->userid );
         $submission->print_submission();
         echo '</div>';

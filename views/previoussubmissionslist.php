@@ -125,7 +125,7 @@ foreach ($submissionslist as $submission) {
 
 echo '<div class="clearer"> </div>';
 vpl_submissions_graph($vpl, $userid);
-vpl_working_periods_graph($vpl, $userid);
+vpl_user_working_periods_graph($vpl, $userid);
 
 echo html_writer::table( $table );
 echo '<div style="text-align:center">';

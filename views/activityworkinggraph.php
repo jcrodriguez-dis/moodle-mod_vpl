@@ -23,10 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/workinggraph.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/workinggraph.php');
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
@@ -38,5 +38,5 @@ $vpl->require_capability( VPL_GRADE_CAPABILITY );
 
 $vpl->print_header( get_string( 'timespent', VPL ) );
 $vpl->print_heading_with_help( 'timespent' );
-vpl_working_periods_graph($vpl, -1);
+vpl_working_periods_graph($vpl);
 $vpl->print_footer_simple();
