@@ -1854,13 +1854,11 @@ class mod_vpl {
      */
     public function get_variation($userid) {
         global $DB;
-        if ($this->is_group_activity()) {
-            $userid = $this->get_group_leaderid( $userid );
-            if ($userid == 0) {
-                return false;
-            }
+        if ($this->is_group_activity()) { // Variations not compatible with a group activity.
+            return false;
         }
-        $varassigned = $DB->get_record( VPL_ASSIGNED_VARIATIONS,
+        $varassigned = $DB->get_record(
+                VPL_ASSIGNED_VARIATIONS,
                 array (
                         'vpl' => $this->instance->id,
                         'userid' => $userid
@@ -1885,15 +1883,18 @@ class mod_vpl {
             }
             \mod_vpl\event\variation_assigned::log( $this, $variation->id, $userid);
         } else {
-            $variation = $DB->get_record( VPL_VARIATIONS,
+            $variation = $DB->get_record(
+                    VPL_VARIATIONS,
                     array (
                             'id' => $varassigned->variation
                     ) );
             if ($variation == false || $variation->vpl != $varassigned->vpl) { // Checks consistency.
-                $DB->delete_records(VPL_ASSIGNED_VARIATIONS, array (
+                $DB->delete_records(
+                    VPL_ASSIGNED_VARIATIONS,
+                    array (
                         'id' => $varassigned->id
-                ) );
-                print_error( 'vpl assigned variation inconsistency' );
+                    ) );
+                print_error( 'vpl assigned variation inconsistency. Fixed removing the current assigment.' );
             }
         }
         return $variation;
