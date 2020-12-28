@@ -524,10 +524,11 @@ function vpl_get_max_post_size_internal($maxs) {
 }
 
 /**
- * Convert a size in byte to string in Kb, Mb, Gb and Tb Following IEC "Prefixes for binary multiples"
+ * Converts a size in byte to string in Kb, Mb, Gb and Tb.
+ * Follows IEC "Prefixes for binary multiples".
  *
- * @param $size int
- *            size in bytes
+ * @param int $size Size in bytes
+ * 
  * @return string
  */
 function vpl_conv_size_to_string($size) {
@@ -583,13 +584,15 @@ function vpl_get_array_key($array, int $value) {
 }
 
 /**
- * Return un array with the format [size in bytes]=> size in text The first element is [0] => select
+ * Returns un array with the format [size in bytes]=> size in text.
+ * The first element is [0] => select.
  *
  * @param int $minimum the initial value
  * @param int $maximum the limit of values generates
- * @return array
+ * 
+ * @return array Key value => Text value
  */
-function vpl_get_select_sizes($minimum = 0, $maximum = PHP_INT_MAX) {
+function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): array {
     $maximum = ( int ) $maximum;
     if ($maximum < 0) {
         $maximum = PHP_INT_MAX;
@@ -620,44 +623,46 @@ function vpl_get_select_sizes($minimum = 0, $maximum = PHP_INT_MAX) {
         }
     }
     if ($pre < $maximum) { // Show limit value.
-        $ret [$maximum] = vpl_conv_size_to_string( $maximum );
+        $ret [$maximum] = vpl_conv_size_to_string($maximum);
     }
     return $ret;
 }
 
 /**
- *
- * @param string $data
- * @return string newline separator "\r\n", "\n", "\r"
+ * Detects end of line separator.
+ * 
+ * @param string& $data Text to check.
+ * 
+ * @return string Newline separator "\r\n", "\n", "\r".
  */
 function vpl_detect_newline(&$data) {
     // Detect text newline chars.
     if (strrpos( $data, "\r\n" ) !== false) {
         return "\r\n"; // Windows.
-    } else if (strrpos( $data, "\n" ) !== false) {
+    } else if (strrpos($data, "\n") !== false) {
         return "\n"; // UNIX.
-    } else if (strrpos( $data, "\r" ) !== false) {
+    } else if (strrpos($data, "\r") !== false) {
         return "\r"; // Mac.
     } else {
         return "\n"; // Default Unix.
     }
 }
 
-function vpl_notice($text, $type = 'success') {
+function vpl_notice(string $text, $type = 'success') {
     global $OUTPUT;
-    echo $OUTPUT->notification( $text, $type );
+    echo $OUTPUT->notification($text, $type);
 }
 
 /**
- * Remove trailing zeros from a float as string
+ * Remove trailing right zeros from a float as string
  *
- * @param
- *            $value
+ * @param string $value float to remove right zeros
+ * 
  * @return string
  */
 function vpl_rtzeros($value) {
-    if (strpos( $value, '.' ) || strpos( $value, ',' )) {
-        return rtrim( rtrim( $value, '0' ), '.,' );
+    if (strpos($value, '.') || strpos($value, ',')) {
+        return rtrim(rtrim($value, '0'), '.,');
     }
     return $value;
 }
