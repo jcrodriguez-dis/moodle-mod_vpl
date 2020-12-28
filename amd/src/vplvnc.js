@@ -45,7 +45,6 @@ define(
             var message = '';
             var lastState = '';
             var VNCDialog = $('#' + VNCDialogId);
-            var tIde = $('#vplide');
             var canvas = $('#' + VNCDialogId + " canvas");
             var onCloseAction = VPLUtil.doNothing;
             var clipboard;
@@ -67,6 +66,9 @@ define(
             inputarea.wrap = 'off';
             inputarea.spellcheck = 'false';
             VNCDialog.append(inputarea);
+            /**
+             * Event handler of keyboard button.
+             */
             function keyboardButton() {
                 if ($(inputarea).is(':focus')) {
                     inputarea.blur();
@@ -74,27 +76,48 @@ define(
                     inputarea.focus();
                 }
             }
+            /**
+             * Event handler of paste button at clipboard.
+             */
             function pasteClipboard() {
                 if (self.isConnected()) {
                     rfb.clipboardPasteFrom(clipboard.getEntry2());
                 }
             }
+            /**
+             * Event handler of paste button at clipboard.
+             *
+             * @param {object} rfb vnc client object
+             * @param {string} text Text received
+             */
             function receiveClipboard(rfb, text) {
                 clipboard.setEntry1(text);
             }
+            /**
+             * Event handler of clipboard button.
+             */
             function openClipboard() {
                 clipboard.show();
             }
+            /**
+             * Inform rfb of focus received.
+             */
             function getFocus() {
                 if (self.isConnected()) {
                     rfb.get_keyboard().set_focused(true);
                 }
             }
+            /**
+             * Inform rfb of focus lost.
+             */
             function lostFocus() {
                 if (self.isConnected()) {
                     rfb.get_keyboard().set_focused(false);
                 }
             }
+            /**
+             * Tries to do a copy.
+             */
             function copyAction() {
                 clipboard.setEntry1(clipboard.getEntry1());
                 document.execCommand('copy');
@@ -118,10 +141,14 @@ define(
                     rfb.get_display().viewportChange(0, 0, w, h);
                 }
             };
+            /**
+             * Event handler that limit the size of the vnc client windows.
+             *
+             */
             function controlDialogSize() {
                 // Resize if dialog is large than screen.
-                var bw = tIde.width();
-                var bh = tIde.height();
+                var bw = $('html').width();
+                var bh = $(window).height();
                 if (VNCDialog.width() > bw) {
                     needResize = true;
                     VNCDialog.dialog("option", "width", bw);
@@ -162,6 +189,7 @@ define(
                 }
             });
             VNCDialog.css("padding", "1px");
+            VNCDialog.parent().css('z-index', 2000);
             this.updateTitle = function() {
                 var text = title;
                 if (message !== '') {
@@ -177,6 +205,14 @@ define(
                 message = t;
                 this.updateTitle();
             };
+            /**
+             * Event handler to show vnc client state in windows title.
+             *
+             * @param {object} rfb vnc client
+             * @param {string} state Name of the state
+             * @param {string} oldstate Name of the old state. Not used
+             * @param {string} msg State detail message
+             */
             function updateState(rfb, state, oldstate, msg) {
                 lastState = state;
                 switch (state) {
@@ -239,6 +275,13 @@ define(
                 onCloseAction();
                 clipboard.hide();
             };
+            /**
+             * Round a number to event and not less than 100.
+             *
+             * @param {number} v value to round
+             *
+             * @returns {int}
+             */
             function round(v) {
                 if (v < 100) {
                     v = 100;
