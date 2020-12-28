@@ -30,6 +30,13 @@ require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
 global $CFG;
 
+/**
+ * Sanitize zip directory name
+ * 
+ * @param string $name Directory name
+ * 
+ * @return void
+ */
 function vpl_user_zip_dirname( $name ) {
     // Prepare name.
     $name = trim( $name );
@@ -45,6 +52,17 @@ function vpl_user_zip_dirname( $name ) {
     return $name;
 }
 
+/**
+ * Adds files to zip
+ * 
+ * @param ZipArchive         $zip        Object that represents a zip file.
+ * @param string             $sourcedir  Source directory name
+ * @param string             $zipdirname Zip directory name
+ * @param file_group_process $fgm        Object that manages group of files
+ * @param string             $ziperrors  Output message if error
+ *  
+ * @return void
+ */
 function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {
     foreach ($fgm->getFileList() as $filename) {
         $source = file_group_process::encodeFileName( $filename );
@@ -82,7 +100,7 @@ if ($vpl->is_group_activity()) {
     $idfiels = 'groupid';
     $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
 } else {
-    $list = $vpl->get_students( $currentgroup );
+    $list = $vpl->get_students($currentgroup, 'u.username');
     $idfiels = 'userid';
 }
 
@@ -94,7 +112,7 @@ if ($all) {
 // Organize information by user id.
 $submissions = array();
 foreach ($asortedsubmissions as $instance) {
-    if ( ! isset($submissions[$instance->$idfiels]) ) {
+    if (! isset($submissions[$instance->$idfiels])) {
         $submissions[$instance->$idfiels] = array();
     }
     $submissions[$instance->$idfiels][] = $instance;
@@ -103,7 +121,7 @@ foreach ($asortedsubmissions as $instance) {
 // Get all information by user.
 $alldata = array ();
 foreach ($list as $uginfo) {
-    if (! isset( $submissions [$uginfo->id] )) {
+    if (! isset($submissions [$uginfo->id])) {
         continue;
     }
     $data = new stdClass();
@@ -132,8 +150,8 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
     $ziperrors = '';
     foreach ($alldata as $data) {
         $user = $data->uginfo;
-        $zipdirname = vpl_user_zip_dirname( $user->lastname . ' ' . $user->firstname );
-        $zipdirname .= ' ' . $user->id;
+        $zipdirname = vpl_user_zip_dirname($user->lastname . ' ' . $user->firstname);
+        $zipdirname .= ' ' . $user->id . ' ' . $user->username;
         // Create directory.
         $zip->addEmptyDir( $zipdirname );
         $zipdirname .= '/';
