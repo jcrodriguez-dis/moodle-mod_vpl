@@ -66,6 +66,10 @@ define(
                 message = t;
                 this.updateTitle();
             };
+            /**
+             * Manages the data received from clipboard
+             * @param {string} data Data recieved
+             */
             function receiveClipboard(data) {
                 clipboardData += data;
                 if (clipboardData.length > cliboardMaxsize) {
@@ -73,14 +77,23 @@ define(
                     clipboardData = clipboardData.substr(from);
                 }
             }
+            /**
+             * Sends the clipboard data to the connection
+             */
             function pasteClipboard() {
                 if (ws && ws.readyState == ws.OPEN) {
                     ws.send(clipboard.getEntry2());
                 }
             }
+            /**
+             * Updates the data in the clipboard dialog
+             */
             function updateClipboard() {
                 clipboard.setEntry1(clipboardData);
             }
+            /**
+             * Opens the clipboard dialog
+             */
             function openClipboard() {
                 updateClipboard();
                 clipboard.show();
@@ -227,7 +240,10 @@ define(
                 clipboard.hide();
                 self.disconnect();
             };
-
+            /**
+             * Sets the terminal theme
+             * @param {int} theme
+             */
             function setTheme(theme) {
                 var cbase = "vpl_terminal_theme";
                 var nthemes = 5;
@@ -238,6 +254,9 @@ define(
                 }
                 tdialog.addClass(cbase + theme);
             }
+            /**
+             * Limits the size of the dialogo to the IDE
+             */
             function controlDialogSize() {
                 // Resize if dialog is large than screen.
                 var bw = tIde.width();

@@ -585,6 +585,10 @@ define(
                         isDir: true,
                         content: {}
                     };
+                    /**
+                     * Adds a new file the structure of directories
+                     * @param {int} i Index of file to add in the file array
+                     */
                     function addFilePath(i) {
                         var file = files[i];
                         var fileName = file.getFileName();
@@ -624,6 +628,12 @@ define(
                         return;
                     }
                     var dirIndent = '<span class="vpl_ide_dirindent"></span>';
+                    /**
+                     * Generates an array of string with the HTML code to represent the list of IDE files
+                     * @param {Object} dir Current directory
+                     * @param {int} indent Html code to indent subdirectories
+                     * @param {Array} lines Output. Each line contains the HTML to represent an IDE file
+                     */
                     function lister(dir, indent, lines) {
                         for (var name in dir.content) {
                             if (dir.content.hasOwnProperty(name)) {
@@ -818,12 +828,21 @@ define(
             fileListContainer.vplVisible = false;
             fileListContainer.hide();
             var tabsAir = false;
+            /**
+             * Returns separation space
+             * @returns {int} size in pixels
+             */
             function getTabsAir() {
                 if (tabsAir === false) {
                     tabsAir = (tabs.outerWidth(true) - tabs.width()) / 2;
                 }
                 return tabsAir;
             }
+            /**
+             * Resize tab width
+             * @param {Event} e Unused
+             * @param {Object} ui UI object
+             */
             function resizeTabWidth(e, ui) {
                 var diffLeft = ui.position.left - ui.originalPosition.left;
                 var maxWidth;
@@ -862,6 +881,9 @@ define(
                 handles: ""
             };
             tabs.resizable(resizableOptions);
+             /**
+             * Updates handles for internal IDE resize
+             */
             function updateTabsHandles() {
                 var handles = ['e', 'w', 'e', 'e, w'];
                 var index = 0;
@@ -872,6 +894,9 @@ define(
                 resizableOptions.disable = index === 0;
                 tabs.resizable(resizableOptions);
             }
+            /**
+             * Resize the IDE height
+             */
             function resizeHeight() {
                 var newHeight = $(window).outerHeight();
                 newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 20);
@@ -962,12 +987,21 @@ define(
                 resizeHeight();
                 fileManager.currentFile('adjustSize');
             };
+            /**
+             * Transfer focus to current file
+             */
             function focusCurrentFile() {
                 fileManager.currentFile('focus');
             }
             var dialogbaseOptions = $.extend({}, {
                 close: focusCurrentFile
             }, VPLUtil.dialogbaseOptions);
+            /**
+             * Shows a dialog with a message.
+             * @param {string} message
+             * @param {Object} options icon, title, actions handler (ok, yes, no, close)
+             * @returns {JQuery} JQueryUI Dialog object already open
+             */
             function showMessage(message, options) {
                 return VPLUtil.showMessage(message, $.extend({}, dialogbaseOptions, options));
             }
@@ -978,6 +1012,11 @@ define(
             };
 
             var dialogNew = $('#vpl_ide_dialog_new');
+            /**
+             * The event handler for the new file action
+             * @param {Object} event
+             * @return {boolean}
+             */
             function newFileHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
                     return true;
@@ -1011,6 +1050,10 @@ define(
             VPLUtil.setDialogTitleIcon(dialogNew, 'new');
 
             var dialogRename = $('#vpl_ide_dialog_rename');
+            /**
+             * The event handler for the rename current file action
+             * @param {Object} event
+             */
             function renameHandler(event) {
                 if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
                     return;
@@ -1473,7 +1516,9 @@ define(
                     window.location = options.download;
                 }
             });
-
+            /**
+             * Reset files action
+             */
             function resetFiles() {
                 VPLUtil.requestAction('resetfiles', '', {}, options.ajaxurl)
                 .done(function(response) {
@@ -1505,6 +1550,9 @@ define(
                         comments: $('#vpl_ide_input_comments').val(),
                         version: fileManager.getVersion()
                     };
+                    /**
+                     * Save action
+                     */
                     function doSave() {
                         VPLUtil.requestAction('save', 'saving', data, options.ajaxurl)
                         .done(function(response) {
@@ -1568,6 +1616,13 @@ define(
                     this.lastAction = action;
                 }
             };
+            /**
+             * Launches the action
+             *
+             * @param {string} action Action 'run', 'debug', 'evaluate'
+             * @param {string} acting I18n for the action in progress
+             * @param {string} data Data attached to the action
+             */
             function executionRequest(action, acting, data) {
                 if (!data) {
                     data = {};
@@ -1580,6 +1635,9 @@ define(
                     .fail(showErrorMessage);
                 }
             }
+            /**
+             * Launches the run action
+             */
             function runAction() {
                 executionRequest('run', 'running', {
                     XGEOMETRY: VNCClient.getCanvasSize()
@@ -1596,6 +1654,9 @@ define(
                     mac: 'Command-U'
                 }
             });
+            /**
+             * Launches the debug action
+             */
             function debugAction() {
                 executionRequest('debug', 'debugging', {
                     XGEOMETRY: VNCClient.getCanvasSize()
@@ -1612,6 +1673,9 @@ define(
                     mac: 'Option-U'
                 }
             });
+            /**
+             * Launches the evaluate action
+             */
             function evaluateAction() {
                 executionRequest('evaluate', 'evaluating');
             }
@@ -1798,9 +1862,12 @@ define(
             fileManager = new FileManager();
 
             autoResizeTab();
-            // Check the menu width that can change without event.
+            // Checks menu width every 1 sec as it can change without event.
             (function() {
                 var oldMenuWidth = menu.width();
+                /**
+                 * Checks menu width change
+                 */
                 function checkMenuWidth() {
                     var newMenuWidth = menu.width();
                     if (oldMenuWidth != newMenuWidth) {

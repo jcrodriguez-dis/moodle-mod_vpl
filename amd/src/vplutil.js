@@ -712,6 +712,12 @@ define(
             dialog.dialog('open');
             dialog.dialog('option', 'height', 'auto');
         };
+        /**
+         * Shows a dialog with a message.
+         * @param {string} message
+         * @param {Object} initialoptions icon, title, actions handler (ok, yes, no, close)
+         * @returns {JQuery} JQueryUI Dialog object already open
+         */
         VPLUtil.showMessage = function(message, initialoptions) {
             var options = $.extend({}, VPLUtil.dialogbaseOptions, initialoptions);
             var messageDialog = $('<div class="vpl_ide_dialog" style="display:none"></div>');
@@ -1028,6 +1034,11 @@ define(
             if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
                 return '';
             }
+            /**
+             * Adds escape to the text
+             * @param {string} t text to escape
+             * @returns {string} result
+             */
             function escReg(t) {
                 return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
             }
@@ -1047,6 +1058,11 @@ define(
             var lastAnotation = false;
             var lastAnotationFile = false;
             var afterTitle = false;
+            /**
+             * Generate attribute href for the editor in sh
+             * @param {int} i Index of sh
+             * @return {strng} href
+             */
             function getHref(i) {
                 if (typeof sh[i].getTagId === 'undefined') {
                     return 'href="#" ';
@@ -1061,6 +1077,12 @@ define(
                     regFiles[i] = new RegExp(reg, '');
                 }
             })();
+            /**
+             * Generate the file links in the comments to point to the files
+             * @param {string} line Line to modify
+             * @param {string} rawline Text to include in annotation
+             * @returns {string} The line modified
+             */
             function genFileLinks(line, rawline) {
                 var used = false;
                 for (var i = 0; i < regFiles.length; i++) {
@@ -1106,6 +1128,11 @@ define(
                 }
                 return line;
             }
+            /**
+             * Generates HTML for title line
+             * @param {string} line The line to process
+             * @returns {string} Line in HTML format
+             */
             function getTitle(line) {
                 lastAnotation = false;
                 line = line.substr(1);
@@ -1121,20 +1148,36 @@ define(
                 html = genFileLinks(html, line);
                 return html;
             }
+            /**
+             * Returns comment that has been saved
+             * @returns {string}
+             */
             function getComment() {
                 lastAnotation = false;
                 var ret = comment;
                 comment = '';
                 return ret;
             }
+            /**
+             * Adds a new comment in HTML
+             * @param {string} rawline  Comment to add
+             */
             function addComment(rawline) {
                 var line = VPLUtil.sanitizeText(rawline);
                 comment += genFileLinks(line, rawline) + '<br>';
             }
+            /**
+             * Adds a new case
+             * @param {*} rawline Text to add
+             */
             function addCase(rawline) {
                 var line = VPLUtil.sanitizeText(rawline);
                 case_ += genFileLinks(line, rawline) + "\n";
             }
+            /**
+             * Returns cases saved in HTML
+             * @returns {string}
+             */
             function getCase() {
                 lastAnotation = false;
                 var ret = case_;
@@ -1261,6 +1304,11 @@ define(
             var files = [];
             var results = [];
             var shs = [];
+            /**
+             * Constructor for submission highlighter
+             * @param {Array} files Files to show highlighted
+             * @param {Array} results Output
+             */
             function SubmissionHighlighter(files, results) {
                 var self = this;
                 this.files = files;
