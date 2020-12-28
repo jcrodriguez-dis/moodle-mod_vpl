@@ -1140,10 +1140,12 @@ class mod_vpl {
     /**
      * Get array of students for this activity. If group is set return only group members
      *
-     * @param string $group optional parm with group to search for
+     * @param string $group       optional parm with group to search for
+     * @param string $extrafields optional parm with extrafields e.g. 'u.nameq, u.name2'
+     * 
      * @return array of objects
      */
-    public function get_students($group = '') {
+    public function get_students($group = '', $extrafields = '') {
         if ( isset( $this->students ) && $group == '') {
             return $this->students;
         }
@@ -1153,7 +1155,8 @@ class mod_vpl {
             $nostudents [$user->id] = true;
         }
         $students = array ();
-        $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, user_picture::fields( 'u' ),
+        $fields = user_picture::fields( 'u' ) . $extrafields;
+        $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, $fields,
                 'u.lastname ASC', '', '', $group );
         // TODO the following code is too slow.
         foreach ($all as $user) {
