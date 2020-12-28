@@ -25,6 +25,8 @@ defined( 'MOODLE_INTERNAL' ) || die();
 
 /**
  * Migrate data_vpl dir to upgrades VPL to 2.2 (2012060112) version
+ * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
     global $CFG, $DB;
@@ -90,6 +92,8 @@ function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
 
 /**
  * Upgrades VPL to 2.2 (2012060112) version
+ * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2012060112() {
     global $DB;
@@ -105,8 +109,16 @@ function xmldb_vpl_upgrade_2012060112() {
         $dbman->drop_field( $table, $field );
     }
 
-    $field = new xmldb_field( 'availablefrom', XMLDB_TYPE_INTEGER, '10'
-            , XMLDB_UNSIGNED, XMLDB_NOTNULL, null, '0', 'shortdescription' );
+    $field = new xmldb_field(
+        'availablefrom',
+        XMLDB_TYPE_INTEGER,
+        '10',
+        XMLDB_UNSIGNED,
+        XMLDB_NOTNULL,
+        null,
+        '0',
+        'shortdescription'
+    );
 
     // Launch rename field startdate.
     if ($dbman->field_exists( $table, $field )) {
@@ -166,6 +178,8 @@ function xmldb_vpl_upgrade_2012060112() {
 
 /**
  * Upgrades VPL to 2012060112 version
+ * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2012100212() {
     global $DB;
@@ -183,6 +197,8 @@ function xmldb_vpl_upgrade_2012100212() {
 
 /**
  * Upgrades VPL to 2013111512 version
+  * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2013111512() {
     global $DB;
@@ -218,6 +234,8 @@ function xmldb_vpl_upgrade_2013111512() {
 
 /**
  * Upgrades VPL to 3.3 (2017112412) version
+ * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2017112412() {
     global $DB;
@@ -279,6 +297,8 @@ function xmldb_vpl_upgrade_2017112412() {
 
 /**
  * Upgrades VPL to 3.3.1 (2017121312) version
+ * 
+ * @return void
  */
 function xmldb_vpl_upgrade_2017121312() {
     global $DB;
@@ -322,6 +342,48 @@ function xmldb_vpl_upgrade_2017121312() {
     }
 }
 
+/**
+ * Upgrades VPL to 3.4 (2021011012) version
+ * 
+ * @return void
+ */
+function xmldb_vpl_upgrade_2021011012() {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+    $table = new xmldb_table('vpl');
+    $index = new xmldb_index('course_indx', XMLDB_INDEX_NOTUNIQUE, ['course']);
+    // Conditionally launch add index course_indx.
+    if (!$dbman->index_exists($table, $index)) {
+        $dbman->add_index($table, $index);
+    }
+    $index = new xmldb_index('startdate_indx', XMLDB_INDEX_NOTUNIQUE, ['startdate']);
+    // Conditionally launch add index startdate_indx.
+    if (!$dbman->index_exists($table, $index)) {
+        $dbman->add_index($table, $index);
+    }
+
+    $table = new xmldb_table('vpl_submissions');
+    $index = new xmldb_index('vpl_userid_indx', XMLDB_INDEX_NOTUNIQUE, ['vpl', 'userid']);
+    // Conditionally launch add index vpl_userid_indx.
+    if (!$dbman->index_exists($table, $index)) {
+        $dbman->add_index($table, $index);
+    }
+
+    $index = new xmldb_index('vpl_groupid_indx', XMLDB_INDEX_NOTUNIQUE, ['vpl', 'groupid']);
+    // Conditionally launch add index vpl_groupid_indx.
+    if (!$dbman->index_exists($table, $index)) {
+        $dbman->add_index($table, $index);
+    }
+}
+
+/**
+ * Upgrades VPL DB and data to the new version
+ * 
+ * @param int $oldversion Current version
+ * 
+ * @return void
+ */
 function xmldb_vpl_upgrade($oldversion = 0) {
     $vpl22 = 2012060112;
     if ($oldversion < $vpl22) {
@@ -339,7 +401,6 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
-
     $vpl33 = 2017112412;
     if ($oldversion < $vpl33) {
         xmldb_vpl_upgrade_2017112412();
@@ -351,6 +412,11 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2017121312();
         // Vpl savepoint reached.
         upgrade_mod_savepoint(true, $vpl331, 'vpl');
+    }
+    $vpl34 = 2021011012;
+    if ($oldversion < $vpl34) {
+        xmldb_vpl_upgrade_2021011012();
+        upgrade_mod_savepoint(true, $vpl34, 'vpl');
     }
     return true;
 }
