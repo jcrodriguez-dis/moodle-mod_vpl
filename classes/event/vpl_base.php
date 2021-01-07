@@ -45,7 +45,7 @@ class vpl_base extends base {
         } else {
             $einfo = array (
                     'objectid' => $vpl->get_instance()->id,
-                    'context' => $vpl->get_context()
+                    'contextid' => $vpl->get_context()->id,
             );
             parent::log( $einfo );
         }

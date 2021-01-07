@@ -36,16 +36,14 @@ class variation_assigned extends variation_base {
         return $this->get_description_mod( 'assigned' );
     }
     public static function log($vpl, $varid = null, $userid = null) {
-        if (is_array($vpl)) {
-            $info = $vpl;
-        } else {
-            $info = array (
-                'other' => array('vplid' => $vpl->get_instance()->id),
-                'objectid' => $varid,
-                'context' => $vpl->get_context(),
-                'relateduserid' => $userid,
-            );
-        }
+        $vplinstance = $vpl->get_instance();
+        $info = array (
+            'objectid' => $varid,
+            'contextid' => $vpl->get_context()->id,
+            'relateduserid' => $userid,
+            'courseid' => $vplinstance->course,
+            'other' => array('vplid' => $vplinstance->id),
+        );
         parent::log( $info );
     }
 }

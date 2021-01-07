@@ -26,10 +26,35 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
-class variation_base extends vpl_base {
+class variation_base extends base {
+    public static function get_objectid_mapping() {
+        return array('db' => VPL_VARIATIONS, 'restore' => VPL_VARIATIONS);
+    }
+    public static function get_other_mapping() {
+        // Nothing to map.
+        return false;
+    }
     protected function init() {
-        parent::init();
+        $this->data ['crud'] = 'u';
+        $this->data ['edulevel'] = self::LEVEL_TEACHING;
         $this->data ['objecttable'] = VPL_VARIATIONS;
+    }
+    public static function log($vpl) {
+        if (is_array($vpl)) {
+            $info = $vpl;
+        } else {
+            $vplinstance = $vpl->get_instance();
+            $info = array (
+                'objectid' => $varid,
+                'contextid' => $vpl->get_context()->id,
+                'courseid' => $vplinstance->course,
+                'other' => array('vplid' => $vplinstance->id),
+            );
+        }
+        parent::log( $info );
+    }
+    public function get_url() {
+        return $this->get_url_base( 'view.php' );
     }
     public function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $mod;
@@ -38,17 +63,5 @@ class variation_base extends vpl_base {
             $desc .= ' for user with id ' . $this->relateduserid;
         }
         return $desc;
-    }
-    public static function log($vpl, $varid = null) {
-        if (is_array($vpl)) {
-            $info = $vpl;
-        } else {
-            $info = array (
-                'other' => array('vplid' => $vpl->get_instance()->id),
-                'objectid' => $varid,
-                'context' => $vpl->get_context()
-            );
-        }
-        parent::log( $info );
     }
 }
