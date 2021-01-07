@@ -32,11 +32,13 @@ require_once($CFG->dirroot.'/course/lib.php');
 
 /**
  * Create/update grade item for given VPL activity.
- *
- * @param stdClass VPL record with extra cmidnumber
- * @param array $grades optional array/object of grade(s); 'reset' means reset grades in gradebook
+ * (Code and comments adapted from Moodle assign)
+ * 
+ * @param stdClass $instance VPL record with extra cmidnumber
+ * @param Array    $grades   Optional array/object of grade(s);
+ *                           'reset' means reset grades in gradebook
+ * 
  * @return int 0 if ok, error code otherwise
- * (Code and comments adaptes from Moodle assign)
  */
 function vpl_grade_item_update($instance, $grades=null) {
     global $CFG;
@@ -66,19 +68,22 @@ function vpl_grade_item_update($instance, $grades=null) {
         $grades = null;
     }
 
-    return grade_update('mod/vpl', $instance->course, 'mod', 'vpl',
-                        $instance->id, 0, $grades, $itemdetails);
+    return grade_update(
+        'mod/vpl', $instance->course, 'mod', 'vpl',
+        $instance->id, 0, $grades, $itemdetails
+    );
 }
 
 /**
  * Update activity grades.
- *
- * @param stdClass VPL database record
- * @param int $userid specific user only, 0 means all
- * @param bool $nullifnone - not used
- * (API and comment taken from Moodle assign)
+ * API and comment taken from Moodle assign.
+ * 
+ * @param stdClass $instance   of VPL database record
+ * @param int      $userid     specific user only, 0 means all
+ * @param bool     $nullifnone - not used
+ * 
+ * @return bollean true correct, false fail
  */
-
 function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
     global $CFG, $USER;
     require_once($CFG->libdir.'/gradelib.php');
@@ -109,7 +114,7 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
             $grade->rawgrade = $subc->reduce_grade($sub->grade);
             $grade->feedback = $feedback;
             $grade->feedbackformat = FORMAT_HTML;
-            if ( $sub->grader > 0 ) {
+            if ($sub->grader > 0) {
                 $grade->usermodified = $sub->grader;
             } else {
                 $grade->usermodified = $USER->id;
