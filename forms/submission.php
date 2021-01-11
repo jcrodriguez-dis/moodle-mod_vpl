@@ -75,6 +75,7 @@ if ($fromform = $mform->get_data()) {
                     $error, 'error' );
         die();
     }
+    \mod_vpl\util\phpconfig::increase_memory_limit();
     $files = array ();
     for ($i = 0; $i < $instance->maxfiles; $i ++) {
         $attribute = 'file' . $i;
