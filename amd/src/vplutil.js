@@ -138,7 +138,7 @@ define(
         (function() {
             var regExt = /\.([^.]*)$/;
             var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
-            var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt)$/i;
+            var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt|exe|com)$/i;
             var regBlk = /^blockly[0123]?$/;
             VPLUtil.fileExtension = function(fileName) {
                 var res = regExt.exec(fileName);
