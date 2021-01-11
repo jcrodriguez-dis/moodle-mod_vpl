@@ -25,7 +25,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 
 /**
  * Migrate data_vpl dir to upgrades VPL to 2.2 (2012060112) version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
@@ -92,7 +92,7 @@ function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
 
 /**
  * Upgrades VPL to 2.2 (2012060112) version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2012060112() {
@@ -178,7 +178,7 @@ function xmldb_vpl_upgrade_2012060112() {
 
 /**
  * Upgrades VPL to 2012060112 version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2012100212() {
@@ -197,7 +197,7 @@ function xmldb_vpl_upgrade_2012100212() {
 
 /**
  * Upgrades VPL to 2013111512 version
-  * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2013111512() {
@@ -234,7 +234,7 @@ function xmldb_vpl_upgrade_2013111512() {
 
 /**
  * Upgrades VPL to 3.3 (2017112412) version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2017112412() {
@@ -297,7 +297,7 @@ function xmldb_vpl_upgrade_2017112412() {
 
 /**
  * Upgrades VPL to 3.3.1 (2017121312) version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2017121312() {
@@ -344,7 +344,7 @@ function xmldb_vpl_upgrade_2017121312() {
 
 /**
  * Upgrades VPL to 3.4 (2021011012) version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade_2021011012() {
@@ -379,9 +379,9 @@ function xmldb_vpl_upgrade_2021011012() {
 
 /**
  * Upgrades VPL DB and data to the new version
- * 
+ *
  * @param int $oldversion Current version
- * 
+ *
  * @return void
  */
 function xmldb_vpl_upgrade($oldversion = 0) {

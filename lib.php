@@ -33,11 +33,11 @@ require_once($CFG->dirroot.'/course/lib.php');
 /**
  * Create/update grade item for given VPL activity.
  * (Code and comments adapted from Moodle assign)
- * 
+ *
  * @param stdClass $instance VPL record with extra cmidnumber
  * @param Array    $grades   Optional array/object of grade(s);
  *                           'reset' means reset grades in gradebook
- * 
+ *
  * @return int 0 if ok, error code otherwise
  */
 function vpl_grade_item_update($instance, $grades=null) {
@@ -77,11 +77,11 @@ function vpl_grade_item_update($instance, $grades=null) {
 /**
  * Update activity grades.
  * API and comment taken from Moodle assign.
- * 
+ *
  * @param stdClass $instance   of VPL database record
  * @param int      $userid     specific user only, 0 means all
  * @param bool     $nullifnone - not used
- * 
+ *
  * @return bollean true correct, false fail
  */
 function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
@@ -303,7 +303,6 @@ function vpl_supports($feature) {
  * Return an object with short information about what a user has done with a given particular
  * instance of this module $return->time = the time they did it $return->info = a short text
  * description
- *
  */
 function vpl_user_outline($course, $user, $mod, $instance) {
     // Search submisions for $user $instance.

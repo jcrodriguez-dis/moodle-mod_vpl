@@ -29,11 +29,11 @@ require_once(dirname(__FILE__).'/../locallib.php');
 
 /**
  * Unit tests for \mod_vpl\util\phpconfig class.
- * 
+ *
  * @group mod_vpl
  */
 class mod_vpl_util_phpconfig extends advanced_testcase {
-   /**
+    /**
      * Method to test function get_bytes(string $value): int
      */
     public function test_get_bytes() {
@@ -43,25 +43,20 @@ class mod_vpl_util_phpconfig extends advanced_testcase {
         }
 
     }
-   /**
+    /**
      * Method to test function get_post_max_size(): int
      */
     public function test_get_post_max_size() {
-        // Untestable, checks only callable
+        // Untestable, checks only callable.
         $this->assertTrue(\mod_vpl\util\phpconfig::get_post_max_size() > 0);
     }
-   /**
+    /**
      * Method to test function increase_memory_limit(): void
      */
     public function test_increase_memory_limit() {
-        $memory_limit = \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit'));
-        $max_post = \mod_vpl\util\phpconfig::get_post_max_size();
+        $maxpost = \mod_vpl\util\phpconfig::get_post_max_size();
         \mod_vpl\util\phpconfig::increase_memory_limit();
-        $this->assertTrue($max_post * 3 <= \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit')));
-    }
-   /**
-     * Method to test function checks_free_memory(int $memoryneeded): void
-     */
-    public function test_checks_free_memory() {
+        $memorylimit = \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit'));
+        $this->assertTrue($maxpost * 3 <= $memorylimit);
     }
 }

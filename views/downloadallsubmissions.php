@@ -32,9 +32,9 @@ global $CFG;
 
 /**
  * Sanitize zip directory name
- * 
+ *
  * @param string $name Directory name
- * 
+ *
  * @return void
  */
 function vpl_user_zip_dirname( $name ) {
@@ -54,13 +54,13 @@ function vpl_user_zip_dirname( $name ) {
 
 /**
  * Adds files to zip
- * 
+ *
  * @param ZipArchive         $zip        Object that represents a zip file.
  * @param string             $sourcedir  Source directory name
  * @param string             $zipdirname Zip directory name
  * @param file_group_process $fgm        Object that manages group of files
  * @param string             $ziperrors  Output message if error
- *  
+ *
  * @return void
  */
 function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {

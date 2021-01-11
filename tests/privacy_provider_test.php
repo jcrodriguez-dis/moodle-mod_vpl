@@ -37,6 +37,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
 /**
  * Unit tests for \mod_vpl\privacy\provider class.
+ *
  * @group mod_vpl
  */
 class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
@@ -458,7 +459,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
 
 /**
  * Class to use instead of \mod_vpl\privacy\provider.
- * This derived class of \mod_vpl\privacy\provider expose protected methods as public to test it.
+ * This derived class of \mod_vpl\privacy\provider expose protected methods
+ * as public to test it.
  */
 class testable_provider extends \mod_vpl\privacy\provider {
     public static function get_user_preferences(int $userid): array {

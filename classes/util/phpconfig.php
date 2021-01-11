@@ -32,17 +32,17 @@ defined( 'MOODLE_INTERNAL' ) || die();
 class phpconfig {
     /**
      * Keeps conversions from Kb, Mb or Gb to bytes.
-     * 
+     *
      * @var array Key 'k', 'm', 'g' => value
      */
-    const byteconverter = array( 'k' => 1024,
+    const BYTECONVERTER = array( 'k' => 1024,
                                  'm' => 1024 * 1024,
                                  'g' => 1024 * 1024 * 1024 );
     /**
      * Returns number of bytes from string values in Kb, Mb or Gb
-     * 
+     *
      * @param string $value Value to convert e.g 2M, 1.5G, 32K
-     * 
+     *
      * @return int Nummer of bytes
      */
     static public function get_bytes(string $value): int {
@@ -52,8 +52,8 @@ class phpconfig {
             if ($unity == 'b') {
                 $unity = substr($value, strlen($value) - 2, 1);
             }
-            if (isset(self::byteconverter[$unity])) {
-                $bytes = substr($value, 0, -1) * self::byteconverter[$unity];
+            if (isset(self::BYTECONVERTER[$unity])) {
+                $bytes = substr($value, 0, -1) * self::BYTECONVERTER[$unity];
             } else {
                 $bytes = (int) $value;
             }
@@ -65,7 +65,7 @@ class phpconfig {
 
     /**
      * Return the post maximum size in bytes
-     * 
+     *
      * @return int Number of bytes
      */
     static public function get_post_max_size(): int {
@@ -74,22 +74,22 @@ class phpconfig {
 
     /**
      * Increase PHP memory limit to post_max_size * 3
-     * 
+     *
      * @return void
      */
     static public function increase_memory_limit(): void {
         $bytes = self::get_post_max_size() * 3;
         if ($bytes > self::get_bytes(ini_get('memory_limit'))) {
-            $newmemorylimit = (int) ($bytes / self::byteconverter['k']);
+            $newmemorylimit = (int) ($bytes / self::BYTECONVERTER['k']);
             ini_set('memory_limit', $newmemorylimit . 'K');
         }
     }
 
     /**
      * Throws an exception if the PHP free memory is less than needed
-     * 
+     *
      * @param int $memoryneeded Memory needed
-     * 
+     *
      * @return void
      */
     static public function checks_free_memory(int $memoryneeded): void {

@@ -1142,7 +1142,7 @@ class mod_vpl {
      *
      * @param string $group       optional parm with group to search for
      * @param string $extrafields optional parm with extrafields e.g. 'u.nameq, u.name2'
-     * 
+     *
      * @return array of objects
      */
     public function get_students($group = '', $extrafields = '') {

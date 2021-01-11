@@ -528,7 +528,7 @@ function vpl_get_max_post_size_internal($maxs) {
  * Follows IEC "Prefixes for binary multiples".
  *
  * @param int $size Size in bytes
- * 
+ *
  * @return string
  */
 function vpl_conv_size_to_string($size) {
@@ -589,7 +589,7 @@ function vpl_get_array_key($array, int $value) {
  *
  * @param int $minimum the initial value
  * @param int $maximum the limit of values generates
- * 
+ *
  * @return array Key value => Text value
  */
 function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): array {
@@ -630,9 +630,9 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
 
 /**
  * Detects end of line separator.
- * 
+ *
  * @param string& $data Text to check.
- * 
+ *
  * @return string Newline separator "\r\n", "\n", "\r".
  */
 function vpl_detect_newline(&$data) {
@@ -657,7 +657,7 @@ function vpl_notice(string $text, $type = 'success') {
  * Remove trailing right zeros from a float as string
  *
  * @param string $value float to remove right zeros
- * 
+ *
  * @return string
  */
 function vpl_rtzeros($value) {
