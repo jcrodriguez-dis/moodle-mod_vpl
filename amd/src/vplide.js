@@ -1550,6 +1550,10 @@ define(
                         comments: $('#vpl_ide_input_comments').val(),
                         version: fileManager.getVersion()
                     };
+                    if (JSON.stringify(data).length > options.postMaxSize) {
+                        showErrorMessage(str('maxpostsizeexceeded'));
+                        return;
+                    }
                     /**
                      * Save action
                      */

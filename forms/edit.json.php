@@ -38,8 +38,10 @@ try {
     if (! isloggedin()) {
         throw new Exception( get_string( 'loggedinnot' ) );
     }
-
-    $id = required_param( 'id', PARAM_INT ); // Course id.
+    if (! isset($_GET['id'])) {
+        throw new Exception( get_string( 'maxpostsizeexceeded', VPL ) );
+    }
+    $id = required_param( 'id', PARAM_INT ); // Course module id.
     $action = required_param( 'action', PARAM_ALPHANUMEXT );
     $userid = optional_param( 'userid', false, PARAM_INT );
     $subid = optional_param( 'subid', false, PARAM_INT );
@@ -57,6 +59,7 @@ try {
     if ($_SERVER ['CONTENT_LENGTH'] != $rawdatasize) {
         throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER ['CONTENT_LENGTH'] . " found $rawdatasize)" );
     }
+    \mod_vpl\util\phpconfig::increase_memory_limit();
     $actiondata = json_decode( $rawdata );
     if (! $vpl->is_submit_able()) {
         throw new Exception( get_string( 'notavailable' ) );

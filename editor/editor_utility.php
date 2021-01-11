@@ -50,6 +50,7 @@ class vpl_editor_util {
         $options ['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
         $options ['theme'] = get_user_preferences('vpl_acetheme', $options ['theme']);
         $options ['lang'] = $CFG->lang;
+        $options ['postMaxSize'] = \mod_vpl\util\phpconfig::get_post_max_size();
         self::generate_jquery();
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
@@ -337,7 +338,8 @@ class vpl_editor_util {
                 'step',
                 'breakpoint',
                 'selectbreakpoint',
-                'removebreakpoint'
+                'removebreakpoint',
+                'maxpostsizeexceeded',
         );
         $words = array (
                 'cancel',

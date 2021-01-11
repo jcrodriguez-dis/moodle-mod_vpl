@@ -162,6 +162,7 @@ $string ['maxfiles'] = 'Maximum number of files';
 $string ['maxfilesexceeded'] = 'Maximum number of files exceeded';
 $string ['maxfilesize'] = 'Maximum upload file size';
 $string ['maxfilesizeexceeded'] = 'Maximum file size exceeded';
+$string ['maxpostsizeexceeded'] = 'Maximum server post size exceeded. Please, remove files or reduce files size';
 $string ['maximumperiod'] = 'Maximum period {$a}';
 $string ['maxresourcelimits'] = 'Maximum execution resources limits';
 $string ['maxsimilarityoutput'] = 'Maximum output by similarity';
