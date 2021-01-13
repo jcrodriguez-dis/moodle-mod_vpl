@@ -27,12 +27,13 @@
  */
 namespace mod_vpl\privacy;
 
-use core_privacy\local\metadata\collection;
-use core_privacy\local\request\approved_contextlist;
-use core_privacy\local\request\contextlist;
-use core_privacy\local\request\transform;
-use core_privacy\local\request\writer;
-use core_privacy\local\request\userlist;
+use \core_privacy\local\metadata\collection;
+use \core_privacy\local\request\approved_contextlist;
+use \core_privacy\local\request\contextlist;
+use \core_privacy\local\request\transform;
+use \core_privacy\local\request\writer;
+use \core_privacy\local\request\content_writer;
+use \core_privacy\local\request\userlist;
 use \core_privacy\local\request\approved_userlist;
 
 defined( 'MOODLE_INTERNAL' ) || die();
@@ -55,23 +56,42 @@ class provider implements \core_privacy\local\metadata\provider,
     public static function get_metadata(collection $collection): collection {
         $vplfields = [
             'id' => 'privacy:metadata:vpl:id',
+            'course' => 'privacy:metadata:vpl:course',
             'name' => 'privacy:metadata:vpl:name',
             'shortdescription' => 'privacy:metadata:vpl:shortdescription',
-            'variation' => 'privacy:metadata:vpl:assignedvariationdescription',
+            'startdate' => 'privacy:metadata:vpl:startdate',
+            'duedate' => 'privacy:metadata:vpl:duedate',
             'grade' => 'privacy:metadata:vpl:grade',
             'reductionbyevaluation' => 'privacy:metadata:vpl:reductionbyevaluation',
             'freeevaluations' => 'privacy:metadata:vpl:freeevaluations',
         ];
         $submisionsfields = [
+            'userid' => 'privacy:metadata:vpl_submissions:userid',
+            'groupid' => 'privacy:metadata:vpl_submissions:groupid',
             'datesubmitted' => 'privacy:metadata:vpl_submissions:datesubmitted',
             'comments' => 'privacy:metadata:vpl_submissions:studentcomments',
             'nevaluations' => 'privacy:metadata:vpl_submissions:nevaluations',
             'dategraded' => 'privacy:metadata:vpl_submissions:dategraded',
             'grade' => 'privacy:metadata:vpl_submissions:grade',
+            'grader' => 'privacy:metadata:vpl_submissions:graderid',
             'gradercomments' => 'privacy:metadata:vpl_submissions:gradercomments',
         ];
+        $variationsfields = [
+            'userid' => 'privacy:metadata:vpl_assigned_variations:userid',
+            'vpl' => 'privacy:metadata:vpl_assigned_variations:vplid',
+            'variation' => 'privacy:metadata:vpl_assigned_variations:description',
+        ];
+        $runningfields = [
+            'userid' => 'privacy:metadata:vpl_running_processes:userid',
+            'vpl' => 'privacy:metadata:vpl_running_processes:vplid',
+            'server' => 'privacy:metadata:vpl_running_processes:server',
+            'start_time' => 'privacy:metadata:vpl_running_processes:starttime',
+        ];
+
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
+        $collection->add_database_table('vpl_assigned_variations', $variationsfields, 'privacy:metadata:vpl_assigned_variations');
+        $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
         // IDE user preferences.
         $collection->add_user_preference('vpl_editor_fontsize', 'privacy:metadata:vpl_editor_fontsize');
         $collection->add_user_preference('vpl_acetheme', 'privacy:metadata:vpl_acetheme');
@@ -93,6 +113,7 @@ class provider implements \core_privacy\local\metadata\provider,
         self::add_contexts_for_submissions($contextlist, $userid);
         self::add_contexts_for_evaluations($contextlist, $userid);
         self::add_contexts_for_variations($contextlist, $userid);
+        self::add_contexts_for_running($contextlist, $userid);
 
         return $contextlist;
     }
@@ -108,44 +129,104 @@ class provider implements \core_privacy\local\metadata\provider,
         if (empty($contextlist->count())) {
             return;
         }
-
         $userid = $contextlist->get_user()->id;
-
         foreach ($contextlist->get_contexts() as $context) {
             if ($context->contextlevel != CONTEXT_MODULE) {
                 continue;
             }
-
             $vplinstance = self::get_vpl_by_context($context);
             if ($vplinstance === null) {
                 continue;
             }
+            $vplid = $vplinstance->id;
             $contentwriter = writer::with_context($context);
+            self::export_vpl_data($contentwriter, $vplinstance);
+            self::export_user_assigned_variation_data($contentwriter, $vplid, $userid);
+            self::export_user_submissions_data($contentwriter, $vplid, $userid);
+            self::export_user_running_processes_data($contentwriter, $vplid, $userid);
+        }
+    }
 
+    /**
+     * Export vpl description for related personal data.
+     *
+     * @param content_writer $contentwriter data writer object.
+     * @param object $vplinstance vpl instance
+     */
+    public static function export_vpl_data(content_writer $contentwriter, $vplinstance) {
             // Get vpl details object for output.
-            self::add_assigned_variation($vplinstance, $userid);
             $vploutput = self::get_vpl_output($vplinstance);
             $contentwriter->export_data([], $vploutput);
-            // Get the vpl submissions related to the user.
-            $vpl = new \mod_vpl(false, $vplinstance->id);
-            $submissions = self::get_vpl_submissions_by_vpl_and_user($vplinstance->id, $userid);
-            $zipfilename = get_string('submission', 'vpl') . '.zip';
-            $subcontextsecuence = 1;
-            foreach ($submissions as $submissioninstance) {
-                $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
-                $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
-                $submissioninstance->gradercomments = $submission->get_grade_comments();
-                $dataoutput = self::get_vpl_submission_output($submissioninstance);
-                $contentwriter->export_data($subcontext, $dataoutput);
-                if ($submissioninstance->userid == $userid) {
-                    $tempfilename = $submission->get_submitted_fgm()->generate_zip_file();
-                    if ($tempfilename !== false) {
-                        $filecontent = file_get_contents($tempfilename);
-                        $contentwriter->export_custom_file($subcontext, $zipfilename, $filecontent);
-                        unlink($tempfilename);
-                    }
+    }
+    /**
+     * Export variation for related personal data.
+     *
+     * @param content_writer $contentwriter data writer object.
+     * @param int $vplid vpl DB id
+     * @param int $userid user DB id
+     */
+    public static function export_user_assigned_variation_data(content_writer $contentwriter, int $vplid, int $userid) {
+        // Get assigned variation related to the user if any.
+        $variation = self::get_assigned_variation_by_vpl_and_user($vplid, $userid);
+        if (count($variation) == 1) {
+            $variationoutput = self::get_vpl_assigned_variation_output(reset($variation));
+            $contentwriter->export_data([get_string('privacy:variationpath', 'vpl')], $variationoutput);
+        }
+    }
+    /**
+     * Export submissions personal data.
+     *
+     * @param content_writer $contentwriter data writer object.
+     * @param int $vplid vpl DB id
+     * @param int $userid user DB id
+     */
+    public static function export_user_submissions_data(content_writer $contentwriter, int $vplid, int $userid) {
+        // Get the vpl submissions related to the user.
+        $vpl = new \mod_vpl(false, $vplid);
+        $submissions = self::get_vpl_submissions_by_vpl_and_user($vplid, $userid);
+        $zipfilename = get_string('submission', 'vpl') . '.zip';
+        $subcontextsecuence = 1;
+        foreach ($submissions as $submissioninstance) {
+            $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
+            $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
+            $nograder = $submissioninstance->userid == $userid;
+            if ( $submissioninstance->dategraded > 0) {
+                $submissioninstance->gradercomments = $submission->get_grade_comments($nograder);
+                if ( $nograder ) {
+                    unset($submissioninstance->grader);
+                } else {
+                    unset($submissioninstance->userid);
                 }
             }
+            $dataoutput = self::get_vpl_submission_output($submissioninstance);
+            $contentwriter->export_data($subcontext, $dataoutput);
+            if ($nograder) {
+                $tempfilename = $submission->get_submitted_fgm()->generate_zip_file();
+                if ($tempfilename !== false) {
+                    $filecontent = file_get_contents($tempfilename);
+                    $contentwriter->export_custom_file($subcontext, $zipfilename, $filecontent);
+                    unlink($tempfilename);
+                }
+            }
+        }
+    }
+
+    /**
+     * Export running processes personal data.
+     *
+     * @param content_writer $contentwriter data writer object.
+     * @param int $vplid vpl DB id
+     * @param int $userid user DB id
+     */
+    public static function export_user_running_processes_data(content_writer $contentwriter, int $vplid, int $userid) {
+        // Get the vpl submissions related to the user.
+        $runningprocesses = self::get_running_processes_by_vpl_and_user($vplid, $userid);
+        $zipfilename = get_string('submission', 'vpl') . '.zip';
+        $subcontextsecuence = 1;
+        foreach ($runningprocesses as $runningprocess) {
+            $subcontext = [ get_string('privacy:runningprocesspath', 'vpl', $subcontextsecuence++) ];
+            $dataoutput = self::get_vpl_running_process_output($runningprocess);
+            $contentwriter->export_data($subcontext, $dataoutput);
         }
     }
 
@@ -228,6 +309,9 @@ class provider implements \core_privacy\local\metadata\provider,
 
         // Delete asigned variations.
         self::delete_assigned_variations_by_contextlist($contextlist, $userid);
+
+        // Delete running processes.
+        self::delete_running_processes_by_contextlist($contextlist, $userid);
     }
 
     /**
@@ -253,7 +337,7 @@ class provider implements \core_privacy\local\metadata\provider,
                   FROM {vpl_submissions} s
                   JOIN {course_modules} cm ON s.vpl = cm.instance
                   JOIN {modules} m ON m.id = cm.module
-                  WHERE cm.id = :instanceid AND m.name = :modulename";
+                 WHERE cm.id = :instanceid AND m.name = :modulename";
         $userlist->add_from_sql('userid', $sql, $params);
 
         // Graders.
@@ -261,7 +345,7 @@ class provider implements \core_privacy\local\metadata\provider,
                   FROM {vpl_submissions} s
                   JOIN {course_modules} cm ON s.vpl = cm.instance
                   JOIN {modules} m ON m.id = cm.module
-                  WHERE s.grader > 0 AND cm.id = :instanceid AND m.name = :modulename";
+                 WHERE s.grader > 0 AND cm.id = :instanceid AND m.name = :modulename";
         $userlist->add_from_sql('grader', $sql, $params);
 
         // Variations assigned.
@@ -269,7 +353,15 @@ class provider implements \core_privacy\local\metadata\provider,
                   FROM {vpl_assigned_variations} av
                   JOIN {course_modules} cm ON av.vpl = cm.instance
                   JOIN {modules} m ON m.id = cm.module
-                  WHERE cm.id = :instanceid AND m.name = :modulename";
+                 WHERE cm.id = :instanceid AND m.name = :modulename";
+        $userlist->add_from_sql('userid', $sql, $params);
+
+        // Running process.
+        $sql = "SELECT DISTINCT rp.userid
+                  FROM {vpl_running_processes} rp
+                  JOIN {course_modules} cm ON rp.vpl = cm.instance
+                  JOIN {modules} m ON m.id = cm.module
+                 WHERE cm.id = :instanceid AND m.name = :modulename";
         $userlist->add_from_sql('userid', $sql, $params);
     }
 
@@ -316,12 +408,17 @@ class provider implements \core_privacy\local\metadata\provider,
                   FROM {vpl_assigned_variations}
                  WHERE vpl = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
+        // Delete related running processes.
+        $sql = "DELETE
+                  FROM {vpl_running_processes}
+                 WHERE vpl = :vplid AND userid {$userssql}";
+        $DB->execute($sql, $params + $usersparams);
     }
 
     // Start of helper functions.
 
     /**
-     * Add contexts for submissions of the specified user.
+     * Adds contexts of submissions of the specified user.
      *
      * @param contextlist $list the list of context.
      * @param int $userid the userid.
@@ -333,7 +430,7 @@ class provider implements \core_privacy\local\metadata\provider,
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {vpl_submissions} s ON s.vpl = cm.instance
-                  WHERE s.userid = :userid";
+                 WHERE s.userid = :userid";
 
         $params = [
                 'contextmodule' => CONTEXT_MODULE,
@@ -345,7 +442,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     * Add contexts for evaluations of the specified user.
+     * Adds contexts of evaluations of the specified user.
      *
      * @param contextlist $list the list of context.
      * @param int $userid the userid.
@@ -369,7 +466,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     * Add contexts for assigned variations to the specified user.
+     * Adds contexts of assigned variations to the specified user.
      *
      * @param contextlist $list the list of context.
      * @param int $userid the userid.
@@ -382,6 +479,30 @@ class provider implements \core_privacy\local\metadata\provider,
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {vpl_assigned_variations} va ON va.vpl = cm.instance
                  WHERE va.userid = :userid";
+
+        $params = [
+                'contextmodule' => CONTEXT_MODULE,
+                'modulename'    => 'vpl',
+                'userid'       => $userid,
+        ];
+
+        $list->add_from_sql($sql, $params);
+    }
+
+    /**
+     * Adds contexts of running process for the specified user.
+     *
+     * @param contextlist $list the list of context.
+     * @param int $userid the userid.
+     * @return void.
+     */
+    protected static function add_contexts_for_running(contextlist $list, int $userid): void {
+        $sql = "SELECT DISTINCT ctx.id
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                  JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                  JOIN {vpl_running_processes} rp ON rp.vpl = cm.instance
+                 WHERE rp.userid = :userid";
 
         $params = [
                 'contextmodule' => CONTEXT_MODULE,
@@ -408,26 +529,6 @@ class provider implements \core_privacy\local\metadata\provider,
         }
         return $pref;
     }
-    /**
-     * Return if a user has graded submissions for a given VPL activity.
-     *
-     * @param int $vplid The id of the VPL to check.
-     * @param int $userid The id of the user.
-     * @return bool If user has graded submissions returns true, otherwise false.
-     * @throws \dml_exception
-     */
-    protected static function has_graded_vpl_submissions($vplid, $userid) {
-        global $DB;
-        if ( $userid < 1 ) {
-            return false;
-        }
-        $params = [
-                'vpl' => $vplid,
-                'grader' => $userid
-        ];
-        $marks = $DB->count_records('vpl_submissions', $params);
-        return $marks > 0;
-    }
 
     /**
      * Return VPL instance for a context module.
@@ -448,7 +549,7 @@ class provider implements \core_privacy\local\metadata\provider,
                   FROM {vpl} v
                   JOIN {course_modules} cm ON v.id = cm.instance
                   JOIN {modules} m ON m.id = cm.module
-                  WHERE cm.id = :coursemoduleid AND m.name = :modulename";
+                 WHERE cm.id = :coursemoduleid AND m.name = :modulename";
         return $DB->get_record_sql($sql, $params);
     }
 
@@ -513,6 +614,35 @@ class provider implements \core_privacy\local\metadata\provider,
         $params += $contextparams;
         $DB->execute($sql, $params);
     }
+    /**
+     * Delete running processes for the user and their contextlist.
+     *
+     * @param object $contextlist Object with the contexts related to a userid.
+     * @param int $userid The user ID.
+     */
+    protected static function delete_running_processes_by_contextlist($contextlist, $userid) {
+        global $DB;
+        // Get sql partial where of contexts.
+        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+
+        $params = [
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename' => 'vpl',
+            'userid' => $userid,
+        ];
+
+        $sql = "DELETE
+                  FROM {vpl_running_processes}
+                 WHERE userid = :userid AND
+                          vpl IN (
+                       SELECT cm.instance
+                         FROM {course_modules} cm
+                         JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                         JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                        WHERE ctx.id {$contextsql} )";
+        $params += $contextparams;
+        $DB->execute($sql, $params);
+    }
 
     /**
      * Helper function to retrieve vpl submissions related with user (submitted or grader).
@@ -539,27 +669,77 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     * Helper to join the assigned variation
+     * Helper function to retrieve assigned variation related with user.
      *
-     * @param object $vplinstance Object containing vpl record.
-     * @return object Formatted vpl output object for exporting.
+     * @param int $vplid The vpl id to retrieve variation.
+     * @param int $userid The user id to retrieve assigned variation.
+     * @return array Array of assigned variation details.
+     * @throws \dml_exception
      */
-    protected static function add_assigned_variation(object $vplinstance, int $userid) {
+    protected static function get_assigned_variation_by_vpl_and_user($vplid, $userid) {
         global $DB;
         $params = [
-            'vplid' => $vplinstance->id,
+            'vplid' => $vplid,
             'userid' => $userid,
         ];
-        $sql = "SELECT v.description
+        $sql = "SELECT *
                   FROM {vpl_variations} v
                   JOIN {vpl_assigned_variations} av ON v.id = av.variation
                  WHERE av.vpl = :vplid AND av.userid = :userid";
-        $res = $DB->get_field_sql($sql, $params);
-        if ($res !== false) {
-            $vplinstance->variation = $res;
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Helper function to retrieve running processes of a user.
+     *
+     * @param int $vplid The vpl id to retrieve running processes.
+     * @param int $userid The user id to retrieve running processes.
+     * @return array Array of running processes details.
+     * @throws \dml_exception
+     */
+    protected static function get_running_processes_by_vpl_and_user($vplid, $userid) {
+        global $DB;
+        $params = [
+            'vplid' => $vplid,
+            'userid' => $userid,
+        ];
+        $sql = "SELECT *
+                  FROM {vpl_running_processes} rp
+                 WHERE rp.vpl = :vplid AND rp.userid = :userid";
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
+     * Helper function to copy object fields
+     *
+     * @param object $from  Object containing data.
+     * @param object $to    Object to modify.
+     * @param array  $fiels List of fields to copy.
+     * @return void
+     */
+    protected static function copy_fields($from, $to, $fields) {
+        foreach ($fields as $field) {
+            if (isset($from->$field)) {
+                $to->$field = $from->$field;
+            }
         }
     }
 
+    /**
+     * Helper function to copy and convert object date fields
+     *
+     * @param object $from  Object containing data.
+     * @param object $to    Object to modify.
+     * @param array  $fiels List of fields to copy.
+     * @return void
+     */
+    protected static function copy_date_fields($from, $to, $datefields) {
+        foreach ($datefields as $field) {
+            if (isset($from->$field) && $from->$field > 0) {
+                $to->$field = transform::datetime($from->$field);
+            }
+        }
+    }
     /**
      * Helper function generate vpl output object for exporting.
      *
@@ -567,11 +747,10 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted vpl output object for exporting.
      */
     protected static function get_vpl_output($vpldata) {
-        $vpl = (object) [
-            'id' => $vpldata->id,
-            'name' => $vpldata->name,
-            'shortdescription' => $vpldata->shortdescription,
-        ];
+        $vpl = new \stdClass;
+        $fields = ['id', 'course', 'name', 'shortdescription'];
+        $datefields = ['startdate', 'duedate'];
+        self::copy_fields($vpldata, $vpl, $fields);
         if ($vpldata->grade != 0) { // If 0 then NO GRADE.
             if ($vpldata->grade > 0) {
                 $vpl->grade = get_string('grademax', 'core_grades')
@@ -586,9 +765,7 @@ class provider implements \core_privacy\local\metadata\provider,
         } else {
             $vpl->grade = get_string('nograde');
         }
-        if (isset($vpldata->variation)) {
-            $vpl->variation = $vpldata->variation;
-        }
+        self::copy_date_fields($vpldata, $vpl, $datefields);
         return $vpl;
     }
 
@@ -599,23 +776,42 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted vpl submission output for exporting.
      */
     protected static function get_vpl_submission_output($submission) {
-        $subfields = array('datesubmitted', 'comments', 'nevaluations');
-        $gradefields = array('dategraded', 'grade', 'gradercomments');
-        $datesfields = array('datesubmitted', 'dategraded');
+        $subfields = ['userid', 'groupid', 'comments', 'nevaluations'];
+        $gradefields = ['grade', 'gradercomments'];
+        $datefields = ['datesubmitted', 'dategraded'];
         $data = new \stdClass();
-        foreach ($subfields as $field) {
-            $data->$field = $submission->$field;
-        }
+        self::copy_fields($submission, $data, $subfields);
+        self::copy_date_fields($submission, $data, $datefields);
         if ($submission->dategraded > 0) {
-            foreach ($gradefields as $field) {
-                $data->$field = $submission->$field;
-            }
+            self::copy_fields($submission, $data, $gradefields);
         }
-        foreach ($datesfields as $field) {
-            if (isset($data->$field)) {
-                $data->$field = transform::datetime($data->$field);
-            }
-        }
+        return $data;
+    }
+    /**
+     * Helper function generate assigned variation output object for exporting.
+     *
+     * @param object $assignedvariation Object containing an instance record of assigned variation.
+     * @return object Formatted assigned variation output for exporting.
+     */
+    protected static function get_vpl_assigned_variation_output($assignedvariation) {
+        $fields = ['userid', 'vpl'];
+        $data = new \stdClass();
+        self::copy_fields($assignedvariation, $data, $fields);
+        $data->variation = $assignedvariation->description;
+        return $data;
+    }
+    /**
+     * Helper function generate running process output object for exporting.
+     *
+     * @param object $assignedvariation Object containing an instance record of running process.
+     * @return object Formatted running process output for exporting.
+     */
+    protected static function get_vpl_running_process_output($runningprocess) {
+        $fields = ['userid', 'vpl', 'server'];
+        $data = new \stdClass();
+        self::copy_fields($runningprocess, $data, $fields);
+        self::copy_date_fields($runningprocess, $data, ['start_time']);
+        $data->server = parse_url($data->server, PHP_URL_HOST);
         return $data;
     }
 }

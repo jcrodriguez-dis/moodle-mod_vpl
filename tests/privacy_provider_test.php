@@ -206,7 +206,13 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $this->assertEquals('', $data->shortdescription);
         $gradestr = get_string('grademax', 'core_grades') . ': ' . format_float(10, 5, true, true);
         $this->assertEquals($gradestr, $data->grade);
-        $this->assertTrue(strpos($data->variation, 'variation ') === 0);
+
+        $data = $writer->get_data([get_string('privacy:variationpath', 'vpl')]);
+        $userid = $this->students[2]->id;
+        $res = $this->vplvariations->get_variation($userid);
+        $this->assertEquals($res->vpl, $data->vpl);
+        $this->assertEquals($userid, $data->userid);
+        $this->assertEquals($res->description, $data->variation);
     }
 
     /**
@@ -235,6 +241,37 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
 
         $data = $writer->get_data([get_string('privacy:submissionpath', 'vpl', 2)]);
         $this->assertEquals([], $data);
+    }
+
+    /**
+     * Method to test export user data with running processes.
+     */
+    public function test_export_user_data_with_running_processes() {
+        global $DB;
+        $instance = $this->vplonefile->get_instance();
+        $vplid = $instance->id;
+        $userid = $this->students[0]->id;
+        for ($i = 1; $i < 4; $i++) {
+            $parms = array(
+                'userid' => $userid,
+                'vpl' => $vplid,
+                'server' => 'https://www.server' . $i . '.com',
+                'start_time' => time(),
+                'adminticket' => 'secret',
+            );
+            $DB->insert_record( VPL_RUNNING_PROCESSES, $parms);
+        }
+        $context = $this->vplonefile->get_context();
+        $approved = new \core_privacy\local\request\approved_contextlist($this->students[0], 'mod_vpl', array($context->id));
+        $this->provider->export_user_data($approved);
+        $writer = \core_privacy\local\request\writer::with_context($context);
+        for ($i = 1; $i < 4; $i++) {
+            $data = $writer->get_data([get_string('privacy:runningprocesspath', 'vpl', $i) ]);
+            $this->assertInstanceOf('stdClass', $data);
+            $this->assertEquals($vplid, $data->vpl);
+            $this->assertEquals($userid, $data->userid);
+            $this->assertEquals('www.server' . $i . '.com', $data->server);
+        }
     }
 
     /**

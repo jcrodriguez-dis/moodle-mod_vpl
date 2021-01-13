@@ -167,12 +167,12 @@ class mod_vpl_submission {
         $fg = $this->get_submitted_fgm();
         return $fg->getallfiles();
     }
-    public function set_submitted_file($files, $othersub = false) {
+    public function set_submitted_file($files, $othersub = null) {
         $fg = $this->get_submitted_fgm();
-        if ($othersub != false) {
+        if ($othersub != null) {
             $otherdir = $othersub->get_submission_directory();
             $otherfln = $othersub->get_submissionfilelistname();
-            $fg->addallfiles( $files, $otherdir, $otherfln);
+            $fg->addallfiles($files, $otherdir, $otherfln);
         } else {
             $fg->addallfiles($files);
         }
@@ -491,15 +491,17 @@ class mod_vpl_submission {
     /**
      * Get grade comments
      *
+     * @param bool $forceremove True removes grade reduction information from titles
+     *
      * @return string
      */
-    public function get_grade_comments() {
+    public function get_grade_comments(bool $forceremove = false) {
         $ret = '';
         $fn = $this->get_gradecommentsfilename();
         if (file_exists( $fn )) {
             $ret = file_get_contents( $fn );
-            // Remove grade reduction information from titles [-*(-#)] .
-            if ( ! $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
+            // Remove grade reduction information from titles [-*(-#)].
+            if ( $forceremove || ! $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                 $ret = preg_replace('/^(-.*)(\([ \t]*-[0-9]*\.?[0-9]+[ \t]*\)[ \t]*)$/m', '$1', $ret);
             }
         }
@@ -1221,23 +1223,5 @@ class mod_vpl_submission {
             $ret .= $filename . ' ' . strlen( $data ) . 'b ' . count( explode( $nl, $data ) ) . 'l';
         }
         return $ret;
-    }
-    public function get_ce_parms() {
-        $response = $this->getce();
-        $compilation = '';
-        $execution = '';
-        $grade = '';
-        $this->get_ce_html( $response, $compilation, $execution, $grade, false );
-        $params = '';
-        if (strlen( $compilation )) {
-            $params .= vpl_param_tag( 'compilation', $compilation );
-        }
-        if (strlen( $execution )) {
-            $params .= vpl_param_tag( 'evaluation', $execution );
-        }
-        if (strlen( $grade )) {
-            $params .= vpl_param_tag( 'grade', $grade );
-        }
-        return $params;
     }
 }
