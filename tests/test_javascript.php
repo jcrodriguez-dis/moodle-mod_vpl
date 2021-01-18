@@ -26,16 +26,14 @@
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
 $PAGE->requires->js_call_amd('mod_vpl/jstests-lazy', 'start');
-require_login();
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$vpl->prepare_page( 'tests/test_javascript', array (
-        'id' => $id
-) );
-$basebody = "id=$id";
-$title = 'JavaScript Tests for VPL';
-$vpl->print_header( $title );
-echo "<h1>$title</h1>";
+$course = $DB->get_record( "course", array ( 'id' => $COURSE->id ) );  
+
+require_course_login( $course );
+
+$title = 'VPL JavaScript Tests';
+$PAGE->set_url('/mod/vpl/tests/test_javascript.php');
+$PAGE->set_title( $title );
+$PAGE->set_heading( $title );
+echo $OUTPUT->header();
 echo "<div id='test_results'></div>";
-$vpl->print_footer();
+echo $OUTPUT->footer();
