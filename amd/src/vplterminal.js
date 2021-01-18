@@ -311,6 +311,7 @@ define(
                 setTheme(data.preferences.terminalTheme);
             });
             tdialog.css("padding", "1px");
+            tdialog.parent().css('z-index', 2000);
             this.show = function() {
                 tdialog.dialog('open');
                 terminal.focus();
