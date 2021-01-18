@@ -392,7 +392,8 @@ define(
                 'asm': 'assembly_x86',
                 'bash': 'sh',
                 'bat': 'batchfile',
-                'c': 'c_cpp', 'C': 'c_cpp', 'cc': 'c_cpp', 'cpp': 'c_cpp', 'hxx': 'c_cpp', 'h': 'c_cpp', 'H': 'c_cpp',
+                'c': 'c_cpp', 'C': 'c_cpp', 'cc': 'c_cpp', 'cpp': 'c_cpp', 'c++': 'c_cpp',
+                'hxx': 'c_cpp', 'h': 'c_cpp', 'H': 'c_cpp',
                 'cases': 'cases',
                 'cbl': 'cobol', 'cob': 'cobol',
                 'coffee': 'coffee',
@@ -403,7 +404,7 @@ define(
                 'dart': 'dart',
                 'e': 'eiffel',
                 'erl': 'erlang', 'hrl': 'erlang',
-                'f': 'fortran', 'f77': 'fortran',
+                'f': 'fortran', 'f77': 'fortran', 'f90': 'fortran', 'for': 'fortran',
                 'go': 'golang',
                 'groovy': 'groovy',
                 'gv': 'dot',
@@ -426,8 +427,7 @@ define(
                 'php': 'php',
                 'pro': 'prolog', 'pl': 'prolog',
                 'py': 'python',
-                'R': 'r',
-                'r': 'r',
+                'R': 'r', 'r': 'r',
                 'rb': 'ruby', 'ruby': 'ruby',
                 's': 'assembly_x86',
                 'sass': 'sass',
@@ -443,7 +443,7 @@ define(
                 'ts': 'typescript',
                 'twig': 'twig',
                 'vbs': 'vbscript',
-                'v': 'verilog',
+                'v': 'verilog', 'vh': 'verilog',
                 'vhd': 'vhdl', 'vhdl': 'vhdl',
                 'xml': 'xml',
                 'yaml': 'yaml'
@@ -1073,7 +1073,9 @@ define(
             (function() {
                 for (var i = 0; i < filenames.length; i++) {
                     var regf = escReg(filenames[i]);
-                    var reg = "(^|.* |.*/)" + regf + "[:(](\\d+)([:,]?(\\d+)?\\)?)";
+                    // Filename:N, filename(N), filename N, filename line N, filename on line N.
+                    // N=#|#:#|#,#.
+                    var reg = "(^|.* |.*/)" + regf + "( on line | line |:|\\()(\\d+)(:|,)?(\\d+)?(\\))?";
                     regFiles[i] = new RegExp(reg, '');
                 }
             })();
@@ -1104,8 +1106,8 @@ define(
                             type = 'error';
                         }
                         lastAnotation = {
-                            'row': (match[2] - 1),
-                            'column': match[3],
+                            'row': (match[3] - 1),
+                            'column': match[5],
                             'type': type,
                             'text': rawline,
                         };
@@ -1113,8 +1115,8 @@ define(
                         var fileName = filenames[i];
                         var href = getHref(i);
                         var lt = VPLUtil.sanitizeText(fileName);
-                        var data = 'data-file="' + fileName + '" data-line="' + match[2] + '"';
-                        line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + ':$2$3</a>');
+                        var data = 'data-file="' + fileName + '" data-line="' + match[3] + '"';
+                        line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + lt + '$2$3$4$5$6</a>');
                         sh[i].setAnnotations(anot);
                     }
                 }
@@ -1485,6 +1487,8 @@ define(
             }
             VPLUtil.log(VPLUtil.options);
         };
+        // Needs global use of VPLUtil for view source.
+        window.VPLUtil = VPLUtil;
         return VPLUtil;
     }
 );
