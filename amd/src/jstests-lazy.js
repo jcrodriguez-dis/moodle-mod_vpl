@@ -1,0 +1,154 @@
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * IDE Control
+ * @package mod_vpl
+ * @copyright 2017 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
+
+define(
+    [
+        'jquery',
+        'mod_vpl/vplutil',
+    ],
+    function($, VPLUtil) {
+        var tests = [];
+        var result = [];
+        var testing = '';
+        var nAsserts = 0;
+        /**
+         * Show results of tests in page and window.console
+         */
+        function showResults() {
+            let stat = nAsserts + " asserts tested";
+            window.console.log(stat);
+            $('#test_results').append($('<p></p>').text(stat));
+            let message;
+            if (result.length == 0) {
+                message = 'Test passed';
+            } else {
+                message = result.length + ' errors found';
+            }
+            window.console.log(message);
+            $('#test_results').append($('<p></p>').text(message));
+            if (result.length > 0) {
+                let list = $('<ol></ol>');
+                for (let index = 0; index < result.length; index++) {
+                    window.console.log((index + 1) + ': ' + result[index]);
+                    let element = $('<li></li>');
+                    element.text(result[index]);
+                    list.append(element);
+                }
+                $('#test_results').append(list);
+            }
+        }
+        /**
+         * Basic test assert
+         * @param {boolean} b test result
+         * @param {string} message Optional message
+         */
+        function assert(b, message) {
+            nAsserts++;
+            if (!b) {
+                if (typeof message == 'string') {
+                    result.push("Error: " + message + " testing " + testing);
+                }
+            }
+        }
+        /**
+         * Basic test assert
+         * @param {boolean} a Expected
+         * @param {boolean} b Actual
+         * @param {string} message Optional message
+         */
+        function assertEquals(a, b, message) {
+            nAsserts++;
+            if (a != b) {
+                if (typeof message == 'string') {
+                    result.push("Error: " + message + " testing " + testing + '. Expected "' + a + '" found "' + b + '"');
+                }
+            }
+        }
+        /**
+         * Run tests in tests array
+         */
+        function runTests() {
+            for (let index = 0; index < tests.length; index++) {
+                try {
+                    testing = tests[index].name;
+                    tests[index].test();
+                } catch (e) {
+                    result.push("Error: Exception " + e.message + " testing " + testing + "\n" + e.stack);
+                }
+            }
+        }
+        tests.push({
+            'name': "VPLUtil",
+            'test': function() {
+                assert(VPLUtil.returnTrue(), 'returnTrue');
+                assert(!VPLUtil.returnFalse(), 'returnFalse');
+                (function() {
+                    let rawData = new ArrayBuffer(13);
+                    assertEquals(13, rawData.byteLength, 'rawData.byteLength');
+                    let bufferData = new Uint8Array(rawData);
+                    for (let index = 0; index < bufferData.length; index++) {
+                        bufferData[index] = Math.round(Math.random() * 255);
+                    }
+                    assertEquals(13, bufferData.length, 'bufferData.length');
+                    let stringData = "abcdeñhfjéÇ123143565387095609784";
+                    let rawResult = VPLUtil.String2ArrayBuffer(stringData);
+                    let stringResult = VPLUtil.ArrayBuffer2String(rawResult);
+                    assertEquals(stringData, stringResult, 'ArrayBuffer2String');
+                    stringResult = VPLUtil.ArrayBuffer2String(rawData);
+                    rawResult = VPLUtil.String2ArrayBuffer(stringResult);
+                    let bufferResult = new Uint8Array(rawResult);
+                    assertEquals(bufferData.length, bufferResult.length, 'String2ArrayBuffer');
+                    if (bufferData.length == bufferResult.length) {
+                        for (let index = 0; index < bufferData.length; index++) {
+                            assertEquals(bufferData[index], bufferResult[index], 'String2ArrayBuffer values');
+                        }
+                    }
+                })();
+                (function() {
+                    assertEquals('c', VPLUtil.fileExtension('a.c'), 'fileExtension');
+                    assertEquals('C', VPLUtil.fileExtension('a.c.C'), 'fileExtension');
+                    assertEquals('hxx', VPLUtil.fileExtension('a.hxx'), 'fileExtension');
+                    assertEquals('all', VPLUtil.fileExtension('.all'), 'fileExtension');
+                })();
+                (function() {
+                    assert(!VPLUtil.isImage('a.c'), 'isImage');
+                })();
+                (function() {
+                    assert(!VPLUtil.isBinary('a.c'), 'isBinary');
+                })();
+                (function() {
+                    assert(!VPLUtil.isBlockly('a.c'), 'isBlockly');
+                })();
+                (function() {
+                    assert(VPLUtil.validFileName('a.c'), 'validFileName');
+                })();
+            }
+        });
+        runTests();
+        return {
+            start: function() {
+                $(showResults);
+            }
+        };
+    }
+);
