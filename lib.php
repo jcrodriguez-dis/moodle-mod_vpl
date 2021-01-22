@@ -481,7 +481,7 @@ function mod_vpl_get_fontawesome_icon_map() {
     return [
             'mod_vpl:testcases' => 'fa-check-square-o',
             'mod_vpl:basic' => 'fa-cog',
-            'mod_vpl:test' => 'fa-user-secret',
+            'mod_vpl:test' => 'fa-flask',
             'mod_vpl:executionoptions' => 'fa-sliders',
             'mod_vpl:requestedfiles' => 'fa-shield',
             'mod_vpl:maxresourcelimits' => 'fa-tachometer',
@@ -499,7 +499,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:previoussubmissionslist' => 'fa-history',
             'mod_vpl:modulenameplural' => 'fa-list-ul',
             'mod_vpl:description' => 'fa-tasks',
-            'mod_vpl:similarity' => 'fa-clone',
+            'mod_vpl:similarity' => 'fa-binoculars',
             'mod_vpl:submissionslist' => 'fa-list-ul',
             'mod_vpl:loading' => 'fa-spinner fa-pulse',
             'mod_vpl:copy' => 'fa-copy',
@@ -507,6 +507,8 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:gradercomments' => 'fa-check-square',
             'mod_vpl:downloadsubmissions' => 'fa-cloud-download',
             'mod_vpl:downloadallsubmissions' => 'fa-history',
+            'mod_vpl:user' => 'fa-user',
+            'mod_vpl:group' => 'fa-group',
     ];
 }
 

@@ -1473,9 +1473,9 @@ class mod_vpl {
                             'id' => $userid
                     ) );
                     if ($this->is_group_activity()) {
-                        $text = get_string( 'group' ) . ' ';
+                        $text = vpl_get_awesome_icon('group') . ' ';
                     } else {
-                        $text = get_string( 'user' ) . ' ';
+                        $text = vpl_get_awesome_icon('user') . ' ';
                     }
                     $text .= $this->fullname( $user, false );
                     $maintabs [] = new tabobject( $tabname, $href, $text, $text );
