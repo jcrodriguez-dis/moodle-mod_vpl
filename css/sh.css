@@ -15,3 +15,8 @@
     white-space: pre;
     word-wrap: normal;
 }
+
+.vpl_show_hide_content {
+    margin-left: 10px;
+    white-space: pre-line;
+}
