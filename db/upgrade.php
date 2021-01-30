@@ -343,11 +343,11 @@ function xmldb_vpl_upgrade_2017121312() {
 }
 
 /**
- * Upgrades VPL to 3.4 (2021011012) version
+ * Upgrades VPL to 3.4 (2021011014) version
  *
  * @return void
  */
-function xmldb_vpl_upgrade_2021011012() {
+function xmldb_vpl_upgrade_2021011014() {
     global $DB;
 
     $dbman = $DB->get_manager();
@@ -388,34 +388,29 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     $vpl22 = 2012060112;
     if ($oldversion < $vpl22) {
         xmldb_vpl_upgrade_2012060112();
-        // VPL savepoint reached.
         upgrade_mod_savepoint( true, $vpl22, 'vpl' );
     }
     if ($oldversion < 2012100212) {
         xmldb_vpl_upgrade_2012100212();
-        // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2012100212, 'vpl' );
     }
     if ($oldversion < 2013111512) {
         xmldb_vpl_upgrade_2013111512();
-        // VPL savepoint reached.
         upgrade_mod_savepoint( true, 2013111512, 'vpl' );
     }
     $vpl33 = 2017112412;
     if ($oldversion < $vpl33) {
         xmldb_vpl_upgrade_2017112412();
-        // Vpl savepoint reached.
         upgrade_mod_savepoint(true, $vpl33, 'vpl');
     }
     $vpl331 = 2017121312;
     if ($oldversion < $vpl331) {
         xmldb_vpl_upgrade_2017121312();
-        // Vpl savepoint reached.
         upgrade_mod_savepoint(true, $vpl331, 'vpl');
     }
-    $vpl34 = 2021011012;
+    $vpl34 = 2021011014;
     if ($oldversion < $vpl34) {
-        xmldb_vpl_upgrade_2021011012();
+        xmldb_vpl_upgrade_2021011014();
         upgrade_mod_savepoint(true, $vpl34, 'vpl');
     }
     return true;
