@@ -1351,20 +1351,30 @@ define(
             };
             SubmissionHighlighter.prototype.highlight = function() {
                 var self = this;
-                if (typeof ace === 'undefined') {
+                var needAce = false;
+                var files = this.files;
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    if (VPLUtil.isBinary(file.fileName) || VPLUtil.isBlockly(file.fileName)) {
+                        continue;
+                    } else {
+                        needAce = true;
+                        break;
+                    }
+                }
+                if (needAce && typeof ace === 'undefined') {
                     VPLUtil.loadScript(['../editor/ace9/ace.js'],
                         function() {
                            self.highlight();
                         });
                     return;
                 }
-                var files = this.files;
                 var results = this.results;
                 var shFiles = [];
                 var shFileNames = [];
-                for (var i = 0; i < files.length; i++) {
-                    var file = files[i];
-                    var preid = 'code' + file.tagId;
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    let preid = 'code' + file.tagId;
                     if (VPLUtil.isBlockly(file.fileName)) {
                         self.highlightBlockly(preid);
                         continue;
@@ -1416,14 +1426,6 @@ define(
                  });
             };
             VPLUtil.syntaxHighlight = function() {
-                var self = this;
-                if (typeof ace === 'undefined') {
-                    VPLUtil.loadScript(['../editor/ace9/ace.js'],
-                                       function() {
-                                           self.syntaxHighlight();
-                                       });
-                    return;
-                }
                 new SubmissionHighlighter(files, results);
                 files = [];
                 results = [];
