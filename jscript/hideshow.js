@@ -41,12 +41,4 @@
             }
         }
     };
-    VPL.hideLater = function() {
-        var div = window.document.getElementById('vpl.hide');
-        if (div) {
-            div.style.transition = 'display 2s';
-            div.style.display = 'none';
-        }
-    };
-    setTimeout(VPL.hideLater, 5000);
 })();
