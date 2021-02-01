@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
 
-global $DB, $USER;
+global $DB, $USER, $PAGE;
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
@@ -58,7 +58,8 @@ if ($userid && $userid != $USER->id) {
     $vpl->require_capability( VPL_GRADE_CAPABILITY );
     if ($submissionid) {
         $subinstance = $DB->get_record( 'vpl_submissions', array (
-                'id' => $submissionid
+            'id' => $submissionid,
+            'vpl' => $vpl->get_instance()->id
         ) );
     } else {
         $subinstance = $vpl->last_user_submission( $userid );
@@ -69,12 +70,14 @@ if ($userid && $userid != $USER->id) {
     $userid = $USER->id;
     if ($submissionid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
         $subinstance = $DB->get_record( 'vpl_submissions', array (
-                'id' => $submissionid
+            'id' => $submissionid,
+            'vpl' => $vpl->get_instance()->id,
         ) );
     } else {
         $subinstance = $vpl->last_user_submission( $userid );
     }
 }
+
 if ($subinstance != null && $subinstance->vpl != $vpl->get_instance()->id) {
     print_error( 'invalidcourseid' );
 }
@@ -82,25 +85,26 @@ if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
 
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
+
 // Print header.
 $vpl->print_header( get_string( 'submissionview', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
-// Display submission.
-
 
 // Check consistence.
 if (! $subinstance) {
     vpl_redirect(vpl_mod_href( 'view.php', 'id', $id, 'userid', $userid ),
                  get_string( 'nosubmission', VPL ));
 }
+
 $submissionid = $subinstance->id;
 
-if ($vpl->is_inconsistent_user( $subinstance->userid, $userid )) {
-    print_error( 'vpl submission user inconsistence' );
-}
 if ($vpl->get_instance()->id != $subinstance->vpl) {
     print_error( 'vpl submission vpl inconsistence' );
 }
+
+// Display submission.
+
 $submission = new mod_vpl_submission( $vpl, $subinstance );
 
 if ($vpl->get_visiblegrade() || $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
@@ -114,4 +118,3 @@ $vpl->print_variation( $subinstance->userid );
 $submission->print_submission();
 $vpl->print_footer();
 \mod_vpl\event\submission_viewed::log( $submission );
-vpl_sh_factory::syntaxhighlight();

@@ -42,6 +42,7 @@ function vpl_grade_header($vpl, $inpopup) {
 require_login();
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
 vpl_include_jsfile( 'updatesublist.js', false );
