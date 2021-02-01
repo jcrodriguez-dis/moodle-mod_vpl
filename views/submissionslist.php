@@ -28,6 +28,7 @@ global $CFG, $USER, $OUTPUT;
 require_once($CFG->dirroot.'/mod/vpl/locallib.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
+require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
 
 class vpl_submissionlist_order {
     protected static $field; // Field to compare.
@@ -173,6 +174,10 @@ function vpl_submissionlist_arrow($burl, $sort, $selsort, $seldir) {
         $sortdir = 'move';
     }
     $url = vpl_url_add_param( $url, 'sortdir', $newdir );
+    $showgrades = optional_param( 'showgrades', 0, PARAM_INT );
+    if ( $showgrades > 0 ) {
+        $url = vpl_url_add_param( $url, 'showgrades', 1 );
+    }
     return ' <a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
 }
 function vpl_get_listmenu($showgrades, $id) {
@@ -226,6 +231,7 @@ if ($evaluate > 0) {
     require_once($CFG->dirroot.'/mod/vpl/editor/editor_utility.php');
     vpl_editor_util::generate_requires_evaluation();
 }
+
 $vpl = new mod_vpl( $id );
 $vpl->prepare_page( 'views/submissionslist.php', array (
         'id' => $id
@@ -234,6 +240,8 @@ $vpl->prepare_page( 'views/submissionslist.php', array (
 $cm = $vpl->get_course_module();
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 \mod_vpl\event\vpl_all_submissions_viewed::log( $vpl );
+
+$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 
 // Print header.
 $vpl->print_header( get_string( 'submissionslist', VPL ) );
@@ -516,16 +524,8 @@ foreach ($alldata as $data) {
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
             if ($showgrades) {
-                $compilation = '';
-                $execution = '';
-                $dummy = '';
-                $submission->get_ce_html( $result, $compilation, $execution, $dummy, false, true );
-                if (strlen( $compilation ) + strlen( $execution ) > 0) {
-                    $gradecomments = $OUTPUT->box_start();
-                    $gradecomments .= $compilation;
-                    $gradecomments .= $execution;
-                    $gradecomments .= $OUTPUT->box_end();
-                }
+                $gradecomments .= $submission->get_detailed_grade();
+                $gradecomments .= $submission->print_ce(true);
             }
         } else {
             $result = $submission->getCE();
@@ -556,6 +556,9 @@ foreach ($alldata as $data) {
                 $nextids [$lastid] = $user->id;
             }
             $lastid = $subid; // Save submission id as next index.
+            if ($showgrades) {
+                $gradecomments = $submission->print_ce(true);
+            }
         }
         // Add div id to submission info.
         $grader = '<div id="m' . $subid . '">' . $grader . '</div>';

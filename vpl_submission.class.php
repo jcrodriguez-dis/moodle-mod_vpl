@@ -654,6 +654,38 @@ class mod_vpl_submission {
     }
 
     /**
+     * Return processed comment
+     *
+     * @param string $title Title to show
+     * @param string $comment Content to process
+     * @param bool $empty Process empty comment
+     * @return string
+     */
+    public function get_processed_comment($title, $comment, $empty = false) {
+        GLOBAL $PAGE;
+        $ret = '';
+        if (strlen($comment) > 0 || $empty) {
+            $div = new vpl_hide_show_div( true );
+            $ret = '<b>' . get_string( $title, VPL ) . $div->generate( true ) . '</b><br>';
+            $ret .= $div->begin_div( true ) . s($comment) . $div->end_div( true );
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
+        }
+        return $ret;
+    }
+
+    /**
+     * Return sudmission detailed grade part in html format
+     * @return string
+     */
+    public function get_detailed_grade($process = true) {
+        GLOBAL $PAGE;
+        $ret = $this->reduce_grade_string() . '<br>';
+        $feedback = $this->get_grade_comments($process);
+        $ret .= $this->get_processed_comment('gradercomments', $feedback);
+        return $ret;
+    }
+
+    /**
      * Print sudmission grade
      *
      * @param boolean $detailed show detailed grade (default false)
@@ -673,15 +705,7 @@ class mod_vpl_submission {
             if ($this->vpl->get_grade() != 0) {
                 $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), true) . '<br>';
                 if ($detailed) {
-                    $ret .= $this->reduce_grade_string() . '<br>';
-                    $feedback = $this->get_grade_comments();
-                    if ($feedback) {
-                        $div = new vpl_hide_show_div( true );
-                        $tagid = 'gradercomments' . $this->get_instance()->id;
-                        $ret .= "<b id='$tagid'>" . get_string( 'gradercomments', VPL ) . $div->generate( true ) . '</b><br>';
-                        $ret .= $div->begin_div( true ) . s($feedback) . $div->end_div( true );
-                        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
-                    }
+                    $ret .= $this->get_detailed_grade();
                 }
             }
             if (! empty( $CFG->enableoutcomes )) {
@@ -706,7 +730,6 @@ class mod_vpl_submission {
         } else {
             if ($ret) {
                 echo $OUTPUT->box( $ret );
-
             }
         }
     }
@@ -755,16 +778,21 @@ class mod_vpl_submission {
                     break;
                 }
             }
+            $needbr = false;
             foreach ($users as $u) {
                 if ( $u->id != $userid ) {
                     echo $OUTPUT->user_picture( $u ) . ' ' . fullname( $u );
+                    $needbr = true;
                 }
+            }
+            if ($needbr) {
+                echo '<br>';
             }
         }
         $commmets = $this->instance->comments;
         if ($commmets > '') {
             echo '<br>';
-            echo '<h4>' . get_string( 'comments', VPL ) . '</h4>';
+            echo '<b>' . get_string( 'comments', VPL ) . '</b>';
             echo $OUTPUT->box( nl2br( s( $commmets ) ) );
         }
     }
@@ -772,45 +800,43 @@ class mod_vpl_submission {
     /**
      * Print compilation and execution
      *
-     * @return void
+     * @param bool $return True return string, false print string
+     * @return string empty or html
      */
-    public function print_ce() {
+    public function print_ce($return = false) {
         global $OUTPUT, $PAGE;
         $ce = $this->getce();
         if ($ce ['compilation'] === 0) {
-            return;
+            return '';
         }
+        $ret = '';
         $compilation = '';
         $execution = '';
         $grade = '';
         $this->get_ce_html( $ce, $compilation, $execution, $grade, true, true );
         if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
             $div = new vpl_hide_show_div( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
-            echo '<h3>' . get_string( 'automaticevaluation', VPL ) . $div->generate( true ) . '</h3>';
-            $div->begin_div();
-            echo $OUTPUT->box_start();
+            $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate( true ) . '</b>';
+            $ret .= $div->begin_div(true);
+            $ret .= $OUTPUT->box_start();
             if (strlen( $grade ) > 0) {
-                echo '<b>' . $grade . '</b><br>';
-                echo $this->reduce_grade_string() . '<br>';
+                $ret .= '<b>' . $grade . '</b><br>';
+                $ret .= $this->reduce_grade_string() . '<br>';
             }
             $compilation = $ce ['compilation'];
-            if (strlen( $compilation ) > 0) {
-                $div = new vpl_hide_show_div( true );
-                echo '<b>' . get_string( 'compilation', VPL ) . $div->generate( true ) . '</b><br>';
-                echo $div->begin_div( true ) . s($compilation) . $div->end_div( true );
-                $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
-            }
+            $ret .= $this->get_processed_comment('compilation', $compilation);
             if (strlen( $execution ) > 0) {
                 $proposedcomments = $this->proposedcomment( $ce ['execution'] );
-                if (strlen( $execution )) {
-                    $div = new vpl_hide_show_div( true );
-                    echo '<b>' . get_string( 'comments', VPL ) . $div->generate( true ) . "</b><br>";
-                    echo $div->begin_div( true ) . s($proposedcomments) . $div->end_div( true );
-                    $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
-                }
+                $ret .= $this->get_processed_comment( 'comments', $proposedcomments, true);
             }
-            echo $OUTPUT->box_end();
-            $div->end_div();
+            $ret .= $OUTPUT->box_end();
+            $ret .= $div->end_div(true);
+        }
+        if ($return) {
+            return $ret;
+        } else {
+            echo $ret;
+            return '';
         }
     }
 
