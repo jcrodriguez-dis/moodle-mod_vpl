@@ -56,7 +56,7 @@ class vpl_hide_show_div {
         }
     }
     public function begin_div($return = false) {
-        $html = '<div id="shd' . $this->id . '"';
+        $html = '<div id="shd' . $this->id . '" class="vpl_show_hide_content"';
         if (! ($this->show)) {
             $html .= ' style="display:none"';
         }
