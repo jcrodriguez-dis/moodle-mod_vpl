@@ -30,7 +30,6 @@ class vpl_editor_util {
         $PAGE->requires->jquery();
         $PAGE->requires->jquery_plugin('ui');
         $PAGE->requires->jquery_plugin('ui-css');
-        $PAGE->requires->jquery_plugin('ui-touch', 'mod_vpl');
     }
     public static function generate_requires_evaluation() {
         global $PAGE;
