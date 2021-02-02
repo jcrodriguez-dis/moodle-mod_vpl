@@ -77,7 +77,7 @@ class vpl_editor_util {
     }
     public static function print_tag() {
         $tagid = 'vplide';
-?>
+        ?>
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
     <div id="vpl_tr" class="vpl_ide_tr">
@@ -246,7 +246,7 @@ class vpl_editor_util {
          </canvas>
     </div>
 </div>
-<?php
+        <?php
     }
     /**
      * get list of i18n translations for the editor
@@ -384,10 +384,10 @@ class vpl_editor_util {
         $options ['ajaxurls'] = $ajaxurls;
         $joptions = json_encode( $options );
         self::print_js_i18n();
-?>
+        ?>
 <script>
     VPL_Batch_Evaluation(<?php echo $joptions;?>);
 </script>
-<?php
+        <?php
     }
 }

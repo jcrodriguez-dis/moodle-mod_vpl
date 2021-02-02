@@ -74,7 +74,7 @@ class mod_vpl_webservice extends external_api {
                 'reqfiles' => array ()
         );
         $files = mod_vpl_edit::get_requested_files( $vpl );
-        // Adapt array[name]=content to format array[]=array(name,data).
+        // Adapt array of name => value content to format array of objects {name, data}.
         $files = mod_vpl_edit::files2object( $files );
         $ret ['reqfiles'] = $files;
         return $ret;
@@ -159,7 +159,7 @@ class mod_vpl_webservice extends external_api {
         }
         $compilationexecution = new stdClass();
         $files = mod_vpl_edit::get_submitted_files( $vpl, $USER->id, $compilationexecution );
-        // Adapt array[name]=content to format array[]=array(name,data).
+        // Adapt array of name => value content to format array of objects {name, data}.
         $files = mod_vpl_edit::files2object( $files );
         $ret = array (
                 'files' => $files,

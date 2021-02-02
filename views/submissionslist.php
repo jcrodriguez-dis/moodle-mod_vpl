@@ -32,8 +32,8 @@ require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
 
 class vpl_submissionlist_order {
     protected static $field; // Field to compare.
-    protected static $ascending; // Value to return when ascending or descending order
-    protected static $corder = null; // Funtion usort of old PHP versions don't call static class functions
+    protected static $ascending; // Value to return when ascending or descending order.
+    protected static $corder = null; // Funtion usort of old PHP versions don't call static class functions.
     // Compare two submission fields.
     static public function cpm_userid($a, $b) {
         if ($a->userinfo->id < $b->userinfo->id) {

@@ -61,7 +61,7 @@ class vpl_running_processes {
     static public function lanched_processes($courseid) {
         global $DB;
         // Clean old processes.
-        // TODO: save the maximum time and delete based on it
+        // TODO: save the maximum time and delete based on it.
         $old = time() - (60 * 60); // One hour.
         $DB->delete_records_select(self::TABLE, "start_time < ?", array($old));
 

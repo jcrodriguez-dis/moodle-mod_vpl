@@ -23,14 +23,15 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/*********** DOCUMENTATION ************
-* WARNING *
+/*
+--------------- DOCUMENTATION ---------------
+- WARNING -
   You need to add manually to the URL of this script
 the id of one VPL activity to be tested
 (../mod/vpl/tests/webservice_client.php?id=1234)
 THE ACTIVITY WILL BE MODIFIED
 
-* INSTALLATION *
+- INSTALLATION -
   The VPL webservice is installed or update with the VPL module.
 To be available in a Moodle server, need be enabled:
  1) The external web service
@@ -38,14 +39,14 @@ To be available in a Moodle server, need be enabled:
  3) The VPL web service
  (in Home / ► Site administration / ► Plugins / ► Web services)
 
-* USE *
+- USE -
   If all is OK, at the bottom of the activity's description page
 will appear a  link to "Web service". Clicking this link will be
 shown a page that gives us a URL to the VPL web service. This
 URL must be copy and paste into the client by the user. This URL
 content the token and the id of the VPL activity to be accessed.
 
-* DEVELOPMENT OF WEB SERVICE CLIENTS *
+- DEVELOPMENT OF WEB SERVICE CLIENTS -
   The service has been developed using the web service API of Moodle.
 All the documentation of the Moodle Web service may be apply to
 the VPL web service with some remarks: the service is using
@@ -68,7 +69,8 @@ It is easy to switch to other protocols as SOAP or XML-RPC but you
 need to change the class used in "webservice.php". Also you can use
 a permanent token, in this case, you need to generate the
 correct URL to the standard protocol server.
-*********** END DOCUMENTATION ************/
+--------------- END DOCUMENTATION ---------------
+*/
 
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
