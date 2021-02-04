@@ -258,7 +258,7 @@ define(
                 };
                 // Control copy and cut (yes cut also use this) for localClipboard.
                 editor.on('copy', function(t) {
-                    fileManager.setClipboard(t);
+                    fileManager.setClipboard(t.text);
                 });
                 $(tid).on('paste', '*', fileManager.restrictedPaste);
                 $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
