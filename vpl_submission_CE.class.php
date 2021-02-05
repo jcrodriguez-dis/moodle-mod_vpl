@@ -46,6 +46,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'd' => 'd',
             'erl' => 'erlang',
             'go' => 'go',
+            'groovy' => 'groovy',
             'java' => 'java',
             'js' => 'javascript',
             'scala' => 'scala',
