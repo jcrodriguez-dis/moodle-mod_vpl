@@ -65,7 +65,7 @@ class mod_vpl_mod_form extends moodleform_mod {
 
         $mform->addElement( 'header', 'submissionrestrictions', get_string( 'submissionrestrictions', VPL ) );
         $mform->addElement( 'text', 'maxfiles', get_string( 'maxfiles', VPL ) );
-        $mform->setType( 'maxfiles', PARAM_TEXT);
+        $mform->setType( 'maxfiles', PARAM_INT);
         $mform->setDefault( 'maxfiles', 1 );
         $mform->addElement( 'select', 'worktype', get_string( 'worktype', VPL ), array (
                 0 => get_string( 'individualwork', VPL ),
@@ -113,7 +113,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault( 'reductionbyevaluation', 0 );
         $mform->addHelpButton('reductionbyevaluation', 'reductionbyevaluation', VPL);
         $mform->addElement( 'text', 'freeevaluations', get_string( 'freeevaluations', VPL ));
-        $mform->setType( 'freeevaluations', PARAM_TEXT);
+        $mform->setType( 'freeevaluations', PARAM_INT);
         $mform->setDefault( 'freeevaluations', 0 );
         $mform->addHelpButton('freeevaluations', 'freeevaluations', VPL);
         $mform->addElement( 'selectyesno', 'visiblegrade', get_string( 'visiblegrade', VPL ) );
