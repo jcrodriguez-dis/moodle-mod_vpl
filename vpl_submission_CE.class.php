@@ -69,6 +69,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'html' => 'html',
             'hs' => 'haskell',
             'm' => 'matlab',
+            'mzn' => 'minizinc',
             'perl' => 'perl',
             'prl' => 'perl',
             'php' => 'php',
