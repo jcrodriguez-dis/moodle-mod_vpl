@@ -28,6 +28,34 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
 
+/**
+ * Get the list of jail servers from the current VPL activity
+ * This is a recursive process.
+ *
+ * @param string $vpl Object of the current VPL activity
+ * @param array  $already VPL activities already processed
+ *
+ * @return string List of jail servers, one per line
+ */
+
+function get_currentjailservers($vpl, &$already = array()) {
+    $serverlist = '';
+    $vplinstance = $vpl->get_instance();
+    if (isset( $already [$vplinstance->id] )) {
+        print_error( 'Recursive basedon vpl definition' );
+    }
+    $call = count( $already );
+    $already [$vplinstance->id] = true;
+    if ($vplinstance->basedon) {
+        $basedon = new mod_vpl( null, $vplinstance->basedon );
+        $serverlist = get_currentjailservers( $basedon, $already );
+    }
+    if ( $vplinstance->jailservers > '') {
+        $serverlist = $vplinstance->jailservers . "\n" . $serverlist;
+    }
+    return $serverlist;
+}
+
 global $PAGE, $COURSE, $COURSE, $DB;
 require_login();
 
@@ -44,7 +72,7 @@ $vpl->print_header( get_string( 'check_jail_servers', VPL ) );
 $vpl->print_heading_with_help( 'check_jail_servers' );
 
 \mod_vpl\event\vpl_jail_servers_tested::log( $vpl );
-$servers = vpl_jailserver_manager::check_servers( $vpl->get_instance()->jailservers );
+$servers = vpl_jailserver_manager::check_servers( get_currentjailservers($vpl) );
 $serverstable = new html_table();
 $serverstable->head = array (
         '#',
@@ -69,11 +97,12 @@ $pluginversion = $plugin->version;
 
 $serverstable->data = array ();
 $num = 0;
-$cleanurl = ! $vpl->has_capability( VPL_SETJAILS_CAPABILITY ) || ! $vpl->has_capability( VPL_MANAGE_CAPABILITY );
 foreach ($servers as $server) {
     $serverurl = $server->server;
-    if ($cleanurl) {
-        $serverurl = parse_url( $serverurl, PHP_URL_HOST );
+    $path = parse_url( $serverurl, PHP_URL_PATH );
+    if ($path > '/') {
+        $lenpath = strlen($path);
+        $serverurl = substr_replace( $serverurl, '/*****', -$lenpath, $lenpath);
     }
     $num ++;
     if ($server->offline) {
