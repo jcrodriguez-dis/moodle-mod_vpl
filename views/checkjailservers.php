@@ -56,6 +56,23 @@ function get_currentjailservers($vpl, &$already = array()) {
     return $serverlist;
 }
 
+/**
+ * Removes path(jail security) from URL
+ *
+ * @param string $url URL to clean
+ *
+ * @return string URL without path
+ */
+
+function remove_path($url) {
+    $path = parse_url( $url, PHP_URL_PATH );
+    if ($path > '/') {
+        $lenpath = strlen($path);
+        $url = substr_replace( $url, '/*****', -$lenpath, $lenpath);
+    }
+    return $url;
+}
+
 global $PAGE, $COURSE, $COURSE, $DB;
 require_login();
 
@@ -98,12 +115,7 @@ $pluginversion = $plugin->version;
 $serverstable->data = array ();
 $num = 0;
 foreach ($servers as $server) {
-    $serverurl = $server->server;
-    $path = parse_url( $serverurl, PHP_URL_PATH );
-    if ($path > '/') {
-        $lenpath = strlen($path);
-        $serverurl = substr_replace( $serverurl, '/*****', -$lenpath, $lenpath);
-    }
+    $serverurl = remove_path($server->server);
     $num ++;
     if ($server->offline) {
         $status = '<div class="vpl_server_failed">' . $server->current_status . '</div>';
@@ -157,10 +169,7 @@ foreach ($processes as $process) {
     if ( isset($response['running']) && $response['running'] == 1) {
         $status = get_string('running', VPL);
     }
-    $serverurl = $process->server;
-    if ($cleanurl) {
-        $serverurl = parse_url( $serverurl, PHP_URL_HOST );
-    }
+    $serverurl = remove_path( $process->server );
     $num ++;
     $vpl = new mod_vpl(false, $process->vpl);
     $user = $DB->get_record( 'user', array (
