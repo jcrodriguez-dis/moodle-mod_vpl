@@ -92,15 +92,19 @@ define(
 
         VPLUtil.setProtocol = function(coninfo) {
             var secure;
-            switch (coninfo.wsProtocol) {
-                case 'always_use_wss':
-                    secure = true;
-                    break;
-                case 'always_use_ws':
-                    secure = false;
-                    break;
-                default:
-                    secure = window.location.protocol == 'https:';
+            if (coninfo.securePort == 0 || coninfo.port == 0) {
+                secure = coninfo.port == 0;
+            } else {
+                switch (coninfo.wsProtocol) {
+                    case 'always_use_wss':
+                        secure = true;
+                        break;
+                    case 'always_use_ws':
+                        secure = false;
+                        break;
+                    default:
+                        secure = window.location.protocol == 'https:';
+                }
             }
             var URLBase = (secure ? 'wss://' : 'ws://') + coninfo.server;
             coninfo.secure = secure;
