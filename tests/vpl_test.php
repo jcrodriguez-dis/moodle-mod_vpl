@@ -105,8 +105,30 @@ class mod_vpl_testcase extends mod_vpl_base_testcase {
     }
 
     /**
-     * Method to test mod_vpl::add_submission
+     * Internal method to test mod_vpl::get_students returns
      */
+    public function internal_test_get_students($users, $students) {
+        $studentsid = array();
+        foreach ($students as $student) {
+            $studentsid[$student->id] = $student;
+        }
+        $this->assertEquals(count($students), count($users));
+        foreach ($users as $student) {
+            $this->assertTrue(isset($studentsid[$student->id]));
+            unset($studentsid[$student->id]);
+        }
+    }
+
+    /**
+     * Method to test mod_vpl::get_students
+     */
+    public function test_get_students() {
+        $vpl = $this->vpldefault;
+        $this->internal_test_get_students($vpl->get_students(), $this->students);
+        $this->internal_test_get_students($vpl->get_students('', 'u.username'), $this->students);
+        $this->internal_test_get_students($vpl->get_students('', ',u.username'), $this->students);
+    }
+
     public function test_add_submission() {
         // Test regular submission.
         // Test equal submission.

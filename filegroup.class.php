@@ -403,7 +403,7 @@ class file_group_process {
         $zip = new ZipArchive();
         $dir = $CFG->dataroot . '/temp/vpl';
         if (! file_exists($dir) ) {
-            mkdir($dir);
+            mkdir($dir, $CFG->directorypermissions, true);
         }
         $zipfilename = tempnam( $dir, 'zip' );
         if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {

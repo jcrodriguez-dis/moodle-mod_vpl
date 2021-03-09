@@ -142,12 +142,15 @@ foreach ($list as $uginfo) {
 $zip = new ZipArchive();
 $dir = $CFG->dataroot . '/temp/vpl';
 if (! file_exists($dir)) {
-    mkdir($dir);
+    mkdir($dir, $CFG->directorypermissions, true);
 }
 $zipfilename = tempnam( $dir, 'zip' );
-
-if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
+if ( $zipfilename === false || ! file_exists($zipfilename) ) {
+    print_error("Enable to create temporal Zip file");
+}
+if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
     $ziperrors = '';
+    $nsubmissions = 0;
     foreach ($alldata as $data) {
         $user = $data->uginfo;
         $zipdirname = vpl_user_zip_dirname($user->lastname . ' ' . $user->firstname);
@@ -156,6 +159,7 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
         $zip->addEmptyDir( $zipdirname );
         $zipdirname .= '/';
         foreach ($data->submissions as $submission) {
+            $nsubmissions ++;
             $zipsubdirname = $zipdirname;
             $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted );
             $zipsubdirname .= $date . '/';
@@ -186,9 +190,14 @@ if ($zip->open( $zipfilename, ZipArchive::CREATE | ZipArchive::OVERWRITE )) {
             }
         }
     }
+    $date = date(DATE_W3C);
+    $nusers = count($alldata);
+    $zip->addFromString('Report.txt', "Date: $date\nNumber of users: $nusers\nNumber of submissions: $nsubmissions");
     if ( $ziperrors > '' ) {
-        $zip->addFromString( 'errors.txt', $ziperrors );
+        $zip->addFromString( 'Errors.txt', $ziperrors );
     }
     $zip->close();
     vpl_output_zip($zipfilename, $vpl->get_instance()->name . $extraname);
+} else {
+    print_error("Enable to open temporal Zip file");
 }

@@ -173,6 +173,7 @@ function vpl_delete_dir($dirname) {
  */
 function vpl_output_zip($zipfilename, $name) {
     if (! file_exists($zipfilename)) {
+        debugging("Zip file not found " . $zipfilename, DEBUG_DEVELOPER);
         print_error("Zip file not found");
         die;
     }

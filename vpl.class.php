@@ -1155,10 +1155,13 @@ class mod_vpl {
             $nostudents [$user->id] = true;
         }
         $students = array ();
+        $extrafields = trim($extrafields);
+        if ( $extrafields > '' && $extrafields[0] != ',' ) {
+            $extrafields = ',' . $extrafields;
+        }
         $fields = user_picture::fields( 'u' ) . $extrafields;
         $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, $fields,
                 'u.lastname ASC', '', '', $group );
-        // TODO the following code is too slow.
         foreach ($all as $user) {
             if (! isset( $nostudents [$user->id] )) {
                 $students [$user->id] = $user;
