@@ -74,7 +74,7 @@ Feature: List submissions of students
     Then I should not see "Error"
     And I should not see "Surname"
 
-Scenario: A non-editing teacher download all submissions
+  Scenario: A non-editing teacher download all submissions
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
     And I follow "VPL activity 1"
