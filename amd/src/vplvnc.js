@@ -35,9 +35,19 @@ define(
     ],
     function($, jqui, VPLUtil, VPLClipboard, console) {
         window.INCLUDE_URI = "../editor/noVNC/include/";
-        Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
-                           "keysymdef.js", "keyboard.js", "input.js", "display.js",
-                           "jsunzip.js", "rfb.js", "keysym.js"]);
+        /**
+         * Load VNC Script after the Util ("util.js" is loaded
+         */
+        function loadVNCScripts() {
+            if (typeof Util == 'undefined') {
+                VPLUtil.delay('loadVNCScripts', loadVNCScripts);
+            } else {
+                Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
+                "keysymdef.js", "keyboard.js", "input.js", "display.js",
+                "jsunzip.js", "rfb.js", "keysym.js"]);
+            }
+        }
+        VPLUtil.delay('loadVNCScripts', loadVNCScripts);
         var VPLVNCClient = function(VNCDialogId, str) {
             var self = this;
             var rfb;
