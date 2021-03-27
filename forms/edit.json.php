@@ -38,13 +38,11 @@ try {
     if (! isloggedin()) {
         throw new Exception( get_string( 'loggedinnot' ) );
     }
-    if (! isset($_GET['id'])) {
-        throw new Exception( get_string( 'maxpostsizeexceeded', VPL ) );
-    }
     $id = required_param( 'id', PARAM_INT ); // Course module id.
     $action = required_param( 'action', PARAM_ALPHANUMEXT );
     $userid = optional_param( 'userid', false, PARAM_INT );
     $subid = optional_param( 'subid', false, PARAM_INT );
+    $copy = optional_param('privatecopy', false, PARAM_INT);
     $vpl = new mod_vpl( $id );
     // TODO use or not sesskey."require_sesskey();".
     require_login( $vpl->get_course(), false );
@@ -83,6 +81,8 @@ try {
             }
             if ( empty($actiondata->version) ) {
                 $actiondata->version = -1;
+            } else {
+                $actiondata->version = (int) $actiondata->version;
             }
             $result->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments, $actiondata->version );
             break;
@@ -98,6 +98,9 @@ try {
                 $load = mod_vpl_edit::load( $vpl, $userid , $subid);
             } else {
                 $load = mod_vpl_edit::load( $vpl, $userid );
+            }
+            if ($copy) {
+                $load->version = -1;
             }
             $load->files = mod_vpl_edit::filestoide( $load->files );
             $result->response = $load;

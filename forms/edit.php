@@ -91,7 +91,7 @@ $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
 $options ['ajaxurl'] = $ajaxurl . '&action=';
 if ( $copy ) {
-    $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}";
+    $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}&privatecopy=1";
     if ( $subid && $lastsub ) {
         $loadajaxurl .= "&subid={$lastsub->id}";
     }
