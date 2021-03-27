@@ -344,7 +344,11 @@ class file_group_process {
      * @return int
      */
     public function getversion() {
-        $info = stat($this->dir);
+        try {
+            $info = stat($this->dir);
+        } catch (Exception $e) {
+            return 0;
+        }
         if ($info !== false) {
             return $info['mtime'];
         } else {
