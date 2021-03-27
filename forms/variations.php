@@ -75,7 +75,7 @@ class mod_vpl_variation_form extends moodleform {
                 'size' => '20'
         ) );
         $mform->setDefault( 'identification', '' );
-        $mform->setType( 'identification', PARAM_ALPHANUM );
+        $mform->setType( 'identification', PARAM_RAW );
         $fieldname = 'description' . $this->varid; // Allows multile editors in page.
         $mform->addElement('editor', $fieldname, get_string('description', VPL));
         $mform->setType($fieldname, PARAM_RAW);
