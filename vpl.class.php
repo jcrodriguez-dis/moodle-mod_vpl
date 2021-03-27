@@ -1847,7 +1847,8 @@ class mod_vpl {
             }
             $number = 1;
             foreach ($variations as $variation) {
-                echo '<b>' . get_string( 'variation', VPL, $number ) . '</b><br>';
+                echo '<b>' . get_string( 'variation', VPL, $number ) . '</b>: ';
+                echo s($variation->identification) . '<br>';
                 echo $OUTPUT->box( $variation->description );
                 $number ++;
             }
