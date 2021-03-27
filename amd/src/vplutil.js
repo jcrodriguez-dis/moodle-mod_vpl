@@ -293,6 +293,13 @@ define(
                     pb.close();
                 }
             };
+            pb.endAll = function() {
+                if (filePending !== 0) {
+                    filePending = 0;
+                    end();
+                    pb.close();
+                }
+            };
             /**
             * Read each file in the zip file.
             * Recursive process.
@@ -325,11 +332,13 @@ define(
                     } else {
                         goNext = save({name: f.name, contents: e.target.result, encoding: 0});
                     }
+                    pb.endFile();
                     // Load next file if OK.
                     if (goNext) {
                         readSecuencial(sec + 1);
+                    } else {
+                        pb.endAll();
                     }
-                    pb.endFile();
                 };
                 if (binary) {
                     if (ext == 'zip') {
