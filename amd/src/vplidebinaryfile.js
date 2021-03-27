@@ -32,9 +32,10 @@ define(
             this.isBinary = function() {
                 return true;
             };
+            var setOldContent = this.setContent;
             this.setContent = function(c) {
-                this.setmodified();
-                this.setContent(c);
+                setOldContent.call(this, c);
+                this.setModified();
                 this.updateDataURL();
             };
             this.updateDataURL = function() {
