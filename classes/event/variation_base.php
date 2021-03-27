@@ -39,7 +39,7 @@ class variation_base extends base {
         $this->data ['edulevel'] = self::LEVEL_TEACHING;
         $this->data ['objecttable'] = VPL_VARIATIONS;
     }
-    public static function log($vpl) {
+    public static function log($vpl, $varid = null) {
         if (is_array($vpl)) {
             $info = $vpl;
         } else {
