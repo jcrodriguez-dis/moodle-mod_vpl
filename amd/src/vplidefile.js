@@ -72,6 +72,7 @@ define(
             };
             this.setModified = function() {
                 modified = true;
+                this.showFileName();
             };
             this.getTabPos = function() {
                 return fileManager.getTabPos(this);
@@ -87,7 +88,7 @@ define(
             };
             this.change = function() {
                 if (!modified) {
-                    this.setModified(true);
+                    this.setModified();
                     fileManager.generateFileList();
                     this.showFileName();
                     VPLUtil.longDelay('setModified', fileManager.setModified);
