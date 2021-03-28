@@ -133,7 +133,7 @@ class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
                 $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
                 $this->fail('Exception expected');
             } catch (Exception $e) {
-                $this->assertStringContainsString('password', $e->getMessage());
+                $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
         }
     }

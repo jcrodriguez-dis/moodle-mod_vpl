@@ -488,7 +488,11 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
                     $expecteduserids[] = $users[$i]->id;
                 }
             }
-            $this->assertEqualsCanonicalizing($expecteduserids, $userlist->get_userids());
+            $a1 = $expecteduserids;
+            $a2 = $userlist->get_userids();
+            sort($a1);
+            sort($a2);
+            $this->assertEquals($a1, $a2);
         }
 
     }
