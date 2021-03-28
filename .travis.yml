@@ -22,17 +22,20 @@ cache:
     - $HOME/.composer/cache
     - $HOME/.npm
 
-php:
- - 7.3
- - 7.4
- 
-env:
-  global:
-    - MOODLE_BRANCH=MOODLE_35_STABLE
-    - MOODLE_BRANCH=master
-  jobs:
-    - DB=pgsql
-    - DB=mysqli
+jobs:
+  include:
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=pgsql
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=mysqli
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=pgsql
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
+     - php: 7.4
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
+     - php: 8.0
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
 
 before_install:
   - phpenv config-rm xdebug.ini
