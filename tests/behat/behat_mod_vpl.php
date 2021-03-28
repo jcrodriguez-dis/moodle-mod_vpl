@@ -45,7 +45,7 @@ class behat_mod_vpl extends behat_base {
      * @return void
      */
     public function i_click_on_selector_in_vpl($selector) {
-        $script = "$(\"$selector\").click();";
+        $script = "$(\"$selector\")[0].click();";
         $this->getSession()->evaluateScript($script);
     }
 
