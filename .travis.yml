@@ -57,7 +57,11 @@ script:
   - moodle-plugin-ci savepoints
   - moodle-plugin-ci mustache
 #  - moodle-plugin-ci phpdoc
-  - moodle-plugin-ci grunt
+  - if [ "$MOODLE_BRANCH" == "MOODLE_35_STABLE" ]; then
+        echo "Grunt checker skipped for MOODLE_35_STABLE";
+    else
+        moodle-plugin-ci grunt;
+    fi
   - moodle-plugin-ci phpunit
   - moodle-plugin-ci behat
   - /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
