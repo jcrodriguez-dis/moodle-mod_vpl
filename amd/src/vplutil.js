@@ -1366,8 +1366,9 @@ define(
                 var self = this;
                 var needAce = false;
                 var files = this.files;
-                for (let i = 0; i < files.length; i++) {
-                    let file = files[i];
+                var i, file;
+                for (i = 0; i < files.length; i++) {
+                    file = files[i];
                     if (VPLUtil.isBinary(file.fileName) || VPLUtil.isBlockly(file.fileName)) {
                         continue;
                     } else {
@@ -1385,9 +1386,9 @@ define(
                 var results = this.results;
                 var shFiles = [];
                 var shFileNames = [];
-                for (let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    let preid = 'code' + file.tagId;
+                for (i = 0; i < files.length; i++) {
+                    file = files[i];
+                    var preid = 'code' + file.tagId;
                     if (VPLUtil.isBlockly(file.fileName)) {
                         self.highlightBlockly(preid);
                         continue;
@@ -1418,11 +1419,11 @@ define(
                     shFileNames.push(file.fileName);
                     shs[file.tagId] = sh;
                 }
-                for (var ri = 0; ri < results.length; ri++) {
-                    var tag = document.getElementById(results[ri].tagId);
+                for (i = 0; i < results.length; i++) {
+                    var tag = document.getElementById(results[i].tagId);
                     var text = tag.textContent || tag.innerText;
                     tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
-                                                           results[ri].noFormat, results[ri].folding);
+                                                           results[i].noFormat, results[i].folding);
                 }
             };
 

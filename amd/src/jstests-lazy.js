@@ -35,10 +35,10 @@ define(
          * Show results of tests in page and window.console
          */
         function showResults() {
-            let stat = nAsserts + " asserts tested";
+            var stat = nAsserts + " asserts tested";
             window.console.log(stat);
             $('#test_results').append($('<p></p>').text(stat));
-            let message;
+            var message;
             if (result.length == 0) {
                 message = 'Test passed';
             } else {
@@ -47,10 +47,10 @@ define(
             window.console.log(message);
             $('#test_results').append($('<p></p>').text(message));
             if (result.length > 0) {
-                let list = $('<ol></ol>');
-                for (let index = 0; index < result.length; index++) {
+                var list = $('<ol></ol>');
+                for (var index = 0; index < result.length; index++) {
                     window.console.log((index + 1) + ': ' + result[index]);
-                    let element = $('<li></li>');
+                    var element = $('<li></li>');
                     element.text(result[index]);
                     list.append(element);
                 }
@@ -88,7 +88,7 @@ define(
          * Run tests in tests array
          */
         function runTests() {
-            for (let index = 0; index < tests.length; index++) {
+            for (var index = 0; index < tests.length; index++) {
                 try {
                     testing = tests[index].name;
                     tests[index].test();
@@ -103,23 +103,23 @@ define(
                 assert(VPLUtil.returnTrue(), 'returnTrue');
                 assert(!VPLUtil.returnFalse(), 'returnFalse');
                 (function() {
-                    let rawData = new ArrayBuffer(13);
+                    var rawData = new ArrayBuffer(13);
                     assertEquals(13, rawData.byteLength, 'rawData.byteLength');
-                    let bufferData = new Uint8Array(rawData);
-                    for (let index = 0; index < bufferData.length; index++) {
+                    var bufferData = new Uint8Array(rawData);
+                    for (var index = 0; index < bufferData.length; index++) {
                         bufferData[index] = Math.round(Math.random() * 255);
                     }
                     assertEquals(13, bufferData.length, 'bufferData.length');
-                    let stringData = "abcdeñhfjéÇ123143565387095609784";
-                    let rawResult = VPLUtil.String2ArrayBuffer(stringData);
-                    let stringResult = VPLUtil.ArrayBuffer2String(rawResult);
+                    var stringData = "abcdeñhfjéÇ123143565387095609784";
+                    var rawResult = VPLUtil.String2ArrayBuffer(stringData);
+                    var stringResult = VPLUtil.ArrayBuffer2String(rawResult);
                     assertEquals(stringData, stringResult, 'ArrayBuffer2String');
                     stringResult = VPLUtil.ArrayBuffer2String(rawData);
                     rawResult = VPLUtil.String2ArrayBuffer(stringResult);
-                    let bufferResult = new Uint8Array(rawResult);
+                    var bufferResult = new Uint8Array(rawResult);
                     assertEquals(bufferData.length, bufferResult.length, 'String2ArrayBuffer');
                     if (bufferData.length == bufferResult.length) {
-                        for (let index = 0; index < bufferData.length; index++) {
+                        for (var index = 0; index < bufferData.length; index++) {
                             assertEquals(bufferData[index], bufferResult[index], 'String2ArrayBuffer values');
                         }
                     }
