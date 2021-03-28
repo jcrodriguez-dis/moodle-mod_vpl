@@ -47,7 +47,7 @@ Feature: In an VPL activity, editing teacher change variations
     And I am on "Course 1" course homepage
     When I follow "VPL activity name"
     And I navigate to "Variations" in current page administration
-        And I set the following fields to these values:
+    And I set the following fields to these values:
       | id_usevariations | 1 |
       | id_variationtitle | My variation title text |
     And I press "Save"

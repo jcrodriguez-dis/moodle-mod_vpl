@@ -33,8 +33,3 @@ Feature: In an VPL activity, editing teacher change test cases
     And I follow "VPL activity name"
     When I navigate to "Test cases" in current page administration
     Then I should see "vpl_evaluate.cases"
-    
-    
-
-
-
