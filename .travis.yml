@@ -24,17 +24,15 @@ cache:
 
 jobs:
   include:
-     - php: 7.3
+     - php: 7.2
        env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=pgsql
-     - php: 7.3
+     - php: 7.2
        env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=mysqli
      - php: 7.3
        env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=pgsql
      - php: 7.3
        env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
      - php: 7.4
-       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
-     - php: 8.0
        env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
 
 before_install:
