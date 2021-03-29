@@ -75,6 +75,7 @@ class behat_mod_vpl extends behat_base {
             file.lastModifiedDate = new Date();
             fileList = [file];
             drop = $.Event({type: \"drop\", dataTransfer: {files: fileList}});
+            drop.isSimulated = true;
             $(\"$selector\").trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
