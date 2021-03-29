@@ -206,6 +206,9 @@ define(
             return data.substr(data.indexOf(',') + 1);
         };
         VPLUtil.readZipFile = function(data, save, progressBar, end) {
+            if (!end) {
+                end = VPLUtil.doNothing;
+            }
             if (typeof JUnzip == 'undefined') {
                 VPLUtil.loadScript(['../editor/zip/inflate.js',
                     '../editor/zip/unzip.js']
@@ -217,6 +220,8 @@ define(
             var ab = VPLUtil.ArrayBuffer2String(data);
             var unzipper = new JUnzip(ab);
             if (!unzipper.isZipFile()) {
+                VPLUtil.log('Not a ZIP file');
+                end();
                 return;
             }
             unzipper.readEntries();
@@ -228,9 +233,7 @@ define(
             */
             function process(i) {
                 if (i >= out || progressBar.isClosed()) {
-                    if (end) {
-                        end();
-                    }
+                    end();
                     return;
                 }
                 var entry = unzipper.entries[i];
@@ -248,15 +251,14 @@ define(
                     } else if (entry.compressionMethod === 8) {
                         uncompressed = JSInflate.inflate(entry.data);
                     }
-                    data = VPLUtil.String2ArrayBuffer(uncompressed);
                     if (VPLUtil.isBinary(fileName)) {
                         // If binary use as arrayBuffer.
                         if (!save({name: fileName, contents: btoa(uncompressed), encoding: 1})) {
                             i = out;
                         }
                         process(i + 1);
-                        progressBar.endFile();
                     } else {
+                        data = VPLUtil.String2ArrayBuffer(uncompressed);
                         var blob = new Blob([data], {
                             type: 'text/plain'
                         });
@@ -266,7 +268,11 @@ define(
                                 i = out;
                             }
                             process(i + 1);
-                            progressBar.endFile();
+                        };
+                        fr.onerror = function(e) {
+                            VPLUtil.log(e);
+                            i = out;
+                            process(i + 1);
                         };
                         fr.readAsText(blob);
                     }
@@ -278,35 +284,25 @@ define(
         VPLUtil.readSelectedFiles = function(filesToRead, save, end) {
             // Process all File objects.
             var pb = new VPLUtil.progressBar('import', 'import');
-            var filePending = 0;
+            var errorsMessages = '';
             if (!end) {
                 end = VPLUtil.doNothing;
             }
             pb.processFile = function(name) {
                 pb.setLabel(name);
-                filePending++;
-            };
-            pb.endFile = function() {
-                filePending--;
-                if (filePending === 0) {
-                    end();
-                    pb.close();
-                }
-            };
-            pb.endAll = function() {
-                if (filePending !== 0) {
-                    filePending = 0;
-                    end();
-                    pb.close();
-                }
             };
             /**
-            * Read each file in the zip file.
+            * Read each file in filesToReas
             * Recursive process.
             * @param {int} sec secuencial file to read
             */
             function readSecuencial(sec) {
                 if (sec >= filesToRead.length || pb.isClosed()) {
+                    end();
+                    pb.close();
+                    if (errorsMessages > '') {
+                        VPLUtil.showErrorMessage(errorsMessages);
+                    }
                     return;
                 }
                 var f = filesToRead[sec];
@@ -315,30 +311,28 @@ define(
                 var reader = new FileReader();
                 var ext = VPLUtil.fileExtension(f.name).toLowerCase();
                 reader.onload = function(e) {
-                    var goNext = false;
                     if (binary) {
                         if (ext == 'zip') {
                             try {
                                 VPLUtil.readZipFile(e.target.result, save, pb, function() {
                                                                                   readSecuencial(sec + 1);
                                                                                });
+                                return;
                             } catch (ex) {
                                 VPLUtil.showErrorMessage(ex + " : " + f.name);
                             }
                         } else {
                             var data = VPLUtil.dataFromURLData(e.target.result);
-                            goNext = save({name: f.name, contents: data, encoding: 1});
+                            save({name: f.name, contents: data, encoding: 1});
                         }
                     } else {
-                        goNext = save({name: f.name, contents: e.target.result, encoding: 0});
+                        save({name: f.name, contents: e.target.result, encoding: 0});
                     }
-                    pb.endFile();
-                    // Load next file if OK.
-                    if (goNext) {
-                        readSecuencial(sec + 1);
-                    } else {
-                        pb.endAll();
-                    }
+                    readSecuencial(sec + 1);
+                };
+                reader.onerror = function(e) {
+                    errorsMessages += "Error \"" + e.target.error + "\" reading " + f.name + "\n";
+                    readSecuencial(sec + 1);
                 };
                 if (binary) {
                     if (ext == 'zip') {
@@ -1366,9 +1360,8 @@ define(
                 var self = this;
                 var needAce = false;
                 var files = this.files;
-                var i, file;
-                for (i = 0; i < files.length; i++) {
-                    file = files[i];
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
                     if (VPLUtil.isBinary(file.fileName) || VPLUtil.isBlockly(file.fileName)) {
                         continue;
                     } else {
@@ -1386,9 +1379,9 @@ define(
                 var results = this.results;
                 var shFiles = [];
                 var shFileNames = [];
-                for (i = 0; i < files.length; i++) {
-                    file = files[i];
-                    var preid = 'code' + file.tagId;
+                for (let i = 0; i < files.length; i++) {
+                    let file = files[i];
+                    let preid = 'code' + file.tagId;
                     if (VPLUtil.isBlockly(file.fileName)) {
                         self.highlightBlockly(preid);
                         continue;
@@ -1419,11 +1412,11 @@ define(
                     shFileNames.push(file.fileName);
                     shs[file.tagId] = sh;
                 }
-                for (i = 0; i < results.length; i++) {
-                    var tag = document.getElementById(results[i].tagId);
+                for (var ri = 0; ri < results.length; ri++) {
+                    var tag = document.getElementById(results[ri].tagId);
                     var text = tag.textContent || tag.innerText;
                     tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
-                                                           results[i].noFormat, results[i].folding);
+                                                           results[ri].noFormat, results[ri].folding);
                 }
             };
 
