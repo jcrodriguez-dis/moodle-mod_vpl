@@ -72,7 +72,8 @@ try {
             break;
         case 'load' :
             $fgm = $vpl->get_required_fgm();
-            $result->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
+            $files = $fgm->getallfiles();
+            $result->response->files = mod_vpl_edit::filestoide( $files );
             $result->response->version = $fgm->getversion();
             break;
         default :
