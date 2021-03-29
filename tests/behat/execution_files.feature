@@ -25,7 +25,7 @@ Feature: In an VPL activity, editing teacher manage execution files
     And I log out
 
   @javascript
-  Scenario: A teacher set execution files
+  Scenario: A teacher sets execution files (adds, rename, delete and see)
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     # See default files

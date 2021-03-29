@@ -27,7 +27,7 @@ Feature: In an VPL activity, editing allows drop files
     And I log out
 
   @javascript
-  Scenario: A teacher set requested files
+  Scenario: A teacher drops files in requested files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"
@@ -36,14 +36,23 @@ Feature: In an VPL activity, editing allows drop files
       | vpl_ide_input_newfilename | new_file_name.c |
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
+    # Drops a new file
     When I drop the file "a.c" contening "int main() {\n   printf(\"hola\");\n}" on "#vpl_tabs" in VPL
     Then I should see "a.c"
     When I follow "a.c"
     Then I should see "int main() {"
     And I should see "printf(\"hola\");"
+    # Drops a file replacing existing file content
+    When I drop the file "new_file_name.c" contening "int f() {\n   return 0;\n}" on "#vpl_tabs" in VPL
+    When I follow "new_file_name.c"
+    Then I should see "int f() {"
+    # Saves files
     When I click on "#vpl_ide_save" in VPL
+    # Sees files
     And I follow "VPL activity testing"
     Then I should see "Execution files"
+    And I should see "new_file_name.c"
+    And I should see "int f() {"
     And I should see "a.c"
     And I should see "int main() {"
     And I should see "printf(\"hola\");"

@@ -27,7 +27,7 @@ Feature: In an VPL activity, editing teacher set requested files and student use
     And I log out
 
   @javascript
-  Scenario: A teacher set requested files
+  Scenario: A teacher sets requested files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"

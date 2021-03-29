@@ -27,9 +27,15 @@ Feature: In an VPL activity, editing teacher change test cases
     And I log out
 
   @javascript
-  Scenario: A teacher access test cases
+  Scenario: A teacher access to the test cases editor
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity name"
     When I navigate to "Test cases" in current page administration
     Then I should see "vpl_evaluate.cases"
+    When I drop the file "vpl_evaluate.cases" contening "Case = test\n" on "#vpl_tabs" in VPL
+    Then I should see "Case = test"
+    When I click on "#vpl_ide_save" in VPL
+    And I follow "VPL activity testing"
+    Then I should see "vpl_evaluate.cases"
+    And I should see "Case = test"
