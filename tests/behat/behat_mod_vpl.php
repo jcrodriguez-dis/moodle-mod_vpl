@@ -63,7 +63,7 @@ class behat_mod_vpl extends behat_base {
     /**
      * Drop file with text content
      *
-     * @Given /^I drop the file "([^"]*)" contening "([^"]*)" on "([^"]*)" in VPL$/
+     * @Given /^I drop the file "([^"]*)" contening "((?:[^"]|\\.)*)" on "([^"]*)" in VPL$/
      * @return void
      */
     public function i_drop_the_file_contening_on_in_vpl($finename, $contents, $selector) {
