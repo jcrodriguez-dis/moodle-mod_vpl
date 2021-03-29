@@ -59,4 +59,24 @@ class behat_mod_vpl extends behat_base {
         $script = "window.confirm = function(){return true;};";
         $this->getSession()->evaluateScript($script);
     }
+
+    /**
+     * Drop file with text content
+     *
+     * @Given /^I drop the file "([^"]*)" contening "([^"]*)" on "([^"]*)" in VPL$/
+     * @return void
+     */
+    public function i_drop_the_file_contening_on_in_vpl($finename, $contents, $selector) {
+        $contentesc = addslashes_js($contents);
+        // Testing framework does not accept heredoc syntax.
+        $script = "(function() {
+            file = new Blob([\"$contentesc\"], {type: \"\"});
+            file.name = \"$finename\";
+            file.lastModifiedDate = new Date();
+            fileList = [file];
+            drop = $.Event({type: \"drop\", dataTransfer: {files: fileList}});
+            $(\"$selector\").trigger(drop);
+        })()";
+        $this->getSession()->evaluateScript($script);
+    }
 }
