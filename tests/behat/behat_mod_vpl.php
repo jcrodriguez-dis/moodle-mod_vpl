@@ -47,6 +47,7 @@ class behat_mod_vpl extends behat_base {
     public function i_click_on_selector_in_vpl($selector) {
         $script = "$(\"$selector\")[0].click();";
         $this->getSession()->evaluateScript($script);
+        sleep(1);
     }
 
     /**
@@ -79,5 +80,6 @@ class behat_mod_vpl extends behat_base {
             $(\"$selector\").trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
+        sleep(1);
     }
 }
