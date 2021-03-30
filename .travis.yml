@@ -2,7 +2,7 @@ language: php
 
 os: linux
 
-dist: bionic
+dist: xenial
 arch: arm64
 virt: lxd
 
