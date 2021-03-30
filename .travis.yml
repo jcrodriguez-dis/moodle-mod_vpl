@@ -2,9 +2,9 @@ language: php
 
 os: linux
 
-dist: xenial
-
-
+dist: bionic
+arch: arm64
+virt: lxd
 
 addons:
   postgresql: "9.6"
