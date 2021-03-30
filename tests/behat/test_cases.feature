@@ -1,8 +1,8 @@
 @mod @mod_vpl
-Feature: In an VPL activity, editing teacher change test cases
+Feature: In a VPL activity, editing teacher changes test cases
   In order to change test cases
   As an editing teacher
-  I access to a VPL activity variation page and create, modify, and delete varitions
+  I access a VPL activity variation page and create, modify, and delete variations
 
   Background:
     Given the following "courses" exist:
@@ -32,14 +32,10 @@ Feature: In an VPL activity, editing teacher change test cases
     And I am on "Course 1" course homepage
     And I follow "VPL activity name"
     When I navigate to "Test cases" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_evaluate.cases"
     When I drop the file "vpl_evaluate.cases" contening "Case = test\n" on "#vpl_tabs" in VPL
     Then I should see "Case = test"
     When I click on "#vpl_ide_save" in VPL
     And I follow "VPL activity name"
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_evaluate.cases"
     And I should see "Case = test"

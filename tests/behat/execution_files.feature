@@ -25,14 +25,12 @@ Feature: In an VPL activity, editing teacher manage execution files
     And I log out
 
   @javascript
-  Scenario: A teacher sets execution files (adds, rename, delete and see)
+  Scenario: A teacher sets execution files by adding, renaming, deleting, and seeing files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     # See default files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -56,8 +54,6 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -76,8 +72,6 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -95,8 +89,6 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"

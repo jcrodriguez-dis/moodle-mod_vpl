@@ -42,7 +42,7 @@ Feature: In an VPL activity, editing teacher change variations
     Then I should not see "My variation title text"
 
   @javascript
-  Scenario: A teacher create a variation and delete variation
+  Scenario: A teacher creates a variation and deletes a variation
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity name"
