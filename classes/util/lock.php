@@ -28,7 +28,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 
 class lock {
     protected $lockfile;
-    static public function filename() {
+    public static function filename() {
         return '/vpl.lock';
     }
     public function __construct($dir, $timeout = 5) {

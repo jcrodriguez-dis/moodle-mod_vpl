@@ -48,7 +48,7 @@ class vpl_file_from_dir extends vpl_file_from_base {
     protected $filename;
     protected $userid;
     // This is for compatibility with GAP 2.x application.
-    static public function process_gap_userfile($filepath) {
+    public static function process_gap_userfile($filepath) {
         if (strtolower( basename( $filepath ) ) == 'datospersonales.gap') {
             $nif = '';
             $nombre = '';
@@ -77,7 +77,7 @@ class vpl_file_from_dir extends vpl_file_from_base {
     }
 
     // This is for compatibility with GAP 2.x application.
-    static public function get_user_id_from_file($filename) {
+    public static function get_user_id_from_file($filename) {
         if (count( self::$usersname )) {
             $filename = strtolower( $filename );
             foreach (array_keys(self::$usersname) as $userid) {
@@ -240,7 +240,7 @@ class vpl_similarity_preprocess {
      * @param $toremove $toremove with filenames as keys to remove from comparation
      * @return void
      */
-    static public function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles
+    public static function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles
                                           , $vpl = false, $subinstance = false, $toremove = array()) {
         $files = array ();
         $filelist = $fgm->getFileList();
@@ -290,7 +290,7 @@ class vpl_similarity_preprocess {
         }
         return $files;
     }
-    static public function activity(&$simil, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    public static function activity(&$simil, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
         $cm = $vpl->get_course_module();
         $groupmode = groups_get_activity_groupmode( $cm );
@@ -339,7 +339,7 @@ class vpl_similarity_preprocess {
      * @param int $userid id of the user to preprocess
      * @return void
      */
-    static public function user_activity(&$simil, $vpl, $userid) {
+    public static function user_activity(&$simil, $vpl, $userid) {
         $subinstance = $vpl->last_user_submission( $userid );
         if (! $subinstance) {
             return;
@@ -376,12 +376,12 @@ class vpl_similarity_preprocess {
             }
         }
     }
-    static public function get_zip_filepath($vplid, $zipname) {
+    public static function get_zip_filepath($vplid, $zipname) {
         global $CFG;
         $zipname = basename( $zipname );
         return $CFG->dataroot . '/temp/vpl_zip/' . $vplid . '_' . $zipname;
     }
-    static public function create_zip_file($vplid, $zipname, $zipdata) {
+    public static function create_zip_file($vplid, $zipname, $zipdata) {
         $filename = self::get_zip_filepath( $vplid, $zipname );
         vpl_fwrite( $filename, $zipdata );
     }
@@ -397,7 +397,7 @@ class vpl_similarity_preprocess {
      * @param $spb
      * @return void
      */
-    static public function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
         $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
         if ($ext != 'ZIP') {
             print_error( 'nozipfile' );

@@ -27,7 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 
 class vpl_tokenizer_factory {
     private static $classloaded = array ();
-    static public function get($type) {
+    public static function get($type) {
         if (! isset( self::$classloaded [$type] )) {
             $include = 'tokenizer_' . $type . '.class.php';
             require_once(dirname( __FILE__ ) . '/' . $include);

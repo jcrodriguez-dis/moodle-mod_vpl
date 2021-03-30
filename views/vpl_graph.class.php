@@ -40,7 +40,7 @@ class vpl_graph {
      * @param $ydata array of array of numbers first array is indexed by legend.
      * @return void
      */
-    static public function draw($title, $xlabel, $ylabel, $xdata, $ydata, $legends = false, $typebar = false) {
+    public static function draw($title, $xlabel, $ylabel, $xdata, $ydata, $legends = false, $typebar = false) {
         global $OUTPUT;
         $chart = new \core\chart_bar();
         $chart->set_stacked(true);

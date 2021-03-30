@@ -31,7 +31,7 @@ class vpl_similarity_c extends vpl_similarity_base {
     public function get_type() {
         return 1;
     }
-    static public function expand_operator(&$array, &$from) {
+    public static function expand_operator(&$array, &$from) {
         $last = count( $array ) - 1; // Array alredy with equal =.
         for ($i = $from; $i < $last; $i ++) { // Replicate from las instruction to =.
             $array [] = $array [$i];

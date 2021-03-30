@@ -28,7 +28,7 @@ class vpl_list_util {
     static protected $fields; // Field to compare.
     static protected $ascending; // Value to return when ascending or descending order.
     // Compare two submission fields.
-    static public function cpm($avpl, $bvpl) {
+    public static function cpm($avpl, $bvpl) {
         $a = $avpl->get_instance();
         $b = $bvpl->get_instance();
         foreach (self::$fields as $field) {
@@ -48,7 +48,7 @@ class vpl_list_util {
     /**
      * Check and set data to sort return comparation function $field field to compare $descending order
      */
-    static public function set_order($field, $ascending = true) {
+    public static function set_order($field, $ascending = true) {
         $sortfields = array (
                 'name' => array (
                         'name'
@@ -80,7 +80,7 @@ class vpl_list_util {
             self::$ascending = 1;
         }
     }
-    static public function vpl_list_arrow($burl, $sort, $instanceselection, $selsort, $seldir) {
+    public static function vpl_list_arrow($burl, $sort, $instanceselection, $selsort, $seldir) {
         global $OUTPUT;
         $newdir = 'down'; // Dir to go if clicked.
         $url = vpl_url_add_param( $burl, 'sort', $sort );
@@ -102,7 +102,7 @@ class vpl_list_util {
     }
 
     // Count submissions graded.
-    static public function count_graded($vpl) {
+    public static function count_graded($vpl) {
         $numsubs = 0;
         $numgraded = 0;
         $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid' );

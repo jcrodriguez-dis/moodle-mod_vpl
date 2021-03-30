@@ -222,7 +222,7 @@ class vpl_similarity_base {
         return 100 * (1 - ($dif / ($this->sizeh + $other->get_sizeh())));
     }
 
-    static public function clone_token($token, $value) {
+    public static function clone_token($token, $value) {
         return new vpl_token($token->type, $value, $token->line);
     }
 }
@@ -254,17 +254,17 @@ class vpl_files_pair {
         $this->id = self::$idcounter ++;
         $this->clusternumber = 0;
     }
-    static public function set_mins($s1, $s2, $s3) {
+    public static function set_mins($s1, $s2, $s3) {
         self::$mins1 = $s1;
         self::$mins2 = $s2;
         self::$mins3 = $s3;
     }
-    static public function set_maxs($s1, $s2, $s3) {
+    public static function set_maxs($s1, $s2, $s3) {
         self::$maxs1 = $s1;
         self::$maxs2 = $s2;
         self::$maxs3 = $s3;
     }
-    static public function cmp($a, $b) {
+    public static function cmp($a, $b) {
         $al = $a->get_level();
         $bl = $b->get_level();
         if ($al == $bl) {
@@ -364,7 +364,7 @@ class vpl_files_pair {
  * Utility class to get list of preprocessed files
  */
 class vpl_similarity {
-    static public function get_selected(&$files, $maxselected, $slimit, $spb) {
+    public static function get_selected(&$files, $maxselected, $slimit, $spb) {
         $vs1 = array ();
         $vs2 = array ();
         $vs3 = array ();
@@ -445,7 +445,7 @@ class vpl_similarity {
         return $selected;
     }
     static protected $corder = null;
-    static public function filter_selected(&$vec, $maxselected, &$minlevel, $sid, $last = false) {
+    public static function filter_selected(&$vec, $maxselected, &$minlevel, $sid, $last = false) {
         if (count( $vec ) > $maxselected || ($last && count( $vec ) > 0)) {
             if (self::$corder === null) {
                 self::$corder = new vpl_similarity();
@@ -461,7 +461,7 @@ class vpl_similarity {
             $minlevel = $vec [count( $vec ) - 1]->$field;
         }
     }
-    static public function cmp_selected1($a, $b) {
+    public static function cmp_selected1($a, $b) {
         if ($a->s1 == $b->s1) {
             if ($a->s3 == $b->s3) {
                 if ($a->s2 == $b->s2) {
@@ -473,7 +473,7 @@ class vpl_similarity {
         }
         return ($a->s1 > $b->s1) ? - 1 : 1;
     }
-    static public function cmp_selected2($a, $b) {
+    public static function cmp_selected2($a, $b) {
         if ($a->s2 == $b->s2) {
             if ($a->s1 == $b->s1) {
                 if ($a->s3 == $b->s3) {
@@ -485,7 +485,7 @@ class vpl_similarity {
         }
         return ($a->s2 > $b->s2) ? - 1 : 1;
     }
-    static public function cmp_selected3($a, $b) {
+    public static function cmp_selected3($a, $b) {
         if ($a->s3 == $b->s3) {
             if ($a->s1 == $b->s1) {
                 if ($a->s2 == $b->s2) {

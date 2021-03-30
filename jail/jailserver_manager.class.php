@@ -35,7 +35,7 @@ require_once( __DIR__ . '/../locallib.php');
 class vpl_jailserver_manager {
     const RECHECK = 300; // Optional setable?
     const TABLE = 'vpl_jailservers';
-    static public function get_curl($server, $request, $fresh = false) {
+    public static function get_curl($server, $request, $fresh = false) {
         if (! function_exists( 'curl_init' )) {
             throw new Exception( 'PHP cURL required' );
         }
@@ -61,7 +61,7 @@ class vpl_jailserver_manager {
         }
         return $ch;
     }
-    static public function get_response($server, $request, &$error = null, $fresh = false) {
+    public static function get_response($server, $request, &$error = null, $fresh = false) {
         $ch = self::get_curl( $server, $request, $fresh );
         $rawresponse = curl_exec( $ch );
         if ($rawresponse === false) {
@@ -145,7 +145,7 @@ class vpl_jailserver_manager {
      *            List of local server in text
      * @return array of servers
      */
-    static public function get_server_list(string $localserverlisttext) {
+    public static function get_server_list(string $localserverlisttext) {
         $plugincfg = get_config('mod_vpl');
         $nllocal = vpl_detect_newline( $localserverlisttext );
         $nlglobal = vpl_detect_newline( $plugincfg->jail_servers );
@@ -176,7 +176,7 @@ class vpl_jailserver_manager {
      *            info about jail servers response
      * @return string
      */
-    static public function get_server(int $maxmemory, string $localserverlisttext = '',
+    public static function get_server(int $maxmemory, string $localserverlisttext = '',
                                       string &$feedback = null): string {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
@@ -231,7 +231,7 @@ class vpl_jailserver_manager {
      * @param string $url to server
      * @return bool
      */
-    static public function is_private_host(string $url): bool {
+    public static function is_private_host(string $url): bool {
         $hostname = parse_url( $url, PHP_URL_HOST );
         if ($hostname === false) {
             return true;
@@ -252,7 +252,7 @@ class vpl_jailserver_manager {
      * @param string $localserverlisttext List of local servers
      * @return array of server object with info about server status
      */
-    static public function check_servers(string $localserverlisttext = ''): array {
+    public static function check_servers(string $localserverlisttext = ''): array {
         global $DB;
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
@@ -301,7 +301,7 @@ class vpl_jailserver_manager {
      *            List of local server in text
      * @return array of URLs
      */
-    static public function get_https_server_list(string $localserverlisttext = ''): array {
+    public static function get_https_server_list(string $localserverlisttext = ''): array {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'PHP XMLRPC required' );
         }

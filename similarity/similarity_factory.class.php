@@ -49,7 +49,7 @@ class vpl_filetype {
             'html' => 'html',
             'htm' => 'html'
     );
-    static public function str($ext) {
+    public static function str($ext) {
         if (isset( self::$sstr [$ext] )) {
             return self::$sstr [$ext];
         } else {
@@ -68,7 +68,7 @@ class vpl_similarity_factory {
         $class = 'vpl_similarity_' . $type;
         return new $class();
     }
-    static public function get($filename) {
+    public static function get($filename) {
         $ext = pathinfo( $filename, PATHINFO_EXTENSION );
         if ($type = vpl_filetype::str( $ext )) {
             return self::get_object( $type );

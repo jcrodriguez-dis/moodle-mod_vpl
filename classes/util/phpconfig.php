@@ -45,7 +45,7 @@ class phpconfig {
      *
      * @return int Nummer of bytes
      */
-    static public function get_bytes(string $value): int {
+    public static function get_bytes(string $value): int {
         $value = strtolower(trim($value));
         if (strlen($value) > 0) {
             $unity = substr($value, -1);
@@ -68,7 +68,7 @@ class phpconfig {
      *
      * @return int Number of bytes
      */
-    static public function get_post_max_size(): int {
+    public static function get_post_max_size(): int {
         return self::get_bytes(ini_get('post_max_size'));
     }
 
@@ -77,7 +77,7 @@ class phpconfig {
      *
      * @return void
      */
-    static public function increase_memory_limit(): void {
+    public static function increase_memory_limit(): void {
         $bytes = self::get_post_max_size() * 3;
         if ($bytes > self::get_bytes(ini_get('memory_limit'))) {
             $newmemorylimit = (int) ($bytes / self::BYTECONVERTER['k']);
@@ -92,7 +92,7 @@ class phpconfig {
      *
      * @return void
      */
-    static public function checks_free_memory(int $memoryneeded): void {
+    public static function checks_free_memory(int $memoryneeded): void {
         $memoryused = memory_get_usage();
         $memorylimit = self::get_bytes(ini_get('memory_limit'));
         if ($memorylimit - $memoryused < $memoryneeded) {

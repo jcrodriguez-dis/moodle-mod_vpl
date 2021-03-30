@@ -35,7 +35,7 @@ class vpl_submissionlist_order {
     protected static $ascending; // Value to return when ascending or descending order.
     protected static $corder = null; // Funtion usort of old PHP versions don't call static class functions.
     // Compare two submission fields.
-    static public function cpm_userid($a, $b) {
+    public static function cpm_userid($a, $b) {
         if ($a->userinfo->id < $b->userinfo->id) {
             return self::$ascending;
         } else {
@@ -43,7 +43,7 @@ class vpl_submissionlist_order {
         }
     }
     // Compare two userinfo fields.
-    static public function cpm_userinfo($a, $b) {
+    public static function cpm_userinfo($a, $b) {
         $field = self::$field;
         $adata = $a->userinfo->$field;
         $bdata = $b->userinfo->$field;
@@ -60,7 +60,7 @@ class vpl_submissionlist_order {
         }
     }
     // Compare two submission fields.
-    static public function cpm_submission($a, $b) {
+    public static function cpm_submission($a, $b) {
         $field = self::$field;
         $submissiona = $a->submission;
         $submissionb = $b->submission;
@@ -95,7 +95,7 @@ class vpl_submissionlist_order {
      *
      * @return array with function name
      */
-    static public function set_order($field, $ascending = true) {
+    public static function set_order($field, $ascending = true) {
         if (self::$corder === null) {
             self::$corder = new vpl_submissionlist_order();
         }

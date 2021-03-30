@@ -31,7 +31,7 @@ defined('MOODLE_INTERNAL') || die();
  */
 class vpl_running_processes {
     const TABLE = 'vpl_running_processes';
-    static public function get($userid, $vplid = false) {
+    public static function get($userid, $vplid = false) {
         global $DB;
         $params = array ( 'userid' => $userid);
         if ( $vplid !== false ) {
@@ -39,7 +39,7 @@ class vpl_running_processes {
         }
         return $DB->get_record( self::TABLE, $params );
     }
-    static public function set($userid, $server, $vplid, $adminticket) {
+    public static function set($userid, $server, $vplid, $adminticket) {
         global $DB;
         $info = new stdClass();
         $info->userid = $userid;
@@ -50,7 +50,7 @@ class vpl_running_processes {
         vpl_truncate_running_processes( $info );
         return $DB->insert_record( self::TABLE, $info );
     }
-    static public function delete($userid, $vplid, $adminticket=false) {
+    public static function delete($userid, $vplid, $adminticket=false) {
         global $DB;
         $parms = array('userid' => $userid, 'vpl' => $vplid);
         if ($adminticket) {
@@ -58,7 +58,7 @@ class vpl_running_processes {
         }
         $DB->delete_records( self::TABLE, $parms );
     }
-    static public function lanched_processes($courseid) {
+    public static function lanched_processes($courseid) {
         global $DB;
         // Clean old processes.
         // TODO: save the maximum time and delete based on it.

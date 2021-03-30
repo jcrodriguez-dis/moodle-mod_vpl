@@ -39,7 +39,7 @@ class vpl_diff {
      *            to process
      * @return string without chars and digits
      */
-    static public function removealphanum($line) {
+    public static function removealphanum($line) {
         $ret = '';
         $l = strlen( $line );
         // Parse line to remove alphanum chars.
@@ -61,7 +61,7 @@ class vpl_diff {
      *            $line2
      * @return int (3 => trimmed equal, 2 =>removealphanum , 1 => start of line , 0 => not equal)
      */
-    static public function diffline($line1, $line2) {
+    public static function diffline($line1, $line2) {
         // TODO Refactor.
         // This is a bad solution that must be rebuild to consider diferent languages.
         // Compare trimed text.
@@ -100,7 +100,7 @@ class vpl_diff {
         }
         return $i > 0 ? 1 : 0;
     }
-    static public function newlineinfo($type, $ln1, $ln2 = 0) {
+    public static function newlineinfo($type, $ln1, $ln2 = 0) {
         $ret = new StdClass();
         $ret->type = $type;
         $ret->ln1 = $ln1;
@@ -117,7 +117,7 @@ class vpl_diff {
      * @param $nl2 number of columns
      * @return void
      */
-    static public function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
+    public static function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
         // Set the matrix[0..nl1+1][0..nl2+1] to 0.
         $row = array_pad( array (), $nl2 + 1, 0 );
         $matrix = array_pad( array (), $nl1 + 1, $row );
@@ -136,7 +136,7 @@ class vpl_diff {
         }
     }
 
-    static public function similine($line1, $line2, $pattern) {
+    public static function similine($line1, $line2, $pattern) {
         return preg_replace($pattern, '', $line1) == preg_replace($pattern, '', $line2);
     }
 
@@ -149,7 +149,7 @@ class vpl_diff {
      *            of string
      * @return array of objects with info to show the two array of lines
      */
-    static public function calculatediff($lines1, $lines2) {
+    public static function calculatediff($lines1, $lines2) {
         $ret = array ();
         $nl1 = count( $lines1 );
         $nl2 = count( $lines2 );
@@ -245,7 +245,7 @@ class vpl_diff {
         }
         return $ret;
     }
-    static public function show($filename1, $data1, $htmlheader1, $filename2, $data2, $htmlheader2) {
+    public static function show($filename1, $data1, $htmlheader1, $filename2, $data2, $htmlheader2) {
         // Get file lines.
         $nl = vpl_detect_newline( $data1 );
         $lines1 = explode( $nl, $data1 );
@@ -336,7 +336,7 @@ class vpl_diff {
         echo '<div style="clear:both;"></div>';
         vpl_sh_factory::syntaxhighlight();
     }
-    static public function vpl_get_similfile($f, &$htmlheader, &$filename, &$data) {
+    public static function vpl_get_similfile($f, &$htmlheader, &$filename, &$data) {
         global $DB;
         $htmlheader = '';
         $filename = '';

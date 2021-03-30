@@ -56,7 +56,7 @@ class backup_vpl_activity_task extends backup_activity_task {
      * @param string $content to encode
      * @return string encode result
      */
-    static public function encode_content_links($content) {
+    public static function encode_content_links($content) {
         global $CFG;
 
         $base = preg_quote ( $CFG->wwwroot, "/" );
