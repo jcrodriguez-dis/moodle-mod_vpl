@@ -72,7 +72,7 @@ try {
         case 'load' :
             $fgm = $vpl->get_execution_fgm();
             $files = $fgm->getallfiles();
-            $result->response->files = mod_vpl_edit::filestoide( $fgm->getallfiles() );
+            $result->response->files = mod_vpl_edit::filestoide( $files );
             $result->response->version = $fgm->getversion();
             break;
         case 'run' :
