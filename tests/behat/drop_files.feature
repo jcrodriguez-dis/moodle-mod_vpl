@@ -1,6 +1,6 @@
 @mod @mod_vpl
-Feature: In an VPL activity, editing allows drop files
-  In order drop files in to editor
+Feature: In a VPL activity, editing allows drop files
+  In order to drop files into the editor
   As an editing teacher
   I access to a VPL activity and drop files
 
@@ -27,13 +27,11 @@ Feature: In an VPL activity, editing allows drop files
     And I log out
 
   @javascript
-  Scenario: A teacher drops files in requested files
+  Scenario: A teacher drops files in "requested files"
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"
     And I navigate to "Requested files" in current page administration
-    And I wait until the page is ready
-    And I wait "1" seconds
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
     And I click on "#vpl_ide_dialog_new + div button" in VPL
@@ -52,9 +50,7 @@ Feature: In an VPL activity, editing allows drop files
     When I click on "#vpl_ide_save" in VPL
     # Sees files
     And I follow "VPL activity testing"
-    And I wait until the page is ready
-    And I wait "1" seconds
-    Then I should see "Execution files"
+    Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "int f() {"
     And I should see "a.c"
