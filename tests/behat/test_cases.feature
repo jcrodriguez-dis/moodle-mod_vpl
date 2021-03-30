@@ -36,6 +36,6 @@ Feature: In an VPL activity, editing teacher change test cases
     When I drop the file "vpl_evaluate.cases" contening "Case = test\n" on "#vpl_tabs" in VPL
     Then I should see "Case = test"
     When I click on "#vpl_ide_save" in VPL
-    And I follow "VPL activity testing"
+    And I follow "VPL activity name"
     Then I should see "vpl_evaluate.cases"
     And I should see "Case = test"
