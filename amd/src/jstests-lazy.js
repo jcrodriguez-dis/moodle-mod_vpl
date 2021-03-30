@@ -48,10 +48,10 @@ define(
             $('#test_results').append($('<p></p>').text(message));
             if (result.length > 0) {
                 var list = $('<ol></ol>');
-                for (var index = 0; index < result.length; index++) {
-                    window.console.log((index + 1) + ': ' + result[index]);
+                for (var i = 0; i < result.length; i++) {
+                    window.console.log((i + 1) + ': ' + result[i]);
                     var element = $('<li></li>');
-                    element.text(result[index]);
+                    element.text(result[i]);
                     list.append(element);
                 }
                 $('#test_results').append(list);
@@ -88,10 +88,10 @@ define(
          * Run tests in tests array
          */
         function runTests() {
-            for (var index = 0; index < tests.length; index++) {
+            for (var i = 0; i < tests.length; i++) {
                 try {
-                    testing = tests[index].name;
-                    tests[index].test();
+                    testing = tests[i].name;
+                    tests[i].test();
                 } catch (e) {
                     result.push("Error: Exception " + e.message + " testing " + testing + "\n" + e.stack);
                 }
@@ -106,8 +106,8 @@ define(
                     var rawData = new ArrayBuffer(13);
                     assertEquals(13, rawData.byteLength, 'rawData.byteLength');
                     var bufferData = new Uint8Array(rawData);
-                    for (var index = 0; index < bufferData.length; index++) {
-                        bufferData[index] = Math.round(Math.random() * 255);
+                    for (var i = 0; i < bufferData.length; i++) {
+                        bufferData[i] = Math.round(Math.random() * 255);
                     }
                     assertEquals(13, bufferData.length, 'bufferData.length');
                     var stringData = "abcdeñhfjéÇ123143565387095609784";
@@ -119,8 +119,8 @@ define(
                     var bufferResult = new Uint8Array(rawResult);
                     assertEquals(bufferData.length, bufferResult.length, 'String2ArrayBuffer');
                     if (bufferData.length == bufferResult.length) {
-                        for (var index = 0; index < bufferData.length; index++) {
-                            assertEquals(bufferData[index], bufferResult[index], 'String2ArrayBuffer values');
+                        for (var j = 0; j < bufferData.length; j++) {
+                            assertEquals(bufferData[j], bufferResult[j], 'String2ArrayBuffer values');
                         }
                     }
                 })();
