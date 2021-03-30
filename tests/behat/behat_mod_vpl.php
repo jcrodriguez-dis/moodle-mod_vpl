@@ -68,7 +68,7 @@ class behat_mod_vpl extends behat_base {
      * @return void
      */
     public function i_drop_the_file_contening_on_in_vpl($finename, $contents, $selector) {
-        $contentesc = addslashes_js($contents);
+        $contentesc = str_replace ('"', '\"', $contents);
         // Testing framework does not accept heredoc syntax.
         $script = "(function() {
             file = new Blob([\"$contentesc\"], {type: \"\"});
