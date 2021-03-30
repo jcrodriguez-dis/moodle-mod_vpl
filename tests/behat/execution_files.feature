@@ -31,6 +31,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     # See default files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -54,6 +56,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -72,6 +76,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"
@@ -89,6 +95,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Reload files
     When I follow "VPL activity testing"
     And I navigate to "Execution files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
     And I should see "vpl_evaluate.sh"

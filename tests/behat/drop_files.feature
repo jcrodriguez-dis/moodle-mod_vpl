@@ -32,6 +32,8 @@ Feature: In an VPL activity, editing allows drop files
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"
     And I navigate to "Requested files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
     And I click on "#vpl_ide_dialog_new + div button" in VPL
@@ -50,6 +52,8 @@ Feature: In an VPL activity, editing allows drop files
     When I click on "#vpl_ide_save" in VPL
     # Sees files
     And I follow "VPL activity testing"
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "Execution files"
     And I should see "new_file_name.c"
     And I should see "int f() {"

@@ -32,6 +32,8 @@ Feature: In an VPL activity, editing teacher set requested files and student use
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"
     And I navigate to "Requested files" in current page administration
+    And I wait until the page is ready
+    And I wait "1" seconds
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
     And I click on "#vpl_ide_dialog_new + div button" in VPL
@@ -44,6 +46,8 @@ Feature: In an VPL activity, editing teacher set requested files and student use
     Then I should see "other new file.c"
     When I click on "#vpl_ide_save" in VPL
     And I follow "VPL activity testing"
+    And I wait until the page is ready
+    And I wait "1" seconds
     And I should see "Requested files"
     Then I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
@@ -51,16 +55,22 @@ Feature: In an VPL activity, editing teacher set requested files and student use
     Given I log in as "student1"
     And I am on "Course 1" course homepage
     When I follow "VPL activity testing"
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
     When I follow "Submission view"
     Then I should see "No submission available"
     When I follow "Edit"
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "new_file_name.c"
     And I should see "other new file.c"
     When I click on "#vpl_ide_save" in VPL
     And I follow "Submission view"
+    And I wait until the page is ready
+    And I wait "1" seconds
     Then I should see "Submitted"
     And I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
