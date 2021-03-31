@@ -253,9 +253,8 @@ define(
                     }
                     if (VPLUtil.isBinary(fileName)) {
                         // If binary use as arrayBuffer.
-                        if (!save({name: fileName, contents: btoa(uncompressed), encoding: 1})) {
-                            i = out;
-                        }
+                        save({name: fileName, contents: btoa(uncompressed), encoding: 1});
+                        // TODO Show message when error.
                         process(i + 1);
                     } else {
                         data = VPLUtil.String2ArrayBuffer(uncompressed);
@@ -264,15 +263,14 @@ define(
                         });
                         var fr = new FileReader();
                         fr.onload = function(e) {
-                            if (!save({name: fileName, contents: e.target.result, encoding: 0})) {
-                                i = out;
-                            }
+                            save({name: fileName, contents: e.target.result, encoding: 0});
                             process(i + 1);
                         };
                         fr.onerror = function(e) {
                             VPLUtil.log(e);
                             i = out;
                             process(i + 1);
+                            // TODO Show message when error.
                         };
                         fr.readAsText(blob);
                     }
