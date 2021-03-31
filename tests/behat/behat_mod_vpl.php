@@ -118,6 +118,7 @@ class behat_mod_vpl extends behat_base {
             $('$selector').trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
+        sleep(1);
     }
 
     /**
@@ -152,5 +153,6 @@ class behat_mod_vpl extends behat_base {
                 $('$selector').trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
+        sleep(count($files));
     }
 }
