@@ -56,3 +56,128 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "a.c"
     And I should see "int main() {"
     And I should see "printf(\"hola\");"
+
+  @javascript
+  Scenario: A teacher drops multiple files in "requested files"
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I follow "VPL activity testing"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | new_file_name.c |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    Then I should see "new_file_name.c"
+    # Drops multiple new files
+    When I drop the file "hello.c|hello.py|hello.adb" on "#vpl_tabs" in VPL
+    Then I should see "hello.c"
+    Then I should see "hello.py"
+    Then I should see "hello.adb"
+    When I follow "hello.py"
+    Then I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+    When I follow "hello.c"
+    Then I should see "#include <stdio.h>"
+    And I should see "int main(){"
+    # Saves files
+    When I click on "#vpl_ide_save" in VPL
+    # Sees files
+    And I follow "VPL activity testing"
+    Then I should see "Requested files"
+    And I should see "new_file_name.c"
+    And I should see "hello.c"
+    And I should see "hello.py"
+    And I should see "hello.adb"
+    And I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+    And I should see "#include <stdio.h>"
+    And I should see "int main(){"
+
+  @javascript
+  Scenario: A teacher drops multiple binary files in "requested files"
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I follow "VPL activity testing"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | new_file_name.c |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    Then I should see "new_file_name.c"
+    # Drops multiple new files
+    When I drop the file "logo.png|hello.py|hello world.pdf" on "#vpl_tabs" in VPL
+    Then I should see "logo.png"
+    Then I should see "hello.py"
+    Then I should see "hello world.pdf"
+    When I follow "hello.py"
+    Then I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+    When I follow "hello world.pdf"
+    Then I should see "Binary File"
+    # Saves files
+    When I click on "#vpl_ide_save" in VPL
+    # Sees files
+    And I follow "VPL activity testing"
+    Then I should see "Requested files"
+    And I should see "new_file_name.c"
+    And I should see "logo.png"
+    And I should see "hello.py"
+    And I should see "hello world.pdf"
+    And I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+
+  @javascript
+  Scenario: A teacher drops multiple files including zip files
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I follow "VPL activity testing"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | new_file_name.c |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    Then I should see "new_file_name.c"
+    # Drops multiple new files
+    When I drop the file "files.zip|hello.adb" on "#vpl_tabs" in VPL
+    And I should see "logo.png"
+    And I should see "hello.c"
+    And I should see "hello.py"
+    And I should see "hello world.pdf"
+    And I should see "hello.adb"
+    When I click on "#vpl_ide_save" in VPL
+    # Sees files
+    And I follow "VPL activity testing"
+    Then I should see "Requested files"
+    And I should see "new_file_name.c"
+    And I should see "logo.png"
+    And I should see "hello.py"
+    And I should see "hello.c"
+    And I should see "hello world.pdf"
+    And I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+    And I should see "hello.adb"
+
+  @javascript
+  Scenario: A teacher drops multiple files including zip files already presents
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    When I follow "VPL activity testing"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | new_file_name.c |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    Then I should see "new_file_name.c"
+    # Drops multiple new files
+    When I drop the file "hello.c|files.zip" on "#vpl_tabs" in VPL
+    And I should see "logo.png"
+    And I should see "hello.c"
+    And I should see "hello.py"
+    And I should see "hello world.pdf"
+    When I click on "#vpl_ide_save" in VPL
+    # Sees files
+    And I follow "VPL activity testing"
+    Then I should see "Requested files"
+    And I should see "new_file_name.c"
+    And I should see "logo.png"
+    And I should see "hello.py"
+    And I should see "hello.c"
+    And I should see "hello world.pdf"
+    And I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
