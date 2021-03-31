@@ -68,7 +68,7 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops multiple new files
-    When I drop the file "hello.c|hello.py|hello.adb" on "#vpl_tabs" in VPL
+    When I drop the files "hello.c|hello.py|hello.adb" on "#vpl_tabs" in VPL
     Then I should see "hello.c"
     Then I should see "hello.py"
     Then I should see "hello.adb"
@@ -103,7 +103,7 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops multiple new files
-    When I drop the file "logo.png|hello.py|hello world.pdf" on "#vpl_tabs" in VPL
+    When I drop the files "logo.png|hello.py|hello world.pdf" on "#vpl_tabs" in VPL
     Then I should see "logo.png"
     Then I should see "hello.py"
     Then I should see "hello world.pdf"
@@ -135,7 +135,7 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops multiple new files
-    When I drop the file "files.zip|hello.adb" on "#vpl_tabs" in VPL
+    When I drop the files "files.zip|hello.adb" on "#vpl_tabs" in VPL
     And I should see "logo.png"
     And I should see "hello.c"
     And I should see "hello.py"
@@ -165,7 +165,7 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops multiple new files
-    When I drop the file "hello.c|files.zip" on "#vpl_tabs" in VPL
+    When I drop the files "hello.c|files.zip" on "#vpl_tabs" in VPL
     And I should see "logo.png"
     And I should see "hello.c"
     And I should see "hello.py"
@@ -180,4 +180,14 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "hello.c"
     And I should see "hello world.pdf"
     And I should see "print(\"Hello from Python language!\")"
+    And I should see "print(7 * 43)"
+    # Checks file updates
+    When I navigate to "Requested files" in current page administration
+    And I drop the file "hello.py" contening "print(\"content_changed\")" on "#vpl_tabs" in VPL
+    And I follow "hello.py"
+    Then I should see "print(\"content_changed\")"
+    And I should not see "print(\"Hello from Python language!\")"
+    When I drop the file "files.zip" on "#vpl_tabs" in VPL
+    And I follow "hello.py"
+    Then I should see "print(\"Hello from Python language!\")"
     And I should see "print(7 * 43)"
