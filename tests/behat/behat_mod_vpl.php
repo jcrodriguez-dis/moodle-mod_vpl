@@ -121,7 +121,7 @@ class behat_mod_vpl extends behat_base {
     }
 
     /**
-     * Drop file from datafile subdirectory
+     * Drop files from datafile subdirectory
      *
      * @Given /^I drop the files? "([^"]*)" on "([^"]*)" in VPL$/
      *
