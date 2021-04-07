@@ -279,7 +279,7 @@ define(
                 return rfb && lastState != 'disconnected';
             };
             this.disconnect = function() {
-                if (rfb && lastState == 'normal') {
+                if (rfb) {
                     rfb.disconnect();
                 }
                 onCloseAction();
