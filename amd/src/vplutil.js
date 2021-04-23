@@ -1022,10 +1022,10 @@ define(
             };
 
             ws.onmessage = function(event) {
-                var message = /^([^:]+):/i.exec(event.data);
+                var message = /^([^:]+):(.*)/i.exec(event.data);
                 if (message !== null) {
                     var action = message[1];
-                    var content = event.data.substr(action.length + 1);
+                    var content = message[2];
                     if (messageActions[action]) {
                         messageActions[action](content);
                     }

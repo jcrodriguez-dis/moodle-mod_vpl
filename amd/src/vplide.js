@@ -1591,23 +1591,34 @@ define(
                 },
                 'setResult': self.setResult,
                 'ajaxurl': options.ajaxurl,
-                'run': function(type, coninfo, ws) {
-                    if (lastConsole && lastConsole.isOpen()) {
-                        lastConsole.close();
-                    }
+                'run': function(content, coninfo, ws) {
+                    var parsed = /^([^:]*):?(.*)/i.exec(content);
+                    var type = parsed[1];
                     if (type == 'terminal') {
+                        if (lastConsole && lastConsole.isOpen()) {
+                            lastConsole.close();
+                        }
                         lastConsole = terminal;
                         terminal.connect(coninfo.executionURL, function() {
                             ws.close();
                             focusCurrentFile();
                         });
-                    } else {
+                    } else if (type == 'vnc') {
+                        if (lastConsole && lastConsole.isOpen()) {
+                            lastConsole.close();
+                        }
                         lastConsole = VNCClient;
                         VNCClient.connect(coninfo.secure, coninfo.server, coninfo.portToUse, coninfo.VNCpassword,
                                 coninfo.executionPath, function() {
                                     ws.close();
                                     focusCurrentFile();
                                 });
+                    } else if (type == "browser") {
+                        var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
+                        URL += parsed[2] + "/httpPassthrough";
+                        showMessage('<a href="' + URL + '" target="_blank">Clink here</a>');
+                    } else {
+                        VPLUtil.log("Type of run error " + content, true);
                     }
                 },
                 'lastAction': false,
