@@ -45,6 +45,7 @@ define(
             var autoResizeTab;
             var showErrorMessage;
             var updateMenu;
+            var executionActions;
             var minNumberOfFiles = options.minfiles || 0;
             var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
@@ -1574,6 +1575,9 @@ define(
                                 fileManager.setVersion(response.version);
                                 menuButtons.setTimeLeft(response);
                                 VPLUtil.delay('updateMenu', updateMenu);
+                                if (VPLUtil.monitorRunning()) {
+                                    VPLUtil.requestAction('update', 'updating', data, options.ajaxurl);
+                                }
                             }
                         }).fail(showErrorMessage);
                     }
@@ -1585,52 +1589,6 @@ define(
                 }
             });
 
-            var executionActions = {
-                'getConsole': function() {
-                    return lastConsole;
-                },
-                'setResult': self.setResult,
-                'ajaxurl': options.ajaxurl,
-                'run': function(content, coninfo, ws) {
-                    var parsed = /^([^:]*):?(.*)/i.exec(content);
-                    var type = parsed[1];
-                    if (type == 'terminal') {
-                        if (lastConsole && lastConsole.isOpen()) {
-                            lastConsole.close();
-                        }
-                        lastConsole = terminal;
-                        terminal.connect(coninfo.executionURL, function() {
-                            ws.close();
-                            focusCurrentFile();
-                        });
-                    } else if (type == 'vnc') {
-                        if (lastConsole && lastConsole.isOpen()) {
-                            lastConsole.close();
-                        }
-                        lastConsole = VNCClient;
-                        VNCClient.connect(coninfo.secure, coninfo.server, coninfo.portToUse, coninfo.VNCpassword,
-                                coninfo.executionPath, function() {
-                                    ws.close();
-                                    focusCurrentFile();
-                                });
-                    } else if (type == "browser") {
-                        var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
-                        URL += parsed[2] + "/httpPassthrough";
-                        showMessage('<a href="' + URL + '" target="_blank">Clink here</a>');
-                    } else {
-                        VPLUtil.log("Type of run error " + content, true);
-                    }
-                },
-                'lastAction': false,
-                'getLastAction': function() {
-                    var ret = this.lastAction;
-                    this.lastAction = false;
-                    return ret;
-                },
-                'setLastAction': function(action) {
-                    this.lastAction = action;
-                }
-            };
             /**
              * Launches the action
              *
@@ -1828,9 +1786,15 @@ define(
                 }
                 var modified = fileManager.isModified();
                 menuButtons.enable('save', modified);
-                menuButtons.enable('run', (!modified || options.example) && isOptionAllowed('run'));
-                menuButtons.enable('debug', (!modified || options.example) && isOptionAllowed('debug'));
-                menuButtons.enable('evaluate', (!modified || options.example) && isOptionAllowed('evaluate'));
+                var running = VPLUtil.monitorRunning();
+                if (running) {
+                    menuButtons.setText('run', 'running');
+                } else {
+                    menuButtons.setText('run', 'run');
+                }
+                menuButtons.enable('run', !running && (!modified || options.example) && isOptionAllowed('run'));
+                menuButtons.enable('debug', !running && (!modified || options.example) && isOptionAllowed('debug'));
+                menuButtons.enable('evaluate', !running && (!modified || options.example) && isOptionAllowed('evaluate'));
                 menuButtons.enable('download', !modified);
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
@@ -1854,6 +1818,61 @@ define(
                 menuButtons.enable('find_replace', file.hasFindReplace());
                 menuButtons.enable('next', file.hasNext());
                 VPLUtil.delay('updateFileList', fileManager.updateFileList);
+            };
+
+            executionActions = {
+                'open': updateMenu,
+                'close': updateMenu,
+                'getConsole': function() {
+                    return lastConsole;
+                },
+                'setResult': self.setResult,
+                'ajaxurl': options.ajaxurl,
+                'run': function(content, coninfo, ws) {
+                    var parsed = /^([^:]*):?(.*)/i.exec(content);
+                    var type = parsed[1];
+                    if (type == 'terminal' || type == 'webterminal') {
+                        if (lastConsole && lastConsole.isOpen()) {
+                            lastConsole.close();
+                        }
+                        lastConsole = terminal;
+                        terminal.connect(coninfo.executionURL, function() {
+                            ws.close();
+                            focusCurrentFile();
+                        });
+                    } else if (type == 'vnc') {
+                        if (lastConsole && lastConsole.isOpen()) {
+                            lastConsole.close();
+                        }
+                        lastConsole = VNCClient;
+                        VNCClient.connect(coninfo.secure, coninfo.server, coninfo.portToUse, coninfo.VNCpassword,
+                                coninfo.executionPath, function() {
+                                    ws.close();
+                                    focusCurrentFile();
+                                });
+                    } else if (type == "browser") {
+                        var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
+                        URL += parsed[2] + "/httpPassthrough";
+                        var message = '<a href="' + URL + '" target="_blank">';
+                        message += VPLUtil.str('open') + '</a>';
+                        var options = {
+                            icon: 'run',
+                            title: VPLUtil.str('run'),
+                        };
+                        showMessage(message, options);
+                    } else {
+                        VPLUtil.log("Type of run error " + content, true);
+                    }
+                },
+                'lastAction': false,
+                'getLastAction': function() {
+                    var ret = this.lastAction;
+                    this.lastAction = false;
+                    return ret;
+                },
+                'setLastAction': function(action) {
+                    this.lastAction = action;
+                }
             };
 
             tabs.on("tabsactivate", function() {

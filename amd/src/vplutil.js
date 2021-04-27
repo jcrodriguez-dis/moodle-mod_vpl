@@ -587,6 +587,7 @@ define(
                 'shortcuts': 'flash',
                 'sort': 'list-ol',
                 'run': 'rocket',
+                'running': 'rocket fa-spin',
                 'debug': 'bug',
                 'evaluate': 'check-square-o',
                 'console': 'terminal',
@@ -910,7 +911,7 @@ define(
                 VPLUtil.showErrorMessage(VPLUtil.str('connection_fail'));
             }
         };
-
+        VPLUtil.monitorRunning = VPLUtil.returnFalse;
         VPLUtil.webSocketMonitor = function(coninfo, title, running, externalActions) {
             VPLUtil.setProtocol(coninfo);
             var ws = null;
@@ -967,9 +968,6 @@ define(
                 'close': function() {
                     VPLUtil.log('ws close message from jail');
                     ws.close();
-                    if (externalActions.close) {
-                        externalActions.close();
-                    }
                 }
             };
             try {
@@ -993,6 +991,9 @@ define(
             ws.onopen = function() {
                 ws.notOpen = false;
                 pb.setLabel(VPLUtil.str('connected'));
+                if (externalActions.open) {
+                    externalActions.open();
+                }
             };
             ws.onerror = function(event) {
                 VPLUtil.log('ws error ' + event);
@@ -1008,6 +1009,9 @@ define(
                 } else {
                     deferred.reject(VPLUtil.str('connection_fail'));
                 }
+                if (externalActions.close) {
+                    VPLUtil.delay('externalActions.close', externalActions.close);
+                }
             };
             ws.onclose = function() {
                 if (externalActions.getConsole) {
@@ -1018,6 +1022,9 @@ define(
                     if (!delegated && deferred.state() != 'rejected') {
                         deferred.resolve();
                     }
+                }
+                if (externalActions.close) {
+                    externalActions.close();
                 }
             };
 
@@ -1032,6 +1039,9 @@ define(
                 } else {
                     pb.setLabel(VPLUtil.str('error') + ': ' + event.data);
                 }
+            };
+            VPLUtil.monitorRunning = function() {
+                return ws !== null && ws.readyState != WebSocket.CLOSED;
             };
             return deferred;
         };
