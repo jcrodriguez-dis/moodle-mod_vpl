@@ -297,6 +297,7 @@ class vpl_editor_util {
                 'next',
                 'load',
                 'loading',
+                'open',
                 'options',
                 'outofmemory',
                 'paste',
