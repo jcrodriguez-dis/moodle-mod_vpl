@@ -229,6 +229,7 @@ function vpl_get_lang($bashadapt = false) {
             'fa' => 'IR',
             'fi' => 'FI',
             'fr' => 'FR',
+            'he' => 'IL',
             'hu' => 'HU',
             'ig' => 'NG',
             'it' => 'IT',
