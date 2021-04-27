@@ -348,6 +348,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->activityid = $this->vpl->get_instance()->id;
         return $data;
     }
+
     public function jailaction($server, $action, $data) {
         if (! function_exists( 'xmlrpc_encode_request' )) {
             throw new Exception( 'Inernal server error: PHP XMLRPC requiered' );
@@ -468,6 +469,50 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         vpl_running_processes::set( $instance->userid, $jailserver, $instance->vpl, $jailresponse ['adminticket'] );
         return $response;
     }
+
+    /**
+     * Send update command to the jail
+     *
+     * @param mod_vpl $vpl. VPl instance to process. Default = null
+     * @param string[string] $files. Files to send
+     * @return boolean if update sent
+     */
+    public function update($vpl, $files) {
+        global $DB;
+        $data = new stdClass();
+        $data->files = $files;
+        $vplid = $this->vpl->get_instance()->id;
+        $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid );
+        if ($processinfo == null) { // No process to cancel.
+            return false;
+        }
+        $server = $processinfo->server;
+        $data = new stdClass();
+        $data->files = $files;
+        $fileencoding = array();
+        $encodefiles = array ();
+        foreach ($data->files as $filename => $filedata) {
+            if (vpl_is_binary( $filename )) {
+                $encodefiles [$filename . '.b64'] = base64_encode( $filedata );
+                $fileencoding [$filename . '.b64'] = 1;
+                $data->filestodelete [$filename . '.b64'] = 1;
+            } else {
+                $fileencoding [$filename] = 0;
+                $encodefiles [$filename] = $filedata;
+            }
+            $data->files [$filename] = '';
+        }
+        $data->files = $encodefiles;
+        $data->fileencoding = $fileencoding;
+        $data->adminticket = $processinfo->adminticket;
+        try {
+            $response = $this->jailaction( $server, 'update', $data );
+        } catch ( Exception $e ) {
+            return false;
+        }
+        return $response ['update'] > 0;
+    }
+
     public function retrieveresult() {
         $response = $this->jailreaction( 'getresult' );
         if ($response === false) {

@@ -141,6 +141,23 @@ class mod_vpl_edit{
             throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $errormessage );
         }
     }
+    /**
+     * Updates files in running task
+     *
+     * @param mod_vpl $vpl VPL instance
+     * @param int $userid
+     * @param string[string] $files internal format
+     * @throws Exception
+     * @return boolean True if updated
+     */
+    public static function update(mod_vpl $vpl, int $userid, array & $files) {
+        $lastsub = $vpl->last_user_submission( $userid );
+        if (! $lastsub) {
+            throw new Exception( get_string( 'nosubmission', VPL ) );
+        }
+        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+        return $submission->update($vpl, $files);
+    }
 
     /**
      * Returns initial/requested files of $vpl

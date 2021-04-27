@@ -71,7 +71,7 @@ try {
     }
     $instance = $vpl->get_instance();
     switch ($action) {
-        case 'save' :
+        case 'save':
             if ($userid != $USER->id) {
                 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
             }
@@ -86,11 +86,15 @@ try {
             }
             $result->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments, $actiondata->version );
             break;
-        case 'resetfiles' :
+        case 'update':
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            $result->response = mod_vpl_edit::update( $vpl, $userid, $files);
+            break;
+        case 'resetfiles':
             $files = mod_vpl_edit::get_requested_files( $vpl );
             $result->response->files = mod_vpl_edit::filestoide( $files );
             break;
-        case 'load' :
+        case 'load':
             if ( isset($actiondata->submissionid) ) {
                 $subid = $actiondata->submissionid;
             }
@@ -105,24 +109,24 @@ try {
             $load->files = mod_vpl_edit::filestoide( $load->files );
             $result->response = $load;
             break;
-        case 'run' :
-        case 'debug' :
-        case 'evaluate' :
+        case 'run':
+        case 'debug':
+        case 'evaluate':
             if (! $instance->$action and ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
             $result->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );
             break;
-        case 'retrieve' :
+        case 'retrieve':
             $result->response = mod_vpl_edit::retrieve_result( $vpl, $userid );
             break;
-        case 'cancel' :
+        case 'cancel':
             $result->response = mod_vpl_edit::cancel( $vpl, $userid );
             break;
-        case 'getjails' :
+        case 'getjails':
             $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
             break;
-        default :
+        default:
             throw new Exception( 'ajax action error: ' + $action );
     }
     $timeleft = $instance->duedate - time();
