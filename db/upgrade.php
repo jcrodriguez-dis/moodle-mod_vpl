@@ -385,6 +385,9 @@ function xmldb_vpl_upgrade_2021011014() {
  * @return void
  */
 function xmldb_vpl_upgrade($oldversion = 0) {
+    if ($oldversion == 0) {
+        return;
+    }
     $vpl22 = 2012060112;
     if ($oldversion < $vpl22) {
         xmldb_vpl_upgrade_2012060112();
