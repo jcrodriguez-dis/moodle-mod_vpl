@@ -190,7 +190,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $vplinstance = $vpl->get_instance();
         if (isset( $already [$vplinstance->id] )) {
-            print_error( 'Recursive basedon vpl definition' );
+            throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
         }
         $call = count( $already );
         $already [$vplinstance->id] = true;

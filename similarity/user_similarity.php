@@ -46,14 +46,14 @@ $timelimit = 600; // Limit 10 minutes.
 if (! $course = $DB->get_record( "course", array (
         'id' => $id
 ) )) {
-    print_error( 'invalidcourseid', '', $id );
+    throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
 $user = $DB->get_record( 'user', array (
         'id' => $userid
 ) );
 if (! $user) {
-    print_error( 'invaliduserid', '', $id );
+    throw new moodle_exception('invalidcourseid');
 }
 
 $strtitle = get_string( 'listsimilarity', VPL );

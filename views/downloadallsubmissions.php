@@ -146,7 +146,7 @@ if (! file_exists($dir)) {
 }
 $zipfilename = tempnam( $dir, 'zip' );
 if ( $zipfilename === false || ! file_exists($zipfilename) ) {
-    print_error("Enable to create temporal Zip file");
+    throw new moodle_exception('cannotopenzip');
 }
 if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
     $ziperrors = '';
@@ -199,5 +199,5 @@ if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
     $zip->close();
     vpl_output_zip($zipfilename, $vpl->get_instance()->name . $extraname);
 } else {
-    print_error("Enable to open temporal Zip file");
+    throw new moodle_exception('cannotopenzip');
 }

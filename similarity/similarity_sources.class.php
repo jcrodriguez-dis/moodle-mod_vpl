@@ -400,7 +400,7 @@ class vpl_similarity_preprocess {
     public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
         $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
         if ($ext != 'ZIP') {
-            print_error( 'nozipfile' );
+            throw new moodle_exception('wrongzipfilename');
         }
         $vplid = $vpl->get_instance()->id;
         self::create_zip_file( $vplid, $zipname, $zipdata );

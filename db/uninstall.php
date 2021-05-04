@@ -32,5 +32,5 @@ foreach ($vpls as $vplinstance) {
     $ret = $ret && vpl_delete_instance( $vplinstance->id );
 }
 if (! $ret) {
-    print_error( 'Error deleting VPL' );
+    throw new moodle_exception('error:uninstalling', 'mod_vpl');
 }

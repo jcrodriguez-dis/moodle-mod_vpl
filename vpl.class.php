@@ -167,30 +167,30 @@ class mod_vpl {
         global $DB;
         if ($id) {
             if (! $this->cm = get_coursemodule_from_id( VPL, $id )) {
-                print_error( 'invalidcoursemodule');
+                throw new moodle_exception('invalidcoursemodule');
             }
             if (! $this->course = $DB->get_record( "course", array (
                     "id" => $this->cm->course
             ) )) {
-                print_error( 'unknowncourseidnumber', '', $this->cm->course );
+                throw new moodle_exception('invalidcourseid');
             }
             if (! $this->instance = $DB->get_record( VPL, array (
                     "id" => $this->cm->instance
             ) )) {
-                print_error( 'module instance id unknow' );
+                throw new moodle_exception('invalidcoursemodule');
             }
             $this->instance->cmidnumber = $this->cm->id;
         } else {
             if (! $this->instance = $DB->get_record( VPL, array (
                     "id" => $a
             ) )) {
-                print_error( 'module instance id unknow' );
+                throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL);
             }
             if (! $this->course = $DB->get_record( "course",
                     array (
                             "id" => $this->instance->course
                     ) )) {
-                print_error( 'unknowncourseidnumber', '', $this->instance->course );
+                throw new moodle_exception('invalidcourseid');
             }
             if (! $this->cm = get_coursemodule_from_instance( VPL, $this->instance->id, $this->course->id )) {
                 vpl_notice( get_string( 'invalidcoursemodule', 'error' ) . ' VPL id=' . $a );
@@ -1886,7 +1886,7 @@ class mod_vpl {
             $assign->variation = $variation->id;
             $assign->userid = $userid;
             if (! $DB->insert_record( VPL_ASSIGNED_VARIATIONS, $assign )) {
-                print_error( 'vpl variation not assigned' );
+                throw new moodle_exception('invalidcoursemodule');
             }
             \mod_vpl\event\variation_assigned::log( $this, $variation->id, $userid);
         } else {
@@ -1901,7 +1901,7 @@ class mod_vpl {
                     array (
                         'id' => $varassigned->id
                     ) );
-                print_error( 'vpl assigned variation inconsistency. Fixed removing the current assigment.' );
+                throw new moodle_exception('invalidcoursemodule');
             }
         }
         return $variation;

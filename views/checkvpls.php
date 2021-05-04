@@ -34,7 +34,7 @@ $id = required_param( 'id', PARAM_INT ); // Course id.
 
 // Check course existence.
 if (! $course = $DB->get_record( "course", array ( 'id' => $id ) )) {
-    print_error( 'invalidcourseid', '', $id );
+    throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
 

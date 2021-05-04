@@ -137,7 +137,7 @@ if ( isset($_POST['cancel']) ) {
                     'variation' => $fromform->varid
             ) );
         } else {
-            print_error( VPL_VARIATIONS . ' record not deleted' . $fromform->varid . ' ' . $vplid, VPL, $href );
+            throw new moodle_exception('error:recordnotdeleted', 'mod_vpl', VPL_VARIATIONS);
         }
         vpl_redirect( $href, get_string('deleted') );
     } else {
@@ -149,7 +149,7 @@ if ( isset($_POST['cancel']) ) {
             if ($vid = $DB->insert_record( VPL_VARIATIONS, $fromform )) {
                 \mod_vpl\event\variation_added::log( $vpl, $vid );
             } else {
-                print_error( VPL_VARIATIONS . ' record not inserted' . $fromform->varid . ' ' . $vplid, VPL, $href );
+                throw new moodle_exception('error:recordnotinserted', 'mod_vpl', VPL_VARIATIONS);
             }
             vpl_redirect( $href, get_string('saved', VPL) );
         } else { // Update record.
@@ -166,7 +166,7 @@ if ( isset($_POST['cancel']) ) {
                 \mod_vpl\event\variation_updated::log( $vpl, $fromform->varid );
                 vpl_redirect( $href, get_string('updated', '', $fromform->identification) );
             } else {
-                print_error( VPL_VARIATIONS . ' record inconsistence ' . $id . ' ' . $vplid, VPL, $href );
+                throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL_VARIATIONS);
             }
         }
     }

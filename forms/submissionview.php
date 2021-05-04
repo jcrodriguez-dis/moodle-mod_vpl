@@ -79,7 +79,7 @@ if ($userid && $userid != $USER->id) {
 }
 
 if ($subinstance != null && $subinstance->vpl != $vpl->get_instance()->id) {
-    print_error( 'invalidcourseid' );
+    throw new moodle_exception('invalidcourseid');
 }
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
@@ -100,7 +100,7 @@ if (! $subinstance) {
 $submissionid = $subinstance->id;
 
 if ($vpl->get_instance()->id != $subinstance->vpl) {
-    print_error( 'vpl submission vpl inconsistence' );
+    throw new moodle_exception('error:inconsistency', 'mod_vpl', 'vpl_submission');
 }
 
 // Display submission.

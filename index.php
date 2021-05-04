@@ -84,7 +84,7 @@ $sectionfilter = vpl_get_set_session_var( 'section', 'all' );
 
 // Check course existence.
 if (! $course = $DB->get_record( "course", array ( 'id' => $id ) )) {
-    print_error( 'invalidcourseid', '', $id );
+    throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
 // Load strings.

@@ -379,7 +379,7 @@ class vpl_diff {
             $htmlheader .= $filename . ' ' . optional_param( 'username' . $f, '', PARAM_TEXT );
             $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
             if ($ext != 'ZIP') {
-                print_error( 'nozipfile' );
+                throw new moodle_exception( 'wrongzipfilename' );
             }
             $zip = new ZipArchive();
             $zipfilename = vpl_similarity_preprocess::get_zip_filepath( $vplid, $zipname );
@@ -388,7 +388,7 @@ class vpl_diff {
                 $zip->close();
             }
         } else {
-            print_error( 'type error' );
+            throw new moodle_exception('invalidnum');;
         }
     }
 }

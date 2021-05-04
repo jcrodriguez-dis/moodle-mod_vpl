@@ -54,7 +54,7 @@ $vpl->print_header( get_string( 'listsimilarity', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 $form = new vpl_similarity_form( 'listsimilarity.php', $vpl );
 if (! ($fromform = $form->get_data())) {
-    print_error( 'readingdata', VPL );
+    throw new moodle_exception('invalidformdata');
 }
 // Get filelist names to scan.
 $filesselected = array ();
