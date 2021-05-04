@@ -59,7 +59,7 @@ class vpl_filetype {
 }
 class vpl_similarity_factory {
     private static $classloaded = array ();
-    static private function get_object($type) {
+    private static function get_object($type) {
         if (! isset( self::$classloaded[$type] )) {
             $include = 'similarity_' . $type . '.class.php';
             require_once($include);

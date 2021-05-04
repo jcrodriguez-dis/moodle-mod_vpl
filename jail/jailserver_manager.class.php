@@ -90,7 +90,7 @@ class vpl_jailserver_manager {
      * @param string $server
      * @return boolean
      */
-    static private function is_checkable(string $server) {
+    private static function is_checkable(string $server) {
         global $DB;
         $info = $DB->get_record( self::TABLE, array (
                 'serverhash' => self::get_hash($server),
@@ -111,7 +111,7 @@ class vpl_jailserver_manager {
      * @param string $strerror
      * @return void
      */
-    static private function server_fail(string $server, string $strerror) {
+    private static function server_fail(string $server, string $strerror) {
         global $DB;
         if ($strerror == null) {
             $strerror = '';
@@ -337,7 +337,7 @@ class vpl_jailserver_manager {
      * @param string $server $URL to generate hash
      * @return int
      */
-    static private function get_hash(string $server): int {
+    private static function get_hash(string $server): int {
         $md = substr(md5($server), -7);
         return hexdec( $md );
     }
