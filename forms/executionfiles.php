@@ -51,7 +51,7 @@ $options ['maxfiles'] = 1000;
 $options ['saved'] = true;
 $options ['minfiles'] = $fgp->get_numstaticfiles();
 
-vpl_editor_util::generate_requires($options);
+vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_header( get_string( 'executionfiles', VPL ) );
 $vpl->print_heading_with_help( 'executionfiles' );

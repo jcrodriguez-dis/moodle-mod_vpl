@@ -51,7 +51,7 @@ $options ['minfiles'] = 1;
 $options ['maxfiles'] = 1;
 $options ['saved'] = true;
 
-vpl_editor_util::generate_requires( $options );
+vpl_editor_util::generate_requires($vpl, $options);
 $vpl->print_header( get_string( 'testcases', VPL ) );
 $vpl->print_heading_with_help( 'testcases' );
 

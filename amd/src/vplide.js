@@ -50,6 +50,7 @@ define(
             var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
             var readOnly = options.example;
+            var isTeacher = options.isTeacher;
             var fullScreen = false;
             var scrollBarWidth = VPLUtil.scrollBarWidth();
             var str = VPLUtil.str;
@@ -1853,9 +1854,13 @@ define(
                     } else if (type == "browser") {
                         var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
                         URL += parsed[2] + "/httpPassthrough";
+                        if (isTeacher) {
+                            URL += "?private";
+                        }
                         var message = '<a href="' + URL + '" target="_blank">';
                         message += VPLUtil.str('open') + '</a>';
                         var options = {
+                            width: 200,
                             icon: 'run',
                             title: VPLUtil.str('run'),
                         };

@@ -49,7 +49,7 @@ $options ['minfiles'] = 0;
 $options ['maxfiles'] = 1000;
 $options ['saved'] = true;
 
-vpl_editor_util::generate_requires($options);
+vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_header( get_string( 'requestedfiles', VPL ) );
 $vpl->print_heading_with_help( 'requestedfiles' );

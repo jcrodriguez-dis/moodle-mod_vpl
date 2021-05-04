@@ -36,7 +36,7 @@ class vpl_editor_util {
         self::generate_jquery();
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
     }
-    public static function generate_requires($options) {
+    public static function generate_requires($vpl, $options) {
         global $PAGE;
         global $CFG;
         $plugincfg = get_config('mod_vpl');
@@ -50,6 +50,8 @@ class vpl_editor_util {
         $options ['theme'] = get_user_preferences('vpl_acetheme', $options ['theme']);
         $options ['lang'] = $CFG->lang;
         $options ['postMaxSize'] = \mod_vpl\util\phpconfig::get_post_max_size();
+        $options ['isGroupActivity'] = $vpl->is_group_activity();
+        $options ['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
         self::generate_jquery();
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
