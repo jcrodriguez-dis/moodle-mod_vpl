@@ -504,7 +504,9 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
  * as public to test it.
  */
 class testable_provider extends \mod_vpl\privacy\provider {
+    private static $nothing = false;
     public static function get_user_preferences(int $userid): array {
+        self::$nothing = true; // Removes codecheck warning.
         return parent::get_user_preferences($userid);
     }
 }
