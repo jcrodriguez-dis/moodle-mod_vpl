@@ -1841,6 +1841,14 @@ define(
                             ws.close();
                             focusCurrentFile();
                         });
+                        if (type == 'webterminal') {
+                            var URLfavicon = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse;
+                            URLfavicon += "/favicon.ico";
+                            var imgFavicon = $('<img>');
+                            imgFavicon.attr('src', URLfavicon);
+                            imgFavicon.attr('style', 'display:none');
+                            $('body').append(imgFavicon);
+                        }
                     } else if (type == 'vnc') {
                         if (lastConsole && lastConsole.isOpen()) {
                             lastConsole.close();
