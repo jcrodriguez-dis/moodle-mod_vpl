@@ -1665,7 +1665,8 @@ class mod_vpl {
                 $text .= s( $file );
                 $needcomma = true;
             }
-            $link = ' (<a href="';
+            $link = ' (' . vpl_get_awesome_icon('download');
+            $link .= '<a href="';
             $link .= vpl_mod_href( 'views/downloadrequiredfiles.php', 'id', $this->get_course_module()->id );
             $link .= '">';
             $link .= get_string( 'download', VPL );
