@@ -1624,6 +1624,7 @@ class mod_vpl {
      * @param boolean $newline if true print new line after setting, default false
      */
     public function print_restriction($str, $value = null, $raw = false, $newline = true) {
+        echo vpl_get_awesome_icon($str);
         echo $this->str_restriction($str, $value, $raw);
         if ( $newline ) {
             echo '<br>';
@@ -1681,8 +1682,8 @@ class mod_vpl {
         }
         $worktype = $instance->worktype;
         $values = array (
-                0 => get_string( 'individualwork', VPL ),
-                1 => get_string( 'groupwork', VPL )
+                0 => vpl_get_awesome_icon('user'). ' ' . get_string( 'individualwork', VPL ),
+                1 => vpl_get_awesome_icon('group'). ' ' .get_string( 'groupwork', VPL )
         );
         if ($worktype) {
             $this->print_restriction( 'worktype', $values [$worktype] . ' ' . $this->fullname( $USER ) );
@@ -1697,6 +1698,7 @@ class mod_vpl {
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
         if ($grader) {
             require_once($CFG->libdir . '/gradelib.php');
+            echo vpl_get_awesome_icon('grade');
             if ($gie = $this->get_grade_info()) {
                 if ($gie->scaleid == 0) {
                     $info = get_string('grademax', 'core_grades')
