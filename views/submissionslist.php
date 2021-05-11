@@ -676,7 +676,7 @@ $urls = array_merge( array (
 $urlsel = new url_select( $urls, $urlindex [$subselection] );
 $urlsel->set_label( get_string( 'submissionselection', VPL ) );
 echo $OUTPUT->render( $urlsel );
-if (($gradeable || $vpl->get_instance()->evaluate) && $subselection != 'notgraded') {
+if ($subselection != 'notgraded') {
     $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort"
                ."&sortdir=$sortdir&selection=$subselection&evaluate=";
     $urls = array (
