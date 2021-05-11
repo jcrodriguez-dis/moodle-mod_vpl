@@ -623,7 +623,7 @@ class mod_vpl_submission {
                     $gradestr = $gradeobj->str_long_grade;
                     if ( $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                         $gradestr .= $gradeobj->hidden ? (' <b>' . get_string( 'hidden', 'core_grades' )) . '</b>' : '';
-                        $gradestr .= $gradeobj->locked ? (' <b>' . get_string( 'locked', 'core_grades' )) : '</b>';
+                        $gradestr .= $gradeobj->locked ? (' <b>' . get_string( 'locked', 'core_grades' )) . '</b>' : '';
                         $gradestr .= $gradeobj->overridden ? (' <b>' . get_string( 'overridden', 'core_grades' )) . '</b>' : '';
                     }
                     return $gradestr;
