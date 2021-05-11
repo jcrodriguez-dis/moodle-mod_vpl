@@ -755,7 +755,6 @@ class mod_vpl_submission {
             echo '</a>';
         }
         $url = vpl_mod_href( 'views/downloadsubmission.php', 'id', $id, 'userid', $userid, 'submissionid', $submissionid );
-        
         echo ' (' . vpl_get_awesome_icon('download');
         echo '<a href="' . $url . '">' . get_string( 'download', VPL );
         echo '</a>)';
