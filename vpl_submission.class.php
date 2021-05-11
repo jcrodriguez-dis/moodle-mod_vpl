@@ -744,6 +744,7 @@ class mod_vpl_submission {
         $id = $this->vpl->get_course_module()->id;
         $userid = $this->instance->userid;
         $submissionid = $this->instance->id;
+        echo vpl_get_awesome_icon('duedate') . ' ';
         if ($autolink) {
             $url = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid, 'submissionid', $submissionid );
             echo '<a href="' . $url . '">';
@@ -754,12 +755,16 @@ class mod_vpl_submission {
             echo '</a>';
         }
         $url = vpl_mod_href( 'views/downloadsubmission.php', 'id', $id, 'userid', $userid, 'submissionid', $submissionid );
-        echo ' (<a href="' . $url . '">' . get_string( 'download', VPL );
+        
+        echo ' (' . vpl_get_awesome_icon('download');
+        echo '<a href="' . $url . '">' . get_string( 'download', VPL );
         echo '</a>)';
         // Show evaluation link.
-        if ($this->vpl->get_instance()->evaluate && ! $this->is_graded()) {
+        if ( ($this->vpl->get_instance()->evaluate && ! $this->is_graded()) ||
+             $this->vpl->has_capability(VPL_GRADE_CAPABILITY)) {
             $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid );
-            echo ' (<a href="' . $url . '">' . get_string( 'evaluate', VPL );
+            echo ' (' . vpl_get_awesome_icon('evaluate');
+            echo '<a href="' . $url . '">' . get_string( 'evaluate', VPL );
             echo '</a>)';
         }
         echo '<br>';
