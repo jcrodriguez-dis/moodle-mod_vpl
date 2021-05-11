@@ -923,7 +923,7 @@ define(
             var delegated = false;
             var messageActions = {
                 'message': function(content) {
-                    var parsed = /^([^:]*):?(.*)/i.exec(content);
+                    var parsed = /^([^:]*):?([^]*)/.exec(content);
                     var state = parsed[1];
                     var detail = parsed[2];
                     if (state == 'running') {
@@ -1029,7 +1029,7 @@ define(
             };
 
             ws.onmessage = function(event) {
-                var message = /^([^:]+):(.*)/i.exec(event.data);
+                var message = /^([^:]+):([^]*)/.exec(event.data);
                 if (message !== null) {
                     var action = message[1];
                     var content = message[2];
