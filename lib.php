@@ -511,6 +511,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:maxexeprocesses' => 'fa-microchip',
             'mod_vpl:maxfiles' => 'fa-files-o',
             'mod_vpl:run' => 'fa-rocket',
+            'mod_vpl:debug' => 'fa-bug',
             'mod_vpl:grade' => 'fa-check-circle',
             'mod_vpl:previoussubmissionslist' => 'fa-history',
             'mod_vpl:modulenameplural' => 'fa-list-ul',
