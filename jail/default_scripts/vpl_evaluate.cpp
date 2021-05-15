@@ -823,15 +823,14 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 	flagI = false;
 	flagM = false;
 	string clean = Tools::trim(text);
-
-	while (clean[pos] != '/' && pos < clean.size()) {
-		pos++;
+	pos = clean.size() - 1;
+	while (clean[pos] != '/' && pos > 0) {
+		pos--;
 	}
 	cleanText = clean.substr(1,pos-1);
 	if (pos + 1 != clean.size()) {
 		pos = pos + 1;
-
-		// Flag search
+		// Flags processing
 		while (pos < clean.size()) {
 
 			switch (clean[pos]) {
@@ -841,6 +840,8 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 				case 'm':
 					flagM=true;
 					break;
+				case ' ':
+					break;
 				default:
 					Evaluation* p_ErrorTest = Evaluation::getSinglenton();
 					char wrongFlag = clean[pos];
@@ -848,7 +849,7 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 					stringstream ss;
 					ss << wrongFlag;
 					ss >> flagCatch;
-					string errorType = string("Flag Error in case ")+ string(errorCase)+ string (", found a ") + string(flagCatch) + string (" used as a flag, only i and m available");
+					string errorType = string("Error: invalid flag in regex output ")+ string(errorCase)+ string (", found a ") + string(flagCatch) + string (" used as a flag, only i and m available.");
 					const char* flagError = errorType.c_str();
 					p_ErrorTest->addFatalError(flagError);
 					p_ErrorTest->outputEvaluation();
@@ -892,7 +893,7 @@ bool RegularExpressionOutput::match (const string& output) {
 
 		} else { // Memory Error
 			Evaluation* p_ErrorTest = Evaluation::getSinglenton();
-			string errorType = string("Out of memory error, during matching case ") + string(errorCase);
+			string errorType = string("Error: out of memory error, during matching case ") + string(errorCase);
 			const char* flagError = errorType.c_str();
 			p_ErrorTest->addFatalError(flagError);
 			p_ErrorTest->outputEvaluation();
@@ -904,7 +905,7 @@ bool RegularExpressionOutput::match (const string& output) {
         char* bff = new char[length + 1];
         (void) regerror(reti, &expression, bff, length);
 		Evaluation* p_ErrorTest = Evaluation::getSinglenton();
-		string errorType = string("Regular Expression compilation error")+string (" in case: ")+ string(errorCase) +string (".\n")+ string(bff);
+		string errorType = string("Error: regular expression compilation error")+string (" in case: ")+ string(errorCase) +string (".\n")+ string(bff);
 		const char* flagError = errorType.c_str();
 		p_ErrorTest->addFatalError(flagError);
 		p_ErrorTest->outputEvaluation();
@@ -1593,7 +1594,7 @@ void Evaluation::loadTestCases(string fname) {
 			} else {
 				if ( line.size() > 0 ) {
 					char buf[250];
-					sprintf(buf,"Syntax error: unexpected line %d", i+1);
+					sprintf(buf,"Syntax error: unexpected line %d ", i+1);
 					addFatalError(buf);
 				}
 			}
@@ -1683,46 +1684,45 @@ void Evaluation::runTests() {
 
 void Evaluation::outputEvaluation() {
 	const char* stest[] = {" test", "tests"};
-	if (testCases.size() > 0) {
-		if (ncomments > 1) {
-			printf("\n<|--\n");
-			printf("-Failed tests\n");
-			for (int i = 0; i < ncomments; i++) {
-				printf("%s", titles[i]);
-			}
-			printf("--|>\n");
-		}
-		if ( ncomments > 0 ) {
-			printf("\n<|--\n");
-			for (int i = 0; i < ncomments; i++) {
-				printf("-%s", titlesGR[i]);
-				printf("%s\n", comments[i]);
-			}
-			printf("--|>\n");
-		}
-		int passed = nruns - nerrors;
-		if ( nruns > 0 ) {
-			printf("\n<|--\n");
-			printf("-Summary of tests\n");
-			printf(">+------------------------------+\n");
-			printf(">| %2d %s run/%2d %s passed |\n",
-					nruns, nruns==1?stest[0]:stest[1],
-					passed, passed==1?stest[0]:stest[1]); // Taken from Dominique Thiebaut
-			printf(">+------------------------------+\n");
-			printf("\n--|>\n");
-		}
-		if ( ! noGrade ) {
-			char buf[100];
-			sprintf(buf, "%5.2f", grade);
-			int len = strlen(buf);
-			if (len > 3 && strcmp(buf + (len - 3), ".00") == 0)
-				buf[len - 3] = 0;
-			printf("\nGrade :=>>%s\n", buf);
-		}
-	} else {
+	if (testCases.size() == 0) {
 		printf("<|--\n");
 		printf("-No test case found\n");
 		printf("--|>\n");
+	}
+	if (ncomments > 1) {
+		printf("\n<|--\n");
+		printf("-Failed tests\n");
+		for (int i = 0; i < ncomments; i++) {
+			printf("%s", titles[i]);
+		}
+		printf("--|>\n");
+	}
+	if ( ncomments > 0 ) {
+		printf("\n<|--\n");
+		for (int i = 0; i < ncomments; i++) {
+			printf("-%s", titlesGR[i]);
+			printf("%s\n", comments[i]);
+		}
+		printf("--|>\n");
+	}
+	int passed = nruns - nerrors;
+	if ( nruns > 0 ) {
+		printf("\n<|--\n");
+		printf("-Summary of tests\n");
+		printf(">+------------------------------+\n");
+		printf(">| %2d %s run/%2d %s passed |\n",
+				nruns, nruns==1?stest[0]:stest[1],
+				passed, passed==1?stest[0]:stest[1]); // Taken from Dominique Thiebaut
+		printf(">+------------------------------+\n");
+		printf("\n--|>\n");
+	}
+	if ( ! noGrade ) {
+		char buf[100];
+		sprintf(buf, "%5.2f", grade);
+		int len = strlen(buf);
+		if (len > 3 && strcmp(buf + (len - 3), ".00") == 0)
+			buf[len - 3] = 0;
+		printf("\nGrade :=>>%s\n", buf);
 	}
 	fflush(stdout);
 }
