@@ -67,25 +67,27 @@ function evalTest {
 	local result=0
 	cd $TESTDIR
 	if [ ! -s vpl_execution ] ; then
+	    writeError "$X_MARK"
+    	echo "travis_fold:start:vpl_test.$1"
+		writeError "Test $1 failed: evaluation program compilation failed"
+    	echo "travis_fold:end:vpl_test.$1"
 		result=1
 	else
 		./vpl_test_evaluate.sh $1
 		result=$?
-	fi
-	if [ "$result" != "0" ] ; then
-	    writeError "$X_MARK"
-	    echo "travis_fold:start:vpl_test.$1"
-		if [ ! -s vpl_execution ] ; then
-			writeError "Test $1 failed: evaluation program compilation failed"
-		else
+		if [ "$result" != "0" ] ; then
+		    writeError "$X_MARK"
+	    	echo "travis_fold:start:vpl_test.$1"
 			if [ -s "$VPLTESTERRORS" ] ; then
 			    echo "The program has generated the following errors"
 			    cat $VPLTESTERRORS
+			else
+		    	cat "$VPLTESTOUTPUT"
 			fi
-		    cat "$VPLTESTOUTPUT"
+	    	echo "travis_fold:end:vpl_test.$1"
 		fi
-	    echo "travis_fold:end:vpl_test.$1"
-	else
+	fi
+	if [ "$result" == "0" ] ; then
 	    writeInfo "$CHECK_MARK"
 	fi
     cd ..
