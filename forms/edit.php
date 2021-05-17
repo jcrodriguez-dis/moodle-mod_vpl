@@ -37,10 +37,10 @@ $subid = optional_param( 'submissionid', false, PARAM_INT );
 $vpl = new mod_vpl($id);
 $pageparms = array('id' => $id);
 if ($userid && ! $copy) {
-    $pageparms ['userid'] = $userid;
+    $pageparms['userid'] = $userid;
 }
 if ($copy) {
-    $pageparms ['privatecopy'] = 1;
+    $pageparms['privatecopy'] = 1;
 }
 $vpl->prepare_page( 'forms/edit.php', $pageparms );
 if (! $vpl->is_visible()) {
@@ -70,7 +70,7 @@ if ($subid && $grader) {
     );
     $res = $DB->get_records( 'vpl_submissions', $parms );
     if (count( $res ) == 1) {
-        $lastsub = $res [$subid];
+        $lastsub = $res[$subid];
     } else {
         $lastsub = false;
     }
@@ -78,41 +78,44 @@ if ($subid && $grader) {
     $lastsub = $vpl->last_user_submission( $userid );
 }
 $options = Array();
-$options ['id'] = $id;
-$options ['restrictededitor'] = $instance->restrictededitor && ! $grader;
-$options ['save'] = ! $instance->example;
-$options ['run'] = ($instance->run || $grader);
-$options ['debug'] = ($instance->debug || $grader);
-$options ['evaluate'] = ($instance->evaluate || $grader);
-$options ['example'] = true && $instance->example;
-$options ['comments'] = ! $options ['example'];
-$options ['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
+$options['id'] = $id;
+$options['restrictededitor'] = $instance->restrictededitor && ! $grader;
+$options['save'] = ! $instance->example;
+$options['run'] = ($instance->run || $grader);
+$options['debug'] = ($instance->debug || $grader);
+$options['evaluate'] = ($instance->evaluate || $grader);
+$options['example'] = true && $instance->example;
+$options['comments'] = ! $options['example'];
+$options['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
-$options ['ajaxurl'] = $ajaxurl . '&action=';
+$options['ajaxurl'] = $ajaxurl . '&action=';
 if ( $copy ) {
     $loadajaxurl = "edit.json.php?id={$id}&userid={$userid}&privatecopy=1";
     if ( $subid && $lastsub ) {
         $loadajaxurl .= "&subid={$lastsub->id}";
     }
-    $options ['loadajaxurl'] = $loadajaxurl . '&action=';
+    $options['loadajaxurl'] = $loadajaxurl . '&action=';
 }
-$options ['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
+$options['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
 $timeleft = $instance->duedate - time();
 $hour = 60 * 60;
 if ( $instance->duedate > 0 && $timeleft > -$hour ) {
-    $options ['timeLeft'] = $timeleft;
+    $options['timeLeft'] = $timeleft;
 }
 if ( $subid ) {
-    $options ['submissionid'] = $subid;
+    $options['submissionid'] = $subid;
 }
 
 $reqfgm = $vpl->get_required_fgm();
-$options ['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
-$options ['maxfiles'] = intval($instance->maxfiles);
+$options['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
+$options['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
-$options ['minfiles'] = count( $reqfilelist );
-$options ['saved'] = $lastsub && ! $copy;
+$options['minfiles'] = count( $reqfilelist );
+if ($options['example']) {
+    $options['maxfiles'] = $options['minfiles'];
+}
+$options['saved'] = $lastsub && ! $copy;
 if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );
     \mod_vpl\event\submission_edited::log( $submission );
