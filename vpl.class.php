@@ -1704,10 +1704,10 @@ class mod_vpl {
                 if ($gie->scaleid == 0) {
                     $info = get_string('grademax', 'core_grades')
                             . ': ' . format_float($gie->grademax, 5, true, true);
-                    $info .= $gie->hidden ? (' <b>' . get_string( 'hidden', 'core_grades' ))
-                            . '</b>' : '';
-                    $info .= $gie->locked ? (' <b>' . get_string( 'locked', 'core_grades' ))
-                            . '</b>' : '';
+                    $info .= $gie->hidden ? (' <b>' . vpl_get_awesome_icon('hidden') 
+                                           . get_string( 'hidden', 'core_grades' ) . '</b>') : '';
+                    $info .= $gie->locked ? (' <b>' . vpl_get_awesome_icon('locked')
+                                           . get_string( 'locked', 'core_grades' ) . '</b>') : '';
                 } else {
                     $info = get_string( 'typescale', 'core_grades' );
                 }
@@ -1734,6 +1734,7 @@ class mod_vpl {
                 $this->print_restriction( 'restrictededitor', $stryes );
             }
             if (! $this->get_course_module()->visible) {
+                echo vpl_get_awesome_icon('hidden') . ' ';
                 $this->print_restriction( get_string( 'visible' ), $strno, true );
             }
             if ($instance->basedon) {
