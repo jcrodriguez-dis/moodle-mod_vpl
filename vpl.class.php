@@ -1704,7 +1704,7 @@ class mod_vpl {
                 if ($gie->scaleid == 0) {
                     $info = get_string('grademax', 'core_grades')
                             . ': ' . format_float($gie->grademax, 5, true, true);
-                    $info .= $gie->hidden ? (' <b>' . vpl_get_awesome_icon('hidden') 
+                    $info .= $gie->hidden ? (' <b>' . vpl_get_awesome_icon('hidden')
                                            . get_string( 'hidden', 'core_grades' ) . '</b>') : '';
                     $info .= $gie->locked ? (' <b>' . vpl_get_awesome_icon('locked')
                                            . get_string( 'locked', 'core_grades' ) . '</b>') : '';
