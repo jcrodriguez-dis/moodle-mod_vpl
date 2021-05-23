@@ -75,7 +75,7 @@ class mod_vpl_grade_form extends vpl_form {
         // Type value => introduce value.
         $grade = $vpl->get_grade();
         if ($grade != 0) {
-            $this->addHTML( s( get_string( 'grade' ) . ' ' ) );
+            $this->addHTML( s( get_string( 'grade', 'core_grades' ) . ' ' ) );
             if ($grade > 0) {
                 $this->addText( 'grade', '', 6 );
                 $reduction = 0;
@@ -97,7 +97,7 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addHTML( ' &nbsp;' );
         }
         $class = " class='btn btn-secondary'";
-        $this->addSubmitButton( 'save', get_string( 'grade' ) );
+        $this->addSubmitButton( 'save', get_string( 'grade', 'core_grades' ) );
         if ($inpopup) {
             $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
         }
@@ -150,7 +150,7 @@ class mod_vpl_grade_form extends vpl_form {
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
                     $this->addHTML( '<tr><td align="right">' );
                     $options = make_grades_menu( - $outcome->scaleid );
-                    $options [0] = get_string( 'nooutcome', 'grades' );
+                    $options [0] = get_string( 'nooutcome', 'core_grades' );
                     $this->addHTML( s( $outcome->name ) );
                     $this->addHTML( '</td><td>' );
                     $this->addSelect( 'outcome_grade_' . $oid, $options, $outcome->grades [$userid]->grade );

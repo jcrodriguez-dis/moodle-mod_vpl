@@ -109,7 +109,7 @@ $submission = new mod_vpl_submission( $vpl, $subinstance );
 
 if ($vpl->get_visiblegrade() || $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
     if ($submission->is_graded()) {
-        echo '<h2>' . get_string( 'grade' ) . '</h2>';
+        echo '<h2>' . get_string( 'grade', 'core_grades' ) . '</h2>';
         $submission->print_grade( true );
         \mod_vpl\event\submission_grade_viewed::log($submission);
     }

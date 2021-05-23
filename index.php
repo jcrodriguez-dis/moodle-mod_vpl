@@ -266,7 +266,7 @@ if ($grader && ! $nograde) {
     $table->align [] = 'right';
 }
 if ($student && ! $nograde) {
-    $table->head [] = get_string( 'grade' );
+    $table->head [] = get_string( 'grade', 'core_grades' );
     $table->align [] = 'left';
 }
 

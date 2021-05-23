@@ -703,7 +703,7 @@ class mod_vpl_submission {
             $a->gradername = fullname( $grader );
             $ret .= get_string( 'gradedonby', VPL, $a ) . '<br>';
             if ($this->vpl->get_grade() != 0) {
-                $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), true) . '<br>';
+                $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), false, 'core_grades') . '<br>';
                 if ($detailed) {
                     $ret .= $this->get_detailed_grade();
                 }
@@ -717,7 +717,7 @@ class mod_vpl_submission {
                                                  , 'vpl', $this->vpl->get_instance()->id
                                                  , $this->instance->userid );
                 if (! empty( $gradinginfo->outcomes )) {
-                    $ret .= '<b>' . get_string( 'outcomes', 'grades' ) . '</b><br>';
+                    $ret .= '<b>' . get_string( 'outcomes', 'core_grades' ) . '</b><br>';
                     foreach ($gradinginfo->outcomes as $outcome) {
                         $ret .= s( $outcome->name );
                         $ret .= ' ' . s( $outcome->grades [$inst->userid]->str_grade ) . '<br>';
