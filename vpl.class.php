@@ -1131,7 +1131,8 @@ class mod_vpl {
      */
     public function get_graders($group = '') {
         if (! isset( $this->graders )) {
-            $this->graders = get_users_by_capability( $this->get_context(), VPL_GRADE_CAPABILITY, user_picture::fields( 'u' ),
+            $fields = vpl_get_picture_fields();
+            $this->graders = get_users_by_capability( $this->get_context(), VPL_GRADE_CAPABILITY, $fields,
                     'u.lastname ASC', '', '', $group );
         }
         return $this->graders;
@@ -1159,7 +1160,7 @@ class mod_vpl {
         if ( $extrafields > '' && $extrafields[0] != ',' ) {
             $extrafields = ',' . $extrafields;
         }
-        $fields = user_picture::fields( 'u' ) . $extrafields;
+        $fields = vpl_get_picture_fields() . $extrafields;
         $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, $fields,
                 'u.lastname ASC', '', '', $group );
         foreach ($all as $user) {
@@ -1529,8 +1530,8 @@ class mod_vpl {
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
-                        $text = get_string( 'grade' );
-                        $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'moodle' );
+                        $text = get_string( 'grade', 'core_grades' );
+                        $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'core_grades' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
@@ -1601,12 +1602,12 @@ class mod_vpl {
         echo '</h2>';
     }
 
-    public function str_restriction($str, $value = null, $raw = false) {
+    public function str_restriction($str, $value = null, $raw = false, $comp = 'mod_vpl') {
         $html = '<b>';
         if ($raw) {
             $html .= s( $str );
         } else {
-            $html .= s( get_string( $str, VPL ) );
+            $html .= s( get_string( $str, $comp ) );
         }
         $html .= '</b>: ';
         if ($value === null) {
@@ -1623,9 +1624,9 @@ class mod_vpl {
      * @param boolean $raw if true $str if raw string, default false
      * @param boolean $newline if true print new line after setting, default false
      */
-    public function print_restriction($str, $value = null, $raw = false, $newline = true) {
+    public function print_restriction($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
         echo vpl_get_awesome_icon($str);
-        echo $this->str_restriction($str, $value, $raw);
+        echo $this->str_restriction($str, $value, $raw, $comp);
         if ( $newline ) {
             echo '<br>';
         } else {
@@ -1719,7 +1720,7 @@ class mod_vpl {
         $this->print_gradereduction();
         if ($grader) {
             if (trim( $instance->password ) > '') {
-                $this->print_restriction( get_string( 'password' ), $stryes, true );
+                $this->print_restriction( 'password', $stryes, false, true, 'moodle' );
             }
             if (trim( $instance->requirednet ) > '') {
                 $this->print_restriction( 'requirednet', s( $instance->requirednet ));

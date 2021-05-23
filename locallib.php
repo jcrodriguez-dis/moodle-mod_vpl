@@ -827,6 +827,7 @@ function vpl_s() {
  * @return void
  */
 function vpl_truncate_vpl($instance) {
+    $instance->password = trim($instance->password);
     vpl_truncate_string( $instance->name, 255 );
     vpl_truncate_string( $instance->requirednet, 255 );
     vpl_truncate_string( $instance->password, 255 );
@@ -922,6 +923,18 @@ function vpl_get_version() {
         $version = $plugin->release;
     }
     return $version;
+}
+
+/**
+ * Polyfill for getting user picture fields
+ * @return string List of fields separated by "," u.field
+ */
+function vpl_get_picture_fields() {
+    if (method_exists('\core_user\fields', 'get_picture_fields')) {
+        return 'u.' . implode(',u.', \core_user\fields::get_picture_fields());
+    } else {
+        return user_picture::fields( 'u' );
+    }
 }
 
 function vpl_get_webservice_available() {
