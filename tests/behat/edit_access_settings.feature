@@ -19,6 +19,7 @@ Feature: Create and change VPL activity access settings
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -28,6 +29,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with password"
     Then I should not see "A password is required"
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -40,6 +42,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with password"
     Then I should not see "A password is required"
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -64,6 +67,7 @@ Feature: Create and change VPL activity access settings
     And I press "Continue"
     And I should not see "A password is required"
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere network => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -76,6 +80,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with network"
     Then I should see "Action not allowed from"
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
@@ -88,6 +93,7 @@ Feature: Create and change VPL activity access settings
     And I follow "VPL with SEB"
     Then I should see "Using SEB browser"
 
+  @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on

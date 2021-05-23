@@ -43,6 +43,7 @@ Feature: Create and change VPL activity settings
       | id_freeevaluations | 3 |
     And I log out
 
+  @javascript
   Scenario: An editing teacher sees default VPL setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -63,6 +64,7 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
+  @javascript
   Scenario: A non-editing teacher sees default VPL setting values
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -83,6 +85,7 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
+  @javascript
   Scenario: A non-editing teacher sees default VPL setting values
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -102,6 +105,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Run: No"
     And I should not see "Evaluate: No"
 
+  @javascript
   Scenario: An editing teacher sees default VPL full setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -125,6 +129,7 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
+  @javascript
   Scenario: A non-editing teacher sees default VPL full setting values
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -148,6 +153,7 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
+  @javascript
   Scenario: A student does not access activity due to the network restriction
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -155,18 +161,18 @@ Feature: Create and change VPL activity settings
     When I follow "VPL activity full setting"
     Then I should see "Action not allowed from"
 
-  @JavaScript
+  @javascript
   Scenario: A student sees default VPL full setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity full setting"
     And I navigate to "Edit settings" in current page administration
+    And I expand all fieldsets
     And I set the following fields to these values:
       | id_name | VPL activity changed setting |
       | id_showdescription | "" |
       | id_worktype | Individual work |
       | id_requirednet | |
-      | id_password | |
       | id_sebrequired | No |
       | id_sebkeys | |
     And I press "Save and display"
@@ -179,28 +185,10 @@ Feature: Create and change VPL activity settings
     And I should see "Grade settings: Maximum grade: 17"
     And I should see "Reduction by automatic evaluation: 1%"
     And I should see "Free evaluations: 3"
-    And I should not see "Password:"
+    And I should see "Password:"
     And I should not see "Allowed submission from net:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should see "Dissable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
-    And I log out
-    And I log in as "student1"
-    And I am on "Course 1" course homepage
-    When I follow "VPL activity changed setting"
-    Then I should see "Due date:"
-    And I should see "Available from:"
-    And I should see "Maximum number of files: 13"
-    And I should see "Type of work:"
-    And I should see "Individual work"
-    And I should not see "Grade settings: Maximum grade:"
-    And I should see "Reduction by automatic evaluation: 1%"
-    And I should see "Free evaluations: 3"
-    And I should not see "Password:"
-    And I should not see "Allowed submission from net:"
-    And I should not see "SEB browser required:"
-    And I should not see "SEB exam Key/s:"
-    And I should not see "Run: No"
-    And I should not see "Evaluate: No"

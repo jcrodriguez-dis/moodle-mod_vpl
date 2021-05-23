@@ -31,6 +31,7 @@ Feature: List submissions of students
       | id_name | VPL activity 2 |
     And I log out
 
+  @javascript
   Scenario: An editing teacher sees Submissions list
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -39,6 +40,7 @@ Feature: List submissions of students
     Then I should see "VPL activity 1"
     And I should see "Surname"
 
+  @javascript
   Scenario: An non-editing teacher sees Submissions list
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -47,38 +49,42 @@ Feature: List submissions of students
     Then I should see "VPL activity 1"
     And I should see "Surname"
 
+  @javascript
   Scenario: An editing teacher download submissions
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity 1"
     And I follow "Submissions list"
+    And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download submissions"
     Then I should not see "Error"
-    And I should not see "Surname"
 
+  @javascript
   Scenario: A non-editing teacher download submissions
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
     And I follow "VPL activity 1"
     And I follow "Submissions list"
+    And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download submissions"
     Then I should not see "Error"
-    And I should not see "Surname"
 
+  @javascript
   Scenario: An editing teacher download all submissions
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity 1"
     And I follow "Submissions list"
+    And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download all submissions"
     Then I should not see "Error"
-    And I should not see "Surname"
 
+  @javascript
   Scenario: A non-editing teacher download all submissions
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
     And I follow "VPL activity 1"
     And I follow "Submissions list"
+    And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download all submissions"
     Then I should not see "Error"
-    And I should not see "Surname"

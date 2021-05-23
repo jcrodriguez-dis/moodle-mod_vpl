@@ -32,6 +32,7 @@ Feature: In an VPL activity, editing teacher change options of execution
       | id_grade_modgrade_type | None |
     And I log out
 
+  @javascript
   Scenario: A teacher sees the execution options default values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -46,6 +47,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should not see "Evaluate just on submission:"
     And I should not see "Automatic grade:"
 
+  @javascript
   Scenario: A student sees the execution options default values
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -60,6 +62,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should not see "Evaluate just on submission:"
     And I should not see "Automatic grade:"
 
+  @javascript
   Scenario: A teacher changes the execution options => A teacher see values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -86,6 +89,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should see "Evaluate just on submission: Yes"
     And I should see "Automatic grade: Yes"
 
+  @javascript
   Scenario: A teacher changes the execution options => A student see values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
