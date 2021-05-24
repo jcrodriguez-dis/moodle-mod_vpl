@@ -49,7 +49,8 @@ Feature: In a VPL activity, similarity feature
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
     And I click on "#vpl_ide_save" in VPL
-    I log in as "student2"
+    And I log out
+    And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
     And I follow "Edit"
@@ -61,7 +62,8 @@ Feature: In a VPL activity, similarity feature
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
     And I click on "#vpl_ide_save" in VPL
-    I log in as "student3"
+    And I log out
+    And I log in as "student3"
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
     And I follow "Edit"
@@ -73,6 +75,7 @@ Feature: In a VPL activity, similarity feature
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
     And I click on "#vpl_ide_save" in VPL
+    And I log out
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
