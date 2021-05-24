@@ -42,10 +42,6 @@ Feature: In a VPL activity, similarity feature
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
     And I follow "Edit"
-    And I set the following fields to these values:
-      | vpl_ide_input_newfilename | hello.c |
-    And I click on "#vpl_ide_dialog_new + div button" in VPL
-    And I should see "hello.c"
     # Drops a new file
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
@@ -54,11 +50,6 @@ Feature: In a VPL activity, similarity feature
     And I log in as "student2"
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
-    And I follow "Edit"
-    And I set the following fields to these values:
-      | vpl_ide_input_newfilename | hello.c |
-    And I click on "#vpl_ide_dialog_new + div button" in VPL
-    And I should see "hello.c"
     # Drops a new file
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
@@ -67,11 +58,6 @@ Feature: In a VPL activity, similarity feature
     And I log in as "student3"
     And I am on "Course 1" course homepage
     And I follow "VPL activity testing"
-    And I follow "Edit"
-    And I set the following fields to these values:
-      | vpl_ide_input_newfilename | hello.c |
-    And I click on "#vpl_ide_dialog_new + div button" in VPL
-    And I should see "hello.c"
     # Drops a new file
     And I drop the files "hello.c" on "#vpl_tabs" in VPL
     # Saves files
