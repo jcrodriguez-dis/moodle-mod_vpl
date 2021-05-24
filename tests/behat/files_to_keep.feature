@@ -34,7 +34,7 @@ Feature: In a VPL activity feature files to keep when running
     And I should see "hello.adb"
     And I click on "#id_keepfile1" in VPL
     And I click on "#id_keepfile4" in VPL
-    And I press on "save options"
+    And I press "save options"
     Then I should see "Options have been saved"
     And "input[id=id_keepfile0]:not([checked])" "css_element" should exist
     And "input[id=id_keepfile1][checked]" "css_element" should exist
@@ -51,7 +51,7 @@ Feature: In a VPL activity feature files to keep when running
     And "input[id=id_keepfile4][checked]" "css_element" should exist
     And "input[id=id_keepfile5]:not([checked])" "css_element" should exist
     And I click on "#id_keepfile1" in VPL
-    And I press on "save options"
+    And I press "save options"
     Then I should see "Options have been saved"
     And "input[id=id_keepfile0]:not([checked])" "css_element" should exist
     And "input[id=id_keepfile1]:not([checked])" "css_element" should exist

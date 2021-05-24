@@ -33,6 +33,7 @@ Feature: In a VPL activity, similarity feature
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | hello.c |
     And I click on "#vpl_ide_dialog_new + div button" in VPL
+    And I click on "#vpl_ide_save" in VPL
     And I log out
 
   @javascript
