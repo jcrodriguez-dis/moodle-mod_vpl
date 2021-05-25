@@ -360,7 +360,7 @@ class mod_vpl {
                 $ret .= ' (' . $grouping->name . ')';
             }
         }
-        return $ret;
+        return format_string($ret);
     }
 
     /**
@@ -1596,9 +1596,8 @@ class mod_vpl {
      * Show vpl name
      */
     public function print_name() {
-        echo '<h2>';
-        p( $this->get_printable_name() );
-        echo '</h2>';
+        global $OUTPUT;
+        echo $OUTPUT->heading($this->get_printable_name());
     }
 
     public function str_restriction($str, $value = null, $raw = false) {
