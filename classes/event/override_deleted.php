@@ -15,23 +15,23 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version config
+ * Class for logging of override deleted events
  *
- * @package mod_vpl.
- * @copyright 2021 Juan Carlos Rodríguez-del-Pino
+ * @package mod_vpl
+ * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino, 2021 Astor Bizard
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
- *
- * Define the plugin global var attributes.
- * @var object $plugin
  */
-
+namespace mod_vpl\event;
 
 defined('MOODLE_INTERNAL') || die();
-
-$plugin->version = 2021061600;
-$plugin->requires = 2018051713; // Moodle 3.5!
-$plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.4.3';
-
-$plugin->component = 'mod_vpl';
+require_once(dirname(__FILE__).'/../../locallib.php');
+class override_deleted extends override_base {
+    protected function init() {
+        parent::init();
+        $this->data['crud'] = 'd';
+        $this->legacyaction = 'deleted override';
+    }
+    public function get_description() {
+        return $this->get_description_mod( 'deleted' );
+    }
+}

@@ -98,9 +98,10 @@ if ( $copy ) {
     $options['loadajaxurl'] = $loadajaxurl . '&action=';
 }
 $options['download'] = "../views/downloadsubmission.php?id={$id}&userid={$linkuserid}";
-$timeleft = $instance->duedate - time();
+$duedate = $vpl->get_effective_setting('duedate', $linkuserid);
+$timeleft = $duedate - time();
 $hour = 60 * 60;
-if ( $instance->duedate > 0 && $timeleft > -$hour ) {
+if ( $duedate > 0 && $timeleft > -$hour ) {
     $options['timeLeft'] = $timeleft;
 }
 if ( $subid ) {

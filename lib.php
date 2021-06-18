@@ -156,6 +156,7 @@ function vpl_create_event($instance, $id) {
     $event->instance = $id;
     $event->eventtype = 'duedate';
     $event->timestart = $instance->duedate;
+    $event->timesort = $instance->duedate;
     return $event;
 }
 
@@ -195,7 +196,8 @@ function vpl_update_instance($instance) {
     $event = vpl_create_event( $instance, $instance->id );
     if ($eventid = $DB->get_field( 'event', 'id', array (
             'modulename' => VPL,
-            'instance' => $instance->id
+            'instance' => $instance->id,
+            'priority' => null
     ) )) {
         $event->id = $eventid;
         $calendarevent = calendar_event::load( $eventid );
@@ -246,7 +248,9 @@ function vpl_delete_instance( $id ) {
     $tables = [
             VPL_SUBMISSIONS,
             VPL_VARIATIONS,
-            VPL_ASSIGNED_VARIATIONS
+            VPL_ASSIGNED_VARIATIONS,
+            VPL_OVERRIDES,
+            VPL_ASSIGNED_OVERRIDES
     ];
     foreach ($tables as $table) {
         $DB->delete_records( $table, array ('vpl' => $id) );
@@ -490,6 +494,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:local_jail_servers' => 'fa-server',
             'mod_vpl:check_jail_servers' => 'fa-rocket',
             'mod_vpl:variations' => 'fa-random',
+            'mod_vpl:overrides' => 'fa-unlock-alt',
             'mod_vpl:keepfiles' => 'fa-link',
             'mod_vpl:advancedsettings' => 'fa-cogs',
             'mod_vpl:submission' => 'fa-cloud-upload',
@@ -529,6 +534,10 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:downloadallsubmissions' => 'fa-history',
             'mod_vpl:user' => 'fa-user',
             'mod_vpl:group' => 'fa-group',
+            'mod_vpl:save' => 'fa-save',
+            'mod_vpl:cancel' => 'fa-remove',
+            'mod_vpl:delete' => 'fa-trash',
+            'mod_vpl:editthis' => 'fa-edit',
     ];
 }
 
@@ -662,6 +671,9 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms );
         $node = vpl_navi_node_create($advance, 'variations', $url);
         $advance->add_node( $node );
+        $url = new moodle_url( '/mod/vpl/forms/overrides.php', $parms );
+        $node = vpl_navi_node_create($advance, 'overrides', $url);
+        $advance->add_node( $node );
         $url = new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms );
         $node = vpl_navi_node_create($advance, 'check_jail_servers', $url);
         $advance->add_node( $node );
@@ -787,6 +799,21 @@ function vpl_reset_instance_userdata($vplid) {
     ) );
     // Delete variations assigned.
     $DB->delete_records( VPL_ASSIGNED_VARIATIONS, array (
+            'vpl' => $vplid
+    ) );
+    // Delete overrides and associated events.
+    require_once(dirname(__FILE__) . '/vpl.class.php');
+    $vpl = new mod_vpl(null, $vplid);
+    $sql = 'SELECT o.*, GROUP_CONCAT(ao.userid) as userids, GROUP_CONCAT(ao.groupid) as groupids
+                FROM {vpl_overrides} o
+                LEFT JOIN {vpl_assigned_overrides} ao ON ao.override = o.id
+                WHERE o.vpl = :vplid
+                GROUP BY o.id';
+    $overrides = $DB->get_records_sql($sql, array('vplid' => $vplid));
+    foreach ($overrides as $override) {
+        $vpl->update_override_calendar_events($override, null, true);
+    }
+    $DB->delete_records( VPL_ASSIGNED_OVERRIDES, array (
             'vpl' => $vplid
     ) );
 

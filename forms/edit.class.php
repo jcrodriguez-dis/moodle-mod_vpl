@@ -189,9 +189,8 @@ class mod_vpl_edit{
             $files = self::get_requested_files( $vpl );
             $compilationexecution = new stdClass();
             $compilationexecution->nevaluations = 0;
-            $vplinstance = $vpl->get_instance();
-            $compilationexecution->freeevaluations = $vplinstance->freeevaluations;
-            $compilationexecution->reductionbyevaluation = $vplinstance->reductionbyevaluation;
+            $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
+            $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
 
         }
         return $files;
@@ -236,8 +235,8 @@ class mod_vpl_edit{
             $compilationexecution = new stdClass();
             $compilationexecution->grade = '';
             $compilationexecution->nevaluations = 0;
-            $compilationexecution->freeevaluations = $vplinstance->freeevaluations;
-            $compilationexecution->reductionbyevaluation = $vplinstance->reductionbyevaluation;
+            $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
+            $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
             $response->compilationexecution = $compilationexecution;
         }
         return $response;

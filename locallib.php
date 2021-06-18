@@ -30,6 +30,8 @@ define( 'VPL_JAILSERVERS', 'vpl_jailservers' );
 define( 'VPL_RUNNING_PROCESSES', 'vpl_running_processes' );
 define( 'VPL_VARIATIONS', 'vpl_variations' );
 define( 'VPL_ASSIGNED_VARIATIONS', 'vpl_assigned_variations' );
+define( 'VPL_OVERRIDES', 'vpl_overrides' );
+define( 'VPL_ASSIGNED_OVERRIDES', 'vpl_assigned_overrides' );
 define( 'VPL_GRADE_CAPABILITY', 'mod/vpl:grade' );
 define( 'VPL_VIEW_CAPABILITY', 'mod/vpl:view' );
 define( 'VPL_SUBMIT_CAPABILITY', 'mod/vpl:submit' );

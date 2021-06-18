@@ -108,8 +108,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
             [],
         ];
@@ -318,8 +318,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
             []
         ];
@@ -349,8 +349,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $usersvpls = [
             [$this->vplonefile, $this->vplteamwork],
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             []
         ];
 
@@ -403,8 +403,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $usersvpls = [
             [$this->vplonefile, $this->vplteamwork],
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             []
         ];
 
@@ -437,8 +437,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
             []
         ];
@@ -473,8 +473,8 @@ class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork],
-            [$this->vplvariations],
+            [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
+            [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
             []
         ];

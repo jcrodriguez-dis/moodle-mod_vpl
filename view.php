@@ -78,8 +78,8 @@ $vpl->print_name();
 
 echo $OUTPUT->box_start();
 
-$vpl->print_submission_period();
-$vpl->print_submission_restriction();
+$vpl->print_submission_period( $userid );
+$vpl->print_submission_restriction( $userid );
 $vpl->print_variation( $userid );
 $vpl->print_fulldescription();
 

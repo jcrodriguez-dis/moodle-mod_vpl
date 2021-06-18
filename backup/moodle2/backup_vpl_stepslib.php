@@ -211,6 +211,27 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
     );
 
     /**
+     * @var array Overrides table fields list
+     */
+    protected $overridefields = array (
+            'vpl',
+            'startdate',
+            'duedate',
+            'freeevaluations',
+            'reductionbyevaluation'
+    );
+
+    /**
+     * @var array Assigned Overrides table fields list
+     */
+    protected $assioverridefields = array (
+            'vpl',
+            'userid',
+            'groupid',
+            'override'
+    );
+
+    /**
      * Define the full structure of a VPL instance with user data
      * {@inheritDoc}
      * @see backup_structure_step::define_structure()
@@ -235,6 +256,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $asignedvariation = new backup_nested_element( 'asigned_variation',
                 $idfield,
                 $this->asivariationfields );
+        $overrides = new backup_nested_element( 'overrides' );
+        $override = new backup_nested_element( 'override', $idfield, $this->overridefields );
+        $assignedoverrides = new backup_nested_element( 'assigned_overrides' );
+        $assignedoverride = new backup_nested_element( 'assigned_override',
+                $idfield,
+                $this->assioverridefields );
         $submissions = new backup_nested_element( 'submissions' );
         $submission = new backup_nested_element( 'submission', $idfield, $this->submissionfields );
         $submissionfiles = new backup_nested_element( 'submission_files' );
@@ -243,12 +270,16 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $vpl->add_child( $requiredfiles );
         $vpl->add_child( $executionfiles );
         $vpl->add_child( $variations );
+        $vpl->add_child( $overrides );
+        $vpl->add_child( $assignedoverrides );
         $vpl->add_child( $submissions );
         $requiredfiles->add_child( $requiredfile );
         $executionfiles->add_child( $executionfile );
         $variations->add_child( $variation );
         $variation->add_child( $asignedvariations );
         $asignedvariations->add_child( $asignedvariation );
+        $overrides->add_child( $override );
+        $assignedoverrides->add_child( $assignedoverride );
         $submissions->add_child( $submission );
         $submission->add_child( $submissionfiles );
         $submissionfiles->add_child( $submissionfile );
@@ -261,8 +292,10 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $query .= '   WHERE s.id = ?';
         $vpl->set_source_sql( $query, array ( backup::VAR_ACTIVITYID ) );
         $variation->set_source_table( 'vpl_variations', $parmvplid );
+        $override->set_source_table( 'vpl_overrides', $parmvplid );
         if ($userinfo) {
             $asignedvariation->set_source_table( 'vpl_assigned_variations', $parmvplid );
+            $assignedoverride->set_source_table( 'vpl_assigned_overrides', $parmvplid );
             /*
              * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
              * $submission->set_source_table('vpl_submissions', $parmvplid);
@@ -279,6 +312,8 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $vpl->annotate_ids( 'scale', 'grade' );
         $vpl->annotate_ids( 'vpl', 'basedon' );
         $asignedvariation->annotate_ids( 'user', 'userid' );
+        $assignedoverride->annotate_ids( 'user', 'userid' );
+        $assignedoverride->annotate_ids( 'group', 'groupid' );
         $submission->annotate_ids( 'user', 'userid' );
         $submission->annotate_ids( 'user', 'grader' );
         $submission->annotate_ids( 'group', 'groupid' );

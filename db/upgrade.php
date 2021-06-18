@@ -378,6 +378,61 @@ function xmldb_vpl_upgrade_2021011014() {
 }
 
 /**
+ * Upgrades VPL to 2021061600 version (overrides).
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2021061600() {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+
+    // Define table vpl_overrides to be created.
+    $table = new xmldb_table('vpl_overrides');
+
+    // Adding fields to table vpl_overrides.
+    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $table->add_field('vpl', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('startdate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('duedate', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('freeevaluations', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('reductionbyevaluation', XMLDB_TYPE_CHAR, '10', null, null, null, null);
+
+    // Adding keys to table vpl_overrides.
+    $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+    // Adding indexes to table vpl_assigned_overrides.
+    $table->add_index('vpl', XMLDB_INDEX_NOTUNIQUE, ['vpl']);
+
+    // Conditionally launch create table for vpl_overrides.
+    if (!$dbman->table_exists($table)) {
+        $dbman->create_table($table);
+    }
+
+    // Define table vpl_assigned_overrides to be created.
+    $table = new xmldb_table('vpl_assigned_overrides');
+
+    // Adding fields to table vpl_assigned_overrides.
+    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $table->add_field('vpl', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('groupid', XMLDB_TYPE_INTEGER, '10', null, null, null, null);
+    $table->add_field('override', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+    // Adding keys to table vpl_assigned_overrides.
+    $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+    // Adding indexes to table vpl_assigned_overrides.
+    $table->add_index('vpl', XMLDB_INDEX_NOTUNIQUE, ['vpl']);
+    $table->add_index('override', XMLDB_INDEX_NOTUNIQUE, ['override']);
+
+    // Conditionally launch create table for vpl_assigned_overrides.
+    if (!$dbman->table_exists($table)) {
+        $dbman->create_table($table);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -415,6 +470,11 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     if ($oldversion < $vpl34) {
         xmldb_vpl_upgrade_2021011014();
         upgrade_mod_savepoint(true, $vpl34, 'vpl');
+    }
+
+    if ($oldversion < 2021061600) {
+        xmldb_vpl_upgrade_2021061600();
+        upgrade_mod_savepoint(true, 2021061600, 'vpl');
     }
     return true;
 }

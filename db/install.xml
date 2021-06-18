@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/vpl/db" VERSION="20201227" COMMENT="XMLDB file for Moodle mod/vpl"
+<XMLDB PATH="mod/vpl/db" VERSION="20210616" COMMENT="XMLDB file for Moodle mod/vpl"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -137,6 +137,38 @@
       </KEYS>
       <INDEXES>
         <INDEX NAME="userid_id" UNIQUE="true" FIELDS="userid, id" COMMENT="Index for userid id"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="vpl_overrides" COMMENT="Overrides to VPL settings">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="vpl" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="VPL id"/>
+        <FIELD NAME="startdate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, date the vpl will be available"/>
+        <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, after this date this vpl instance will not be available"/>
+        <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, number of automatic evaluations that do not reduce final score"/>
+        <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, reduce final score by a value or percentage for each automatic evaluation"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="vpl" UNIQUE="false" FIELDS="vpl"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="vpl_assigned_overrides" COMMENT="Overrides assignations to users and groups">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="vpl" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="VPL id"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="User this override applies to"/>
+        <FIELD NAME="groupid" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="Group this override applies to"/>
+        <FIELD NAME="override" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Override id"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="vpl" UNIQUE="false" FIELDS="vpl"/>
+        <INDEX NAME="override" UNIQUE="false" FIELDS="override"/>
       </INDEXES>
     </TABLE>
   </TABLES>

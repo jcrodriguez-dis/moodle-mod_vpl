@@ -70,7 +70,9 @@ class mod_vpl_testcase extends mod_vpl_base_testcase {
                 VPL_SUBMISSIONS,
                 VPL_VARIATIONS,
                 VPL_ASSIGNED_VARIATIONS,
-                VPL_RUNNING_PROCESSES
+                VPL_RUNNING_PROCESSES,
+                VPL_OVERRIDES,
+                VPL_ASSIGNED_OVERRIDES
             ];
             $parms = array('vpl' => $instance->id);
             foreach ($tables as $table) {
@@ -142,6 +144,198 @@ class mod_vpl_testcase extends mod_vpl_base_testcase {
      */
     public function test_print_submission_restriction() {
         // TODO Refactor code to test print submission.
+    }
+
+    /**
+     * Method to test mod_vpl::get_effective_setting
+     */
+    public function test_get_effective_setting() {
+        $vpl = $this->vploverrides;
+        $instance = $vpl->get_instance();
+        $baseduedate = $instance->duedate;
+
+        // Check that student 0 has default settings.
+        $user = $this->students[0];
+        foreach (array('startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations') as $field) {
+            $this->assertEquals(
+                    $instance->$field,
+                    $vpl->get_effective_setting($field, $user->id),
+                    $instance->name . ': ' . $user->username . ' ' . $field
+            );
+        }
+
+        // Check that student 1 and student 2 have everything (due date is postponed by 1 day) overriden.
+        foreach (array($this->students[1], $this->students[2]) as $user) {
+            foreach (array('startdate', 'reductionbyevaluation', 'freeevaluations') as $field) {
+                $this->assertNotEquals(
+                        $instance->$field,
+                        $vpl->get_effective_setting($field, $user->id),
+                        $instance->name . ': ' . $user->username . ' ' . $field
+                );
+            }
+            $this->assertEquals(
+                    $baseduedate + DAYSECS,
+                    $vpl->get_effective_setting('duedate', $user->id),
+                    $instance->name . ': ' . $user->username . ' duedate'
+            );
+        }
+
+        // Check that student 3, teacher 0 and editing teacher 0 has due date (due date is postponed by 2 days) overriden.
+        foreach (array($this->students[3], $this->teachers[0], $this->editingteachers[0]) as $user) {
+            foreach (array('startdate', 'reductionbyevaluation', 'freeevaluations') as $field) {
+                $this->assertEquals(
+                        $instance->$field,
+                        $vpl->get_effective_setting($field, $user->id),
+                        $instance->name . ': ' . $user->username . ' ' . $field
+                );
+            }
+            $this->assertEquals(
+                    $baseduedate + 2 * DAYSECS,
+                    $vpl->get_effective_setting('duedate', $user->id),
+                    $instance->name . ': ' . $user->username . ' duedate'
+            );
+        }
+
+        // Check that teacher 1 has due date (due date is disabled) overriden.
+        $user = $this->teachers[1];
+        foreach (array('startdate', 'reductionbyevaluation', 'freeevaluations') as $field) {
+            $this->assertEquals(
+                    $instance->$field,
+                    $vpl->get_effective_setting($field, $user->id),
+                    $instance->name . ': ' . $user->username . ' ' . $field
+            );
+        }
+        $this->assertEquals(
+                0,
+                $vpl->get_effective_setting('duedate', $user->id),
+                $instance->name . ': ' . $user->username . ' duedate'
+        );
+
+        // Check for any other vpl that settings are not overriden.
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            if ($instance->name == $this->vploverrides->get_instance()->name) {
+                continue;
+            }
+            foreach ($this->users as $user) {
+                foreach (array('startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations') as $field) {
+                    $this->assertEquals(
+                            $instance->$field,
+                            $vpl->get_effective_setting($field, $user->id),
+                            $instance->name. ': ' . $user->username . ' ' . $field
+                    );
+                }
+            }
+        }
+    }
+
+    /**
+     * Method to test mod_vpl::update_override_calendar_events
+     */
+    public function test_update_override_calendar_events() {
+        global $CFG;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+        $vpl = $this->vploverrides;
+        $instance = $vpl->get_instance();
+        $baseduedate = $instance->duedate;
+        $start = $baseduedate - DAYSECS;
+        $end = $baseduedate + 3 * DAYSECS;
+
+        // Check that student 0 has default duedate event.
+        $user = $this->students[0];
+        $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
+                function($event) use ($instance) {
+                    return $event->modulename == VPL && $event->instance == $instance->id;
+                }
+        );
+        $this->assertCount(
+                1,
+                $userevents,
+                $instance->name . ': events for ' . $user->username
+        );
+        $this->assertEquals(
+                $baseduedate,
+                reset($userevents)->timestart,
+                $instance->name . ': event for ' . $user->username
+        );
+
+        // Check that student 1 and student 2 have due date postponed by 1 day event.
+        foreach (array($this->students[1], $this->students[2]) as $user) {
+            $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
+                    function($event) use ($instance) {
+                        return $event->modulename == VPL && $event->instance == $instance->id
+                        && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                    }
+            );
+            $this->assertCount(
+                    1,
+                    $userevents,
+                    $instance->name . ': events for ' . $user->username
+            );
+            $this->assertEquals(
+                    $baseduedate + DAYSECS,
+                    reset($userevents)->timestart,
+                    $instance->name . ': event for ' . $user->username
+            );
+        }
+
+        // Check that student 3 has due date postponed by 2 days (user) event.
+        $user = $this->students[3];
+        $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
+                function($event) use ($instance) {
+                    return $event->modulename == VPL && $event->instance == $instance->id
+                    && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                }
+        );
+        $this->assertCount(
+                1,
+                $userevents,
+                $instance->name . ': events for ' . $user->username
+        );
+        $this->assertEquals(
+                $baseduedate + 2 * DAYSECS,
+                reset($userevents)->timestart,
+                $instance->name . ': event for ' . $user->username
+        );
+
+        // Check that teacher 0 and editing teacher 0 have due date postponed by 2 days (group) event.
+        foreach (array($this->groups[2], $this->groups[3]) as $group) {
+            $groupevents = array_filter(calendar_get_events($start, $end, false, $group->id, $instance->course),
+                    function($event) use ($instance) {
+                        return $event->modulename == VPL && $event->instance == $instance->id
+                        && $event->priority !== null && $event->priority > CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                    }
+            );
+            $this->assertCount(
+                    1,
+                    $groupevents,
+                    $instance->name . ': events for ' . $group->name
+            );
+            $this->assertEquals(
+                    $baseduedate + 2 * DAYSECS,
+                    reset($groupevents)->timestart,
+                    $instance->name . ': event for ' . $group->name
+            );
+        }
+
+        // Check that teacher 1 has due date event disabled.
+        $user = $this->teachers[1];
+        $userevents = array_filter(calendar_get_events(0, $end, $user->id, false, $instance->course),
+                function($event) use ($instance) {
+                    return $event->modulename == VPL && $event->instance == $instance->id
+                    && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                }
+        );
+        $this->assertCount(
+                1,
+                $userevents,
+                $instance->name . ': events for ' . $user->username
+        );
+        $this->assertEquals(
+                0,
+                reset($userevents)->timestart,
+                $instance->name . ': event for ' . $user->username
+        );
     }
 
 }
