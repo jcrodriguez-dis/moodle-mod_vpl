@@ -390,14 +390,16 @@ class vpl_similarity_preprocess {
      * Preprocesses ZIP file, loading processesed files into $simil array
      *
      * @param array $simil of file processed objects
+     * @param $zipname
+     * @param $zipdata
      * @param object $vpl activity to process
-     * @param array $filesselected if set only files selected
      * @param boolean $allfiles preprocess all files
      * @param boolean $joinedfiles join files as one
      * @param $spb
+     * @param array $filesselected if set only files selected
      * @return void
      */
-    public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    public static function zip(&$simil, $zipname, $zipdata, $vpl, $allfiles, $joinedfiles, $spb, $filesselected = array()) {
         $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
         if ($ext != 'ZIP') {
             throw new moodle_exception('wrongzipfilename');

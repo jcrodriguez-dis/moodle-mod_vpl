@@ -97,7 +97,7 @@ $userdata = $form->get_file_content( 'scanzipfile0' );
 if ($userdata !== false && $name !== false) {
     @set_time_limit( $timelimit );
     $ziploadbox0 = new vpl_progress_bar( s( $name ) );
-    vpl_similarity_preprocess::zip( $simil, $name, $userdata, $vpl, $filesselected, $allfiles, $joinedfiles, $ziploadbox0 );
+    vpl_similarity_preprocess::zip($simil, $name, $userdata, $vpl, $allfiles, $joinedfiles, $ziploadbox0, $filesselected);
 }
 
 // Search similarity in other files after current VPL instance.
