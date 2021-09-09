@@ -82,14 +82,14 @@ $simil = array ();
 // Preprocess current VPL instance.
 @set_time_limit( $timelimit );
 $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
-vpl_similarity_preprocess::activity( $simil, $vpl, $filesselected, $allfiles, $joinedfiles, $activityloadbox );
+vpl_similarity_preprocess::activity($simil, $vpl, $allfiles, $joinedfiles, $activityloadbox, $filesselected);
 $il = count( $simil );
 // Preprocess other VPL instance.
 if (isset( $fromform->scanactivity ) && $fromform->scanactivity > 0) {
     @set_time_limit( $timelimit );
     $othervpl = new mod_vpl( $fromform->scanactivity );
     $otheractivityloadbox = new vpl_progress_bar( s( $othervpl->get_printable_name() ) );
-    vpl_similarity_preprocess::activity( $simil, $othervpl, $filesselected, $allfiles, $joinedfiles, $otheractivityloadbox );
+    vpl_similarity_preprocess::activity($simil, $othervpl, $allfiles, $joinedfiles, $otheractivityloadbox, $filesselected);
 }
 // Preprocess files in a ZIP file.
 $name = $form->get_new_filename( 'scanzipfile0' );

@@ -290,7 +290,7 @@ class vpl_similarity_preprocess {
         }
         return $files;
     }
-    public static function activity(&$simil, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    public static function activity(&$simil, $vpl, $allfiles, $joinedfiles, $spb, $filesselected = array()) {
         $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
         $cm = $vpl->get_course_module();
         $groupmode = groups_get_activity_groupmode( $cm );

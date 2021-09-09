@@ -154,7 +154,7 @@ foreach ($vpls as $vpl) {
     if ($nuserfiles > 0) {
         $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
         $bars [] = $activityloadbox;
-        vpl_similarity_preprocess::activity( $simil, $vpl, array (), true, false, $activityloadbox );
+        vpl_similarity_preprocess::activity($simil, $vpl, true, false, $activityloadbox, array());
         $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
         $bars [] = $searchprogression;
         if ($nuserfiles >= count( $outputsize )) {
