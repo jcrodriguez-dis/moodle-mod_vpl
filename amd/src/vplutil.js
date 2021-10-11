@@ -1090,8 +1090,8 @@ define(
                     var regf = escReg(filenames[i]);
                     // Filename:N, filename(N), filename N, filename line N, filename on line N.
                     // N=#|#:#|#,#.
-                    var reg = "(^|.* |.*/)" + regf + "( on line | line |:|\\()(\\d+)(:|,)?(\\d+)?(\\))?";
-                    regFiles[i] = new RegExp(reg, '');
+                    var reg = "(^| |/)" + regf + "( on line | line |:|\\()(\\d+)(:|,)?(\\d+)?(\\))?";
+                    regFiles[i] = new RegExp(reg, 'm');
                 }
             })();
             /**
