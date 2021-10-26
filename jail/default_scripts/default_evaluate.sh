@@ -48,7 +48,7 @@ else
 			echo "#!/bin/bash"
 			echo "echo"
 			echo "echo '<|--'"
-			echo "echo '-$VPL_COMPILATIONFAILED'"
+			echo "echo \"-`echo $VPL_COMPILATIONFAILED | sed -e \"s/\\\"/\\\\\\\\\\\"/g\"`\""
 			if [ -f vpl_wexecution ] ; then
 				echo "echo '======================'"
 				echo "echo 'It seems you are trying to test a program with a graphic user interface.'"
