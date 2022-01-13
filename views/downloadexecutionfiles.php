@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+define( 'NO_DEBUG_DISPLAY', true );
+
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
