@@ -68,6 +68,10 @@ if ( $showfr || $showfe ) {
     vpl_sh_factory::include_js();
 }
 
+// Add a correct page url
+$url = new moodle_url('/mod/vpl/view.php', $urlparms);
+$PAGE->set_url($url);
+
 // Print the page header.
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 $vpl->print_header( get_string( 'description', VPL ) );
