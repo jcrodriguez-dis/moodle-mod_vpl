@@ -47,9 +47,17 @@ class mod_vpl_submission_class_testcase extends mod_vpl_base_testcase {
     }
 
     /**
-     * Method to test mod_vpl_submission:delete_all
+     * Method to test mod_vpl_submission::remove_grade_reduction
      */
-    public function test_set_grade() {
+    public function test_remove_grade_reduction() {
+        $this->assertEquals('Example no match', mod_vpl_submission::remove_grade_reduction('Example no match'));
+        $this->assertEquals('Other no match', mod_vpl_submission::remove_grade_reduction('Other no match'));
+        $this->assertEquals('-', mod_vpl_submission::remove_grade_reduction('-'));
+        $this->assertEquals('- Title with no grade  ', mod_vpl_submission::remove_grade_reduction('- Title with no grade  '));
+        $this->assertEquals('- Title with grade ', mod_vpl_submission::remove_grade_reduction('- Title with grade (-4)'));
+        $this->assertEquals('- Title with grade ', mod_vpl_submission::remove_grade_reduction('- Title with grade ( -4 )'));
+        $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade( - 4 )'));
+        $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade( - 4.0 )'));
+        $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade(-.0010)'));
     }
-
 }

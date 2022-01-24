@@ -489,6 +489,18 @@ class mod_vpl_submission {
     }
 
     /**
+     * Removes grade reduction if exists
+     *
+     * @param string title
+     *
+     * @return string
+     */
+    public static function remove_grade_reduction($title) {
+        $regexp = '/^(-.*)(\([ \t]*-[ \t]*[0-9]*\.?[0-9]*[ \t]*\)[ \t]*)$/m';
+        return preg_replace($regexp, '$1', $title);
+    }
+
+    /**
      * Get grade comments
      *
      * @param bool $forceremove True removes grade reduction information from titles
@@ -502,7 +514,7 @@ class mod_vpl_submission {
             $ret = file_get_contents( $fn );
             // Remove grade reduction information from titles [-*(-#)].
             if ( $forceremove || ! $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
-                $ret = preg_replace('/^(-.*)(\([ \t]*-[0-9]*\.?[0-9]+[ \t]*\)[ \t]*)$/m', '$1', $ret);
+                $ret = self::remove_grade_reduction($ret);
             }
         }
         return $ret;
@@ -849,6 +861,9 @@ class mod_vpl_submission {
      */
     public function print_submission() {
         $this->print_info();
+        if ($this->vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+            $this->vpl->print_variation( $this->instance->userid );
+        }
         // Not automatic graded show proposed evaluation.
         if (! $this->is_graded() || ! $this->vpl->get_visiblegrade() || $this->vpl->has_capability( VPL_GRADE_CAPABILITY )) {
             $this->print_CE();
