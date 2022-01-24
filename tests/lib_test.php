@@ -300,7 +300,6 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         $supp = [
                 FEATURE_GROUPS,
                 FEATURE_GROUPINGS,
-                FEATURE_GROUPMEMBERSONLY,
                 FEATURE_MOD_INTRO,
                 FEATURE_GRADE_HAS_GRADE,
                 FEATURE_GRADE_OUTCOMES,
