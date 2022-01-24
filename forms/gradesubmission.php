@@ -223,7 +223,6 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         $hours = vpl_user_total_working_time($vpl, $userid);
         echo get_string('numhours', '', sprintf('%3.2f', $hours));
         echo '<br>';
-        $vpl->print_variation( $subinstance->userid );
         $submission->print_submission();
         echo '</div>';
         $jscript .= 'VPL.hlrow(' . $submissionid . ');';

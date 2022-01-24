@@ -114,7 +114,6 @@ if ($vpl->get_visiblegrade() || $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
         \mod_vpl\event\submission_grade_viewed::log($submission);
     }
 }
-$vpl->print_variation( $subinstance->userid );
 $submission->print_submission();
 $vpl->print_footer();
 \mod_vpl\event\submission_viewed::log( $submission );

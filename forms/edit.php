@@ -130,6 +130,6 @@ $vpl->print_view_tabs( basename( __FILE__ ) );
 
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
-vpl_editor_util::print_js_description($vpl);
+vpl_editor_util::print_js_description($vpl, $userid);
 
 $vpl->print_footer();

@@ -70,10 +70,12 @@ class vpl_editor_util {
             echo '<script>window.VPLDebugMode = true;</script>';
         }
     }
-    public static function print_js_description($vpl) {
+    public static function print_js_description($vpl, $userid) {
+        $html = $vpl->get_variation_html($userid);
+        $html .= $vpl->get_fulldescription_with_basedon();
         ?>
         <script>
-        window.VPLDescription = <?php echo json_encode($vpl->get_fulldescription_with_basedon());?>;
+        window.VPLDescription = <?php echo json_encode($html);?>;
         </script>
         <?php
     }

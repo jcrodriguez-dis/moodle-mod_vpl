@@ -745,7 +745,7 @@ class mod_vpl {
      *
      * @param $userid int the user id to retrieve submissions
      * @param $groupifga boolean if group activity get group submissions. default true
-     * @return FALSE/array of objects
+     * @return array of objects
      */
     public function user_submissions($userid, $groupifga = true) {
         global $DB;
@@ -1831,36 +1831,39 @@ class mod_vpl {
     }
 
     /**
-     * Print variations in vpl instance
+     * Gets html for all variations defined in activity
+     * @return string
      */
-    public function print_variations() {
+    public function get_all_variations_html() {
         global $OUTPUT;
         global $DB;
+        $html = '';
         require_once(dirname( __FILE__ ) . '/views/show_hide_div.class.php');
         $variations = $DB->get_records( VPL_VARIATIONS, array (
                 'vpl' => $this->instance->id
         ) );
         if (count( $variations ) > 0) {
             $div = new vpl_hide_show_div();
-            echo '<br>';
-            echo vpl_get_awesome_icon('variations');
-            echo ' <b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br>';
-            $div->begin_div();
+            $html .= '<br>';
+            $html .= vpl_get_awesome_icon('variations');
+            $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br>';
+            $html .= $div->begin_div(true);
             if (! $this->instance->usevariations) {
-                echo '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
+                $html .= '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
             if ($this->instance->variationtitle) {
-                echo '<b>' . get_string( 'variationtitle', VPL ) . ': ' . s( $this->instance->variationtitle ) . '</b><br>';
+                $html .= '<b>' . get_string( 'variationtitle', VPL ) . ': ' . s( $this->instance->variationtitle ) . '</b><br>';
             }
             $number = 1;
             foreach ($variations as $variation) {
-                echo '<b>' . get_string( 'variation', VPL, $number ) . '</b>: ';
-                echo s($variation->identification) . '<br>';
-                echo $OUTPUT->box( $variation->description );
+                $html .= '<b>' . get_string( 'variation', VPL, $number ) . '</b>: ';
+                $html .= s($variation->identification) . '<br>';
+                $html .= $OUTPUT->box( $variation->description );
                 $number ++;
             }
-            $div->end_div();
+            $html .= $div->end_div(true);
         }
+        return $html;
     }
 
     /**
@@ -1915,33 +1918,46 @@ class mod_vpl {
     }
 
     /**
-     * Show variations if actived and defined
+     * Gets variations in html if actived and defined
+     * @param integer $userid User Id default value 0
+     * @param array $already array of based on visited, default empty
+     * @return string
      */
-    public function print_variation($userid = 0, $already = array()) {
+    public function get_variation_html($userid = 0, $already = array()) {
         global $OUTPUT;
+        $html = '';
         if (isset( $already [$this->instance->id] )) { // Avoid infinite recursion.
             return;
         }
         $already [$this->instance->id] = true; // Mark as visited.
         if ($this->instance->basedon) { // Show recursive varaitions.
             $basevpl = new mod_vpl( false, $this->instance->basedon );
-            $basevpl->print_variation( $userid, $already );
+            $html .= $basevpl->get_variation_html( $userid, $already );
         }
         // If user with grade or manage capability print all variations.
         if ($this->has_capability( VPL_GRADE_CAPABILITY, $userid ) || $this->has_capability( VPL_MANAGE_CAPABILITY,
                 $userid )) {
-            $this->print_variations();
+            $html .= $this->get_all_variations_html();
         }
         // Show user variation if active.
         if ($this->instance->usevariations) { // Variations actived.
             $variation = $this->get_variation( $userid );
             if ($variation !== false) { // Variations defined.
                 if ($this->instance->variationtitle > '') {
-                    echo '<b>' . format_text( $this->instance->variationtitle, FORMAT_HTML ) . '</b><br>';
+                    $html .= '<b>' . format_text( $this->instance->variationtitle, FORMAT_HTML ) . '</b><br>';
                 }
-                echo $OUTPUT->box( $variation->description );
+                $html .= $OUTPUT->box( $variation->description );
             }
         }
+        return $html;
+    }
+
+    /**
+     * Print variations if actived and defined
+     * @param integer $userid User Id default value 0
+     */
+    public function print_variation($userid = 0) {
+        echo $this->get_variation_html($userid);
     }
 
     /**
