@@ -160,6 +160,7 @@ function vpl_working_periods_graph($vpl) {
     }
     $title = sprintf("%s: %s", get_string('submissions', VPL), $vpl->get_printable_name());
     $n = count($times);
+    $n = $n == 0 ? 1 : $n;
     $straveragetime = get_string('averagetime', VPL, sprintf('%3.1f', ((float) $totaltime / $n)));
     $straverageperiods = get_string('averageperiods', VPL, sprintf('%3.1f', ((float) $totalperiods / $n)));
     $strvmaximumperiod = get_string('maximumperiod', VPL, sprintf('%3.1f', ((float) $maxperiodtime)));
