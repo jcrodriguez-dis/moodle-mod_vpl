@@ -195,7 +195,6 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         global $DB;
         global $CFG;
         static $sub = false;
-        $data = ( object ) $data;
         $vplid = $this->get_new_parentid ( 'vpl' );
         $subid = $this->get_new_parentid ( 'submission' );
         if ($sub === false || $sub->id != $subid) {
