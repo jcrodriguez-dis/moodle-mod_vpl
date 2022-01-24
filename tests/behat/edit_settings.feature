@@ -60,7 +60,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Allowed submission from net:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
-    And I should not see "Dissable external file upload"
+    And I should not see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
@@ -81,7 +81,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Allowed submission from net:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
-    And I should not see "Dissable external file upload"
+    And I should not see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
@@ -101,7 +101,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Allowed submission from net:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
-    And I should not see "Dissable external file upload"
+    And I should not see "Disable external file upload"
     And I should not see "Run: No"
     And I should not see "Evaluate: No"
 
@@ -125,7 +125,7 @@ Feature: Create and change VPL activity settings
     And I should see "Allowed submission from net: 10.10.10.13"
     And I should see "SEB browser required: Yes"
     And I should see "SEB exam Key/s: Yes"
-    And I should see "Dissable external file upload"
+    And I should see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
@@ -149,7 +149,7 @@ Feature: Create and change VPL activity settings
     And I should see "Allowed submission from net: 10.10.10.13"
     And I should see "SEB browser required: Yes"
     And I should see "SEB exam Key/s: Yes"
-    And I should see "Dissable external file upload"
+    And I should see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
@@ -190,7 +190,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Allowed submission from net:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
-    And I should see "Dissable external file upload"
+    And I should see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
     And I log out

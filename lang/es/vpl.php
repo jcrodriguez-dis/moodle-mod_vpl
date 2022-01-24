@@ -269,6 +269,7 @@ $string ['shortcuts'] = 'Atajos de teclado';
 $string ['similarity'] = 'Similaridad';
 $string ['similarto'] = 'Similar a';
 $string ['startdate'] = 'Disponibilidad';
+$string ['starting'] = 'Iniciando';
 $string ['submission'] = 'Entrega';
 $string ['submissionperiod'] = 'Periodo de entrega';
 $string ['submissionrestrictions'] = 'Restricciones de entrega';
