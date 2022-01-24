@@ -827,11 +827,14 @@ function vpl_s() {
  * @return void
  */
 function vpl_truncate_vpl($instance) {
-    $instance->password = trim($instance->password);
-    vpl_truncate_string( $instance->name, 255 );
-    vpl_truncate_string( $instance->requirednet, 255 );
-    vpl_truncate_string( $instance->password, 255 );
-    vpl_truncate_string( $instance->variationtitle, 255 );
+    if (isset($instance->password)) {
+        $instance->password = trim($instance->password);
+    }
+    foreach (['name', 'requirednet', 'password', 'variationtitle'] as $field) {
+        if (isset($instance->$field)) {
+            vpl_truncate_string( $instance->$field, 255 );
+        }
+    }
 }
 
 /**
