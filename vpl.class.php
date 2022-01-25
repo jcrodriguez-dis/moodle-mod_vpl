@@ -1352,10 +1352,9 @@ class mod_vpl {
      */
     public function prepare_page($url = false, $parms = array()) {
         global $PAGE;
-
         $PAGE->set_cm( $this->get_course_module(), $this->get_course(), $this->get_instance() );
         if ($url) {
-            $PAGE->set_url( '/mod/vpl/' . $url, $_GET );
+            $PAGE->set_url( new moodle_url('/mod/vpl/' . $url, $parms) );
         }
     }
 

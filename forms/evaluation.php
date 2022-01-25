@@ -33,16 +33,17 @@ global $USER, $DB, $OUTPUT;
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/evaluation.php', array (
-        'id' => $id
-) );
 $userid = optional_param( 'userid', false, PARAM_INT );
+$parms = array ( 'id' => $id );
+if ($userid) {
+    $parms['userid'] = $userid;
+}
+$vpl->prepare_page( 'forms/evaluation.php',  $parms);
+$vpl = new mod_vpl( $id );
 if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // Evaluate own submission.
     $userid = $USER->id;
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
 } else { // Evaluate other user submission.
-    $vpl->prepare_page( 'forms/evaluation.php', array ( 'id' => $id, 'userid' => $userid ) );
     $vpl->require_capability( VPL_GRADE_CAPABILITY );
 }
 if ($USER->id == $userid) {

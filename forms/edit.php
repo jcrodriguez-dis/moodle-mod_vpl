@@ -42,6 +42,9 @@ if ($userid && ! $copy) {
 if ($copy) {
     $pageparms['privatecopy'] = 1;
 }
+if ($subid) {
+    $pageparms['submissionid'] = $subid;
+}
 $vpl->prepare_page( 'forms/edit.php', $pageparms );
 if (! $vpl->is_visible()) {
     vpl_redirect('?id=' . $id, get_string( 'notavailable' ), 'error' );
