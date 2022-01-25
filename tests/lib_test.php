@@ -198,14 +198,14 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $instance->instance = $instance->id;
-            $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
+            $sparms = array ('modulename' => VPL, 'instance' => $instance->id, 'priority' => null );
             $event = $DB->get_record( 'event', $sparms );
             $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
                     $instance->name);
             $instance->duedate = time() + 1000;
             vpl_update_instance($instance);
-            $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
+            $sparms = array ('modulename' => VPL, 'instance' => $instance->id, 'priority' => null );
             $event = $DB->get_record( 'event', $sparms );
             $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
@@ -274,7 +274,9 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
                     VPL_SUBMISSIONS,
                     VPL_VARIATIONS,
                     VPL_ASSIGNED_VARIATIONS,
-                    VPL_RUNNING_PROCESSES
+                    VPL_RUNNING_PROCESSES,
+                    VPL_OVERRIDES,
+                    VPL_ASSIGNED_OVERRIDES
             ];
             $parms = array('vpl' => $instance->id);
             foreach ($tables as $table) {
@@ -386,6 +388,9 @@ class mod_vpl_lib_testcase extends mod_vpl_base_testcase {
             $this->assertEquals(0, $count, $instance->name);
             $parms = array( 'vpl' => $instance->id);
             $count = $DB->count_records(VPL_ASSIGNED_VARIATIONS, $parms);
+            $this->assertEquals(0, $count, $instance->name);
+            $parms = array( 'vpl' => $instance->id);
+            $count = $DB->count_records(VPL_ASSIGNED_OVERRIDES, $parms);
             $this->assertEquals(0, $count, $instance->name);
             $directory = $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata';
             $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);

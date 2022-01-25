@@ -30,6 +30,8 @@ define( 'VPL_JAILSERVERS', 'vpl_jailservers' );
 define( 'VPL_RUNNING_PROCESSES', 'vpl_running_processes' );
 define( 'VPL_VARIATIONS', 'vpl_variations' );
 define( 'VPL_ASSIGNED_VARIATIONS', 'vpl_assigned_variations' );
+define( 'VPL_OVERRIDES', 'vpl_overrides' );
+define( 'VPL_ASSIGNED_OVERRIDES', 'vpl_assigned_overrides' );
 define( 'VPL_GRADE_CAPABILITY', 'mod/vpl:grade' );
 define( 'VPL_VIEW_CAPABILITY', 'mod/vpl:view' );
 define( 'VPL_SUBMIT_CAPABILITY', 'mod/vpl:submit' );
@@ -1020,4 +1022,35 @@ function vpl_get_webservice_urlbase($vpl) {
     }
     return $CFG->wwwroot . '/mod/vpl/webservice.php?moodlewsrestformat=json'
            . '&wstoken=' . $token . '&id=' . $vpl->get_course_module()->id . '&wsfunction=';
+}
+
+/**
+ * Agregate usersids and groupsids of array of objects of override assigned records
+ * @param array $overridesseparated of objects of records
+ * @return array
+ */
+function vpl_agregate_overrides($overridesseparated) {
+    $usersids = [];
+    $groupids = [];
+    foreach ($overridesseparated as $override) {
+        if (!isset($usersids[$override->id])) {
+            $usersids[$override->id] = [];
+            $groupids[$override->id] = [];
+        }
+        if (!empty($override->usersids)) {
+            array_push($usersids[$override->id], $override->usersids);
+        }
+        if (!empty($override->groupids)) {
+            array_push($groupids[$override->id], $override->groupids);
+        }
+    }
+    $overrides = [];
+    foreach ($overridesseparated as $override) {
+        if (!isset($overrides[$override->id])) {
+            $override->usersids = implode(',', $usersids[$override->id]);
+            $override->groupids = implode(',', $groupids[$override->id]);
+            $overrides[$override->id] = $override;
+        }
+    }
+    return $overrides;
 }

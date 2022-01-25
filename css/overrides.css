@@ -1,0 +1,19 @@
+.path-mod-vpl .override-option .col-md-3 {
+    height: 0;
+}
+
+.path-mod-vpl .override-option .fdate_time_selector div:nth-child(3) {
+    break-after: always;
+}
+
+.path-mod-vpl .override-option > .form-group:first-child {
+    margin-bottom: 0;
+}
+
+.path-mod-vpl #vpl_override_options_form #fgroup_id_buttonar {
+    display: none;
+}
+
+.path-mod-vpl .override-action-button {
+    cursor: pointer;
+}
