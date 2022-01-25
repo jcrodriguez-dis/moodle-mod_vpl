@@ -42,8 +42,8 @@ class mod_vpl_edit{
     /**
      * Translates files from IDE to internal format
      *
-     * @param Object[] $postfiles atributes encoding, name and contents
-     * @return string[string] contents indexed by filenames
+     * @param array $postfiles atributes encoding, name and contents
+     * @return array contents indexed by filenames
      */
     public static function filesfromide(& $postfiles) {
         $files = Array ();
