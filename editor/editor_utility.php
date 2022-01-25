@@ -253,7 +253,7 @@ class vpl_editor_util {
         <?php
     }
     /**
-     * get list of i18n translations for the editor
+     * Get the list of i18n translations for the editor
      */
     public static function i18n() {
         $vplwords = array (

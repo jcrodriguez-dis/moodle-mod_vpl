@@ -35,6 +35,7 @@ global $DB, $USER, $PAGE;
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $userid = optional_param( 'userid', false, PARAM_INT );
+
 $vpl = new mod_vpl( $id );
 if ($userid) {
     $vpl->prepare_page( 'forms/submissionview.php', array (

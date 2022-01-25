@@ -47,7 +47,7 @@ class mod_vpl_submission_class_testcase extends mod_vpl_base_testcase {
     }
 
     /**
-     * Method to test mod_vpl_submission::remove_grade_reduction
+     * Method to test mod_vpl_submission::remove_grade_reduction in title
      */
     public function test_remove_grade_reduction() {
         $this->assertEquals('Example no match', mod_vpl_submission::remove_grade_reduction('Example no match'));

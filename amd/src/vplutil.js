@@ -14,7 +14,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tools for IDE and related
+ * Tools for the VPL IDE
  * @package mod_vpl
  * @copyright 2016 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

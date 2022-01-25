@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../locallib.php');
 
 /**
- * Unit tests for \mod_vpl\util\phpconfig class.
+ * Unit tests for the \mod_vpl\util\phpconfig class.
  *
  * @group mod_vpl
  */

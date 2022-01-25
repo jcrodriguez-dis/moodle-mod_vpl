@@ -243,7 +243,6 @@ $string ['running'] = "Ejecutando";
 $string ['runscript'] = 'Script de ejecución';
 $string ['runscript_help'] = 'Seleccione el script a usar al ejecutar entregas en esta actividad';
 $string ['save'] = 'Guardar';
-$string ['save'] = 'Guardar';
 $string ['savecontinue'] = 'Guardar y continuar';
 $string ['saved'] = 'Guardado';
 $string ['savedfile'] = "El fichero '{\$a}' ha sido guardado";

@@ -25,6 +25,7 @@
 namespace mod_vpl\event;
 
 defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/../../locallib.php');
 class submission_grade_updated extends submission_graded {
     protected function init() {

@@ -34,7 +34,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot . '/mod/vpl/externallib.php');
 
 /**
- * Unit tests for webservice.
+ * Unit tests for VPL webservice.
  * @group mod_vpl
  */
 class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {

@@ -489,7 +489,7 @@ class mod_vpl_submission {
     }
 
     /**
-     * Removes grade reduction if exists
+     * Removes in title grade reduction if exists
      *
      * @param string title
      *
@@ -521,7 +521,7 @@ class mod_vpl_submission {
     }
 
     /**
-     * is visible this submission instance
+     * is visible this submission instance?
      *
      * @return bool
      */

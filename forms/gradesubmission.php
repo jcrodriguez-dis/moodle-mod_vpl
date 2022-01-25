@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Grade submission
+ * Grade a submission
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
