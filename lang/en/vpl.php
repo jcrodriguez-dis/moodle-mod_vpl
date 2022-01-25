@@ -25,6 +25,7 @@ $string ['acceptcertificatesnote'] = "<p>You are using an encrypted connection.<
 <p>If you have problems with this process, you can try to use a http (unencrypted) connection or other browser.</p>
 <p>Please, click on the following links (server #) and accept the offered certificate.</p>";
 $string ['addfile'] = 'Add file';
+$string ['addoverride'] = 'Add an override';
 $string ['advanced'] = 'Advanced';
 $string ['allfiles'] = 'All files';
 $string ['allsubmissions'] = 'All submissions';
@@ -47,6 +48,7 @@ $string ['clipboard'] = 'Clipboard';
 $string ['closed'] = 'Closed';
 $string ['comments'] = 'Comments';
 $string ['compilation'] = 'Compilation';
+$string ['confirmoverridedeletion'] = 'Are you sure you want to delete this override set?';
 $string ['connected'] = 'connected';
 $string ['connecting'] = 'connecting';
 $string ['connection_closed'] = 'connection closed';
@@ -74,6 +76,7 @@ $string ['delete_file_q'] = 'Delete file?';
 $string ['deleteallsubmissions'] = 'Delete all submissions';
 $string ['description'] = 'Description';
 $string ['diff'] = 'diff';
+$string ['disabled'] = 'Disabled';
 $string ['discard_submission_period'] = 'Discard submission period';
 $string ['discard_submission_period_description'] = 'For each student and assignment, the system tries to discard submissions. The system keep the last one and at least a submission for every period';
 $string ['download'] = 'Download';
@@ -206,6 +209,11 @@ $string ['optionssaved'] = 'Options have been saved';
 $string ['origin'] = 'Origin';
 $string ['othersources'] = 'Other sources to add to the scan';
 $string ['outofmemory'] = 'Out of memory';
+$string ['override'] = 'Override';
+$string ['overridefor'] = '{$a->base} - override for {$a->for}';
+$string ['overrides'] = 'Overrides';
+$string ['override_options'] = 'Override options';
+$string ['override_users'] = 'Affected users';
 $string ['paste'] = 'Paste';
 $string ['pluginadministration'] = 'VPL administration';
 $string ['pluginname'] = 'Virtual programming lab';
@@ -238,11 +246,16 @@ $string ['privacy:metadata:vpl_assigned_variations'] = 'Information of the activ
 $string ['privacy:metadata:vpl_assigned_variations:userid'] = 'User DB id.';
 $string ['privacy:metadata:vpl_assigned_variations:vplid'] = 'VPL DB id';
 $string ['privacy:metadata:vpl_assigned_variations:description'] = 'Description of the assigned variation';
+$string ['privacy:metadata:vpl_assigned_overrides'] = 'Information of the activity settings overrides assigned, if any';
+$string ['privacy:metadata:vpl_assigned_overrides:vplid'] = 'VPL DB id';
+$string ['privacy:metadata:vpl_assigned_overrides:userid'] = 'User DB id';
+$string ['privacy:metadata:vpl_assigned_overrides:overrideid'] = 'Assigned override id';
 $string ['privacy:metadata:vpl_running_processes'] = 'Information of user\'s running processes on this activity ';
 $string ['privacy:metadata:vpl_running_processes:userid'] = 'User DB id.';
 $string ['privacy:metadata:vpl_running_processes:vplid'] = 'VPL DB id';
 $string ['privacy:metadata:vpl_running_processes:server'] = 'Server that runs the task';
 $string ['privacy:metadata:vpl_running_processes:starttime'] = 'Date the task starts running';
+$string ['privacy:overridepath'] = 'assigned_override';
 $string ['privacy:submissionpath'] = 'submission_{$a}';
 $string ['privacy:variationpath'] = 'assigned_variation';
 $string ['privacy:runningprocesspath'] = 'running_process_{$a}';
@@ -420,6 +433,11 @@ $string ['modulename_help'] = '<p>VPL is a activity module for Moodle that manag
 </ul>
 <p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab Home Page</a></p>';
 $string ['modulename_link'] = 'mod/vpl/view';
+$string ['override_help'] = 'If "Override" is checked, this setting will be overriden with selected value for affected users.';
+$string ['override_users_help'] = 'One user/group can only be affected to one override set.<br>
+If a user is affected to one set and one group he is a member of is affected to another, then by-user affectation prevails.<br>
+If a user is a member of several groups affected to several sets, the first one in the table prevails.';
+$string ['overrides_help'] = 'A set of settings can be overriden for an activity. These settings will override activity settings for affected users and groups.';
 $string ['requestedfiles_help'] = '<p>Here you set names and its initial content up for the requested files to the max number of files that was set in the basic description of the activity.</p>
 <p>If you don\'t set names for whole number of files, the unnamed files are optional and can have any name.</p>
 <p>You also can add contents to the requested files, so these contents will be available the first time that they will be opened with the editor, if no previous submission exists.</p>';

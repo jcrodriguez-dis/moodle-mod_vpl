@@ -129,9 +129,10 @@ try {
         default:
             throw new Exception( 'ajax action error: ' + $action );
     }
-    $timeleft = $instance->duedate - time();
+    $duedate = $vpl->get_effective_setting('duedate', $userid);
+    $timeleft = $duedate - time();
     $hour = 60 * 60;
-    if ( $instance->duedate > 0 && $timeleft > -$hour ) {
+    if ( $duedate > 0 && $timeleft > -$hour ) {
         $result->response->timeLeft = $timeleft;
     }
 } catch ( Exception $e ) {

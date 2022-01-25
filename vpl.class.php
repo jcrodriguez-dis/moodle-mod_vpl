@@ -360,7 +360,7 @@ class mod_vpl {
                 $ret .= ' (' . $grouping->name . ')';
             }
         }
-        return $ret;
+        return format_string($ret);
     }
 
     /**
@@ -1005,13 +1005,14 @@ class mod_vpl {
     /**
      * Check if it is submission period
      *
+     * @param int $userid (optional) Check for given user, current user if null.
      * @return bool
-     *
      */
-    public function is_submission_period() {
+    public function is_submission_period($userid = null) {
         $now = time();
-        $ret = $this->instance->startdate <= $now;
-        return $ret && ($this->instance->duedate == 0 || $this->instance->duedate >= $now);
+        $startdate = $this->get_effective_setting('startdate', $userid);
+        $duedate = $this->get_effective_setting('duedate', $userid);
+        return $startdate <= $now && ($duedate == 0 || $duedate >= $now);
     }
 
     /**
@@ -1034,15 +1035,16 @@ class mod_vpl {
     /**
      * this vpl instance admit submission
      *
+     * @param int $userid (optional) Check for given user, current user if null.
      * @return bool
      */
-    public function is_submit_able() {
+    public function is_submit_able($userid = null) {
         $cm = $this->get_course_module();
         $modinfo = get_fast_modinfo( $cm->course );
         $instance = $this->get_instance();
         $ret = true;
         $ret = $ret && $this->has_capability( VPL_SUBMIT_CAPABILITY );
-        $ret = $ret && $this->is_submission_period();
+        $ret = $ret && $this->is_submission_period( $userid );
         $ret = $ret && $modinfo->get_cm( $cm->id )->uservisible;
         // Manager or grader can always submit.
         $ret = $ret || $this->has_capability( VPL_GRADE_CAPABILITY );
@@ -1597,9 +1599,8 @@ class mod_vpl {
      * Show vpl name
      */
     public function print_name() {
-        echo '<h2>';
-        p( $this->get_printable_name() );
-        echo '</h2>';
+        global $OUTPUT;
+        echo $OUTPUT->heading($this->get_printable_name());
     }
 
     public function str_restriction($str, $value = null, $raw = false, $comp = 'mod_vpl') {
@@ -1636,23 +1637,24 @@ class mod_vpl {
 
     /**
      * Show vpl submission period
+     * @param int $userid (optional) Show for given user, current user if null.
      */
-    public function print_submission_period() {
-        if ($this->instance->startdate == 0 && $this->instance->duedate == 0) {
-            return;
+    public function print_submission_period($userid = null) {
+        $startdate = $this->get_effective_setting('startdate', $userid);
+        if ($startdate) {
+            $this->print_restriction( 'startdate', userdate( $startdate ) );
         }
-        if ($this->instance->startdate) {
-            $this->print_restriction( 'startdate', userdate( $this->instance->startdate ) );
-        }
-        if ($this->instance->duedate) {
-            $this->print_restriction( 'duedate', userdate( $this->instance->duedate ) );
+        $duedate = $this->get_effective_setting('duedate', $userid);
+        if ($duedate) {
+            $this->print_restriction( 'duedate', userdate( $duedate ) );
         }
     }
 
     /**
      * Show vpl submission restriction
+     * @param int $userid (optional) Show for given user, current user if null.
      */
-    public function print_submission_restriction() {
+    public function print_submission_restriction($userid = null) {
         global $CFG, $USER;
         $filegroup = $this->get_required_fgm();
         $files = $filegroup->getfilelist();
@@ -1717,7 +1719,7 @@ class mod_vpl {
                 $this->print_restriction( get_string( 'gradessettings', 'core_grades' ), get_string( 'nograde' ), true );
             }
         }
-        $this->print_gradereduction();
+        $this->print_gradereduction($userid);
         if ($grader) {
             if (trim( $instance->password ) > '') {
                 $this->print_restriction( 'password', $stryes, false, true, 'moodle' );
@@ -1802,13 +1804,17 @@ class mod_vpl {
     }
 
     /**
-     * Show short description
+     * Print grade reduction
+     * @param int $userid (optional) Print for given user, current user if null.
+     * @param boolean $return If true, return result instead of printing it.
      */
-    public function print_gradereduction($return = false) {
-        if ($this->instance->reductionbyevaluation > 0) {
-            $html = $this->str_restriction( 'reductionbyevaluation', $this->instance->reductionbyevaluation);
-            if ( $this->instance->freeevaluations > 0) {
-                $html .= ' ' . $this->str_restriction( 'freeevaluations', $this->instance->freeevaluations);
+    public function print_gradereduction($userid = null, $return = false) {
+        $reductionbyevaluation = $this->get_effective_setting('reductionbyevaluation', $userid);
+        if ($reductionbyevaluation > 0) {
+            $html = $this->str_restriction( 'reductionbyevaluation', $reductionbyevaluation);
+            $freeevaluations = $this->get_effective_setting('freeevaluations', $userid);
+            if ( $freeevaluations > 0) {
+                $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
             }
             if ( $return ) {
                 return $html;
@@ -1963,5 +1969,140 @@ class mod_vpl {
             $ret [] = $variation->identification;
         }
         return $ret;
+    }
+
+    /**
+     * Cached settings of overrides, for get_effective_setting().
+     * @var array $overridensettings Array[ cmid => Array[ userid => {settings} ] ]
+     */
+    protected static $overridensettings = array();
+    /**
+     * Return effective setting for this vpl instance (taking overrides into account).
+     * @param string $setting Setting name (field of database record).
+     * @param int $userid (optional) Get for given user, current user if null.
+     * @return mixed The effective setting, as a database field.
+     */
+    public function get_effective_setting($setting, $userid = null) {
+        global $USER, $DB;
+        $fields = array('startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations');
+        if (!in_array($setting, $fields)) {
+            return $this->instance->$setting;
+        }
+        if (!$userid) {
+            $userid = $USER->id;
+        }
+        if (!isset(self::$overridensettings[$this->cm->id])) {
+            self::$overridensettings[$this->cm->id] = array();
+        }
+        if (!isset(self::$overridensettings[$this->cm->id][$userid])) {
+            self::$overridensettings[$this->cm->id][$userid] = new stdClass();
+
+            $sql = 'SELECT ao.id as aoid, ao.override, ao.userid, ao.groupid, o.*
+                        FROM {vpl_assigned_overrides} ao
+                        JOIN {vpl_overrides} o ON ao.override = o.id
+                        WHERE o.vpl = :vplid AND (ao.userid = :userid OR ao.groupid IS NOT NULL)
+                        ORDER BY ao.override DESC';
+            $overrides = $DB->get_records_sql($sql, array('vplid' => $this->instance->id, 'userid' => $userid));
+
+            foreach ($overrides as $override) {
+                if (!empty($override->userid)) {
+                    // Found record for user.
+                    foreach ($fields as $field) {
+                        self::$overridensettings[$this->cm->id][$userid]->$field = $override->$field;
+                    }
+                    break; // User overrides take priority, do not search further.
+                }
+
+                if (groups_is_member($override->groupid, $userid)) {
+                    foreach ($fields as $field) {
+                        self::$overridensettings[$this->cm->id][$userid]->$field = $override->$field;
+                    }
+                }
+            }
+        }
+        if (isset(self::$overridensettings[$this->cm->id][$userid]->$setting) &&
+                self::$overridensettings[$this->cm->id][$userid]->$setting !== null) {
+            return self::$overridensettings[$this->cm->id][$userid]->$setting;
+        } else {
+            return $this->instance->$setting;
+        }
+    }
+
+    /**
+     * Update calendar events for duedate overrides.
+     * @param stdClass $override The override being created / updated / deleted.
+     *          It should contain joint data from vpl_overrides and vpl_assigned_overrides tables.
+     * @param stdClass $oldoverride The old override data (in case of an update).
+     * @param boolean $delete If true, simply delete all related events.
+     */
+    public function update_override_calendar_events($override, $oldoverride = null, $delete = false) {
+        global $DB, $CFG;
+        require_once($CFG->dirroot . '/calendar/lib.php');
+
+        $targets = array(
+                'userid' => CALENDAR_EVENT_USER_OVERRIDE_PRIORITY,
+                'groupid' => $override->id
+        );
+        foreach ($targets as $target => $priority) { // Process once for users and once for groups.
+            $params = array(
+                    'modulename' => VPL,
+                    'instance' => $this->instance->id,
+                    'priority' => $priority
+            );
+            if ($oldoverride !== null && !empty($oldoverride->{$target . 's'})) {
+                $oldtargets = array_fill_keys(explode(',', $oldoverride->{$target . 's'}), false);
+            } else {
+                $oldtargets = array();
+            }
+            if (!empty($override->{$target . 's'})) {
+                foreach (explode(',', $override->{$target . 's'}) as $userorgroupid) { // Loop over users or groups.
+                    $params[$target] = $userorgroupid;
+                    $currenteventid = $DB->get_field( 'event', 'id', $params ); // Get current calendar event.
+                    if (isset($override->duedate) && !$delete) {
+                        if ($target == 'userid') {
+                            $userorgroupname = fullname($DB->get_record( 'user', array('id' => $userorgroupid) ));
+                        } else {
+                            $userorgroupname = groups_get_group($userorgroupid)->name;
+                        }
+                        $newevent = vpl_create_event($this->instance, $this->instance->id);
+                        $newevent->name = get_string('overridefor', VPL, array(
+                                'base' => $newevent->name,
+                                'for' => $userorgroupname
+                        ));
+                        if ($target == 'userid') {
+                            // User overrides events do not show correctly if courseid is non zero.
+                            $newevent->courseid = 0;
+                        }
+                        $newevent->timestart = $override->duedate;
+                        $newevent->timesort = $override->duedate;
+                        $newevent->{$target} = $userorgroupid;
+                        $newevent->priority = $priority;
+                        if ($currenteventid === false) {
+                            // No event exist for current user or group, create a new one.
+                            calendar_event::create( $newevent );
+                        } else {
+                            // An event already exists, update it.
+                            calendar_event::load( $currenteventid )->update( $newevent );
+                        }
+                    } else {
+                        if ($currenteventid !== false) {
+                            calendar_event::load( $currenteventid )->delete();
+                        }
+                    }
+                    // This user or group is in newly processed data (or has already been removed).
+                    $oldtargets[$userorgroupid] = true;
+                }
+            }
+            // Discard events related to users or groups removed from override.
+            foreach ($oldtargets as $oldtarget => $tokeep) {
+                if (!$tokeep) {
+                    $params[$target] = $oldtarget;
+                    $eventid = $DB->get_field( 'event', 'id', $params );
+                    if ($eventid !== false) {
+                        calendar_event::load( $eventid )->delete();
+                    }
+                }
+            }
+        }
     }
 }

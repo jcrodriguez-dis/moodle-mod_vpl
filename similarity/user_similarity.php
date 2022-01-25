@@ -88,7 +88,7 @@ foreach ($ovpls as $ovpl) {
         continue;
     }
     // Open and limited => NO.
-    if ($timenow >= $instance->startdate && $timenow <= $instance->duedate) {
+    if ($timenow >= $vpl->get_effective_setting('startdate', $user->id) && $timenow <= $vpl->get_effective_setting('duedate', $user->id)) {
         continue;
     }
     // Can be graded => NO.

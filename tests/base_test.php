@@ -158,6 +158,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
     protected $vplonefile = null;
     protected $vplmultifile = null;
     protected $vplvariations = null;
+    protected $vploverrides = null;
     protected $vplteamwork = null;
     protected $vpls = null;
 
@@ -168,6 +169,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
         $this->setup_onefile_instance();
         $this->setup_multifile_instance();
         $this->setup_variations_instance();
+        $this->setup_overrides_instance();
         $this->setup_vplteamwork_instance();
         $this->vpls = [
                 $this->vpldefault,
@@ -175,6 +177,7 @@ class mod_vpl_base_testcase extends advanced_testcase {
                 $this->vplonefile,
                 $this->vplmultifile,
                 $this->vplvariations,
+                $this->vploverrides,
                 $this->vplteamwork,
         ];
         return;
@@ -320,6 +323,95 @@ class mod_vpl_base_testcase extends advanced_testcase {
         if ($submissionid == false || $error != '' ) {
             $this->fail($error);
         }
+    }
+
+    protected function setup_overrides_instance() {
+        global $DB;
+        $this->setUser($this->editingteachers[0]);
+        $now = time();
+        $baseduedate = $now + DAYSECS;
+        $parms = array(
+                'name' => 'Overrides',
+                'startdate' => 0,
+                'duedate' => $baseduedate,
+                'freeevaluations' => 0,
+                'reductionbyevaluation' => 0,
+                'maxfiles' => 10,
+                'maxfilesize' => 1000,
+                'grade' => 10,
+                'worktype' => 0
+        );
+        $this->vploverrides = $this->create_instance($parms);
+
+        // Create overrides such that:
+        // - Student 0 has default settings,
+        // - Student 1 has everything (due date is postponed by 1 day) overriden (by user),
+        // - Student 2 has everything (due date is postponed by 1 day) overriden (by user),
+        // - Student 3 has due date (due date is postponed by 2 days) overriden (by user),
+        // - Teacher 0 has due date (due date is postponed by 2 days) overriden (by group),
+        // - Editing teacher 0 has due date (due date is postponed by 2 days) overriden (by group),
+        // - Teacher 1 has due date (due date is disabled) overriden (by group and by user, latter should prevail).
+
+        $override = new stdClass();
+        $override->vpl = $this->vploverrides->get_instance()->id;
+        $override->startdate = $now - 3600;
+        $override->duedate = $baseduedate + DAYSECS;
+        $override->freeevaluations = 10;
+        $override->reductionbyevaluation = 1;
+        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $assignedoverride = new stdClass();
+        $assignedoverride->vpl = $override->vpl;
+        $assignedoverride->override = $override->id;
+        $userids = array($this->students[1]->id, $this->students[2]->id);
+        foreach ($userids as $userid) {
+            $assignedoverride->userid = $userid;
+            $assignedoverride->groupid = null;
+            $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        }
+        $override->userids = implode(',', $userids);
+        $override->groupids = null;
+        $this->vploverrides->update_override_calendar_events($override);
+
+        $override = new stdClass();
+        $override->vpl = $this->vploverrides->get_instance()->id;
+        $override->startdate = null;
+        $override->duedate = $baseduedate + 2 * DAYSECS;
+        $override->freeevaluations = null;
+        $override->reductionbyevaluation = null;
+        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $assignedoverride = new stdClass();
+        $assignedoverride->vpl = $override->vpl;
+        $assignedoverride->override = $override->id;
+        $assignedoverride->userid = $this->students[3]->id;
+        $assignedoverride->groupid = null;
+        $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        $groupids = array($this->groups[2]->id, $this->groups[3]->id);
+        foreach ($groupids as $groupid) {
+            $assignedoverride->userid = null;
+            $assignedoverride->groupid = $groupid;
+            $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        }
+        $override->userids = $this->students[3]->id;
+        $override->groupids = implode(',', $groupids);
+        $this->vploverrides->update_override_calendar_events($override);
+
+        $override = new stdClass();
+        $override->vpl = $this->vploverrides->get_instance()->id;
+        $override->groupids = null;
+        $override->startdate = null;
+        $override->duedate = 0;
+        $override->freeevaluations = null;
+        $override->reductionbyevaluation = null;
+        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $assignedoverride = new stdClass();
+        $assignedoverride->vpl = $override->vpl;
+        $assignedoverride->override = $override->id;
+        $assignedoverride->userid = $this->teachers[1]->id;
+        $assignedoverride->groupid = null;
+        $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        $override->userids = $this->teachers[1]->id;
+        $override->groupids = null;
+        $this->vploverrides->update_override_calendar_events($override);
     }
 
     protected function setup_vplteamwork_instance() {

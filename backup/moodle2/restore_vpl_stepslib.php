@@ -69,8 +69,10 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $paths [] = new restore_path_element ( 'required_file', '/activity/vpl/required_files/required_file' );
         $paths [] = new restore_path_element ( 'execution_file', '/activity/vpl/execution_files/execution_file' );
         $paths [] = new restore_path_element ( 'variation', '/activity/vpl/variations/variation' );
+        $paths [] = new restore_path_element ( 'override', '/activity/vpl/overrides/override' );
         if ($userinfo) {
             $paths [] = new restore_path_element ( 'assigned_variation', '/activity/vpl/assigned_variations/assigned_variation' );
+            $paths [] = new restore_path_element ( 'assigned_override', '/activity/vpl/assigned_overrides/assigned_override' );
             $paths [] = new restore_path_element ( 'submission', '/activity/vpl/submissions/submission' );
             $paths [] = new restore_path_element (
                     'submission_file',
@@ -168,6 +170,37 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $data->variation = $this->get_new_parentid ( 'vpl_variation' );
         $data->userid = $this->get_mappingid ( 'user', $data->userid );
         $DB->insert_record ( 'vpl_assigned_variations', $data );
+    }
+
+    /**
+     * Restore an override
+     * @param array $data override instance
+     */
+    protected function process_override($data) {
+        global $DB;
+        $data = ( object ) $data;
+        $data->vpl = $this->get_new_parentid ( 'vpl' );
+        $data->startdate = $this->apply_date_offset ( $data->startdate );
+        $data->duedate = $this->apply_date_offset ( $data->duedate );
+        $newid = $DB->insert_record ( 'vpl_overrides', $data );
+        $this->set_mapping('override', $data->id, $newid); // Map new id to be used by process_assigned_override().
+    }
+
+    /**
+     * Restore an override assignation
+     * @param array $data assigned override instance
+     */
+    protected function process_assigned_override($data) {
+        global $DB;
+        $data = ( object ) $data;
+        $newid = $this->get_mappingid('override', $data->override, null); // Fetch new override id.
+        if ($newid !== null) {
+            $data->vpl = $this->get_new_parentid ( 'vpl' );
+            $data->override = $newid;
+            $data->userid = $this->get_mappingid ( 'user', $data->userid, null );
+            $data->groupid = $this->get_mappingid ( 'group', $data->groupid, null );
+            $DB->insert_record ( 'vpl_assigned_overrides', $data );
+        }
     }
 
     /**
