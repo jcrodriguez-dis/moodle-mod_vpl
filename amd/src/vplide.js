@@ -104,9 +104,9 @@ define(
             }
             options.fontSize = parseInt(options.fontSize);
             /**
-            * Handler for dragover event.
-            * @param {object} e event.
-            */
+             * Handler for dragover event.
+             * @param {object} e event.
+             */
             function dragoverHandler(e) {
                 if (restrictedEdit) {
                     e.originalEvent.dataTransfer.dropEffect = 'none';
@@ -116,10 +116,10 @@ define(
                 e.preventDefault();
             }
             /**
-            * Handler for drop event.
-            * @param {object} e event.
-            * @returns {boolean}
-            */
+             * Handler for drop event.
+             * @param {object} e event.
+             * @returns {boolean}
+             */
             function dropHandler(e) {
                 if (restrictedEdit) { // No drop allowed.
                     e.stopImmediatePropagation();
@@ -142,10 +142,10 @@ define(
             rootObj.on('drop', dropHandler);
             rootObj.on('dragover', dragoverHandler);
             /**
-            * Handler for paste limited by restrictedEdit var.
-            * @param {object} e event.
-            * @returns {boolean}
-            */
+             * Handler for paste limited by restrictedEdit var.
+             * @param {object} e event.
+             * @returns {boolean}
+             */
             function restrictedPaste(e) {
                 if (restrictedEdit) {
                     e.stopPropagation();
@@ -167,11 +167,11 @@ define(
             fileListContainer.vplMinWidth = 80;
             resultContainer.vplMinWidth = 100;
             /**
-            * Avoids selecting grade.
-            * @param {object} event Unuse.
-            * @param {object} ui UI origen.
-            * @returns {boolean}
-            */
+             * Avoids selecting grade.
+             * @param {object} event Unuse.
+             * @param {object} ui UI origen.
+             * @returns {boolean}
+             */
             function avoidSelectGrade(event, ui) {
                 if ("newHeader" in ui) {
                     if (ui.newHeader.hasClass('vpl_ide_accordion_t_grade')) {
@@ -181,8 +181,8 @@ define(
                 return true;
             }
             /**
-            * Constructor of FileManager objects
-            */
+             * Constructor of FileManager objects
+             */
             function FileManager() {
                 var tabsUl = $('#vpl_tabs_ul');
                 $('#vpl_tabs').tabs();
@@ -213,10 +213,10 @@ define(
                     return -1;
                 };
                 /**
-                * Checks if name is included in current files names
-                * @param {string} name Name of file
-                * @returns {boolean} if found or not found
-                */
+                 * Checks if name is included in current files names
+                 * @param {string} name Name of file
+                 * @returns {boolean} if found or not found
+                 */
                 function fileNameIncluded(name) {
                     var checkName = name.toLowerCase() + '/';
                     for (var i = 0; i < files.length; i++) {
@@ -229,11 +229,11 @@ define(
                     return false;
                 }
                 /**
-                * Checks if changing file name results in two blovkly files
-                * @param {string} oldname The old file name
-                * @param {string} newname The new file name
-                * @returns {boolean} if results two two blovkly files
-                */
+                 * Checks if changing file name results in two blovkly files
+                 * @param {string} oldname The old file name
+                 * @param {string} newname The new file name
+                 * @returns {boolean} if results two two blovkly files
+                 */
                 function twoBlockly(oldname, newname) {
                     if (VPLUtil.isBlockly(oldname)) {
                         return false;
@@ -884,8 +884,8 @@ define(
             };
             tabs.resizable(resizableOptions);
              /**
-             * Updates handles for internal IDE resize
-             */
+              * Updates handles for internal IDE resize
+              */
             function updateTabsHandles() {
                 var handles = ['e', 'w', 'e', 'e, w'];
                 var index = 0;

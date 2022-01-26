@@ -227,10 +227,10 @@ define(
             unzipper.readEntries();
             var out = unzipper.entries.length;
             /**
-            * Process each entry in the zip file.
-            * Recursive process.
-            * @param {int} i Entry to process.
-            */
+             * Process each entry in the zip file.
+             * Recursive process.
+             * @param {int} i Entry to process.
+             */
             function process(i) {
                 if (i >= out || progressBar.isClosed()) {
                     end();
@@ -290,10 +290,10 @@ define(
                 pb.setLabel(name);
             };
             /**
-            * Read each file in filesToReas
-            * Recursive process.
-            * @param {int} sec secuencial file to read
-            */
+             * Read each file in filesToReas
+             * Recursive process.
+             * @param {int} sec secuencial file to read
+             */
             function readSecuencial(sec) {
                 if (sec >= filesToRead.length || pb.isClosed()) {
                     end();
@@ -633,10 +633,10 @@ define(
         VPLUtil.setTitleBar = function(dialog, type, icon, buttons, handler) {
             var title = $(dialog).parent().find("span.ui-dialog-title");
             /**
-            * Generate HTML for a button with icon
-            * @param {string} e name of botton.
-            * @returns {string} Html tag <a> as a button.
-            */
+             * Generate HTML for a button with icon
+             * @param {string} e name of botton.
+             * @returns {string} Html tag <a> as a button.
+             */
             function genButton(e) {
                 var html = "<a id='vpl_" + type + "_" + e + "' href='#' title='" + VPLUtil.str(e) + "'>";
                 html += VPLUtil.genIcon(e, 'fw') + "</a>";
