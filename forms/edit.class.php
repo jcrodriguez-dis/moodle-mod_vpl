@@ -38,7 +38,7 @@ require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-class mod_vpl_edit{
+class mod_vpl_edit {
     /**
      * Translates files from IDE to internal format
      *
