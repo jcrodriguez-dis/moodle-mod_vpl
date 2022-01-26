@@ -62,12 +62,22 @@ class phpconfig {
     }
 
     /**
+     * Return the value of a ini paramater
+     *
+     * @param string $param Name of the parameter
+     * @return int Number of bytes
+     */
+    public static function get_ini_value($param): int {
+        return self::get_bytes(ini_get($param));
+    }
+
+    /**
      * Return the post maximum size in bytes
      *
      * @return int Number of bytes
      */
     public static function get_post_max_size(): int {
-        return self::get_bytes(ini_get('post_max_size'));
+        return self::get_ini_value('post_max_size');
     }
 
     /**
@@ -76,8 +86,9 @@ class phpconfig {
      * @return void
      */
     public static function increase_memory_limit(): void {
+        gc_enable();
         $bytes = self::get_post_max_size() * 3;
-        if ($bytes > self::get_bytes(ini_get('memory_limit'))) {
+        if ($bytes > self::get_ini_value('memory_limit') && $bytes > memory_get_usage()) {
             $newmemorylimit = (int) ($bytes / self::BYTECONVERTER['k']);
             ini_set('memory_limit', $newmemorylimit . 'K');
         }
