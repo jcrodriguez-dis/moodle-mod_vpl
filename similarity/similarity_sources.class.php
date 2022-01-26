@@ -229,16 +229,16 @@ class vpl_similarity_preprocess {
     const MINTOKENS = 10;
 
     /**
-     * Preprocesses activity, loading activity files into $simil array
+     * Preprocesses a submission, returning processed files
      *
-     * @param array $simil of file processed objects
-     * @param object $vpl of activity to process
-     * @param array $filesselected if set only files selected
-     * @param boolean $allfiles preprocess all files
-     * @param boolean $joinedfiles join files as one
-     * @param $subinstance
-     * @param $toremove $toremove with filenames as keys to remove from comparation
-     * @return void
+     * @param object $fgm Object to manage the file of a submission
+     * @param array $filesselected List of files to processes
+     * @param boolean $allfiles If true preprocess all files
+     * @param boolean $joinedfiles If true join files as one
+     * @param object $vpl Activity to process (optional)
+     * @param object $subinstance (optional)
+     * @param array $toremove Array with filenames as keys to remove from comparation (optional)
+     * @return array Asociative array with file name as key and simil object as value
      */
     public static function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles
                                           , $vpl = false, $subinstance = false, $toremove = array()) {
@@ -290,7 +290,18 @@ class vpl_similarity_preprocess {
         }
         return $files;
     }
-    public static function activity(&$simil, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    /**
+     * Preprocesses an activity loading and preprocessing the students' files
+     *
+     * @param array& $simil $simil Input/output array that saves the new files found to process
+     * @param object $vpl Activity to process
+     * @param array $filesselected Files to process
+     * @param bool $allfiles If true process all files
+     * @param bool $joinedfiles If true process files as a joined file
+     * @param object $spb Progress bar to show activity load
+     * @return void
+     */
+    public static function activity(&$simil, $vpl, $filesselected, $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
         $cm = $vpl->get_course_module();
         $groupmode = groups_get_activity_groupmode( $cm );
@@ -389,15 +400,17 @@ class vpl_similarity_preprocess {
     /**
      * Preprocesses ZIP file, loading processesed files into $simil array
      *
-     * @param array $simil of file processed objects
-     * @param object $vpl activity to process
-     * @param array $filesselected if set only files selected
-     * @param boolean $allfiles preprocess all files
-     * @param boolean $joinedfiles join files as one
-     * @param $spb
+     * @param array &$simil Input/output array that saves the new files found to process
+     * @param string $zipname Zip file name
+     * @param string $zipdata Zip file content
+     * @param object $vpl Current VPL activity
+     * @param array $filesselected Files to process
+     * @param bool $allfiles If true process all files.
+     * @param bool $joinedfiles If true process files as a joined file
+     * @param object $spb Progress bar to show Zip file load
      * @return void
      */
-    public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected = array(), $allfiles, $joinedfiles, $spb) {
+    public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected, $allfiles, $joinedfiles, $spb) {
         $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
         if ($ext != 'ZIP') {
             throw new moodle_exception('wrongzipfilename');
