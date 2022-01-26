@@ -23,6 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
+use \vpl_similarity_preprocess;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -38,7 +42,7 @@ require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php')
  * Unit tests for vpl_similarity_preprocess class.
  * @group mod_vpl
  */
-class mod_vpl_similarity_preprocess_testcase extends mod_vpl_base_testcase {
+class similarity_test extends base_test {
 
     /**
      * Method to create test fixture

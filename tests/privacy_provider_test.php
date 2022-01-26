@@ -21,6 +21,12 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
+namespace mod_vpl;
+
+use \stdClass;
+use \mod_vpl_submission;
+use \mod_vpl_submission_CE;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
@@ -40,7 +46,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  *
  * @group mod_vpl
  */
-class mod_vpl_privacy_provider_testcase extends mod_vpl_base_testcase {
+class privacy_provider_test extends base_test {
     /**
      * Fixture object of class \mod_vpl\privacy\provider
      */

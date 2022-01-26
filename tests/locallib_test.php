@@ -23,6 +23,10 @@
  * @author Juan Carlos RodrÃ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
+use \Exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -33,7 +37,7 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
  * Unit tests for mod/vpl/locallib.php functions.
  * @group mod_vpl
  */
-class mod_vpl_locallib_testcase extends advanced_testcase {
+class locallib_test extends \advanced_testcase {
 
     public function test_vpl_delete_dir() {
         global $CFG;
@@ -216,7 +220,7 @@ class mod_vpl_locallib_testcase extends advanced_testcase {
         } else {
             $postsave = $_POST;
         }
-        $SESSION = new stdClass();
+        $SESSION = new \stdClass();
         $SESSION->vpl_testvpl1 = 'testdata';
         $this->assertEquals('testdata', vpl_get_set_session_var('testvpl1', 'nada'));
         $this->assertEquals('nada', vpl_get_set_session_var('testvpl2', 'nada'));

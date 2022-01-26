@@ -23,6 +23,8 @@
  * @author    Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/../locallib.php');
@@ -32,7 +34,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
  *
  * @group mod_vpl
  */
-class mod_vpl_util_phpconfig_testcase extends advanced_testcase {
+class util_phpconfig_test extends \advanced_testcase {
     /**
      * Method to test function get_bytes(string $value): int
      */
@@ -57,6 +59,7 @@ class mod_vpl_util_phpconfig_testcase extends advanced_testcase {
         $maxpost = \mod_vpl\util\phpconfig::get_post_max_size();
         \mod_vpl\util\phpconfig::increase_memory_limit();
         $memorylimit = \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit'));
-        $this->assertTrue($maxpost * 3 <= $memorylimit);
+        $memoryused = memory_get_usage();
+        $this->assertTrue($maxpost * 3 <= max($memorylimit, $memoryused) );
     }
 }

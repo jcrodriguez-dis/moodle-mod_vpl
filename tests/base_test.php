@@ -22,17 +22,22 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
+namespace mod_vpl;
+
+use \stdClass;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
+
 /**
  * Code based on mod/assign/tests/base_test.php
  *
  */
-class mod_vpl_base_testcase extends advanced_testcase {
+class base_test extends \advanced_testcase {
     /** @const Default number of students to create */
     const DEFAULT_STUDENT_COUNT = 7;
     /** @const Default number of teachers to create */
@@ -487,6 +492,6 @@ class mod_vpl_base_testcase extends advanced_testcase {
  * Class to use instead of mod_vpl.
  * This derived class of mod_vpl expose protected methods as public to test it.
  */
-class testable_vpl extends mod_vpl {
+class testable_vpl extends \mod_vpl {
 
 }

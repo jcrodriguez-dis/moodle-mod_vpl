@@ -23,6 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
+use \file_group_process;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -36,7 +40,7 @@ require_once($CFG->dirroot . '/mod/vpl/filegroup.class.php');
  * Unit tests for file_group_process class.
  * @group mod_vpl
  */
-class mod_vpl_file_group_process_testcase extends advanced_testcase {
+class filegroup_test extends \advanced_testcase {
     protected $basedir = null;
     protected $gpempty = null;
     protected $gponefile = null;
@@ -284,7 +288,7 @@ class mod_vpl_file_group_process_testcase extends advanced_testcase {
      */
     protected function internal_test_generate_zip_file(file_group_process $fgp, array $expectedfiles) {
         $zipfilename = $fgp->generate_zip_file();
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         $this->assertTrue($zip->open( $zipfilename ));
         $zipfiles = array();
         for ($i = 0; $i < $zip->numFiles; $i ++) {

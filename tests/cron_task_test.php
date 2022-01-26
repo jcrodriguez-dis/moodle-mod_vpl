@@ -22,6 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+namespace mod_vpl;
+
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -39,7 +41,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
  *  before             on range           post range
  * @group mod_vpl
  */
-class mod_vpl_cron_task_testcase extends mod_vpl_base_testcase {
+class cron_task_test extends base_test {
     /**
      * Fixture object of class \mod_vpl\task\cron_task
      */

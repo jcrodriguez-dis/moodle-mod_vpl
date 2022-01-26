@@ -23,6 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -36,7 +38,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * Unit tests for mod_vpl class.
  * @group mod_vpl
  */
-class mod_vpl_testcase extends mod_vpl_base_testcase {
+class vpl_test extends base_test {
 
     /**
      * Method to create test fixture

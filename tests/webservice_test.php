@@ -23,6 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl;
+
+use \mod_vpl_webservice;
+use \Exception;
+
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -37,7 +42,7 @@ require_once($CFG->dirroot . '/mod/vpl/externallib.php');
  * Unit tests for VPL webservice.
  * @group mod_vpl
  */
-class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
+class webservice_test extends base_test {
     private function vpl_call_service($url, $fun, $request = '') {
         if (! function_exists( 'curl_init' )) {
             return 'PHP cURL requiered';
@@ -229,7 +234,7 @@ class mod_vpl_webservice_testcase extends mod_vpl_base_testcase {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
                 } catch (Exception $e) {
-                    throw new Exception("Saving submission default vpl users " . $e);
+                    throw new \Exception("Saving submission default vpl users " . $e);
                 }
             }
         }
