@@ -78,7 +78,7 @@ jobs:
         run: moodle-plugin-ci codechecker --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        if: ${{ always() }}
+        if: ${{ false }}
         run: moodle-plugin-ci phpdoc
 
       - name: Validating
