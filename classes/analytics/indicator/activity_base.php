@@ -26,8 +26,6 @@
 
 namespace mod_vpl\analytics\indicator;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Activity base class.
  *

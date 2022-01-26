@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_editor_util {
     public static function generate_jquery() {
         global $PAGE;

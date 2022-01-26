@@ -24,8 +24,6 @@
  */
 namespace mod_vpl\util;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-
 /**
  * Class to manage PHP config
  */

@@ -24,8 +24,6 @@
  */
 namespace mod_vpl\util;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-
 class lock {
     protected $lockfile;
     public static function filename() {

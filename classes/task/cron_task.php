@@ -24,8 +24,6 @@
  */
 namespace mod_vpl\task;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-
 /**
  * Class cron_task to be used by the task system.
  * The task switch from hidden to show the activities that reach the startdate.

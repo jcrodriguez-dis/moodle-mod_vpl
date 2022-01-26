@@ -24,7 +24,6 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_checkvpls extends base {
     public static function get_objectid_mapping() {
         return array('db' => 'course', 'restore' => 'course');

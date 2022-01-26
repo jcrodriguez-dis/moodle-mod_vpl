@@ -26,8 +26,6 @@
 
 namespace mod_vpl\analytics\indicator;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Social breadth indicator of VPL.
  * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}

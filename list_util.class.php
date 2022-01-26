@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
 class vpl_list_util {
     static protected $fields; // Field to compare.
     static protected $ascending; // Value to return when ascending or descending order.

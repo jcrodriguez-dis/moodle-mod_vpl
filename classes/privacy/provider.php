@@ -36,8 +36,6 @@ use \core_privacy\local\request\content_writer;
 use \core_privacy\local\request\userlist;
 use \core_privacy\local\request\approved_userlist;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-
 /**
  * VPL provider class
  *
