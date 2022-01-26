@@ -15,7 +15,7 @@
 
 /**
  * Evaluation monitoring
- * @package mod_vpl
+ *
  * @copyright 2013 onward Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
