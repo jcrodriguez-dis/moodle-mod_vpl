@@ -24,7 +24,7 @@ Feature: In a VPL activity feature files to keep when running
   Scenario: A teacher set and see files to keep when running
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Execution files" in current page administration
     And I drop the files "hello.c|hello.py|hello.adb" on "#vpl_tabs" in VPL
     And I click on "#vpl_ide_save" in VPL

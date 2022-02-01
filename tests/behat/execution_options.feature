@@ -36,7 +36,7 @@ Feature: In an VPL activity, editing teacher change options of execution
   Scenario: A teacher sees the execution options default values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity name"
+    When I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Maximum number of files: 33"
     And I should see "Type of work:"
     And I should see "Individual work"
@@ -51,7 +51,7 @@ Feature: In an VPL activity, editing teacher change options of execution
   Scenario: A student sees the execution options default values
     Given I log in as "student1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity name"
+    When I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Maximum number of files: 33"
     And I should see "Type of work:"
     And I should see "Individual work"
@@ -66,7 +66,7 @@ Feature: In an VPL activity, editing teacher change options of execution
   Scenario: A teacher changes the execution options => A teacher see values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity name"
+    And I click on "VPL activity name" "link" in the "region-main" "region"
     And I navigate to "Execution options" in current page administration
     And I set the following fields to these values:
       | id_basedon | VPL base activity |
@@ -77,7 +77,8 @@ Feature: In an VPL activity, editing teacher change options of execution
       | id_automaticgrading  | 1 |
     And I press "save options"
     And I should see "Options have been saved"
-    When I follow "VPL activity name"
+    When I am on "Course 1" course homepage
+    And I click on "VPL activity name" "link" in the "region-main" "region"
     And I should see "Type of work:"
     And I should see "Individual work"
     And I should see "Based on: VPL base activity"
@@ -93,7 +94,7 @@ Feature: In an VPL activity, editing teacher change options of execution
   Scenario: A teacher changes the execution options => A student see values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity name"
+    And I click on "VPL activity name" "link" in the "region-main" "region"
     And I navigate to "Execution options" in current page administration
     And I set the following fields to these values:
       | id_basedon | VPL base activity |
@@ -107,7 +108,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity name"
+    And I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Maximum number of files: 33"
     And I should see "Type of work:"
     And I should see "Individual work"

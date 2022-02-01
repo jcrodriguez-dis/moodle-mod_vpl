@@ -30,7 +30,7 @@ Feature: In a VPL activity, editing allows drop files
   Scenario: A teacher drops files in "requested files"
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -49,7 +49,8 @@ Feature: In a VPL activity, editing allows drop files
     # Saves files
     When I click on "#vpl_ide_save" in VPL
     # Sees files
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "int f() {"
@@ -61,7 +62,7 @@ Feature: In a VPL activity, editing allows drop files
   Scenario: A teacher drops multiple files in "requested files"
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -81,7 +82,8 @@ Feature: In a VPL activity, editing allows drop files
     # Saves files
     When I click on "#vpl_ide_save" in VPL
     # Sees files
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "hello.c"
@@ -96,7 +98,7 @@ Feature: In a VPL activity, editing allows drop files
   Scenario: A teacher drops multiple binary files in "requested files"
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -115,7 +117,8 @@ Feature: In a VPL activity, editing allows drop files
     # Saves files
     When I click on "#vpl_ide_save" in VPL
     # Sees files
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "logo.png"
@@ -128,7 +131,7 @@ Feature: In a VPL activity, editing allows drop files
   Scenario: A teacher drops multiple files including zip files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -143,7 +146,8 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "hello.adb"
     When I click on "#vpl_ide_save" in VPL
     # Sees files
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "logo.png"
@@ -158,7 +162,7 @@ Feature: In a VPL activity, editing allows drop files
   Scenario: A teacher drops multiple files including zip files already presents
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -172,7 +176,8 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "hello world.pdf"
     When I click on "#vpl_ide_save" in VPL
     # Sees files
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "logo.png"

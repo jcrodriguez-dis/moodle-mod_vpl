@@ -24,7 +24,7 @@ Feature: In a VPL activity, similarity feature
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
       | id_name | VPL activity testing |
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | similar.c |
@@ -36,7 +36,7 @@ Feature: In a VPL activity, similarity feature
   Scenario: A teacher search similarity
     Given I log in as "student1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I follow "Edit"
     # Drops a new file
     And I drop the file "similar.c" on "#vpl_tabs" in VPL
@@ -45,7 +45,7 @@ Feature: In a VPL activity, similarity feature
     And I log out
     And I log in as "student2"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I follow "Edit"
     # Drops a new file
     And I drop the file "similar.c" on "#vpl_tabs" in VPL
@@ -54,7 +54,7 @@ Feature: In a VPL activity, similarity feature
     And I log out
     And I log in as "student3"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I follow "Edit"
     # Drops a new file
     And I drop the file "similar.c" on "#vpl_tabs" in VPL
@@ -63,7 +63,7 @@ Feature: In a VPL activity, similarity feature
     And I log out
     And I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I follow "Submissions list"
     And I should see "Student1"
     And I should see "Student2"

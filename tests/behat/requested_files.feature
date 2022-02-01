@@ -30,7 +30,7 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
   Scenario: A teacher sets requested files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Requested files" in current page administration
     And I set the following fields to these values:
       | vpl_ide_input_newfilename | new_file_name.c |
@@ -43,14 +43,15 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "other new file.c"
     When I click on "#vpl_ide_save" in VPL
-    And I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I should see "Requested files"
     Then I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
     Then I log out
     Given I log in as "student1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"

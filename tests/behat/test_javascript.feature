@@ -14,8 +14,9 @@ Feature: Runs JavaScript tests on browser
     And I am on "Course 1" course homepage with editing mode on
     And I add a "Virtual programming lab" to section "1" and I fill the form with:
       | id_name | JavaScript test |
-    And I follow "JavaScript test"
-    And I navigate to "Edit settings" in current page administration
+    And I click on "JavaScript test" "link" in the "region-main" "region"
+    # "Edit setting" for Moodle < 4 and "Setting" for Moodle >= 4
+    And I navigate to "ettings" in current page administration
     And I set the following fields to these values:
       | id_introeditor | "<a href="/mod/vpl/tests/test_javascript.php">Run test</a>" |
     And I press "Save and display"

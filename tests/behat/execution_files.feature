@@ -29,7 +29,7 @@ Feature: In an VPL activity, editing teacher manage execution files
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     # See default files
-    When I follow "VPL activity testing"
+    When I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Execution files" in current page administration
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
@@ -52,7 +52,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     # Save files
     When I click on "#vpl_ide_save" in VPL
     # Reload files
-    When I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Execution files" in current page administration
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
@@ -70,7 +71,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     Then I should see "changed file.c"
     Then I click on "#vpl_ide_save" in VPL
     # Reload files
-    When I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Execution files" in current page administration
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"
@@ -87,7 +89,8 @@ Feature: In an VPL activity, editing teacher manage execution files
     Then I should not see "other file_name.c"
     Then I click on "#vpl_ide_save" in VPL
     # Reload files
-    When I follow "VPL activity testing"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Execution files" in current page administration
     Then I should see "vpl_run.sh"
     And I should see "vpl_debug.sh"

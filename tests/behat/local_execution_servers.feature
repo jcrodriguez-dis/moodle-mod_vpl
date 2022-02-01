@@ -24,7 +24,7 @@ Feature: In a VPL activity feature Local execution servers
   Scenario: A teacher set and see URLs in Local execution servers
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I follow "VPL activity testing"
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Local execution servers" in current page administration
     And I set the following fields to these values:
       | id_jailservers | "https://demojail.dis.ulpgc.es" |

@@ -30,7 +30,7 @@ Feature: In an VPL activity, editing teacher change variations
   Scenario: A teacher set variation title and activate variations
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity name"
+    When I click on "VPL activity name" "link" in the "region-main" "region"
     And I navigate to "Variations" in current page administration
     And I set the following fields to these values:
       | id_usevariations | 1 |
@@ -38,14 +38,15 @@ Feature: In an VPL activity, editing teacher change variations
     And I press "Save"
     Then I should see "Updated My variation title text"
     Then I press "Continue"
-    Then I follow "VPL activity name"
+    Then I am on "Course 1" course homepage
+    Then I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should not see "My variation title text"
 
   @javascript
   Scenario: A teacher creates a variation and deletes a variation
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    When I follow "VPL activity name"
+    When I click on "VPL activity name" "link" in the "region-main" "region"
     And I navigate to "Variations" in current page administration
     And I set the following fields to these values:
       | id_usevariations | 1 |
@@ -58,7 +59,8 @@ Feature: In an VPL activity, editing teacher change variations
     And I click on "form + form input[value='Save']" in VPL
     Then I should see "Saved"
     Then I press "Continue"
-    Then I follow "VPL activity name"
+    Then I am on "Course 1" course homepage
+    Then I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Variations"
     And I click on "#sht0" in VPL
     And I should see "variation-code"
@@ -68,5 +70,6 @@ Feature: In an VPL activity, editing teacher change variations
     And I accept confirm in VPL
     And I click on "form + form input[value='Delete']" in VPL
     Then I should see "Deleted"
-    Then I follow "VPL activity name"
+    Then I am on "Course 1" course homepage
+    Then I click on "VPL activity name" "link" in the "region-main" "region"
     And I should not see "Variations"
