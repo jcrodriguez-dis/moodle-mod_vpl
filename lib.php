@@ -653,51 +653,50 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $vplnode->add_node( $node, $fkn );
         $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
 
-        $advance = vpl_navi_node_create($vplnode, 'advancedsettings', $url,
-                navigation_node::TYPE_CONTAINER, 'moodle');
+        $advance = vpl_navi_node_create($vplnode, 'advancedsettings', $url, navigation_node::NODETYPE_LEAF, 'moodle');
         $vplnode->add_node( $advance, $fkn );
 
         $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
         $node = vpl_navi_node_create($advance, 'executionfiles', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms );
         $node = vpl_navi_node_create($advance, 'maxresourcelimits', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms );
         $node = vpl_navi_node_create($advance, 'keepfiles', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms );
         $node = vpl_navi_node_create($advance, 'variations', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/overrides.php', $parms );
         $node = vpl_navi_node_create($advance, 'overrides', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms );
         $node = vpl_navi_node_create($advance, 'check_jail_servers', $url);
-        $advance->add_node( $node );
+        $vplnode->add_node( $node );
         if ($setjails) {
             $url = new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms );
             $node = vpl_navi_node_create($advance, 'local_jail_servers', $url);
-            $advance->add_node( $node );
+            $vplnode->add_node( $node );
         }
 
         $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parms);
-        $testact = vpl_navi_node_create($vplnode, 'test', $url, navigation_node::TYPE_CONTAINER);
+        $testact = vpl_navi_node_create($vplnode, 'test', $url);
         $vplnode->add_node( $testact, $fkn );
         $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
         $node = vpl_navi_node_create($testact, 'submission', $url);
-        $testact->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/forms/edit.php', $parms );
         $node = vpl_navi_node_create($testact, 'edit', $url);
-        $testact->add_node( $node );
+        $vplnode->add_node( $node );
         if ( $userid != $USER->id ) { // Auto grading has sense?
             $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
             $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'core_grades');
-            $testact->add_node( $node );
+            $vplnode->add_node( $node );
         }
         $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parms );
         $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url);
-        $testact->add_node( $node );
+        $vplnode->add_node( $node );
         $url = new moodle_url( '/mod/vpl/index.php', array ('id' => $PAGE->cm->course));
         $node = vpl_navi_node_create($testact, 'modulenameplural', $url);
         $vplnode->add_node( $node, $fkn );
