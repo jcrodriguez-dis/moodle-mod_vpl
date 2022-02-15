@@ -27,12 +27,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0']
-        moodle-branch: ['MOODLE_38_STABLE', 'MOODLE_311_STABLE', 'master']
+        php: ['7.3', '8.0']
+        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_311_STABLE', 'master']
         database: [pgsql, mariadb]
         exclude:
           - php: 8.0
-            moodle-branch: MOODLE_38_STABLE
+            moodle-branch: MOODLE_39_STABLE
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
