@@ -129,7 +129,12 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             $badgrade = $badgrade || $fromform->grade == -1;
         } else {
             $badgrade = $badgrade || trim($fromform->grade) == '';
-            $badgrade = $badgrade || $fromform->grade > $vpl->get_instance()->grade;
+            $floatn = unformat_float($fromform->grade);
+            if ($floatn == false) {
+                $badgrade = true;
+            } else {
+                $badgrade = $badgrade || $floatn > $vpl->get_instance()->grade;
+            }
         }
         if ($badgrade) {
             vpl_redirect( $link, get_string( 'badgrade', 'grades' ), 'error' );

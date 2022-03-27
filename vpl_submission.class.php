@@ -403,7 +403,7 @@ class mod_vpl_submission {
             // Sanitize grade.
             if ($scaleid > 0) {
                  $floatn = unformat_float($info->grade);
-                if ( $floatn !== null && $floatn !== false ) {
+                if ( $floatn !== false ) {
                     $info->grade = $floatn;
                 }
             } else {
