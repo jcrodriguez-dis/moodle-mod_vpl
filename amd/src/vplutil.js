@@ -417,6 +417,7 @@ define(
                 'htm': 'html', 'html': 'html',
                 'hx': 'haxe',
                 'java': 'java',
+                'jl': 'julia',
                 'js': 'javascript',
                 'json': 'json',
                 'jsp': 'jsp',

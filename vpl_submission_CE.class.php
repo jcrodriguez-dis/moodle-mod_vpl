@@ -48,6 +48,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             'go' => 'go',
             'groovy' => 'groovy',
             'java' => 'java',
+            'jl' => 'julia',
             'js' => 'javascript',
             'scala' => 'scala',
             'sql' => 'sql',
