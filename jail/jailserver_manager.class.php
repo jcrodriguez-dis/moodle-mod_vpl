@@ -61,6 +61,24 @@ class vpl_jailserver_manager {
         }
         return $ch;
     }
+
+    /**
+     * Encode action and data as JSONRPC adding an automatic id.
+     *
+     * @param string $method
+     * @param object $data
+     * @return string
+     */
+    public static function jsonrpc_encode($method, $data) {
+        global $USER;
+        $rpcobject = new stdclass;
+        $rpcobject->method = $method;
+        $rpcobject->params = $data;
+        $idtime = hrtime();
+        $rpcobject->id = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
+        return json_encode($rpcobject);
+    }
+
     public static function get_response($server, $request, &$error = null, $fresh = false) {
         $ch = self::get_curl( $server, $request, $fresh );
         $rawresponse = curl_exec( $ch );
