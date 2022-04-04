@@ -28,6 +28,8 @@ Feature: In a VPL activity feature files to keep when running
     And I navigate to "Execution files" in current page administration
     And I drop the files "hello.c|hello.py|hello.adb" on "#vpl_tabs" in VPL
     And I click on "#vpl_ide_save" in VPL
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Files to keep when running" in current page administration
     And I should see "hello.c"
     And I should see "hello.py"
@@ -42,6 +44,8 @@ Feature: In a VPL activity feature files to keep when running
     And "input[id=id_keepfile3]:not([checked])" "css_element" should exist
     And "input[id=id_keepfile4][checked]" "css_element" should exist
     And "input[id=id_keepfile5]:not([checked])" "css_element" should exist
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Files to keep when running" in current page administration
     Then I should not see "Options have been saved"
     And "input[id=id_keepfile0]:not([checked])" "css_element" should exist
