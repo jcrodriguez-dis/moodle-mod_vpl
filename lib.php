@@ -552,7 +552,7 @@ function mod_vpl_get_fontawesome_icon_map() {
 function vpl_navi_node_create(navigation_node $vplnode, $str, $url, $type = navigation_node::NODETYPE_LEAF , $comp = 'mod_vpl' ) {
     $stri18n = get_string($str, $comp);
     $node = $vplnode->create( $stri18n, $url, $type, null, null, new pix_icon( $str, '', 'mod_vpl') );
-    if ( $type == navigation_node::TYPE_CONTAINER ) {
+    if ( $type == navigation_node::NODETYPE_BRANCH ) {
         $node->collapse = true;
         $node->forceopen = false;
     }
@@ -632,8 +632,8 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $userid = optional_param( 'userid', $USER->id, PARAM_INT );
         $klist = $vplnode->get_children_key_list();
         if (count( $klist ) > 1) {
-            $fkn = $klist [1];
-            $vplnode->get($klist [0])->icon = new pix_icon('a/setting', '');
+            $fkn = $klist[1];
+            $vplnode->get($klist[0])->icon = new pix_icon('a/setting', '');
         } else {
             $fkn = null;
         }
@@ -651,54 +651,63 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $url = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
         $node = vpl_navi_node_create($vplnode, 'requestedfiles', $url);
         $vplnode->add_node( $node, $fkn );
-        $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
 
-        $advance = vpl_navi_node_create($vplnode, 'advancedsettings', $url, navigation_node::NODETYPE_LEAF, 'moodle');
-        $vplnode->add_node( $advance, $fkn );
+        if ( $CFG->release >= 4.0 ) { // Remove submenu for compatibility with Moodle >= 4.0.
+            $advance = $vplnode;
+            $keybefore = $fkn;
+        } else {
+            $advance = vpl_navi_node_create($vplnode, 'advancedsettings', null, navigation_node::NODETYPE_BRANCH, 'moodle');
+            $vplnode->add_node( $advance, $fkn );
+            $keybefore = null;
+        }
 
         $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
         $node = vpl_navi_node_create($advance, 'executionfiles', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms );
         $node = vpl_navi_node_create($advance, 'maxresourcelimits', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms );
         $node = vpl_navi_node_create($advance, 'keepfiles', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms );
         $node = vpl_navi_node_create($advance, 'variations', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/overrides.php', $parms );
         $node = vpl_navi_node_create($advance, 'overrides', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms );
         $node = vpl_navi_node_create($advance, 'check_jail_servers', $url);
-        $vplnode->add_node( $node );
+        $advance->add_node( $node, $keybefore );
         if ($setjails) {
             $url = new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms );
             $node = vpl_navi_node_create($advance, 'local_jail_servers', $url);
-            $vplnode->add_node( $node );
+            $advance->add_node( $node, $keybefore );
         }
 
-        $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parms);
-        $testact = vpl_navi_node_create($vplnode, 'test', $url);
-        $vplnode->add_node( $testact, $fkn );
+        if ( $CFG->release >= 4.0 ) { // Remove submenu for compatibility with Moodle >= 4.0.
+            $testact = $vplnode;
+        } else {
+            $testact = vpl_navi_node_create($vplnode, 'test', null);
+            $vplnode->add_node( $testact, $fkn );
+        }
+
         $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
         $node = vpl_navi_node_create($testact, 'submission', $url);
-        $vplnode->add_node( $node );
+        $testact->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/edit.php', $parms );
         $node = vpl_navi_node_create($testact, 'edit', $url);
-        $vplnode->add_node( $node );
+        $testact->add_node( $node, $keybefore );
         if ( $userid != $USER->id ) { // Auto grading has sense?
             $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
             $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'core_grades');
-            $vplnode->add_node( $node );
+            $testact->add_node( $node, $keybefore );
         }
         $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parms );
         $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url);
-        $vplnode->add_node( $node );
+        $testact->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/index.php', array ('id' => $PAGE->cm->course));
-        $node = vpl_navi_node_create($testact, 'modulenameplural', $url);
+        $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url);
         $vplnode->add_node( $node, $fkn );
     }
 }
@@ -712,11 +721,11 @@ function vpl_scale_used($vplid, $scaleid) {
 }
 
 /**
- * Checks if scale is being used by any instance of vpl. This is used to find out if scale
+ * Checks if scale is being used by any instance of VPL. This is used to find out if scale
  * used anywhere
  *
  * @param $scaleid int
- * @return boolean True if the scale is used by any vpl
+ * @return boolean True if the scale is used by any VPL
  */
 function vpl_scale_used_anywhere($scaleid) {
     global $DB;
@@ -870,4 +879,3 @@ function vpl_reset_course_form_defaults($course) {
             'reset_vpl_submissions' => 1
     );
 }
-
