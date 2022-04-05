@@ -107,6 +107,10 @@ jobs:
         if: ${{ always() }}
         run: moodle-plugin-ci behat --profile chrome
       
+      - name: Install valgrind
+        if: ${{ always() }}
+        run: sudo apt install -y valgrind
+
       - name: VPL evaluate program
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_vpl_evaluate.sh
