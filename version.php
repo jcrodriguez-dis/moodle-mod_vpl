@@ -18,7 +18,7 @@
  * Version config
  *
  * @package mod_vpl.
- * @copyright 2021 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2022 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  *
@@ -29,9 +29,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2021061600;
+$plugin->version = 2022040512;
 $plugin->requires = 2018051713; // Moodle 3.5!
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.4.3+';
+$plugin->release = '3.5.0';
 
 $plugin->component = 'mod_vpl';
