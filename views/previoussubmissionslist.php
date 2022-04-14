@@ -113,9 +113,9 @@ foreach ($submissionslist as $submission) {
     }
     $date = '<a href="' . $link . '">' . userdate( $submission->datesubmitted ) . '</a>';
     $sub = new mod_vpl_submission( $vpl, $submission );
-    $submissions [] = $sub;
+    $submissions[] = $sub;
     $actions = vpl_actions_menu($id, $userid, $submission->id);
-    $table->data [] = array (
+    $table->data[] = array (
             $nsub --,
             $date,
             s( $sub->get_detail() ),
@@ -135,9 +135,9 @@ $urls = array (
         $urlbase . '1'
 );
 echo $OUTPUT->url_select( array (
-        $urls [0] => get_string( 'detailedless' ),
-        $urls [1] => get_string( 'detailedmore' )
-), $urls [$detailed] );
+        $urls[0] => get_string( 'detailedless' ),
+        $urls[1] => get_string( 'detailedmore' )
+), $urls[$detailed] );
 echo '</div>';
 if ($detailed) {
     $nsub = count( $submissionslist );

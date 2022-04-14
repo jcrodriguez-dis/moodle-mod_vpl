@@ -29,7 +29,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_edited extends submission_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'r';
+        $this->data['crud'] = 'r';
         $this->legacyaction = 'edit submission';
     }
 }

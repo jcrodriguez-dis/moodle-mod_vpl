@@ -29,7 +29,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_all_submissions_viewed extends vpl_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'r';
+        $this->data['crud'] = 'r';
         $this->legacyaction = 'view all submissions';
     }
     public function get_description() {

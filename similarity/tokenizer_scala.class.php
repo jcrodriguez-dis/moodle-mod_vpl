@@ -97,9 +97,9 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
         $previous = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }

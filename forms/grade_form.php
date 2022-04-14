@@ -38,10 +38,10 @@ class mod_vpl_grade_form extends vpl_form {
         $vpl = $this->submission->get_vpl();
         $scaleid = $vpl->get_grade();
         $options = array ();
-        $options [- 1] = get_string( 'nograde' );
+        $options[- 1] = get_string( 'nograde' );
         if ($scaleid > 0) {
             for ($i = 0; $i <= $scaleid; $i ++) {
-                $options [$i] = $i . ' / ' . $scaleid;
+                $options[$i] = $i . ' / ' . $scaleid;
             }
         } else if ($scaleid < 0) {
             $scaleid = - $scaleid;
@@ -150,10 +150,10 @@ class mod_vpl_grade_form extends vpl_form {
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
                     $this->addHTML( '<tr><td align="right">' );
                     $options = make_grades_menu( - $outcome->scaleid );
-                    $options [0] = get_string( 'nooutcome', 'core_grades' );
+                    $options[0] = get_string( 'nooutcome', 'core_grades' );
                     $this->addHTML( s( $outcome->name ) );
                     $this->addHTML( '</td><td>' );
-                    $this->addSelect( 'outcome_grade_' . $oid, $options, $outcome->grades [$userid]->grade );
+                    $this->addSelect( 'outcome_grade_' . $oid, $options, $outcome->grades[$userid]->grade );
                     $this->addHTML( '</td></tr>' );
                 }
                 $this->addHTML( '</table>' );

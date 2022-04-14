@@ -187,14 +187,14 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             $data->comments = $submission->get_grade_comments();
         } else {
             $res = $submission->getCE();
-            if ($res ['executed']) {
+            if ($res['executed']) {
                 $graderaw = $submission->proposedGrade($res['execution']);
                 if ( $graderaw > '' ) {
                     $data->grade = format_float(floatval($graderaw), 5, true, true);
                 } else {
                     $data->grade = '';
                 }
-                $data->comments = $submission->proposedComment( $res ['execution'] );
+                $data->comments = $submission->proposedComment( $res['execution'] );
             }
         }
         if (! empty( $CFG->enableoutcomes )) {
@@ -203,7 +203,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
             if (! empty( $gradinginfo->outcomes )) {
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
                     $field = 'outcome_grade_' . $oid;
-                    $data->$field = $outcome->grades [$userid]->grade;
+                    $data->$field = $outcome->grades[$userid]->grade;
                 }
             }
         }

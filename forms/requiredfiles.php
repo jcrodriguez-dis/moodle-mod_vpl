@@ -37,17 +37,17 @@ $vpl->prepare_page( 'forms/requiredfiles.php', array ( 'id' => $id ) );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 
 $options = Array ();
-$options ['restrictededitor'] = false;
-$options ['save'] = true;
-$options ['run'] = false;
-$options ['debug'] = false;
-$options ['evaluate'] = false;
-$options ['ajaxurl'] = "requiredfiles.json.php?id={$id}&action=";
-$options ['download'] = "../views/downloadrequiredfiles.php?id={$id}";
-$options ['resetfiles'] = false;
-$options ['minfiles'] = 0;
-$options ['maxfiles'] = 1000;
-$options ['saved'] = true;
+$options['restrictededitor'] = false;
+$options['save'] = true;
+$options['run'] = false;
+$options['debug'] = false;
+$options['evaluate'] = false;
+$options['ajaxurl'] = "requiredfiles.json.php?id={$id}&action=";
+$options['download'] = "../views/downloadrequiredfiles.php?id={$id}";
+$options['resetfiles'] = false;
+$options['minfiles'] = 0;
+$options['maxfiles'] = 1000;
+$options['saved'] = true;
 
 vpl_editor_util::generate_requires($vpl, $options);
 

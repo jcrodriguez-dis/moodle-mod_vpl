@@ -48,37 +48,37 @@ class vpl_similarity_python extends vpl_similarity_base {
                         // Ignore semicolon.
                         break;
                     case '+=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '+';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '-=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '-';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '*=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '*';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '/=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '/';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '//=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '//';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '%=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '%';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     default :
-                        $ret [] = $token;
+                        $ret[] = $token;
                 }
             }
             // TODO remove (p).

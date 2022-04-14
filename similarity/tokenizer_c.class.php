@@ -58,7 +58,7 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
             return;
         }
         if ($this->is_indentifier( $pending )) {
-            if (isset( $this->reserved [$pending] )) {
+            if (isset( $this->reserved[$pending] )) {
                 $type = vpl_token_type::RESERVED;
             } else {
                 $type = vpl_token_type::IDENTIFIER;
@@ -70,7 +70,7 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
                 $type = vpl_token_type::OPERATOR;
             }
         }
-        $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
     public function __construct() {
@@ -129,9 +129,9 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
         $previous = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }
@@ -276,12 +276,12 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
                             $current->value .= $next->value;
                             $next = false;
                 }
-                $correct [] = $current;
+                $correct[] = $current;
             }
             $current = $next;
         }
         if ($current) {
-            $correct [] = $current;
+            $correct[] = $current;
         }
         $this->tokens = $correct;
     }

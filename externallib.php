@@ -76,7 +76,7 @@ class mod_vpl_webservice extends external_api {
         $files = mod_vpl_edit::get_requested_files( $vpl );
         // Adapt array of name => value content to format array of objects {name, data}.
         $files = mod_vpl_edit::files2object( $files );
-        $ret ['reqfiles'] = $files;
+        $ret['reqfiles'] = $files;
         return $ret;
     }
     public static function info_returns() {
@@ -129,7 +129,7 @@ class mod_vpl_webservice extends external_api {
         $oldfiles = $files;
         $files = array();
         foreach ($oldfiles as $file) {
-            $files [ $file['name'] ] = $file['data'];
+            $files[$file['name']] = $file['data'];
         }
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
@@ -168,9 +168,9 @@ class mod_vpl_webservice extends external_api {
                 'grade' => ''
         );
         if ($compilationexecution && $vpl->get_instance()->evaluate) {
-            $ret ['compilation'] = $compilationexecution->compilation;
-            $ret ['evaluation'] = $compilationexecution->evaluation;
-            $ret ['grade'] = $compilationexecution->grade;
+            $ret['compilation'] = $compilationexecution->compilation;
+            $ret['evaluation'] = $compilationexecution->evaluation;
+            $ret['grade'] = $compilationexecution->grade;
         }
         return $ret;
     }

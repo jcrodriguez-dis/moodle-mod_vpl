@@ -76,9 +76,9 @@ $submissions = $vpl->all_last_user_submission();
 $usernumber = 0;
 $nwm = 0;
 foreach ($list as $userinfo) {
-    if (isset( $submissions [$userinfo->id] )) {
+    if (isset( $submissions[$userinfo->id] )) {
         $origin = '';
-        $subinstance = $submissions [$userinfo->id];
+        $subinstance = $submissions[$userinfo->id];
         $submission = new mod_vpl_submission( $vpl, $subinstance );
         $subf = $submission->get_submitted_fgm();
         $filelist = $subf->getFileList();
@@ -106,7 +106,7 @@ foreach ($list as $userinfo) {
             continue;
         }
         $usernumber ++;
-        $table->data [] = array (
+        $table->data[] = array (
                 $usernumber,
                 $vpl->user_fullname_picture( $userinfo ),
                 $origin

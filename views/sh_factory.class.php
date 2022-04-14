@@ -41,12 +41,12 @@ class vpl_sh_factory {
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlight');
     }
     public static function get_object($type) {
-        if (! isset( self::$cache [$type] )) {
+        if (! isset( self::$cache[$type] )) {
             require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');
             $class = 'vpl_sh_' . $type;
-            self::$cache [$type] = new $class();
+            self::$cache[$type] = new $class();
         }
-        return self::$cache [$type];
+        return self::$cache[$type];
     }
     public static function get_sh($filename) {
         if (vpl_is_binary( $filename )) {

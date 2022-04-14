@@ -77,7 +77,7 @@ class vpl_similarity_form extends moodleform {
                     continue;
                 }
                 if ($othervpl->has_capability( VPL_SIMILARITY_CAPABILITY )) {
-                    $list [$othervpl->get_course_module()->id] = $othervpl->get_course()->shortname
+                    $list[$othervpl->get_course_module()->id] = $othervpl->get_course()->shortname
                                                                  . ' ' . $othervpl->get_printable_name();
                 }
             }
@@ -85,7 +85,7 @@ class vpl_similarity_form extends moodleform {
                 break; // Stop loading instances.
             }
         }
-        $list [''] = get_string( 'select' );
+        $list[''] = get_string( 'select' );
         return $list;
     }
     protected function definition() {
@@ -95,15 +95,15 @@ class vpl_similarity_form extends moodleform {
         $mform->addElement( 'header', 'scanoptions', get_string( 'scanoptions', VPL ) );
         $defaultlimit = (intval( count( $this->vpl->get_submissions_number() ) / 25 ) + 1) * 5;
         $options = array ();
-        $options [$defaultlimit] = $defaultlimit;
+        $options[$defaultlimit] = $defaultlimit;
         for ($i = 5; $i <= 40; $i += 5) {
-            $options [$i] = $i;
+            $options[$i] = $i;
         }
         for ($i = 60; $i <= 100; $i += 20) {
-            $options [$i] = $i;
+            $options[$i] = $i;
         }
         for ($i = 150; $i <= 400; $i += 50) {
-            $options [$i] = $i;
+            $options[$i] = $i;
         }
         asort( $options );
         $mform->addElement( 'select', 'maxoutput', get_string( 'maxsimilarityoutput', VPL ), $options );

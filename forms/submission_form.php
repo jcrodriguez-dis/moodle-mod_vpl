@@ -61,7 +61,7 @@ class mod_vpl_submission_form extends moodleform {
         for ($i = 0; $i < $instance->maxfiles; $i ++) {
             $field = 'file' . $i;
             if ($i < $nfiles) {
-                $mform->addElement( 'filepicker', $field, $files [$i] );
+                $mform->addElement( 'filepicker', $field, $files[$i] );
             } else {
                 $mform->addElement( 'filepicker', $field, get_string( 'anyfile', VPL ) );
             }

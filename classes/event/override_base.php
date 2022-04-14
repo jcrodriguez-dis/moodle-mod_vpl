@@ -34,9 +34,9 @@ class override_base extends base {
         return false;
     }
     protected function init() {
-        $this->data ['crud'] = 'u';
-        $this->data ['edulevel'] = self::LEVEL_TEACHING;
-        $this->data ['objecttable'] = VPL_OVERRIDES;
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = VPL_OVERRIDES;
     }
     public static function log($vpl, $overrideid = null) {
         if (is_array($vpl)) {

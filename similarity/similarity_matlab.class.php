@@ -46,14 +46,14 @@ class vpl_similarity_matlab extends vpl_similarity_base {
                         break;
                     case '<' : // Replace < by >.
                         $token->value = '>';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '<=' : // Replace < by >.
                         $token->value = '>=';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     default :
-                        $ret [] = $token;
+                        $ret[] = $token;
                 }
             }
             // TODO remove "(p)" .

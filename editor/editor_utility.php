@@ -41,16 +41,16 @@ class vpl_editor_util {
         $plugincfg = get_config('mod_vpl');
         $tagid = 'vplide';
         if ( isset($plugincfg->editor_theme) ) {
-            $options ['theme'] = $plugincfg->editor_theme;
+            $options['theme'] = $plugincfg->editor_theme;
         } else {
-            $options ['theme'] = 'chrome';
+            $options['theme'] = 'chrome';
         }
-        $options ['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
-        $options ['theme'] = get_user_preferences('vpl_acetheme', $options ['theme']);
-        $options ['lang'] = $CFG->lang;
-        $options ['postMaxSize'] = \mod_vpl\util\phpconfig::get_post_max_size();
-        $options ['isGroupActivity'] = $vpl->is_group_activity();
-        $options ['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+        $options['fontSize'] = get_user_preferences('vpl_editor_fontsize', 12);
+        $options['theme'] = get_user_preferences('vpl_acetheme', $options['theme']);
+        $options['lang'] = $CFG->lang;
+        $options['postMaxSize'] = \mod_vpl\util\phpconfig::get_post_max_size();
+        $options['isGroupActivity'] = $vpl->is_group_activity();
+        $options['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
         self::generate_jquery();
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
         $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
@@ -364,28 +364,28 @@ class vpl_editor_util {
         );
         $list = Array ();
         foreach ($vplwords as $word) {
-            $list [$word] = get_string( $word, VPL );
+            $list[$word] = get_string( $word, VPL );
         }
         foreach ($words as $word) {
-            $list [$word] = get_string( $word );
+            $list[$word] = get_string( $word );
         }
-        $list ['close'] = get_string( 'closebuttontitle' );
-        $list ['more'] = get_string( 'showmore', 'form' );
-        $list ['less'] = get_string( 'showless', 'form' );
-        $list ['fontsize'] = get_string( 'fontsize', 'editor' );
-        $list ['theme'] = get_string( 'theme' );
+        $list['close'] = get_string( 'closebuttontitle' );
+        $list['more'] = get_string( 'showmore', 'form' );
+        $list['less'] = get_string( 'showless', 'form' );
+        $list['fontsize'] = get_string( 'fontsize', 'editor' );
+        $list['theme'] = get_string( 'theme' );
         return $list;
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
         global $PAGE;
         $options = Array ();
-        $options ['ajaxurl'] = $ajaxurl;
-        $options ['nexturl'] = $nexturl;
+        $options['ajaxurl'] = $ajaxurl;
+        $options['nexturl'] = $nexturl;
         $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', array($options) );
     }
     public static function generate_batch_evaluate_sript($ajaxurls) {
         $options = Array ();
-        $options ['ajaxurls'] = $ajaxurls;
+        $options['ajaxurls'] = $ajaxurls;
         $joptions = json_encode( $options );
         self::print_js_i18n();
         ?>

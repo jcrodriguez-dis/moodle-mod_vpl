@@ -39,7 +39,7 @@ class vpl_sh_image extends vpl_sh_base {
     }
     public function get_mime($name) {
         $ext = strtolower( vpl_fileextension( $name ) );
-        return $this->mime [$ext];
+        return $this->mime[$ext];
     }
     public function print_file($name, $data) {
         echo "<h4>" . s( $name ) . '</h4>';

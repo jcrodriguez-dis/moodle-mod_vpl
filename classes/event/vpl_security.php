@@ -30,7 +30,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_security extends vpl_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'r';
+        $this->data['crud'] = 'r';
         $this->legacyaction = 'try action forbidden';
     }
     public function get_description() {

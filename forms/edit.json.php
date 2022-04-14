@@ -54,8 +54,8 @@ try {
     echo $OUTPUT->header(); // Send headers.
     $rawdata = file_get_contents( "php://input" );
     $rawdatasize = strlen( $rawdata );
-    if ($_SERVER ['CONTENT_LENGTH'] != $rawdatasize) {
-        throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER ['CONTENT_LENGTH'] . " found $rawdatasize)" );
+    if ($_SERVER['CONTENT_LENGTH'] != $rawdatasize) {
+        throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawdatasize)" );
     }
     \mod_vpl\util\phpconfig::increase_memory_limit();
     $actiondata = json_decode( $rawdata );

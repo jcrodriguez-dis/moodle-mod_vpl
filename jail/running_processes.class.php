@@ -34,7 +34,7 @@ class vpl_running_processes {
         global $DB;
         $params = array ( 'userid' => $userid);
         if ( $vplid !== false ) {
-            $params[ 'vpl' ] = $vplid;
+            $params['vpl'] = $vplid;
         }
         return $DB->get_record( self::TABLE, $params );
     }

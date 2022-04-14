@@ -45,7 +45,7 @@ function vpl_grade_item_update($instance, $grades=null) {
     require_once($CFG->libdir.'/gradelib.php');
 
     $itemdetails = array('itemname' => $instance->name);
-    $itemdetails ['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
+    $itemdetails['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
     if ( isset($instance->cmidnumber) ) {
         $itemdetails['idnumber'] = $instance->cmidnumber;
     }
@@ -401,7 +401,7 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
             $activity->grade = $grades->items[0]->grades[$sub->userid]->str_long_grade;
         }
         $activity->user = $DB->get_record( 'user', array ( 'id' => $sub->userid ) );
-        $activities [$index ++] = $activity;
+        $activities[$index ++] = $activity;
     }
     return true;
 }
@@ -480,7 +480,7 @@ function vpl_get_coursemodule_info_not_valid($coursemodule) {
  * @return  array
  */
 function mod_vpl_get_fontawesome_icon_map() {
-    return [
+    return[
             'mod_vpl:testcases' => 'fa-check-square-o',
             'mod_vpl:basic' => 'fa-cog',
             'mod_vpl:test' => 'fa-flask',
@@ -853,7 +853,7 @@ function vpl_reset_userdata($data) {
                 } catch (Exception $e) {
                     $instancestatus['error'] = true;
                 }
-                $status [] = $instancestatus;
+                $status[] = $instancestatus;
             }
         }
     }

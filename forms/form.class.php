@@ -32,8 +32,8 @@ class vpl_form {
         if (isset( $this->data->$name )) {
             $value = $this->data->$name;
         }
-        if (isset( $this->datatype [$name] )) {
-            switch ($this->datatype [$name]) {
+        if (isset( $this->datatype[$name] )) {
+            switch ($this->datatype[$name]) {
                 case PARAM_RAW :
                 case PARAM_ALPHA :
                 case PARAM_ALPHANUM :
@@ -76,7 +76,7 @@ class vpl_form {
         $this->action( $page, $id, $attributes );
     }
     public function settype($name, $type) {
-        $this->datatype [$name] = $type;
+        $this->datatype[$name] = $type;
     }
     public function addhidden($name, $value = '') {
         $this->checkDataSet( $name, $value );
@@ -135,7 +135,7 @@ class vpl_form {
         echo '</form>';
     }
     public function is_cancelled() {
-        return isset( $_POST ['cancel'] );
+        return isset( $_POST['cancel'] );
     }
     public function get_data() {
         if (count( $_POST )) {

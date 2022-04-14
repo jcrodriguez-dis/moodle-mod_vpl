@@ -57,49 +57,49 @@ class vpl_similarity_java extends vpl_similarity_c {
                     case '}' :
                         // Remove unneeded {}.
                         if (! ($openbrace && $nsemicolon < 2)) {
-                            $ret [] = $token;
+                            $ret[] = $token;
                         }
                         $openbrace = false;
                         break;
                     case ';' :
                         // Count semicolon after a {.
                         $nsemicolon ++;
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '++' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '+';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '--' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '-';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '+=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '+';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '-=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '-';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '*=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '*';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '/=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '/';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '%=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         $token->value = '%';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '.' :
                         if ($prev->value == 'this') {
@@ -108,7 +108,7 @@ class vpl_similarity_java extends vpl_similarity_c {
                     case '::' :
                         break;
                     default :
-                        $ret [] = $token;
+                        $ret[] = $token;
                 }
                 $prev = $token;
             }

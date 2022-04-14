@@ -39,7 +39,7 @@ class vpl_watermark {
         $wm = ( int ) $wm;
         $ret = '';
         while ( $wm > 0 ) {
-            $ret = self::$encoder [$wm % 7] . $ret;
+            $ret = self::$encoder[$wm % 7] . $ret;
             $wm = ( int ) ($wm / 7);
         }
         return $ret;
@@ -127,7 +127,7 @@ class vpl_watermark {
                 if ($countnwm > 35) { // If 35 lines without wm try to add one.
                     $lclean = rtrim( $line );
                     $l = strlen( $lclean );
-                    if ($l > 0 && ($lclean [$l - 1] == '}' || $lclean [$l - 1] == '{')) {
+                    if ($l > 0 && ($lclean[$l - 1] == '}' || $lclean[$l - 1] == '{')) {
                         $line = $lclean . $wm;
                         $wmadded ++;
                         $countnwm = 0;

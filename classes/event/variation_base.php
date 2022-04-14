@@ -35,9 +35,9 @@ class variation_base extends base {
         return false;
     }
     protected function init() {
-        $this->data ['crud'] = 'u';
-        $this->data ['edulevel'] = self::LEVEL_TEACHING;
-        $this->data ['objecttable'] = VPL_VARIATIONS;
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = VPL_VARIATIONS;
     }
     public static function log($vpl, $varid = null) {
         if (is_array($vpl)) {

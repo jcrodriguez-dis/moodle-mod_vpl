@@ -35,7 +35,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
     protected function isnextopenparenthesis(& $s, $ini) {
         $l = strlen( $s );
         for ($i = $ini; $i < $l; $i ++) {
-            $c = $s [$i];
+            $c = $s[$i];
             if ($c == '(') {
                 return true;
             }
@@ -53,17 +53,17 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         if (strlen( $rest ) == 0) {
             return;
         }
-        $c = $rest [0];
+        $c = $rest[0];
         if ($this->isidentifierchar( $c )) {
             if (($c >= 'A' && $c <= 'Z') || $c == '_') { // Variable.
-                $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, 'V', $this->linenumber );
+                $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, 'V', $this->linenumber );
             } else if (($c >= 'a' && $c <= 'z')) { // Literal.
                 if ($s != null && $this->isnextopenparenthesis( $s, $i ) || $rest == 'is') {
-                    $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, 'L', $this->linenumber );
+                    $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, 'L', $this->linenumber );
                 }
             }
         } else {
-            $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, $rest, $this->linenumber );
+            $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, $rest, $this->linenumber );
         }
         $rest = '';
     }
@@ -82,9 +82,9 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $l = strlen( $filedata );
         $current = '';
         for ($i = 0; $i < $l; $i ++) {
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }
@@ -195,12 +195,12 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                     $current->value .= $next->value;
                     $next = false;
                 }
-                $correct [] = $current;
+                $correct[] = $current;
             }
             $current = $next;
         }
         if ($current) {
-            $correct [] = $current;
+            $correct[] = $current;
         }
         $this->tokens = $correct;
     }

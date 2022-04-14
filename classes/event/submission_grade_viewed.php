@@ -29,8 +29,8 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_grade_viewed extends submission_graded {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'r';
-        $this->data ['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
     }
     public function get_description() {
         return $this->get_description_mod( 'grade' );

@@ -72,7 +72,7 @@ if ($fromform = $mform->get_data()) {
         for ($i = 0; $i < $nlist; $i ++) {
             $name = 'keepfile' . $i;
             if (isset( $fromform->$name )) {
-                $keeplist [] = $list [$i];
+                $keeplist[] = $list[$i];
             }
         }
         $fgp->setFileKeepList( $keeplist );

@@ -47,7 +47,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         if ($state == self::IN_TAGEND) {
             $pending .= '/';
         }
-        $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, $pending, $this->line_number );
+        $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, $pending, $this->line_number );
     }
     public function parse($filedata) {
         $this->tokens = array ();
@@ -60,9 +60,9 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         $endstring = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }

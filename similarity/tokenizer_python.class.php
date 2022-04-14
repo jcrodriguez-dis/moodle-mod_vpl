@@ -37,7 +37,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         if (strlen( $text ) == 0) {
             return false;
         }
-        $first = $text [0];
+        $first = $text[0];
         return $first == '"' || $first == "'";
     }
 
@@ -47,7 +47,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
             return;
         }
         if ($this->is_indentifier( $pending )) {
-            if (isset( $this->reserved [$pending] )) {
+            if (isset( $this->reserved[$pending] )) {
                 $type = vpl_token_type::RESERVED;
             } else {
                 $type = vpl_token_type::IDENTIFIER;
@@ -59,7 +59,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                 $type = vpl_token_type::OPERATOR;
             }
         }
-        $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
 
@@ -115,14 +115,14 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         $previous = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }
             if ($i < ($l - 2)) {
-                $nextnext = $filedata [$i + 2];
+                $nextnext = $filedata[$i + 2];
             } else {
                 $nextnext = '';
             }

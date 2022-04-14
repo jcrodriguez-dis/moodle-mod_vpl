@@ -65,16 +65,16 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $paths = array ();
         $userinfo = $this->get_setting_value ( 'userinfo' );
 
-        $paths [] = new restore_path_element ( 'vpl', '/activity/vpl' );
-        $paths [] = new restore_path_element ( 'required_file', '/activity/vpl/required_files/required_file' );
-        $paths [] = new restore_path_element ( 'execution_file', '/activity/vpl/execution_files/execution_file' );
-        $paths [] = new restore_path_element ( 'variation', '/activity/vpl/variations/variation' );
-        $paths [] = new restore_path_element ( 'override', '/activity/vpl/overrides/override' );
+        $paths[] = new restore_path_element ( 'vpl', '/activity/vpl' );
+        $paths[] = new restore_path_element ( 'required_file', '/activity/vpl/required_files/required_file' );
+        $paths[] = new restore_path_element ( 'execution_file', '/activity/vpl/execution_files/execution_file' );
+        $paths[] = new restore_path_element ( 'variation', '/activity/vpl/variations/variation' );
+        $paths[] = new restore_path_element ( 'override', '/activity/vpl/overrides/override' );
         if ($userinfo) {
-            $paths [] = new restore_path_element ( 'assigned_variation', '/activity/vpl/assigned_variations/assigned_variation' );
-            $paths [] = new restore_path_element ( 'assigned_override', '/activity/vpl/assigned_overrides/assigned_override' );
-            $paths [] = new restore_path_element ( 'submission', '/activity/vpl/submissions/submission' );
-            $paths [] = new restore_path_element (
+            $paths[] = new restore_path_element ( 'assigned_variation', '/activity/vpl/assigned_variations/assigned_variation' );
+            $paths[] = new restore_path_element ( 'assigned_override', '/activity/vpl/assigned_overrides/assigned_override' );
+            $paths[] = new restore_path_element ( 'submission', '/activity/vpl/submissions/submission' );
+            $paths[] = new restore_path_element (
                     'submission_file',
                     '/activity/vpl/submissions/submission/submission_files/submission_file'
             );
@@ -108,7 +108,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
 
     /**
      * Restore a file
-     * @param array $data of file [name, enconding, content]
+     * @param array $data of file[name, enconding, content]
      * @param string $path path to directory where to save file
      */
     private function process_groupfile($data, $path) {
@@ -127,7 +127,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
 
     /**
      * Restore a required file
-     * @param array $data of file [name, enconding, content]
+     * @param array $data of file[name, enconding, content]
      */
     protected function process_required_file($data) {
         global $CFG;
@@ -138,7 +138,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
 
     /**
      * Restore un execution file
-     * @param array $data of file [name, encondinf, content]
+     * @param array $data of file[name, encondinf, content]
      */
     protected function process_execution_file($data) {
         global $CFG;
