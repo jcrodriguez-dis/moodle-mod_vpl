@@ -1,0 +1,151 @@
+{{!
+  vim: ts=2 sts=2 sw=2 syntax=mustache
+  @template: mod_vpl/infoblock
+
+  VPL infoblock
+}}
+{{#startdate}}
+{{#pix}} startdate, mod_vpl {{/pix}} {{!
+}}<b>{{#str}} startdate, mod_vpl{{/str}}: </b>{{!
+}}{{#userdate}} {{startdate}}, {{#str}} strftimedaydatetime, core_langconfig {{/str}} {{/userdate}}<br>
+{{/startdate}}
+{{#duedate}}
+{{#pix}} duedate, mod_vpl {{/pix}} {{!
+}}<b>{{#str}} duedate, mod_vpl {{/str}}: </b>{{!
+}}{{#userdate}} {{duedate}}, {{#str}} strftimedaydatetime, core_langconfig {{/str}} {{/userdate}}<br>
+{{/duedate}}
+{{#requestedfiles}}
+{{#pix}} requestedfiles, mod_vpl {{/pix}} {{!
+}}<b>{{#str}} requestedfiles, mod_vpl {{/str}}: </b>{{!
+}}{{text}} ({{#pix}} download, mod_vpl {{/pix}} {{!
+}}<a href="{{{href}}}">{{#str}} download, mod_vpl {{/str}}</a>)<br>
+{{/requestedfiles}}
+{{#maxfiles}}
+{{#pix}} maxfiles, mod_vpl {{/pix}} <b>{{#str}} maxfiles, mod_vpl {{/str}}: </b>{{maxfiles}}<br>
+{{/maxfiles}}
+{{#maxfilesize}}
+{{#pix}} maxfilesize, mod_vpl {{/pix}} <b>{{#str}} maxfilesize, mod_vpl {{/str}}: </b>{{maxfilesize}}<br>
+{{/maxfilesize}}
+{{^instance.worktype}}
+<b>{{#str}} worktype, mod_vpl {{/str}}: </b>{{!
+}}{{#pix}} user, mod_vpl {{/pix}}{{#str}} individualwork, mod_vpl {{/str}}<br>
+{{/instance.worktype}}
+{{#instance.worktype}}
+<b>{{#str}} worktype, mod_vpl {{/str}}: </b>{{!
+}}{{#pix}} group, mod_vpl {{/pix}}{{#str}} groupwork, mod_vpl {{/str}}<br>
+{{/instance.worktype}}
+{{#instance.example}}
+<b>{{#str}} isexample, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}<br>
+{{/instance.example}}
+{{#grader}}
+  {{#pix}} grade, mod_vpl {{/pix}}<b>{{#str}} gradessettings, core_grades {{/str}}: </b>
+  {{#nograde}}{{#str}} nograde, core {{/str}}{{/nograde}}
+  {{^nograde}}
+    {{#grademax}}
+      {{#str}} grademax, core_grades {{/str}}: {{grademax}}
+    {{/grademax}}
+    {{#gradehidden}}
+      {{#pix}} hidden, mod_vpl {{/pix}}<b>{{#str}} hidden, core_grades {{/str}}</b>
+    {{/gradehidden}}
+    {{#gradelocked}}
+      {{#pix}} locked, mod_vpl {{/pix}}<b>{{#str}} locked, core_grades {{/str}}</b>
+    {{/gradelocked}}
+    {{#gradetypescale}}
+      {{#str}} typescale, core_grades {{/str}}
+    {{/gradetypescale}}
+  {{/nograde}}
+  <br>
+{{/grader}}
+{{#reductionbyevaluation}}
+  <b>{{#str}} reductionbyevaluation, mod_vpl {{/str}}: </b>{{reductionbyevaluation}}
+  {{#freeevaluations}}
+    <b>{{#str}} freeevaluations, mod_vpl {{/str}}: </b>{{freeevaluations}}
+  {{/freeevaluations}}
+  <br>
+{{/reductionbyevaluation}}
+{{#grader}}
+  {{#instance.password}}
+    <b>{{#str}} password, core {{/str}}: </b>{{instance.password}}<br>
+  {{/instance.password}}
+  {{#instance.requirednet}}
+    <b>{{#str}} requirednet, mod_vpl {{/str}}: </b>{{instance.requirednet}}<br>
+  {{/instance.requirednet}}
+  {{#instance.sebrequired}}
+    <b>{{#str}} sebrequired, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}<br>
+  {{/instance.sebrequired}}
+  {{#instance.sebkeys}}
+    <b>{{#str}} sebkeys, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}<br>
+  {{/instance.sebkeys}}
+  {{#instance.restrictededitor}}
+    <b>{{#str}} restrictededitor, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}<br>
+  {{/instance.restrictededitor}}
+  {{#graderextra.hidden}}
+    {{#pix}} hidden, mod_vpl {{/pix}}<b>{{#str}} visible, core {{/str}}: </b>{{#str}} no, core {{/str}}<br>
+  {{/graderextra.hidden}}
+  {{#graderextra.basedon}}
+    {{#pix}} basedon, mod_vpl {{/pix}}<b>{{#str}} basedon, mod_vpl {{/str}}: </b>{{!
+    }}{{graderextra.basedon}}<br>
+  {{/graderextra.basedon}}
+  {{#pix}} run, mod_vpl {{/pix}}<b>{{#str}} run, mod_vpl {{/str}}: </b>{{!
+  }}{{#instance.run}}{{#str}} yes, core {{/str}}{{/instance.run}}{{!
+  }}{{^instance.run}}{{#str}} no, core {{/str}}{{/instance.run}}
+  {{#instance.runscript}}
+    {{#pix}} runscript, mod_vpl {{/pix}}<b>{{#str}} runscript, mod_vpl {{/str}}: </b>{{!
+    }}{{instance.runscript}}
+  {{/instance.runscript}}
+  {{#instance.debug}}
+    {{#pix}} debug, mod_vpl {{/pix}}<b>{{#str}} debug, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}
+  {{/instance.debug}}
+  {{#instance.debugscript}}
+    {{#pix}} debugscript, mod_vpl {{/pix}}<b>{{#str}} debugscript, mod_vpl {{/str}}: </b>{{!
+    }}{{instance.debugscript}}
+  {{/instance.debugscript}}
+  {{#pix}} evaluate, mod_vpl {{/pix}}<b>{{#str}} evaluate, mod_vpl {{/str}}: </b>{{!
+  }}{{#instance.evaluate}}{{#str}} yes, core {{/str}}{{/instance.evaluate}}{{!
+  }}{{^instance.evaluate}}{{#str}} no, core {{/str}}{{/instance.evaluate}}
+  {{#instance.evaluate}}
+    {{#instance.evaluateonsubmission}}
+      {{#pix}} evaluateonsubmission, mod_vpl {{/pix}}{{!
+      }}<b>{{#str}} evaluateonsubmission, mod_vpl {{/str}}: </b>{{#str}} yes, core {{/str}}<br>
+    {{/instance.evaluateonsubmission}}
+    {{^instance.evaluateonsubmission}}
+      <br>
+    {{/instance.evaluateonsubmission}}
+  {{/instance.evaluate}}
+  {{^instance.evaluate}}
+    <br>
+  {{/instance.evaluate}}
+  {{#instance.automaticgrading}}
+    {{#pix}} automaticgrading, mod_vpl {{/pix}}<b>{{#str}} automaticgrading, mod_vpl {{/str}}: </b>{{!
+    }}{{#str}} yes, core {{/str}}
+  {{/instance.automaticgrading}}
+  {{#instance.maxexetime}}
+    {{#pix}} maxexetime, mod_vpl {{/pix}}<b>{{#str}} maxexetime, mod_vpl {{/str}}: </b>{{!
+    }}{{instance.maxexetime}} s
+  {{/instance.maxexetime}}
+  {{#graderextra.maxexememory}}
+    {{#pix}} maxexememory, mod_vpl {{/pix}}<b>{{#str}} maxexememory, mod_vpl {{/str}}: </b>{{!
+    }}{{graderextra.maxexememory}}
+  {{/graderextra.maxexememory}}
+  {{#graderextra.maxexefilesize}}
+    {{#pix}} maxexefilesize, mod_vpl {{/pix}}<b>{{#str}} maxexefilesize, mod_vpl {{/str}}: </b>{{!
+    }}{{graderextra.maxexefilesize}}
+  {{/graderextra.maxexefilesize}}
+  {{#instance.maxexeprocesses}}
+    {{#pix}} maxexeprocesses, mod_vpl {{/pix}}<b>{{#str}} maxexeprocesses, mod_vpl {{/str}}: </b>{{!
+    }}{{instance.maxexeprocesses}}
+  {{/instance.maxexeprocesses}}
+{{/grader}}
+{{{variation}}}
+{{#fulldescription}}
+  <div class="box py-3">
+    {{{fulldescription}}}
+  </div>
+{{/fulldescription}}
+{{^fulldescription}}
+  {{#shortdescription}}
+  <div class="box py-3">
+    {{shortdescription}}
+  </div>
+  {{/shortdescription}}
+{{/fulldescription}}

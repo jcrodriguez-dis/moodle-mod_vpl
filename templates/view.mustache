@@ -1,0 +1,24 @@
+{{!
+    vim: ts=2 sts=2 sw=2 syntax=mustache
+    @template: mod_vpl/view
+
+    VPL instance view page
+}}
+{{{tabs}}}
+{{{heading}}}
+<div class="box generalbox py-3">
+{{{infoblock}}}
+{{#showfr}}
+  <h2>{{#str}} requestedfiles, mod_vpl {{/str}}</h2>
+  {{{fr_files}}}
+{{/showfr}}
+{{#showfe}}
+  <h2>{{#str}} executionfiles, mod_vpl {{/str}}</h2>
+  {{{fe_files}}}
+{{/showfe}}
+</div>
+{{#ws_available}}
+<a href="views/show_webservice.php?id={{cmid}}">{{!
+}}{{#str}} webservice, core_webservice {{/str}}</a>
+{{/ws_available}}
+{{{homelink}}}
