@@ -25,7 +25,9 @@ require_once(dirname(__FILE__).'/../../config.php');
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/vpl.class.php');
 
-global $USER, $PAGE, $OUTPUT;
+use mod_vpl\output\view;
+
+global $USER, $PAGE;
 
 require_login();
 $id = optional_param( 'id', null, PARAM_INT ); // Course Module ID.
@@ -51,53 +53,14 @@ if (! $vpl->has_capability( VPL_MANAGE_CAPABILITY ) && ! $vpl->has_capability( V
 
 \mod_vpl\event\vpl_description_viewed::log( $vpl );
 
-// Prepares showing requiered and execution files.
-$showfr = false;
-$fr = $vpl->get_required_fgm();
-if ( $fr->is_populated() ) {
-    $showfr = true;
-}
-$showfe = false;
-$fe = $vpl->get_execution_fgm();
-if ( $vpl->has_capability( VPL_GRADE_CAPABILITY ) &&
-    $fe->is_populated() ) {
-    $showfe = true;
-}
-if ( $showfr || $showfe ) {
-    require_once(dirname(__FILE__).'/views/sh_factory.class.php');
-    vpl_sh_factory::include_js();
-}
-
 // Print the page header.
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
 $vpl->print_header( get_string( 'description', VPL ) );
+$output = $PAGE->get_renderer('mod_vpl');
 
 // Print the main part of the page.
-$vpl->print_view_tabs( basename( __FILE__ ) );
-$vpl->print_name();
+echo $output->render(new view($vpl, $userid));
 
-echo $OUTPUT->box_start();
+echo $output->footer();
 
-$vpl->print_submission_period( $userid );
-$vpl->print_submission_restriction( $userid );
-$vpl->print_variation( $userid );
-$vpl->print_fulldescription();
-
-if ( $showfr ) {
-    echo '<h2>' . get_string( 'requestedfiles', VPL ) . "</h2>\n";
-    $fr->print_files( false );
-}
-if ( $showfe ) {
-    echo '<h2>' . get_string( 'executionfiles', VPL ) . "</h2>\n";
-    $fe->print_files( false );
-}
-
-echo $OUTPUT->box_end();
-
-
-if (vpl_get_webservice_available()) {
-    echo "<a href='views/show_webservice.php?id=$id'>";
-    echo get_string( 'webservice', 'core_webservice' ) . '</a><br>';
-}
-$vpl->print_footer();
 vpl_sh_factory::syntaxhighlight();
