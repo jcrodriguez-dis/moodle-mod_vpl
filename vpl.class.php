@@ -400,7 +400,7 @@ class mod_vpl {
      */
     public function get_maxfilesize() {
         $plugincfg = get_config('mod_vpl');
-        $max = vpl_get_max_post_size();
+        $max = \mod_vpl\util\phpconfig::get_post_max_size();
         if ($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max) {
             $max = $plugincfg->maxfilesize;
         }

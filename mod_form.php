@@ -77,7 +77,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->addElement( 'selectyesno', 'example', get_string( 'isexample', VPL ) );
         $mform->setDefault( 'example', false );
         $mform->setAdvanced( 'example' );
-        $max = vpl_get_max_post_size();
+        $max = \mod_vpl\util\phpconfig::get_post_max_size();
         if ($plugincfg->maxfilesize > 0 && $plugincfg->maxfilesize < $max) {
             $max = $plugincfg->maxfilesize;
         }

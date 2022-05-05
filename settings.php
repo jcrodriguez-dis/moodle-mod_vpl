@@ -33,7 +33,7 @@ require_once(dirname(__FILE__) . '/lib.php');
 $kbyte = 1024;
 $megabyte = 1024 * $kbyte;
 $minute = 60;
-$listmaxfilesize = vpl_get_select_sizes( 64 * $kbyte, vpl_get_max_post_size() );
+$listmaxfilesize = vpl_get_select_sizes( 64 * $kbyte, \mod_vpl\util\phpconfig::get_post_max_size() );
 $listmaxtime = vpl_get_select_time( 120 * $minute );
 $listmaxexefilesize = vpl_get_select_sizes( 16 * $megabyte );
 $listmaxexememory = vpl_get_select_sizes( 16 * $megabyte );
