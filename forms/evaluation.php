@@ -38,8 +38,8 @@ $parms = array ( 'id' => $id );
 if ($userid) {
     $parms['userid'] = $userid;
 }
-$vpl->prepare_page( 'forms/evaluation.php',  $parms);
 $vpl = new mod_vpl( $id );
+$vpl->prepare_page( 'forms/evaluation.php',  $parms);
 if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // Evaluate own submission.
     $userid = $USER->id;
     $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
