@@ -105,6 +105,9 @@ class webservice_test extends base_test {
         }
     }
 
+    /**
+     * @covers \vpl_get_webservice_token
+     */
     public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
@@ -121,6 +124,10 @@ class webservice_test extends base_test {
             $this->assertEquals($file['data'], $files[$file['name']]);
         }
     }
+
+    /**
+     * @covers \mod_vpl_webservice::info
+     */
     public function test_vpl_webservice_info() {
         foreach ($this->users as $user) {
             $this->setUser($user);
@@ -153,6 +160,9 @@ class webservice_test extends base_test {
         $this->assertEquals($grade, $res['grade']);
     }
 
+    /**
+     * @covers \mod_vpl_webservice::open
+     */
     public function test_vpl_webservice_open() {
         $id = $this->vpldefault->get_course_module()->id;
         foreach ($this->users as $user) {
@@ -224,6 +234,9 @@ class webservice_test extends base_test {
         $this->internal_test_vpl_webservice_open($id, $files);
     }
 
+    /**
+     * @covers \mod_vpl_webservice::save
+     */
     public function test_vpl_webservice_save() {
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');

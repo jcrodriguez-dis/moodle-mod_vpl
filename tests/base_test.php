@@ -35,7 +35,6 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 /**
  * Code based on mod/assign/tests/base_test.php
- *
  */
 class base_test extends \advanced_testcase {
     /** @const Default number of students to create */
@@ -481,6 +480,9 @@ class base_test extends \advanced_testcase {
         return new testable_vpl($cm->id);
     }
 
+    /**
+     * @covers \mod_vpl\base_test
+     */
     public function test_create_instance() {
         if (isset($this->course)) { // No fixture => don't check.
             $this->assertNotEmpty($this->create_instance());

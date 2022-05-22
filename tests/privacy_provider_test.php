@@ -45,6 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * Unit tests for \mod_vpl\privacy\provider class.
  *
  * @group mod_vpl
+ * @covers \mod_vpl\privacy\provider
  */
 class privacy_provider_test extends base_test {
     /**

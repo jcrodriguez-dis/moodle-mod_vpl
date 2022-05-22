@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
  *  -------------|------------------------|----------------
  *  before             on range           post range
  * @group mod_vpl
+ * @covers \mod_vpl\task\cron_task
  */
 class cron_task_test extends base_test {
     /**

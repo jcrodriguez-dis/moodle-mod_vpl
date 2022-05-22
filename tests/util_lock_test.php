@@ -32,6 +32,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
 /**
  * Unit tests for \mod_vpl\util\lock class.
  * @group mod_vpl
+ * @covers \mod_vpl\util\lock
  */
 class util_lock_test extends \advanced_testcase {
 

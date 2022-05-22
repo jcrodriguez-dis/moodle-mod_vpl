@@ -49,7 +49,8 @@ class vpl_test extends base_test {
     }
 
     /**
-     * Method to test mod_vpl:delete_all
+     * Method to test mod_vpl::delete_all
+     * @covers \mod_vpl::delete_all
      */
     public function test_delete_all() {
         global $CFG, $DB;
@@ -125,6 +126,7 @@ class vpl_test extends base_test {
 
     /**
      * Method to test mod_vpl::get_students
+     * @covers \mod_vpl::get_students
      */
     public function test_get_students() {
         $vpl = $this->vpldefault;
@@ -133,6 +135,10 @@ class vpl_test extends base_test {
         $this->internal_test_get_students($vpl->get_students('', ',u.username'), $this->students);
     }
 
+    /**
+     * Method to test mod_vpl::add_submission
+     * @covers \mod_vpl::add_submission
+     */
     public function test_add_submission() {
         // Test regular submission.
         // Test equal submission.
@@ -143,6 +149,7 @@ class vpl_test extends base_test {
 
     /**
      * Method to test mod_vpl::print_submission_restriction
+     * @covers \mod_vpl::print_submission_restriction
      */
     public function test_print_submission_restriction() {
         // TODO Refactor code to test print submission.
@@ -150,6 +157,7 @@ class vpl_test extends base_test {
 
     /**
      * Method to test mod_vpl::get_effective_setting
+     * @covers \mod_vpl::get_effective_setting
      */
     public function test_get_effective_setting() {
         $vpl = $this->vploverrides;
@@ -233,6 +241,7 @@ class vpl_test extends base_test {
 
     /**
      * Method to test mod_vpl::update_override_calendar_events
+     * @covers \mod_vpl::update_override_calendar_events
      */
     public function test_update_override_calendar_events() {
         global $CFG;

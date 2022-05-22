@@ -52,6 +52,7 @@ class submission_test extends base_test {
 
     /**
      * Method to test mod_vpl_submission::remove_grade_reduction in title
+     * @covers \mod_vpl_submission::remove_grade_reduction
      */
     public function test_remove_grade_reduction() {
         $this->assertEquals('Example no match', mod_vpl_submission::remove_grade_reduction('Example no match'));

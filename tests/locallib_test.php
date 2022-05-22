@@ -38,7 +38,9 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
  * @group mod_vpl
  */
 class locallib_test extends \advanced_testcase {
-
+    /**
+     * @covers \vpl_delete_dir
+     */
     public function test_vpl_delete_dir() {
         global $CFG;
         $text = 'Example text';
@@ -75,6 +77,9 @@ class locallib_test extends \advanced_testcase {
         $this->assertEquals( $text, file_get_contents($fpath) );
     }
 
+    /**
+     * @covers \vpl_fopen
+     */
     public function test_vpl_fopen() {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
@@ -128,6 +133,9 @@ class locallib_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * @covers \vpl_get_array_key
+     */
     public function tes_vpl_get_array_key() {
         $array = array(0 => 'nothing', 1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f');
         $this->assertEquals(1, vpl_get_array_key($array, 1));
@@ -142,6 +150,9 @@ class locallib_test extends \advanced_testcase {
         $this->assertEquals(1500, vpl_get_array_key($array, 1800));
     }
 
+    /**
+     * @covers \vpl_fwrite
+     */
     public function test_vpl_fwrite() {
         global $CFG;
         $text = 'Example text';
@@ -206,6 +217,9 @@ class locallib_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * @covers \vpl_get_set_session_var
+     */
     public function test_vpl_get_set_session_var() {
         global $SESSION;
         $nosession = false;
@@ -241,6 +255,10 @@ class locallib_test extends \advanced_testcase {
             $SESSION = $sessionsave;
         }
     }
+
+    /**
+     * @covers \vpl_is_image
+     */
     public function test_vpl_is_image() {
         $this->assertTrue(vpl_is_image('filename.gif'));
         $this->assertTrue(vpl_is_image('filename.jpg'));
@@ -258,6 +276,9 @@ class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_image('a.ico/jpg'));
     }
 
+    /**
+     * @covers \vpl_truncate_string
+     */
     public function test_vpl_truncate_string() {
         $var = 'testvpl3';
         vpl_truncate_string($var, 3);
@@ -279,6 +300,9 @@ class locallib_test extends \advanced_testcase {
         $this->assertEquals('testvpl3', $var);
     }
 
+    /**
+     * @covers \vpl_bash_export
+     */
     public function test_vpl_bash_export() {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
         $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
@@ -286,6 +310,9 @@ class locallib_test extends \advanced_testcase {
         $this->assertEquals("export ALGO='te'\"'\"''\"'\"'xt'\"'\"''\n", vpl_bash_export('ALGO', "te''xt'"));
     }
 
+    /**
+     * @covers \vpl_is_valid_file_name
+     */
     public function test_vpl_is_valid_file_name() {
         $this->assertTrue(vpl_is_valid_file_name('filename.PNG.png'));
         $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafs fdj kfsdhahfskdh'));
@@ -303,6 +330,10 @@ class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
     }
+
+    /**
+     * @covers \vpl_check_network
+     */
     public function test_vpl_check_network() {
         // Tests exact IPs.
         $this->assertTrue(vpl_check_network('1.2.3.4', '1.2.3.4'));

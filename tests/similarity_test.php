@@ -53,6 +53,7 @@ class similarity_test extends base_test {
 
     /**
      * Method to test vpl_similarity_preprocess::get_zip_filepath
+     * @covers \vpl_similarity_preprocess::get_zip_filepath
      */
     public function test_get_zip_filepath() {
         global $CFG;
@@ -70,6 +71,7 @@ class similarity_test extends base_test {
 
     /**
      * Method to test vpl_similarity_preprocess::create_zip_file
+     * @covers \vpl_similarity_preprocess::create_zip_file
      */
     public function test_create_zip_file() {
         $path = vpl_similarity_preprocess::get_zip_filepath(434, '/asg/z1');

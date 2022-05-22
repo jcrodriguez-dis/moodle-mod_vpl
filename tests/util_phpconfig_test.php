@@ -33,6 +33,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
  * Unit tests for the \mod_vpl\util\phpconfig class.
  *
  * @group mod_vpl
+ * @covers \mod_vpl\util\phpconfig
  */
 class util_phpconfig_test extends \advanced_testcase {
     /**
