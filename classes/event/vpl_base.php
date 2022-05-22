@@ -35,9 +35,9 @@ class vpl_base extends base {
         return false;
     }
     protected function init() {
-        $this->data ['crud'] = 'u';
-        $this->data ['edulevel'] = self::LEVEL_TEACHING;
-        $this->data ['objecttable'] = VPL;
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = VPL;
     }
     public static function log($vpl) {
         if (is_array( $vpl )) {

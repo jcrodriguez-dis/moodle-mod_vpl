@@ -33,13 +33,13 @@ class vpl_checkvpls extends base {
         return false;
     }
     protected function init() {
-        $this->data ['crud'] = 'u';
-        $this->data ['edulevel'] = self::LEVEL_OTHER;
-        $this->data ['objecttable'] = 'course';
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = 'course';
     }
 
     public function get_url() {
-        $param = array ( 'id' => $this->data ['objectid'] );
+        $param = array ( 'id' => $this->data['objectid'] );
         return new \moodle_url( 'mod/vpl/views/checkvpls.php',  $param);
     }
     public function get_description() {

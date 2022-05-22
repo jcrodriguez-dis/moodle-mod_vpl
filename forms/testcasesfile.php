@@ -39,17 +39,17 @@ $vpl->prepare_page( 'forms/testcasesfile.php', array (
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 
 $options = array ();
-$options ['restrictededitor'] = false;
-$options ['save'] = true;
-$options ['run'] = false;
-$options ['debug'] = false;
-$options ['evaluate'] = false;
-$options ['ajaxurl'] = "testcasesfile.json.php?id={$id}&action=";
-$options ['download'] = "../views/downloadexecutionfiles.php?id={$id}";
-$options ['resetfiles'] = false;
-$options ['minfiles'] = 1;
-$options ['maxfiles'] = 1;
-$options ['saved'] = true;
+$options['restrictededitor'] = false;
+$options['save'] = true;
+$options['run'] = false;
+$options['debug'] = false;
+$options['evaluate'] = false;
+$options['ajaxurl'] = "testcasesfile.json.php?id={$id}&action=";
+$options['download'] = "../views/downloadexecutionfiles.php?id={$id}";
+$options['resetfiles'] = false;
+$options['minfiles'] = 1;
+$options['maxfiles'] = 1;
+$options['saved'] = true;
 
 vpl_editor_util::generate_requires($vpl, $options);
 $vpl->print_header( get_string( 'testcases', VPL ) );

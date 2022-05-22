@@ -74,7 +74,7 @@ class backup_nested_filegroup extends backup_nested_element {
         );
         foreach ($extrafiles as $file) {
             if (file_exists( $base . $file )) {
-                $files [] = $this->load_file($base, $file);
+                $files[] = $this->load_file($base, $file);
             }
         }
         $dirpath = $base . $dirname;
@@ -84,7 +84,7 @@ class backup_nested_filegroup extends backup_nested_element {
                 if ($filename == "." || $filename == "..") {
                     continue;
                 }
-                $files [] = $this->load_file($base, $dirname . '/' . $filename);
+                $files[] = $this->load_file($base, $dirname . '/' . $filename);
             }
             closedir( $dirlst );
         }

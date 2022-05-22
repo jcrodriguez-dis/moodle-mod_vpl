@@ -44,7 +44,7 @@ class vpl_diff {
         $l = strlen( $line );
         // Parse line to remove alphanum chars.
         for ($i = 0; $i < $l; $i ++) {
-            $c = $line [$i];
+            $c = $line[$i];
             if (! ctype_alnum( $c ) && $c != ' ') {
                 $ret .= $c;
             }
@@ -94,7 +94,7 @@ class vpl_diff {
             $l = strlen( $line2 );
         }
         for ($i = 0; $i < $l; ++ $i) {
-            if ($line1 [$i] != $line2 [$i]) {
+            if ($line1[$i] != $line2[$i]) {
                 break;
             }
         }
@@ -126,13 +126,13 @@ class vpl_diff {
 
         // Update first column.
         for ($i = 0; $i <= $nl1; $i ++) {
-            $matrix [$i] [0] = 0;
-            $prev [$i] [0] = - 1;
+            $matrix[$i][0] = 0;
+            $prev[$i][0] = - 1;
         }
         // Update first row.
         for ($j = 1; $j <= $nl2; $j ++) {
-            $matrix [0] [$j] = 0;
-            $prev [0] [$j] = 1;
+            $matrix[0][$j] = 0;
+            $prev[0][$j] = 1;
         }
     }
 
@@ -158,13 +158,13 @@ class vpl_diff {
         }
         if ($nl1 == 0) { // There is no first file.
             foreach ($lines2 as $pos => $line) {
-                $ret [] = self::newlineinfo( '>', 0, $pos + 1 );
+                $ret[] = self::newlineinfo( '>', 0, $pos + 1 );
             }
             return $ret;
         }
         if ($nl2 == 0) { // There is no second file.
             foreach ($lines1 as $pos => $line) {
-                $ret [] = self::newlineinfo( '<', $pos + 1 );
+                $ret[] = self::newlineinfo( '<', $pos + 1 );
             }
             return $ret;
         }
@@ -174,22 +174,22 @@ class vpl_diff {
 
         // Matrix processing.
         for ($i = 1; $i <= $nl1; $i ++) {
-            $line = $lines1 [$i - 1];
+            $line = $lines1[$i - 1];
             for ($j = 1; $j <= $nl2; $j ++) {
-                if ($matrix [$i] [$j - 1] > $matrix [$i - 1] [$j]) {
-                    $max = $matrix [$i] [$j - 1];
+                if ($matrix[$i][$j - 1] > $matrix[$i - 1][$j]) {
+                    $max = $matrix[$i][$j - 1];
                     $best = 1;
                 } else {
-                    $max = $matrix [$i - 1] [$j];
+                    $max = $matrix[$i - 1][$j];
                     $best = - 1;
                 }
-                $prize = self::diffline( $line, $lines2 [$j - 1] );
-                if ($matrix [$i - 1] [$j - 1] + $prize >= $max) {
-                    $max = $matrix [$i - 1] [$j - 1] + $prize;
+                $prize = self::diffline( $line, $lines2[$j - 1] );
+                if ($matrix[$i - 1][$j - 1] + $prize >= $max) {
+                    $max = $matrix[$i - 1][$j - 1] + $prize;
                     $best = 0;
                 }
-                $matrix [$i] [$j] = $max;
-                $prev [$i] [$j] = $best;
+                $matrix[$i][$j] = $max;
+                $prev[$i][$j] = $best;
             }
         }
 
@@ -202,8 +202,8 @@ class vpl_diff {
             $pair = new stdClass();
             $pair->i = $pi;
             $pair->j = $pj;
-            $pairs [] = $pair;
-            $p = $prev [$pi] [$pj];
+            $pairs[] = $pair;
+            $p = $prev[$pi][$pj];
             if ($p == 0) {
                 $pi --;
                 $pj --;
@@ -223,21 +223,21 @@ class vpl_diff {
         $prevpair->j = 0;
         foreach ($pairs as $pair) {
             if ($pair->i == $prevpair->i + 1 && $pair->j == $prevpair->j + 1) { // Regular advance.
-                $l1 = $lines1 [$pair->i - 1];
-                $l2 = $lines2 [$pair->j - 1];
+                $l1 = $lines1[$pair->i - 1];
+                $l2 = $lines2[$pair->j - 1];
                 if ($l1 == $l2) { // Equals.
-                    $ret [] = self::newlineinfo( '=', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo( '=', $pair->i, $pair->j );
                 } else if ( self::similine($l1, $l2, '/\s/')) {
-                    $ret [] = self::newlineinfo( '1', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo( '1', $pair->i, $pair->j );
                 } else if ( self::similine($l1, $l2, '/(\s|[0-9]|[a-z])/i')) {
-                    $ret [] = self::newlineinfo( '2', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo( '2', $pair->i, $pair->j );
                 } else {
-                    $ret [] = self::newlineinfo( '#', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo( '#', $pair->i, $pair->j );
                 }
             } else if ($pair->i == $prevpair->i + 1) { // Removed next line.
-                $ret [] = self::newlineinfo( '<', $pair->i, false );
+                $ret[] = self::newlineinfo( '<', $pair->i, false );
             } else if ($pair->j == $prevpair->j + 1) { // Added one line.
-                $ret [] = self::newlineinfo( '>', false, $pair->j );
+                $ret[] = self::newlineinfo( '>', false, $pair->j );
             } else {
                 debugging( "Internal error " . s( $pair ) . " " . s( $prevpair) );
             }
@@ -270,13 +270,13 @@ class vpl_diff {
         $datal1 = '';
         $datal2 = '';
         $diffl = '';
-        $lines1 [- 1] = '';
-        $lines2 [- 1] = '';
+        $lines1[- 1] = '';
+        $lines2[- 1] = '';
         foreach ($diff as $line) {
-            $diffl .= $separator [$line->type] . "\n";
+            $diffl .= $separator[$line->type] . "\n";
             if ($line->ln1) {
                 $datal1 .= sprintf("%4d\n", $line->ln1);
-                $data1 .= $lines1 [$line->ln1 - 1] . "\n";
+                $data1 .= $lines1[$line->ln1 - 1] . "\n";
             } else {
                 if ( $data1 == '' ) {
                     $data1 .= $emptyline;
@@ -287,7 +287,7 @@ class vpl_diff {
             }
             if ($line->ln2) {
                 $datal2 .= sprintf("%4d\n", $line->ln2);
-                $data2 .= $lines2 [$line->ln2 - 1] . "\n";
+                $data2 .= $lines2[$line->ln2 - 1] . "\n";
             } else {
                 if ( $data2 == '' ) {
                     $data2 .= $emptyline;

@@ -35,7 +35,7 @@ class vpl_similarity_prolog extends vpl_similarity_base {
         $ret = array ();
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
-                $ret [] = $token;
+                $ret[] = $token;
             }
         }
         return $ret;

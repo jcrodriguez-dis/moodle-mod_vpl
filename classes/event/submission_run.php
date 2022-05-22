@@ -29,7 +29,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_run extends submission_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'r';
+        $this->data['crud'] = 'r';
         $this->legacyaction = 'run';
     }
 }

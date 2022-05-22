@@ -33,8 +33,8 @@ function get_select_instance_filter($urlbase, $instancefilter) {
     $urlindex = array ();
     $urlbase->param( 'selection', 'none' );
     $noneurl = $urlbase->out( false );
-    $urls [$noneurl] = get_string( 'none' );
-    $urlindex ['none'] = $noneurl;
+    $urls[$noneurl] = get_string( 'none' );
+    $urlindex['none'] = $noneurl;
     $filter = array (
             'open',
             'closed',
@@ -47,11 +47,11 @@ function get_select_instance_filter($urlbase, $instancefilter) {
 
     foreach ($filter as $sel) {
         $urlbase->param( 'selection', $sel );
-        $urls [$urlbase->out( false )] = get_string( $sel, VPL );
-        $urlindex [$sel] = $urlbase->out( false );
+        $urls[$urlbase->out( false )] = get_string( $sel, VPL );
+        $urlindex[$sel] = $urlbase->out( false );
     }
 
-    $select = new url_select( $urls, $urlindex [$instancefilter], array () );
+    $select = new url_select( $urls, $urlindex[$instancefilter], array () );
     $select->set_label(get_string('filter'));
     return $select;
 }
@@ -61,14 +61,14 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     $urlindex = array ();
     $urlbase->param( 'section', 'all' );
     $allurl = $urlbase->out( false );
-    $urls [$allurl] = get_string( 'all' );
-    $urlindex ['all'] = $allurl;
+    $urls[$allurl] = get_string( 'all' );
+    $urlindex['all'] = $allurl;
     foreach ($sectionnames as $section => $sectionname) {
         $urlbase->param( 'section', "sec$section" );
-        $urls [$urlbase->out( false )] = s($sectionname);
-        $urlindex ["sec$section"] = $urlbase->out( false );
+        $urls[$urlbase->out( false )] = s($sectionname);
+        $urlindex["sec$section"] = $urlbase->out( false );
     }
-    $select = new url_select( $urls, $urlindex [$sectionfilter], array () );
+    $select = new url_select( $urls, $urlindex[$sectionfilter], array () );
     $select->set_label(get_string('section'));
     return $select;
 }
@@ -197,7 +197,7 @@ foreach ($ovpls as $ovpl) {
             }
         }
         if ($add) {
-            $vpls [] = $vpl;
+            $vpls[] = $vpl;
         }
     }
 }
@@ -240,7 +240,7 @@ if ($sort > '') {
 
 // Generate table.
 $table = new html_table();
-$table->attributes ['class'] = 'generaltable mod_index';
+$table->attributes['class'] = 'generaltable mod_index';
 $table->head = array (
         '#',
         $strsection,
@@ -252,22 +252,22 @@ $table->align = array (
         'left'
 );
 if ($startdate) {
-    $table->head [] = $strstartdate;
-    $table->align [] = 'center';
+    $table->head[] = $strstartdate;
+    $table->align[] = 'center';
 }
 if ($duedate) {
-    $table->head [] = $strduedate;
-    $table->align [] = 'center';
+    $table->head[] = $strduedate;
+    $table->align[] = 'center';
 }
 if ($grader && ! $nograde) {
-    $table->head [] = get_string( 'submissions', VPL );
-    $table->head [] = get_string( 'graded', VPL );
-    $table->align [] = 'right';
-    $table->align [] = 'right';
+    $table->head[] = get_string( 'submissions', VPL );
+    $table->head[] = get_string( 'graded', VPL );
+    $table->align[] = 'right';
+    $table->align[] = 'right';
 }
 if ($student && ! $nograde) {
-    $table->head [] = get_string( 'grade', 'core_grades' );
-    $table->align [] = 'left';
+    $table->head[] = get_string( 'grade', 'core_grades' );
+    $table->align[] = 'left';
 }
 
 $baseurlsection = vpl_abs_href( '/course/view.php', 'id', $COURSE->id );
@@ -290,36 +290,36 @@ foreach ($vpls as $vpl) {
             "<a href='$url'>{$vpl->get_printable_name()}</a>"
     );
     if ($startdate) {
-        $row [] = $instance->startdate > 0 ? userdate( $instance->startdate ) : '';
+        $row[] = $instance->startdate > 0 ? userdate( $instance->startdate ) : '';
     }
     if ($duedate) {
-        $row [] = $instance->duedate > 0 ? userdate( $instance->duedate ) : '';
+        $row[] = $instance->duedate > 0 ? userdate( $instance->duedate ) : '';
     }
     if ($grader) {
         if ($vpl->has_capability( VPL_GRADE_CAPABILITY )
             && $vpl->get_grade() != 0 && ! $instance->example) {
             $info = vpl_list_util::count_graded( $vpl );
-            $totalsubs += $info ['submissions'];
-            $totalgraded += $info ['graded'];
+            $totalsubs += $info['submissions'];
+            $totalgraded += $info['graded'];
             $url = vpl_rel_url( 'views/submissionslist.php', 'id', $vpl->get_course_module()->id, 'selection', 'allsubmissions' );
-            $row [] = '<a href="' . $url . '">' . $info ['submissions'] . '</a>';
+            $row[] = '<a href="' . $url . '">' . $info['submissions'] . '</a>';
             // Need mark?
-            if ($info ['submissions'] > $info ['graded'] && $vpl->get_grade() != 0
+            if ($info['submissions'] > $info['graded'] && $vpl->get_grade() != 0
                 && ! ($instance->duedate != 0 && $instance->duedate > time())) {
                 $url = vpl_rel_url( 'views/submissionslist.php', 'id', $vpl->get_course_module()->id, 'selection', 'notgraded' );
-                $diff = $info ['submissions'] - $info ['graded'];
-                $row [] = '<div class="vpl_nm">' . $info ['graded'] . ' <a href="' . $url . '">(' . $diff . ')</a><div>';
+                $diff = $info['submissions'] - $info['graded'];
+                $row[] = '<div class="vpl_nm">' . $info['graded'] . ' <a href="' . $url . '">(' . $diff . ')</a><div>';
             } else {
                 // No grade able.
-                if ($vpl->get_grade() == 0 && $info ['graded'] == 0) {
-                    $row [] = '-';
+                if ($vpl->get_grade() == 0 && $info['graded'] == 0) {
+                    $row[] = '-';
                 } else {
-                    $row [] = $info ['graded'];
+                    $row[] = $info['graded'];
                 }
             }
         } else {
-            $row [] = '';
-            $row [] = '';
+            $row[] = '';
+            $row[] = '';
         }
     }
     if ($student) {
@@ -334,8 +334,8 @@ foreach ($vpls as $vpl) {
                 } else {
                     $result = $submission->getCE();
                     $text = '';
-                    if ($result ['executed'] !== 0) {
-                        $prograde = $submission->proposedGrade( $result ['execution'] );
+                    if ($result['executed'] !== 0) {
+                        $prograde = $submission->proposedGrade( $result['execution'] );
                         if ($prograde > '') {
                             $text = get_string( 'proposedgrade', VPL, $submission->get_grade_core( $prograde ) );
                         }
@@ -349,26 +349,26 @@ foreach ($vpls as $vpl) {
                     $text = '<div class="vpl_nm">' . $text . '</div>';
                 }
             }
-            $row [] = $text;
+            $row[] = $text;
         } else {
-            $row [] = '-';
+            $row[] = '-';
         }
     }
-    $table->data [] = $row;
+    $table->data[] = $row;
 }
 if ($totalsubs > 0) {
     $row = array ('', '', '');
     if ($startdate) {
-        $row [] = '';
+        $row[] = '';
     }
     if ($duedate) {
-        $row [] = '';
+        $row[] = '';
     }
     end( $row );
-    $row [key( $row )] = get_string( 'total' );
-    $row [] = $totalsubs;
-    $row [] = $totalgraded;
-    $table->data [] = $row;
+    $row[key( $row )] = get_string( 'total' );
+    $row[] = $totalsubs;
+    $row[] = $totalgraded;
+    $table->data[] = $row;
 }
 echo "<br>";
 echo html_writer::table( $table );

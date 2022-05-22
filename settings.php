@@ -157,7 +157,7 @@ $list = array(
 );
 $themelist = array();
 foreach ($list as $theme) {
-    $themelist [$theme] = $theme;
+    $themelist[$theme] = $theme;
 }
 $settings->add(
         new admin_setting_configselect( $prefix . 'editor_theme', get_string( 'editortheme', VPL ),

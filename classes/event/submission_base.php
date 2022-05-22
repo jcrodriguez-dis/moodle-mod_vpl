@@ -35,9 +35,9 @@ class submission_base extends base {
         return false;
     }
     protected function init() {
-        $this->data ['crud'] = 'c';
-        $this->data ['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data ['objecttable'] = VPL_SUBMISSIONS;
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = VPL_SUBMISSIONS;
     }
     public function get_url() {
         return $this->get_url_base( 'forms/submissionview.php' );

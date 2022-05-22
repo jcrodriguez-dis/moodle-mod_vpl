@@ -29,7 +29,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class variation_added extends variation_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'c';
+        $this->data['crud'] = 'c';
         $this->legacyaction = 'added variation';
     }
     public function get_description() {

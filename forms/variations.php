@@ -42,8 +42,8 @@ class mod_vpl_variation_option_form extends moodleform {
         ) );
         $mform->setType( 'variationtitle', PARAM_TEXT );
         $buttongroup = array ();
-        $buttongroup [] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
-        $buttongroup [] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
+        $buttongroup[] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
+        $buttongroup[] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
         $mform->addGroup( $buttongroup );
     }
 }
@@ -82,12 +82,12 @@ class mod_vpl_variation_form extends moodleform {
         $mform->setDefault( $fieldname, '' );
 
         $buttongroup = array ();
-        $buttongroup [] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
-        $buttongroup [] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
+        $buttongroup[] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
+        $buttongroup[] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
         if ($this->number > 0) {
             $menssage = addslashes( get_string( 'delete' ) );
             $onclick = 'onclick="return confirm(\'' . $menssage . '\')"';
-            $buttongroup [] = $mform->createElement( 'submit', 'delete', get_string( 'delete' ), $onclick );
+            $buttongroup[] = $mform->createElement( 'submit', 'delete', get_string( 'delete' ), $onclick );
         }
         $mform->addGroup( $buttongroup );
     }

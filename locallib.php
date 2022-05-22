@@ -151,7 +151,7 @@ function vpl_delete_dir($dirname) {
             $list = array ();
             while ( $name = readdir( $dd ) ) {
                 if ($name != '.' && $name != '..') {
-                    $list [] = $name;
+                    $list[] = $name;
                 }
             }
             closedir( $dd );
@@ -267,10 +267,10 @@ function vpl_get_lang($bashadapt = false) {
     if ($bashadapt) {
         $parts = explode( '_', $lang );
         if (count( $parts ) == 2) {
-            $lang = $parts [0];
+            $lang = $parts[0];
         }
-        if (isset( $commonlangs [$lang] )) {
-            $lang = $lang . '_' . $commonlangs [$lang];
+        if (isset( $commonlangs[$lang] )) {
+            $lang = $lang . '_' . $commonlangs[$lang];
         }
         $lang .= '.UTF-8';
     }
@@ -297,9 +297,9 @@ function vpl_abs_href() {
     global $CFG;
     $parms = func_get_args();
     $l = count( $parms );
-    $href = $CFG->wwwroot . $parms [0];
+    $href = $CFG->wwwroot . $parms[0];
     for ($p = 1; $p < $l - 1; $p += 2) {
-        $href .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms [$p] ) . '=' . urlencode( $parms [$p + 1] );
+        $href .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms[$p] ) . '=' . urlencode( $parms[$p + 1] );
     }
     return $href;
 }
@@ -324,9 +324,9 @@ function vpl_mod_href() {
     global $CFG;
     $parms = func_get_args();
     $l = count( $parms );
-    $href = $CFG->wwwroot . '/mod/vpl/' . $parms [0];
+    $href = $CFG->wwwroot . '/mod/vpl/' . $parms[0];
     for ($p = 1; $p < $l - 1; $p += 2) {
-        $href .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms [$p] ) . '=' . urlencode( $parms [$p + 1] );
+        $href .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms[$p] ) . '=' . urlencode( $parms[$p + 1] );
     }
     return $href;
 }
@@ -350,9 +350,9 @@ function vpl_mod_href() {
 function vpl_rel_url() {
     $parms = func_get_args();
     $l = count( $parms );
-    $url = $parms [0];
+    $url = $parms[0];
     for ($p = 1; $p < $l - 1; $p += 2) {
-        $url .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms [$p] ) . '=' . urlencode( $parms [$p + 1] );
+        $url .= ($p > 1 ? '&amp;' : '?') . urlencode( $parms[$p] ) . '=' . urlencode( $parms[$p + 1] );
     }
     return $url;
 }
@@ -483,10 +483,10 @@ function vpl_get_select_time($maximum = null) {
     }
     while ( $value <= $maximum ) {
         if ($value < $minute) {
-            $ret [$value] = get_string( 'numseconds', '', $value );
+            $ret[$value] = get_string( 'numseconds', '', $value );
         } else {
             $num = ( int ) ($value / $minute);
-            $ret [$num * $minute] = get_string( 'numminutes', '', $num );
+            $ret[$num * $minute] = get_string( 'numminutes', '', $num );
             $value = $num * $minute;
         }
         $value *= 2;
@@ -517,16 +517,16 @@ function vpl_conv_size_to_string($size) {
             'TiB'
     );
     for ($i = 0; $i < count( $measure ) - 1; $i ++) {
-        if ($measure [$i] <= 0) { // Check for int overflow.
-            $num = $size / $measure [$i - 1];
-            return sprintf( '%.2f %s', $num, $measurename [$i - 1] );
+        if ($measure[$i] <= 0) { // Check for int overflow.
+            $num = $size / $measure[$i - 1];
+            return sprintf( '%.2f %s', $num, $measurename[$i - 1] );
         }
-        if ($size < $measure [$i + 1]) {
-            $num = $size / $measure [$i];
-            if ($num >= 3 || $size % $measure [$i] == 0) {
-                return sprintf( '%4d %s', $num, $measurename [$i] );
+        if ($size < $measure[$i + 1]) {
+            $num = $size / $measure[$i];
+            if ($num >= 3 || $size % $measure[$i] == 0) {
+                return sprintf( '%4d %s', $num, $measurename[$i] );
             } else {
-                return sprintf( '%.2f %s', $num, $measurename [$i] );
+                return sprintf( '%.2f %s', $num, $measurename[$i] );
             }
         }
     }
@@ -555,7 +555,7 @@ function vpl_get_array_key($array, int $value) {
 }
 
 /**
- * Returns un array with the format [size in bytes]=> size in text.
+ * Returns un array with the format [size in bytes] => size in text.
  * The first element is [0] => select.
  *
  * @param int $minimum the initial value
@@ -582,7 +582,7 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
     $pre = 0;
     $increment = $value / 4;
     while ( $value <= $maximum && $value > 0 ) { // Avoid int overflow.
-        $ret [$value] = vpl_conv_size_to_string( $value );
+        $ret[$value] = vpl_conv_size_to_string( $value );
         $pre = $value;
         $value += $increment;
         $value = ( int ) $value;
@@ -594,7 +594,7 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
         }
     }
     if ($pre < $maximum) { // Show limit value.
-        $ret [$maximum] = vpl_conv_size_to_string($maximum);
+        $ret[$maximum] = vpl_conv_size_to_string($maximum);
     }
     return $ret;
 }
@@ -648,7 +648,7 @@ function vpl_rtzeros($value) {
 function vpl_select_index($url, $array) {
     $ret = array ();
     foreach ($array as $value) {
-        $ret [$value] = $url . $value;
+        $ret[$value] = $url . $value;
     }
     return $ret;
 }
@@ -663,7 +663,7 @@ function vpl_select_index($url, $array) {
 function vpl_select_array($url, $array) {
     $ret = array ();
     foreach ($array as $value) {
-        $ret [$url . $value] = get_string( $value, VPL );
+        $ret[$url . $value] = get_string( $value, VPL );
     }
     return $ret;
 }
@@ -733,7 +733,7 @@ function vpl_is_valid_path_name($path) {
     }
     $dirs = explode( '/', $path );
     for ($i = 0; $i < count( $dirs ); $i ++) {
-        if (! vpl_is_valid_file_name( $dirs [$i] )) {
+        if (! vpl_is_valid_file_name( $dirs[$i] )) {
             return false;
         }
     }

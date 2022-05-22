@@ -69,8 +69,8 @@ if ($mform->is_cancelled()) {
 }
 if ($fromform = $mform->get_data()) {
     $rawpostsize = strlen( file_get_contents( "php://input" ) );
-    if ($_SERVER ['CONTENT_LENGTH'] != $rawpostsize) {
-        $error = "NOT SAVED (Http POST error: CONTENT_LENGTH expected " . $_SERVER ['CONTENT_LENGTH'] . " found $rawpostsize)";
+    if ($_SERVER['CONTENT_LENGTH'] != $rawpostsize) {
+        $error = "NOT SAVED (Http POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawpostsize)";
         vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
                     $error, 'error' );
         die();
@@ -89,7 +89,7 @@ if ($fromform = $mform->get_data()) {
                     $data = iconv( $encode, 'UTF-8', $data );
                 }
             }
-            $files [$name] = $data;
+            $files[$name] = $data;
         }
     }
     $errormessage = '';

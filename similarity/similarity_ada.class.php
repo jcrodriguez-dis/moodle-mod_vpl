@@ -52,22 +52,22 @@ class vpl_similarity_ada extends vpl_similarity_base {
                         break;
                     case ')' :
                         $bracketlevel --;
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case ';' :
-                        $ret [] = $token;
+                        $ret[] = $token;
                         // End of identifier list declaration?
                         if ($identifierlist) {
                             if ($identifierdefpos > 0) {
                                 $rep = array_slice( $ret, $identifierdefpos );
                                 for ($i = 0; $i < $nidentifiers; $i ++) {
                                     foreach ($rep as $data) {
-                                        $ret [] = $data;
+                                        $ret[] = $data;
                                     }
                                 }
                             } else {
                                 for ($i = 0; $i < $nidentifiers; $i ++) {
-                                    $ret [] = $token;
+                                    $ret[] = $token;
                                 }
                             }
                         }
@@ -84,17 +84,17 @@ class vpl_similarity_ada extends vpl_similarity_base {
                                 $nidentifiers ++;
                             }
                         } else {
-                            $ret [] = $token;
+                            $ret[] = $token;
                         }
                         break;
                     case ':' :
                         if ($identifierlist) {
                             $identifierdefpos = count( $ret );
                         }
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     default :
-                        $ret [] = $token;
+                        $ret[] = $token;
                 }
             }
         }

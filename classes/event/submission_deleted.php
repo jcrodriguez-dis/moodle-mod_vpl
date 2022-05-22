@@ -29,7 +29,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_deleted extends submission_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'd';
+        $this->data['crud'] = 'd';
         $this->legacyaction = 'delete submission';
     }
 }

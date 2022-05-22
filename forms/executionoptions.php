@@ -79,7 +79,7 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addElement( 'header', 'header_execution_options', get_string( 'executionoptions', VPL ) );
         $strbasedon = get_string( 'basedon', VPL );
         $basedonlist = array ();
-        $basedonlist [0] = '';
+        $basedonlist[0] = '';
         $courseid = $this->vpl->get_course()->id;
         $listcm = get_coursemodules_in_course( VPL, $courseid );
         $instance = $this->vpl->get_instance();
@@ -87,11 +87,11 @@ class mod_vpl_executionoptions_form extends moodleform {
         foreach ($listcm as $aux) {
             if ($aux->instance != $vplid) {
                 $vpl = new mod_vpl( $aux->id );
-                $basedonlist [$aux->instance] = $vpl->get_printable_name();
+                $basedonlist[$aux->instance] = $vpl->get_printable_name();
             }
         }
         asort( $basedonlist );
-        $basedonlist [0] = get_string( 'select' );
+        $basedonlist[0] = get_string( 'select' );
         $mform->addElement( 'select', 'basedon', $strbasedon, $basedonlist );
         $mform->setDefault( 'basedon', $instance->basedon );
 

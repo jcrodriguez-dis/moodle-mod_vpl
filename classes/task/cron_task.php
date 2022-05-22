@@ -94,7 +94,7 @@ class cron_task extends \core\task\scheduled_task {
                 }
                 $cm = $vpl->get_course_module();
                 set_coursemodule_visible( $cm->id, true );
-                $rebuilds [$cm->course] = $cm->course;
+                $rebuilds[$cm->course] = $cm->course;
             }
         }
         foreach ($rebuilds as $courseid) {

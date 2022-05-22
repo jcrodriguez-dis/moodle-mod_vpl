@@ -50,8 +50,8 @@ class vpl_filetype {
             'htm' => 'html'
     );
     public static function str($ext) {
-        if (isset( self::$sstr [$ext] )) {
-            return self::$sstr [$ext];
+        if (isset( self::$sstr[$ext] )) {
+            return self::$sstr[$ext];
         } else {
             return false;
         }

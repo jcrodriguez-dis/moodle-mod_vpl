@@ -34,7 +34,7 @@ class vpl_similarity_c extends vpl_similarity_base {
     public static function expand_operator(&$array, &$from) {
         $last = count( $array ) - 1; // Array alredy with equal =.
         for ($i = $from; $i < $last; $i ++) { // Replicate from las instruction to =.
-            $array [] = $array [$i];
+            $array[] = $array[$i];
         }
         $from = count( $array ) + 1;
     }
@@ -66,7 +66,7 @@ class vpl_similarity_c extends vpl_similarity_base {
                     case '}' :
                         // Remove unneeded {}.
                         if (! ($openbrace && $nsemicolon < 2)) {
-                            $ret [] = $token;
+                            $ret[] = $token;
                         }
                         $openbrace = false;
                         $posiniinst = count( $ret );
@@ -74,67 +74,67 @@ class vpl_similarity_c extends vpl_similarity_base {
                     case ';' :
                         // Count semicolon after a {.
                         $nsemicolon ++;
-                        $ret [] = $token;
+                        $ret[] = $token;
                         $posiniinst = count( $ret );
                         break;
                     case '++' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '+';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '--' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '-';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '+=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '+';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '-=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '-';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '*=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '*';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '/=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '/';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '%=' :
-                        $ret [] = self::clone_token($token, '=');
+                        $ret[] = self::clone_token($token, '=');
                         self::expand_operator( $ret, $posiniinst );
                         $token->value = '%';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '->' : // Replace "->" by "*( ).".
                         if ($prev->value == 'this') {
                             break;
                         }
-                        $ret [] = self::clone_token($token, '(');
-                        $ret [] = self::clone_token($token, '*');
-                        $ret [] = self::clone_token($token, ')');
+                        $ret[] = self::clone_token($token, '(');
+                        $ret[] = self::clone_token($token, '*');
+                        $ret[] = self::clone_token($token, ')');
                         $token->value = '.';
-                        $ret [] = $token;
+                        $ret[] = $token;
                         break;
                     case '::' :
                         break;
                     case ':' :
                         $posiniinst = count( $ret );
                     default :
-                        $ret [] = $token;
+                        $ret[] = $token;
                 }
                 $prev = $token;
             }

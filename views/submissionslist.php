@@ -117,12 +117,12 @@ class vpl_submissionlist_order {
             self::$ascending = 1;
         }
         // Funtion usort of old PHP versions don't call static class functions.
-        if (isset( $userinfofields [$field] )) {
+        if (isset( $userinfofields[$field] )) {
             return array (
                     self::$corder,
                     'cpm_userinfo'
             );
-        } else if (isset( $submissionfields [$field] )) {
+        } else if (isset( $submissionfields[$field] )) {
             return array (
                     self::$corder,
                     'cpm_submission'
@@ -275,12 +275,12 @@ $submissionsnumber = $vpl->get_submissions_number();
 $alldata = array ();
 foreach ($list as $uginfo) {
     $submission = null;
-    if (! isset( $submissions [$uginfo->id] )) {
+    if (! isset( $submissions[$uginfo->id] )) {
         if ($subselection != 'all') {
             continue;
         }
     } else {
-        $subinstance = $submissions [$uginfo->id];
+        $subinstance = $submissions[$uginfo->id];
         $submission = new mod_vpl_submission_CE( $vpl, $subinstance );
         $subid = $subinstance->id;
         $subinstance->gradesortable = null;
@@ -298,16 +298,16 @@ foreach ($list as $uginfo) {
                 continue;
             }
             $result = $submission->getCE();
-            if ($result ['executed'] !== 0) {
-                $prograde = $submission->proposedGrade( $result ['execution'] );
+            if ($result['executed'] !== 0) {
+                $prograde = $submission->proposedGrade( $result['execution'] );
                 if ($prograde > '') {
                     $subinstance->gradesortable = $prograde;
                 }
             }
         }
         // I know that subinstance isn't the correct place to put nsubmissions but is the easy.
-        if (isset( $submissionsnumber [$uginfo->id] )) {
-            $subinstance->nsubmissions = $submissionsnumber [$uginfo->id]->submissions;
+        if (isset( $submissionsnumber[$uginfo->id] )) {
+            $subinstance->nsubmissions = $submissionsnumber[$uginfo->id]->submissions;
         } else {
             $subinstance->nsubmissions = ' ';
         }
@@ -320,7 +320,7 @@ foreach ($list as $uginfo) {
         $data->userinfo->firstname = '';
         $data->userinfo->lastname = $uginfo->name;
     }
-    $alldata [] = $data;
+    $alldata[] = $data;
 }
 $groupsurl = vpl_mod_href( 'views/submissionslist.php', 'id', $id, 'sort', $sort, 'sortdir', $sortdir, 'selection', $subselection );
 // Unblock user session.
@@ -492,8 +492,8 @@ foreach ($alldata as $data) {
             $text = $submission->get_grade_core();
             // Add proposed grade diff.
             $result = $submission->getCE();
-            if ($result ['executed'] !== 0) {
-                $prograde = $submission->proposedGrade( $result ['execution'] );
+            if ($result['executed'] !== 0) {
+                $prograde = $submission->proposedGrade( $result['execution'] );
                 if ($prograde > '' && $prograde != $subinstance->grade) {
                     $text .= ' (' . $prograde . ')';
                 }
@@ -506,7 +506,7 @@ foreach ($alldata as $data) {
                 $actions->add( vpl_get_action_link('grade', $link, 'core_grades') );
                 // Add new next user.
                 if ($lastid) {
-                    $nextids [$lastid] = $user->id;
+                    $nextids[$lastid] = $user->id;
                 }
                 $lastid = $subid; // Save submission id as next index.
             } else {
@@ -516,10 +516,10 @@ foreach ($alldata as $data) {
             $graderid = $subinstance->grader;
             $graderuser = $submission->get_grader( $graderid );
             // Count evaluator marks.
-            if (isset( $ngrades [$graderid] )) {
-                $ngrades [$graderid] ++;
+            if (isset( $ngrades[$graderid] )) {
+                $ngrades[$graderid] ++;
             } else {
-                $ngrades [$graderid] = 1;
+                $ngrades[$graderid] = 1;
             }
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
@@ -530,13 +530,13 @@ foreach ($alldata as $data) {
         } else {
             $result = $submission->getCE();
             $text = '';
-            if (($evaluate == 1 && $result ['compilation'] === 0)
-                || ($evaluate == 2 && $result ['executed'] === 0 && $nevaluation <= $usernumber)
+            if (($evaluate == 1 && $result['compilation'] === 0)
+                || ($evaluate == 2 && $result['executed'] === 0 && $nevaluation <= $usernumber)
                 || ($evaluate == 3 && $nevaluation <= $usernumber)) { // Need evaluation.
                     vpl_evaluate( $vpl, $alldata, $user, $usernumber, $groupsurl );
             }
-            if ($result ['executed'] !== 0) {
-                $prograde = $submission->proposedGrade( $result ['execution'] );
+            if ($result['executed'] !== 0) {
+                $prograde = $submission->proposedGrade( $result['execution'] );
                 if ($prograde > '') {
                     $text = get_string( 'proposedgrade', VPL, $submission->get_grade_core( $prograde ) );
                 }
@@ -553,7 +553,7 @@ foreach ($alldata as $data) {
             $actions->add(vpl_get_action_link('grade', $link, 'core_grades'));
             // Add new next user.
             if ($lastid) {
-                $nextids [$lastid] = $user->id;
+                $nextids[$lastid] = $user->id;
             }
             $lastid = $subid; // Save submission id as next index.
             if ($showgrades) {
@@ -581,7 +581,7 @@ foreach ($alldata as $data) {
     $link = new moodle_url('/mod/vpl/forms/edit.php', array('id' => $id, 'userid' => $user->id, 'privatecopy' => 1));
     $actions->add(vpl_get_action_link('copy', $link));
     if ($showgrades) {
-        $table->data [] = array (
+        $table->data[] = array (
                 $usernumberlink,
                 $showphoto ? $vpl->user_picture( $user ) : '',
                 $vpl->fullname( $user, !$showphoto),
@@ -590,7 +590,7 @@ foreach ($alldata as $data) {
                 $OUTPUT->render($actions)
         );
     } else if ($gradeable) {
-        $table->data [] = array (
+        $table->data[] = array (
                 $usernumberlink,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
@@ -602,7 +602,7 @@ foreach ($alldata as $data) {
                 $OUTPUT->render($actions)
         );
     } else {
-        $table->data [] = array (
+        $table->data[] = array (
                 $usernumberlink,
                 $showphoto ? $vpl->user_picture( $user) : '',
                 $vpl->fullname( $user, !$showphoto),
@@ -645,7 +645,7 @@ if (count( $ngrades )) {
                     'popup' => true
             ) );
         }
-        $tablegraders->data [] = array (
+        $tablegraders->data[] = array (
                 $gradernumber,
                 $picture . ' ' . fullname( $grader ),
                 sprintf( '%d/%d  (%5.2f%%)', $marks, $usernumber, ( float ) 100.0 * $marks / $usernumber )
@@ -673,7 +673,7 @@ $urls = array_merge( array (
         'graded',
         'gradedbyuser'
 ) ) );
-$urlsel = new url_select( $urls, $urlindex [$subselection] );
+$urlsel = new url_select( $urls, $urlindex[$subselection] );
 $urlsel->set_label( get_string( 'submissionselection', VPL ) );
 echo $OUTPUT->render( $urlsel );
 if ($subselection != 'notgraded') {
@@ -686,10 +686,10 @@ if ($subselection != 'notgraded') {
             4 => $urlbase . '4'
     );
     $urlsel = new url_select( array (
-            $urls [2] => get_string( 'notexecuted', VPL ),
-            $urls [3] => get_string( 'notgraded', VPL ),
-            $urls [4] => get_string( 'all' )
-    ), $urls [$evaluate] );
+            $urls[2] => get_string( 'notexecuted', VPL ),
+            $urls[3] => get_string( 'notgraded', VPL ),
+            $urls[4] => get_string( 'all' )
+    ), $urls[$evaluate] );
     $urlsel->set_label( get_string( 'evaluate', VPL ) );
     echo $OUTPUT->render( $urlsel );
 }

@@ -94,7 +94,7 @@ class file_group_execution extends file_group_process {
      */
     public function getfilecomment($num) {
         if ($num < self::$numbasefiles) {
-            return get_string( self::$basefiles [$num], VPL );
+            return get_string( self::$basefiles[$num], VPL );
         } else {
             return get_string( 'file' ) . ' ' . ($num + 1 - self::$numbasefiles);
         }
@@ -438,10 +438,10 @@ class mod_vpl {
                 $html .= ' (' . $link . ')';
             }
             $html .= '<br>';
-            if (isset( $all [$info->count] )) {
-                $all [$info->count] .= '(' . $info->count . ') ' . $html;
+            if (isset( $all[$info->count] )) {
+                $all[$info->count] .= '(' . $info->count . ') ' . $html;
             } else {
-                $all [$info->count] = '(' . $info->count . ') ' . $html;
+                $all[$info->count] = '(' . $info->count . ') ' . $html;
             }
         }
         // Sort comments by number of occurrences.
@@ -513,7 +513,7 @@ class mod_vpl {
             }
             require_once('forms/password_form.php');
             $this->print_header();
-            $mform = new mod_vpl_password_form( $_SERVER ['SCRIPT_NAME'], $this);
+            $mform = new mod_vpl_password_form( $_SERVER['SCRIPT_NAME'], $this);
             $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
             if (isset( $SESSION->$passattempt)) {
                 vpl_notice( get_string( 'attemptnumber', VPL, $SESSION->$passattempt),
@@ -639,9 +639,9 @@ class mod_vpl {
             if (! vpl_is_valid_path_name( $name )) {
                 $error .= '"' . s( $name ) . '" ' . get_string( 'incorrect_file_name', VPL ) . "<br>";
             }
-            if ($i < $lr && $list [$i] != $name) {
+            if ($i < $lr && $list[$i] != $name) {
                 $a = new stdClass();
-                $a->expected = $list [$i];
+                $a->expected = $list[$i];
                 $a->found = $name;
                 $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br>";
             }
@@ -911,10 +911,10 @@ class mod_vpl {
      * @return object
      */
     public function get_context() {
-        if (! isset( self::$context [$this->cm->id] )) {
-            self::$context [$this->cm->id] = context_module::instance( $this->cm->id );
+        if (! isset( self::$context[$this->cm->id] )) {
+            self::$context[$this->cm->id] = context_module::instance( $this->cm->id );
         }
-        return self::$context [$this->cm->id];
+        return self::$context[$this->cm->id];
     }
 
     /**
@@ -1155,7 +1155,7 @@ class mod_vpl {
         // Generate array of graders indexed.
         $nostudents = array ();
         foreach ($this->get_graders($group) as $user) {
-            $nostudents [$user->id] = true;
+            $nostudents[$user->id] = true;
         }
         $students = array ();
         $extrafields = trim($extrafields);
@@ -1166,8 +1166,8 @@ class mod_vpl {
         $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, $fields,
                 'u.lastname ASC', '', '', $group );
         foreach ($all as $user) {
-            if (! isset( $nostudents [$user->id] )) {
-                $students [$user->id] = $user;
+            if (! isset( $nostudents[$user->id] )) {
+                $students[$user->id] = $user;
             }
         }
         if ($group != '') { // Don't cache if group request.
@@ -1231,15 +1231,15 @@ class mod_vpl {
      * @return Array of user objects
      */
     public function get_group_members($groupid) {
-        if (! isset( self::$usergroupscache [$groupid] )) {
+        if (! isset( self::$usergroupscache[$groupid] )) {
             $gm = groups_get_members( $groupid );
             if ($gm) {
-                self::$usergroupscache [$groupid] = $gm;
+                self::$usergroupscache[$groupid] = $gm;
             } else {
-                self::$usergroupscache [$groupid] = array();
+                self::$usergroupscache[$groupid] = array();
             }
         }
-        return self::$usergroupscache [$groupid];
+        return self::$usergroupscache[$groupid];
     }
     /**
      * If is a group activity return group members for the group of the userid
@@ -1447,10 +1447,10 @@ class mod_vpl {
         $viewtab = vpl_create_tabobject('view.php', $href, 'description' );
         if ($level2) {
             if ($viewer) {
-                $maintabs [] = $viewtab;
+                $maintabs[] = $viewtab;
             }
             $href = vpl_mod_href( 'views/submissionslist.php', 'id', $cmid );
-            $maintabs [] = vpl_create_tabobject( 'submissionslist.php', $href, 'submissionslist' );
+            $maintabs[] = vpl_create_tabobject( 'submissionslist.php', $href, 'submissionslist' );
             // Similarity.
             if ($similarity) {
                 if ($active == 'listwatermark.php' || $active == 'similarity_form.php' || $active == 'listsimilarity.php') {
@@ -1459,7 +1459,7 @@ class mod_vpl {
                     $tabname = 'similarity';
                 }
                 $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
-                $maintabs [] = vpl_create_tabobject( $tabname, $href, 'similarity' );
+                $maintabs[] = vpl_create_tabobject( $tabname, $href, 'similarity' );
             }
             // Test.
             if ($grader || $manager) {
@@ -1472,7 +1472,7 @@ class mod_vpl {
                 }
                 $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
                 if ($userid == $USER->id) {
-                    $maintabs [] = vpl_create_tabobject( $tabname, $href, 'test' );
+                    $maintabs[] = vpl_create_tabobject( $tabname, $href, 'test' );
                 } else {
                     $user = $DB->get_record( 'user', array (
                             'id' => $userid
@@ -1483,7 +1483,7 @@ class mod_vpl {
                         $text = vpl_get_awesome_icon('user') . ' ';
                     }
                     $text .= $this->fullname( $user, false );
-                    $maintabs [] = new tabobject( $tabname, $href, $text, $text );
+                    $maintabs[] = new tabobject( $tabname, $href, $text, $text );
                 }
             }
         }
@@ -1506,13 +1506,13 @@ class mod_vpl {
                 require_once('vpl_submission.class.php');
                 $subinstance = $this->last_user_submission( $userid );
                 if ($viewer && ! $level2) {
-                    $tabs [] = $viewtab;
+                    $tabs[] = $viewtab;
                 }
                 if ($manager || ($grader && $USER->id == $userid)
                     || (! $grader && $submiter && $this->is_submit_able()
                     && ! $this->instance->restrictededitor && ! $example)) {
                     $href = vpl_mod_href( 'forms/submission.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = vpl_create_tabobject( 'submission.php', $href, 'submission' );
+                    $tabs[] = vpl_create_tabobject( 'submission.php', $href, 'submission' );
                 }
                 if ($manager || ($grader && $USER->id == $userid)
                     || (! $grader && $submiter && $this->is_submit_able())) {
@@ -1521,22 +1521,22 @@ class mod_vpl {
                     if ($example && $this->instance->run) {
                         $stredit = 'run';
                     }
-                    $tabs [] = vpl_create_tabobject( 'edit.php', $href, $stredit);
+                    $tabs[] = vpl_create_tabobject( 'edit.php', $href, $stredit);
                 }
                 if (! $example) {
                     $href = vpl_mod_href( 'forms/submissionview.php', 'id', $cmid, 'userid', $userid );
-                    $tabs [] = vpl_create_tabobject( 'submissionview.php', $href, 'submissionview');
+                    $tabs[] = vpl_create_tabobject( 'submissionview.php', $href, 'submissionview');
                     if ($grader && $this->get_grade() != 0 && $subinstance
                         && ($subinstance->dategraded == 0
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
                         $text = get_string( 'grade', 'core_grades' );
-                        $tabs [] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'core_grades' );
+                        $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, 'grade', 'core_grades' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
-                        $tabs [] = vpl_create_tabobject( 'previoussubmissionslist.php', $href, 'previoussubmissionslist' );
+                        $tabs[] = vpl_create_tabobject( 'previoussubmissionslist.php', $href, 'previoussubmissionslist' );
                     }
                 }
                 // Show user picture if this activity require password.
@@ -1575,15 +1575,15 @@ class mod_vpl {
             case 'listsimilarity.php' :
                 if ($similarity) {
                     $href = vpl_mod_href( 'similarity/similarity_form.php', 'id', $cmid );
-                    $tabs [] = vpl_create_tabobject( 'similarity_form.php', $href, 'similarity' );
+                    $tabs[] = vpl_create_tabobject( 'similarity_form.php', $href, 'similarity' );
                     if ($active == 'listsimilarity.php') {
-                        $tabs [] = vpl_create_tabobject( 'listsimilarity.php', '', 'listsimilarity' );
+                        $tabs[] = vpl_create_tabobject( 'listsimilarity.php', '', 'listsimilarity' );
                     }
                     $plugincfg = get_config('mod_vpl');
                     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
                     if ($watermark) {
                         $href = vpl_mod_href( 'similarity/listwatermark.php', 'id', $cmid );
-                        $tabs [] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
+                        $tabs[] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
                     }
                 }
                 print_tabs( array (
@@ -1689,9 +1689,9 @@ class mod_vpl {
                 1 => vpl_get_awesome_icon('group'). ' ' .get_string( 'groupwork', VPL )
         );
         if ($worktype) {
-            $this->print_restriction( 'worktype', $values [$worktype] . ' ' . $this->fullname( $USER ) );
+            $this->print_restriction( 'worktype', $values[$worktype] . ' ' . $this->fullname( $USER ) );
         } else {
-            $this->print_restriction( 'worktype', $values [$worktype] );
+            $this->print_restriction( 'worktype', $values[$worktype] );
         }
         $stryes = get_string( 'yes' );
         $strno = get_string( 'no' );
@@ -1756,23 +1756,23 @@ class mod_vpl {
                     $strno,
                     $stryes
             );
-            $this->print_restriction( 'run', $noyes [$instance->run], false, false );
+            $this->print_restriction( 'run', $noyes[$instance->run], false, false );
             if ($instance->runscript) {
                 $this->print_restriction( 'runscript', strtoupper($instance->runscript), false, false );
             }
             if ($instance->debug) {
-                $this->print_restriction( 'debug', $noyes [1], false, false );
+                $this->print_restriction( 'debug', $noyes[1], false, false );
             }
             if ($instance->debugscript) {
                 $this->print_restriction( 'debugscript', strtoupper($instance->debugscript), false, false );
             }
-            $this->print_restriction( 'evaluate', $noyes [$instance->evaluate], false,
+            $this->print_restriction( 'evaluate', $noyes[$instance->evaluate], false,
                     ! ($instance->evaluate && $instance->evaluateonsubmission) );
             if ($instance->evaluate && $instance->evaluateonsubmission) {
-                $this->print_restriction( 'evaluateonsubmission', $noyes [1] );
+                $this->print_restriction( 'evaluateonsubmission', $noyes[1] );
             }
             if ($instance->automaticgrading) {
-                $this->print_restriction( 'automaticgrading', $noyes [1], false, false );
+                $this->print_restriction( 'automaticgrading', $noyes[1], false, false );
             }
             if ($instance->maxexetime) {
                 $this->print_restriction( 'maxexetime', $instance->maxexetime . ' s', false, false );
@@ -1895,7 +1895,7 @@ class mod_vpl {
             }
             // Select a random variation.
             shuffle( $variations );
-            $variation = $variations [0];
+            $variation = $variations[0];
             $assign = new stdClass();
             $assign->vpl = $this->instance->id;
             $assign->variation = $variation->id;
@@ -1931,10 +1931,10 @@ class mod_vpl {
     public function get_variation_html($userid = 0, $already = array()) {
         global $OUTPUT;
         $html = '';
-        if (isset( $already [$this->instance->id] )) { // Avoid infinite recursion.
+        if (isset( $already[$this->instance->id] )) { // Avoid infinite recursion.
             return;
         }
-        $already [$this->instance->id] = true; // Mark as visited.
+        $already[$this->instance->id] = true; // Mark as visited.
         if ($this->instance->basedon) { // Show recursive varaitions.
             $basevpl = new mod_vpl( false, $this->instance->basedon );
             $html .= $basevpl->get_variation_html( $userid, $already );
@@ -1969,10 +1969,10 @@ class mod_vpl {
      * return an array with variations for this user
      */
     public function get_variation_identification($userid = 0, &$already = array()) {
-        if (! ($this->instance->usevariations) || isset( $already [$this->instance->id] )) { // Avoid infinite recursion.
+        if (! ($this->instance->usevariations) || isset( $already[$this->instance->id] )) { // Avoid infinite recursion.
             return array ();
         }
-        $already [$this->instance->id] = true;
+        $already[$this->instance->id] = true;
         if ($this->instance->basedon) {
             $basevpl = new mod_vpl( false, $this->instance->basedon );
             $ret = $basevpl->get_variation_identification( $userid, $already );
@@ -1981,7 +1981,7 @@ class mod_vpl {
         }
         $variation = $this->get_variation( $userid );
         if ($variation !== false) {
-            $ret [] = $variation->identification;
+            $ret[] = $variation->identification;
         }
         return $ret;
     }

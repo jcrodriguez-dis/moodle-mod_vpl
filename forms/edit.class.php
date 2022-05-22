@@ -49,9 +49,9 @@ class mod_vpl_edit {
         $files = Array ();
         foreach ($postfiles as $file) {
             if ( $file->encoding == 1 ) {
-                $files [$file->name] = base64_decode( $file->contents );
+                $files[$file->name] = base64_decode( $file->contents );
             } else {
-                $files [$file->name] = $file->contents;
+                $files[$file->name] = $file->contents;
             }
         }
         return $files;
@@ -75,7 +75,7 @@ class mod_vpl_edit {
                 $file->contents = $data;
                 $file->encoding = 0;
             }
-            $files [] = $file;
+            $files[] = $file;
         }
         return $files;
     }
@@ -92,7 +92,7 @@ class mod_vpl_edit {
                     'name' => $name,
                     'data' => $data
             );
-            $files [] = $file;
+            $files[] = $file;
         }
         return $files;
     }
@@ -272,9 +272,9 @@ class mod_vpl_edit {
                 'debug' => 'debugged',
                 'evaluate' => 'evaluated'
         );
-        $eventclass = '\mod_vpl\event\submission_' . $traslate [$action];
+        $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
-        return $submission->run( $code [$action], $options );
+        return $submission->run( $code[$action], $options );
     }
 
     /**

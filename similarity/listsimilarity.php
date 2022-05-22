@@ -62,7 +62,7 @@ $filelist = $vpl->get_required_fgm()->getFileList();
 $num = 0;
 foreach ($filelist as $filename) {
     if (isset( $fromform->{'file' . $num} )) {
-        $filesselected [ basename($filename) ] = true;
+        $filesselected[basename($filename)] = true;
     }
     $num ++;
 }
@@ -155,7 +155,7 @@ if (count( $selected )) {
     $clusters = new vpl_clusters( $selected );
     $usernumber = 0;
     foreach ($selected as $case) {
-        $table->data [] = array (
+        $table->data[] = array (
                 ++ $usernumber,
                 $case->first->show_info( $extinfo ),
                 $case->get_link(),

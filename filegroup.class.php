@@ -170,7 +170,7 @@ class file_group_process {
         if (count( $filelist ) >= $this->maxnumfiles) {
             return false;
         }
-        $filelist [] = $filename;
+        $filelist[] = $filename;
         $this->setFileList( $filelist );
         if ($data !== null) {
             vpl_fwrite( $path, $data );
@@ -189,7 +189,7 @@ class file_group_process {
         $filelist = $this->getFileList();
         $filehash = array();
         foreach ($filelist as $f) {
-            $filehash [$f] = 1;
+            $filehash[$f] = 1;
         }
         vpl_create_dir($this->dir);
         foreach ($files as $filename => $data) {
@@ -259,9 +259,9 @@ class file_group_process {
         foreach ($filelist as $filename) {
             $fullname = $this->dir . self::encodeFileName( $filename );
             if (is_file( $fullname )) {
-                 $files [$filename] = file_get_contents( $fullname );
+                 $files[$filename] = file_get_contents( $fullname );
             } else {
-                 $files [$filename] = '';
+                 $files[$filename] = '';
             }
         }
         return $files;
@@ -297,7 +297,7 @@ class file_group_process {
             $num = $mix;
             $filelist = $this->getFileList();
             if ($num >= 0 && $num < count( $filelist )) {
-                $filename = $this->dir . self::encodeFileName( $filelist [$num] );
+                $filename = $this->dir . self::encodeFileName( $filelist[$num] );
                 if (is_file( $filename )) {
                     return file_get_contents( $filename );
                 } else {
@@ -330,7 +330,7 @@ class file_group_process {
             $fullname = $this->dir . self::encodeFileName( $filename );
             if (is_file( $fullname )) {
                 $info = stat( $fullname );
-                if ($info ['size'] > 0) {
+                if ($info['size'] > 0) {
                     return true;
                 }
             }

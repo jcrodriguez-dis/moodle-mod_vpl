@@ -38,18 +38,18 @@ $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $fgp = $vpl->get_required_fgm();
 
 $options = Array ();
-$options ['restrictededitor'] = false;
-$options ['save'] = true;
-$options ['run'] = true;
-$options ['debug'] = true;
-$options ['evaluate'] = true;
-$options ['ajaxurl'] = "executionfiles.json.php?id={$id}&action=";
-$options ['download'] = "../views/downloadexecutionfiles.php?id={$id}";
-$options ['resetfiles'] = false;
-$options ['minfiles'] = 0;
-$options ['maxfiles'] = 1000;
-$options ['saved'] = true;
-$options ['minfiles'] = $fgp->get_numstaticfiles();
+$options['restrictededitor'] = false;
+$options['save'] = true;
+$options['run'] = true;
+$options['debug'] = true;
+$options['evaluate'] = true;
+$options['ajaxurl'] = "executionfiles.json.php?id={$id}&action=";
+$options['download'] = "../views/downloadexecutionfiles.php?id={$id}";
+$options['resetfiles'] = false;
+$options['minfiles'] = 0;
+$options['maxfiles'] = 1000;
+$options['saved'] = true;
+$options['minfiles'] = $fgp->get_numstaticfiles();
 
 vpl_editor_util::generate_requires($vpl, $options);
 

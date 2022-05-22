@@ -354,8 +354,8 @@ class provider implements \core_privacy\local\metadata\provider,
         }
 
         $params = [
-                'instanceid'    => $context->instanceid,
-                'modulename'    => 'vpl',
+            'instanceid' => $context->instanceid,
+            'modulename' => 'vpl',
         ];
 
         // Submissions.
@@ -472,9 +472,9 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE s.userid = :userid";
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename'    => 'vpl',
-                'userid'       => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'       => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -496,9 +496,9 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE s.grader = :userid";
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename'    => 'vpl',
-                'userid'       => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'        => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -520,9 +520,9 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE va.userid = :userid";
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename'    => 'vpl',
-                'userid'       => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'        => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -544,9 +544,9 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE ao.userid = :userid";
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename'    => 'vpl',
-                'userid'       => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'        => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -568,9 +568,9 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE rp.userid = :userid";
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename'    => 'vpl',
-                'userid'       => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'        => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -604,9 +604,9 @@ class provider implements \core_privacy\local\metadata\provider,
         global $DB;
 
         $params = [
-                'modulename' => 'vpl',
-                'contextmodule' => CONTEXT_MODULE,
-                'coursemoduleid' => $context->instanceid
+            'modulename' => 'vpl',
+            'contextmodule' => CONTEXT_MODULE,
+            'coursemoduleid' => $context->instanceid
         ];
         $sql = "SELECT v.*
                   FROM {vpl} v
@@ -690,9 +690,9 @@ class provider implements \core_privacy\local\metadata\provider,
         list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $params = [
-                'contextmodule' => CONTEXT_MODULE,
-                'modulename' => 'vpl',
-                'userid' => $userid,
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename' => 'vpl',
+            'userid' => $userid,
         ];
 
         $sql = "DELETE
@@ -794,8 +794,8 @@ class provider implements \core_privacy\local\metadata\provider,
     protected static function get_assigned_override_by_vpl_and_user($vplid, $userid) {
         global $DB;
         $params = [
-                'vplid' => $vplid,
-                'userid' => $userid,
+            'vplid' => $vplid,
+            'userid' => $userid,
         ];
         $sql = "SELECT ao.id as aoid, ao.userid, o.*
                     FROM {vpl_assigned_overrides} ao

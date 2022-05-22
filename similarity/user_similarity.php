@@ -96,7 +96,7 @@ foreach ($ovpls as $ovpl) {
     if ($vpl->get_grade() == 0) {
         continue;
     }
-    $vpls [] = $vpl;
+    $vpls[] = $vpl;
 }
 
 @set_time_limit( $timelimit );
@@ -154,33 +154,33 @@ foreach ($vpls as $vpl) {
     $nuserfiles = count( $simil );
     if ($nuserfiles > 0) {
         $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
-        $bars [] = $activityloadbox;
+        $bars[] = $activityloadbox;
         vpl_similarity_preprocess::activity( $simil, $vpl, array (), true, false, $activityloadbox );
         $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
-        $bars [] = $searchprogression;
+        $bars[] = $searchprogression;
         if ($nuserfiles >= count( $outputsize )) {
             $noutput = 4;
         } else {
-            $noutput = $outputsize [$nuserfiles];
+            $noutput = $outputsize[$nuserfiles];
         }
         $selected = vpl_similarity::get_selected( $simil, $noutput, $nuserfiles, $searchprogression );
         if (count( $selected ) > 0) {
-            $table->data [] = array (
+            $table->data[] = array (
                     $vpl->get_printable_name(),
                     '',
                     ''
             );
             foreach ($selected as $case) {
-                $table->data [] = array (
+                $table->data[] = array (
                         $case->first->show_info(),
                         $case->get_link(),
                         $case->second->show_info()
                 );
                 $other = $case->second->get_userid();
-                if (! isset( $relatedusers [$other] )) {
-                    $relatedusers [$other] = 1;
+                if (! isset( $relatedusers[$other] )) {
+                    $relatedusers[$other] = 1;
                 } else {
-                    $relatedusers [$other] ++;
+                    $relatedusers[$other] ++;
                 }
             }
         }
@@ -214,7 +214,7 @@ if (count( $relatedusers ) > 0) {
         $otheruser = $DB->get_record( 'user', array (
                 'id' => $otheruserid
         ) );
-        $table->data [] = array (
+        $table->data[] = array (
                 $rel,
                 $vpl->user_fullname_picture( $otheruser )
         );

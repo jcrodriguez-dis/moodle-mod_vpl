@@ -38,10 +38,10 @@ class vpl_token {
     public $line;
     private static $hashvalues = array ();
     private static function get_hash($value) {
-        if (! isset( self::$hashvalues [$value] )) {
-            self::$hashvalues [$value] = mt_rand();
+        if (! isset( self::$hashvalues[$value] )) {
+            self::$hashvalues[$value] = mt_rand();
         }
-        return self::$hashvalues [$value];
+        return self::$hashvalues[$value];
     }
     public function __construct($type, $value, $line) {
         $this->type = $type;

@@ -28,7 +28,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class override_updated extends override_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'u';
+        $this->data['crud'] = 'u';
         $this->legacyaction = 'updated override';
     }
     public function get_description() {

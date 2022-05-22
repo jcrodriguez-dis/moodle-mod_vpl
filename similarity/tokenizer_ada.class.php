@@ -45,16 +45,16 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
     }
     protected function add_pending(&$rawpending) {
         $pending = strtolower( $rawpending );
-        if (isset( self::$operators [$pending] )) {
+        if (isset( self::$operators[$pending] )) {
             $type = vpl_token_type::OPERATOR;
-        } else if (isset( $this->reserved [$pending] )) {
+        } else if (isset( $this->reserved[$pending] )) {
             $type = vpl_token_type::RESERVED;
         } else if ($this->is_number( $pending )) {
             $type = vpl_token_type::LITERAL;
         } else {
             $type = vpl_token_type::IDENTIFIER;
         }
-        $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $rawpending = '';
     }
     public function __construct() {
@@ -182,9 +182,9 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         $previous = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }
@@ -248,7 +248,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                         break;
                     } else if ($current == "'") {
                         $this->add_pending( $pending );
-                        if ($i < ($l - 2) && $filedata [$i + 2] === "'") { // Char literal coding problem.
+                        if ($i < ($l - 2) && $filedata[$i + 2] === "'") { // Char literal coding problem.
                             $i += 2;
                             break;
                         } // Not char literal then operator.
@@ -277,16 +277,16 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         foreach ($this->tokens as &$next) {
             if ($current) {
                 if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                    && isset( $this->operators [$current->value . $next->value] )) {
+                    && isset( $this->operators[$current->value . $next->value] )) {
                     $current->value .= $next->value;
                     $next = false;
                 }
-                $correct [] = $current;
+                $correct[] = $current;
             }
             $current = $next;
         }
         if ($current) {
-            $correct [] = $current;
+            $correct[] = $current;
         }
         $this->tokens = $correct;
     }

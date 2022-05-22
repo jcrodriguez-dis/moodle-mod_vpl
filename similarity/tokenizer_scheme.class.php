@@ -72,12 +72,12 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         );
         $this->reserved = array ();
         foreach ($list as $word) {
-            $this->reserved [$word] = 1;
+            $this->reserved[$word] = 1;
         }
     }
     protected function is_previous_open_parenthesis(& $string, $pos) {
         for (; $pos >= 0; $pos --) {
-            $char = $string [$pos];
+            $char = $string[$pos];
             if ($char == '(') {
                 return true;
             }
@@ -102,14 +102,14 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         return $first >= '0' && $first <= '9';
     }
     protected function add_parenthesis() {
-        $this->tokens [] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
+        $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
     }
     protected function add_parameter_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
             return;
         }
-        $this->tokens [] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
         $pending = '';
     }
     protected function add_function_pending(&$pending) {
@@ -117,12 +117,12 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             $pending = '';
             return;
         }
-        if (isset( $this->reserved [$pending] )) {
+        if (isset( $this->reserved[$pending] )) {
             $type = vpl_token_type::OPERATOR;
         } else {
             $type = vpl_token_type::IDENTIFIER;
         }
-        $this->tokens [] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
     const IN_REGULAR = 0;
@@ -139,9 +139,9 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $pospendig = 0;
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }

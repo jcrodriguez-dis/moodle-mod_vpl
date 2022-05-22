@@ -33,7 +33,7 @@ abstract class base extends \core\event\base {
                 'id' => $this->contextinstanceid
         );
         if (($this->relateduserid) && $this->relateduserid != $this->userid) {
-            $parms ['userid'] = $this->relateduserid;
+            $parms['userid'] = $this->relateduserid;
         }
         return new \moodle_url( '/mod/vpl/' . $script, $parms );
     }

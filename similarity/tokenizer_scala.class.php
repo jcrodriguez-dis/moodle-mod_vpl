@@ -97,9 +97,9 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
         $previous = '';
         for ($i = 0; $i < $l; $i ++) {
             $previous = $current;
-            $current = $filedata [$i];
+            $current = $filedata[$i];
             if ($i < ($l - 1)) {
-                $next = $filedata [$i + 1];
+                $next = $filedata[$i + 1];
             } else {
                 $next = '';
             }
@@ -172,7 +172,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                     $this->add_pending( $pending );
                     $state = self::REGULAR;
                     // Process current as regular.
-                case self::regular :
+                case self::REGULAR :
                     if ($current == '/') {
                         if ($next == '*') { // Begin block comments.
                             $state = self::IN_COMMENT;

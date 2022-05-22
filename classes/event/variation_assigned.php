@@ -30,7 +30,7 @@ class variation_assigned extends variation_base {
     protected function init() {
         parent::init();
         $this->legacyaction = 'assigned variation';
-        $this->data ['crud'] = 'c';
+        $this->data['crud'] = 'c';
     }
     public function get_description() {
         return $this->get_description_mod( 'assigned' );

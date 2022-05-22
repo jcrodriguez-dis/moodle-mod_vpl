@@ -42,14 +42,14 @@ function vpl_submissions_graph($vpl, $userid) {
         // Create submissions object.
         $subs = array ();
         foreach ($submissionslist as $submission) {
-            $subs [] = new mod_vpl_submission( $vpl, $submission );
+            $subs[] = new mod_vpl_submission( $vpl, $submission );
         }
         foreach ($subs as $sub) {
             $filesarray = $sub->get_submitted_fgm()->getfilelist();
             foreach ($filesarray as $name) {
                 if (! in_array( $name, $names, true )) {
-                    $names [] = $name;
-                    $series [$name] = array ();
+                    $names[] = $name;
+                    $series[$name] = array ();
                 }
             }
         }
@@ -79,18 +79,18 @@ function vpl_submissions_graph($vpl, $userid) {
         }
         $nsub = 1;
         foreach ($subs as $sub) {
-            $subsn [] = $nsub % $subshow == 0 ? $nsub : '';
+            $subsn[] = $nsub % $subshow == 0 ? $nsub : '';
             $filesarray = $sub->get_submitted_files();
             $files = array ();
             foreach ($filesarray as $name => $data) {
                 $size = strlen( $data );
-                $files [$name] = $size;
+                $files[$name] = $size;
             }
             foreach ($names as $name) {
-                if (isset( $files [$name] )) {
-                    $series [$name] [$nsub - 1] = $files [$name];
+                if (isset( $files[$name] )) {
+                    $series[$name][$nsub - 1] = $files[$name];
                 } else {
-                    $series [$name] [$nsub - 1] = null;
+                    $series[$name][$nsub - 1] = null;
                 }
             }
             $nsub ++;

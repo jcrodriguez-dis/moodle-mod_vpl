@@ -143,9 +143,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         foreach ($extrafiles as $file) {
             if (file_exists ( $base . $file )) {
                 $data = array ();
-                $data ['name'] = $file;
-                $data ['content'] = file_get_contents ( $base . $file );
-                $files [] = $data;
+                $data['name'] = $file;
+                $data['content'] = file_get_contents ( $base . $file );
+                $files[] = $data;
             }
         }
         $dirpath = $base . $dirname;
@@ -156,9 +156,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
                     continue;
                 }
                 $data = array ();
-                $data ['name'] = $dirname . '/' . $filename;
-                $data ['content'] = file_get_contents ( $dirpath . '/' . $filename );
-                $files [] = $data;
+                $data['name'] = $dirname . '/' . $filename;
+                $data['content'] = file_get_contents ( $dirpath . '/' . $filename );
+                $files[] = $data;
             }
             closedir ( $dirlst );
         }
@@ -198,14 +198,14 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      */
     public function process_vpl($data) {
         // Get the course module id and context id.
-        $this->instanceid = $data ['id'];
+        $this->instanceid = $data['id'];
         $cminfo = $this->get_cminfo ( $this->instanceid );
-        $this->moduleid = $cminfo ['id'];
+        $this->moduleid = $cminfo['id'];
         $contextid = $this->converter->get_contextid ( CONTEXT_MODULE, $this->moduleid );
 
         // Get intro from file.
-        $data ['intro'] = $this->get_fulldescription ();
-        $data ['introformat'] = 1;
+        $data['intro'] = $this->get_fulldescription ();
+        $data['introformat'] = 1;
 
         // Start writing vpl.xml.
         $this->open_xml_writer ( "activities/vpl_{$this->moduleid}/vpl.xml" );
@@ -293,7 +293,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         $this->xmlwriter->begin_tag ( 'submission', $data, array (
                 '/submission/id'
         ) );
-        $this->process_submitted_files ( $data ['userid'], $data ['id'] );
+        $this->process_submitted_files ( $data['userid'], $data['id'] );
         $this->xmlwriter->end_tag ( 'submission' );
     }
 

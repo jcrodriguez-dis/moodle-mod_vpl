@@ -92,7 +92,7 @@ class vpl_jailserver_manager {
             $response = xmlrpc_decode( $rawresponse, "UTF-8" );
             if (is_array( $response )) {
                 if (xmlrpc_is_fault( $response )) {
-                    $error = 'xmlrpc is fault: ' . s( $response ["faultString"] );
+                    $error = 'xmlrpc is fault: ' . s( $response["faultString"] );
                 } else {
                     return $response;
                 }
@@ -172,11 +172,11 @@ class vpl_jailserver_manager {
         // Clean temp server list and search for 'end_of_jails'.
         foreach ($tempserverlist as $server) {
             $server = trim( $server );
-            if ($server > '' && $server [0] != '#') {
+            if ($server > '' && $server[0] != '#') {
                 if (strtolower( $server ) == 'end_of_jails') {
                     break;
                 } else {
-                    $serverlist [] = $server;
+                    $serverlist[] = $server;
                 }
             }
         }
@@ -213,16 +213,16 @@ class vpl_jailserver_manager {
                 if ($response === false) {
                     self::server_fail( $server, $error );
                     $feedback .= parse_url( $server, PHP_URL_HOST ) . ' ' . $error . "\n";
-                } else if (! isset( $response ['status'] )) {
+                } else if (! isset( $response['status'] )) {
                     self::server_fail( $server, $error );
                     $feedback .= parse_url( $server, PHP_URL_HOST ) . " protocol error (No status)\n";
                 } else {
-                    if ($response ['status'] == 'ready') {
+                    if ($response['status'] == 'ready') {
                         return $server;
                     }
                 }
             } else {
-                $planb [] = $server;
+                $planb[] = $server;
             }
         }
         foreach ($planb as $server) {
@@ -230,11 +230,11 @@ class vpl_jailserver_manager {
             if ($response === false) {
                 self::server_fail( $server, $error );
                 $feedback .= parse_url( $server, PHP_URL_HOST ) . ' ' . $error . "\n";
-            } else if (! isset( $response ['status'] )) {
+            } else if (! isset( $response['status'] )) {
                 self::server_fail( $server, $error );
                 $feedback .= parse_url( $server, PHP_URL_HOST ) . " protocol error (No status)\n";
             } else {
-                if ($response ['status'] == 'ready') {
+                if ($response['status'] == 'ready') {
                     return $server;
                 }
             }
@@ -290,7 +290,7 @@ class vpl_jailserver_manager {
             if ($response === false) {
                 self::server_fail( $server, $status );
             } else {
-                $status = s( $response ['status'] );
+                $status = s( $response['status'] );
             }
             if ($info == null) {
                 $info = new stdClass();
@@ -307,7 +307,7 @@ class vpl_jailserver_manager {
                 $message = 'WARNING: not accessible from the internet';
                 $info->server = "{$info->server}\n[$message]";
             }
-            $feedback [] = $info;
+            $feedback[] = $info;
         }
         return $feedback;
     }
@@ -336,12 +336,12 @@ class vpl_jailserver_manager {
                 $response = self::get_response( $server, $requestready, $error );
                 if ($response === false) {
                     self::server_fail( $server, $error );
-                } else if (! isset( $response ['status'] )) {
+                } else if (! isset( $response['status'] )) {
                     self::server_fail( $server, $error );
                 } else {
-                    if ($response ['status'] == 'ready') {
+                    if ($response['status'] == 'ready') {
                         $parsed = parse_url( $server );
-                        $list [] = 'https://' . $parsed ['host'] . ':' . $response ['secureport'] . '/OK';
+                        $list[] = 'https://' . $parsed['host'] . ':' . $response['secureport'] . '/OK';
                     }
                 }
             }
