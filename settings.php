@@ -21,83 +21,144 @@
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * Define the attributes $settings variable.
+ * @var object $settings
  */
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once $CFG->dirroot.'/mod/vpl/lib.php';
+require_once(dirname(__FILE__) . '/lib.php');
+
 $kbyte = 1024;
-$megabyte=1024*$kbyte;
-$gigabyte= 1024*$megabyte;
+$megabyte = 1024 * $kbyte;
 $minute = 60;
-$list_maxfilesize = vpl_get_select_sizes(64*$kbyte,vpl_get_max_post_size());
-$list_maxtime = vpl_get_select_time(120*$minute);
-$list_maxexefilesize = vpl_get_select_sizes(16*$megabyte); //Start value
-$list_maxexememory = vpl_get_select_sizes(16*$megabyte); //Start value
-
-$default_maxfilesize = vpl_get_array_key($list_maxfilesize,$megabyte);
-$default_maxtime = vpl_get_array_key($list_maxtime,16*$minute);
-$default_maxexefilesize = vpl_get_array_key($list_maxexefilesize,128*$megabyte);
-$default_maxexememory = vpl_get_array_key($list_maxexememory,512*$megabyte);
-$default_maxexeprocesses = 200;
-
-$default_defaultfilesize = vpl_get_array_key($list_maxfilesize,64*$kbyte);
-$default_defaulttime = vpl_get_array_key($list_maxtime,4*$minute);
-$default_defaultexefilesize = vpl_get_array_key($list_maxexefilesize,64*$megabyte);
-$default_defaultexememory = vpl_get_array_key($list_maxexememory,64*$megabyte);
-$default_defaultexeprocesses = 100;
+$listmaxfilesize = vpl_get_select_sizes( 64 * $kbyte, \mod_vpl\util\phpconfig::get_post_max_size() );
+$listmaxtime = vpl_get_select_time( 120 * $minute );
+$listmaxexefilesize = vpl_get_select_sizes( 16 * $megabyte );
+$listmaxexememory = vpl_get_select_sizes( 16 * $megabyte );
+$defaultmaxfilesize = vpl_get_array_key( $listmaxfilesize, $megabyte );
+$defaultmaxtime = vpl_get_array_key( $listmaxtime, 16 * $minute );
+$defaultmaxexefilesize = vpl_get_array_key( $listmaxexefilesize, 128 * $megabyte );
+$defaultmaxexememory = vpl_get_array_key( $listmaxexememory, 512 * $megabyte );
+$defaultmaxexeprocesses = 400;
+$defaultdefaultfilesize = vpl_get_array_key( $listmaxfilesize, 64 * $kbyte );
+$defaultdefaulttime = vpl_get_array_key( $listmaxtime, 4 * $minute );
+$defaultdefaultexefilesize = vpl_get_array_key( $listmaxexefilesize, 64 * $megabyte );
+$defaultdefaultexememory = vpl_get_array_key( $listmaxexememory, 128 * $megabyte );
+$defaultdefaultexeprocesses = 200;
 $prefix = 'mod_vpl/';
-$settings->add(new admin_setting_heading('heading1','',get_string('maxresourcelimits',VPL)));
-$settings->add(new admin_setting_configselect($prefix.'maxfilesize', get_string('maxfilesize', VPL)
-    ,get_string('maxfilesize', VPL), $default_maxfilesize, $list_maxfilesize));
-$settings->add(new admin_setting_configselect($prefix.'maxexetime', get_string('maxexetime', VPL)
-    ,get_string('maxexetime', VPL), $default_maxtime, $list_maxtime));
-$settings->add(new admin_setting_configselect($prefix.'maxexefilesize', get_string('maxexefilesize', VPL)
-    ,get_string('maxexefilesize', VPL), $default_maxexefilesize, $list_maxexefilesize));
-$settings->add(new admin_setting_configselect($prefix.'maxexememory', get_string('maxexememory', VPL)
-    ,get_string('maxexememory', VPL), $default_maxexememory, $list_maxexememory));
-$settings->add(new admin_setting_configtext($prefix.'maxexeprocesses', get_string('maxexeprocesses', VPL)
-    ,get_string('maxexeprocesses', VPL),$default_maxexeprocesses, PARAM_INT ,4));
+$settings->add( new admin_setting_heading( 'heading1', '', get_string( 'maxresourcelimits', VPL ) ) );
+$settings->add(
+        new admin_setting_configselect( $prefix . 'maxfilesize', get_string( 'maxfilesize', VPL ), get_string( 'maxfilesize', VPL ),
+                $defaultmaxfilesize, $listmaxfilesize ) );
+$settings->add(
+        new admin_setting_configselect( $prefix . 'maxexetime', get_string( 'maxexetime', VPL ), get_string( 'maxexetime', VPL ),
+                $defaultmaxtime, $listmaxtime ) );
+$settings->add(
+        new admin_setting_configselect( $prefix . 'maxexefilesize', get_string( 'maxexefilesize', VPL ),
+                get_string( 'maxexefilesize', VPL ), $defaultmaxexefilesize, $listmaxexefilesize ) );
+$settings->add(
+        new admin_setting_configselect( $prefix . 'maxexememory', get_string( 'maxexememory', VPL ), get_string( 'maxexememory',
+                VPL ), $defaultmaxexememory, $listmaxexememory ) );
+$settings->add(
+        new admin_setting_configtext( $prefix . 'maxexeprocesses', get_string( 'maxexeprocesses', VPL ),
+                get_string( 'maxexeprocesses', VPL ), $defaultmaxexeprocesses, PARAM_INT, 4 ) );
+$settings->add( new admin_setting_heading( 'headingd', '', get_string( 'defaultresourcelimits', VPL ) ) );
+$name = 'defaultfilesize';
+$settings->add(
+        new admin_setting_configselect( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ),
+                $defaultdefaultfilesize, $listmaxfilesize ) );
+$name = 'defaultexetime';
+$settings->add(
+        new admin_setting_configselect( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ), $defaultdefaulttime,
+                $listmaxtime ) );
+$name = 'defaultexefilesize';
+$settings->add(
+        new admin_setting_configselect( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ),
+                $defaultdefaultexefilesize, $listmaxexefilesize ) );
+$name = 'defaultexememory';
+$settings->add(
+        new admin_setting_configselect( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ),
+                $defaultdefaultexememory, $listmaxexememory ) );
+$name = 'defaultexeprocesses';
+$settings->add(
+        new admin_setting_configtext( $prefix . $name, get_string( $name, VPL ), get_string( $name, VPL ),
+                $defaultdefaultexeprocesses, PARAM_INT, 4 ) );
+$settings->add( new admin_setting_heading( 'heading2', '', get_string( 'jail_servers_config', VPL ) ) );
+$default = "# This server is only for test use.\n";
+$default .= "# Install your own Jail server and remove the following line as soon as possible.\n";
+$default .= 'http://demojail.dis.ulpgc.es';
+$settings->add(
+        new admin_setting_configtextarea( $prefix . 'jail_servers', get_string( 'jail_servers', VPL ),
+                get_string( 'jail_servers_description', VPL ), $default ) );
+$settings->add(
+        new admin_setting_configcheckbox( $prefix . 'acceptcertificates', get_string( 'acceptcertificates', VPL ),
+                get_string( 'acceptcertificates_description', VPL ), 1 ) );
+$wsoptions = array (
+        'always_use_wss' => get_string( 'always_use_wss', VPL ),
+        'always_use_ws' => get_string( 'always_use_ws', VPL ),
+        'depends_on_https' => get_string( 'depends_on_https', VPL )
+);
+$name = 'websocket_protocol';
+$settings->add(
+        new admin_setting_configselect( $prefix . 'websocket_protocol', get_string( 'websocket_protocol', VPL ),
+                get_string( 'websocket_protocol_description', VPL ), 'depends_on_https', $wsoptions ) );
+$name = 'proxy';
+$settings->add(
+        new admin_setting_configtext( $prefix . $name, get_string( $name, VPL ), get_string( $name . '_description', VPL ), '',
+                PARAM_URL ) );
+$settings->add( new admin_setting_heading( 'heading3', '', get_string( 'miscellaneous' ) ) );
+$settings->add(
+        new admin_setting_configcheckbox( $prefix . 'use_watermarks', get_string( 'usewatermarks', VPL ),
+                get_string( 'usewatermarks_description', VPL ), 0 ) );
 
-$settings->add(new admin_setting_heading('headingd','',get_string('defaultresourcelimits',VPL)));
-$name='defaultfilesize';
-$settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-    ,get_string($name, VPL), $default_defaultfilesize, $list_maxfilesize));
-$name='defaultexetime';
-$settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-    ,get_string($name, VPL), $default_defaulttime, $list_maxtime));
-$name='defaultexefilesize';
-$settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-    ,get_string($name, VPL), $default_defaultexefilesize, $list_maxexefilesize));
-$name='defaultexememory';
-$settings->add(new admin_setting_configselect($prefix.$name, get_string($name, VPL)
-    ,get_string($name, VPL), $default_defaultexememory, $list_maxexememory));
-$name='defaultexeprocesses';
-$settings->add(new admin_setting_configtext($prefix.$name, get_string($name, VPL)
-    ,get_string($name, VPL),$default_defaultexeprocesses, PARAM_INT ,4));
-
-$settings->add(new admin_setting_heading('heading2','',get_string('jail_servers_config',VPL)));
-$default = "#This server is only for test use. "
-            ."Install your own Jail server and remove the following line as soon as possible\n".
-            'http://demojail.dis.ulpgc.es';
-$settings->add(new admin_setting_configtextarea($prefix.'jail_servers',
-               get_string('jail_servers', VPL),get_string('jail_servers_description', VPL),$default));
-$settings->add(new admin_setting_configcheckbox($prefix.'acceptcertificates', get_string('acceptcertificates', VPL),
-                       get_string('acceptcertificates_description', VPL), 1));
-$ws_options = array('always_use_wss' => get_string('always_use_wss', VPL),
-                            'always_use_ws' => get_string('always_use_ws', VPL),
-                            'depends_on_https' => get_string('depends_on_https', VPL));
-$name='websocket_protocol';
-$settings->add(new admin_setting_configselect($prefix.'websocket_protocol',
-                       get_string('websocket_protocol', VPL),
-                       get_string('websocket_protocol_description', VPL), 'depends_on_https', $ws_options));
-$name='proxy';
-$settings->add(new admin_setting_configtext($prefix.$name, get_string($name, VPL)
-        ,get_string($name.'_description', VPL),'', PARAM_URL));
-$settings->add(new admin_setting_heading('heading3','',get_string('miscellaneous')));
 $list = vpl_get_select_time();
-$default = vpl_get_array_key($list,60);
-$settings->add(new admin_setting_configselect($prefix.'discard_submission_period',
-               get_string('discard_submission_period', VPL),
-               get_string('discard_submission_period_description', VPL),$default,$list));
-
+$default = vpl_get_array_key( $list, 60 );
+$settings->add(
+        new admin_setting_configselect( $prefix . 'discard_submission_period', get_string( 'discard_submission_period', VPL ),
+                get_string( 'discard_submission_period_description', VPL ), $default, $list ) );
+$list = array(
+        'ambiance',
+        'chaos',
+        'chrome',
+        'clouds_midnight',
+        'clouds',
+        'cobalt',
+        'crmson_editor',
+        'dawn',
+        'dreamweaver',
+        'eclipse',
+        'github',
+        'idle_fingers',
+        'iplastic',
+        'katzenmilch',
+        'kr_theme',
+        'kr',
+        'kuroir',
+        'merbivore_soft',
+        'merbivore',
+        'mono_industrial',
+        'monokai',
+        'pastel_on_dark',
+        'solarized_dark',
+        'solarized_light',
+        'sqlserver',
+        'terminal',
+        'texmate',
+        'tomorrow_night_blue',
+        'tomorrow_night_bright',
+        'tomorrow_night_eighties',
+        'tomorrow_night',
+        'tomorrow',
+        'twilight',
+        'vibrant_ink',
+        'xcode'
+);
+$themelist = array();
+foreach ($list as $theme) {
+    $themelist[$theme] = $theme;
+}
+$settings->add(
+        new admin_setting_configselect( $prefix . 'editor_theme', get_string( 'editortheme', VPL ),
+                get_string( 'editortheme', VPL ), 'chrome', $themelist ) );

@@ -22,16 +22,19 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-require_once dirname(__FILE__).'/similarity_base.class.php';
 
-class vpl_similarity_html extends vpl_similarity_base{
-    public function get_type(){
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
+class vpl_similarity_html extends vpl_similarity_base {
+    public function get_type() {
         return 9;
     }
-    public function sintax_normalize(&$tokens){
+    public function sintax_normalize(&$tokens) {
         return $tokens;
     }
-    public function get_tokenizer(){
-        return vpl_tokenizer_factory::get('html');
+    public function get_tokenizer() {
+        return vpl_tokenizer_factory::get( 'html' );
     }
 }

@@ -1,0 +1,18 @@
+#vpl_grade_view {
+    position: relative;
+    display: flex;
+}
+#vpl_grade_form {
+    width: auto;
+}
+#vpl_grade_form textarea {
+    resize: both;
+    margin: 0 1em;
+}
+#vpl_grade_comments {
+    height: 10em;
+    overflow: auto;
+}
+#vpl_submission_view {
+    clear: both;
+}

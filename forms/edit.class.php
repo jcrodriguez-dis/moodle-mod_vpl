@@ -16,75 +16,242 @@
 
 
 /**
- * Class to centralize edition/execution operations
+ * Class to manage edition/execution operations
  *
  * @package mod_vpl
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-require_once(dirname( __FILE__ ) . '/../locallib.php');
-require_once(dirname( __FILE__ ) . '/../vpl.class.php');
-require_once(dirname( __FILE__ ) . '/../vpl_submission_CE.class.php');
-require_once(dirname( __FILE__ ) . '/../vpl_example_CE.class.php');
+
+defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
+
+/**
+ * Class to manage edition/execution operations
+ *
+ * @package mod_vpl
+ * @copyright 2014 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 class mod_vpl_edit {
-    public static function files2object($array_files) {
+    /**
+     * Translates files from IDE to internal format
+     *
+     * @param array $postfiles atributes encoding, name and contents
+     * @return array contents indexed by filenames
+     */
+    public static function filesfromide(& $postfiles) {
+        $files = Array ();
+        foreach ($postfiles as $file) {
+            if ( $file->encoding == 1 ) {
+                $files[$file->name] = base64_decode( $file->contents );
+            } else {
+                $files[$file->name] = $file->contents;
+            }
+        }
+        return $files;
+    }
+
+    /**
+     * Translates files from internal format to IDE format
+     *
+     * @param string[string] $from contents indexed by filenames
+     * @return array of stdClass
+     */
+    public static function filestoide(& $from) {
+        $files = Array ();
+        foreach ($from as $name => $data) {
+            $file = new stdClass();
+            $file->name = $name;
+            if ( vpl_is_binary($name, $data) ) {
+                $file->contents = base64_encode( $data );
+                $file->encoding = 1;
+            } else {
+                $file->contents = $data;
+                $file->encoding = 0;
+            }
+            $files[] = $file;
+        }
+        return $files;
+    }
+
+    /**
+     * Converts from file internal format to old array of array format
+     * @param string[string] $arrayfiles files internal format
+     * @return string[][]
+     */
+    public static function files2object(& $arrayfiles) {
         $files = array ();
-        foreach ($array_files as $name => $data) {
+        foreach ($arrayfiles as $name => $data) {
             $file = array (
                     'name' => $name,
                     'data' => $data
             );
-            $files [] = $file;
+            $files[] = $file;
         }
         return $files;
     }
-    public static function save($vpl, $userid, $files) {
+
+    /**
+     * Save a submission version
+     *
+     * @param mod_vpl $vpl VPL instance
+     * @param int $userid
+     * @param string[string] $files internal format
+     * @param string $comments
+     * @throws Exception
+     * @return int saved record id
+     */
+    public static function save(mod_vpl $vpl, int $userid, array & $files, string $comments='', int $version = -1) {
         global $USER;
-        if ($subid = $vpl->add_submission( $userid, $files, '', $error_message )) {
-            $id = $vpl->get_course_module()->id;
+        $response = new stdClass();
+        $response->requestsconfirmation = false;
+        $response->saved = false;
+        if ($version != -1) {
+            $lastsub = $vpl->last_user_submission( $userid );
+            if ($lastsub && $lastsub->id != $version) {
+                $response->requestsconfirmation = true;
+                $response->question = get_string('replacenewer', VPL);
+                $response->version = $lastsub->id;
+                return $response;
+            }
+            if ($userid != $USER->id) {
+                $response->requestsconfirmation = true;
+                $response->question = get_string('saveforotheruser', VPL);
+                $response->version = -1;
+                return $response;
+            }
+        }
+        $errormessage = '';
+        if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
             \mod_vpl\event\submission_uploaded::log( array (
                     'objectid' => $subid,
                     'context' => $vpl->get_context(),
                     'relateduserid' => ($USER->id != $userid ? $userid : null)
             ) );
+            $response->version = $subid;
+            $response->saved = true;
+            return $response;
         } else {
-            throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $error_message );
+            throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $errormessage );
         }
     }
+    /**
+     * Updates files in running task
+     *
+     * @param mod_vpl $vpl VPL instance
+     * @param int $userid
+     * @param string[string] $files internal format
+     * @throws Exception
+     * @return boolean True if updated
+     */
+    public static function update(mod_vpl $vpl, int $userid, array & $files) {
+        $lastsub = $vpl->last_user_submission( $userid );
+        if (! $lastsub) {
+            throw new Exception( get_string( 'nosubmission', VPL ) );
+        }
+        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+        return $submission->update($vpl, $files);
+    }
+
+    /**
+     * Returns initial/requested files of $vpl
+     * @param mod_vpl $vpl
+     * @return string[string] files internal format
+     */
     public static function get_requested_files($vpl) {
-        $req_fgm = $vpl->get_required_fgm();
-        $req_filelist = $req_fgm->getFileList();
-        $nf = count( $req_filelist );
-        $files = Array ();
-        for($i = 0; $i < $nf; $i ++) {
-            $filename = $req_filelist [$i];
-            $filedata = $req_fgm->getFileData( $req_filelist [$i] );
-            $files [$filename] = $filedata;
-        }
-        return $files;
+        $reqfgm = $vpl->get_required_fgm();
+        return $reqfgm->getallfiles();
     }
-    public static function get_submitted_files($vpl, $userid, & $CE) {
-        $CE = false;
+
+    /**
+     * Returns last submitted files of $vpl and userid.
+     * If available $compilationexecution will return compilation and execution information.
+     * @param mod_vpl $vpl
+     * @param int $userid
+     * @param Object $compilationexecution
+     * @return string[string]
+     */
+    public static function get_submitted_files($vpl, $userid, & $compilationexecution) {
+        $compilationexecution = false;
         $lastsub = $vpl->last_user_submission( $userid );
         if ($lastsub) {
             $submission = new mod_vpl_submission( $vpl, $lastsub );
             $fgp = $submission->get_submitted_fgm();
-            $filelist = $fgp->getFileList();
-            $nf = count( $filelist );
-            for($i = 0; $i < $nf; $i ++) {
-                $filename = $filelist [$i];
-                $filedata = $fgp->getFileData( $filelist [$i] );
-                $files [$filename] = $filedata;
-            }
-            $CE = $submission->get_CE_for_editor();
+            $files = $fgp->getallfiles();
+            $compilationexecution = $submission->get_CE_for_editor();
         } else {
             $files = self::get_requested_files( $vpl );
+            $compilationexecution = new stdClass();
+            $compilationexecution->nevaluations = 0;
+            $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
+            $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
+
         }
         return $files;
     }
-    public static function execute($vpl, $userid, $action) {
-        global $USER;
+
+    /**
+     * Returns the last or other submission and compilation execution information
+     * @param mod_vpl $vpl
+     * @param int $userid
+     * @param int|boolean $submissionid
+     * @return Object
+     */
+    public static function load($vpl, $userid, $submissionid = false) {
+        global $DB;
+        $response = new stdClass();
+        $response->version = 0;
+        $response->comments = '';
+        $response->compilationexecution = false;
+        $vplinstance = $vpl->get_instance();
+        if ( $submissionid !== false ) {
+            // Security checks.
+            $parms = array('id' => $submissionid, 'vpl' => $vplinstance->id);
+            $vpl->require_capability( VPL_GRADE_CAPABILITY );
+            $res = $DB->get_records('vpl_submissions', $parms);
+            if ( count($res) == 1 ) {
+                 $subreg = $res[$submissionid];
+            } else {
+                 $subreg = false;
+            }
+        } else {
+            $subreg = $vpl->last_user_submission( $userid );
+        }
+        $response->files = self::get_requested_files( $vpl );
+        if ($subreg) {
+            $submission = new mod_vpl_submission( $vpl, $subreg );
+            $fgp = $submission->get_submitted_fgm();
+            $response->version = $subreg->id;
+            $response->comments = $subreg->comments;
+            $response->files = array_merge($response->files, $fgp->getallfiles());
+            $response->compilationexecution = $submission->get_CE_for_editor();
+        } else {
+            $compilationexecution = new stdClass();
+            $compilationexecution->grade = '';
+            $compilationexecution->nevaluations = 0;
+            $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
+            $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
+            $response->compilationexecution = $compilationexecution;
+        }
+        return $response;
+    }
+
+    /**
+     * Request the execution (run|debug|evaluate)of a user's submission
+     * @param mod_vpl $vpl
+     * @param int $userid
+     * @param string $action
+     * @param array $options for the execution
+     * @throws Exception
+     * @return Object with execution information
+     */
+    public static function execute($vpl, $userid, $action, $options = array()) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );
         if (! $lastsub && ! $example) {
@@ -105,11 +272,18 @@ class mod_vpl_edit {
                 'debug' => 'debugged',
                 'evaluate' => 'evaluated'
         );
-        $eventclass = '\mod_vpl\event\submission_' . $traslate [$action];
-        $acode = $code [$action];
+        $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
-        return $submission->run( $acode );
+        return $submission->run( $code[$action], $options );
     }
+
+    /**
+     * Request the retrieve of the evaluation result
+     * @param mod_vpl $vpl
+     * @param int $userid
+     * @throws Exception
+     * @return stdClass
+     */
     public static function retrieve_result($vpl, $userid) {
         $lastsub = $vpl->last_user_submission( $userid );
         if (! $lastsub) {
@@ -118,6 +292,13 @@ class mod_vpl_edit {
         $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         return $submission->retrieveResult();
     }
+
+    /**
+     * Request the cancel of a evaluation/execution in progress
+     * @param mod_vpl $vpl
+     * @param int $userid
+     * @throws Exception
+     */
     public static function cancel($vpl, $userid) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );

@@ -23,42 +23,40 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/../../../config.php';
-class vpl_token_type{
-    const reserved=1;
-    const identifier=2;
-    const operator=3;
-    const literal=4;
-    const other=5;
-}
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_token{
+class vpl_token_type {
+    const RESERVED = 1;
+    const IDENTIFIER = 2;
+    const OPERATOR = 3;
+    const LITERAL = 4;
+    const OTHER = 5;
+}
+class vpl_token {
     public $type;
     public $value;
-    //public $line;
-    private static $hash_values=array();
-    private static function get_hash($value){
-        if(!isset($hash_values[$value])){
-            $hash_values[$value]=mt_rand();
+    public $line;
+    private static $hashvalues = array ();
+    private static function get_hash($value) {
+        if (! isset( self::$hashvalues[$value] )) {
+            self::$hashvalues[$value] = mt_rand();
         }
-        return $hash_values[$value];
+        return self::$hashvalues[$value];
     }
-    public function __construct($type,$value,$line){
-        $this->type=$type;
-        $this->value=$value;
-        //$this->line = $line;
+    public function __construct($type, $value, $line) {
+        $this->type = $type;
+        $this->value = $value;
+        $this->line = $line;
     }
-    public function hash(){
-        return self::get_hash($this->value);
+    public function hash() {
+        return self::get_hash( $this->value );
     }
-    public function show(){
-        echo /*$this->line.' '.*/$this->type.' '.$this->value.'<br />';
+    public function show() {
+        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br>';
     }
 }
-class vpl_tokenizer_base{
-    const CR ="\r";
-    const LF ="\n";
-    const TAB ="\t";
-    public function __construct(){
-    }
+class vpl_tokenizer_base {
+    const CR = "\r";
+    const LF = "\n";
+    const TAB = "\t";
 }

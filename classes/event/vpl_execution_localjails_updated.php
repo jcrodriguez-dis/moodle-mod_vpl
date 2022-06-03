@@ -24,12 +24,12 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_execution_localjails_updated extends vpl_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'u';
+        $this->data['crud'] = 'u';
         $this->legacyaction = 'set jails';
     }
     public function get_description() {

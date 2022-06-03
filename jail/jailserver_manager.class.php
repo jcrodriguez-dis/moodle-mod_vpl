@@ -15,6 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Manage jail (execution) servers API
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
@@ -27,69 +28,94 @@
  * the jail servers. get_Server is the main feature
  *
  */
-class vpl_jailserver_manager{
-    const recheck=300; //300 sec = 5 min ¿optional setable?
-    const table='vpl_jailservers';
 
-    static public function get_curl($server,$request,$fresh=false){
-        global $CFG;
-        if(!function_exists('curl_init')){
-            throw new Exception('PHP cURL requiered');
+defined('MOODLE_INTERNAL') || die();
+require_once( __DIR__ . '/../locallib.php');
+
+class vpl_jailserver_manager {
+    const RECHECK = 300; // Optional setable?
+    const TABLE = 'vpl_jailservers';
+    public static function get_curl($server, $request, $fresh = false) {
+        if (! function_exists( 'curl_init' )) {
+            throw new Exception( 'PHP cURL required' );
         }
         $plugincfg = get_config('mod_vpl');
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $server);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/xml;charset=UTF-8', 'User-Agent: VPL 3.1.2'));
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        if( $fresh ){
-            curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
+        curl_setopt( $ch, CURLOPT_URL, $server );
+        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
+        curl_setopt( $ch, CURLOPT_POST, 1 );
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, array (
+                'Content-type: text/xml;charset=UTF-8',
+                'User-Agent: VPL ' . vpl_get_version()
+        ) );
+        curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
+        curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
+        if ($fresh) {
+            curl_setopt( $ch, CURLOPT_FRESH_CONNECT, true );
         }
-        if( @$plugincfg->acceptcertificates ){
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        if (@$plugincfg->acceptcertificates) {
+            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
         }
-        if( isset($plugincfg->proxy) && strlen($plugincfg->proxy)>7 ){
-            curl_setopt($ch, CURLOPT_PROXY, $plugincfg->proxy);
+        if (isset( $plugincfg->proxy ) && strlen( $plugincfg->proxy ) > 7) {
+            curl_setopt( $ch, CURLOPT_PROXY, $plugincfg->proxy );
         }
         return $ch;
     }
 
-    static public function get_response($server,$request, &$error=null,$fresh=false){
-        $ch = vpl_jailserver_manager::get_curl($server,$request,$fresh);
-        $raw_response=curl_exec($ch);
-        if($raw_response === false){
-            $error='request failed: '.s(curl_error($ch));
-            curl_close($ch);
+    /**
+     * Encode action and data as JSONRPC adding an automatic id.
+     *
+     * @param string $method
+     * @param object $data
+     * @return string
+     */
+    public static function jsonrpc_encode($method, $data) {
+        global $USER;
+        $rpcobject = new stdclass;
+        $rpcobject->method = $method;
+        $rpcobject->params = $data;
+        $idtime = hrtime();
+        $rpcobject->id = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
+        return json_encode($rpcobject);
+    }
+
+    public static function get_response($server, $request, &$error = null, $fresh = false) {
+        $ch = self::get_curl( $server, $request, $fresh );
+        $rawresponse = curl_exec( $ch );
+        if ($rawresponse === false) {
+            $error = 'request failed: ' . s( curl_error( $ch ) );
+            curl_close( $ch );
             return false;
-        }else{
-            curl_close($ch);
-            $error='';
-            $response = xmlrpc_decode($raw_response, "UTF-8");
-            if(is_array($response)){
-                if(xmlrpc_is_fault ($response)){
-                    $error = 'xmlrpc is fault: '.s($response["faultString"]);
-                }else{
+        } else {
+            curl_close( $ch );
+            $error = '';
+            $response = xmlrpc_decode( $rawresponse, "UTF-8" );
+            if (is_array( $response )) {
+                if (xmlrpc_is_fault( $response )) {
+                    $error = 'xmlrpc is fault: ' . s( $response["faultString"] );
+                } else {
                     return $response;
                 }
-            }else{
-                $error = 'http error '.s(strip_tags($raw_response));
-                $fail = true;
+            } else {
+                $error = 'http error ' . s( strip_tags( $rawresponse ) );
             }
             return false;
         }
     }
     /**
      * Check if the server is tagged as down
-     * @param url $server
+     *
+     * @param string $server
      * @return boolean
      */
-    static private function is_checkable($server){
+    private static function is_checkable(string $server) {
         global $DB;
-        $info= $DB->get_record(self::table,array('server' => $server));
-        if($info != null){
-            if($info->lastfail+self::recheck > time()){
+        $info = $DB->get_record( self::TABLE, array (
+                'serverhash' => self::get_hash($server),
+                'server' => $server
+        ) );
+        if ($info != null) {
+            if ($info->lastfail + self::RECHECK > time()) {
                 return false;
             }
         }
@@ -98,53 +124,58 @@ class vpl_jailserver_manager{
 
     /**
      * Tag the server as down
-     * @param URL $server
+     *
+     * @param string $server
      * @param string $strerror
      * @return void
      */
-    static private function server_fail($server,$strerror){
+    private static function server_fail(string $server, string $strerror) {
         global $DB;
-        if($strerror==null){
-            $strerror='';
+        if ($strerror == null) {
+            $strerror = '';
         }
-        $info= $DB->get_record(self::table,array('server' => $server));
-        if($info != null){
-            $info->lastfail=time();
-            $info->laststrerror=$strerror;
-            $info->nfails++;
-            vpl_truncate_JAILSERVERS($info);
-            $DB->update_record(self::table,$info);
-        }else{
+        $info = $DB->get_record( self::TABLE, array (
+                'serverhash' => self::get_hash($server),
+                'server' => $server
+        ) );
+        if ($info != null) {
+            $info->lastfail = time();
+            $info->laststrerror = $strerror;
+            $info->nfails ++;
+            vpl_truncate_jailservers( $info );
+            $DB->update_record( self::TABLE, $info );
+        } else {
             $info = new stdClass();
             $info->server = $server;
-            $info->lastfail=time();
-            $info->laststrerror=$strerror;
-            $info->nfails=1;
-            vpl_truncate_JAILSERVERS($info);
-            $DB->insert_record(self::table,$info);
+            $info->lastfail = time();
+            $info->laststrerror = $strerror;
+            $info->nfails = 1;
+            $info->serverhash = self::get_hash($server);
+            vpl_truncate_jailservers( $info );
+            $DB->insert_record( self::TABLE, $info );
         }
     }
 
     /**
      * Return the defined server list
-     * @param string $localserverlisttext='' List of local server in text
+     *
+     * @param string $localserverlisttext=''
+     *            List of local server in text
      * @return array of servers
      */
-    static function get_server_list($localserverlisttext){
-        global $CFG;
+    public static function get_server_list(string $localserverlisttext) {
         $plugincfg = get_config('mod_vpl');
-        $nl_local = vpl_detect_newline($localserverlisttext);
-        $nl_global = vpl_detect_newline($plugincfg->jail_servers);
-        $tempserverlist = array_merge(explode($nl_local,$localserverlisttext),
-                                    explode($nl_global,$plugincfg->jail_servers));
-        $serverlist = array();
-        //Clean temp server list and search for 'end_of_jails'
+        $nllocal = vpl_detect_newline( $localserverlisttext );
+        $nlglobal = vpl_detect_newline( $plugincfg->jail_servers );
+        $tempserverlist = array_merge( explode( $nllocal, $localserverlisttext ), explode( $nlglobal, $plugincfg->jail_servers ) );
+        $serverlist = array ();
+        // Clean temp server list and search for 'end_of_jails'.
         foreach ($tempserverlist as $server) {
-            $server = trim($server);
-            if($server>'' && $server[0]!='#'){
-                if(strtolower($server) == 'end_of_jails'){
+            $server = trim( $server );
+            if ($server > '' && $server[0] != '#') {
+                if (strtolower( $server ) == 'end_of_jails') {
                     break;
-                }else{
+                } else {
                     $serverlist[] = $server;
                 }
             }
@@ -154,50 +185,58 @@ class vpl_jailserver_manager{
 
     /**
      * Return a valid server to be used, May tag some servers as faulty
-     * @param int $maxmemory requiered
-     * @param string $localserverlisttext='' List of local server in text
-     * @param string $feedback info about jail servers response
-     * @return URL
+     *
+     * @param int $maxmemory
+     *            required
+     * @param string $localserverlisttext=''
+     *            List of local server in text
+     * @param string $feedback
+     *            info about jail servers response
+     * @return string
      */
-    static function get_server($maxmemory,$localserverlisttext='', &$feedback=null){
-        if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC required');
+    public static function get_server(int $maxmemory, string $localserverlisttext = '',
+                                      string &$feedback = null): string {
+        if (! function_exists( 'xmlrpc_encode_request' )) {
+            throw new Exception( 'PHP XMLRPC required' );
         }
-        $serverlist = vpl_jailserver_manager::get_server_list($localserverlisttext);
-        shuffle($serverlist);
+        $serverlist = self::get_server_list( $localserverlisttext );
+        shuffle( $serverlist );
         $data = new stdClass();
-        $data->maxmemory=$maxmemory;
-        $requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
+        $data->maxmemory = $maxmemory;
+        $requestready = xmlrpc_encode_request( 'available', $data, array ( 'encoding' => 'UTF-8' ) );
         $feedback = '';
-        $plan_b = array();
+        $error = '';
+        $planb = array ();
         foreach ($serverlist as $server) {
-            if(vpl_jailserver_manager::is_checkable($server)){
-                $response=self::get_response($server,$requestReady,$error);
-                if($response === false){
-                    vpl_jailserver_manager::server_fail($server,$error);
-                    $feedback .= parse_url($server,PHP_URL_HOST).' '.$error."\n";
-                }elseif(!isset($response['status'])){
-                    vpl_jailserver_manager::server_fail($server,$error);
-                    $feedback .= parse_url($server,PHP_URL_HOST)." protocol error (No status)\n";
-                }else{
-                    if($response['status']=='ready')
+            if (self::is_checkable( $server )) {
+                $response = self::get_response( $server, $requestready, $error );
+                if ($response === false) {
+                    self::server_fail( $server, $error );
+                    $feedback .= parse_url( $server, PHP_URL_HOST ) . ' ' . $error . "\n";
+                } else if (! isset( $response['status'] )) {
+                    self::server_fail( $server, $error );
+                    $feedback .= parse_url( $server, PHP_URL_HOST ) . " protocol error (No status)\n";
+                } else {
+                    if ($response['status'] == 'ready') {
                         return $server;
+                    }
                 }
-            }else{
-                $plan_b[]=$server;
+            } else {
+                $planb[] = $server;
             }
         }
-        foreach ($plan_b as $server) {
-            $response=self::get_response($server,$requestReady,$error,true);
-            if($response === false){
-                vpl_jailserver_manager::server_fail($server,$error);
-                $feedback .= parse_url($server,PHP_URL_HOST).' '.$error."\n";
-            }elseif(!isset($response['status'])){
-                vpl_jailserver_manager::server_fail($server,$error);
-                $feedback .= parse_url($server,PHP_URL_HOST)." protocol error (No status)\n";
-            }else{
-                if($response['status']=='ready')
+        foreach ($planb as $server) {
+            $response = self::get_response( $server, $requestready, $error, true );
+            if ($response === false) {
+                self::server_fail( $server, $error );
+                $feedback .= parse_url( $server, PHP_URL_HOST ) . ' ' . $error . "\n";
+            } else if (! isset( $response['status'] )) {
+                self::server_fail( $server, $error );
+                $feedback .= parse_url( $server, PHP_URL_HOST ) . " protocol error (No status)\n";
+            } else {
+                if ($response['status'] == 'ready') {
                     return $server;
+                }
             }
         }
         return false;
@@ -205,96 +244,119 @@ class vpl_jailserver_manager{
 
     /**
      * Check if a server is located in a private network
-     * @return true == private
+     * Return true ==> private IP
+     *
+     * @param string $url to server
+     * @return bool
      */
-    static function is_private_host($URL){
-        $host_name=parse_url($URL,PHP_URL_HOST);
-        if($host_name===false) return true;
+    public static function is_private_host(string $url): bool {
+        $hostname = parse_url( $url, PHP_URL_HOST );
+        if ($hostname === false) {
+            return true;
+        }
         $private = '10., 127., 172.16.0.0/12, 192.168., 169.254.';
-        $name = $host_name.'.';
-        $IP = gethostbyname($name);
-        if($IP != $name){
-            return address_in_subnet($IP,$private);
-            // IPv6 not implemented
-            // fc00::/7
-            // fe80::/10
+        $name = $hostname . '.';
+        $ip = gethostbyname( $name );
+        if ($ip != $name) {
+            return address_in_subnet( $ip, $private );
+            // IPv6 not implemented fc00::/7 fe80::/10 .
         }
         return true;
     }
 
-
     /**
      * Clear servers table and check for every one again
+     *
+     * @param string $localserverlisttext List of local servers
      * @return array of server object with info about server status
      */
-    static function check_servers($localserverlisttext=''){
-        global $CFG;
+    public static function check_servers(string $localserverlisttext = ''): array {
         global $DB;
-        if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC required');
+        if (! function_exists( 'xmlrpc_encode_request' )) {
+            throw new Exception( 'PHP XMLRPC required' );
         }
         $data = new stdClass();
-        $data->maxmemory=(int)1024*10;
-        $requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
-        $serverlist = array_unique(vpl_jailserver_manager::get_server_list($localserverlisttext));
-        $feedback = array();
+        $data->maxmemory = ( int ) 1024 * 10;
+        $requestready = xmlrpc_encode_request( 'available', $data, array (
+                'encoding' => 'UTF-8'
+        ) );
+        $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
+        $feedback = array ();
         foreach ($serverlist as $server) {
-            $response=self::get_response($server,$requestReady,$status);
-            $info= $DB->get_record(self::table,array('server' => $server));
-            if($response === false){
-                vpl_jailserver_manager::server_fail($server,$status);
-            }else{
-                $status=s($response['status']);
+            $status = null;
+            $response = self::get_response( $server, $requestready, $status );
+            $params = array ( 'serverhash' => self::get_hash($server), 'server' => $server );
+            $info = $DB->get_record( self::TABLE, $params);
+            if ($response === false) {
+                self::server_fail( $server, $status );
+            } else {
+                $status = s( $response['status'] );
             }
-            if($info == null){
+            if ($info == null) {
                 $info = new stdClass();
                 $info->server = $server;
-                $info->lastfail=null;
-                $info->laststrerror='';
-                $info->nfails=0;
+                $info->lastfail = null;
+                $info->laststrerror = '';
+                $info->nfails = 0;
+                $info->serverhash = self::get_hash($server);
             }
-            $info->current_status=$status;
+            $info->current_status = $status;
             $info->offline = $response === false;
-            if(self::is_private_host($server)){
-                //TODO implement other way to warning
-                $info->server = '[private] '.$info->server;
+            if (self::is_private_host( $server )) {
+                // TODO implement other way to warning.
+                $message = 'WARNING: not accessible from the internet';
+                $info->server = "{$info->server}\n[$message]";
             }
-            $feedback[]=$info;
+            $feedback[] = $info;
         }
         return $feedback;
     }
 
     /**
      * Return the https URL servers list
-     * @param string $localserverlisttext='' List of local server in text
+     *
+     * @param string $localserverlisttext=''
+     *            List of local server in text
      * @return array of URLs
      */
-    static function get_https_server_list($localserverlisttext=''){
-        global $CFG;
-        global $DB;
-        if(!function_exists('xmlrpc_encode_request')){
-            throw new Exception('PHP XMLRPC required');
+    public static function get_https_server_list(string $localserverlisttext = ''): array {
+        if (! function_exists( 'xmlrpc_encode_request' )) {
+            throw new Exception( 'PHP XMLRPC required' );
         }
         $data = new stdClass();
-        $data->maxmemory=(int)1024*10;
-        $requestReady = xmlrpc_encode_request('available',$data,array('encoding'=>'UTF-8'));
-        $serverlist = array_unique(vpl_jailserver_manager::get_server_list($localserverlisttext));
-        $list = array();
+        $data->maxmemory = ( int ) 1024 * 10;
+        $requestready = xmlrpc_encode_request( 'available', $data, array (
+                'encoding' => 'UTF-8'
+        ) );
+        $error = '';
+        $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
+        $list = array ();
         foreach ($serverlist as $server) {
-            if(vpl_jailserver_manager::is_checkable($server)){
-                $response=self::get_response($server,$requestReady,$error);
-                if($response === false){
-                    vpl_jailserver_manager::server_fail($server,$error);
-                }elseif(!isset($response['status'])){
-                    vpl_jailserver_manager::server_fail($server,$error);
-                }else{
-                    if($response['status']=='ready'){
-                        $parsed = parse_url($server);
-                        $list[] = 'https://'.$parsed['host'].':'.$response['secureport'].'/OK';
+            if (self::is_checkable( $server )) {
+                $response = self::get_response( $server, $requestready, $error );
+                if ($response === false) {
+                    self::server_fail( $server, $error );
+                } else if (! isset( $response['status'] )) {
+                    self::server_fail( $server, $error );
+                } else {
+                    if ($response['status'] == 'ready') {
+                        $parsed = parse_url( $server );
+                        $list[] = 'https://' . $parsed['host'] . ':' . $response['secureport'] . '/OK';
                     }
                 }
             }
         }
         return $list;
+    }
+
+    /**
+     * Get server URL hash
+     *
+     * @param string $server $URL to generate hash
+     * @return int
+     */
+    private static function get_hash(string $server): int {
+        $md = substr(md5($server), -7);
+        return hexdec( $md );
     }
 }

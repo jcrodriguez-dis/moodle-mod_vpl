@@ -24,13 +24,20 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_base extends base {
+    public static function get_objectid_mapping() {
+        return array('db' => VPL, 'restore' => VPL);
+    }
+    public static function get_other_mapping() {
+        // Nothing to map.
+        return false;
+    }
     protected function init() {
-        $this->data ['crud'] = 'u';
-        $this->data ['edulevel'] = self::LEVEL_TEACHING;
-        $this->data ['objecttable'] = VPL;
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = VPL;
     }
     public static function log($vpl) {
         if (is_array( $vpl )) {
@@ -38,7 +45,7 @@ class vpl_base extends base {
         } else {
             $einfo = array (
                     'objectid' => $vpl->get_instance()->id,
-                    'context' => $vpl->get_context()
+                    'contextid' => $vpl->get_context()->id,
             );
             parent::log( $einfo );
         }

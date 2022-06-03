@@ -1,11 +1,29 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+/**
+ * @var array $string
+ */
 $string['vpl'] = 'Virtual Programming Lab';
 $string['novpls'] = 'Kein virtual programming lab definiert';
 $string['moduleconfigtitle'] = 'VPL Module Konfiguration';
 $string['modulename'] = 'Virtual programming lab';
 $string['pluginname'] = 'Virtual programming lab';
 $string['modulenameplural'] = 'Virtual programming labs';
-$string['pluginadministration'] ='VPL Administration';
+$string['pluginadministration'] = 'VPL Administration';
 $string['shortdescription'] = 'Kurzbeschreibung';
 $string['fulldescription'] = 'Beschreibung';
 $string['submissionperiod'] = 'Abgabezeitraum';
@@ -17,11 +35,11 @@ $string['maximumperiod'] = 'Max. Überarbeitungen {$a}';
 $string['workingperiods'] = 'Arbeitszeiten';
 $string['submissionrestrictions'] = 'Abgabeeinschränkungen';
 $string['maxfiles'] = 'Maximale Anzahl an Dateien';
-$string['maxfilesexceeded'] ='Maximale Anzahl an Dateien überschritten';
-$string['maxfilesize']= 'Maximale Upload Dateigröße';
-$string['defaultfilesize']= 'Standard maximale Upload Dateigröße';
-$string['maxfilesizeexceeded']= 'Maximale Dateigröße überschritten';
-$string['requirednet']= 'Erlaubte Online-Abgabe';
+$string['maxfilesexceeded'] = 'Maximale Anzahl an Dateien überschritten';
+$string['maxfilesize'] = 'Maximale Upload Dateigröße';
+$string['defaultfilesize'] = 'Standard maximale Upload Dateigröße';
+$string['maxfilesizeexceeded'] = 'Maximale Dateigröße überschritten';
+$string['requirednet'] = 'Erlaubte Online-Abgabe';
 $string['gradeoptions'] = 'Benotungseinstellungen';
 $string['visiblegrade'] = 'Sichtbar';
 $string['nojailavailable'] = 'Kein Jail-Server verfügbar';
@@ -30,7 +48,7 @@ $string['requestedfiles'] = 'Erforderliche Dateien';
 $string['execution'] = 'Ausführung';
 $string['editing'] = 'Bearbeiten';
 $string['basic'] = 'Einfach';
-$string['advanced']='Erweitert';
+$string['advanced'] = 'Erweitert';
 $string['comments'] = 'Kommentare';
 $string['compilation'] = 'Kompilierung';
 $string['anyfile'] = 'Beliebige Datei';
@@ -45,7 +63,7 @@ $string['gradercomments'] = 'Kommentare zur Bewertung';
 $string['automaticgrading'] = 'Automatische Bewertung';
 $string['open'] = 'Offen';
 $string['closed'] = 'Geschlossen';
-$string['timelimited'] ='Zeitlich begrenzt';
+$string['timelimited'] = 'Zeitlich begrenzt';
 $string['timeunlimited'] = 'Zeitlich unbegrenzt';
 $string['manualgrading'] = 'Manuelle Bewertung';
 
@@ -119,7 +137,7 @@ $string['submissionselection'] = 'Abgabeauswahl';
 $string['instanceselection'] = 'VPL Auswahl';
 $string['graded'] = 'Bewertet';
 $string['notgraded'] = 'Nicht bewertet';
-$string['allsubmissions'] ='Alle Abgaben';
+$string['allsubmissions'] = 'Alle Abgaben';
 $string['gradedbyuser'] = 'Bewertet durch Benutzer';
 $string['variation'] = 'Variation {$a}';
 $string['variations'] = 'Variationen';
@@ -132,28 +150,28 @@ $string['deleteallsubmissions'] = 'Alle Abgaben löschen';
 $string['maxsimilarityoutput'] = 'Maximale Ausgabe durch Ähnlichkeit';
 $string['resetvpl'] = '{$a} zurücksetzen';
 $string['numcluster'] = 'Gruppe {$a}';
-$string['inconsistentgroup']='Sie sind nicht Mitglied nur einer Gruppe (0 o >1)';
-$string['worktype']='Arbeitstyp';
-$string['individualwork']='Einzelarbeit';
-$string['groupwork']='Gruppenarbeit';
-$string['downloadallsubmissions']='Alle Abgaben herunterladen';
+$string['inconsistentgroup'] = 'Sie sind nicht Mitglied nur einer Gruppe (0 o >1)';
+$string['worktype'] = 'Arbeitstyp';
+$string['individualwork'] = 'Einzelarbeit';
+$string['groupwork'] = 'Gruppenarbeit';
+$string['downloadsubmissions'] = 'Alle Abgaben herunterladen';
 
 $string['similarity'] = 'Ähnlichkeit';
 $string['listwatermarks'] = 'Wasserzeichen-Liste';
 $string['nowatermark'] = 'Eigene Wasserzeichen {$a}';
 $string['origin'] = 'Ursprung';
-$string['filestoscan']='Zu prüfende Dateien';
-$string['scanoptions']='Prüfeinstellungen';
-$string['allfiles']='Alle Dateien';
-$string['joinedfiles']='Zusammengefügte ausgewählte Dateien';
-$string['minsimlevel']='Minimale angezeigte Ähnlichkeit';
-$string['othersources']='Andere zu prüfende Quellen';
-$string['scanactivity']='Aktivität';
-$string['scanzipfile']='Zip-Datei';
-$string['scandirectory']='Ordner';
-$string['scanother'] ='Prüfe Ähnlichkeit in hinzugefügten Quellen';
-$string['listsimilarity']='Liste der gefundenen Ähnlichkeiten';
-$string['similarto']='Ähnlich wie';
+$string['filestoscan'] = 'Zu prüfende Dateien';
+$string['scanoptions'] = 'Prüfeinstellungen';
+$string['allfiles'] = 'Alle Dateien';
+$string['joinedfiles'] = 'Zusammengefügte ausgewählte Dateien';
+$string['minsimlevel'] = 'Minimale angezeigte Ähnlichkeit';
+$string['othersources'] = 'Andere zu prüfende Quellen';
+$string['scanactivity'] = 'Aktivität';
+$string['scanzipfile'] = 'Zip-Datei';
+$string['scandirectory'] = 'Ordner';
+$string['scanother'] = 'Prüfe Ähnlichkeit in hinzugefügten Quellen';
+$string['listsimilarity'] = 'Liste der gefundenen Ähnlichkeiten';
+$string['similarto'] = 'Ähnlich wie';
 $string['diff'] = 'diff';
 $string['scanningdir'] = 'Prüfe Ordner ...';
 $string['unzipping'] = 'Entpacke ...';
@@ -161,7 +179,7 @@ $string['unzipping'] = 'Entpacke ...';
 $string['requiredpassword'] = 'Ein Passwort wird benötigt';
 $string['attemptnumber'] = 'Versuch Nummer {$a}';
 $string['opnotallowfromclient'] = 'Aktion ist von diesem Rechner nicht erlaubt';
-$string['listofcomments']='Kommentarliste';
+$string['listofcomments'] = 'Kommentarliste';
 $string['removegrade'] = 'Bewertung löschen';
 $string['graderemoved'] = 'Die Bewertung wurde gelöscht';
 $string['gradenotremoved'] = 'Die Bewertung wurde NICHT gelöscht. Überprüfen Sie die Aktivitätskonfiguration in der Bewertungsverwaltung.';
@@ -181,20 +199,19 @@ $string['menulocal_jail_servers'] = 'Lokale Jail-Server';
 $string['check_jail_servers'] = 'Jail-Server überprüfen';
 $string['menucheck_jail_servers'] = 'Jail-Server überprüfen';
 $string['jail_servers_description'] = 'Jeder Server in eine eigene Zeile';
-$string['server']='Server';
-$string['currentstatus']='Aktueller Status';
-$string['lasterror']='Letzte Fehlerbeschreibung';
-$string['lasterrordate']='Letzter Fehlerzeitpunkt';
-$string['totalnumberoferrors']="Fehler";
+$string['server'] = 'Server';
+$string['currentstatus'] = 'Aktueller Status';
+$string['lasterror'] = 'Letzte Fehlerbeschreibung';
+$string['lasterrordate'] = 'Letzter Fehlerzeitpunkt';
+$string['totalnumberoferrors'] = "Fehler";
 
 $string['proposedgrade'] = 'Bewertungsvorschlag: {$a}';
 $string['discard_submission_period'] = 'Abgabenspeicherungsperiode';
 $string['discard_submission_period_description'] = 'Pro Student und Aufgabe behält das System immer die letzte Abgabe sowie zumindest eine für jede Periode.';
-$string['direct_applet']='Direktes Applet Deployment';
-$string['direct_applet_description']='Verwende HTML tags, um das Applet zu deployen. Diese Option wird benötigt, wenn Clients keinen Zugriff auf www.java.com haben.';
+$string['direct_applet'] = 'Direktes Applet Deployment';
+$string['direct_applet_description'] = 'Verwende HTML tags, um das Applet zu deployen. Diese Option wird benötigt, wenn Clients keinen Zugriff auf www.java.com haben.';
 
 $string['serverexecutionerror'] = 'Server Ausführungsfehler';
-
 
 $string['vpl:addinstance'] = 'Neue VPL Instanzen hinzufügen';
 $string['vpl:view'] = 'Komplette VPL Aufgabenbeschreibung anzeigen';
@@ -204,74 +221,74 @@ $string['vpl:manage'] = 'VPL Aufgabe verwalten';
 $string['vpl:similarity'] = 'VPL Aufgaben Ähnlichkeit prüfen';
 $string['vpl:setjails'] = 'Jail-Server speziellen VPL Instanzen zuweisen';
 
-//Applet Code Editor
-$string['previous_page']= 'Vorige Seite';
-$string['return_to_previous_page']= 'Züruck zur vorigen Seite';
-$string['next_page']= 'Nächste Seite';
-$string['go_next_page']= 'Weiter zur nächsten Seite';
-$string['help']= 'Hilfe';
-$string['contextual_help']= 'Kontextuelle Hilfe';
-$string['general_help']= 'Allgemeine Hilfe zur Sprache';
-$string['file']= 'Datei';
-$string['options']= 'Optionen';
-$string['new']= 'Neu';
-$string['create_new_file']= 'Neue Datei erstellen';
-$string['file_name']= 'Dateiname';
-$string['incorrect_file_name']= 'Falscher Dateiname';
-$string['rename']= 'Umbenennen';
-$string['renameFile']= 'Datei umbenennen';
-$string['new_file_name']= 'Neuer Dateiname';
-$string['delete']= 'Löschen';
-$string['delete_file']= 'Datei löschen';
-$string['delete_file_q']= 'Datei wirklich löschen?';
+// Code Editor.
+$string['previous_page'] = 'Vorige Seite';
+$string['return_to_previous_page'] = 'Züruck zur vorigen Seite';
+$string['next_page'] = 'Nächste Seite';
+$string['go_next_page'] = 'Weiter zur nächsten Seite';
+$string['help'] = 'Hilfe';
+$string['contextual_help'] = 'Kontextuelle Hilfe';
+$string['general_help'] = 'Allgemeine Hilfe zur Sprache';
+$string['file'] = 'Datei';
+$string['options'] = 'Optionen';
+$string['new'] = 'Neu';
+$string['create_new_file'] = 'Neue Datei erstellen';
+$string['file_name'] = 'Dateiname';
+$string['incorrect_file_name'] = 'Falscher Dateiname';
+$string['rename'] = 'Umbenennen';
+$string['renameFile'] = 'Datei umbenennen';
+$string['new_file_name'] = 'Neuer Dateiname';
+$string['delete'] = 'Löschen';
+$string['delete_file'] = 'Datei löschen';
+$string['delete_file_q'] = 'Datei wirklich löschen?';
 $string['delete_file_fq'] = "Datei '{\$a}' löschen?";
-$string['save']='Speichern';
-$string['undo']= 'Rückgängung';
-$string['undo_change']= 'Änderung rückgängig machen';
-$string['redo']= 'Wiederholen';
-$string['redo_undone']= 'Änderungen wiederherstellen';
-$string['cut']= 'Ausschneiden';
-$string['cut_text']= 'Ausgewählten Text in die Zwischenablage verschieben';
-$string['copy']= 'Kopieren';
-$string['copy_text']= 'Ausgewählten Text in die Zwischenablage kopieren';
-$string['paste']= 'Einfügen';
-$string['paste_text']= 'Text aus der Zwischenablage einfügen';
-$string['select_all']= 'Alles markieren';
-$string['select_all_text']= 'Gesamten Text markieren';
-$string['find_replace']= 'Suchen/Ersetzen';
-$string['find_find_replace']= 'Suchen oder suchen und ersetzen';
-$string['program_help']= 'Programmhilfe';
-$string['page_unaccessible']= 'Unerreichbare Seite';
-$string['about']= 'Über';
-$string['help_about']= 'Hilfe über';
-$string['figure']='Abbildung';
-$string['line_number']= 'Zeilennummer';
-$string['toggle_show_line_number']= 'Zeilennummern anzeigen';
-$string['next']= 'Weiter';
-$string['find_next_search_string']= 'Finde den nächsten Suchtext im Text';
-$string['replace']= 'Ersetzen';
-$string['replace_selection_if_match']= 'Ersetze Auswahl, wenn sie dem Suchtext entspricht';
-$string['replace_find']= 'Ersetzen/Finden';
-$string['replace_find_next']= 'Ersetzen und den nächsten Suchtext finden';
-$string['replace_all']= 'Alle ersetzen';
-$string['replace_all_next']= 'Alle weiteren ersetzen';
-$string['language_help']= 'Sprachenspezifische Hilfe';
-$string['console']= 'Konsole';
-$string['find']= 'Finden';
-$string['case_sensitive']= 'Groß-/Kleinschreibung beachten';
-$string['replace_find']= 'Ersetzen/Finden';
-$string['font_size']= 'Schriftgröße';
-$string['connecting']='Verbinde';
-$string['connection_fail']='Verbindungsfehler';
-$string['connected']='Verbunden';
-$string['connection_closed']='Verbindung geschlossen';
+$string['save'] = 'Speichern';
+$string['undo'] = 'Rückgängung';
+$string['undo_change'] = 'Änderung rückgängig machen';
+$string['redo'] = 'Wiederholen';
+$string['redo_undone'] = 'Änderungen wiederherstellen';
+$string['cut'] = 'Ausschneiden';
+$string['cut_text'] = 'Ausgewählten Text in die Zwischenablage verschieben';
+$string['copy'] = 'Kopieren';
+$string['copy_text'] = 'Ausgewählten Text in die Zwischenablage kopieren';
+$string['paste'] = 'Einfügen';
+$string['paste_text'] = 'Text aus der Zwischenablage einfügen';
+$string['select_all'] = 'Alles markieren';
+$string['select_all_text'] = 'Gesamten Text markieren';
+$string['find_replace'] = 'Suchen/Ersetzen';
+$string['find_find_replace'] = 'Suchen oder suchen und ersetzen';
+$string['program_help'] = 'Programmhilfe';
+$string['page_unaccessible'] = 'Unerreichbare Seite';
+$string['about'] = 'Über';
+$string['help_about'] = 'Hilfe über';
+$string['figure'] = 'Abbildung';
+$string['line_number'] = 'Zeilennummer';
+$string['toggle_show_line_number'] = 'Zeilennummern anzeigen';
+$string['next'] = 'Weiter';
+$string['find_next_search_string'] = 'Finde den nächsten Suchtext im Text';
+$string['replace'] = 'Ersetzen';
+$string['replace_selection_if_match'] = 'Ersetze Auswahl, wenn sie dem Suchtext entspricht';
+$string['replace_find'] = 'Ersetzen/Finden';
+$string['replace_find_next'] = 'Ersetzen und den nächsten Suchtext finden';
+$string['replace_all'] = 'Alle ersetzen';
+$string['replace_all_next'] = 'Alle weiteren ersetzen';
+$string['language_help'] = 'Sprachenspezifische Hilfe';
+$string['console'] = 'Konsole';
+$string['find'] = 'Finden';
+$string['case_sensitive'] = 'Groß-/Kleinschreibung beachten';
+$string['replace_find'] = 'Ersetzen/Finden';
+$string['font_size'] = 'Schriftgröße';
+$string['connecting'] = 'Verbinde';
+$string['connection_fail'] = 'Verbindungsfehler';
+$string['connected'] = 'Verbunden';
+$string['connection_closed'] = 'Verbindung geschlossen';
 
-//Applet status bar
-$string['notsaved']='Nicht gespeichert';
-$string['saving']='Speichert';
-$string['running']='Läuft';
-$string['evaluating']='Evaluiert';
-$string['debugging']='Debuggt';
+// Edit status.
+$string['notsaved'] = 'Nicht gespeichert';
+$string['saving'] = 'Speichert';
+$string['running'] = 'Läuft';
+$string['evaluating'] = 'Evaluiert';
+$string['debugging'] = 'Debuggt';
 $string['check_jail_servers_help'] = '<p>Diese Seite überprüft und zeigt den Status der Jail-Server,
         die für diese Aktivität verwendet werden.</p>';
 $string['executionfiles_help'] = '<h2>Einleitung</h2>
@@ -414,24 +431,13 @@ basiert plus die allgemeinen Jail-Server. Wenn diese Aktivität und jene, die au
 $string['modulename_help'] = '<p>VPL ist ein Aktivitätsmodul für Moodle, das Programmieraufgaben verwaltet und folgende Eigenschaften aufweist:
 </p>
 <ul>
-<li>Möglichkeit, den Programmcode im Browser über ein Java Applet zu verändern</li>
+<li>Möglichkeit, den Programmcode im Browser</li>
 <li>Studenten können Programme interaktiv im Browser ausführen</li>
 <li>Automatische Tests zur Bewertung von Programmen können ausgeführt werden</li>
 <li>Möglichkeit, Ähnlichkeiten zwischen Dateien zu suchen</li>
 <li>Möglichkeit, Änderungseinschränkungen und externe Einfügeoptionen zu konfigurieren</li>
 </ul>
-<p><b>Grundlegende Definition einer Virtual Programming Lab Aktivität</b></p>
-<p>Um auf erweiterte Optionen zugreifen zu können, muss zuerst eine grundlegende Definition gespeichert werden.</p>
-<p>Bedingungen für die Abgabe können in den <b>Abgabeeinschränkungen</b> eingestellt werden:</p>
-<ul>
-<li>Maximale Anzahl an Dateien, die abgegeben werden können. Man kann die Dateinamen im Tab &quot;Erforderliche Dateien&quot; vorgeben.</li>
-<li>Abgabe nur im eingeschränkten Code Editor möglich. Wenn diese Option gesetzt ist können keine Dateien hochgeladen werden und auch kein Text von außerhalb des Editors hineinkopiert werden.</li>
-<li>Maximale Dateigröße beim Hochladen</li>
-<li>Passwort, um auf die Aktivität zuzugreifen und Abgaben zu tätigen.
-Wenn ein Passwort gesetzt wird, wird das System nach dem Passwort fragen.</li>
-<li>Netzwerke aus denen die Abgabe erlaubt wird.</li>
-</ul>
-<p>Auch häufige Optionen wie die Bewertungsskala und Gruppen können auf dieser Seite konfiguriert werden.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
 $string['requestedfiles_help'] = '<p>Hier können Namen für die erforderlichen Dateien gesetzt werden.</p>
 <p>Wenn nicht für alle erforderlichen Dateien Namen gesetzt werden sind die unbenannten Dateien optionen und können beliebige Namen erhalten.</p>

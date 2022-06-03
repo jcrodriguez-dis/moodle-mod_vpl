@@ -1,6 +1,7 @@
 #!/bin/bash
-# Default Java language debug script for VPL
-# Copyright (C) 2011 Juan Carlos Rodríguez-del-Pino. All rights reserved.
+# This file is part of VPL for Moodle
+# Script for debugging Java language
+# Copyright (C) 2011 onwards Juan Carlos Rodríguez-del-Pino. All rights reserved.
 # License GNU/GPL, see LICENSE.txt or http://www.gnu.org/licenses/gpl-2.0.html
 # Author Juan Carlos Rodriguez-del-Pino
 
@@ -12,17 +13,32 @@ function getClassName {
 	echo "$CLASSNAME"
 }
 
-#load common script and check programs
+# @vpl_script_description Using jdb or ddd if detected
+# load common script and check programs
 . common_script.sh
 check_program javac
 check_program java
+check_program jgrasp ddd jdb
+if [ "$1" == "version" ] ; then
+	if [ "$PROGRAM" == "jgrasp" ] ; then
+		get_program_version unknown
+	else
+		get_program_version --version
+	fi
+fi
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
-	export CLASSPATH=$CLASSPATH:$JUNIT4
+	CLASSPATH=$CLASSPATH:$JUNIT4
 fi
+get_source_files jar NOERROR
+for JARFILE in $SOURCE_FILES
+do
+	CLASSPATH=$CLASSPATH:$JARFILE
+done
+export CLASSPATH
 get_source_files java
 #compile all SOURCE_FILES files
-javac -g -J-Xmx16m -Xlint:deprecation $SOURCE_FILES
+javac -g -Xlint:deprecation $SOURCE_FILES
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
@@ -31,7 +47,7 @@ fi
 MAINCLASS=
 for FILENAME in $VPL_SUBFILES
 do
-	egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME 2>&1 >/dev/null
+	egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME &>/dev/null
 	if [ "$?" -eq "0" ]	; then
 		MAINCLASS=$(getClassName "$FILENAME")
 		break
@@ -41,8 +57,8 @@ if [ "$MAINCLASS" = "" ] ; then
 	for FILENAME in $SOURCE_FILES
 	do
 	    echo $FILENAME
-		egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME 2>&1 >/dev/null
-		if [ "$?" -eq "0" -a "$MAINCLASS" = "" ]	; then
+		egrep "void[ \n\t]+main[ \n\t]*\(" $FILENAME &>/dev/null
+		if [ "$?" -eq "0" -a "$MAINCLASS" = "" ] ; then
 			MAINCLASS=$(getClassName "$FILENAME")
 			break
 		fi
@@ -53,7 +69,7 @@ if [ "$MAINCLASS" = "" ] ; then
 	TESTCLASS=
 	for FILENAME in $SOURCE_FILES
 	do
-		grep "org\.junit\." $FILENAME 2>&1 >/dev/null
+		grep "org\.junit\." $FILENAME &>/dev/null
 		if [ "$?" -eq "0" ]	; then
 			TESTCLASS=$(getClassName "$FILENAME")
 			break
@@ -70,28 +86,13 @@ fi
 cat common_script.sh > vpl_execution
 echo "export CLASSPATH=$CLASSPATH:$HOME" >> vpl_execution
 chmod +x vpl_execution
-# is JSwat installed ?
-if [ -f /usr/local/JSwat/bin/JSwat ] ; then
-	echo "export SOURCEPATH=$HOME" >> vpl_execution
-	echo "get_source_files java" >> vpl_execution
-	echo "/usr/local/JSwat/bin/JSwat --laf javax.swing.plaf.nimbus.NimbusLookAndFeel \$SOURCE_FILES" >> vpl_execution
+# is jgrasp installed ?
+if [ "$(command -v jgrasp)" != "" ] ; then
+	echo "jgrasp $MAINCLASS.java" >> vpl_execution
+	echo "wait_end jgrasp" >> vpl_execution
 	mv vpl_execution vpl_wexecution
-elif [ "$(command -v ddd)" == "" ] ; then
-	echo "jdb -Xmx16m -J-Xmx16M $MAINCLASS" >> vpl_execution
-	for FILENAME in $SOURCE_FILES
-	do
-		grep -E "JFrame|JDialog" $FILENAME 2>&1 >/dev/null
-		if [ "$?" -eq "0" ]	; then
-			check_program xterm
-			cat common_script.sh > vpl_wexecution
-			chmod +x vpl_wexecution
-			echo "xterm -e ./.vpl_javadebug" >> vpl_wexecution
-			mv vpl_execution .vpl_javadebug
-			break
-		fi
-	done
-else
-	echo "ddd -geometry 800x600 --jdb --debugger \"jdb -J-Xmx16M -Xmx16M \" $MAINCLASS" >> vpl_execution
+elif [ "$(command -v ddd)" != "" ] ; then
+	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
 	mkdir .ddd
 	mkdir .ddd/sessions
 	mkdir .ddd/themes
@@ -105,4 +106,18 @@ Ddd*saveHistoryOnExit: off
 ! DO NOT ADD ANYTHING BELOW THIS LINE -- DDD WILL OVERWRITE IT
 END_OF_FILE
 	mv vpl_execution vpl_wexecution
+else
+	echo "jdb $MAINCLASS" >> vpl_execution
+	for FILENAME in $SOURCE_FILES
+	do
+		grep -E "JFrame|JDialog" $FILENAME &>/dev/null
+		if [ "$?" -eq "0" ]	; then
+			check_program x-terminal-emulator xterm
+			cat common_script.sh > vpl_wexecution
+			chmod +x vpl_wexecution
+			echo "./.vpl_javadebug" >> vpl_wexecution
+			mv vpl_execution .vpl_javadebug
+			break
+		fi
+	done
 fi

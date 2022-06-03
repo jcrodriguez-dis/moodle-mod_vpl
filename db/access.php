@@ -15,12 +15,17 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Plugin capabilities
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * Define the VPl plugin capabilities
+ * @var array $capabilities
  */
+
 defined( 'MOODLE_INTERNAL' ) || die();
 
 $capabilities = array (
@@ -45,7 +50,7 @@ $capabilities = array (
                 'archetypes' => array (
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_ALLOW,
-                        'teacher' => CAP_PREVENT,
+                        'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW

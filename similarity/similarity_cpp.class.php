@@ -23,13 +23,15 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/similarity_c.class.php';
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_similarity_cpp extends vpl_similarity_c{
-    public function get_type(){
+require_once(dirname(__FILE__).'/similarity_c.class.php');
+
+class vpl_similarity_cpp extends vpl_similarity_c {
+    public function get_type() {
         return 2;
     }
-    public function get_tokenizer(){
-        return vpl_tokenizer_factory::get('cpp');
+    public function get_tokenizer() {
+        return vpl_tokenizer_factory::get( 'cpp' );
     }
 }

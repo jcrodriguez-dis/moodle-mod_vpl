@@ -23,13 +23,14 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 defined( 'MOODLE_INTERNAL' ) || die();
-require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
+
+global $CFG, $DB;
+require_once($CFG->dirroot . '/mod/vpl/lib.php');
 $ret = true;
 $vpls = $DB->get_records( 'vpl', null, '', 'id' );
 foreach ($vpls as $vplinstance) {
-    $vpl = new mod_vpl( null, $vplinstance->id );
-    $ret = $ret && $vpl->delete_all();
+    $ret = $ret && vpl_delete_instance( $vplinstance->id );
 }
 if (! $ret) {
-    print_error( 'error deleting VPL' );
+    throw new moodle_exception('error:uninstalling', 'mod_vpl');
 }

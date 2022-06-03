@@ -1,0 +1,11 @@
+case=Text error 1
+output=text with numbers 3 4 5.5 end and more
+case=Text 1
+output=text with numbers 3 4 5.5 end
+case=Text 2
+output=text, with numbers 3 4 5 5. end
+case=Text 3
+output=text with
+ numbers 3 4 5 5 end
+case=Text error 2
+output=text numbers end

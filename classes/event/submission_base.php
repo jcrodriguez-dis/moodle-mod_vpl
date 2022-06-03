@@ -24,13 +24,20 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_base extends base {
+    public static function get_objectid_mapping() {
+        return array('db' => 'vpl_submissions', 'restore' => 'vpl_submissions');
+    }
+    public static function get_other_mapping() {
+        // Nothing to map.
+        return false;
+    }
     protected function init() {
-        $this->data ['crud'] = 'c';
-        $this->data ['edulevel'] = self::LEVEL_PARTICIPATING;
-        $this->data ['objecttable'] = VPL_SUBMISSIONS;
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
+        $this->data['objecttable'] = VPL_SUBMISSIONS;
     }
     public function get_url() {
         return $this->get_url_base( 'forms/submissionview.php' );

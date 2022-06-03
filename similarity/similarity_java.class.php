@@ -23,106 +23,100 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/similarity_c.class.php';
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_similarity_java extends vpl_similarity_c{
-    public function get_type(){
+require_once(dirname(__FILE__).'/similarity_c.class.php');
+
+class vpl_similarity_java extends vpl_similarity_c {
+    public function get_type() {
         return 3;
     }
-    public function sintax_normalize(&$tokens){
-        $open_brace =false;
-        $nsemicolon=0;
-        $ret = array();
-        $prev = new vpl_token(vpl_token_type::identifier,'',0);
-        foreach($tokens as $token){
-            if($token->type == vpl_token_type::operator){
-                //++ and -- operator
-                //:: operator
-                //(*p). and p->
-                //+=, -=, *=, etc
-                switch($token->value){
-                    case '[':
-                        //only add ]
+    public function sintax_normalize(&$tokens) {
+        $openbrace = false;
+        $nsemicolon = 0;
+        $ret = array ();
+        $prev = new vpl_token( vpl_token_type::IDENTIFIER, '', 0 );
+        foreach ($tokens as $token) {
+            if ($token->type == vpl_token_type::OPERATOR) {
+                // Operators "++" and "--" .
+                // Operator "::" .
+                // Expresion "(*p)." and "p->" .
+                // Operators +=, -=, *=, etc.
+                switch ($token->value) {
+                    case '[' :
+                        // Only add ].
                         break;
-                    case '(':
-                        //only add )
+                    case '(' :
+                        // Only add ).
                         break;
-                    case '{':
-                        //only add }
-                        $nsemicolon=0;
-                        $open_brace =true;
+                    case '{' :
+                        // Only add }.
+                        $nsemicolon = 0;
+                        $openbrace = true;
                         break;
-                    case '}':
-                        //Remove unneeded {}
-                        if(!($open_brace && $nsemicolon<2)){
-                            $ret[]=$token;
+                    case '}' :
+                        // Remove unneeded {}.
+                        if (! ($openbrace && $nsemicolon < 2)) {
+                            $ret[] = $token;
                         }
-                        $open_brace =false;
+                        $openbrace = false;
                         break;
-                    case ';':
-                        //count semicolon after a {
-                        $nsemicolon++;
-                        $ret[]=$token;
+                    case ';' :
+                        // Count semicolon after a {.
+                        $nsemicolon ++;
+                        $ret[] = $token;
                         break;
-                    case '++':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='+';
-                        $ret[]=$token;
+                    case '++' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '+';
+                        $ret[] = $token;
                         break;
-                    case '--':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='-';
-                        $ret[]=$token;
+                    case '--' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '-';
+                        $ret[] = $token;
                         break;
-                    case '+=':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='+';
-                        $ret[]=$token;
+                    case '+=' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '+';
+                        $ret[] = $token;
                         break;
-                    case '-=':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='-';
-                        $ret[]=$token;
+                    case '-=' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '-';
+                        $ret[] = $token;
                         break;
-                    case '*=':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='*';
-                        $ret[]=$token;
+                    case '*=' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '*';
+                        $ret[] = $token;
                         break;
-                    case '/=':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='/';
-                        $ret[]=$token;
+                    case '/=' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '/';
+                        $ret[] = $token;
                         break;
-                    case '%=':
-                        $token->value='=';
-                        $ret[]=$token;
-                        $token->value='%';
-                        $ret[]=$token;
+                    case '%=' :
+                        $ret[] = self::clone_token($token, '=');
+                        $token->value = '%';
+                        $ret[] = $token;
                         break;
-                    case '.':
-                        if($prev->value == 'this'){
+                    case '.' :
+                        if ($prev->value == 'this') {
                             break;
                         }
-                    case '::':
+                    case '::' :
                         break;
-                    default:
-                        $ret[]=$token;
+                    default :
+                        $ret[] = $token;
                 }
-                $prev=$token;
+                $prev = $token;
             }
-            //TODO remove (p)
+            // TODO remove "(p)" .
         }
         return $ret;
     }
-
-    public function get_tokenizer(){
-        return vpl_tokenizer_factory::get('java');
+    public function get_tokenizer() {
+        return vpl_tokenizer_factory::get( 'java' );
     }
 }

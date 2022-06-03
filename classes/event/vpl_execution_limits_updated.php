@@ -24,8 +24,8 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_execution_limits_updated extends vpl_base {
     protected function init() {
         parent::init();

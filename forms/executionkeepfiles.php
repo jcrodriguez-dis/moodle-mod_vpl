@@ -22,17 +22,19 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-require_once dirname( __FILE__ ) . '/../../../config.php';
-require_once dirname( __FILE__ ) . '/../locallib.php';
-require_once dirname( __FILE__ ) . '/../vpl.class.php';
-require_once $CFG->libdir . '/formslib.php';
+
+require_once(dirname( __FILE__ ) . '/../../../config.php');
+require_once(dirname( __FILE__ ) . '/../locallib.php');
+require_once(dirname( __FILE__ ) . '/../vpl.class.php');
+global $CFG;
+require_once($CFG->libdir . '/formslib.php');
 class mod_vpl_executionkeepfiles_form extends moodleform {
     protected $fgp;
-    function __construct($page, $fgp) {
+    public function __construct($page, $fgp) {
         $this->fgp = $fgp;
         parent::__construct( $page );
     }
-    function definition() {
+    protected function definition() {
         $mform = & $this->_form;
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );
         $mform->setType( 'id', PARAM_INT );
@@ -53,16 +55,13 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionkeepfiles.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'forms/executionkeepfiles.php', array ( 'id' => $id ) );
 vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-//Display page
+// Display page.
 $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'keepfiles' );
-$vpl->print_configure_tabs( basename( __FILE__ ) );
-$course = $vpl->get_course();
+
 $fgp = $vpl->get_execution_fgm();
 $mform = new mod_vpl_executionkeepfiles_form( 'executionkeepfiles.php', $fgp );
 if ($fromform = $mform->get_data()) {
@@ -70,13 +69,14 @@ if ($fromform = $mform->get_data()) {
         $list = $fgp->getFileList();
         $nlist = count( $list );
         $keeplist = array ();
-        for($i = 0; $i < $nlist; $i ++) {
+        for ($i = 0; $i < $nlist; $i ++) {
             $name = 'keepfile' . $i;
             if (isset( $fromform->$name )) {
-                $keeplist [] = $list [$i];
+                $keeplist[] = $list[$i];
             }
         }
         $fgp->setFileKeepList( $keeplist );
+        $vpl->update();
         \mod_vpl\event\vpl_execution_keeplist_updated::log( $vpl );
         vpl_notice( get_string( 'optionssaved', VPL ) );
     }

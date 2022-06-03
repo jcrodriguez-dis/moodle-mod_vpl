@@ -1,26 +1,42 @@
 <?PHP
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * English to Japanese translation, 02/2012
+ *
  * @author Imaizumi Takashi (Chiba University)
+ * @var array $string
  */
-
 $string['VPL_COMPILATIONFAILED'] = 'コンパイルか実行の準備に失敗しました';
-$string['downloadallsubmissions']='すべての提出物をダウンロード';
-$string['groupwork']='グループワーク';
-$string['inconsistentgroup']='あなたが所属しているグループ数は1ではありません';
-$string['individualwork']='個別の作業';
-$string['maxresourcelimits']='実行時資源の最大値';
-$string['pluginadministration']='VPLの管理';
-$string['testcases']='テストケース';
-$string['totalnumberoferrors']='エラー';
-$string['workingperiods']='作業時間';
-$string['worktype']='作業の種類';
-$string['defaultexefilesize']='デフォルトの実行ファイルの最大サイズ';
-$string['defaultexememory']='デフォルトのメモリ使用量の最大値';
-$string['defaultexeprocesses']='デフォルトのプロセス数の最大値';
-$string['defaultexetime']='デフォルトの実行時間の最大値';
-$string['defaultfilesize']='デフォルトのアップロードファイルの最大値';
-$string['defaultresourcelimits']='デフォルトの実行時資源の制限';
+$string['downloadsubmissions'] = 'すべての提出物をダウンロード';
+$string['groupwork'] = 'グループワーク';
+$string['inconsistentgroup'] = 'あなたが所属しているグループ数は1ではありません';
+$string['individualwork'] = '個別の作業';
+$string['maxresourcelimits'] = '実行時資源の最大値';
+$string['pluginadministration'] = 'VPLの管理';
+$string['testcases'] = 'テストケース';
+$string['totalnumberoferrors'] = 'エラー';
+$string['workingperiods'] = '作業時間';
+$string['worktype'] = '作業の種類';
+$string['defaultexefilesize'] = 'デフォルトの実行ファイルの最大サイズ';
+$string['defaultexememory'] = 'デフォルトのメモリ使用量の最大値';
+$string['defaultexeprocesses'] = 'デフォルトのプロセス数の最大値';
+$string['defaultexetime'] = 'デフォルトの実行時間の最大値';
+$string['defaultfilesize'] = 'デフォルトのアップロードファイルの最大値';
+$string['defaultresourcelimits'] = 'デフォルトの実行時資源の制限';
 $string['about'] = 'について';
 $string['addfile'] = 'ファイルの追加';
 $string['allfiles'] = 'すべてのファイル';
@@ -172,7 +188,7 @@ $string['othersources'] = '調査に加えるその他のソース';
 $string['page_unaccessible'] = '利用できないページ';
 $string['paste'] = '貼り付け';
 $string['paste_text'] = 'クリップボードからテキストを貼り付け';
-$string['pluginname']='Virtual programming lab';
+$string['pluginname'] = 'Virtual programming lab';
 $string['previous_page'] = '直前のページ';
 $string['previoussubmissionslist'] = 'これまでの提出物のリスト';
 $string['program_help'] = 'プログラムヘルプ';
@@ -436,23 +452,13 @@ $string['local_jail_servers_help'] = '<h1>ローカルjailサーバ</h1>
 サーバリストの最後に"end_of_jails"を含む行を記述する。</p>';
 $string['modulename_help'] = '<p>VPLは、プログラミング課題の管理をするためのMoodleの活動モジュールであり、次のような特徴を持っている。</p>
 <ul>
-<li>アプレットを用い、プログラムのソースコードをブラウザ内で編集することが可能</li>
+<li>プログラムのソースコードをブラウザ内で編集することが可能</li>
 <li>学生はブラウザ内でプログラムを対話的に実行可能（ここの環境では不可）</li>
 <li>プログラムのレビューのためにテストケースで実行可能</li>
 <li>ファイル間の類似度を検索できる</li>
 <li>編集に制限を掛けたり、外部からの貼り付けを無効にできる</li>
 </ul>
-<p>提出に関する制限は、<b>提出の制限</b>パネルで設定できる。</p>
-<ul>
-<li>提出可能なファイル数。ファイル名は「要求されたファイル」タブで設定できる。</li>
-<li>制限されたコードエディタを用いた提出しか許さない。
-このオプションを設定した場合、ファイルをアップロードしたり、コードエディタ外からテキストを貼り付けることができなくなる。</li>
-<li>アップロードするファイルの最大サイズ。</li>
-<li>活動にアクセスしたり課題を提出するためのパスワード。
-パスワードを設定した場合、活動にアクセスするときにシステムがパスワードを問い合わせる。</li>
-<li>提出することができるネットワーク。</li>
-</ul>
-<p>また、評価のスケールやグループなど、標準的なオプションもこのページで設定できる。</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
 $string['requestedfiles_help'] = '<h1>要求されたファイル</h1>
 <p>ここでは、活動の基本部で指定されたファイル数まで、要求されたファイルの名前を指定する。</p>

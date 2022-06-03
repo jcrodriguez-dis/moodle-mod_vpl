@@ -1,1 +1,8 @@
-ace.define("ace/snippets/sjs",["require","exports","module"],function(e,t,n){t.snippetText="",t.scope="sjs"})
+;                (function() {
+                    ace.require(["ace/snippets/sjs"], function(m) {
+                        if (typeof module == "object" && typeof exports == "object" && module) {
+                            module.exports = m;
+                        }
+                    });
+                })();
+            

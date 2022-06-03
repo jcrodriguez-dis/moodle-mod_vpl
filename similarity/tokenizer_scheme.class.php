@@ -23,166 +23,184 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/tokenizer_base.class.php';
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_tokenizer_scheme extends vpl_tokenizer_base{
-    protected $reserved=null;
-    protected $line_number;
+require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
+class vpl_tokenizer_scheme extends vpl_tokenizer_base {
+    protected $reserved = null;
+    protected $linenumber;
     protected $tokens;
-    function __construct(){
-        parent::__construct();
-        //TODO need more reserved and functions
-        $list = array('define', 'if', 'cond', 'else',
-                                 'let', 'eq?', 'eqv?', 'equal?',
-                                 'and', 'or', 'letrec', 'let-syntax',
-                                 'letrec-sintax', 'begin', 'do',
-                                'quote', '+', '-', '*', '/',
-                                 'sqrt', 'eval', 'car', 'cdr', 'list',
-                                 'cons', 'null?', 'list?', '=', '<>',
-                                 '<=', '>=', '<', '>', 'lambda',
-                                 'not');
-        $this->reserved= array();
+    public function __construct() {
+        // TODO need more reserved and functions.
+        $list = array (
+                'define',
+                'if',
+                'cond',
+                'else',
+                'let',
+                'eq?',
+                'eqv?',
+                'equal?',
+                'and',
+                'or',
+                'letrec',
+                'let-syntax',
+                'letrec-sintax',
+                'begin',
+                'do',
+                'quote',
+                '+',
+                '-',
+                '*',
+                '/',
+                'sqrt',
+                'eval',
+                'car',
+                'cdr',
+                'list',
+                'cons',
+                'null?',
+                'list?',
+                '=',
+                '<>',
+                '<=',
+                '>=',
+                '<',
+                '>',
+                'lambda',
+                'not'
+        );
+        $this->reserved = array ();
         foreach ($list as $word) {
-            $this->reserved[$word]=1;
+            $this->reserved[$word] = 1;
         }
     }
-    function is_previous_open_parenthesis(& $string, $pos){
-        for( ;$pos >= 0;$pos--){
+    protected function is_previous_open_parenthesis(& $string, $pos) {
+        for (; $pos >= 0; $pos --) {
             $char = $string[$pos];
-            if($char=='('){
+            if ($char == '(') {
                 return true;
             }
-            if($char != ' ' && $char != self::TAB && $char != self::LF && $char != self::CR){
+            if ($char != ' ' && $char != self::TAB && $char != self::LF && $char != self::CR) {
                 return false;
             }
         }
         return false;
     }
-    protected function is_indentifier($text){
-        if(strlen($text)==0){
+    protected function is_indentifier($text) {
+        if (strlen( $text ) == 0) {
             return false;
         }
-        $first=$text{0};
-        return ($first >= 'a' && $first <= 'z') ||
-                    ($first >= 'A' && $first <= 'Z') ||
-                    $first=='_';
+        $first = $text[0];
+        return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
     }
-    protected function is_number($text){
-        if(strlen($text)==0){
+    protected function is_number($text) {
+        if (strlen( $text ) == 0) {
             return false;
         }
-        $first=$text{0};
+        $first = $text[0];
         return $first >= '0' && $first <= '9';
     }
-    protected function add_parenthesis(){
-        $this->tokens[] = new vpl_token(vpl_token_type::operator,'(',$this->line_number);
+    protected function add_parenthesis() {
+        $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
     }
-
-    protected function add_parameter_pending(&$pending){
-        if($pending <= ' '){
+    protected function add_parameter_pending(&$pending) {
+        if ($pending <= ' ') {
             $pending = '';
             return;
         }
-        $this->tokens[] = new vpl_token(vpl_token_type::literal,$pending,$this->line_number);
-        $pending='';
+        $this->tokens[] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
+        $pending = '';
     }
-
-    protected function add_function_pending(&$pending){
-        if($pending <= ' '){
+    protected function add_function_pending(&$pending) {
+        if ($pending <= ' ') {
             $pending = '';
             return;
         }
-        if(isset($this->reserved[$pending])){
-            $type=vpl_token_type::operator;
-        }else{
-            $type=vpl_token_type::identifier;
+        if (isset( $this->reserved[$pending] )) {
+            $type = vpl_token_type::OPERATOR;
+        } else {
+            $type = vpl_token_type::IDENTIFIER;
         }
-        $this->tokens[] = new vpl_token($type,$pending,$this->line_number);
-        $pending='';
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $pending = '';
     }
-    const in_regular=0;
-    const in_string=1;
-    const in_char=2;
-    const in_comment=4;
-
-    function parse($filedata){
-        $this->tokens=array();
-        $this->line_number=1;
-        $state = self::in_regular;
-        $pending='';
-        $previous_is_open_parenthesis = false;
-        $l = strlen($filedata);
-        $current='';
-        $pospendig=0;
-        for($i=0;$i<$l;$i++){
-            $previous=$current;
-            $current=$filedata[$i];
-            if($i < ($l-1)) {
-                $next = $filedata[$i+1];
-            }else{
-                $next ='';
+    const IN_REGULAR = 0;
+    const IN_STRING = 1;
+    const IN_CHAR = 2;
+    const IN_COMMENT = 4;
+    public function parse($filedata) {
+        $this->tokens = array ();
+        $this->linenumber = 1;
+        $state = self::IN_REGULAR;
+        $pending = '';
+        $l = strlen( $filedata );
+        $current = '';
+        $pospendig = 0;
+        for ($i = 0; $i < $l; $i ++) {
+            $previous = $current;
+            $current = $filedata[$i];
+            if ($i < ($l - 1)) {
+                $next = $filedata[$i + 1];
+            } else {
+                $next = '';
             }
-            if($current == self::CR){
-                if($next == self::LF) {
+            if ($current == self::CR) {
+                if ($next == self::LF) {
                     continue;
-                }else{
+                } else {
                     $current = self::LF;
                 }
             }
-            switch($state){
-
-                case self::in_comment:{
-                    if($current==self::LF) {
-                        $state = self::in_regular;
+            switch ($state) {
+                case self::IN_COMMENT :
+                    if ($current == self::LF) {
+                        $state = self::IN_REGULAR;
                     }
                     break;
-                }
-                case self::in_string:{
-                    if($current=='"' && $previous!="\\") {
-                        $state = self::in_regular;
+                case self::IN_STRING :
+                    if ($current == '"' && $previous != "\\") {
+                        $state = self::IN_REGULAR;
                     }
                     break;
-                }
-                case self::in_char:{
-                    if(! ctype_alpha($current) && $current!='-') {
-                        $state = self::in_regular;
-                        $i--;
-                        continue; //Reprocess current char
+                case self::IN_CHAR :
+                    if (! ctype_alpha( $current ) && $current != '-') {
+                        $state = self::IN_REGULAR;
+                        $i --;
+                        break; // Reprocess current char.
                     }
                     break;
-                }
-                case self::in_regular:{
-                    if(($current != ' ') && ($current != '(')&& ($current!=')')
-                    && ($current != ';')&& ($current != '"') && ($current!=self::LF) && ($current!=self::TAB)) {
-                        if($pending == ''){
-                            $pospendig=$i;
+                case self::IN_REGULAR :
+                    if (($current != ' ') && ($current != '(') && ($current != ')') && ($current != ';')
+                        && ($current != '"') && ($current != self::LF) && ($current != self::TAB)) {
+                        if ($pending == '') {
+                            $pospendig = $i;
                         }
                         $pending .= $current;
-                    }else{
-                        if(strlen($pending)){
-                            if($this->is_previous_open_parenthesis($filedata, $pospendig-1)){
-                                $this->add_function_pending($pending);
-                            }else{
-                                $this->add_parameter_pending($pending);
+                    } else {
+                        if (strlen( $pending )) {
+                            if ($this->is_previous_open_parenthesis( $filedata, $pospendig - 1 )) {
+                                $this->add_function_pending( $pending );
+                            } else {
+                                $this->add_parameter_pending( $pending );
                             }
                         }
-                        if($current == '('){
+                        if ($current == '(') {
                             $this->add_parenthesis();
                         }
-                        if($current == ';'){
-                            $state = self::in_comment;
-                        } elseif($current == '"')    {
-                            $state = self::in_string;
-                        } elseif($current == '#' && $next =='\\') {
-                            $state = self::in_char;
+                        if ($current == ';') {
+                            $state = self::IN_COMMENT;
+                        } else if ($current == '"') {
+                            $state = self::IN_STRING;
+                        } else if ($current == '#' && $next == '\\') {
+                            $state = self::IN_CHAR;
                         }
                     }
                     break;
-                }
             }
         }
     }
-    function get_tokens(){
+    public function get_tokens() {
         return $this->tokens;
     }
 }

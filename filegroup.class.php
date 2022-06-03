@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class to edit a group of files
+ * Class to manage a group of files
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
@@ -23,10 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/locallib.php';
-require_once dirname(__FILE__).'/views/sh_factory.class.php';
+defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname(__FILE__).'/locallib.php');
+require_once(dirname(__FILE__).'/views/sh_factory.class.php');
+require_once(dirname(__FILE__).'/similarity/watermark.class.php');
 
-class file_group_process{
+
+class file_group_process {
     /**
      * Name of file list
      *
@@ -56,6 +59,50 @@ class file_group_process{
     protected $numstaticfiles;
 
     /**
+     * Save an array of strings in a file
+     *
+     * @param $filename string
+     * @param $list array of strings
+     *
+     * @return void
+     */
+    public static function write_list($filename, $list, $otherfln = false) {
+        $data = '';
+        foreach ($list as $info) {
+            if ($info > '') {
+                if ($data > '') {
+                    $data .= "\n";
+                }
+                $data .= $info;
+            }
+        }
+        // Try to reuse other file.
+        if ($otherfln != false && is_file( $otherfln )
+            && file_get_contents( $otherfln ) === $data
+            && link( $otherfln, $filename) ) {
+            return;
+        }
+        vpl_fwrite( $filename, $data );
+    }
+
+    /**
+     * get parsed lines of a file
+     *
+     * @param $filename string
+     * @return array of lines of the file
+     */
+    public static function read_list($filename) {
+        $ret = array ();
+        if (is_file( $filename )) {
+            $data = file_get_contents( $filename );
+            if ($data > '') {
+                $nl = vpl_detect_newline( $data );
+                $ret = explode( $nl, $data );
+            }
+        }
+        return $ret;
+    }
+    /**
      * Constructor
      *
      * @param string $filelistname
@@ -63,22 +110,18 @@ class file_group_process{
      * @param int $maxnumfiles
      * @param int $numstaticfiles
      */
-    function __construct($filelistname,$dir,$maxnumfiles=10000,$numstaticfiles=0){
-        $this->filelistname = $filelistname;
-        $this->dir = $dir;
-        if(strlen($dir) == 0 || $dir[strlen($dir)-1] != '/'){
-            $this->dir .= '/';
-        }
+    public function __construct($dir, $maxnumfiles = 10000, $numstaticfiles = 0) {
+        $this->filelistname = dirname($dir) . "/" . basename($dir) . ".lst";
+        $this->dir = dirname($dir) . "/" . basename($dir) . "/";
         $this->maxnumfiles = $maxnumfiles;
         $this->numstaticfiles = $numstaticfiles;
     }
 
     /**
      * Get max number of files.
-     *
      * @return int
      */
-    function get_maxnumfiles(){
+    public function get_maxnumfiles() {
         return $this->maxnumfiles;
     }
 
@@ -87,7 +130,7 @@ class file_group_process{
      *
      * @return int
      */
-    function get_numstaticfiles(){
+    public function get_numstaticfiles() {
         return $this->numstaticfiles;
     }
 
@@ -96,8 +139,8 @@ class file_group_process{
      * @parm path file path
      * @return string
      */
-    static function encodeFileName($path){
-        return str_replace('/','=',$path);
+    public static function encodefilename($path) {
+        return str_replace('/', '=', $path);
     }
 
     /**
@@ -107,106 +150,121 @@ class file_group_process{
      * @param string $data
      * @return bool (added==true)
      */
-    function addFile($filename,$data=null){
-        if(!vpl_is_valid_path_name($filename)){
+    public function addfile($filename, $data = null) {
+        if (! vpl_is_valid_path_name( $filename )) {
             return false;
         }
-        ignore_user_abort (true);
+        ignore_user_abort( true );
         $filelist = $this->getFileList();
-        foreach($filelist as $f){
-            if($filename == $f){
-                if($data !== null){
-                    $path=$this->dir.self::encodeFileName($filename);
-                    $fd = vpl_fopen($path);
-                    fwrite($fd,$data);
-                    fclose($fd);
+        $path = $this->dir . self::encodeFileName( $filename );
+        if (array_search($filename, $filelist) !== false) {
+            if ($data !== null) {
+                vpl_fwrite( $path, $data );
+            } else {
+                if (is_file($path)) {
+                    unlink($path);
                 }
-                return true;
             }
+            return true;
         }
-        if(count($filelist)>= $this->maxnumfiles){
+        if (count( $filelist ) >= $this->maxnumfiles) {
             return false;
         }
         $filelist[] = $filename;
-        $this->setFileList($filelist);
-        if($data){
-            $path=$this->dir.self::encodeFileName($filename);
-            $fd = vpl_fopen($path);
-            fwrite($fd,$data);
-            fclose($fd);
+        $this->setFileList( $filelist );
+        if ($data !== null) {
+            vpl_fwrite( $path, $data );
         }
         return true;
     }
 
     /**
-     * Delete a file from groupfile
+     * Add new files to the group/Modify the data file
      *
-     * @param int $num file position
-     * @return bool
+     * @param array $files
+     * @return bool (added==true)
      */
-    function deleteFile($num){
-        if($num < $this->numstaticfiles){
-            return false;
-        }
-        ignore_user_abort (true);
+    public function addallfiles($files, $otherdir = false, $otherfln = false) {
+        ignore_user_abort( true );
         $filelist = $this->getFileList();
-        $l = count($filelist);
-        $ret = false;
-        $filelistmod = array();
-        for($i = 0 ;$i <$l; $i++){
-            if($num== $i){
-                $fullname = $this->dir.self::encodeFileName($filelist[$num]);
-                $ret = true;
-                if(file_exists($fullname)){
-                    unlink($fullname);
+        $filehash = array();
+        foreach ($filelist as $f) {
+            $filehash[$f] = 1;
+        }
+        vpl_create_dir($this->dir);
+        foreach ($files as $filename => $data) {
+            if ( !isset($filehash[$filename]) ) {
+                $filelist[] = $filename;
+            }
+            if ($data === null) {
+                $data = '';
+            }
+            $fnencode = self::encodeFileName( $filename );
+            $path = $this->dir . $fnencode;
+            if ( $otherdir != false ) {
+                $otherpath = $otherdir . $fnencode;
+                if (file_exists( $otherpath)
+                        && $data == file_get_contents( $otherpath )
+                        && link($otherpath, $path) ) {
+                    continue;
                 }
             }
-            else{
-                $filelistmod[]=$filelist[$i];
-            }
+            vpl_fwrite( $path, $data );
         }
-        if($ret){
-            $this->setFileList($filelistmod);
-        }
-        return $ret;
+        $this->setFileList( $filelist, $otherfln);
     }
 
     /**
-     * Rename a file
+     * Delete all files from groupfile
      *
-     * @param int $num
-     * @param string $filename new filename
-     * @return bool (renamed==true)
+     * @return void
      */
-    function renameFile($num,$filename){
-        if($num<$this->numstaticfiles || !vpl_is_valid_path_name($filename)){
-            return false;
-        }
-        ignore_user_abort (true);
+    public function deleteallfiles() {
+        ignore_user_abort( true );
         $filelist = $this->getFileList();
-        if(array_search($filename,$filelist) !== false){
-            return false;
-        }
-        if($num >= 0 && $num<count($filelist)){
-            $path1=$this->dir.self::encodeFileName($filelist[$num]);
-            $path2=$this->dir.self::encodeFileName($filename);
-            if(file_exists($path1)){
-                rename($path1,$path2);
-                $filelist[$num] =$filename;
-                $this->setFileList($filelist);
-                return true;
+        foreach ($filelist as $filename) {
+            $fullname = $this->dir . self::encodeFileName( $filename );
+            if (is_file( $fullname )) {
+                unlink( $fullname );
             }
         }
-        return false;
+        $this->setFileList( array() );
     }
 
+    /**
+     * Get the file list name used by default
+     *
+     * @return string
+     */
+    public function getfilelistname() {
+        return $this->filelistname;
+    }
     /**
      * Get list of files
      *
      * @return string[]
      */
-    function getFileList(){
-        return vpl_read_list_from_file($this->filelistname);
+    public function getfilelist() {
+        return self::read_list($this->filelistname);
+    }
+
+    /**
+     * Get all files from group
+     *
+     * @return array $files
+     */
+    public function getallfiles() {
+        $files = array();
+        $filelist = $this->getFileList();
+        foreach ($filelist as $filename) {
+            $fullname = $this->dir . self::encodeFileName( $filename );
+            if (is_file( $fullname )) {
+                 $files[$filename] = file_get_contents( $fullname );
+            } else {
+                 $files[$filename] = '';
+            }
+        }
+        return $files;
     }
 
     /**
@@ -214,8 +272,8 @@ class file_group_process{
      *
      * @param string[] $filelist
      */
-    function setFileList($filelist){
-        vpl_write_list_to_file($this->filelistname,$filelist);
+    public function setfilelist($filelist, $otherfln = false) {
+        self::write_list($this->filelistname, $filelist, $otherfln );
     }
 
     /**
@@ -224,8 +282,8 @@ class file_group_process{
      * @param int $num
      * @return string
      */
-    function getFileComment($num){
-        return get_string('file').' '.($num+1);
+    public function getfilecomment($num) {
+        return get_string( 'file' ) . ' ' . ($num + 1);
     }
 
     /**
@@ -234,102 +292,149 @@ class file_group_process{
      * @param int/string $mix
      * @return string
      */
-    function getFileData($mix){
-        if(is_int($mix)){
-            $num=$mix;
+    public function getfiledata($mix) {
+        if (is_int( $mix )) {
+            $num = $mix;
             $filelist = $this->getFileList();
-            if($num>=0 && $num<count($filelist)){
-                $filename =$this->dir.self::encodeFileName($filelist[$num]);
-                if(file_exists($filename)){
-                    return file_get_contents($filename);
-                }else{
+            if ($num >= 0 && $num < count( $filelist )) {
+                $filename = $this->dir . self::encodeFileName( $filelist[$num] );
+                if (is_file( $filename )) {
+                    return file_get_contents( $filename );
+                } else {
+                    return '';
+                }
+            }
+        } else if (is_string( $mix )) {
+            $filelist = $this->getFileList();
+            if (array_search( $mix, $filelist ) !== false) {
+                $fullfilename = $this->dir . self::encodeFileName( $mix );
+                if (is_file( $fullfilename )) {
+                    return file_get_contents( $fullfilename );
+                } else {
                     return '';
                 }
             }
         }
-        elseif(is_string($mix)){
-            $filelist = $this->getFileList();
-            if(array_search($mix,$filelist)!== false){
-                $fullfilename =$this->dir.self::encodeFileName($mix);
-                if(file_exists($fullfilename)){
-                    return file_get_contents($fullfilename);
-                }else{
-                    return '';
-                }
-            }
-        }
-        debugging("File not found $mix",DEBUG_DEVELOPER);
+        debugging( "File not found $mix", DEBUG_DEVELOPER );
         return '';
     }
 
     /**
      * Return is there is some file with data
+     *
      * @return boolean
      */
-    function is_populated(){
+    public function is_populated() {
         $filelist = $this->getFileList();
-        foreach($filelist as $filename){
-            $fullname = $this->dir.self::encodeFileName($filename);
-            if(file_exists($fullname)){
-                $info = stat($fullname);
-                 if($info['size']>0){
-                     return true;
-                 }
+        foreach ($filelist as $filename) {
+            $fullname = $this->dir . self::encodeFileName( $filename );
+            if (is_file( $fullname )) {
+                $info = stat( $fullname );
+                if ($info['size'] > 0) {
+                    return true;
+                }
             }
         }
         return false;
     }
 
+    /**
+     * Return a version number for the group file
+     *
+     * @return int
+     */
+    public function getversion() {
+        try {
+            $info = stat($this->dir);
+        } catch (Exception $e) {
+            return 0;
+        }
+        if ($info !== false) {
+            return $info['mtime'];
+        } else {
+            return 0;
+        }
+    }
 
+    static protected $outputtextsize = 0; // Total size of text files shown.
+    static protected $outputbinarysize = 0; // Total size of binary files shown.
+    static protected $outputtextlimit = 100000; // Limit of total size of text files shown.
+    static protected $outputbinarylimit = 10000000; // Limit of total size of binary files shown.
     /**
      * Print file group
-     **/
-    function print_files($if_no_exist=true){
-        global $OUTPUT;
+     */
+    public function print_files($ifnoexist = true) {
         $filenames = $this->getFileList();
+        $showbinary = self::$outputbinarysize < self::$outputbinarylimit;
+        $showcode = self::$outputtextsize < self::$outputtextlimit;
         foreach ($filenames as $name) {
-            if(file_exists($this->dir.self::encodeFileName($name))){
-                echo '<h3>'.s($name).'</h3>';
-                $printer= vpl_sh_factory::get_sh($name);
-                echo $OUTPUT->box_start();
-                $data = $this->getFileData($name);
-                $printer->print_file($name,$data);
-                echo $OUTPUT->box_end();
-            }elseif($if_no_exist){
-                echo '<h3>'.s($name).'</h3>';
+            if (is_file( $this->dir . self::encodeFileName( $name ) )) {
+                if ( vpl_is_binary($name) ) {
+                    if ($showbinary) {
+                        $printer = vpl_sh_factory::get_sh( $name );
+                        $data = $this->getFileData( $name );
+                        $printer->print_file( $name, $data );
+                        self::$outputbinarysize += strlen($data);
+                    } else {
+                        echo '<h4>' . s( $name ) . '</h4>';
+                        echo "[...]";
+                    }
+                } else {
+                    if ($showcode) {
+                        $printer = vpl_sh_factory::get_sh( $name );
+                    } else {
+                        $printer = vpl_sh_factory::get_object('text_nsh');
+                    }
+                    $data = $this->getFileData( $name );
+                    $printer->print_file( $name, $data );
+                    self::$outputtextsize += strlen($data);
+                }
+            } else if ($ifnoexist) {
+                echo '<h4>' . s( $name ) . '</h4>';
             }
+        }
+        vpl_sh_factory::syntaxhighlight();
+    }
+
+    /**
+     * Generate temporal zip file
+     *
+     * @parm $watermark bool Adds watermark to files
+     */
+    public function generate_zip_file(bool $watermark = false) {
+        global $CFG;
+        global $USER;
+        $zip = new ZipArchive();
+        $dir = $CFG->dataroot . '/temp/vpl';
+        if (! file_exists($dir) ) {
+            mkdir($dir, $CFG->directorypermissions, true);
+        }
+        $zipfilename = tempnam( $dir, 'zip' );
+        if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
+            foreach ($this->getFileList() as $filename) {
+                $data = $this->getFileData( $filename );
+                if ($watermark) {
+                    $data = vpl_watermark::addwm( $data, $filename, $USER->id );
+                }
+                $zip->addFromString( $filename, $data );
+            }
+            $zip->close();
+            return $zipfilename;
+        } else {
+            return false;
         }
     }
 
     /**
-     * Download files
-     * @parm $name name of zip file generated
-     **/
-    function download_files($name){
-        $cname = rawurlencode($name.'.zip');
-        global $CFG;
-        $zip = new ZipArchive();
-        $zipfilename=tempnam($CFG->dataroot . '/temp/'  , 'vpl_zipdownload' );
-        if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
-            foreach ($this->getFileList() as $filename) {
-                $zip->addFromString($filename, $this->getFileData($filename));
-            }
-            $zip->close();
-            //Get zip data
-            $data=file_get_contents($zipfilename);
-            //remove zip file
-            unlink($zipfilename);
-            //Send zipdata
-            @header('Content-Length: '.strlen($data));
-            @header('Content-Type: application/zip; charset=utf-8');
-            @header('Content-Disposition: attachment; filename="'.$name.'.zip"; filename*=utf-8\'\''.$cname);
-            @header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0');
-            @header('Content-Transfer-Encoding: binary');
-            @header('Expires: 0');
-            @header('Pragma: no-cache');
-            @header('Accept-Ranges: none');
-            echo $data;
-            die;
+     * Download files as zip
+     *
+     * @parm $name name of the generated zip file
+     */
+    public function download_files($name, $watermark = false) {
+        $zipfilename = $this->generate_zip_file($watermark);
+        if ($zipfilename !== false) {
+            vpl_output_zip($zipfilename, $name);
+            die();
         }
     }
 }

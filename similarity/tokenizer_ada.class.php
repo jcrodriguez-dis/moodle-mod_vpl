@@ -23,199 +23,275 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/tokenizer_base.class.php';
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_tokenizer_ada extends vpl_tokenizer_base{
-    const regular=0;
-    const in_string=1;
-    const in_linecomment=2;
-    const in_number=3;
-    protected static $ada_reserved=null;
+require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+
+class vpl_tokenizer_ada extends vpl_tokenizer_base {
+    const REGULAR = 0;
+    const IN_STRING = 1;
+    const IN_LINECOMMENT = 2;
+    const IN_NUMBER = 3;
+    protected static $adareserved = null;
     protected static $operators;
-    protected $line_number;
+    protected $linenumber;
     protected $tokens;
-    protected function is_number($text){
-        if(strlen($text)==0){
+    protected function is_number($text) {
+        if (strlen( $text ) == 0) {
             return false;
         }
-        $first=$text{0};
+        $first = $text[0];
         return $first >= '0' && $first <= '9';
     }
-
-    protected function add_pending(&$rawpending){
-        $pending = strtolower($rawpending);
-        if(isset(self::$operators[$pending])){
-            $type=vpl_token_type::operator;
-        }elseif(isset($this->reserved[$pending])){
-            $type=vpl_token_type::reserved;
-        }elseif($this->is_number($pending)){
-            $type=vpl_token_type::literal;
-        }else{
-            $type=vpl_token_type::identifier;
+    protected function add_pending(&$rawpending) {
+        $pending = strtolower( $rawpending );
+        if (isset( self::$operators[$pending] )) {
+            $type = vpl_token_type::OPERATOR;
+        } else if (isset( $this->reserved[$pending] )) {
+            $type = vpl_token_type::RESERVED;
+        } else if ($this->is_number( $pending )) {
+            $type = vpl_token_type::LITERAL;
+        } else {
+            $type = vpl_token_type::IDENTIFIER;
         }
-        $this->tokens[] = new vpl_token($type,$pending,$this->line_number);
-        $rawpending='';
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $rawpending = '';
     }
-    function __construct(){
-        if(self::$ada_reserved === null){
-            self::$ada_reserved= array('abort' => true, 'else' => true, 'new' => true, 'return' => true,
-                'abs' => true, 'elsif' => true, 'not' => true, 'reverse' => true,
-                'abstract' => true, 'end' => true, 'null' => true,
-                'accept' => true, 'entry' => true,  'select' => true,
-                'access' => true, 'exception' => true, 'of' => true, 'separate' => true,
-                'aliased' => true, 'exit' => true, 'or' => true, 'subtype' => true,
-                'all' => true,  'others' => true, 'synchronized' => true,
-                'and' => true, 'for' => true, 'out' => true,
-                'array' => true, 'function' => true, 'overriding' => true, 'tagged' => true,
-                'at' => true,   'task' => true,
-                'generic' => true, 'package' => true, 'terminate' => true,
-                'begin' => true, 'goto' => true, 'pragma' => true, 'then' => true,
-                'body' => true,  'private' => true, 'type' => true,
-                'if' => true, 'procedure' => true,
-                'case' => true, 'in' => true, 'protected' => true, 'until' => true,
-                'constant' => true, 'interface' => true, 'use' => true,
-                'is' => true, 'raise' => true,
-                'declare' => true,  'range' => true, 'when' => true,
-                'delay' => true, 'limited' => true, 'record' => true, 'while' => true,
-                'delta' => true, 'loop' => true, 'rem' => true, 'with' => true,
-                'digits' => true,  'renames' => true,
-                'do' => true, 'mod' => true, 'requeue' => true, 'xor' => true);
-            self::$operators= array('abs' => true, 'not' => true, 'in' => true,
-                'or' => true, 'and' => true, 'rem' => true, 'mod' => true, 'xor' => true,
-                '&' => true, '\'' => true, '(' => true, ')' => true, '*' => true,
-                '+' => true, ',' => true, '–' => true, '.' => true, '/' => true,
-                ':' => true, ';' => true, '<' => true, '=' => true, '>' => true, '|' => true,
-                '=>' => true, '..' => true, '**' => true, ':=' => true, '/=' => true,
-                '>=' => true, '<=' => true, '<<' => true, '>>' => true, '<>' => true);
+    public function __construct() {
+        if (self::$adareserved === null) {
+            self::$adareserved = array (
+                    'abort' => true,
+                    'else' => true,
+                    'new' => true,
+                    'return' => true,
+                    'abs' => true,
+                    'elsif' => true,
+                    'not' => true,
+                    'reverse' => true,
+                    'abstract' => true,
+                    'end' => true,
+                    'null' => true,
+                    'accept' => true,
+                    'entry' => true,
+                    'select' => true,
+                    'access' => true,
+                    'exception' => true,
+                    'of' => true,
+                    'separate' => true,
+                    'aliased' => true,
+                    'exit' => true,
+                    'or' => true,
+                    'subtype' => true,
+                    'all' => true,
+                    'others' => true,
+                    'synchronized' => true,
+                    'and' => true,
+                    'for' => true,
+                    'out' => true,
+                    'array' => true,
+                    'function' => true,
+                    'overriding' => true,
+                    'tagged' => true,
+                    'at' => true,
+                    'task' => true,
+                    'generic' => true,
+                    'package' => true,
+                    'terminate' => true,
+                    'begin' => true,
+                    'goto' => true,
+                    'pragma' => true,
+                    'then' => true,
+                    'body' => true,
+                    'private' => true,
+                    'type' => true,
+                    'if' => true,
+                    'procedure' => true,
+                    'case' => true,
+                    'in' => true,
+                    'protected' => true,
+                    'until' => true,
+                    'constant' => true,
+                    'interface' => true,
+                    'use' => true,
+                    'is' => true,
+                    'raise' => true,
+                    'declare' => true,
+                    'range' => true,
+                    'when' => true,
+                    'delay' => true,
+                    'limited' => true,
+                    'record' => true,
+                    'while' => true,
+                    'delta' => true,
+                    'loop' => true,
+                    'rem' => true,
+                    'with' => true,
+                    'digits' => true,
+                    'renames' => true,
+                    'do' => true,
+                    'mod' => true,
+                    'requeue' => true,
+                    'xor' => true
+            );
+            self::$operators = array (
+                    'abs' => true,
+                    'not' => true,
+                    'in' => true,
+                    'or' => true,
+                    'and' => true,
+                    'rem' => true,
+                    'mod' => true,
+                    'xor' => true,
+                    '&' => true,
+                    '\'' => true,
+                    '(' => true,
+                    ')' => true,
+                    '*' => true,
+                    '+' => true,
+                    ',' => true,
+                    '–' => true,
+                    '.' => true,
+                    '/' => true,
+                    ':' => true,
+                    ';' => true,
+                    '<' => true,
+                    '=' => true,
+                    '>' => true,
+                    '|' => true,
+                    '=>' => true,
+                    '..' => true,
+                    '**' => true,
+                    ':=' => true,
+                    '/=' => true,
+                    '>=' => true,
+                    '<=' => true,
+                    '<<' => true,
+                    '>>' => true,
+                    '<>' => true
+            );
         }
-        $this->reserved = &self::$ada_reserved;
-        parent::__construct();
+        $this->reserved = &self::$adareserved;
     }
-
-
-    function parse($filedata){
-        $this->tokens=array();
-        $this->line_number=1;
-        $state = self::regular;
-        $pending='';
-        $l = strlen($filedata);
-        $current='';
-        $previous='';
-        for($i=0;$i<$l;$i++){
-            $previous=$current;
-            $current=$filedata[$i];
-            if($i < ($l-1)) {
-                $next = $filedata[$i+1];
-            }else{
-                $next ='';
+    public function parse($filedata) {
+        $this->tokens = array ();
+        $this->linenumber = 1;
+        $state = self::REGULAR;
+        $pending = '';
+        $l = strlen( $filedata );
+        $current = '';
+        $previous = '';
+        for ($i = 0; $i < $l; $i ++) {
+            $previous = $current;
+            $current = $filedata[$i];
+            if ($i < ($l - 1)) {
+                $next = $filedata[$i + 1];
+            } else {
+                $next = '';
             }
-            if($previous == self::LF){
-                $this->line_number++;
+            if ($previous == self::LF) {
+                $this->linenumber ++;
             }
-            if($current == self::CR){
-                if($next == self::LF) {
+            if ($current == self::CR) {
+                if ($next == self::LF) {
                     continue;
-                }else{
-                    $this->line_number++;
+                } else {
+                    $this->linenumber ++;
                     $current = self::LF;
                 }
             }
-            switch($state){
-                case self::in_linecomment:
-                    // Check end of comment
-                    if($current==self::LF){
-                        $state=self::regular;
+            switch ($state) {
+                case self::IN_LINECOMMENT :
+                    // Check end of comment.
+                    if ($current == self::LF) {
+                        $state = self::REGULAR;
                     }
                     break;
-                case self::in_string:
-                    // Check end of string
-                    if($current=='"'){
-                        if($next!='"') {
-                            $state = self::regular;
+                case self::IN_STRING :
+                    // Check end of string.
+                    if ($current == '"') {
+                        if ($next != '"') {
+                            $state = self::REGULAR;
                             break;
-                        }else{
-                            $i++;
-                            $current=' ';
+                        } else {
+                            $i ++;
+                            $current = ' ';
                             break;
                         }
                     }
                     break;
-                case self::in_number:
-                    if(($current >= '0' && $current <= '9') ||
-                    $current == '.' || $current == 'e' || $current == 'e'){
+                case self::IN_NUMBER :
+                    if (($current >= '0' && $current <= '9') || $current == '.' || $current == 'e' || $current == 'e') {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
-                    if(($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')){
+                    if (($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')) {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
-                    $this->add_pending($pending);
-                    $state = self::regular;
-                    //Process current as regular
-                case self::regular:
-                    if(strpos(" \n\r\t\v\f",$current)!== false){ //A separator
-                        $this->add_pending($pending);
+                    $this->add_pending( $pending );
+                    $state = self::REGULAR;
+                    // Process current as REGULAR.
+                case self::REGULAR :
+                    if (strpos( " \n\r\t\v\f", $current ) !== false) { // A separator.
+                        $this->add_pending( $pending );
                         break;
-                    }elseif($current == '-') {
-                        if($next == '-'){ // Begin line comment
-                            $state = self::in_linecomment;
-                            $this->add_pending($pending);
-                            $i++;
-                            continue;
-                        }
-                    }elseif($current == '"')    {
-                        $state = self::in_string;
-                        $this->add_pending($pending);
-                        break;
-                    }elseif($current == "'"){
-                        $this->add_pending($pending);
-                        if($i < ($l-2) && $filedata[$i+2]=== "'"){ //Char literal coding problem
-                            $i+=2;
+                    } else if ($current == '-') {
+                        if ($next == '-') { // Begin line comment.
+                            $state = self::IN_LINECOMMENT;
+                            $this->add_pending( $pending );
+                            $i ++;
                             break;
-                        } //Not char literal then operator
-                    }elseif(strpos("&'()*+,–./:;<=>|",$current)!== false){ //A delimiter
-                        $this->add_pending($pending);
-                        $this->add_pending($current);
+                        }
+                    } else if ($current == '"') {
+                        $state = self::IN_STRING;
+                        $this->add_pending( $pending );
                         break;
-                    }
-                    elseif($current >= '0' && $current <= '9'){ //Start of number
-                        $state = self::in_number;
-                        $this->add_pending($pending);
+                    } else if ($current == "'") {
+                        $this->add_pending( $pending );
+                        if ($i < ($l - 2) && $filedata[$i + 2] === "'") { // Char literal coding problem.
+                            $i += 2;
+                            break;
+                        } // Not char literal then operator.
+                    } else if (strpos( "&'()*+,–./:;<=>|", $current ) !== false) { // A delimiter.
+                        $this->add_pending( $pending );
+                        $this->add_pending( $current );
+                        break;
+                    } else if ($current >= '0' && $current <= '9') { // Start of number.
+                        $state = self::IN_NUMBER;
+                        $this->add_pending( $pending );
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending($pending);
+                    $this->add_pending( $pending );
             }
         }
-        $this->add_pending($pending);
+        $this->add_pending( $pending );
         $this->compact_operators();
     }
-    function get_tokens(){
+    public function get_tokens() {
         return $this->tokens;
     }
-    function compact_operators(){
-        $correct = array();
+    public function compact_operators() {
+        $correct = array ();
         $current = false;
-        foreach($this->tokens as &$next){
-            if($current){
-                if($current->type == vpl_token_type::operator
-                && $next->type == vpl_token_type::operator
-                && isset($this->operators[$current->value.$next->value])){
+        foreach ($this->tokens as &$next) {
+            if ($current) {
+                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
+                    && isset( $this->operators[$current->value . $next->value] )) {
                     $current->value .= $next->value;
-                    $next=false;
+                    $next = false;
                 }
                 $correct[] = $current;
             }
             $current = $next;
         }
-        if($current){
+        if ($current) {
             $correct[] = $current;
         }
         $this->tokens = $correct;
     }
-    function show_tokens(){
-        foreach($this->tokens as $token){
+    public function show_tokens() {
+        foreach ($this->tokens as $token) {
             $token->show();
         }
     }

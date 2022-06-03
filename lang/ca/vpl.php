@@ -1,9 +1,25 @@
 <?php
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+//
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Catalan translation, 06/2013
  * @author Antonio Piedras Morente (Universitat de Barcelona)
+ * @var array $string
  */
-$string['downloadallsubmissions'] = 'Baixa totes les trameses';
+$string['downloadsubmissions'] = 'Baixa totes les trameses';
 $string['groupwork'] = 'Treball en grup';
 $string['inconsistentgroup'] = 'No és membre d\'un únic grup (0 o >1)';
 $string['individualwork'] = 'Treball individual';
@@ -20,8 +36,8 @@ $string['defaultexetime'] = 'Temps màxim d\'execució per defecte';
 $string['defaultfilesize'] = 'Mida màxima del fitxer penjat per defecte';
 $string['defaultresourcelimits'] = 'Límit de recursos en execució per defecte';
 $string['moduleconfigtitle'] = 'Configuració del mòdul vpl';
-$string['modulename']='Laboratori virtual de programació';
-$string['pluginname']='Laboratori virtual de programació';
+$string['modulename'] = 'Laboratori virtual de programació';
+$string['pluginname'] = 'Laboratori virtual de programació';
 $string['modulenameplural'] = 'Laboratoris virtuals de programació';
 $string['maxfiles'] = 'Nombre màxim de fitxers';
 $string['maxfilesexceeded'] = 'Superat el nombre màxim de fitxers';
@@ -29,9 +45,9 @@ $string['shortdescription'] = 'Descripció curta';
 $string['fulldescription'] = 'Descripció completa';
 $string['startdate'] = 'data de disponibilitat';
 $string['duedate'] = 'data termini de lliurament';
-$string['visiblegrade']='mostra avaluació';
-$string['basic']='Bàsic';
-$string['advanced']='avançat';
+$string['visiblegrade'] = 'mostra avaluació';
+$string['basic'] = 'Bàsic';
+$string['advanced'] = 'avançat';
 $string['anyfile'] = 'Qualsevol fitxer';
 $string['comments'] = 'Comentaris';
 $string['description'] = 'Descripció';
@@ -93,11 +109,11 @@ $string['automaticgrading'] = 'Qualificació automàtica';
 $string['automaticevaluation'] = 'Avaluació automàtica';
 $string['open'] = 'Obert';
 $string['closed'] = 'Tancat';
-$string['timelimited'] ='Amb limitació de temps';
+$string['timelimited'] = 'Amb limitació de temps';
 $string['timeunlimited'] = 'Sense límit de temps';
 $string['manualgrading'] = 'Qualificació manual';
 
-$string['allsubmissions'] ='Tots els lliuraments';
+$string['allsubmissions'] = 'Tots els lliuraments';
 $string['gradedbyuser'] = 'Avaluades per l\'usuari';
 $string['variation'] = 'Variació {$a}';
 $string['variations'] = 'Variacions';
@@ -110,38 +126,37 @@ $string['similarity'] = 'Similitud';
 $string['listwatermarks'] = 'Llistat de marques d\'aigua';
 $string['nowatermark'] = 'Marques d\'aigua pròpies {$a}';
 $string['origin'] = 'Origen';
-$string['filestoscan']='Fitxers a escanejar';
-$string['scanoptions']='Opcions d\'escaneig';
-$string['allfiles']='Tots els fitxers';
-$string['joinedfiles']='Fitxers seleccionats agrupats';
-$string['minsimlevel']='Nivell de similitud mínima a mostrar';
-$string['othersources']='Altres fonts a utilitzar';
-$string['scanactivity']='Activitat';
-$string['scanzipfile']='Fitxer zip';
-$string['scandirectory']='Directori';
-$string['scanother'] ='Escaneja similitud en altres fonts';
-$string['listsimilarity']='S\'ha trobat la llista de similitud';
-$string['similarto']='Similar a';
+$string['filestoscan'] = 'Fitxers a escanejar';
+$string['scanoptions'] = 'Opcions d\'escaneig';
+$string['allfiles'] = 'Tots els fitxers';
+$string['joinedfiles'] = 'Fitxers seleccionats agrupats';
+$string['minsimlevel'] = 'Nivell de similitud mínima a mostrar';
+$string['othersources'] = 'Altres fonts a utilitzar';
+$string['scanactivity'] = 'Activitat';
+$string['scanzipfile'] = 'Fitxer zip';
+$string['scandirectory'] = 'Directori';
+$string['scanother'] = 'Escaneja similitud en altres fonts';
+$string['listsimilarity'] = 'S\'ha trobat la llista de similitud';
+$string['similarto'] = 'Similar a';
 $string['diff'] = 'diff';
 $string['scanningdir'] = 'Examinant el directori ...';
 $string['unzipping'] = 'Descomprimint ...';
 $string['numcluster'] = 'Grup {$a}';
 
-$string['requiredpassword']='Cal una clau';
+$string['requiredpassword'] = 'Cal una clau';
 $string['attemptnumber'] = 'Intent número {$a}';
 $string['opnotallowfromclient'] = 'Acció no permesa des d\'aquesta màquina';
-$string['listofcomments']='Llista de comentaris';
+$string['listofcomments'] = 'Llista de comentaris';
 $string['removegrade'] = 'Esborra la qualificació';
 $string['graderemoved'] = 'La qualificació s\'ha eliminat';
 $string['gradenotremoved'] = 'NO s\'ha pogut eliminar la qualificació. Comproveu la configuració de l\'activitat en qualificacions.';
 $string['gradenotsaved'] = 'NO s\'ha desat la qualificació. Comproveu la configuració de l\'activitat en qualificacions.';
-$string['listofcomments']='Llista de comentaris';
+$string['listofcomments'] = 'Llista de comentaris';
 $string['calculate'] = 'calcula';
 $string['gradeandnext'] = 'Qualifica & Sig';
 $string['deleteallsubmissions'] = 'Elimina tots els lliuraments';
 $string['maxsimilarityoutput'] = 'Màxima sortida per similitud';
 $string['resetvpl'] = 'Reinicia {$a}';
-
 
 $string['run'] = 'Executa';
 $string['debug'] = 'Depura';
@@ -166,7 +181,6 @@ $string['discard_submission_period'] = 'Període de descart de lliuraments';
 $string['discard_submission_period_description'] = 'Per a cada estudiant i tasca, s\'intenta descartar lliuraments mantenint l\'última i almenys una per a cada període';
 $string['serverexecutionerror'] = 'S\'ha produït un error en el servidor d\'execució';
 
-
 $string['vpl'] = 'Laboratori virtual de programació';
 $string['vpl:addinstance'] = 'Afegeix una nova instància vpl';
 $string['vpl:grade'] = 'Avalua un lliurament';
@@ -176,65 +190,65 @@ $string['vpl:view'] = 'Mostra la descripció completa d\'un vpl';
 $string['vpl:similarity'] = 'Busca similituds entre lliuraments';
 $string['vpl:setjails'] = 'Estableix servidors presó per instàncies concretes de VPL';
 
+// Code Editor.
 
-//Applet Code Editor
+$string['previous_page'] = 'Pàgina anterior';
+$string['return_to_previous_page'] = 'Torna a la pàgina anterior';
+$string['next_page'] = 'Pàgina següent';
+$string['go_next_page'] = 'Vés a la pàgina següent';
+$string['help'] = 'Ajuda';
+$string['contextual_help'] = 'Ajuda contextual';
+$string['file'] = 'Fitxer';
+$string['options'] = 'Opcions';
+$string['font_size'] = 'Mida de la lletra';
+$string['new'] = 'Nou';
+$string['create_new_file'] = 'Crea un nou fitxer per editar';
+$string['file_name'] = 'No del fitxer';
+$string['incorrect_file_name'] = 'El nom del fitxer és incorrecte';
+$string['rename'] = 'Canvia el nom';
+$string['rename_file'] = 'Canvi el nom del fitxer';
+$string['new_file_name'] = 'Nom del nou fitxer';
+$string['delete'] = 'Esborra';
+$string['delete_file'] = 'Esborra el fitxer';
+$string['delete_file_q'] = 'Voleu esborrar el fitxer?';
+$string['save'] = 'Desa';
+$string['undo'] = 'Desfés';
+$string['undo_change'] = 'Desfés canvis';
+$string['redo'] = 'Refés';
+$string['redo_undone'] = 'Refés canvis desfets';
+$string['cut'] = 'Talla';
+$string['cut_text'] = 'Talla el text seleccionat';
+$string['copy'] = 'Copia';
+$string['copy_text'] = 'Copia el text seleccionat';
+$string['paste'] = 'Enganxa';
+$string['paste_text'] = 'Enganxa el text seleccionat';
+$string['select_all'] = 'Selecciona tot';
+$string['select_all_text'] = 'Selecciona tot el text';
+$string['find_replace'] = 'Cerca/Reemplaça';
+$string['find_find_replace'] = 'Cerca o Cerca i Reemplaça text';
+$string['program_help'] = 'Ajuda de l\'editor';
+$string['page_unaccessible'] = 'No es pot accedir a la pàgina';
+$string['about'] = 'Quant a';
+$string['help_about'] = 'Ajuda quant a';
+$string['figure'] = 'Figura';
+$string['line_number'] = 'Número de línia';
+$string['toggle_show_line_number'] = 'Mostra número de línia';
+$string['next'] = 'Següent';
+$string['find_next_search_string'] = 'Següent búsqueda en el text';
+$string['replace'] = 'Reemplaça';
+$string['replace_selection_if_match'] = 'Reemplaça el text seleccionat si coincideix amb el cercat';
+$string['replace_find'] = 'Reemplaça/Següent';
+$string['replace_find_next'] = 'Reemplaça i torna a buscar en el text';
+$string['replace_all'] = 'Reemplaça tot';
+$string['replace_all_next'] = 'Reemplaça totes les coincidències següents';
+$string['language_help'] = 'Ajuda del llenguatge';
+$string['console'] = 'Consola';
+$string['find'] = 'Busca';
+$string['case_sensitive'] = 'Sensible a majúscules i minúscules';
+$string['replace_find'] = 'Reemplaça/Busca';
+$string['font_size'] = 'Mida de la lletra';
 
-$string['previous_page']= 'Pàgina anterior';
-$string['return_to_previous_page']= 'Torna a la pàgina anterior';
-$string['next_page']= 'Pàgina següent';
-$string['go_next_page']= 'Vés a la pàgina següent';
-$string['help']= 'Ajuda';
-$string['contextual_help']= 'Ajuda contextual';
-$string['file']= 'Fitxer';
-$string['options']= 'Opcions';
-$string['font_size']= 'Mida de la lletra';
-$string['new']= 'Nou';
-$string['create_new_file']= 'Crea un nou fitxer per editar';
-$string['file_name']= 'No del fitxer';
-$string['incorrect_file_name']= 'El nom del fitxer és incorrecte';
-$string['rename']= 'Canvia el nom';
-$string['rename_file']= 'Canvi el nom del fitxer';
-$string['new_file_name']= 'Nom del nou fitxer';
-$string['delete']= 'Esborra';
-$string['delete_file']= 'Esborra el fitxer';
-$string['delete_file_q']= 'Voleu esborrar el fitxer?';
-$string['save']='Desa';
-$string['undo']= 'Desfés';
-$string['undo_change']= 'Desfés canvis';
-$string['redo']= 'Refés';
-$string['redo_undone']= 'Refés canvis desfets';
-$string['cut']= 'Talla';
-$string['cut_text']= 'Talla el text seleccionat';
-$string['copy']= 'Copia';
-$string['copy_text']= 'Copia el text seleccionat';
-$string['paste']= 'Enganxa';
-$string['paste_text']= 'Enganxa el text seleccionat';
-$string['select_all']= 'Selecciona tot';
-$string['select_all_text']= 'Selecciona tot el text';
-$string['find_replace']= 'Cerca/Reemplaça';
-$string['find_find_replace']= 'Cerca o Cerca i Reemplaça text';
-$string['program_help']= 'Ajuda de l\'editor';
-$string['page_unaccessible']= 'No es pot accedir a la pàgina';
-$string['about']= 'Quant a';
-$string['help_about']= 'Ajuda quant a';
-$string['figure']='Figura';
-$string['line_number']= 'Número de línia';
-$string['toggle_show_line_number']= 'Mostra número de línia';
-$string['next']= 'Següent';
-$string['find_next_search_string']= 'Següent búsqueda en el text';
-$string['replace']= 'Reemplaça';
-$string['replace_selection_if_match']= 'Reemplaça el text seleccionat si coincideix amb el cercat';
-$string['replace_find']= 'Reemplaça/Següent';
-$string['replace_find_next']= 'Reemplaça i torna a buscar en el text';
-$string['replace_all']= 'Reemplaça tot';
-$string['replace_all_next']= 'Reemplaça totes les coincidències següents';
-$string['language_help']= 'Ajuda del llenguatge';
-$string['console']= 'Consola';
-$string['find']= 'Busca';
-$string['case_sensitive']= 'Sensible a majúscules i minúscules';
-$string['replace_find']= 'Reemplaça/Busca';
-$string['font_size']= 'Mida de la lletra';
-//Added without order
+// Added without order.
 $string['connected'] = "connectat";
 $string['connecting'] = "connectant";
 $string['connection_closed'] = "connexió tancada";
@@ -243,8 +257,8 @@ $string['debugging'] = "Depurant";
 $string['jail_servers_description'] = "Escriviu un servidor en cada línia";
 $string['proxy_port_from_description'] = "El proxy s'utilitza per connectar l'applet client amb el servidor presó. Establiu el valor inicial del rang de ports des dels que dóna servei el proxy";
 $string['proxy_port_to_description'] = "El proxy s'utilitza per connectar l'applet client amb el servidor presó. Establiu el valor final del rang de ports des dels que dóna servei el proxy";
-$string['direct_applet']='Desplegament directe de l\'applet';
-$string['direct_applet_description']='S\'utilitzen etiquetes HTML per desplegar l\'applet. Establiu aquesta opció si els clients no tenen accés a www.java.com';
+$string['direct_applet'] = 'Desplegament directe de l\'applet';
+$string['direct_applet_description'] = 'S\'utilitzen etiquetes HTML per desplegar l\'applet. Establiu aquesta opció si els clients no tenen accés a www.java.com';
 $string['evaluating'] = "avaluant";
 $string['filesChangedNotSaved'] = "Fitxers modificats però no desats";
 $string['general_help'] = "Ajuda general sobre el llenguatge";
@@ -253,11 +267,11 @@ $string['local_jail_servers'] = 'Servidors persó locals';
 $string['menulocal_jail_servers'] = 'Presons locals';
 $string['check_jail_servers'] = 'Comprovació de servidores presó';
 $string['menucheck_jail_servers'] = 'Comprovació presons';
-$string['server']='Servidor';
-$string['currentstatus']='Estat actual';
-$string['lasterror']='Informació de l\'últim error';
-$string['lasterrordate']='Data de l\'últim error';
-$string['totalnumberoferrors']="Errors";
+$string['server'] = 'Servidor';
+$string['currentstatus'] = 'Estat actual';
+$string['lasterror'] = 'Informació de l\'últim error';
+$string['lasterrordate'] = 'Data de l\'últim error';
+$string['totalnumberoferrors'] = "Errors";
 
 $string['jail_servers_config'] = "Configuració de servidors presó";
 $string['keepfiles'] = "Fitxers a mantenir mentre s'està executant";
@@ -443,17 +457,7 @@ $string['modulename_help'] = '<p><b>VPL. Laboratori Virtual de Programaci&oacute
 <li>Cerca de similitud entre pr&agrave;ctiques pel control del plagi.</li>
 <li>Restriccions de lliurament de pr&agrave;ctiques que limiten el talla i enganxa de codi extern.</li>
 </ul>
-<p><b>Definici&oacute; b&agrave;sica d\'un Laboratori Virtual de Programaci&oacute;</b></p>
-En el panel <b></b><b>Restriccions de lliurament</b> es poden establir diverses restriccions:
-<ul>
-<li>Nombre m&agrave;xim de fitxers a lliurar</li>
-<li>Si nom&eacute;s es permet el lliurament de fitxers per mitj&agrave; de l\'editor restringit que impedeix enganxar codi exterior.</li>
-<li>Mida m&agrave;xima de cada fitxer a lliurar</li>
-<li>Contrasenya a sol&middot;licitar per accedir a l\'activitat i lliurar-la</li>
-<li>Xarxa o xarxes des d\'on es possible accedir i lliurar</li>
-</ul>
-<p>En aquesta p&agrave;gina tamb&eacute; es poden establir les opcions comunes a tota activitat
-com es l\'escala de qualificacions i les opcions de grups.</p>';
+<p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
 $string['requestedfiles_help'] = '<h1>Fitxers requerits</h1>
 <p>Aqu&iacute; es fixen noms pels fitxers requerits.</p>

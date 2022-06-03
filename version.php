@@ -15,19 +15,23 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Module version
+ * Version config
  *
- * @package mod_vpl
- * @copyright Juan Carlos Rodríguez-del-Pino
+ * @package mod_vpl.
+ * @copyright 2022 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * Define the plugin global var attributes.
+ * @var object $plugin
  */
+
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2015080600;    //Current module version 3.1.4
-$plugin->cron    = 300;         //cron check this module every 5 minutes
-$plugin->requires = 2014051200; // Moodle 2.7
+$plugin->version = 2022052312;
+$plugin->requires = 2018051713; // Moodle 3.5!
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.1.4';
+$plugin->release = '3.5.0+';
+
 $plugin->component = 'mod_vpl';

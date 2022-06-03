@@ -15,19 +15,21 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Syntaxhighlighters for images
+ * VPL show images
  *
  * @package mod_vpl
- * @copyright 2014 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodriguez-del-Pino
- **/
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 
-require_once dirname ( __FILE__ ) . '/sh_base.class.php';
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
+
 class vpl_sh_image extends vpl_sh_base {
-    private $MIME;
-    function __construct(){
-        $this->MIME = array (
+    private $mime;
+    public function __construct() {
+        $this->mime = array (
                 'jpg' => 'jpeg',
                 'jpeg' => 'jpeg',
                 'gif' => 'gif',
@@ -35,15 +37,16 @@ class vpl_sh_image extends vpl_sh_base {
                 'ico' => 'vnd.microsoft.icon'
         );
     }
-    function getMIME($name) {
-        $ext = strtolower(vpl_fileExtension($name));
-        return $this->MIME[$ext];
+    public function get_mime($name) {
+        $ext = strtolower( vpl_fileextension( $name ) );
+        return $this->mime[$ext];
     }
-    function print_file($name, $data) {
+    public function print_file($name, $data) {
+        echo "<h4>" . s( $name ) . '</h4>';
         echo '<div class="vpl_sh vpl_g">';
-        echo '<img src="data:image/'.$this->getMIME($name).';base64,';
-        echo base64_encode($data);
-        echo '" alt="'.s($name).'" />';
+        echo '<img src="data:image/' . $this->get_mime( $name ) . ';base64,';
+        echo base64_encode( $data );
+        echo '" alt="' . s( $name ) . '" />';
         echo '</div>';
     }
 }

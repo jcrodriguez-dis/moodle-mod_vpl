@@ -15,33 +15,36 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Example Compilation Execution class definition
- *
+ * Class for Example activitie
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 defined('MOODLE_INTERNAL') || die();
-require_once dirname(__FILE__).'/vpl_submission_CE.class.php';
-class mod_vpl_example_CE extends mod_vpl_submission_CE{
+require_once(dirname(__FILE__).'/vpl_submission_CE.class.php');
+
+class mod_vpl_example_CE extends mod_vpl_submission_CE {
     /**
      * Constructor
-     * @param $vpl. vpl object instance
-     **/
-    function __construct($vpl) {
+     *
+     * @param mod_vpl $vpl. instance of mod_vpl
+     */
+    public function __construct($vpl) {
         global $USER;
         $fake = new stdClass();
         $fake->userid = $USER->id;
         $fake->vpl = $vpl->get_instance()->id;
-        parent::__construct($vpl, $fake);
+        parent::__construct( $vpl, $fake );
     }
 
     /**
+     *
      * @return object file group manager for example files
-     **/
-    function get_submitted_fgm(){
-        if(!$this->submitted_fgm){
+     */
+    public function get_submitted_fgm() {
+        if (! $this->submitted_fgm) {
             $this->submitted_fgm = $this->vpl->get_required_fgm();
         }
         return $this->submitted_fgm;
@@ -49,10 +52,12 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE{
 
     /**
      * Save Compilation Execution result. Removed
-     * @param $result array response from server
-     * @return uvoid
+     *
+     * @param $result array
+     *            response from server
+     * @return void
      */
-    function saveCE($result){
-        //Paranoic removed
+    public function savece($result) {
+        // Paranoic removed.
     }
 }

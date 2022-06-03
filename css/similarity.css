@@ -1,26 +1,68 @@
-.vpl_sim0 {font-size:small;  height:3em; background-color:#FF0000; color: #FFFFFF;}
-.vpl_sim0 a {color: #FFFFFF;}
-.vpl_sim0 a:hover {color: #00FF00;}
-.vpl_sim1 {font-size:small;  height:3em;  font-size:small; background-color:#FF1010; color: #FFFFFF;}
-.vpl_sim1 a {color: #FFFFFF;}
-.vpl_sim1 a:hover {color: #00FF00;}
-.vpl_sim2 {font-size:small;  height:3em; background-color:#FF2828; color: #FFFFFF;}
-.vpl_sim2 a {color: #FFFFFF;}
-.vpl_sim2 a:hover {color: #00FF00;}
-.vpl_sim3 {font-size:small;  height:3em; background-color:#FF4040; color: #FFFFFF;}
-.vpl_sim3 a {color: #FFFFFF;}
-.vpl_sim3 a:hover {color: #00FF00;}
-.vpl_sim4 {font-size:small;  height:3em; background-color:#FF5858; color: #FFFFFF;}
-.vpl_sim4 a {color: #FFFFFF;}
-.vpl_sim4 a:hover {color: #00FF00;}
-.vpl_sim5 {font-size:small;  height:3em; background-color:#FF7070; color: #FFFFFF;}
-.vpl_sim5 a {color: #FFFFFF;}
-.vpl_sim5 a:hover {color: #00FF00;}
-.vpl_sim6 {font-size:small;  height:3em; background-color:#FF8888; color: #FFFFFF;}
-.vpl_sim6 a {color: #FFFFFF;}
-.vpl_sim6 a:hover {color: #00FF00;}
-.vpl_sim7 {font-size:small;  height:3em; background-color:#FFA0A0;}
-.vpl_sim8 {font-size:small;  height:3em; background-color:#FFB8B8;}
-.vpl_sim9 {font-size:small;  height:3em; background-color:#FFD0D0;}
-.vpl_sim10 {font-size:small;  height:3em; background-color:#FFE8E8;}
-.vpl_sim11 {font-size:small;  height:3em; background-color:#FFFFFF;}
+.vpl_sim0,
+.vpl_sim1,
+.vpl_sim2,
+.vpl_sim3,
+.vpl_sim4,
+.vpl_sim5 {
+    color: #fff;
+    font-size: small;
+    height: 3em;
+}
+.vpl_sim6,
+.vpl_sim7,
+.vpl_sim8,
+.vpl_sim9,
+.vpl_sim10,
+.vpl_sim11 {
+    color: #000;
+    font-size: small;
+    height: 3em;
+}
+
+.vpl_sim0 {
+    background-color: #f00;
+}
+
+.vpl_sim1 {
+    background-color: #ff1010;
+}
+
+.vpl_sim2 {
+    background-color: #ff2828;
+}
+
+.vpl_sim3 {
+    background-color: #ff4040;
+}
+
+.vpl_sim4 {
+    background-color: #ff5858;
+}
+
+.vpl_sim5 {
+    background-color: #ff7070;
+}
+
+.vpl_sim6 {
+    background-color: #f88;
+}
+
+.vpl_sim7 {
+    background-color: #ffa0a0;
+}
+
+.vpl_sim8 {
+    background-color: #ffb8b8;
+}
+
+.vpl_sim9 {
+    background-color: #ffd0d0;
+}
+
+.vpl_sim10 {
+    background-color: #ffe8e8;
+}
+
+.vpl_sim11 {
+    background-color: #fff;
+}

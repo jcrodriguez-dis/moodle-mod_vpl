@@ -15,6 +15,18 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * This file contains the backup activity for the VPL module
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
+
+defined ( 'MOODLE_INTERNAL' ) || die ();
+require_once(dirname ( __FILE__ ) . '/backup_vpl_stepslib.php');
+
+/**
  * VPL backup task class that provides all the settings and steps to perform one
  * complete backup of the activity
  *
@@ -23,15 +35,12 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-defined ( 'MOODLE_INTERNAL' ) || die ();
-require_once(dirname ( __FILE__ ) . '/backup_vpl_stepslib.php');
 class backup_vpl_activity_task extends backup_activity_task {
 
     /**
-     * Define (add) particular settings this activity can have
+     * No particular settings for this activity.
      */
     protected function define_my_settings() {
-        // No particular settings for this activity.
     }
 
     /**
@@ -44,8 +53,10 @@ class backup_vpl_activity_task extends backup_activity_task {
     /**
      * Code the transformations to perform in the activity in
      * order to get transportable (encoded) links
+     * @param string $content to encode
+     * @return string encode result
      */
-    static public function encode_content_links($content) {
+    public static function encode_content_links($content) {
         global $CFG;
 
         $base = preg_quote ( $CFG->wwwroot, "/" );

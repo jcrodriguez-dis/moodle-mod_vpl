@@ -23,13 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-class vpl_tokenizer_factory{
-    static private $classloaded=array();
-    static function get($type){
-        if(!isset(self::$classloaded[$type])){
-            $include = 'tokenizer_'.$type.'.class.php';
-            require_once dirname(__FILE__).'/'.$include;
-            $class = 'vpl_tokenizer_'.$type;
+class vpl_tokenizer_factory {
+    private static $classloaded = array ();
+    public static function get($type) {
+        if (! isset( self::$classloaded[$type] )) {
+            $include = 'tokenizer_' . $type . '.class.php';
+            require_once(dirname( __FILE__ ) . '/' . $include);
+            $class = 'vpl_tokenizer_' . $type;
             self::$classloaded[$type] = new $class();
         }
         return self::$classloaded[$type];

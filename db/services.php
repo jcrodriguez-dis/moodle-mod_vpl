@@ -21,8 +21,16 @@
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ *
+ * Declaration of the web service functions.
+ * @var array $functions
+ *
+ * Define web services.
+ * @var array $services
  */
-// Definition of functions of the web service.
+
+defined( 'MOODLE_INTERNAL' ) || die();
+
 $functions = array (
         'mod_vpl_info' => array (
                 'classname' => 'mod_vpl_webservice',
@@ -65,7 +73,7 @@ $functions = array (
                 'type' => 'write'
         )
 );
-// Define web service.
+
 $services = array (
         'VPL web service' => array (
                 'functions' => array (

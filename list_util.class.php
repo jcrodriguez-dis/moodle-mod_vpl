@@ -23,84 +23,109 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined('MOODLE_INTERNAL') || die();
-class vpl_list_util{
-    static $fields;   //field to compare
-    static $ascending; //value to return when ascending or descending order
-
-    static public function cpm($avpl,$bvpl){ //Compare two submission fields
+class vpl_list_util {
+    static protected $fields; // Field to compare.
+    static protected $ascending; // Value to return when ascending or descending order.
+    // Compare two submission fields.
+    public static function cpm($avpl, $bvpl) {
         $a = $avpl->get_instance();
         $b = $bvpl->get_instance();
-        foreach(self::$fields as $field){
+        foreach (self::$fields as $field) {
             $avalue = $a->$field;
             $bvalue = $b->$field;
-            if($avalue == $bvalue){
+            if ($avalue == $bvalue) {
                 continue;
-            }elseif($avalue < $bvalue){
+            } else if ($avalue < $bvalue) {
                 return self::$ascending;
-            }else{
-                return -self::$ascending;
+            } else {
+                return - self::$ascending;
             }
         }
         return 0;
     }
 
     /**
-     * Check and set data to sort return comparation function
-     * $field field to compare
-     * $descending order
+     * Check and set data to sort return comparation function $field field to compare $descending order
      */
-    static public function set_order($field,$ascending = true){
-        $sortfields = array('name'=>array('name'),
-        'shortdescription' => array('shortdescription'),
-        'startdate' => array('startdate','duedate','name'),
-        'duedate' => array('duedate','startdate','name'),
-        'automaticgrading' => array('automaticgrading','duedate','name'));
-        if(isset($sortfields[$field])){
+    public static function set_order($field, $ascending = true) {
+        $sortfields = array (
+                'name' => array (
+                        'name'
+                ),
+                'startdate' => array (
+                        'startdate',
+                        'duedate',
+                        'name'
+                ),
+                'duedate' => array (
+                        'duedate',
+                        'startdate',
+                        'name'
+                ),
+                'automaticgrading' => array (
+                        'automaticgrading',
+                        'duedate',
+                        'name'
+                )
+        );
+        if (isset( $sortfields[$field] )) {
             self::$fields = $sortfields[$field];
-        }else{ //Unknow field
+        } else { // Unknow field.
             self::$fields = $sortfields['duedate'];
         }
-        if($ascending){
-            self::$ascending = -1;
-        }else{
+        if ($ascending) {
+            self::$ascending = - 1;
+        } else {
             self::$ascending = 1;
         }
     }
-    static public function vpl_list_arrow($burl,$sort,$instanceselection,$selsort, $seldir){
+    public static function vpl_list_arrow($burl, $sort, $instanceselection, $selsort, $seldir) {
         global $OUTPUT;
-        $newdir = 'down'; //Dir to go if click
-        $url = vpl_url_add_param($burl,'sort',$sort);
-        $url = vpl_url_add_param($url,'selection',$instanceselection);
-        if($sort == $selsort){
+        $newdir = 'down'; // Dir to go if clicked.
+        $url = vpl_url_add_param( $burl, 'sort', $sort );
+        $url = vpl_url_add_param( $url, 'selection', $instanceselection );
+        if ($sort == $selsort) {
             $sortdir = $seldir;
-            if($sortdir == 'up'){
+            if ($sortdir == 'up') {
                 $newdir = 'down';
-            }elseif($sortdir == 'down'){
+            } else if ($sortdir == 'down') {
                 $newdir = 'up';
-            }else{ //Unknow sortdir
+            } else { // Unknow sortdir.
                 $sortdir = 'down';
             }
-            $url = vpl_url_add_param($url,'sortdir',$newdir);
-        }else{
+            $url = vpl_url_add_param( $url, 'sortdir', $newdir );
+        } else {
             $sortdir = 'move';
         }
-        return '<a href="'.$url.'">'.($OUTPUT->pix_icon('t/'.$sortdir,get_string($sortdir))).'</a>';
+        return '<a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
     }
-    static public function count_graded($vpl){ //Count submissions graded
+
+    // Count submissions graded.
+    public static function count_graded($vpl) {
         $numsubs = 0;
         $numgraded = 0;
-        $subs = $vpl->all_last_user_submission('s.dategraded');
-        $students = $vpl->get_students();
-        foreach($students as $student){
-            if(isset($subs[$student->id])){
-                $sub=$subs[$student->id];
-                $numsubs++;
-                if($sub->dategraded > 0){ //is graded
-                    $numgraded++;
+        $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid' );
+        if ($vpl->is_group_activity()) { // Fixes group activity userid.
+            foreach ($subs as $sub) {
+                $group = $vpl->get_group_members($sub->groupid);
+                if ( count($group) ) {
+                    $user = reset($group);
+                    $sub->userid = $user->id;
                 }
             }
         }
-        return array('submissions' => $numsubs, 'graded' => $numgraded);
+        $students = $vpl->get_students();
+        foreach ($subs as $sub) {
+            if (isset( $students[$sub->userid] )) {
+                $numsubs ++;
+                if ($sub->dategraded > 0) { // Is graded.
+                    $numgraded ++;
+                }
+            }
+        }
+        return array (
+                'submissions' => $numsubs,
+                'graded' => $numgraded
+        );
     }
 }

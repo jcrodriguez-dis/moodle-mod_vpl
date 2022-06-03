@@ -1,14 +1,16 @@
 #!/bin/bash
+# This file is part of VPL for Moodle
 # Default evaluate script for VPL
-# @Copyright 2014 Juan Carlos Rodríguez-del-Pino
-# @License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
-# @Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+# Copyright (C) 2014 onwards Juan Carlos Rodríguez-del-Pino
+# License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+# Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 #load VPL environment vars
 . common_script.sh
 if [ "$SECONDS" = "" ] ; then
 	export SECONDS=20
 fi
+let VPL_MAXTIME=$SECONDS-5;
 if [ "$VPL_GRADEMIN" = "" ] ; then
 	export VPL_GRADEMIN=0
 	export VPL_GRADEMAX=10
@@ -21,7 +23,7 @@ else
 	#avoid conflict with C++ compilation
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
 	#Prepare run
-	./vpl_run.sh >>vpl_compilation_error.txt 2>&1
+	./vpl_run.sh &>>vpl_compilation_error.txt
 	cat vpl_compilation_error.txt
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution vpl_test
@@ -31,18 +33,14 @@ else
 			echo "Error need file 'vpl_evaluate.cases' to make an evaluation"
 			exit 1
 		fi
-		#Add constants to vpl_evaluate.cpp
-		echo "const float VPL_GRADEMIN=$VPL_GRADEMIN;" >vpl_evaluate.cpp
-		echo "const float VPL_GRADEMAX=$VPL_GRADEMAX;" >>vpl_evaluate.cpp
-		let VPL_MAXTIME=VPL_MAXTIME-$SECONDS-1;
-		echo "const int VPL_MAXTIME=$VPL_MAXTIME;" >>vpl_evaluate.cpp
-		cat vpl_evaluate.cpp.save >> vpl_evaluate.cpp
+		mv vpl_evaluate.cpp.save vpl_evaluate.cpp
 		check_program g++
 		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
 		if [ ! -f .vpl_tester ] ; then
 			echo "Error compiling evaluation program"
+			exit 1
 		else
-			echo "#!/bin/bash" >> vpl_execution
+			cat vpl_environment.sh >> vpl_execution
 			echo "./.vpl_tester" >> vpl_execution
 		fi
 	else
@@ -60,4 +58,3 @@ else
 	fi
 	chmod +x vpl_execution
 fi
-

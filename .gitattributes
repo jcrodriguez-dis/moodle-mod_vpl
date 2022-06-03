@@ -1,0 +1,18 @@
+*.txt text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+*.xml text eol=lf
+*.adb text eol=lf
+*.py text eol=lf
+*.sh text eol=lf
+*.c text eol=lf
+*.cpp text eol=lf
+*.h text eol=lf
+*.css text eol=lf
+*.php text eol=lf
+*.feature text eol=lf
+*.svg text eol=lf
+*.png binary
+*.jpg binary
+*.zip binary
+*.pdf binary

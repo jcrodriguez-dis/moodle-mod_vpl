@@ -24,12 +24,12 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_grade_deleted extends submission_graded {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'd';
+        $this->data['crud'] = 'd';
     }
     public function get_description() {
         return $this->get_description_mod( 'grade' );

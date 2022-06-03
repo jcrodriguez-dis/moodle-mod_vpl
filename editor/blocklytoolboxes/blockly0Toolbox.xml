@@ -1,0 +1,20 @@
+<xml xmlns="http://www.w3.org/1999/xhtml">
+	<category name="[[run]]" colour="330">
+		<button text="[[start]]" callbackKey="blocklyStartButton"
+			web-class="blocklyStartC"></button>
+		<button text="[[startanimate]]" callbackKey="blocklyStartAnimateButton"
+			web-class="blocklyStartAnimateC"></button>
+		<button text="[[stop]]" callbackKey="blocklyStopButton"
+			web-class="blocklyStopC"></button>
+		<button text="[[pause]]" callbackKey="blocklyPauseButton"
+			web-class="blocklyPauseC"></button>
+		<button text="[[resume]]" callbackKey="blocklyResumeButton"
+			web-class="blocklyResumeC"></button>
+		<button text="[[step]]" callbackKey="blocklyStepButton"
+			web-class="blocklyStepC"></button>
+        <button text="[[selectbreakpoint]]" callbackKey="blocklySelectBreakpointButton"
+            web-class="blocklySelectBreakpointC"></button>
+        <button text="[[removebreakpoint]]" callbackKey="blocklyRemoveBreakpointButton"
+            web-class="blocklyRemoveBreakpointC"></button>
+	</category>
+</xml>

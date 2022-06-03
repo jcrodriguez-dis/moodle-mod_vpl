@@ -1,5 +1,4 @@
 <?php
-<?php
 // This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
 // VPL for Moodle is free software: you can redistribute it and/or modify
@@ -16,17 +15,21 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Syntaxhighlighters for binary files
+ * VPL Syntaxhighlighters for binary files
  *
  * @package mod_vpl
- * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino
+ * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodriguez-del-Pino
- **/
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 
-require_once dirname ( __FILE__ ) . '/sh_base.class.php';
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
+
 class vpl_sh_binary extends vpl_sh_base {
-    function print_file($name, $data) {
-        echo get_string('binaryfile',VPL);
+    public function print_file($name, $data) {
+        echo "<h4>" . s( $name ) . '</h4>';
+        echo get_string( 'binaryfile', VPL );
     }
 }

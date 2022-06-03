@@ -18,132 +18,186 @@
  * Download all submissions of an activity in zip file
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-global $CFG, $USER;
+require_once(dirname(__FILE__).'/../../../config.php');
+require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
-require_once dirname(__FILE__).'/../../../config.php';
-require_once dirname(__FILE__).'/../locallib.php';
-require_once dirname(__FILE__).'/../vpl.class.php';
-require_once dirname(__FILE__).'/../vpl_submission_CE.class.php';
+global $CFG;
 
-function vpl_selzipdirname($name){
-    static $names = null;
-    if($names == null){
-        $names = array();
-    }
-    //prepare name
-    $name = trim($name);
-    $name = iconv('UTF-8', 'ASCII//TRANSLIT',$name);
-    $name = str_replace('?', '_', $name);
-    $name = str_replace('.', ' ', $name);
-    $name = str_replace(',', ' ', $name);
-    //TODO Select by plugin configuration if it must reduced to initials or not the names
-    $ret = '';
-    $word = false;
-    for($i=0; $i < strlen($name); $i++){
-        $c = $name[$i];
-        if($c != ' ' && !$word){
-            $ret .= strtoupper($c);
+/**
+ * Sanitize zip directory name
+ *
+ * @param string $name Directory name
+ *
+ * @return void
+ */
+function vpl_user_zip_dirname( $name ) {
+    // Prepare name.
+    $name = trim( $name );
+    $name = str_replace( '?', '_', $name );
+    $name = str_replace( '.', '_', $name );
+    $name = str_replace( ',', '_', $name );
+    $name = str_replace( ':', '_', $name );
+    $name = str_replace( '*', '_', $name );
+    $name = str_replace( '\\', '_', $name );
+    $name = str_replace( '<', '_', $name );
+    $name = str_replace( '>', '_', $name );
+    $name = str_replace( '|', '_', $name );
+    return $name;
+}
+
+/**
+ * Adds files to zip
+ *
+ * @param ZipArchive         $zip        Object that represents a zip file.
+ * @param string             $sourcedir  Source directory name
+ * @param string             $zipdirname Zip directory name
+ * @param file_group_process $fgm        Object that manages group of files
+ * @param string             $ziperrors  Output message if error
+ *
+ * @return void
+ */
+function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {
+    foreach ($fgm->getFileList() as $filename) {
+        $source = file_group_process::encodeFileName( $filename );
+        $filepathorigen = $sourcedir . $source;
+        $filepathtarget = $zipdirname . $filename;
+        if ( ! file_exists($filepathorigen) ) {
+            $ziperrors .= 'Warning: file "'.$filepathorigen . "\" does not exists\n";
+            $zip->addFromString( $filepathtarget, '' );
+            continue;
         }
-        if($c != ' '){
-            $word = true;
-        }else{
-            $word = false;
+        if ( ! $zip->addFromString( $filepathtarget, file_get_contents($filepathorigen) ) ) {
+            $ziperrors .= 'File "'.$filepathorigen . '" in "' . $filepathtarget . '" ';
+            $ziperrors .= 'generate ' . $zip->getStatusString () ."\n";
         }
     }
-    if(isset($names[$ret])){
-        $names[$ret]++;
-        $ret .= $names[$ret];
-    }else{
-        $names[$ret]=0;
-    }
-    return $ret;
 }
 
 require_login();
-$id = required_param('id', PARAM_INT);
-$group = optional_param('group', -1, PARAM_INT);
-//Undocumented feature, add &CE=1 to the query string
-$includeCE = optional_param('CE', 0, PARAM_INT);
-$subselection = vpl_get_set_session_var('subselection','allsubmissions','selection');
-$vpl = new mod_vpl($id);
+$id = required_param( 'id', PARAM_INT );
+$all = optional_param( 'all', 0, PARAM_INT );
+
+$vpl = new mod_vpl( $id );
 $cm = $vpl->get_course_module();
-$vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-\mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);
-//get students
-$currentgroup = groups_get_activity_group($cm);
-if(!$currentgroup){
-    $currentgroup='';
+$vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
+\mod_vpl\event\vpl_all_submissions_downloaded::log( $vpl );
+// Get students.
+$currentgroup = groups_get_activity_group( $cm );
+$extraname = '';
+if (! $currentgroup) {
+    $currentgroup = '';
+} else {
+    $extraname = ' ' . groups_get_group_name( $currentgroup );
 }
-$list = $vpl->get_students($currentgroup);
-$submissions = $vpl->all_last_user_submission();
-//Get all information
-$all_data = array();
-foreach ($list as $userinfo) {
-    if($vpl->is_group_activity() && $userinfo->id != $vpl->get_group_leaderid($userinfo->id)){
-        continue;
+if ($vpl->is_group_activity()) {
+    $idfiels = 'groupid';
+    $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+} else {
+    $list = $vpl->get_students($currentgroup, 'u.username');
+    $idfiels = 'userid';
+}
+
+if ($all) {
+    $asortedsubmissions = $vpl->all_user_submission();
+} else {
+    $asortedsubmissions = $vpl->all_last_user_submission();
+}
+// Organize information by user id.
+$submissions = array();
+foreach ($asortedsubmissions as $instance) {
+    if (! isset($submissions[$instance->$idfiels])) {
+        $submissions[$instance->$idfiels] = array();
     }
-    $submission = null;
-    if(!isset($submissions[$userinfo->id])){
+    $submissions[$instance->$idfiels][] = $instance;
+}
+
+// Get all information by user.
+$alldata = array ();
+foreach ($list as $uginfo) {
+    if (! isset($submissions[$uginfo->id])) {
         continue;
-    }
-    else{
-        $subinstance = $submissions[$userinfo->id];
-        $submission = new mod_vpl_submission_CE($vpl,$subinstance);
     }
     $data = new stdClass();
-    $data->userinfo = $userinfo;
-    $data->submission = $submission;
-    //When group activity => change leader object lastname to groupname for order porpouse
-    if($vpl->is_group_activity()){
-        $data->userinfo->firstname = '';
-        $data->userinfo->lastname = $vpl->fullname($userinfo);
+    $data->uginfo = $uginfo;
+    // When group activity => change leader object lastname to groupname for order porpouse.
+    if ($vpl->is_group_activity()) {
+        $data->uginfo->firstname = 'Group';
+        $data->uginfo->lastname = $uginfo->name;
     }
-    $all_data[] = $data;
+    $usersubmissions = array();
+    foreach ($submissions[$uginfo->id] as $subinstance) {
+        $usersubmissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
+    }
+    $data->submissions = $usersubmissions;
+    $alldata[] = $data;
 }
-//Unblock user session
-session_write_close();
+
 $zip = new ZipArchive();
-$zipfilename=tempnam($CFG->dataroot . '/temp/'  , 'vpl_zipdownloadall' );
-if($zip->open($zipfilename,ZIPARCHIVE::CREATE)){
-    foreach ($all_data as $data){
-        $user = $data->userinfo;
-        $fgm = $data->submission->get_submitted_fgm();
-        $zipdirname = vpl_selzipdirname($user->lastname.' '.$user->firstname);
-        //Create directory
-        $zip->addEmptyDir($zipdirname);
+$dir = $CFG->dataroot . '/temp/vpl';
+if (! file_exists($dir)) {
+    mkdir($dir, $CFG->directorypermissions, true);
+}
+$zipfilename = tempnam( $dir, 'zip' );
+if ( $zipfilename === false || ! file_exists($zipfilename) ) {
+    throw new moodle_exception('cannotopenzip');
+}
+if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
+    $ziperrors = '';
+    $nsubmissions = 0;
+    foreach ($alldata as $data) {
+        $user = $data->uginfo;
+        $zipdirname = vpl_user_zip_dirname($user->lastname . ' ' . $user->firstname);
+        $zipdirname .= ' ' . $user->id . ' ' . $user->username;
+        // Create directory.
+        $zip->addEmptyDir( $zipdirname );
         $zipdirname .= '/';
-        $sourcedir=$data->submission->get_submission_directory().'/';
-        foreach ($fgm->getFileList() as $filename) {
-            $source= file_group_process::encodeFileName($filename);
-            $zip->addFile($sourcedir.$source,$zipdirname.$filename);
-        }
-        if($includeCE){
-            $CE=$data->submission->getCE();
-            if(!($CE['compilation']===0)){
-                $zip->addFromString($zipdirname.'vpl_data/compilation.txt',$CE['compilation']);
-                if($CE['executed']){
-                    $zip->addFromString($zipdirname.'vpl_data/execution.txt',$CE['execution']);
+        foreach ($data->submissions as $submission) {
+            $nsubmissions ++;
+            $zipsubdirname = $zipdirname;
+            $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted );
+            $zipsubdirname .= $date . '/';
+            $fgm = $submission->get_submitted_fgm();
+            $sourcedir = $submission->get_submission_directory();
+
+            vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
+            $instance = $submission->get_instance();
+            $cecg = $submission->getce();
+            $cecg['gradecomments'] = $submission->get_grade_comments();
+            $cecg['usercomments'] = $instance->comments;
+            $cecg['grade'] = $instance->grade;
+            if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
+                $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > '') {
+                $zipsubdirname = $zipdirname . $date . '.ceg/';
+                if ( $cecg['compilation'] !== 0 ) {
+                    $zip->addFromString( $zipsubdirname. 'compilation' . '.txt', $cecg['compilation']);
+                }
+                if ( $cecg['executed'] == 1 ) {
+                    $zip->addFromString( $zipsubdirname . 'execution' . '.txt', $cecg['execution']);
+                }
+                $elements = array('gradecomments', 'usercomments', 'grade');
+                foreach ($elements as $ele) {
+                    if ( $cecg[$ele] !== '' ) {
+                        $zip->addFromString( $zipsubdirname . $ele . '.txt', $cecg[$ele]);
+                    }
                 }
             }
         }
     }
+    $date = date(DATE_W3C);
+    $nusers = count($alldata);
+    $zip->addFromString('Report.txt', "Date: $date\nNumber of users: $nusers\nNumber of submissions: $nsubmissions");
+    if ( $ziperrors > '' ) {
+        $zip->addFromString( 'Errors.txt', $ziperrors );
+    }
     $zip->close();
-    //Get zip data
-    $data=file_get_contents($zipfilename);
-    //remove zip file
-    unlink($zipfilename);
-    $name = $vpl->get_instance()->name;
-    //Send zipdata
-    @header('Content-Length: '.strlen($data));
-    @header('Content-Disposition: attachment; filename="'.$name.'.zip"');
-    @header('Cache-Control: private, must-revalidate, pre-check=0, post-check=0, max-age=0');
-    @header('Expires: '. gmdate('D, d M Y H:i:s', 0) .' GMT');
-    @header('Pragma: no-cache');
-    @header('Accept-Ranges: none');
-    echo $data;
+    vpl_output_zip($zipfilename, $vpl->get_instance()->name . $extraname);
+} else {
+    throw new moodle_exception('cannotopenzip');
 }

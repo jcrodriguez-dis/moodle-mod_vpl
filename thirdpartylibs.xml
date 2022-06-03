@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<libraries>
+    <library>
+        <location>editor/ace9</location>
+        <name>ACE (Ajax.org Cloud9 Editor)</name>
+        <version>1.4.12</version>
+        <license>BSD</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
+        <location>editor/noVNC</location>
+        <name>noVNC: HTML5 VNC Client</name>
+        <license>MPL</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>editor/xterm</location>
+        <name>term.js - an xterm emulator</name>
+        <license>MIT</license>
+    </library>
+    <library>
+        <location>editor/zip</location>
+        <name>inflate.js, unzip.js</name>
+        <license>MIT</license>
+    </library>
+    <library>
+        <location>editor/blockly</location>
+        <name>Blockly</name>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>editor/acorn</location>
+        <name>JS-Interpreter</name>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+</libraries>

@@ -21,12 +21,16 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 namespace mod_vpl\event;
-require_once(dirname(__FILE__).'/../../locallib.php');
-defined('MOODLE_INTERNAL') || die();
 
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__).'/../../locallib.php');
 class variation_deleted extends variation_base {
     protected function init() {
         parent::init();
         $this->data['crud'] = 'd';
+        $this->legacyaction = 'deleted variation';
+    }
+    public function get_description() {
+        return $this->get_description_mod( 'deleted' );
     }
 }

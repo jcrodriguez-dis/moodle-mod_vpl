@@ -24,12 +24,12 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_uploaded extends submission_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'c';
+        $this->data['crud'] = 'c';
         $this->legacyaction = 'submit files';
     }
 }

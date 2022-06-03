@@ -1,14 +1,31 @@
 #!/bin/bash
-# $Id: prolog_run.sh,v 1.4 2012-09-24 15:13:22 juanca Exp $
-# Default Prolog language run script for VPL
+# This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+# Script for running Prolog language
 # Copyright (C) 2012 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load common script and check programs
+# @vpl_script_description Using swipl with the first file
+# load common script and check programs
 . common_script.sh
 check_program swipl
-swipl -q -s $VPL_SUBFILE0 -t halt
+if [ "$1" == "version" ] ; then
+	PROLOGVERSIONOUTPUT=.vpl_prolog_version_output
+	echo "#!/bin/bash" > vpl_execution
+	echo "swipl -v < /dev/null &> $PROLOGVERSIONOUTPUT" >> vpl_execution
+	echo "head -n2 $PROLOGVERSIONOUTPUT" >> vpl_execution
+	echo "rm $PROLOGVERSIONOUTPUT" >> vpl_execution
+	chmod +x vpl_execution
+	exit
+fi
+get_first_source_file pro pl
+swipl -q -s "$FIRST_SOURCE_FILE" -t halt 1 > /dev/null < /dev/null
 cat common_script.sh > vpl_execution
-echo "swipl -q -L32M -s $VPL_SUBFILE0" >>vpl_execution
+if [ "$1" == "batch" ] ; then
+	echo "swipl -q -s \"$FIRST_SOURCE_FILE\" -t vpl_hello" >>vpl_execution
+else
+	echo "swipl -q -s \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+fi
+
 chmod +x vpl_execution
+

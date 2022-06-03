@@ -24,8 +24,8 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 abstract class base extends \core\event\base {
     protected $legacyaction = '';
     protected function get_url_base($script) {
@@ -33,9 +33,9 @@ abstract class base extends \core\event\base {
                 'id' => $this->contextinstanceid
         );
         if (($this->relateduserid) && $this->relateduserid != $this->userid) {
-            $parms ['userid'] = $this->relateduserid;
+            $parms['userid'] = $this->relateduserid;
         }
-        return new \moodle_url( 'mod/vpl/' . $script, $parms );
+        return new \moodle_url( '/mod/vpl/' . $script, $parms );
     }
     public function get_description() {
         return '';

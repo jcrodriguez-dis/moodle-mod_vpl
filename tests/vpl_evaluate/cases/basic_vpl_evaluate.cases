@@ -1,0 +1,14 @@
+case=Text
+output=text with numbers 3 4 5.5 end
+case=Text multi-output
+output=numbers 3 4 5.5 end
+output=text with numbers 3 4 5.5 end
+case=Numbers
+output=3 4 5.5
+case=Numbers multi-output
+output=3 4 5.4
+output=text with numbers 3 4 5.5 end
+case=Exact text
+output=" text with numbers 3 , 4 . 5.5 end"
+case=Regular expression
+output=/^ text.*3.*end$/

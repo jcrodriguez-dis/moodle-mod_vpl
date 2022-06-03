@@ -15,68 +15,47 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Syntaxhighlighters object factory class
+ * VPL Syntaxhighlighter object factory class
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-class vpl_sh_factory{
-    static $base =null;
-    static $c = null;
-    static $cpp = null;
-    static $java = null;
-    static $scheme = null;
-    static $ada = null;
-    static $sql = null;
-    static $sh = null;
-    static $pascal = null;
-    static $fortran77 = null;
-    static $prolog = null;
-    static $matlab = null;
-    static $python = null;
-    static $scala = null;
-    static function get_object(&$ref, $type){
-        if($ref == null){
-            require_once dirname(__FILE__).'/sh_'.$type.'.class.php';
-            $class = 'vpl_sh_'.$type;
-            $ref = new $class();
-        }
-        return $ref;
+class vpl_sh_factory {
+    protected static $cache = array ();
+    protected static $loaded = false;
+    public static function include_js() {
+        global $PAGE;
+        global $CFG;
+        $opt = new stdClass();
+        $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', array($opt));
     }
-
-    static function get_sh($filename){
-        $ext = pathinfo($filename,PATHINFO_EXTENSION);
-        if($ext == 'c'){
-            return self::get_object(self::$c,'c');
-        }elseif($ext == 'cpp' || $ext == 'h'){
-            return self::get_object(self::$cpp,'cpp');
-        }elseif($ext == 'java'){
-            return self::get_object(self::$java,'java');
-        }elseif($ext == 'ada' || $ext == 'adb' || $ext == 'ads'){
-            return self::get_object(self::$ada,'ada');
-        }elseif($ext == 'sql'){
-            return self::get_object(self::$sql,'sql');
-        }elseif($ext == 'scm'){
-            return self::get_object(self::$scheme,'scheme');
-        }elseif($ext == 'sh'){
-            return self::get_object(self::$sh,'sh');
-        }elseif($ext == 'pas'){
-            return self::get_object(self::$sh,'pascal');
-        }elseif($ext == 'f77' || $ext == 'f' ){
-            return self::get_object(self::$fortran77,'fortran77');
-        }elseif($ext == 'pl' ){
-            return self::get_object(self::$prolog,'prolog');
-        }elseif($ext == 'm' ){
-            return self::get_object(self::$matlab,'matlab');
-        }elseif($ext == 'py' ){
-            return self::get_object(self::$python,'python');
-        }elseif($ext == 'scala' ){
-            return self::get_object(self::$scala,'scala');
-        }else{
-            return self::get_object(self::$base,'base');
+    public static function syntaxhighlight() {
+        global $PAGE;
+        if ( ! self::$loaded ) {
+            self::include_js();
+            self::$loaded = true;
         }
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlight');
+    }
+    public static function get_object($type) {
+        if (! isset( self::$cache[$type] )) {
+            require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');
+            $class = 'vpl_sh_' . $type;
+            self::$cache[$type] = new $class();
+        }
+        return self::$cache[$type];
+    }
+    public static function get_sh($filename) {
+        if (vpl_is_binary( $filename )) {
+            if (vpl_is_image( $filename )) {
+                return self::get_object( 'image' );
+            } else {
+                return self::get_object( 'binary' );
+            }
+        }
+        return self::get_object( 'ace' );
     }
 }

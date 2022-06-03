@@ -1,189 +1,362 @@
+#vpl_results_accordion .vpl_ide_accordion_c_description a,
+#vpl_results_accordion .vpl_ide_accordion_c_comments a,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a {
+    color: #1177d1; /* Removes Jquery-UI and set Moodle default theme color. */
+}
+
 .vpl_ide_root {
-	text-align:left;
-	direction:ltr;
-	width: 100%;
+    direction: ltr;
+    text-align: left;
+    width: 100%;
 }
-.vpl_body_fullscreen{
-	overflow: hidden;
+
+.vpl_body_fullscreen {
+    overflow: hidden;
 }
+
 .vpl_ide_root_fullscreen {
-	width: 100%;
-	height: 100%;
-	position: fixed;
-	background-color:white;
-	top:0;
-	left:0;
-	z-index:90;
+    background-color: white;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 90;
 }
-.vpl_ide_dialog{
-	z-index:999;
+
+.vpl_ide_dialog {
+    z-index: 999;
 }
+#vpl_ide_dialog_about {
+    width: 400px;
+    height: 260px;
+}
+#vpl_menu .ui-button-text-only,
+#vpl_menu .ui-button-text {
+    padding: 0.4em;
+}
+
 .vpl_ide_menu {
-	min-width: 320px;
+    min-width: 340px;
+    padding: 0.2em;
 }
+
 .vpl_ide_tr {
-	position:relative;
-	min-width: 330px;
-	width: 100%;
+    border: 0;
+    margin: 0;
+    min-width: 330px;
+    padding: 0;
+    position: relative;
+    width: 100%;
+}
+
+#vpl_filelist {
+    display: none;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+#vpl_filelist_header {
+    padding-left: 0.5em;
+}
+
+#vpl_filelist_content {
+    overflow: auto;
+    padding-left: 0.5em;
+    white-space: pre;
+}
+
+.vpl_ide_dirindent {
+    display: inline-block;
+    width: 1.5em;
 }
 
 .vpl_ide_tabs {
-	min-width: 200px;
-	position:absolute;
-    left:0px;
-}
-.vpl_ide_charicon{
-	color:rgb(200,200,200);
-	font-family:monospace;
-	vertical-align:0.15em;
-	text-shadow: -1px 0 gray, 0 1px gray,
-	  1px 0 gray, 0 -1px gray;
+    position: absolute;
+    top: 0;
 }
 
-.vpl_ide_delicon{
+#vpl_tabs_scroll {
+    overflow: auto;
 }
-.ui-tabs-active .vpl_ide_delicon:hover{
-	color:red;
-	cursor: pointer;
+
+.vpl_ide_tabs li {
+    line-height: 1ex;
 }
-.ui-tabs .ui-tabs-panel {
-	padding:0;
+
+.vpl_ide_charicon {
+    color: gray;
+}
+
+.vpl_ide_closeicon {
+    color: white;
+    text-shadow:
+        1px 0 1px gray,
+        0 1px 1px gray,
+        0 -1px 1px gray,
+        -1px 0 1px gray;
+}
+div.vpl_ide_dialog_content {
+    height: 250px;
+    overflow: scroll;
+    width: 350px;
+}
+
+.vpl_ide_closeicon:hover {
+    color: gray;
+    cursor: pointer;
+    text-shadow: none;
+}
+
+.vpl_ide .ui-widget {
+    font-size: 12px;
+}
+
+.vpl_ide .ui-widget-content {
+    font-size: 12px;
+}
+
+.vpl_ide .ui-dialog-titlebar {
+    font-size: 13px;
+    padding: 0 1em 0 1em;
+}
+
+.vpl_ide .ui-button {
+    font-size: 14px;
+}
+
+div.vpl_ide_file.ui-tabs-panel {
+    padding: 0;
 }
 /*Resolve problem with essential theme*/
 .vpl_ide_file * {
-	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
 }
+
 .vpl_ide_file {
-	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-	margin: 2px;
-	padding: 0;
-	z-index:0;
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
+    margin: 2px;
+    padding: 0;
+    z-index: 0;
+    position: absolute;
 }
-.vpl_ide_dropzone {
-	width: 200px;
-	height: 200px;
+
+.vpl_ide_binary {
+    font-size: 300%;
+    line-height: 200%;
+    margin: auto;
+    text-align: center;
+    z-index: 0;
 }
+
+.vpl_ide_img {
+    overflow: auto;
+}
+
+img.vpl_ide_file {
+    display: block;
+    height: auto;
+    padding: 2px;
+    width: auto;
+    z-index: 0;
+}
+
 .vpl_ide_results {
-	min-width: 100px;
-    position:absolute;
-    right:0;
-    padding-left:3px;
-    padding-bottom:3px
+    height: 100%;
+    min-width: 100px;
+    position: absolute;
+    right: 0;
+    top: 0;
 }
-.vpl_ide_results a {
-    padding: 1px 2px;
-    border-bottom: solid 1px;
-    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.4);
-}
+
 .vpl_ide_results pre {
-   line-height: 100%;
+    line-height: 100%;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
 }
 
-.vpl_ide_progressbar{
-	background-color: #ccc;
-	position: relative;
-	width: 200px;
+.vpl_ide_progressbar {
+    min-width: 100px;
+    position: relative;
 }
-.vpl_ide_progressbarlabel{
-	position:absolute;
-    width:100%;
-    text-align:center;
-    top: 4px;
+
+.vpl_ide_progressbaricon {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 2em;
+}
+
+.vpl_ide_progressbarlabel {
+    border: 0;
+    display: block;
     font-weight: bold;
-    text-shadow: 1px -1px 0 white, -1px 1px 0 white, 2px -2px 1px white, -2px 2px 1px white;
-    /*color: white;*/
+    margin: 0 1em 0 1em;
+    padding: 0 1em 0 1em;
+    text-align: center;
 }
+
+.vpl_icon_repeat {
+    left: -0.7em;
+    position: absolute;
+}
+
 .vpl_ide {
-	font-size: 80%;
+    font-size: 12px;
 }
-.ace_gutter-tooltip{
-	white-space: pre-wrap !important;
+.vpl_ide div.ui-dialog-titlebar {
+    padding: 0.15em;
 }
-.vpl_ide_result_compilation, .vpl_ide_result_execution {
-	font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
-	font-size: 12pt;
-	white-space: pre-wrap;
-}
-/* horizontal menu css Taken from "Jaime Peña Tresancos" en 
-   "En el presente artículo hablaremos de qué es y
-    qué proporciona el jQuery User Interface Menu"
-*/
-
-.vpl_ide .ui-menu {
-	overflow: hidden;
-	z-index: 10;
+.ace_gutter-tooltip {
+    white-space: pre-wrap;
 }
 
-.vpl_ide .ui-menu>li {
-	float: left;
-	display: block;
-	width: auto !important;
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_execution {
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
+    max-width: 120em;
+    white-space: pre;
 }
 
-.vpl_ide .ui-menu ul li {
-	display: block;
-	float: none;
-}
-
-.vpl_ide .ui-menu ul li ul {
-	left: 120px !important;
-	width: 100%;
-}
-
-.vpl_ide .ui-menu ul li ul li {
-	width: auto;
-}
-
-.vpl_ide .ui-menu ul li ul li a {
-	float: left;
-}
-
-.vpl_ide .ui-menu>li {
-	margin: 5px 5px !important;
-	padding: 0 0 !important;
-}
-
-.vpl_ide .ui-menu>li>a {
-	float: left;
-	display: block;
-	clear: both;
-	overflow: hidden;
-}
-
-.vpl_ide .ui-menu .ui-menu .ui-menu li {
-	float: left;
-	display: block;
-}
-
-.vpl_menu_option_separator{
-	width: 10em;
-	text-align: left;
-}
-.vpl_vnc{
-    position:fixed;
+.vpl_vnc {
+    position: fixed;
     width: auto;
     z-index: 1000;
 }
 
-.vpl_terminal{
+.vpl_vnc .ui-dialog-content {
     padding: 0;
-    margin:0;
-    border:0;
+}
+.vpl_noVNC_canvas {
+    cursor: none;
+    height: 600px;
+    width: 800px;
+}
+
+.vpl_vnc .ui-button-text-only .ui-button-text {
+    padding: 0.15em;
+}
+#vpl_dialog_terminal {
+    display: none;
+}
+.vpl_terminal {
+    background-color: black;
+    border: 0;
+    margin: 0;
+    padding: 0;
     z-index: 1000;
 }
 
-/*Resolve problem with essential theme*/
-pre.vpl_terminal *{
-	font:1em/1.2 monospace;
-}
-pre.vpl_terminal{
-	font:1em/1.2 monospace;
-	font-size:12px;
-    display: inline-block;
+.vpl_terminal_theme1 div {
+    background-color: white;
+    color: black;
 }
 
-.vpl_vnc canvas{ 
-    width:800px;
-    height:600px;
+.vpl_terminal_theme1 .reverse-video {
     background-color: black;
+    color: white;
+}
+
+.vpl_terminal_theme2 div {
+    background-color: navy;
+    color: yellow;
+}
+
+.vpl_terminal_theme2 .reverse-video {
+    background-color: yellow;
+    color: navy;
+}
+
+.vpl_terminal_theme3 div {
+    background-color: blue;
+    color: white;
+}
+
+.vpl_terminal_theme3 .reverse-video {
+    background-color: white;
+    color: blue;
+}
+.vpl_terminal_theme4 div {
+    background-color: red;
+    color: #0ff;
+}
+
+.vpl_terminal_theme4 .reverse-video {
+    background-color: #0ff;
+    color: red;
+}
+
+.vpl_clipboard {
+    display: none;
+    z-index: 1010;
+}
+.vpl_clipboard_label1.ui-button-text,
+.vpl_clipboard_label1.ui-button-text {
+    padding: 0.15em;
+}
+.vpl_clipboard .vpl_clipboard_entry1,
+.vpl_clipboard .vpl_clipboard_entry2 {
+    height: 50px;
+    width: 200px;
+}
+
+/*Resolve problem with essential theme*/
+pre.vpl_terminal * {
+    border: 0;
+    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    margin: 0;
+    padding: 0;
+}
+
+pre.vpl_terminal {
+    display: inline-block;
+    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    font-size: 12px;
+    padding: 2px;
+}
+/* Support to ways of class setting, jqueryui button may change */
+#vpl_ide_timeleft.vpl_buttonleft_orange,
+.vpl_buttonleft_orange {
+    background-color: orange;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+#vpl_ide_timeleft.vpl_buttonleft_red,
+.vpl_buttonleft_red {
+    background-color: red;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+#vpl_ide_timeleft.vpl_buttonleft_black,
+.vpl_buttonleft_black {
+    background-color: black;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+
+.vpl_dimmed {
+    opacity: 0.3;
 }

@@ -22,84 +22,85 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-require_once dirname(__FILE__).'/similarity_base.class.php';
 
-class vpl_similarity_ada extends vpl_similarity_base{
-    public function get_type(){
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
+class vpl_similarity_ada extends vpl_similarity_base {
+    public function get_type() {
         return 4;
     }
-    public function sintax_normalize(&$tokens){
-        $identifier_list = false;
-        $n_identifiers = 0;
-        $identifier_def_pos = 0;
-        $bracket_level = 0;
-        $ret = array();
-        $prev = new vpl_token(vpl_token_type::identifier,'',0);
-        foreach($tokens as $token){
-            if($token->type == vpl_token_type::operator){
-                switch($token->value){
-                    case '[':
-                        //only add ]
+    public function sintax_normalize(&$tokens) {
+        $identifierlist = false;
+        $nidentifiers = 0;
+        $identifierdefpos = 0;
+        $bracketlevel = 0;
+        $ret = array ();
+        foreach ($tokens as $token) {
+            if ($token->type == vpl_token_type::OPERATOR) {
+                switch ($token->value) {
+                    case '[' :
+                        // Only add ].
                         break;
-                    case '(':
-                        //only add )
-                        $bracket_level++;
+                    case '(' :
+                        // Only add ).
+                        $bracketlevel ++;
                         break;
-                    case '{':
-                        //only add }
+                    case '{' :
+                        // Only add }.
                         break;
-                    case ')':
-                        $bracket_level--;
-                        $ret[]=$token;
+                    case ')' :
+                        $bracketlevel --;
+                        $ret[] = $token;
                         break;
-                    case ';':
-                        $ret[]=$token;
-                        //End of identifier list declaration?
-                        if($identifier_list){
-                            if($identifier_def_pos>0){
-                                $rep = array_slice($ret,$identifier_def_pos);
-                                for($i=0; $i<$n_identifiers ; $i++){
-                                    foreach($rep as $data){
+                    case ';' :
+                        $ret[] = $token;
+                        // End of identifier list declaration?
+                        if ($identifierlist) {
+                            if ($identifierdefpos > 0) {
+                                $rep = array_slice( $ret, $identifierdefpos );
+                                for ($i = 0; $i < $nidentifiers; $i ++) {
+                                    foreach ($rep as $data) {
                                         $ret[] = $data;
                                     }
                                 }
-                            }else{
-                                for($i=0; $i<$n_identifiers ; $i++){
+                            } else {
+                                for ($i = 0; $i < $nidentifiers; $i ++) {
                                     $ret[] = $token;
                                 }
                             }
                         }
-                        $identifier_list = false;
+                        $identifierlist = false;
                         break;
-                    case ',':
-                        //Posible identifier list
-                        if($bracket_level == 0){
-                            if($identifier_list){
-                            $identifier_list = true;
-                            $identifier_def_pos = 0;
-                            $n_identifiers = 1;
-                            }else{
-                                $n_identifiers++;
+                    case ',' :
+                        // Posible identifier list.
+                        if ($bracketlevel == 0) {
+                            if ($identifierlist) {
+                                $identifierlist = true;
+                                $identifierdefpos = 0;
+                                $nidentifiers = 1;
+                            } else {
+                                $nidentifiers ++;
                             }
-                        }else{
-                            $ret[]=$token;
+                        } else {
+                            $ret[] = $token;
                         }
                         break;
-                    case ':':
-                        if($identifier_list){
-                            $identifier_def_pos = count($ret);
+                    case ':' :
+                        if ($identifierlist) {
+                            $identifierdefpos = count( $ret );
                         }
                         $ret[] = $token;
                         break;
-                    default:
-                        $ret[]=$token;
+                    default :
+                        $ret[] = $token;
                 }
-                $prev=$token;
             }
         }
         return $ret;
     }
-        public function get_tokenizer(){
-        return vpl_tokenizer_factory::get('ada');
+    public function get_tokenizer() {
+        return vpl_tokenizer_factory::get( 'ada' );
     }
 }

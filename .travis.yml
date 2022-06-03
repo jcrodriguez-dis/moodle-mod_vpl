@@ -1,0 +1,67 @@
+language: php
+
+os: linux
+
+dist: bionic
+
+addons:
+  postgresql: "9.6"
+  apt:
+    packages:
+      - g++
+
+services:
+  - mysql
+  - postgresql
+  - docker
+  
+cache:
+  directories:
+    - $HOME/.composer/cache
+    - $HOME/.npm
+
+jobs:
+  include:
+     - php: 7.2
+       env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=pgsql
+     - php: 7.2
+       env: MOODLE_BRANCH=MOODLE_35_STABLE    DB=mysqli
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=pgsql
+     - php: 7.3
+       env: MOODLE_BRANCH=MOODLE_310_STABLE    DB=mysqli
+     - php: 7.4
+       env: MOODLE_BRANCH=MOODLE_311_STABLE    DB=mysqli
+     - php: 7.4
+       env: MOODLE_BRANCH=MOODLE_311_STABLE    DB=pgsql
+
+before_install:
+  - phpenv config-rm xdebug.ini
+  - cd ../..
+  - composer create-project -n --no-dev --prefer-dist moodlehq/moodle-plugin-ci ci ^3
+  - export PATH="$(cd ci/bin; pwd):$(cd ci/vendor/bin; pwd):$PATH"
+
+before_script:
+  - chmod +x /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh
+
+install:
+  - moodle-plugin-ci install
+
+script:
+  - moodle-plugin-ci phplint
+#  CPD errors I need to rewrite scala and python tokenizer
+#  - moodle-plugin-ci phpcpd
+  - moodle-plugin-ci phpmd
+  - moodle-plugin-ci codechecker
+  - moodle-plugin-ci validate
+  - moodle-plugin-ci savepoints
+  - moodle-plugin-ci mustache
+#  - moodle-plugin-ci phpdoc
+  - if [ "$MOODLE_BRANCH" == "MOODLE_35_STABLE" ]; then
+        echo "Grunt checker skipped for MOODLE_35_STABLE";
+    else
+        moodle-plugin-ci grunt;
+    fi
+  - moodle-plugin-ci phpunit
+  - moodle-plugin-ci behat
+  - /home/travis/build/moodle/mod/vpl/tests/vpl_evaluate/test_vpl_evaluate.sh

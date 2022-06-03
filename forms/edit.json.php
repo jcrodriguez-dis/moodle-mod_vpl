@@ -18,99 +18,126 @@
  * Processes AJAX requests from IDE
  *
  * @package mod_vpl
- * @copyright    2012 Juan Carlos Rodríguez-del-Pino
- * @license        http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author        Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define('AJAX_SCRIPT', true);
-$outcome = new stdClass();
-$outcome->success = true;
-$outcome->response = new stdClass();
-$outcome->error = '';
-try{
-    require_once dirname(__FILE__).'/../../../config.php';
-    require_once dirname(__FILE__).'/edit.class.php';
-    if(!isloggedin()){
-        throw new Exception(get_string('loggedinnot'));
+define( 'AJAX_SCRIPT', true );
+
+require(__DIR__ . '/../../../config.php');
+
+global $PAGE, $OUTPUT, $USER;
+
+$result = new stdClass();
+$result->success = true;
+$result->response = new stdClass();
+$result->error = '';
+try {
+    require_once(dirname( __FILE__ ) . '/edit.class.php');
+    if (! isloggedin()) {
+        throw new Exception( get_string( 'loggedinnot' ) );
     }
+    $id = required_param( 'id', PARAM_INT ); // Course module id.
+    $action = required_param( 'action', PARAM_ALPHANUMEXT );
+    $userid = optional_param( 'userid', false, PARAM_INT );
+    $subid = optional_param( 'subid', false, PARAM_INT );
+    $copy = optional_param('privatecopy', false, PARAM_INT);
+    $vpl = new mod_vpl( $id );
+    // TODO use or not sesskey."require_sesskey();".
+    require_login( $vpl->get_course(), false );
 
-    $id      = required_param('id', PARAM_INT); // course id
-    $action  = required_param('action', PARAM_ALPHANUMEXT);
-    $userid = optional_param('userid',FALSE,PARAM_INT);
-    $vpl = new mod_vpl($id);
-    //TODO use or not sesskey
-    //require_sesskey();
-    require_login($vpl->get_course(),false);
-
-    $PAGE->set_url(new moodle_url('/mod/vpl/forms/editor.json.php', array('id'=>$id, 'action'=>$action)));
+    $PAGE->set_url( new moodle_url( '/mod/vpl/forms/edit.json.php', array (
+            'id' => $id,
+            'action' => $action
+    ) ) );
     echo $OUTPUT->header(); // Send headers.
-    $raw_data=file_get_contents("php://input");
-    $raw_data_size = strlen($raw_data);
-    if($_SERVER['CONTENT_LENGTH'] != $raw_data_size){
-        throw new Exception("Ajax POST error: CONTENT_LENGTH expected "
-                .$_SERVER['CONTENT_LENGTH']
-                ." found $raw_data_size)");
+    $rawdata = file_get_contents( "php://input" );
+    $rawdatasize = strlen( $rawdata );
+    if ($_SERVER['CONTENT_LENGTH'] != $rawdatasize) {
+        throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawdatasize)" );
     }
-    $data=json_decode($raw_data);
-    if (!$vpl->is_submit_able()) {
-       throw new Exception(get_string('notavailable'));
+    \mod_vpl\util\phpconfig::increase_memory_limit();
+    $actiondata = json_decode( $rawdata );
+    if (! $vpl->is_submit_able()) {
+        throw new Exception( get_string( 'notavailable' ) );
     }
-    if (!$userid || $userid == $USER->id) { // Make own submission
+    if (! $userid || $userid == $USER->id) { // Make load own submission.
         $userid = $USER->id;
-        $vpl->require_capability ( VPL_SUBMIT_CAPABILITY );
-        if (! $vpl->pass_network_check ()) {
-            throw new Exception(get_string ( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr ());
-        }
-        if(!$vpl->pass_password_check()){
-            throw new Exception(get_string('requiredpassword',VPL));
-        }
-    } else { // Make other user submission
-        $vpl->require_capability ( VPL_MANAGE_CAPABILITY );
+        $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+        $vpl->restrictions_check();
+    } else { // Access other user submission.
+        $vpl->require_capability( VPL_GRADE_CAPABILITY );
     }
     $instance = $vpl->get_instance();
     switch ($action) {
-    case 'save':
-        $postfiles=(array)$data;
-        $files = Array();
-        foreach($postfiles as $name => $data){
-            $files[]=array('name' => $name, 'data' => $data);
-        }
-        mod_vpl_edit::save($vpl,$userid,$files);
-    break;
-    case 'resetfiles':
-        $outcome->response->files = mod_vpl_edit::get_requested_files($vpl);
-    break;
-    case 'run':
-        if(!$instance->run and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
-            throw new Exception(get_string('notavailable'));
-        $outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
-    break;
-    case 'debug':
-        if(!$instance->debug and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
-            throw new Exception(get_string('notavailable'));
-        $outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
-    break;
-    case 'evaluate':
-        if(!$instance->evaluate and !$vpl->has_capability ( VPL_GRADE_CAPABILITY ))
-            throw new Exception(get_string('notavailable'));
-        $outcome->response = mod_vpl_edit::execute($vpl,$userid,$action);
-    break;
-    case 'retrieve':
-        $outcome->response=mod_vpl_edit::retrieve_result($vpl,$userid);
-        break;
-    case 'cancel':
-        $outcome->response=mod_vpl_edit::cancel($vpl,$userid);
-        break;
-    case 'getjails':
-        $outcome->response->servers=vpl_jailserver_manager::get_https_server_list($vpl->get_instance()->jailservers);
-        break;
-    default:
-        throw new Exception('ajax action error');
-  }
-}catch(Exception $e){
-    $outcome->success =false;
-    $outcome->error = $e->getMessage();
+        case 'save':
+            if ($userid != $USER->id) {
+                $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+            }
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            if ( empty($actiondata->comments) ) {
+                $actiondata->comments = '';
+            }
+            if ( empty($actiondata->version) ) {
+                $actiondata->version = -1;
+            } else {
+                $actiondata->version = (int) $actiondata->version;
+            }
+            $result->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments, $actiondata->version );
+            break;
+        case 'update':
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            $result->response = mod_vpl_edit::update( $vpl, $userid, $files);
+            break;
+        case 'resetfiles':
+            $files = mod_vpl_edit::get_requested_files( $vpl );
+            $result->response->files = mod_vpl_edit::filestoide( $files );
+            break;
+        case 'load':
+            if ( isset($actiondata->submissionid) ) {
+                $subid = $actiondata->submissionid;
+            }
+            if ( $subid && $vpl->has_capability( VPL_GRADE_CAPABILITY ) ) {
+                $load = mod_vpl_edit::load( $vpl, $userid , $subid);
+            } else {
+                $load = mod_vpl_edit::load( $vpl, $userid );
+            }
+            if ($copy) {
+                $load->version = -1;
+            }
+            $load->files = mod_vpl_edit::filestoide( $load->files );
+            $result->response = $load;
+            break;
+        case 'run':
+        case 'debug':
+        case 'evaluate':
+            if (! $instance->$action and ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
+            $result->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );
+            break;
+        case 'retrieve':
+            $result->response = mod_vpl_edit::retrieve_result( $vpl, $userid );
+            break;
+        case 'cancel':
+            $result->response = mod_vpl_edit::cancel( $vpl, $userid );
+            break;
+        case 'getjails':
+            $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
+            break;
+        default:
+            throw new Exception( 'ajax action error: ' + $action );
+    }
+    $duedate = $vpl->get_effective_setting('duedate', $userid);
+    $timeleft = $duedate - time();
+    $hour = 60 * 60;
+    if ( $duedate > 0 && $timeleft > -$hour ) {
+        $result->response->timeLeft = $timeleft;
+    }
+} catch ( Exception $e ) {
+    $result->success = false;
+    $result->error = $e->getMessage();
 }
-echo json_encode($outcome);
+echo json_encode( $result );
 die();

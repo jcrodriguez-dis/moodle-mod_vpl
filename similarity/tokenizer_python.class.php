@@ -26,245 +26,216 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/tokenizer_base.class.php';
+defined('MOODLE_INTERNAL') || die();
 
-class vpl_tokenizer_python extends vpl_tokenizer_base{
-    const regular=0;
-    const in_string=1;
-    const in_char=2;
-    const in_macro=3;
-    const in_comment=4;
-    const in_linecomment=5;
-    const in_number=6;
-    protected static $python_reserved=null;
-    protected $line_number;
-    protected $tokens;
-    protected function is_indentifier($text){
-        if(strlen($text)==0){
+require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+class vpl_tokenizer_python extends vpl_tokenizer_c {
+
+    protected static $pythonreserved = null;
+
+    protected function is_text($text) {
+        if (strlen( $text ) == 0) {
             return false;
         }
-        $first=$text[0];
-        return ($first >= 'a' && $first <= 'z') ||
-                    ($first >= 'A' && $first <= 'Z') ||
-                    $first=='_';
-    }
-    protected function is_number($text){
-        if(strlen($text)==0){
-            return false;
-        }
-        $first=$text[0];
-        return $first >= '0' && $first <= '9';
-    }
-    protected function is_text($text){
-        if(strlen($text)==0){
-            return false;
-        }
-        $first=$text[0];
+        $first = $text[0];
         return $first == '"' || $first == "'";
     }
 
-    protected function add_pending(&$pending){
-        if($pending <= ' '){
+    protected function add_pending(&$pending) {
+        if ($pending <= ' ') {
             $pending = '';
             return;
         }
-        if($this->is_indentifier($pending)){
-            if(isset($this->reserved[$pending])){
-                $type=vpl_token_type::reserved;
-            }else{
-                $type=vpl_token_type::identifier;
+        if ($this->is_indentifier( $pending )) {
+            if (isset( $this->reserved[$pending] )) {
+                $type = vpl_token_type::RESERVED;
+            } else {
+                $type = vpl_token_type::IDENTIFIER;
             }
-        }else{
-            if($this->is_number($pending) || $this->is_text($pending)){
-                $type=vpl_token_type::literal;
-            }else{
-                $type=vpl_token_type::operator;
+        } else {
+            if ($this->is_number( $pending ) || $this->is_text( $pending )) {
+                $type = vpl_token_type::LITERAL;
+            } else {
+                $type = vpl_token_type::OPERATOR;
             }
         }
-        $this->tokens[] = new vpl_token($type,$pending,$this->line_number);
-        $pending='';
+        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $pending = '';
     }
-    function __construct(){
-        if(self::$python_reserved === null){
-            self::$python_reserved= array('False' => true, 'class' => true, 'finally' => true, 'is' => true, 'return' => true,
-                    'None' => true, 'continue' => true, 'for' => true, 'lambda' => true, 'try' => true,
-                    'True' => true, 'def' => true, 'from' => true, 'nonlocal' => true, 'while' => true,
-                    'and' => true, 'del' => true, 'global' => true, 'not' => true, 'with' => true,
-                    'as' => true, 'elif' => true, 'if' => true, 'or' => true, 'yield' => true,
-                    'assert' => true, 'else' => true, 'import' => true, 'pass' => true,
-                    'break' => true, 'except' => true, 'in' => true, 'raise' => true);
+
+    public function __construct() {
+        if (self::$pythonreserved === null) {
+            self::$pythonreserved = array (
+                    'False' => true,
+                    'class' => true,
+                    'finally' => true,
+                    'is' => true,
+                    'return' => true,
+                    'None' => true,
+                    'continue' => true,
+                    'for' => true,
+                    'lambda' => true,
+                    'try' => true,
+                    'True' => true,
+                    'def' => true,
+                    'from' => true,
+                    'nonlocal' => true,
+                    'while' => true,
+                    'and' => true,
+                    'del' => true,
+                    'global' => true,
+                    'not' => true,
+                    'with' => true,
+                    'as' => true,
+                    'elif' => true,
+                    'if' => true,
+                    'or' => true,
+                    'yield' => true,
+                    'assert' => true,
+                    'else' => true,
+                    'import' => true,
+                    'pass' => true,
+                    'break' => true,
+                    'except' => true,
+                    'in' => true,
+                    'raise' => true
+            );
         }
-        $this->reserved=&self::$python_reserved;
-        parent::__construct();
+        $this->reserved = &self::$pythonreserved;
     }
 
-
-    function parse($filedata){
-        $this->tokens=array();
-        $this->line_number=1;
-        $state = self::regular;
-        $pending='';
-        $first_no_space = '';
-        $last_no_space = '';
-        $l = strlen($filedata);
-        $current='';
-        $previous='';
-        for($i=0;$i<$l;$i++){
-            $previous=$current;
-            $current=$filedata[$i];
-            if($i < ($l-1)) {
-                $next = $filedata[$i+1];
-            }else{
-                $next ='';
+    public function parse($filedata) {
+        $this->tokens = array ();
+        $this->linenumber = 1;
+        $state = self::REGULAR;
+        $pending = '';
+        $firstnospace = '';
+        $l = strlen( $filedata );
+        $current = '';
+        $previous = '';
+        for ($i = 0; $i < $l; $i ++) {
+            $previous = $current;
+            $current = $filedata[$i];
+            if ($i < ($l - 1)) {
+                $next = $filedata[$i + 1];
+            } else {
+                $next = '';
             }
-            if($i < ($l-2)) {
-                $nextnext = $filedata[$i+2];
-            }else{
+            if ($i < ($l - 2)) {
+                $nextnext = $filedata[$i + 2];
+            } else {
                 $nextnext = '';
             }
-            if($previous == self::LF){
-                $last_no_space='';
-                $first_no_space = '';
-                $this->line_number++;
+            if ($previous == self::LF) {
+                $firstnospace = '';
+                $this->linenumber ++;
             }
-            if($current == self::CR){
-                if($next == self::LF) {
+            if ($current == self::CR) {
+                if ($next == self::LF) {
                     continue;
-                }else{
-                    $this->line_number++;
+                } else {
+                    $this->linenumber ++;
                     $current = self::LF;
                 }
             }
-            if($current != ' ' && $current != "\t") {//Keep first and last no space char
-                if($current != self::LF){
-                    $last_no_space=$current;
-                }
-                if($first_no_space == ''){
-                    $first_no_space = $current;
+            if ($current != ' ' && $current != "\t") { // Keep first and last no space char.
+                if ($firstnospace == '') {
+                    $firstnospace = $current;
                 }
             }
-            switch($state){
-                case self::in_comment:
-                    // Check end of block comment
-                    if($current=='"' && $next=='"' && $nextnext=='"') {
-                        $i+=2;
-                        $state=self::regular;
-                        continue;
-                    }
-                    break;
-                case self::in_linecomment:
-                    // Check end of comment
-                    if($current==self::LF){
-                        $state=self::regular;
-                    }
-                    break;
-                case self::in_string:
-                    // Check end of string
-                    if($current=='"' && $previous!='\\') {
-                        $state = self::regular;
+            switch ($state) {
+                case self::IN_COMMENT :
+                    // Check end of block comment.
+                    if ($current == '"' && $next == '"' && $nextnext == '"') {
+                        $i += 2;
+                        $state = self::REGULAR;
                         break;
                     }
-                    //discard two backslash
-                    if($current=='\\' && $previous=='\\'){
-                        $current=' ';
+                    break;
+                case self::IN_LINECOMMENT :
+                    // Check end of comment.
+                    if ($current == self::LF) {
+                        $state = self::REGULAR;
                     }
                     break;
-                case self::in_char:
-                    // Check end of char
-                    if($current=='\'' && $previous!='\\') {
+                case self::IN_STRING :
+                    // Check end of string.
+                    if ($current == '"' && $previous != '\\') {
+                        $state = self::REGULAR;
+                        break;
+                    }
+                    // Discard two backslash.
+                    if ($current == '\\' && $previous == '\\') {
+                        $current = ' ';
+                    }
+                    break;
+                case self::IN_CHAR :
+                    // Check end of char.
+                    if ($current == '\'' && $previous != '\\') {
                         $pending .= '\'';
-                        $state = self::regular;
+                        $state = self::REGULAR;
                         break;
                     }
-                    //discard two backslash
-                    if($current=='\\' && $previous=='\\'){
-                        $current=' ';
+                    // Discard two backslash.
+                    if ($current == '\\' && $previous == '\\') {
+                        $current = ' ';
                     }
                     break;
-                case self::in_number:
-                    if(($current >= '0' && $current <= '9') ||
-                        $current == '.' || $current == 'E' || $current == 'e'){
+                case self::IN_NUMBER :
+                    if (($current >= '0' && $current <= '9') || $current == '.'
+                        || $current == 'E' || $current == 'e') {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
-                    if(($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')){
+                    if (($current == '-' || $current == '+') && ($previous == 'E' || $previous == 'e')) {
                         $pending .= $current;
-                        continue;
+                        break;
                     }
-                    $this->add_pending($pending);
-                    $state = self::regular;
-                    //Process current as regular
-                case self::regular:
-                    if($current == '"' && $next == '"' && $nextnext == '"') {
-                        // Begin block comments
-                        $state = self::in_comment;
-                        $this->add_pending($pending);
-                        $i+=2;
-                        continue;
-                    }elseif($current == '#') {
-                        // Begin line comment
-                        $state = self::in_linecomment;
-                        $this->add_pending($pending);
-                        continue;
-                    }elseif($current == '"')    {
-                        $state = self::in_string;
-                        $this->add_pending($pending);
+                    $this->add_pending( $pending );
+                    $state = self::REGULAR;
+                    // Process current as REGULAR.
+                case self::REGULAR :
+                    if ($current == '"' && $next == '"' && $nextnext == '"') {
+                        // Begin block comments.
+                        $state = self::IN_COMMENT;
+                        $this->add_pending( $pending );
+                        $i += 2;
                         break;
-                    }elseif($current == "'"){
-                        $state = self::in_char;
-                        $this->add_pending($pending);
+                    } else if ($current == '#') {
+                        // Begin line comment.
+                        $state = self::IN_LINECOMMENT;
+                        $this->add_pending( $pending );
                         break;
-                    } elseif($current == '#' && $first_no_space==$current){
-                        $state = self::in_macro;
-                        $this->add_pending($pending);
+                    } else if ($current == '"') {
+                        $state = self::IN_STRING;
+                        $this->add_pending( $pending );
                         break;
-                    } elseif($current >= '0' && $current <= '9'){
-                        $state = self::in_number;
-                        $this->add_pending($pending);
+                    } else if ($current == "'") {
+                        $state = self::IN_CHAR;
+                        $this->add_pending( $pending );
+                        break;
+                    } else if ($current == '#' && $firstnospace == $current) {
+                        $state = self::IN_MACRO;
+                        $this->add_pending( $pending );
+                        break;
+                    } else if ($current >= '0' && $current <= '9') {
+                        $state = self::IN_NUMBER;
+                        $this->add_pending( $pending );
                         $pending = $current;
                         break;
                     }
-                    if(($current >= 'a' && $current <= 'z') ||
-                    ($current >= 'A' && $current <= 'Z') ||
-                    $current=='_' || ord($current) > 127){
+                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                        || $current == '_' || ord( $current ) > 127) {
                         $pending .= $current;
                     } else {
-                        $this->add_pending($pending);
-                        if($current >' '){
-                            $this->add_pending($current);
+                        $this->add_pending( $pending );
+                        if ($current > ' ') {
+                            $this->add_pending( $current );
                         }
                     }
             }
         }
-        $this->add_pending($pending);
+        $this->add_pending( $pending );
         $this->compact_operators();
-    }
-    function get_tokens(){
-        return $this->tokens;
-    }
-    function compact_operators(){
-        $correct = array();
-        $current = false;
-        foreach($this->tokens as &$next){
-            if($current){
-                if($current->type == vpl_token_type::operator
-                   && $next->type == vpl_token_type::operator
-                   && strpos('()[]{};',$current->value) === false){
-                       $current->value .= $next->value;
-                       $next=false;
-                }
-                $correct[] = $current;
-            }
-            $current = $next;
-        }
-        if($current){
-            $correct[] = $current;
-        }
-        $this->tokens = $correct;
-    }
-    function show_tokens(){
-        foreach($this->tokens as $token){
-            $token->show();
-        }
     }
 }

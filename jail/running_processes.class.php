@@ -14,7 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+
 /**
+ * Manage running tasks
+ *
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -22,31 +25,49 @@
 
 /**
  * Only ONE task per user
- * @author juanca
  *
+ * @author juanca
  */
- class vpl_running_processes{
-    const table='vpl_running_processes';
-
-    static public function get($userid){
+class vpl_running_processes {
+    const TABLE = 'vpl_running_processes';
+    public static function get($userid, $vplid = false) {
         global $DB;
-        return $DB->get_record(self::table,array('userid' => $userid));
+        $params = array ( 'userid' => $userid);
+        if ( $vplid !== false ) {
+            $params['vpl'] = $vplid;
+        }
+        return $DB->get_record( self::TABLE, $params );
     }
-
-    static public function set($userid,$server,$vplid,$adminticket){
+    public static function set($userid, $server, $vplid, $adminticket) {
         global $DB;
         $info = new stdClass();
         $info->userid = $userid;
         $info->server = $server;
         $info->vpl = $vplid;
-        $info->start_time=time();
+        $info->start_time = time();
         $info->adminticket = $adminticket;
-        vpl_truncate_RUNNING_PROCESSES($info);
-        return $DB->insert_record(self::table,$info);
+        vpl_truncate_running_processes( $info );
+        return $DB->insert_record( self::TABLE, $info );
     }
-
-    static public function delete($userid){
+    public static function delete($userid, $vplid, $adminticket=false) {
         global $DB;
-        $DB->delete_records(self::table, array('userid' => $userid));
+        $parms = array('userid' => $userid, 'vpl' => $vplid);
+        if ($adminticket) {
+            $parms['adminticket'] = $adminticket;
+        }
+        $DB->delete_records( self::TABLE, $parms );
+    }
+    public static function lanched_processes($courseid) {
+        global $DB;
+        // Clean old processes.
+        // TODO: save the maximum time and delete based on it.
+        $old = time() - (60 * 60); // One hour.
+        $DB->delete_records_select(self::TABLE, "start_time < ?", array($old));
+
+        $sql = 'SELECT {vpl_running_processes}.* FROM {vpl_running_processes}';
+        $sql .= ' INNER JOIN {vpl} ON {vpl_running_processes}.vpl = {vpl}.id';
+        $sql .= ' WHERE {vpl}.course = ?;';
+        $param = array ( $courseid );
+        return $DB->get_records_sql( $sql, $param );
     }
 }

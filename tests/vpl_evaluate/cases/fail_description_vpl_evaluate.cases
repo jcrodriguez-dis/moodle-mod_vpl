@@ -1,0 +1,15 @@
+case= Error 1
+Fail message= Fail_message_1
+input = A
+output = C
+case= Error 2
+Fail message= Fail_message_2
+input = A
+output = B
+case= Error 3
+input = A
+output = C
+case= Error 4
+Fail message= Fail_message_4
+input = A
+output = C

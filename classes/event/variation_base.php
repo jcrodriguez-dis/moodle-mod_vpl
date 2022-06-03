@@ -24,22 +24,44 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
-class variation_base extends vpl_base {
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
+class variation_base extends base {
+    public static function get_objectid_mapping() {
+        return array('db' => VPL_VARIATIONS, 'restore' => VPL_VARIATIONS);
+    }
+    public static function get_other_mapping() {
+        // Nothing to map.
+        return false;
+    }
     protected function init() {
-        parent::init();
-        $this->data ['objecttable'] = VPL_VARIATIONS;
-        $this->legacyaction = 'variations form';
+        $this->data['crud'] = 'u';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['objecttable'] = VPL_VARIATIONS;
     }
-    public function get_description() {
-        return $this->get_description_mod( 'variation' );
-    }
-    public static function log($info) {
-        if (is_array( $info )) {
-            parent::log( $info );
+    public static function log($vpl, $varid = null) {
+        if (is_array($vpl)) {
+            $info = $vpl;
         } else {
-            throw new \coding_exception( 'Parameter must be an array' );
+            $vplinstance = $vpl->get_instance();
+            $info = array (
+                'objectid' => $varid,
+                'contextid' => $vpl->get_context()->id,
+                'courseid' => $vplinstance->course,
+                'other' => array('vplid' => $vplinstance->id),
+            );
         }
+        parent::log( $info );
+    }
+    public function get_url() {
+        return $this->get_url_base( 'view.php' );
+    }
+    public function get_description_mod($mod) {
+        $desc = 'The user with id ' . $this->userid . ' ' . $mod;
+        $desc .= ' variation with id ' . $this->objectid . ' of VPL activity with id ' . $this->other['vplid'];
+        if ($this->relateduserid) {
+            $desc .= ' for user with id ' . $this->relateduserid;
+        }
+        return $desc;
     }
 }

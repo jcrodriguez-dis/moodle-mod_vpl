@@ -22,9 +22,22 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 defined ( 'MOODLE_INTERNAL' ) || die ();
 require_once(dirname( __FILE__ ) . '/restore_vpl_stepslib.php');
+
+/**
+ * Provides support for restore VPL antivities in the moodle2 backup format
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 class restore_vpl_activity_task extends restore_activity_task {
+    /**
+     * @var object save structure step to used later
+     */
     private $structurestep;
     /**
      * Define (add) particular settings this activity can have
@@ -45,10 +58,10 @@ class restore_vpl_activity_task extends restore_activity_task {
      * Define the contents in the activity that must be
      * processed by the link decoder
      */
-    static public function define_decode_contents() {
+    public static function define_decode_contents() {
         $contents = array ();
 
-        $contents [] = new restore_decode_content ( 'vpl', array (
+        $contents[] = new restore_decode_content ( 'vpl', array (
                 'intro'
         ), 'vpl' );
 
@@ -59,11 +72,11 @@ class restore_vpl_activity_task extends restore_activity_task {
      * Define the decoding rules for links belonging
      * to the activity to be executed by the link decoder
      */
-    static public function define_decode_rules() {
+    public static function define_decode_rules() {
         $rules = array ();
 
-        $rules [] = new restore_decode_rule ( 'VPLVIEWBYID', '/mod/vpl/view.php?id=$1', 'course_module' );
-        $rules [] = new restore_decode_rule ( 'VPLINDEX', '/mod/vpl/index.php?id=$1', 'course' );
+        $rules[] = new restore_decode_rule ( 'VPLVIEWBYID', '/mod/vpl/view.php?id=$1', 'course_module' );
+        $rules[] = new restore_decode_rule ( 'VPLINDEX', '/mod/vpl/index.php?id=$1', 'course' );
 
         return $rules;
     }
@@ -75,7 +88,7 @@ class restore_vpl_activity_task extends restore_activity_task {
      * It must return one array
      * of {@link restore_log_rule} objects
      */
-    static public function define_restore_log_rules() {
+    public static function define_restore_log_rules() {
         $rules = array ();
         return $rules;
     }
@@ -91,10 +104,15 @@ class restore_vpl_activity_task extends restore_activity_task {
      * by the restore final task, but are defined here at
      * activity level. All them are rules not linked to any module instance (cmid = 0)
      */
-    static public function define_restore_log_rules_for_course() {
+    public static function define_restore_log_rules_for_course() {
         $rules = array ();
         return $rules;
     }
+
+    /**
+     * Tries to get the basedon field, if the "basedon activity" is not in the backup.
+     * This happend when duplicating activity.
+     */
     public function after_restore() {
         global $DB;
         $id = $this->get_activityid ();
@@ -103,6 +121,9 @@ class restore_vpl_activity_task extends restore_activity_task {
         ) );
         if ($data != false) {
             $data->basedon = $this->structurestep->get_mappingid ( 'vpl', $data->basedon );
+            if ($data->basedon == false ) {
+                $data->basedon = $this->structurestep->get_baseon_by_name($data);
+            }
             $DB->update_record ( 'vpl', $data );
         }
     }

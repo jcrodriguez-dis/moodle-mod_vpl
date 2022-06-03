@@ -15,62 +15,71 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Show/hide HTML div
+ * Show/hide HTML div [+]/[-]
+ *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once dirname(__FILE__).'/../../../config.php';
-require_once dirname(__FILE__).'/../locallib.php';
-class vpl_hide_show_div{
-    static private $globalid=0;
-    var $id;
-    var $show;
-    function __construct($show=false){
-        if(self::$globalid == 0){
-            echo vpl_include_jsfile('hideshow.js');
+defined( 'MOODLE_INTERNAL' ) || die();
+
+require_once(dirname(__FILE__).'/../locallib.php');
+
+class vpl_hide_show_div {
+    private static $globalid = 0;
+    protected $id;
+    protected $show;
+    public function __construct($show = false) {
+        if (self::$globalid == 0) {
+            echo vpl_include_jsfile( 'hideshow.js' );
         }
         $this->id = self::$globalid;
         $this->show = $show;
-        self::$globalid++;
+        self::$globalid ++;
     }
-    function generate($return=false){
-        $HTML = '<a id="sht'.$this->id.'" href="javascript:void(0);"';
-        $HTML .= ' onclick="VPL.show_hide_div('.$this->id.');">';
-        if($this->show){
-            $HTML .= '[-]';
-        }else{
-            $HTML .= '[+]';
+    public function generate($return = false) {
+        $html = ' <a id="sht' . $this->id . '" style="cursor:pointer"';
+        $html .= ' onclick="VPL.showHideDiv(' . $this->id . ');">';
+        if ($this->show) {
+            $html .= '<i class="fa fa-eye-slash" aria-hidden="true"></i> [-]';
+        } else {
+            $html .= '<i class="fa fa-eye" aria-hidden="true"></i> [+]';
         }
-        $HTML .= '</a>';
-        if($return){
-            return $HTML;
-        }else{
-            echo $HTML;
+        $html .= '</a>';
+        if ($return) {
+            return $html;
+        } else {
+            echo $html;
             return '';
         }
     }
-    function begin_div($return=false){
-        $HTML = '<div id="shd'.$this->id.'"';
-        if(!($this->show)){
-            $HTML .= ' style="display:none"';
+    public function begin_div($return = false) {
+        $html = '<div id="shd' . $this->id . '" class="vpl_show_hide_content"';
+        if (! ($this->show)) {
+            $html .= ' style="display:none"';
         }
-        $HTML .= '>';
-        if($return){
-            return $HTML;
-        }else{
-            echo $HTML;
+        $html .= '>';
+        if ($return) {
+            return $html;
+        } else {
+            echo $html;
             return '';
         }
     }
-    function end_div($return=false){
-        if($return){
+
+    public function end_div($return = false) {
+        if ($return) {
             return '</div>';
-        }else{
+        } else {
             echo '</div>';
             return '';
         }
     }
+
+    public function get_div_id() {
+        return 'shd' . $this->id;
+    }
+
 }

@@ -24,13 +24,13 @@
  */
 namespace mod_vpl\event;
 
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_graded extends submission_base {
     protected function init() {
         parent::init();
-        $this->data ['crud'] = 'c';
-        $this->data ['edulevel'] = self::LEVEL_TEACHING;
+        $this->data['crud'] = 'c';
+        $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->legacyaction = 'grade';
     }
     protected function get_description_mod($mod) {
