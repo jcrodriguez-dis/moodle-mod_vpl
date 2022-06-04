@@ -130,7 +130,7 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         } else {
             $badgrade = $badgrade || trim($fromform->grade) == '';
             $floatn = unformat_float($fromform->grade);
-            if ($floatn == false) {
+            if ($floatn === false) {
                 $badgrade = true;
             } else {
                 $badgrade = $badgrade || $floatn > $vpl->get_instance()->grade;
