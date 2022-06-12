@@ -32,6 +32,6 @@ defined('MOODLE_INTERNAL') || die();
 $plugin->version = 2022052312;
 $plugin->requires = 2018051713; // Moodle 3.5!
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '3.5.0+';
+$plugin->release = '3.5.0++';
 
 $plugin->component = 'mod_vpl';

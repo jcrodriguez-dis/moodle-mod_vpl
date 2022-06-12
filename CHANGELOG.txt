@@ -1,0 +1,88 @@
+===================================
+CHANGELOG for Plugin VPL 3.5.0++
+===================================
+
+All notable changes to this project will be documented in this file.
+Since this is a non-official ChangeLog, yo may want to see release
+notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
+
+[ VPL 3.5.0++ - 2.0.0 ] - 2022-06-12
+
+    * Added
+
+        - Include some test cases for groups of options
+        - Provide utilities for customized error exceptions at utils
+        - Include namespaces for tokenizer classes and tests
+        - Include a flag to disable colors at error messages
+
+    * Changed
+
+        - Move tokenizer classes to classes/tokenizer and classes/util
+        - Specify data type at tokenizer for security reasons
+        - Upgrade VPL to v3.5.0+ to use Moodle 4.0
+        - Delete asserts related to data types
+        - Set associate array for states to improve performance
+
+    * Fixed
+
+        - Fix semantic versioning at CHANGELOG
+        - Fix some names for tokenizer methods to be more accurate
+        - Fix error messages when number of rule is printed
+        - Fix data types errors at tokenizer
+        - Fix code to be compatible for PHP 8.0
+
+[ VPL 3.5.0++ - 1.3.0 ] - 2022-06-07
+
+    * Added
+
+        - Provide test cases for old and some new changes
+        - Provide option to disable syntax checker
+        - Include comprobation for next when it's an array of objects
+        - Include asserts to assure that a group of tokens could be defined at a rule
+        - Include asserts to assure that a required group of token is defined together
+
+    * Changed
+
+        - Replace die with exceptions at check_error
+        - Replace script testing to PHP Unit
+        - Improve error messages to be more accurate
+        - Update JSON example to explain new options
+
+    * Fixed
+
+        - Fix discard operation for comments
+        - Fix merge operation and apply_inheritance
+        - Replace dir_path function with standard PHP dirname utility
+
+[ VPL 3.5.0++ - 1.2.0 ] - 2022-04-23
+
+    * Added
+
+        - Include examples of highlight rules JSON files for testing
+        - Provide support for testing using scripts
+        - Template of a class for PHP Unit
+        - Include syntax checker at tokenizer
+
+[ VPL 3.5.0++ - 1.1.0 ] - 2022-04-23
+
+    * Added
+
+        - Provide token class based on vpl_token
+        - Include parser operation to parse an entire file
+        - Include utility to get all tokens from tokenizer
+        - Provide operation to prepare tokenizer
+        - Provide error management
+
+    * Fixed
+        - Update highlight rules JSON file for PHP
+
+[ VPL 3.5.0++ - 1.0.0 ] - 2022-04-22
+
+    * Added
+
+        - Include examples of highlight rules JSON files
+        - Add initial tokenizer file
+
+    * Fixed
+
+        - Replace 3.4.3+ version to 3.4.3++

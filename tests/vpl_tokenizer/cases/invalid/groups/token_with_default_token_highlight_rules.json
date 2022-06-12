@@ -1,0 +1,15 @@
+// TEST: tested
+{
+    "states": [
+        {
+            "name": "state1",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//",
+                    "default_token": "comment"
+                }
+            ]
+        }
+    ]
+}

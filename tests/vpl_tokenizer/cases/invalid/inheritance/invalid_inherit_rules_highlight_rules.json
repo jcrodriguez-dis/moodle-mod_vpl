@@ -1,0 +1,4 @@
+// TEST: tested
+{
+    "inherit_rules": 10
+}

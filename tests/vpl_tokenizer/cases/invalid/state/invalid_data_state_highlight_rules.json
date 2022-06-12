@@ -1,0 +1,9 @@
+// TEST: tested
+{
+    "states": [
+        {
+            "name": "state1",
+            "data": 10
+        }
+    ]
+}

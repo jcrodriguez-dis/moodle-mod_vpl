@@ -1,0 +1,106 @@
+// Example of a highlight rules declaration
+//
+//  Highlighter needs to know what is the lexic and syntax
+//  which defines a programming language. This is an example
+//  of a file which could understand the tokenizer.
+//
+{
+    // COMMENTS: C-style comments (// and /* */)
+
+    // Tokenizer would first check if rules are correctly declared.
+    // This may cause a slower execution whether there are so many
+    // highlight rules, so you could skip this step specifying this
+    // option. If check_rules has not been declared, its value would
+    // be true. It is important to notice that check_rules must be
+    // the first option declared in order to truly affects the tokenizer
+    "check_rules": true,
+
+    // You can inherit the rules of another programming language,
+    // so its rules would be applied first. You can omit this
+    // property by simply insert an empty value or not declaring it.
+    // It is important to notice that file would be searched from
+    // current file's path, and extension must not be defined
+    "inherit_rules": "text_highlight_rules",
+
+    // List of all states on which highligther would check
+    // during its execution, starting at "start" state
+    "states": [
+        // Start state
+        //
+        //  Initial state on which the highlighter always begin.
+        //  The system will progress down the list, looking for
+        //  a matching regex. If input matches current regex, the
+        //  highlighter will continue to the state defined at "next",
+        //  if it's declared, or to the state under current one,
+        //  if it's not.
+        //
+        {
+            "name": "start", // unique string identifier of the state
+            // List of all rules that would check the highlighter when it's
+            // at current state. It is not possible to define a state whith
+            // any single rule declared at this array
+            "data": [
+                // Example of a block which defines a regex
+                // related to current state. All states must
+                // have at least one valid regex block.
+                {
+                    "token": "comment", // string or array of string which specifies the CSS token to apply
+                    "regex": "//", // string with the regex to match
+                    "next": "single_line_comment" // [Optional] next state to enter which could be string or a list of states
+                },
+                {
+                    "state_name": "Function Declaration", // string that specificed the state's name
+                    "token": "storage.type",
+                    "regex": "function\\s*\\(\\w+\\)",
+                    "next": "declr_function"
+                }
+            ]
+        },
+        {
+            "name": "single_line_comment",
+            "data": [
+                // Example of a state different than start
+                //
+                //  Since highlighter acts as a state machine, a new
+                //  state won't be checked unless one of the regex's
+                //  blocks of current state has a next field and matches.
+                //  In other words, highlighter would check constanly the
+                //  actual state until a next token has been actived
+                //
+                {
+                    "token": "comment",
+                    "regex": "\\$",
+                    "next": "single_line_comment"
+                },
+                {
+                    "token": "comment",
+                    "regex": "$",
+                    "next": "start"
+                },
+                {
+                    // String which specificies for current regex's block
+                    // the default token that will be checked until a new
+                    // state will be visited.
+                    "defaultToken": "comment"
+                }
+            ]
+        },
+        {
+            "name": "declr_function",
+            "data": [
+                {
+                    // When a regex has groups, you can specify a token for
+                    // each group declaring "token" as an array of strings.
+                    "token": [
+                        "storage.type",
+                        "text",
+                        "entity.name.function"
+                    ],
+                    "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
+                    // You can define an array of object for next option
+                    "next": "start"
+                }
+            ]
+        }
+    ]
+}

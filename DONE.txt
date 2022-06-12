@@ -1,0 +1,75 @@
+===================================
+DONE for Plugin VPL 3.5.0++
+===================================
+
+environment:
+
+    2022-06-10
+
+        - Set WSL to version 22.04 LTS
+        - Upgrade PHP to PHP 8 at Linux and VSC
+        - Upgrade Moodle 3.11 to Moodle 4.0 for Linux
+        - Upgrade VPL module to 3.5.0+ for Moodle 4.0 compatibility
+
+tokenizer.class.php:
+
+    2022-06-12
+        - Fix merge operation with name indexing
+        - Remove search method for states and fix with index name
+
+    2022-06-11
+
+        - Assume that PHP 8.0 would be used
+        - Move tokenizer classes to "classes" directory
+        - Include namespace at tokenizer classes to delete require_once
+        - Remove prefix vpl at tokenizer class
+        - Support to override check_rules
+        - Set the great majority of variables/parameters with a specific type
+        - Disable colors for final production at error messages
+        - Explain that get_states is just for testing or external use
+        - Return a copy of states at get_states
+        - Fix names at some methods to be more precise
+        - Include index at each state to improve search performance
+
+    2022-06-08
+
+        - Include tests for required and possible groups for rule's options
+        - Fix error messages for rules at check_json_file
+
+    2022-06-07
+
+        - Include exceptions at check_error instead of die
+        - Provide check_rules option to disable syntax checker
+        - Improve error messages at check_error
+        - Fix discard_comments method
+        - Include checks for the elements of an array of objects
+        - Fix merge operation and apply inheritance
+        - Fix the operation to get the directory path of a file
+        - Include asserts for required and possible groups for the options of a rule
+
+tokenizer_test.php:
+
+    2022-06-12
+
+        - Include asserts to check keys at merge
+
+    2022-06-11
+
+        - Include namespace at test classes to delete require_once
+        - Include namespace at test classes to delete require_once
+
+    2022-06-10
+
+        - Set relative paths for test JSON files
+        - Replace constant with const attribute
+        - Delete require_once for tokenizer
+        - Delete unused require_once (lib, locallib)
+
+    2022-06-07
+
+        - Include PHP Unit support instead of manual testing
+        - Test cases for check_rules option
+        - Include new annotation to just test tokenizer
+        - Include test cases for next token when it is an array of objects
+        - Test cases for check_rules option
+        - Basic tests for merge operation

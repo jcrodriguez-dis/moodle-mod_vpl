@@ -1,0 +1,6 @@
+// TEST: tested
+{
+    // Each state must have at least a name, so this
+    // file is not valid for tokenizer
+    "states": [ { } ]
+}

@@ -1,0 +1,20 @@
+// TEST: tested
+{
+    "states": [
+        {
+            "name": "state1",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//",
+                    "next": "text",
+                    "default_token": "comment"
+                },
+                {
+                    "token": "text",
+                    "regex": ".*"
+                }
+            ]
+        }
+    ]
+}

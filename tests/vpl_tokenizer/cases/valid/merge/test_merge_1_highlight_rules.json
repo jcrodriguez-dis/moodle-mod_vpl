@@ -1,0 +1,17 @@
+// TEST: tested
+{
+    "check_rules": false,
+    "inherit_rules": "inherit_rules_one_state_highlight_rules",
+    "states": [
+        {
+            "name": "root",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//",
+                    "next": "text-state"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,54 @@
+{
+    "check_rules": true,
+    "inherit_rules": "text_highlight_rules",
+    "states": [
+        {
+            "name": "start",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//",
+                    "next": "single_line_comment"
+                },
+                {
+                    "state_name": "Function Declaration",
+                    "token": "storage.type",
+                    "regex": "function\\s*\\(\\w+\\)",
+                    "next": "declr_function"
+                }
+            ]
+        },
+        {
+            "name": "single_line_comment",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "\\$",
+                    "next": "single_line_comment"
+                },
+                {
+                    "token": "comment",
+                    "regex": "$",
+                    "next": "start"
+                },
+                {
+                    "defaultToken": "comment"
+                }
+            ]
+        },
+        {
+            "name": "declr_function",
+            "data": [
+                {
+                    "token": [
+                        "storage.type",
+                        "text",
+                        "entity.name.function"
+                    ],
+                    "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
+                    "next": "start"
+                }
+            ]
+        }
+    ]
+}

@@ -1,0 +1,30 @@
+{
+    "check_rules": false,
+    "states": [
+        {
+            "name": "start",
+            "data": [
+                {
+                    "token": "empty_line",
+                    "regex": "^$"
+                },
+                {
+                    "default_token": "text"
+                }
+            ]
+        },
+        {
+            "name": "test",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//"
+                },
+                {
+                    "token": "multiple.comment",
+                    "regex": "/\\*"
+                }
+            ]
+        }
+    ]
+}

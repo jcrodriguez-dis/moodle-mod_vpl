@@ -1,0 +1,10 @@
+// TEST: tested
+{
+    // Since states must have a name and a set of rules, this file
+    // should not be valid for tokenizer
+    "states": [
+        {
+            "name": "state1"
+        }
+    ]
+}

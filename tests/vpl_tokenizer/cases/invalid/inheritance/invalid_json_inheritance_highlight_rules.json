@@ -1,0 +1,4 @@
+// TEST: tested
+{
+    "inherit_rules": "dump_highlight_rules"
+}

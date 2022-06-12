@@ -1,0 +1,24 @@
+// TEST: tested
+{
+    "check_rules": false,
+    "states": [
+        {
+            "name": "eol",
+            "data": [
+                {
+                    "token": "eol",
+                    "regex": "\n"
+                }
+            ]
+        },
+        {
+            "name": "text-state",
+            "data": [
+                {
+                    "token": "text",
+                    "regex": ".*"
+                }
+            ]
+        }
+    ]
+}
