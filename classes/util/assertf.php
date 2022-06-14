@@ -31,7 +31,7 @@ class assertf {
      * Flag to enable or disable the colors at error messages.
      * This option must be false at production.
      */
-    public const SET_MESSAGES_WITH_COLORS = true;
+    public static bool $messagewithcolors = true;
 
     /**
      * Get error message for passed filename and message
@@ -40,16 +40,16 @@ class assertf {
      * @param string $message customized error message
      * @return string
      */
-    static function get_error(string $filename, string $message): string {
-        if (self::SET_MESSAGES_WITH_COLORS) {
-            $message_ = isset($filename)? "\e[1m" . $filename . "\e[0m" : "";
-            $message_ .= "\e[1m:\e[0m \e[0;31merror:\e[0m " . $message;
+    public static function get_error(string $filename, string $message): string {
+        if (self::$messagewithcolors) {
+            $messagecustomized = isset($filename) ? "\e[1m" . $filename . "\e[0m" : "";
+            $messagecustomized .= "\e[1m:\e[0m \e[0;31merror:\e[0m " . $message;
         } else {
-            $message_ = isset($filename)? $filename : "";
-            $message_ .= "error: " . $message;
+            $messagecustomized = isset($filename) ? $filename : "";
+            $messagecustomized .= "error: " . $message;
         }
 
-        return $message_;
+        return $messagecustomized;
     }
 
     /**
@@ -60,11 +60,22 @@ class assertf {
      * @param string $message customized error message
      * @return void
      */
-    static function assert(bool $cond, ?string $filename, string $message): void {
+    public static function assert(bool $cond, ?string $filename, string $message): void {
         if ($cond != true) {
-            $message_ = self::get_error($filename, $message);
-            throw new Exception($message_);
+            $messagecustomized = self::get_error($filename, $message);
+            throw new Exception($messagecustomized);
         }
     }
 
+    /**
+     * Throw an exception with passed filename and message
+     *
+     * @param ?string $filename location on which error has been thrown
+     * @param string $message customized error message
+     * @return void
+     */
+    public static function showerr(?string $filename, string $message): void {
+        $messagecustomized = self::get_error($filename, $message);
+        throw new Exception($messagecustomized);
+    }
 }

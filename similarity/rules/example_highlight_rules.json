@@ -7,12 +7,25 @@
 {
     // COMMENTS: C-style comments (// and /* */)
 
+    // Since each highlight rules JSON file would generate a different
+    // tokenizer, you can distinguish them setting this option. However,
+    // it is optional, so you could not define it, and tokenizer would
+    // be called as default "default"
+    "name": "example-tokenizer",
+
+    // Each programming language has a extension, and tokenizer would
+    // check if passed file ends with that value whether this option
+    // has been defined. However, if you want to disable extensions,
+    // do not set this option, or define it with "plaintext" value.
+    //
+    // Since programming languages could be defined with more than
+    // one extension, you can define this option with an array of strings
+    "extension": "plaintext",   // example: ".c" or [".c",".h"]
+
     // Tokenizer would first check if rules are correctly declared.
     // This may cause a slower execution whether there are so many
     // highlight rules, so you could skip this step specifying this
-    // option. If check_rules has not been declared, its value would
-    // be true. It is important to notice that check_rules must be
-    // the first option declared in order to truly affects the tokenizer
+    // option. If check_rules has not been declared, its value would be true
     "check_rules": true,
 
     // You can inherit the rules of another programming language,
@@ -22,6 +35,7 @@
     // current file's path, and extension must not be defined
     "inherit_rules": "text_highlight_rules",
 
+    // Required option!!
     // List of all states on which highligther would check
     // during its execution, starting at "start" state
     "states": [
@@ -49,7 +63,6 @@
                     "next": "single_line_comment" // [Optional] next state to enter which could be string or a list of states
                 },
                 {
-                    "state_name": "Function Declaration", // string that specificed the state's name
                     "token": "storage.type",
                     "regex": "function\\s*\\(\\w+\\)",
                     "next": "declr_function"
@@ -76,12 +89,6 @@
                     "token": "comment",
                     "regex": "$",
                     "next": "start"
-                },
-                {
-                    // String which specificies for current regex's block
-                    // the default token that will be checked until a new
-                    // state will be visited.
-                    "defaultToken": "comment"
                 }
             ]
         },

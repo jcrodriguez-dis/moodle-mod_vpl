@@ -1,4 +1,6 @@
 {
+    "name": "example-tokenizer",
+    "extension": "plaintext",
     "check_rules": true,
     "inherit_rules": "text_highlight_rules",
     "states": [
@@ -11,7 +13,6 @@
                     "next": "single_line_comment"
                 },
                 {
-                    "state_name": "Function Declaration",
                     "token": "storage.type",
                     "regex": "function\\s*\\(\\w+\\)",
                     "next": "declr_function"
@@ -30,9 +31,6 @@
                     "token": "comment",
                     "regex": "$",
                     "next": "start"
-                },
-                {
-                    "defaultToken": "comment"
                 }
             ]
         },

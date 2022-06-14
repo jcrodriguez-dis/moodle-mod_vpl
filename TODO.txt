@@ -6,10 +6,8 @@ tokenizer.class.php:
     - Fix errors at get_line_tokens
     - Fix errors at prepare_tokens
     - Static checks for old rules at JSON files
-    - Delete default_token and set indexable array for rules with name
+    - Include unset to avoid repeted checks for required groups
 
 tokenizer_test.php:
     - Add more test cases for check_json_file method
     - Add more test cases for merge_json_file
-    - Add tests for valid JSON files
-    - Fix comments to specify data types

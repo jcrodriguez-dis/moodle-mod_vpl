@@ -24,8 +24,6 @@
  */
 namespace mod_vpl\tokenizer;
 
-defined('MOODLE_INTERNAL') || die();
-
 class token {
     /**
      * Type of current token
@@ -44,8 +42,8 @@ class token {
      * @param ?string $value value of current token
      */
     public function __construct(?string $type, ?string $value) {
-        $this->type = is_null($type)? "" : $type;
-        $this->value = is_null($value)? "" : $value;
+        $this->type = is_null($type) ? "" : $type;
+        $this->value = is_null($value) ? "" : $value;
     }
 
     /**

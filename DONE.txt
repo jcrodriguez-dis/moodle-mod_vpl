@@ -11,11 +11,25 @@ environment:
         - Upgrade Moodle 3.11 to Moodle 4.0 for Linux
         - Upgrade VPL module to 3.5.0+ for Moodle 4.0 compatibility
 
-tokenizer.class.php:
+tokenizer.php:
+
+    2022-06-13
+
+        - Include tests for new options
+        - Include tests for new error messages
+        - Set different location for JSON test cases
+        - Fix code style based on Moodle
+        - Delete returned at init methods since jsonobj is passed by reference
 
     2022-06-12
+
         - Fix merge operation with name indexing
         - Remove search method for states and fix with index name
+        - Delete default_token and set indexable array for rules with name
+        - Update example JSON file with or without comments
+        - Include options to tokenizer name and extension
+        - Optimize preprocess and process
+        - Set extension as an array of strings
 
     2022-06-11
 
@@ -49,9 +63,14 @@ tokenizer.class.php:
 
 tokenizer_test.php:
 
+    2022-06-13
+
+        - Fix code style based on Moodle
+
     2022-06-12
 
         - Include asserts to check keys at merge
+        - Update tests with new optimization at tokenizer
 
     2022-06-11
 

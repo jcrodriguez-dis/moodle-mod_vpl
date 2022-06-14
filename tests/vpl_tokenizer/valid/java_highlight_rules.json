@@ -125,9 +125,6 @@
                     "token": "comment",
                     "regex": "\\*\\/",
                     "next": "start"
-                },
-                {
-                    "default_token": "comment"
                 }
             ]
         }

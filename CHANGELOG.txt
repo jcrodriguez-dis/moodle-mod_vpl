@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
+[ VPL 3.5.0++ - 2.1.1 ] - 2022-06-14
+
+    * Fixed
+
+        - Update code style based on Moodle
+        - Refactor code based on code style
+
+[ VPL 3.5.0++ - 2.1.0 ] - 2022-06-12
+
+    * Added
+
+        - Include an option to set tokenizer name
+        - Add an option to specify extension for programming language
+
+    * Changed
+
+        - Memory optimization at tokenizer to just save useful data
+        - Increase performance while preprocessing at tokenizer
+        - Update tests cases to be compatible with new tokenizer
+        - Update example templates with new syntax
+
+    * Deleted
+
+        - Remove next_token as a valid rule option
+        - Remove syntax check for possible groups
+
 [ VPL 3.5.0++ - 2.0.0 ] - 2022-06-12
 
     * Added

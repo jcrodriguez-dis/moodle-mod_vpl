@@ -1,4 +1,6 @@
 {
+    "name": "tokenizer-java",
+    "extension": ".java",
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
     "states": [
@@ -125,9 +127,6 @@
                     "token": "comment",
                     "regex": "\\*\\/",
                     "next": "start"
-                },
-                {
-                    "default_token": "comment"
                 }
             ]
         }

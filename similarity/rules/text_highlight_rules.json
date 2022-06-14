@@ -1,4 +1,5 @@
 {
+    "name": "tokenizer-text",
     "check_rules": false,
     "states": [
         {
@@ -9,7 +10,8 @@
                     "regex": "^$"
                 },
                 {
-                    "default_token": "text"
+                    "token": "text",
+                    "regex": ".*"
                 }
             ]
         }

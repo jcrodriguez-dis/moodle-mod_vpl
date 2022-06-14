@@ -7,9 +7,6 @@
                 {
                     "token": "empty_line",
                     "regex": "^$"
-                },
-                {
-                    "default_token": "text"
                 }
             ]
         },
