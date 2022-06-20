@@ -1063,8 +1063,7 @@ define(
          * Direct run a command
          * @param {string} URL to server
          * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
-         * @param {object} events Object with events for controling WebSocket ['onopen', 'onerror', 'onclose', 'onmessage']
-         * @returns {object} deferred
+         * @returns {object} deferred. Use done() to set handler to receive WebSocket. Use fail to set error handler.
          */
         VPLUtil.directRun = function(URL, command) {
             var deferred = $.Deferred();
@@ -1095,24 +1094,37 @@ define(
             });
             return deferred;
         };
-        VPLUtil.directRunTest = function(URL, command) {
+        /**
+         * Function to experiment with Direct run.
+         * Limits: one data send and 10 messages received and 10 minutes connected
+         * @param {string} URL to server
+         * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
+         * @param {object} data to send to server
+         */
+         VPLUtil.directRunTest = function(URL, command, data) {
             VPLUtil.directRun(URL, command)
                 .done(function(ws) {
                     var mcount = 0;
                     ws.onopen = function() {
                         log.debug("Ws open");
+                        if (data != undefined) {
+                            ws.send(data);
+                        }
+                        setTimeout(function() { //  Close test if open for more than 10 minutes.
+                            ws.close();
+                        }, 60 * 10 * 1000);
                     };
-                    ws.onmessage = function(menssage) {
-                        log.debug("WS Menssage (" + ++mcount + "): " + menssage.data);
+                    ws.onmessage = function(event) {
+                        log.debug("WS Message (" + ++mcount + "): " + event.data);
                         if (mcount >= 10) {
                             ws.close();
                         }
                     };
-                    ws.onerror = function(error) {
-                        log.debug("WS error: " + error);
+                    ws.onerror = function(event) {
+                        log.debug("WS error: " + event);
                     };
-                    ws.onclose = function(message) {
-                        log.debug("WS close: " + message);
+                    ws.onclose = function(event) {
+                        log.debug("WS close: " + event.code + " " + event.reason);
                     };
                 })
                 .fail(function(message) {
