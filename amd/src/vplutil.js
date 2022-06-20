@@ -836,9 +836,8 @@ define(
                 }
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 var message = VPLUtil.str('connection_fail') + ': ' + textStatus;
-                if (debugMode) {
-                    message += '<br>' + errorThrown.message;
-                    message += '<br>' + jqXHR.responseText.substr(0, 80);
+                if (debugMode && errorThrown.message != undefined) {
+                    message += ': ' + errorThrown.message;
                 }
                 VPLUtil.log(message);
                 deferred.reject(message);
@@ -913,8 +912,18 @@ define(
             }
         };
         VPLUtil.monitorRunning = VPLUtil.returnFalse;
+        (function() {
+            var lastProccessID = -1;
+            VPLUtil.setProcessId = function(id) {
+                lastProccessID = id;
+            };
+            VPLUtil.getProcessId = function() {
+                return lastProccessID;
+            };
+        })();
         VPLUtil.webSocketMonitor = function(coninfo, title, running, externalActions) {
             VPLUtil.setProtocol(coninfo);
+            VPLUtil.setProcessId(coninfo.processid);
             var ws = null;
             var pb = null;
             var deferred = $.Deferred();
@@ -950,9 +959,10 @@ define(
                     }
                 },
                 'retrieve': function() {
+                    var data = {"processid": VPLUtil.getProcessId()};
                     pb.close();
                     delegated = true;
-                    VPLUtil.requestAction('retrieve', '', '', externalActions.ajaxurl)
+                    VPLUtil.requestAction('retrieve', '', data, externalActions.ajaxurl)
                     .done(
                         function(response) {
                             deferred.resolve();
@@ -969,6 +979,8 @@ define(
                 'close': function() {
                     VPLUtil.log('ws close message from jail');
                     ws.close();
+                    var data = {"processid": VPLUtil.getProcessId()};
+                    VPLUtil.requestAction('stop', '', data, externalActions.ajaxurl);
                 }
             };
             try {
@@ -1045,6 +1057,67 @@ define(
                 return ws !== null && ws.readyState != WebSocket.CLOSED;
             };
             return deferred;
+        };
+
+        /**
+         * Direct run a command
+         * @param {string} URL to server
+         * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
+         * @param {object} events Object with events for controling WebSocket ['onopen', 'onerror', 'onclose', 'onmessage']
+         * @returns {object} deferred
+         */
+        VPLUtil.directRun = function(URL, command) {
+            var deferred = $.Deferred();
+            $.ajax({
+                async: true,
+                type: "POST",
+                url: URL + 'directrun',
+                'data': JSON.stringify({"command": command}),
+                contentType: "application/json; charset=utf-8",
+                dataType: "json"
+            }).done(function(result) {
+                if (!result.success) {
+                    deferred.reject(result.error);
+                } else {
+                    var response = result.response;
+                    VPLUtil.setProtocol(response);
+                    var ws = new WebSocket(response.executionURL);
+                    log.debug('Conecting with:' + response.executionURL);
+                    deferred.resolve(ws);
+                }
+            }).fail(function(jqXHR, textStatus, errorThrown) {
+                var message = 'Connection fail' + ': ' + textStatus;
+                if (errorThrown.message != undefined) {
+                    message += ': ' + errorThrown.message;
+                }
+                log.debug(message);
+                deferred.reject(message);
+            });
+            return deferred;
+        };
+        VPLUtil.directRunTest = function(URL, command) {
+            VPLUtil.directRun(URL, command)
+                .done(function(ws) {
+                    var mcount = 0;
+                    ws.onopen = function() {
+                        log.debug("Ws open");
+                    };
+                    ws.onmessage = function(menssage) {
+                        log.debug("WS Menssage (" + ++mcount + "): " + menssage.data);
+                        if (mcount >= 10) {
+                            ws.close();
+                        }
+                    };
+                    ws.onerror = function(error) {
+                        log.debug("WS error: " + error);
+                    };
+                    ws.onclose = function(message) {
+                        log.debug("WS close: " + message);
+                    };
+                })
+                .fail(function(message) {
+                    log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);
+                });
         };
         VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
             if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
