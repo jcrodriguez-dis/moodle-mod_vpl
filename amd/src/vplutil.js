@@ -801,20 +801,23 @@ define(
             return VPLUtil.showMessage(message, currentOptions);
         };
 
-        VPLUtil.requestAction = function(action, title, data, URL) {
+        VPLUtil.requestAction = function(action, title, data, URL, noDialog) {
             var deferred = $.Deferred();
             var request = null;
             var xhr = false;
-            if (title === '') {
-                title = 'connecting';
-            }
-            var apb = new VPLUtil.progressBar(action, title, function() {
-                if (request.readyState != 4) {
-                    if (xhr && xhr.abort) {
-                        xhr.abort();
-                    }
+            var apb = false;
+            if (!noDialog) {
+                if (title === '') {
+                    title = 'connecting';
                 }
-            });
+                apb = new VPLUtil.progressBar(action, title, function() {
+                    if (request.readyState != 4) {
+                        if (xhr && xhr.abort) {
+                            xhr.abort();
+                        }
+                    }
+                });
+            }
             request = $.ajax({
                 beforeSend: function(jqXHR) {
                     xhr = jqXHR;
@@ -827,7 +830,9 @@ define(
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).always(function() {
-                apb.close();
+                if (!noDialog) {
+                    apb.close();
+                }
             }).done(function(response) {
                 if (!response.success) {
                     deferred.reject(response.error);
@@ -980,7 +985,7 @@ define(
                     VPLUtil.log('ws close message from jail');
                     ws.close();
                     var data = {"processid": VPLUtil.getProcessId()};
-                    VPLUtil.requestAction('stop', '', data, externalActions.ajaxurl);
+                    VPLUtil.requestAction('cancel', '', data, externalActions.ajaxurl, true);
                 }
             };
             try {
@@ -1060,10 +1065,10 @@ define(
         };
 
         /**
-         * Direct run a command
-         * @param {string} URL to server
-         * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
-         * @returns {object} deferred. Use done() to set handler to receive WebSocket. Use fail to set error handler.
+         * Run a command in a execution server with input/output using a WebSocket
+         * @param {string} URL to VPL editor services in Moodle server
+         * @param {string} command Command to run in execution server
+         * @returns {object} deferred. Use done() to set handler to receive the WebSocket. Use fail to set error handler.
          */
         VPLUtil.directRun = function(URL, command) {
             var deferred = $.Deferred();
