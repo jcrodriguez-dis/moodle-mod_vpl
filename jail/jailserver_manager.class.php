@@ -62,6 +62,8 @@ class vpl_jailserver_manager {
         return $ch;
     }
 
+    static private $lastjsonrpcid = '';
+
     /**
      * Encode action and data as JSONRPC adding an automatic id.
      *
@@ -75,7 +77,8 @@ class vpl_jailserver_manager {
         $rpcobject->method = $method;
         $rpcobject->params = $data;
         $idtime = hrtime();
-        $rpcobject->id = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
+        self::$lastjsonrpcid = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
+        $rpcobject->id = self::$lastjsonrpcid;
         return json_encode($rpcobject);
     }
 
@@ -89,15 +92,28 @@ class vpl_jailserver_manager {
         } else {
             curl_close( $ch );
             $error = '';
-            $response = xmlrpc_decode( $rawresponse, "UTF-8" );
-            if (is_array( $response )) {
-                if (xmlrpc_is_fault( $response )) {
-                    $error = 'xmlrpc is fault: ' . s( $response["faultString"] );
+            if ($rawresponse[0] == '{') {
+                $response = json_decode( $rawresponse );
+                if (json_last_error() != JSON_ERROR_NONE) {
+                    $error = 'JSONRPC response is fault: ' . json_last_error_msg();
                 } else {
-                    return $response;
+                    if ($response->id != self::$lastjsonrpcid) {
+                        $error = 'JSONRPC response mismatch ID';
+                    } else {
+                        return (array) ($response->result);
+                    }
                 }
             } else {
-                $error = 'http error ' . s( strip_tags( $rawresponse ) );
+                $response = xmlrpc_decode( $rawresponse, "UTF-8" );
+                if (is_array( $response )) {
+                    if (xmlrpc_is_fault( $response )) {
+                        $error = 'XMLRPC is fault: ' . s( $response["faultString"] );
+                    } else {
+                        return $response;
+                    }
+                } else {
+                    $error = 'HTTP error ' . s( strip_tags( $rawresponse ) );
+                }
             }
             return false;
         }
@@ -184,26 +200,43 @@ class vpl_jailserver_manager {
     }
 
     /**
+     * Returns action request XMLRPC or JSONRPC.
+     * @param string action
+     * @param object data
+     * @return string
+     */
+    public static function get_action_request(string $action, object $data): string {
+        if (function_exists('xmlrpc_encode_request' )) {
+            return xmlrpc_encode_request( $action, $data, ['encoding' => 'UTF-8'] );
+        } else {
+            return self::jsonrpc_encode( $action, $data);
+        }
+    }
+
+    /**
+     * Returns available request XMLRPC or JSONRPC.
+     * @param int $maxmemory, required
+     * @return string
+     */
+    public static function get_available_request(int $maxmemory): string {
+        $data = new stdClass();
+        $data->maxmemory = $maxmemory;
+        return self::get_action_request('available', $data);
+    }
+
+    /**
      * Return a valid server to be used, May tag some servers as faulty
      *
-     * @param int $maxmemory
-     *            required
-     * @param string $localserverlisttext=''
-     *            List of local server in text
-     * @param string $feedback
-     *            info about jail servers response
+     * @param int $maxmemory. Required
+     * @param string $localserverlisttext=''. List of local server in text.
+     * @param string $feedback. Info about jail servers response
      * @return string
      */
     public static function get_server(int $maxmemory, string $localserverlisttext = '',
                                       string &$feedback = null): string {
-        if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC required' );
-        }
         $serverlist = self::get_server_list( $localserverlisttext );
         shuffle( $serverlist );
-        $data = new stdClass();
-        $data->maxmemory = $maxmemory;
-        $requestready = xmlrpc_encode_request( 'available', $data, array ( 'encoding' => 'UTF-8' ) );
+        $requestready = self::get_available_request($maxmemory);
         $feedback = '';
         $error = '';
         $planb = array ();
@@ -272,14 +305,7 @@ class vpl_jailserver_manager {
      */
     public static function check_servers(string $localserverlisttext = ''): array {
         global $DB;
-        if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC required' );
-        }
-        $data = new stdClass();
-        $data->maxmemory = ( int ) 1024 * 10;
-        $requestready = xmlrpc_encode_request( 'available', $data, array (
-                'encoding' => 'UTF-8'
-        ) );
+        $requestready = self::get_available_request(1024 * 10);
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
         $feedback = array ();
         foreach ($serverlist as $server) {
@@ -320,14 +346,7 @@ class vpl_jailserver_manager {
      * @return array of URLs
      */
     public static function get_https_server_list(string $localserverlisttext = ''): array {
-        if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'PHP XMLRPC required' );
-        }
-        $data = new stdClass();
-        $data->maxmemory = ( int ) 1024 * 10;
-        $requestready = xmlrpc_encode_request( 'available', $data, array (
-                'encoding' => 'UTF-8'
-        ) );
+        $requestready = self::get_available_request(1024 * 10);
         $error = '';
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
         $list = array ();
