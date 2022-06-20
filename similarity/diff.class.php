@@ -212,7 +212,7 @@ class vpl_diff {
             } else if ($p == 1) {
                 $pj --;
             } else {
-                debbuging('error');
+                throw new Exception('Calculating diff');
             }
             $limit --;
         }
