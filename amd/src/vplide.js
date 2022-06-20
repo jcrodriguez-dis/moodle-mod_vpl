@@ -1577,6 +1577,7 @@ define(
                                 menuButtons.setTimeLeft(response);
                                 VPLUtil.delay('updateMenu', updateMenu);
                                 if (VPLUtil.monitorRunning()) {
+                                    data.processid = VPLUtil.getProcessId();
                                     VPLUtil.requestAction('update', 'updating', data, options.ajaxurl);
                                 }
                             }
