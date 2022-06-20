@@ -354,18 +354,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     }
 
     public function jailaction($server, $action, $data) {
-        if (! function_exists( 'xmlrpc_encode_request' )) {
-            throw new Exception( 'Inernal server error: PHP XMLRPC requiered' );
-        }
-
         $plugin = new stdClass();
         require(dirname( __FILE__ ) . '/version.php');
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
-
-        $request = xmlrpc_encode_request( $action, $data, array (
-                'encoding' => 'UTF-8'
-        ) );
+        $request = vpl_jailserver_manager::get_action_request( $action, $data);
         $error = '';
         $response = vpl_jailserver_manager::get_response( $server, $request, $error );
         if ($response === false) {
@@ -412,6 +405,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public function run($type, $options = array()) {
         // Stop current task if one.
+
         $this->cancelprocess();
         $options = ( array ) $options;
         $plugincfg = get_config('mod_vpl');
@@ -470,22 +464,25 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $response->wsProtocol = $plugincfg->websocket_protocol;
         $response->VNCpassword = substr( $jailresponse['executionticket'], 0, 8 );
         $instance = $this->get_instance();
-        vpl_running_processes::set( $instance->userid, $jailserver, $instance->vpl, $jailresponse['adminticket'] );
+        $userid = $instance->userid;
+        $vplid = $instance->vpl;
+        $adminticket = $jailresponse['adminticket'];
+        $response->processid = vpl_running_processes::set($userid, $jailserver, $vplid, $adminticket);
         return $response;
     }
 
     /**
      * Send update command to the jail
      *
-     * @param mod_vpl $vpl. VPl instance to process. Default = null
+     * @param int $processid. Process info DB id
      * @param string[string] $files. Files to send
      * @return boolean if update sent
      */
-    public function update($vpl, $files) {
+    public function update($processid, $files) {
         $data = new stdClass();
         $data->files = $files;
         $vplid = $this->vpl->get_instance()->id;
-        $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid );
+        $processinfo = vpl_running_processes::get_by_id($vplid, $this->instance->userid, $processid);
         if ($processinfo == null) { // No process to cancel.
             return false;
         }
@@ -516,8 +513,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         return $response['update'] > 0;
     }
 
-    public function retrieveresult() {
-        $response = $this->jailreaction( 'getresult' );
+    public function retrieveresult($processid) {
+        $vplid = $this->vpl->get_instance()->id;
+        $processinfo = vpl_running_processes::get_by_id($vplid, $this->instance->userid, $processid);
+        if ($processinfo == null) { // No process to cancel.
+            throw new Exception( get_string( 'serverexecutionerror', VPL ) );
+        }
+        $response = $this->jailreaction( 'getresult', $processinfo );
         if ($response === false) {
             throw new Exception( get_string( 'serverexecutionerror', VPL ) );
         }
@@ -543,9 +545,18 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         return $response['running'] > 0;
     }
-    public function cancelprocess() {
+    /**
+     * Cancel running process
+     * @param int $processid
+     */
+    public function cancelprocess(int $processid = -1) {
         $vplid = $this->vpl->get_instance()->id;
-        $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid );
+        $userid = $this->get_instance()->userid;
+        if ($processid == -1) {
+            $processinfo = vpl_running_processes::get( $userid, $vplid);
+        } else {
+            $processinfo = vpl_running_processes::get_by_id( $vplid, $userid, $processid );
+        }
         if ($processinfo == null) { // No process to cancel.
             return;
         }
@@ -555,6 +566,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             // No matter, consider that the process stopped.
             debugging( "Process in execution server not sttoped or not found", DEBUG_DEVELOPER );
         }
-        vpl_running_processes::delete( $this->get_instance()->userid, $vplid);
+        vpl_running_processes::delete( $userid, $vplid, $processinfo->adminticket);
     }
 }
