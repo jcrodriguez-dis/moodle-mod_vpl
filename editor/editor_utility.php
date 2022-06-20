@@ -317,6 +317,7 @@ class vpl_editor_util {
                 'saving',
                 'select_all',
                 'shortcuts',
+                'starting',
                 'sureresetfiles',
                 'timeleft',
                 'timeout',
