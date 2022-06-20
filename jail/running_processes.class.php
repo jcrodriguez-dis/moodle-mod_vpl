@@ -30,14 +30,40 @@
  */
 class vpl_running_processes {
     const TABLE = 'vpl_running_processes';
-    public static function get($userid, $vplid = false) {
+    public static function get($userid, $vplid = false, $adminticket = false) {
         global $DB;
         $params = array ( 'userid' => $userid);
         if ( $vplid !== false ) {
             $params['vpl'] = $vplid;
         }
+        if ( $adminticket !== false ) {
+            $params['adminticket'] = $adminticket;
+        }
         return $DB->get_record( self::TABLE, $params );
     }
+
+    /**
+     * Returns process info by id.
+     * @param int $vplid VPL id.
+     * @param int $userid User id.
+     * @param int $id Process record id.
+     * @return object
+     */
+    public static function get_by_id(int $vplid, int $userid, int $id) {
+        global $DB;
+        $params = ['id' => $id, 'vpl' => $vplid, 'userid' => $userid];
+        return $DB->get_record( self::TABLE, $params );
+    }
+
+    /**
+     * Adds a proccess information to the vpl_running_processes DB table.
+     *
+     * @param int $userid User id
+     * @param string $server URL to execution server
+     * @param int $vplid VPL activity id
+     * @param string $adminticket to control the process
+     * @return int Process id in the DB table
+     */
     public static function set($userid, $server, $vplid, $adminticket) {
         global $DB;
         $info = new stdClass();
@@ -49,6 +75,7 @@ class vpl_running_processes {
         vpl_truncate_running_processes( $info );
         return $DB->insert_record( self::TABLE, $info );
     }
+
     public static function delete($userid, $vplid, $adminticket=false) {
         global $DB;
         $parms = array('userid' => $userid, 'vpl' => $vplid);
