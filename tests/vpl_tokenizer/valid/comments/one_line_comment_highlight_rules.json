@@ -1,14 +1,13 @@
 // TEST: tested
 // Just one line comment 0
-// Just one line comment 0
 {
     // Just one line comment 1
-    "states": [ // Just one line comment 2
+    "states": [
         {
             // Just one line comment 2
-            "name": "state1",
+            "name": "start",
             // Just one line comment 3
-            "data": [   // Just one line comment 3
+            "data": [
                 {
                     "token": "comment",
                     // Just one line comment 4

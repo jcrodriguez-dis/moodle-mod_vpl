@@ -1,4 +1,14 @@
 {
-    "states": [],
+    "states": [
+        {
+            "name": "start",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//"
+                }
+            ]
+        }
+    ],
     "example": 10
 }

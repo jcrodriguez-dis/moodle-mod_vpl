@@ -25,28 +25,14 @@
 namespace mod_vpl\tokenizer;
 
 use mod_vpl\util\assertf;
+use mod_vpl\tokenizer\utils;
 
 class tokenizer {
-    // Available data types for token's options,
-    // which could be numbers, strings, arrays, and objects.
-    // Keys of this array are the token's names, and
-    // values the list of all data types associated.
-    private const TOKENTYPES = array(
-        "token"                 => ["string", "array_string"],
-        "regex"                 => ["string"],
-        "next"                  => ["string", "array_object"],
-    );
-
-    // Group of token's options which must be defined together.
-    // This was defined in order to avoid no-sense definitions.
-    private const REQUIREDGROUPOFTOKENS = array(
-        0 => ["token", "regex"]
-    );
-
     private string $name;
     private array $extension;
     private string $inheritrules;
     private bool $overridecheckrules;
+    private bool $setcheckrules;
     private bool $checkrules;
     private array $states;
 
@@ -54,24 +40,44 @@ class tokenizer {
     private array $regexprs;
 
     /**
+     * Check syntax for all highlighter rules JSON files stored at rules.
+     *
+     * It is recommended to execute this method before using the tokenizer
+     * whether some changes have been applied at rules folder
+     */
+    public static function check_rules_syntax(): void {
+        $dir = dirname(__FILE__) . '/../../similarity/rules';
+
+        $scanarr = scandir($dir);
+        $filesarr = array_diff($scanarr, array('.', '..'));
+
+        foreach ($filesarr as $filename) {
+            $filename = $dir . '/' . $filename;
+            new tokenizer($filename, false, true);
+        }
+    }
+
+    /**
      * Creates a new instance of \mod_vpl\tokenizer\tokenizer class
      *
      * @param string $filename JSON file with highlight rules
      * @param bool $overridecheckrules set this to true to avoid syntax check
+     * @param bool $setcheckrules set this to true to check rules although check_rules is false
      */
-    public function __construct(string $filename, bool $overridecheckrules=false) {
+    public function __construct(string $filename, bool $overridecheckrules=false, bool $setcheckrules=false) {
         assertf::assert(file_exists($filename), $filename, 'file ' . $filename . ' must exist');
 
         $errmssg = $filename . ' must have suffix _highlight_rules.json';
         assertf::assert(str_ends_with($filename, '_highlight_rules.json'), $filename, $errmssg);
 
+        $this->setcheckrules = $setcheckrules;
         $this->overridecheckrules = $overridecheckrules;
         $this->checkrules = true;
 
         $this->name = 'default';
-        $this->extension = ['plaintext'];
+        $this->extension = ['no-ext'];
 
-        $jsonobj = $this->load_json($filename);
+        $jsonobj = utils::load_json($filename);
         $this->init_tokenizer($filename, $jsonobj);
         $this->apply_inheritance();
         // $this->prepare_tokenizer($filename);
@@ -291,21 +297,6 @@ class tokenizer {
         }
     }
 
-    private static function load_json(string $filename): object {
-        $data = file_get_contents($filename);
-        $content = self::discard_comments($data);
-
-        $jsonobj = json_decode($content);
-        assertf::assert(isset($jsonobj), $filename, 'file ' . $filename . ' is empty');
-        return $jsonobj;
-    }
-
-    private static function discard_comments(string $data): string {
-        $pattern = '#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|([\s\t]//.*)|(^//.*)#';
-        $content = preg_replace($pattern, '', $data);
-        return $content;
-    }
-
     private function init_tokenizer(string $filename, object $jsonobj): void {
         $this->init_check_rules($filename, $jsonobj);
         $this->init_tokenizer_name($filename, $jsonobj);
@@ -337,7 +328,7 @@ class tokenizer {
     private function init_extension(string $filename, object $jsonobj) {
         if (isset($jsonobj->extension)) {
             assertf::assert(
-                is_string($jsonobj->extension) || self::check_token_type($jsonobj->extension, "array_string") === true,
+                is_string($jsonobj->extension) || utils::check_type($jsonobj->extension, "array_string") === true,
                 $filename, '"extension" option must be a string or an array of strings'
             );
 
@@ -348,11 +339,13 @@ class tokenizer {
             }
 
             foreach ($this->extension as $ext) {
-                $errmssg = 'extension ' . $ext . ' must start with .';
-                assertf::assert(str_starts_with('.', $ext), $filename, $errmssg);
+                if (strcmp($ext, 'no-ext') != 0) {
+                    $errmssg = 'extension ' . $ext . ' must start with .';
+                    assertf::assert(str_starts_with($ext, '.'), $filename, $errmssg);
+                }
             }
 
-            unset($jsonobj['name']);
+            unset($jsonobj->extension);
         }
     }
 
@@ -367,6 +360,10 @@ class tokenizer {
 
             if (!$this->overridecheckrules) {
                 $this->checkrules = $optionval;
+            }
+
+            if ($this->setcheckrules) {
+                $this->checkrules = true;
             }
 
             unset($jsonobj->check_rules);
@@ -427,21 +424,13 @@ class tokenizer {
             }
         }
 
-        $this->states = self::convert_to_assoc_states($jsonobj->states);
-        unset($jsonobj->states);
-    }
+        $this->states = utils::get_assoc_states($jsonobj->states);
 
-    private static function convert_to_assoc_states(array $states): array {
-        $stassoc = array();
-
-        if (count($states) > 0) {
-            foreach ($states as $state) {
-                $indexvalue = $state->name;
-                $stassoc[$indexvalue] = $state;
-            }
+        if ($this->checkrules == true) {
+            assertf::assert(isset($this->states['start']), $filename, '"start" state must exist');
         }
 
-        return $stassoc;
+        unset($jsonobj->states);
     }
 
     private function check_rules(string $filename, object $state, int $numstate, int $numrule, int $numnext): void {
@@ -456,15 +445,15 @@ class tokenizer {
                 $errmssg = "invalid option " . $optionname . " at rule " . $numrule . " of state \"";
                 $errmssg .= $state->name . "\" nº" . $numstate;
                 $errmssg = $numnext != -1 ? $errmssg . " (next: " . $numnext . ")" : $errmssg;
-                assertf::assert(array_key_exists($optionname, self::TOKENTYPES), $filename, $errmssg);
+                assertf::assert(array_key_exists($optionname, utils::TOKENTYPES), $filename, $errmssg);
 
                 $optionsdefined[] = $optionname;
                 $optionvalue = $rule->$optionname;
                 $istypevalid = false;
                 $typeoption = "";
 
-                foreach (self::TOKENTYPES[$optionname] as $typevalue) {
-                    $condtype = self::check_token_type($optionvalue, $typevalue);
+                foreach (utils::TOKENTYPES[$optionname] as $typevalue) {
+                    $condtype = utils::check_type($optionvalue, $typevalue);
 
                     if ($condtype === true) {
                         $istypevalid = true;
@@ -480,7 +469,9 @@ class tokenizer {
                 }
 
                 if (strcmp($optionname, "next") == 0) {
-                    $numnext = $numnext + 1;
+                    if (strcmp($typeoption, "array_object") == 0 || $numnext == -1) {
+                        $numnext = $numnext + 1;
+                    }
                 }
 
                 $errmssg = "invalid data type for " . $optionname . " at rule " . $numrule . " of state \"";
@@ -488,62 +479,35 @@ class tokenizer {
                 $errmssg = $numnext != -1 ? $errmssg . " (next: " . $numnext . ")" : $errmssg;
                 assertf::assert($istypevalid, $filename, $errmssg);
 
+                if (strcmp($optionname, "token") == 0) {
+                    $errmssg = "invalid token at rule " . $numrule . " of state \"";
+                    $errmssg .= $state->name . "\" nº" . $numstate;
+                    $errmssg = $numnext != -1 ? $errmssg . " (next: " . $numnext . ")" : $errmssg;
+                    assertf::assert(utils::check_token($rule->$optionname), $filename, $errmssg);
+                }
+
                 if (strcmp($optionname, "next") == 0) {
                     if (strcmp($typeoption, "array_object") == 0) {
                         $substate = (object)array("name" => $state->name, "data" => $optionvalue);
                         $this->check_rules($filename, $substate, $numstate, 0, $numnext);
+                        $numnext = $numnext >= 1 ? $numnext - 1 : $numnext;
                     }
                 }
             }
 
-            foreach (self::REQUIREDGROUPOFTOKENS as $group) {
-                foreach ($group as $optionname) {
-                    if (in_array($optionname, $optionsdefined)) {
-                        $intersectoptions = array_intersect($group, $optionsdefined);
-                        $areallelementsdefined = count($intersectoptions) == count($group);
-
-                        $errmssg = 'missing options ' . implode(',', array_diff($group, $intersectoptions));
-                        $errmssg .= ' at rule ' . $numrule . ' of state "' . $state->name . '" nº' . $numstate;
-                        $errmssg = $numnext != -1 ? $errmssg . ' (next: ' . $numnext . ')' : $errmssg;
-                        assertf::assert($areallelementsdefined, $filename, $errmssg);
+            foreach (utils::REQUIREDGROUPRULEOPTIONS as $optionrequired => $group) {
+                if (in_array($optionrequired, $optionsdefined)) {
+                    foreach ($group as $optiong) {
+                        $errmssg = "option " . $optionrequired . " must be defined next to " . $optiong . " at rule ";
+                        $errmssg .= $numrule . " of state \"" . $state->name . "\" nº" . $numstate;
+                        $errmssg = $numnext != -1 ? $errmssg . " (next: " . $numnext . ")" : $errmssg;
+                        assertf::assert(in_array($optiong, $optionsdefined), $filename, $errmssg);
                     }
                 }
             }
 
             $numrule = $numrule + 1;
         }
-    }
-
-    private static function check_token_type($value, string $typename) {
-        if (str_starts_with($typename, "array_")) {
-            if (is_array($value)) {
-                $typearray = substr($typename, 6);
-
-                foreach ($value as $indexvalue => $val) {
-                    $cond = strcmp($typearray, "number") == 0 && is_numeric($val) == false;
-                    $cond = $cond || strcmp($typearray, "string") == 0 && is_string($val) == false;
-                    $cond = $cond || strcmp($typearray, "object") == 0 && is_object($val) == false;
-                    $cond = $cond || strcmp($typearray, "array") == 0 && is_array($val) == false;
-
-                    if ($cond == true) {
-                        return $indexvalue;
-                    }
-                }
-
-                return true;
-            }
-        } else {
-            $condtypes = array(
-                "number" => is_numeric($value),
-                "string" => is_string($value),
-                "object" => is_object($value),
-                "array"  => is_array($value)
-            );
-
-            return $condtypes[$typename];
-        }
-
-        return false;
     }
 
     private function apply_inheritance(): void {
@@ -557,33 +521,12 @@ class tokenizer {
                     $this->states = array_merge($this->states, $newstate);
                 } else {
                     foreach ($srcvalue->data as $rulesrc) {
-                        if (!self::contains_rule($this->states[$srcname], $rulesrc)) {
-                            $this->states[$srcname][] = $rulesrc;
+                        if (!utils::contains_rule($this->states[$srcname], $rulesrc)) {
+                            $this->states[$srcname]->data[] = $rulesrc;
                         }
                     }
                 }
             }
         }
-    }
-
-    private static function contains_rule(object $state, object $rule): bool {
-        $result = false;
-
-        foreach ($state->data as $ruleobj) {
-            if ($result == true) {
-                return $result;
-            }
-
-            $result = true;
-
-            foreach (array_keys(get_object_vars($ruleobj)) as $optionn) {
-                if (!isset($rule->$optionn)) {
-                    $result = false;
-                    break;
-                }
-            }
-        }
-
-        return $result;
     }
 }

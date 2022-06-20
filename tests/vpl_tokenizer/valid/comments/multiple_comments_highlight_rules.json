@@ -5,7 +5,7 @@
     "states": [
         {
             /* Multiple-line comment */
-            "name": "state1", /* Multiple-line comment
+            "name": "start", /* Multiple-line comment
 
             */
             "data": [

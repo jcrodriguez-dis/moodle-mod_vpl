@@ -1,0 +1,17 @@
+// TEST: tested
+{
+    "check_rules": false,
+    "inherit_rules": "inherit_rules_two_states_highlight_rules",
+    "states": [
+        {
+            "name": "start",
+            "data": [
+                {
+                    "token": "comment",
+                    "regex": "//",
+                    "next": "text-state"
+                }
+            ]
+        }
+    ]
+}

@@ -12,11 +12,11 @@
                     "regex": "--.*$"
                 },
                 {
-                    "token": "string",
+                    "token": "string.double",
                     "regex": "\".*?\""
                 },
                 {
-                    "token": "string",
+                    "token": "string.single",
                     "regex": "'.'"
                 },
                 {
@@ -28,7 +28,7 @@
                     "regex": "count|min|max|avg|sum|rank|now|coalesce|main"
                 },
                 {
-                    "token": "identifier",
+                    "token": "entity.name",
                     "regex": "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
                 },
                 {
@@ -52,7 +52,7 @@
                     "regex": "[\\)]"
                 },
                 {
-                    "token": "text",
+                    "token": "string.unquoted",
                     "regex": "\\s+"
                 }
             ]

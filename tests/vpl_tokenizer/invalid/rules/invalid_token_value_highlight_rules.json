@@ -1,0 +1,13 @@
+{
+    "states": [
+        {
+            "name": "root",
+            "data": [
+                {
+                    "token": "text",
+                    "regex": ".*"
+                }
+            ]
+        }
+    ]
+}

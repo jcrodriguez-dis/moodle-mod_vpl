@@ -16,11 +16,11 @@
     // Each programming language has a extension, and tokenizer would
     // check if passed file ends with that value whether this option
     // has been defined. However, if you want to disable extensions,
-    // do not set this option, or define it with "plaintext" value.
+    // do not set this option, or define it with "no-ext" value.
     //
     // Since programming languages could be defined with more than
     // one extension, you can define this option with an array of strings
-    "extension": "plaintext",   // example: ".c" or [".c",".h"]
+    "extension": "no-ext",   // example: ".c" or [".c",".h"]
 
     // Tokenizer would first check if rules are correctly declared.
     // This may cause a slower execution whether there are so many
@@ -58,6 +58,8 @@
                 // related to current state. All states must
                 // have at least one valid regex block.
                 {
+                    // Token option must be defined based on TextMate manual,
+                    // see https://macromates.com/manual/en/language_grammars
                     "token": "comment", // string or array of string which specifies the CSS token to apply
                     "regex": "//", // string with the regex to match
                     "next": "single_line_comment" // [Optional] next state to enter which could be string or a list of states
@@ -100,7 +102,7 @@
                     // each group declaring "token" as an array of strings.
                     "token": [
                         "storage.type",
-                        "text",
+                        "entity.name",
                         "entity.name.function"
                     ],
                     "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",

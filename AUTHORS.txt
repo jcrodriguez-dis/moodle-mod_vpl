@@ -1,5 +1,7 @@
 Main developer: Juan Carlos Rodriguez-del-Pino, jc.rodriguezdelpino@ulpgc.es
 
+Tokenizer: David Parreño Baruzano, david.parreno101@alu.ulpgc.es
+
 Translations:
     Catalan: Antonio Piedras Morente
     Japanese: Imaizumi Takashi

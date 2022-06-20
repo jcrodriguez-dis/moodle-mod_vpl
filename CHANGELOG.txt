@@ -6,6 +6,29 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
+[ VPL 3.5.0++ - 2.1.2 ] - 2022-06-20
+
+    * Added
+
+        - Include more test cases for inheritance and merge
+        - Include check for "token" based on TextMate
+        - Include an option to always check rules ignoring check_rules and overridecheckrules
+        - Include asserts to check if "start" state exists
+        - Include tests for syntax check static method
+
+    * Changed
+
+        - Move static utilities of tokenizer to utils class
+        - Reduce test cases for tokenizer by putting some methods together
+        - Update test cases to have valid tokens
+        - Update JSON files to be compatible with TextMate tokens
+
+    * Fixed
+
+        - Fix merge operation when there are the same states
+        - Fix syntax check for extension option
+        - Fix num_next verbose message
+
 [ VPL 3.5.0++ - 2.1.1 ] - 2022-06-14
 
     * Fixed

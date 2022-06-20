@@ -1,26 +1,23 @@
-// TEST: tested
 {
-    "check_rules": false,
     "inherit_rules": "inherit_rules_one_state_highlight_rules",
     "states": [
         {
-            "name": "root",
+            "name": "start",
             "data": [
                 {
-                    "token": "comment",
-                    "regex": "//",
                     "next": "text-state"
                 }
             ]
         },
         {
-            "name": "eol",
+            "name": "text-state",
             "data": [
                 {
-                    "token": "eol",
-                    "regex": "\n"
+                    "token": "comment",
+                    "regex": "//"
                 }
             ]
         }
     ]
+
 }

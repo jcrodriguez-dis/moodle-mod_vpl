@@ -6,11 +6,11 @@
             "name": "start",
             "data": [
                 {
-                    "token": "empty_line",
+                    "token": "constant.character",
                     "regex": "^$"
                 },
                 {
-                    "token": "text",
+                    "token": "string.unquoted",
                     "regex": ".*"
                 }
             ]

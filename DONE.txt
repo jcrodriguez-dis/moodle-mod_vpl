@@ -13,6 +13,19 @@ environment:
 
 tokenizer.php:
 
+    2022-06-20
+
+        - Fix merge operation at apply_inheritance
+        - Move static methods to utils class at tokenizer
+        - Include an option to always check rules ignoring check_rules and overridecheckrules
+        - Include asserts to check if "start" state exists
+        - Update JSON files to be compatible with TextMate tokens
+
+    2022-06-17
+
+        - Static checks for old rules at JSON files
+        - Set old version for required groups
+
     2022-06-13
 
         - Include tests for new options
@@ -62,6 +75,18 @@ tokenizer.php:
         - Include asserts for required and possible groups for the options of a rule
 
 tokenizer_test.php:
+
+    2922-06-20
+
+        - Include more test cases for apply_inheritance
+        - Include one test for "token" check
+        - Update all test cases to be compatible based on TextMate (when check_rules=true)
+        - Test cases for assert that check if "start" state exists
+        - Test for static check syntax method
+
+    2022-06-17
+
+        - Put together some test cases
 
     2022-06-13
 
