@@ -60,16 +60,14 @@ class mod_vpl_submission {
      * @param mod_vpl $vpl
      * @param Object/id $mix submission DB record instance object or record id
      */
-    public function __construct(mod_vpl $vpl, $mix = false) {
+    public function __construct(mod_vpl $vpl, $rid) {
         global $DB;
         $this->vpl = $vpl;
-        if (is_object( $mix )) {
-            $this->instance = $mix;
-        } else if ($mix === false) {
-            throw new Exception( 'vpl_submission id error' );
+        if (is_object( $rid )) {
+            $this->instance = $rid;
         } else {
             $this->instance = $DB->get_record( 'vpl_submissions', array (
-                    'id' => $mix
+                    'id' => $rid
             ) );
             if (! $this->instance) {
                 throw new Exception( 'vpl_submission id error' );
