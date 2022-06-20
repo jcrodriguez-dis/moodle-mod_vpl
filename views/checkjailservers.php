@@ -156,9 +156,7 @@ foreach ($processes as $process) {
     $data = new stdClass();
     $data->adminticket = $process->adminticket;
     $data->pluginversion = $pluginversion;
-    $request = xmlrpc_encode_request( 'running', $data, array (
-            'encoding' => 'UTF-8'
-    ) );
+    $request = vpl_jailserver_manager::get_action_request('running', $data);
     $error = '';
     $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
     if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
