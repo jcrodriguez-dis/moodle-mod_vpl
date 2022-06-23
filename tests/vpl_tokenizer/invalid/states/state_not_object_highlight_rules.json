@@ -1,8 +1,6 @@
 // TEST: tested
 {
-    // Each state must be always an object, so this
-    // file would be invalid for tokenizer
-    "states": [
-        10
-    ]
+    "states": {
+        "start": 10
+    }
 }

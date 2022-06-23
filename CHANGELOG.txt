@@ -6,6 +6,27 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
+[ VPL 3.5.0++ - 3.0.0 ] - 2022-06-22
+
+    * Added
+
+        - Include default_token as a valid option for rules
+        - Include access for protected methods at tokenizer just for testing
+        - Include boolean type as an available value for check_type
+        - Include PHP Unit for tokenizer_base
+
+    * Changed
+
+        - Move static check method for rules to tokenizer_test
+        - Reduce setcheckrules and overridecheckrules to just one parameter
+        - Update highlight rules syntax to be similar as Ace Editor
+        - Rename utils to tokenizer_base and define an abstract method with generic code
+
+    * Fixed
+
+        - Fix code style at tokenizer_test.php
+        - Fix prepare_tokenizer based on Ace Editor
+
 [ VPL 3.5.0++ - 2.1.2 ] - 2022-06-20
 
     * Added

@@ -2,8 +2,7 @@
     "states": {
         "start": [
             {
-                "token": "hello",
-                "regex": ".*"
+                "default_token": 10
             }
         ]
     }

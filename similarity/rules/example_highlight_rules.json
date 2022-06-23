@@ -1,19 +1,64 @@
-// Example of a highlight rules declaration
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
-//  Highlighter needs to know what is the lexic and syntax
-//  which defines a programming language. This is an example
-//  of a file which could understand the tokenizer.
+// VPL for Moodle is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
 //
-{
-    // COMMENTS: C-style comments (// and /* */)
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-    // Since each highlight rules JSON file would generate a different
-    // tokenizer, you can distinguish them setting this option. However,
-    // it is optional, so you could not define it, and tokenizer would
-    // be called as default "default"
+/**
+ * Example of a highlight rules declaration
+ *
+ *  Tokenizer needs to know what is the lexic that defines
+ *  a programming language. This JSON file would contain all
+ *  the information that tokenizer uses, such as the states,
+ *  programming language extension, and so on.
+ *
+ *  The example is just a brief demostration of the tools that
+ *  tokenizer allows in order to define a set of rules. For more
+ *  information about highlight rules, please see <...>.
+ *
+ *  This syntax is based on Ace Editor highlight rules files. To
+ *  know more about them, go to <https://ace.c9.io/>
+ */
+{
+    /**
+     * As it is shown here, this files could have comments based
+     * on C-style, so you can include inline or multiple-line
+     * comments, as it is define in C programming language.
+     *
+     * Talking about the performance, comments would be discarded
+     * during the creation of the tokenizer, so in some cases on
+     * which files have a lot of lines, the execution could be slower
+     * than expected. However, this are special cases, and you should
+     * not worry about them.
+     */
+
+    /**
+     * Before talking about the content of a highlight rules file,
+     * it is important to know some basic requirements:
+     *
+     *  - Highlight rules must be defined at a JSON file
+     *  - The name of the file must end with "_highlight_rules.json"
+     *  - Some options are secundary, so default values would be used if they're not defined
+     */
+
+    // OPTIONAL
+    // This option is not required, but could be useful since
+    // would define a name for the tokenizer. The tokenizer's
+    // name would be "default" whether "name" option is not
+    // defined at highlight rules file.
     "name": "example-tokenizer",
 
-    // Each programming language has a extension, and tokenizer would
+    // OPTIONAL
+    // Each programming language has an extension, and tokenizer would
     // check if passed file ends with that value whether this option
     // has been defined. However, if you want to disable extensions,
     // do not set this option, or define it with "no-ext" value.
@@ -22,12 +67,14 @@
     // one extension, you can define this option with an array of strings
     "extension": "no-ext",   // example: ".c" or [".c",".h"]
 
+    // OPTIONAL
     // Tokenizer would first check if rules are correctly declared.
     // This may cause a slower execution whether there are so many
     // highlight rules, so you could skip this step specifying this
     // option. If check_rules has not been declared, its value would be true
     "check_rules": true,
 
+    // OPTIONAL
     // You can inherit the rules of another programming language,
     // so its rules would be applied first. You can omit this
     // property by simply insert an empty value or not declaring it.
@@ -35,81 +82,89 @@
     // current file's path, and extension must not be defined
     "inherit_rules": "text_highlight_rules",
 
-    // Required option!!
-    // List of all states on which highligther would check
-    // during its execution, starting at "start" state
-    "states": [
+    // REQUIRED
+    // List of states that tokenizer uses during its execution.
+    // Each state must have a named and an array of rules.
+    //
+    // Tokenizer would always traverse down the list of a the
+    // first state defined, and when a regex matches, it will
+    // continue to the next state or the one defined at "next".
+    "states": {
         // Start state
         //
-        //  Initial state on which the highlighter always begin.
-        //  The system will progress down the list, looking for
-        //  a matching regex. If input matches current regex, the
-        //  highlighter will continue to the state defined at "next",
-        //  if it's declared, or to the state under current one,
-        //  if it's not.
+        //  Initial state on which execution begins. A highlight
+        //  rules file would be considered as invalid wether this
+        //  state has not been defined locally or at inheritance.
+        "start": [
+            // Definition of a rule, which always contain a set
+            // of options. This version only admits "token", "regex",
+            // "next", and "default_token", but in future releases
+            // "push" and "pop" options would be included.
+            //
+            // It is important to notice that some options must be
+            // defined together, and others need to be alone. For
+            // example, "token" and "regex" must be together, but
+            // "default_token" should not be with any other option.
+            // However, "next" is a special option, since could be
+            // defined with "token" and "regex" or alone.
+            {
+                // "Token" defines the identifier of a rule, and must follow
+                // naming conventions of TextMate (https://macromates.com/manual/en/language_grammars).
+                // However, there are some valid tokens that are not standard, and would be docummented later.
+                "token": "comment", // type: string | array[string] if groups are defined at "regex"
+
+                // "Regex" specifies a regex expression which must match.
+                // It is important to notice that you can define groups with "(" and ")"
+                // at the expession, but the number of them must match whith the number of tokens at "token".
+                "regex": "\\/\\/", // type: string
+
+                // "Next" is an option used to set the state that tokenizer must go
+                // whether current input matches the "regex" expression. If "next"
+                // is not included, tokenizer would not change current state.
+                "next": "single_line_comment" // type: string | array[object] to define private states
+            },
+            {
+                "token": "storage.type",
+                "regex": "function\\s*\\(\\w+\\)",
+                "next": "declr_function"
+            },
+            {
+                // "Default Token" is an option which must be define alone and should
+                // be included at the last rule of the state. It is used to define the
+                // token that tokenizer would have whether any of the previous rules match
+                "default_token": "comment"  // type: string
+            }
+        ],
+        // Example of a state different than start
         //
-        {
-            "name": "start", // unique string identifier of the state
-            // List of all rules that would check the highlighter when it's
-            // at current state. It is not possible to define a state whith
-            // any single rule declared at this array
-            "data": [
-                // Example of a block which defines a regex
-                // related to current state. All states must
-                // have at least one valid regex block.
-                {
-                    // Token option must be defined based on TextMate manual,
-                    // see https://macromates.com/manual/en/language_grammars
-                    "token": "comment", // string or array of string which specifies the CSS token to apply
-                    "regex": "//", // string with the regex to match
-                    "next": "single_line_comment" // [Optional] next state to enter which could be string or a list of states
-                },
-                {
-                    "token": "storage.type",
-                    "regex": "function\\s*\\(\\w+\\)",
-                    "next": "declr_function"
-                }
-            ]
-        },
-        {
-            "name": "single_line_comment",
-            "data": [
-                // Example of a state different than start
-                //
-                //  Since highlighter acts as a state machine, a new
-                //  state won't be checked unless one of the regex's
-                //  blocks of current state has a next field and matches.
-                //  In other words, highlighter would check constanly the
-                //  actual state until a next token has been actived
-                //
-                {
-                    "token": "comment",
-                    "regex": "\\$",
-                    "next": "single_line_comment"
-                },
-                {
-                    "token": "comment",
-                    "regex": "$",
-                    "next": "start"
-                }
-            ]
-        },
-        {
-            "name": "declr_function",
-            "data": [
-                {
-                    // When a regex has groups, you can specify a token for
-                    // each group declaring "token" as an array of strings.
-                    "token": [
-                        "storage.type",
-                        "entity.name",
-                        "entity.name.function"
-                    ],
-                    "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
-                    // You can define an array of object for next option
-                    "next": "start"
-                }
-            ]
-        }
-    ]
+        //  Since highlighter acts as a state machine, a new
+        //  state won't be checked unless one of the regex's
+        //  blocks of current state has a next field and matches.
+        //  In other words, highlighter would check constanly the
+        //  actual state until a next token has been actived
+        //
+        "single_line_comment": [
+            {
+                "token": "comment",
+                "regex": "\\$",
+                "next": "single_line_comment"
+            },
+            {
+                "token": "comment",
+                "regex": "$",
+                "next": "start"
+            }
+        ],
+        "declr_function": [
+            {
+                "token": [
+                    "storage.type",
+                    "entity.name",
+                    "entity.name.function"
+                ],
+                "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
+                "next": "start"
+            }
+        ]
+    }
 }

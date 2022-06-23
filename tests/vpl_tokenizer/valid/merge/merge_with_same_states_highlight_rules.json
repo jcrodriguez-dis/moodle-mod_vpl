@@ -1,23 +1,16 @@
 {
     "inherit_rules": "inherit_rules_one_state_highlight_rules",
-    "states": [
-        {
-            "name": "start",
-            "data": [
-                {
-                    "next": "text-state"
-                }
-            ]
-        },
-        {
-            "name": "text-state",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "//"
-                }
-            ]
-        }
-    ]
-
+    "states": {
+        "start": [
+            {
+                "next": "text-state"
+            }
+        ],
+        "text-state": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
 }

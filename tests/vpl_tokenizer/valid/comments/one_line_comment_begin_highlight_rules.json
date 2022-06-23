@@ -2,15 +2,12 @@
 // This is an empty file and this comment should
 // be ignored, so JSON object wouldn't have content
 {
-    "states": [
-        {
-            "name": "start",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "//"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
 }

@@ -3,131 +3,125 @@
     "extension": ".java",
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
-    "states": [
-        {
-            "name": "start",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "\\/\\/.*$"
-                },
-                {
-                    "token": "comment.block.documentation",
-                    "regex": "\\/\\*(?=\\*)",
-                    "next": "doc-start"
-                },
-                {
-                    "token": "comment",
-                    "regex": "\\/\\*",
-                    "next": "comment"
-                },
-                {
-                    "token": "string.double",
-                    "regex": "[\"]((\\\\.)|([^\"\\\\]))*?[\"]"
-                },
-                {
-                    "token": "string.single",
-                    "regex": "[']((\\\\.)|([^'\\\\]))*?[']"
-                },
-                {
-                    "token": "constant.numeric",
-                    "regex": "0([xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\b"
-                },
-                {
-                    "token": "constant.numeric",
-                    "regex": "[+-]?\\d[\\d_]*((\\.[\\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b"
-                },
-                {
-                    "token": "constant.language",
-                    "regex": "(true|false)\\b"
-                },
-                {
-                    "token": "keyword",
-                    "regex": "(open(\\s+))?module(?=\\s*\\w)",
-                    "next": [
-                        {
-                            "token": "paren.lparen",
-                            "regex": "{",
-                            "next": [
-                                {
-                                    "token": "paren.rparen",
-                                    "regex": "}",
-                                    "next": "start"
-                                },
-                                {
-                                    "token": "keyword",
-                                    "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b"
-                                }
-                            ]
-                        },
-                        {
-                            "token": "string.unquoted",
-                            "regex": "\\s+"
-                        },
-                        {
-                            "token": "string.unquoted",
-                            "regex": "\\w+"
-                        },
-                        {
-                            "token": "constant.character",
-                            "regex": "\\."
-                        },
-                        {
-                            "token": "string.unquoted",
-                            "regex": "\\s+"
-                        },
-                        {
-                            "next": "start"
-                        }
-                    ]
-                },
-                {
-                    "token": "variable.language",
-                    "regex": "this"
-                },
-                {
-                    "token": "keyword",
-                    "regex": "abstract|continue|for|new|switch|assert|default|goto|package|synchronized|boolean|do|if|private|this|break|double|implements|protected|throw|byte|else|import|public|throws|case|enum|instanceof|return|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|const|float|native|super|while|var"
-                },
-                {
-                    "token": "constant.language",
-                    "regex": "null|Infinity|NaN|undefined"
-                },
-                {
-                    "token": "support.function",
-                    "regex": "AbstractMethodError|AssertionError|ClassCircularityError|ClassFormatError|Deprecated|EnumConstantNotPresentException|ExceptionInInitializerError|IllegalAccessError|IllegalThreadStateException|InstantiationError|InternalError|NegativeArraySizeException|NoSuchFieldError|Override|Process|ProcessBuilder|SecurityManager|StringIndexOutOfBoundsException|SuppressWarnings|TypeNotPresentException|UnknownError|UnsatisfiedLinkError|UnsupportedClassVersionError|VerifyError|InstantiationException|IndexOutOfBoundsException|ArrayIndexOutOfBoundsException|CloneNotSupportedException|NoSuchFieldException|IllegalArgumentException|NumberFormatException|SecurityException|Void|InheritableThreadLocal|IllegalStateException|InterruptedException|NoSuchMethodException|IllegalAccessException|UnsupportedOperationException|Enum|StrictMath|Package|Compiler|Readable|Runtime|StringBuilder|Math|IncompatibleClassChangeError|NoSuchMethodError|ThreadLocal|RuntimePermission|ArithmeticException|NullPointerException|Long|Integer|Short|Byte|Double|Number|Float|Character|Boolean|StackTraceElement|Appendable|StringBuffer|Iterable|ThreadGroup|Runnable|Thread|IllegalMonitorStateException|StackOverflowError|OutOfMemoryError|VirtualMachineError|ArrayStoreException|ClassCastException|LinkageError|NoClassDefFoundError|ClassNotFoundException|RuntimeException|Exception|ThreadDeath|Error|Throwable|System|ClassLoader|Cloneable|Class|CharSequence|Comparable|String|Object"
-                },
-                {
-                    "token": "entity.name",
-                    "regex": "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
-                },
-                {
-                    "token": "keyword.operator",
-                    "regex": "!|\\$|%|&|\\||\\^|\\*|\\/|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?|\\:|\\*=|\\/=|%=|\\+=|\\-=|&=|\\|=|\\^=|\\b(in|instanceof|new|delete|typeof|void)"
-                },
-                {
-                    "token": "paren.lparen",
-                    "regex": "[[({]"
-                },
-                {
-                    "token": "paren.rparen",
-                    "regex": "[\\])}]"
-                },
-                {
-                    "token": "string.unquoted",
-                    "regex": "\\s+"
-                }
-            ]
-        },
-        {
-            "name": "comment",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "\\*\\/",
-                    "next": "start"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/.*$"
+            },
+            {
+                "token": "comment.block.documentation",
+                "regex": "\\/\\*(?=\\*)",
+                "next": "doc-start"
+            },
+            {
+                "token": "comment",
+                "regex": "\\/\\*",
+                "next": "comment"
+            },
+            {
+                "token": "string.double",
+                "regex": "[\"]((\\\\.)|([^\"\\\\]))*?[\"]"
+            },
+            {
+                "token": "string.single",
+                "regex": "[']((\\\\.)|([^'\\\\]))*?[']"
+            },
+            {
+                "token": "constant.numeric",
+                "regex": "0([xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\b"
+            },
+            {
+                "token": "constant.numeric",
+                "regex": "[+-]?\\d[\\d_]*((\\.[\\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b"
+            },
+            {
+                "token": "constant.language",
+                "regex": "(true|false)\\b"
+            },
+            {
+                "token": "keyword",
+                "regex": "(open(\\s+))?module(?=\\s*\\w)",
+                "next": [
+                    {
+                        "token": "paren.lparen",
+                        "regex": "{",
+                        "next": [
+                            {
+                                "token": "paren.rparen",
+                                "regex": "}",
+                                "next": "start"
+                            },
+                            {
+                                "token": "keyword",
+                                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b"
+                            }
+                        ]
+                    },
+                    {
+                        "token": "string.unquoted",
+                        "regex": "\\s+"
+                    },
+                    {
+                        "token": "string.unquoted",
+                        "regex": "\\w+"
+                    },
+                    {
+                        "token": "constant.character",
+                        "regex": "\\."
+                    },
+                    {
+                        "token": "string.unquoted",
+                        "regex": "\\s+"
+                    },
+                    {
+                        "next": "start"
+                    }
+                ]
+            },
+            {
+                "token": "variable.language",
+                "regex": "this"
+            },
+            {
+                "token": "keyword",
+                "regex": "abstract|continue|for|new|switch|assert|default|goto|package|synchronized|boolean|do|if|private|this|break|double|implements|protected|throw|byte|else|import|public|throws|case|enum|instanceof|return|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|const|float|native|super|while|var"
+            },
+            {
+                "token": "constant.language",
+                "regex": "null|Infinity|NaN|undefined"
+            },
+            {
+                "token": "support.function",
+                "regex": "AbstractMethodError|AssertionError|ClassCircularityError|ClassFormatError|Deprecated|EnumConstantNotPresentException|ExceptionInInitializerError|IllegalAccessError|IllegalThreadStateException|InstantiationError|InternalError|NegativeArraySizeException|NoSuchFieldError|Override|Process|ProcessBuilder|SecurityManager|StringIndexOutOfBoundsException|SuppressWarnings|TypeNotPresentException|UnknownError|UnsatisfiedLinkError|UnsupportedClassVersionError|VerifyError|InstantiationException|IndexOutOfBoundsException|ArrayIndexOutOfBoundsException|CloneNotSupportedException|NoSuchFieldException|IllegalArgumentException|NumberFormatException|SecurityException|Void|InheritableThreadLocal|IllegalStateException|InterruptedException|NoSuchMethodException|IllegalAccessException|UnsupportedOperationException|Enum|StrictMath|Package|Compiler|Readable|Runtime|StringBuilder|Math|IncompatibleClassChangeError|NoSuchMethodError|ThreadLocal|RuntimePermission|ArithmeticException|NullPointerException|Long|Integer|Short|Byte|Double|Number|Float|Character|Boolean|StackTraceElement|Appendable|StringBuffer|Iterable|ThreadGroup|Runnable|Thread|IllegalMonitorStateException|StackOverflowError|OutOfMemoryError|VirtualMachineError|ArrayStoreException|ClassCastException|LinkageError|NoClassDefFoundError|ClassNotFoundException|RuntimeException|Exception|ThreadDeath|Error|Throwable|System|ClassLoader|Cloneable|Class|CharSequence|Comparable|String|Object"
+            },
+            {
+                "token": "entity.name",
+                "regex": "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "!|\\$|%|&|\\||\\^|\\*|\\/|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?|\\:|\\*=|\\/=|%=|\\+=|\\-=|&=|\\|=|\\^=|\\b(in|instanceof|new|delete|typeof|void)"
+            },
+            {
+                "token": "paren.lparen",
+                "regex": "[[({]"
+            },
+            {
+                "token": "paren.rparen",
+                "regex": "[\\])}]"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\s+"
+            }
+        ],
+        "comment": [
+            {
+                "token": "comment",
+                "regex": "\\*\\/",
+                "next": "start"
+            }
+        ]
+    }
 }

@@ -1,6 +1,4 @@
 // TEST: tested
 {
-    // States must be always an array of objects, so this
-    // file would not be valid for tokenizer
     "states": 10
 }

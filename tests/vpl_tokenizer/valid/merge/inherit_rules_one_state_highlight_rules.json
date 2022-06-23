@@ -1,15 +1,12 @@
 // TEST: tested
 {
     "check_rules": false,
-    "states": [
-        {
-            "name": "text-state",
-            "data": [
-                {
-                    "token": "text",
-                    "regex": ".*"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "text-state": [
+            {
+                "token": "text",
+                "regex": ".*"
+            }
+        ]
+    }
 }

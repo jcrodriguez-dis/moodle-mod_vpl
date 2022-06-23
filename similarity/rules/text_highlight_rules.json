@@ -1,19 +1,16 @@
 {
     "name": "tokenizer-text",
     "check_rules": false,
-    "states": [
-        {
-            "name": "start",
-            "data": [
-                {
-                    "token": "constant.character",
-                    "regex": "^$"
-                },
-                {
-                    "token": "string.unquoted",
-                    "regex": ".*"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "start": [
+            {
+                "token": "constant.character",
+                "regex": "^$"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": ".*"
+            }
+        ]
+    }
 }

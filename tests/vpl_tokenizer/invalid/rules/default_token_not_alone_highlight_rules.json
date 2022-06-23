@@ -3,9 +3,9 @@
         "start": [
             {
                 "token": "comment",
-                "regex": "//"
+                "regex": "//",
+                "default_token": "comment"
             }
         ]
-    },
-    "example": 10
+    }
 }

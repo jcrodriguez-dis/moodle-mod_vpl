@@ -1,15 +1,12 @@
 {
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
-    "states": [
-        {
-            "name": "test",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "//"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "test": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
 }

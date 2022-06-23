@@ -1,20 +1,17 @@
 // TEST: tested
 {
-    "states": [
-        {
-            "name": "state1",
-            "data": [
-                {
-                    "token": "keyword.control",
-                    "next": [
-                        {
-                            "token": "comment",
-                            "regex": "//"
-                        },
-                        10
-                    ]
-                }
-            ]
-        }
-    ]
+    "states": {
+        "state1": [
+            {
+                "token": "keyword.control",
+                "next": [
+                    {
+                        "token": "comment",
+                        "regex": "//"
+                    },
+                    10
+                ]
+            }
+        ]
+    }
 }

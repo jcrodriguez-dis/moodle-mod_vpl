@@ -1,13 +1,10 @@
 // TEST: tested
 {
-    "states": [
-        {
-            "name": "state1",
-            "data": [
-                {
-                    "example": 10
-                }
-            ]
-        }
-    ]
+    "states": {
+        "state1": [
+            {
+                "example": 10
+            }
+        ]
+    }
 }

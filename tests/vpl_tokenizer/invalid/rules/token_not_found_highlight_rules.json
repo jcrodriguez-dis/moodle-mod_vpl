@@ -1,13 +1,10 @@
 // TEST: tested
 {
-    "states": [
-        {
-            "name": "state1",
-            "data": [
-                {
-                    "regex": "//"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "state1": [
+            {
+                "regex": "//"
+            }
+        ]
+    }
 }

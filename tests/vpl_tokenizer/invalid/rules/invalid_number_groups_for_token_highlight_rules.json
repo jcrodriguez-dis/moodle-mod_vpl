@@ -1,13 +1,10 @@
 {
-    "states": [
-        {
-            "name": "state1",
-            "data": [
-                {
-                    "token": [ "comment", "comment" ],
-                    "regex": "//"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "state1": [
+            {
+                "token": [ "comment", "comment" ],
+                "regex": "//"
+            }
+        ]
+    }
 }

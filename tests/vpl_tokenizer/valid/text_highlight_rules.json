@@ -1,27 +1,16 @@
 {
+    "name": "tokenizer-text",
     "check_rules": false,
-    "states": [
-        {
-            "name": "start",
-            "data": [
-                {
-                    "token": "empty_line",
-                    "regex": "^$"
-                }
-            ]
-        },
-        {
-            "name": "test",
-            "data": [
-                {
-                    "token": "comment",
-                    "regex": "//"
-                },
-                {
-                    "token": "multiple.comment",
-                    "regex": "/\\*"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "start": [
+            {
+                "token": "constant.character",
+                "regex": "^$"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": ".*"
+            }
+        ]
+    }
 }

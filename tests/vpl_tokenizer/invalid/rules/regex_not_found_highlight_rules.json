@@ -1,13 +1,10 @@
 // TEST: tested
 {
-    "states": [
-        {
-            "name": "state1",
-            "data": [
-                {
-                    "token": "comment"
-                }
-            ]
-        }
-    ]
+    "states": {
+        "state1": [
+            {
+                "token": "comment"
+            }
+        ]
+    }
 }

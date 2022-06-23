@@ -68,7 +68,7 @@ class assertf {
     }
 
     /**
-     * Throw an exception with passed filename and message
+     * Show an error with passed filename and message
      *
      * @param ?string $filename location on which error has been thrown
      * @param string $message customized error message
@@ -76,6 +76,6 @@ class assertf {
      */
     public static function showerr(?string $filename, string $message): void {
         $messagecustomized = self::get_error($filename, $message);
-        throw new Exception($messagecustomized);
+        fwrite(STDERR, $messagecustomized);
     }
 }

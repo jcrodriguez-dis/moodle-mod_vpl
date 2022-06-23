@@ -2,12 +2,13 @@
 TODO for Plugin VPL 3.5.0++
 ===================================
 
-Comentar al tutor las fechas de entrega, defensa, y evaluación de la extraordinaria
-
-tokenizer.class.php:
+tokenizer.php:
     - Fix errors at get_line_tokens
     - Fix errors at prepare_tokens
+    - Include push and pop
 
 tokenizer_test.php:
     - Add more test cases for check_json_file method
     - Add more test cases for merge_json_file
+    - Add test cases for tokenizer based on Ace Editor
+    - Add test cases for check_type, contains_rule, and check_token

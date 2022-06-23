@@ -13,6 +13,18 @@ environment:
 
 tokenizer.php:
 
+    2022-06-23
+
+        - Fix prepare_tokenizer method based on Ace Editor
+        - Replace utils with tokenizer_base at classes/tokenizer
+        - Documentation for referencies at ace editor
+
+    2022-06-22
+
+        - Reduce overridecheckrules and setcheckrules to one parameter
+        - Update code for new syntax based on Acer Editor
+        - Include default_token at tokenizer syntax
+
     2022-06-20
 
         - Fix merge operation at apply_inheritance
@@ -75,6 +87,16 @@ tokenizer.php:
         - Include asserts for required and possible groups for the options of a rule
 
 tokenizer_test.php:
+
+    2022-06-23
+
+        - Include test cases for create_splitter_regex and remove_capturing_groups
+        - Fix merge tests and all regex with "/" value, since "/" must be defined as "\\/"
+        - Documentation for referencies at ace editor
+
+    2022-06-22
+
+        - Set static check method for rules as a test case
 
     2922-06-20
 
