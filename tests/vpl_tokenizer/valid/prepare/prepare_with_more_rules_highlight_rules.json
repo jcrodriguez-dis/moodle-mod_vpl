@@ -1,0 +1,37 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "comment.line.double-slash",
+                "regex": "\\/\\/"
+            },
+            {
+                "token": [ "storage.type", "entity.name.function", "paren.lparen", "paren.rparen" ],
+                "regex": "(void)([a-z]+(?:[a-zA-Z0-9]|_)*)(\\()(\\))",
+                "next": "statement"
+            },
+            {
+                "default_token": "comment.line.double-slash"
+            }
+        ],
+        "statement": [
+            {
+                "token": "entity.name",
+                "regex": "([a-z]+([a-zA-Z0-9]|_)*)"
+            },
+            {
+                "next": "comment"
+            }
+        ],
+        "comment": [
+            {
+                "token": "comment.line.double-slash",
+                "regex": "\\/\\/"
+            },
+            {
+                "default_token": "comment"
+            }
+        ]
+    }
+}

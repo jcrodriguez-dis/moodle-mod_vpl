@@ -24,6 +24,7 @@
 
 namespace mod_vpl;
 
+use mod_vpl\tokenizer\tokenizer_base;
 use \stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -488,6 +489,21 @@ class base_test extends \advanced_testcase {
             $this->assertNotEmpty($this->create_instance());
         }
     }
+
+    /**
+     * Call protected method of passed object
+     *
+     * @param $obj object with protected methods
+     * @param $name name of the method
+     * @param array $args list of parameters
+     * @return mixed
+     */
+    public static function call_method($obj, $name, array $args) {
+        $class = new \ReflectionClass($obj);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs($obj, $args);
+    }
 }
 
 /**
@@ -496,4 +512,42 @@ class base_test extends \advanced_testcase {
  */
 class testable_vpl extends \mod_vpl {
 
+}
+
+/**
+ * Class to use instead of tokenizer_base.
+ * This derived class of tokenizer_base expose protected methods as public to test it.
+ */
+class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
+    public static function get_states_from($tokenizer): array {
+        return $tokenizer->get_states();
+    }
+
+    public static function get_matchmappings_from($tokenizer): array {
+        return $tokenizer->get_matchmappings();
+    }
+
+    public static function get_regexprs_from($tokenizer): array {
+        return $tokenizer->get_regexprs();
+    }
+
+    public static function check_type($value, string $typename) {
+        return tokenizer_base::check_type($value, $typename);
+    }
+
+    public static function contains_rule(array $state, object $rule): bool {
+        return tokenizer_base::contains_rule($state, $rule);
+    }
+
+    public static function check_token($token, array $availabletokens): bool {
+        return tokenizer_base::check_token($token, $availabletokens);
+    }
+
+    public static function remove_capturing_groups(string $src): string {
+        return tokenizer_base::remove_capturing_groups($src);
+    }
+
+    public static function create_splitter_regex(string $src): string {
+        return tokenizer_base::create_splitter_regexp($src);
+    }
 }

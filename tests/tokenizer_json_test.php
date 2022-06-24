@@ -249,8 +249,8 @@ class tokenizer_json_test extends \advanced_testcase {
         $filename = self::get_test_path() . 'valid/merge/merge_one_to_one_state_highlight_rules.json';
 
         try {
-            $tokenizer_json = new tokenizer_json($filename);
-            $states = $tokenizer_json->get_states();
+            $tokenizerjson = new tokenizer_json($filename);
+            $states = testable_tokenizer_base::get_states_from($tokenizerjson);
 
             $this->assertTrue(count($states) == 2);
 
@@ -276,8 +276,8 @@ class tokenizer_json_test extends \advanced_testcase {
         $filename = self::get_test_path() . 'valid/merge/merge_one_to_two_states_highlight_rules.json';
 
         try {
-            $tokenizer_json = new tokenizer_json($filename);
-            $states = $tokenizer_json->get_states();
+            $tokenizerjson = new tokenizer_json($filename);
+            $states = testable_tokenizer_base::get_states_from($tokenizerjson);
 
             $this->assertTrue(count($states) == 3);
 
@@ -308,8 +308,8 @@ class tokenizer_json_test extends \advanced_testcase {
         $filename = self::get_test_path() . 'valid/merge/merge_two_to_one_states_highlight_rules.json';
 
         try {
-            $tokenizer_json = new tokenizer_json($filename);
-            $states = $tokenizer_json->get_states();
+            $tokenizerjson = new tokenizer_json($filename);
+            $states = testable_tokenizer_base::get_states_from($tokenizerjson);
 
             $this->assertTrue(count($states) == 3);
 
@@ -340,8 +340,8 @@ class tokenizer_json_test extends \advanced_testcase {
         $filename = self::get_test_path() . 'valid/merge/merge_with_same_states_highlight_rules.json';
 
         try {
-            $tokenizer_json = new tokenizer_json($filename);
-            $states = $tokenizer_json->get_states();
+            $tokenizerjson = new tokenizer_json($filename);
+            $states = testable_tokenizer_base::get_states_from($tokenizerjson);
 
             $this->assertTrue(count($states) == 2);
 
@@ -360,7 +360,161 @@ class tokenizer_json_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Method to test tokenizer_json::prepare_tokenizer for one state
+     */
+    public function test_prepare_tokenizer_one_state() {
+        $filename = self::get_test_path() . 'valid/prepare/prepare_with_one_state_highlight_rules.json';
+        $tokenizerjson = new tokenizer_json($filename);
 
+        $regexprs = testable_tokenizer_base::get_regexprs_from($tokenizerjson);
+        $matchmappings = testable_tokenizer_base::get_matchmappings_from($tokenizerjson);
+
+        $this->assertTrue(count($regexprs) == 1);
+        $this->assertTrue(isset($regexprs["start"]));
+        $this->assertSame("/(\/\/)|(\/\*)|($)/", $regexprs["start"]);
+
+        $this->assertTrue(count($matchmappings) == 1);
+        $this->assertTrue(isset($matchmappings["start"]));
+        $this->assertTrue(count($matchmappings["start"]) == 3);
+        $this->assertTrue(isset($matchmappings["start"]["default_token"]));
+        $this->assertSame("text", $matchmappings["start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["start"][0]));
+        $this->assertSame(0, $matchmappings["start"][0]);
+        $this->assertTrue(isset($matchmappings["start"][1]));
+        $this->assertSame(1, $matchmappings["start"][1]);
+    }
+
+    /**
+     * Method to test tokenizer_json::prepare_tokenizer for two states
+     */
+    public function test_prepare_tokenizer_two_states() {
+        $filename = self::get_test_path() . 'valid/prepare/prepare_with_two_states_highlight_rules.json';
+        $tokenizerjson = new tokenizer_json($filename);
+
+        $regexprs = testable_tokenizer_base::get_regexprs_from($tokenizerjson);
+        $matchmappings = testable_tokenizer_base::get_matchmappings_from($tokenizerjson);
+
+        $this->assertTrue(count($regexprs) == 2);
+        $this->assertTrue(isset($regexprs["start"]));
+        $this->assertSame("/(\/\/)|(\/\*)|($)/", $regexprs["start"]);
+        $this->assertTrue(isset($regexprs["another_start"]));
+        $this->assertSame("/(\/\/)|(\/\*)|($)/", $regexprs["another_start"]);
+
+        $this->assertTrue(count($matchmappings) == 2);
+        $this->assertTrue(isset($matchmappings["start"]));
+        $this->assertTrue(count($matchmappings["start"]) == 3);
+        $this->assertTrue(isset($matchmappings["start"]["default_token"]));
+        $this->assertSame("text", $matchmappings["start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["start"][0]));
+        $this->assertSame(0, $matchmappings["start"][0]);
+        $this->assertTrue(isset($matchmappings["start"][1]));
+        $this->assertSame(1, $matchmappings["start"][1]);
+
+        $this->assertTrue(isset($matchmappings["another_start"]));
+        $this->assertTrue(count($matchmappings["another_start"]) == 3);
+        $this->assertTrue(isset($matchmappings["another_start"]["default_token"]));
+        $this->assertSame("text", $matchmappings["another_start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["another_start"][0]));
+        $this->assertSame(0, $matchmappings["another_start"][0]);
+        $this->assertTrue(isset($matchmappings["another_start"][1]));
+        $this->assertSame(1, $matchmappings["another_start"][1]);
+    }
+
+    /**
+     * Method to test tokenizer_json::prepare_tokenizer with capturing groups
+     */
+    public function test_prepare_tokenizer_capturing_groups() {
+        $filename = self::get_test_path() . 'valid/prepare/prepare_with_groups_highlight_rules.json';
+        $tokenizerjson = new tokenizer_json($filename);
+
+        $regexprs = testable_tokenizer_base::get_regexprs_from($tokenizerjson);
+        $matchmappings = testable_tokenizer_base::get_matchmappings_from($tokenizerjson);
+
+        $this->assertTrue(count($regexprs) == 1);
+        $this->assertTrue(isset($regexprs["start"]));
+        $this->assertSame("/(\/\/)|((?:.*)(?:b))|($)/", $regexprs["start"]);
+
+        $this->assertTrue(count($matchmappings) == 1);
+        $this->assertTrue(isset($matchmappings["start"]));
+        $this->assertTrue(count($matchmappings["start"]) == 3);
+        $this->assertTrue(isset($matchmappings["start"]["default_token"]));
+        $this->assertSame("comment", $matchmappings["start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["start"][0]));
+        $this->assertSame(0, $matchmappings["start"][0]);
+        $this->assertTrue(isset($matchmappings["start"][1]));
+        $this->assertSame(1, $matchmappings["start"][1]);
+    }
+
+    /**
+     * Method to test tokenizer_json::prepare_tokenizer with more rules
+     */
+    public function test_prepare_tokenizer_more_rules() {
+        $filename = self::get_test_path() . 'valid/prepare/prepare_with_more_rules_highlight_rules.json';
+        $tokenizerjson = new tokenizer_json($filename);
+
+        $regexprs = testable_tokenizer_base::get_regexprs_from($tokenizerjson);
+        $matchmappings = testable_tokenizer_base::get_matchmappings_from($tokenizerjson);
+
+        $this->assertTrue(count($regexprs) == 3);
+        $this->assertTrue(isset($regexprs["start"]));
+        $this->assertSame("/(\/\/)|((?:void)(?:[a-z]+(?:[a-zA-Z0-9]|_)*)(?:\()(?:\)))|($)/", $regexprs["start"]);
+        $this->assertTrue(isset($regexprs["statement"]));
+        $this->assertSame("/(([a-z]+([a-zA-Z0-9]|_)*))|($)/", $regexprs["statement"]);
+        $this->assertTrue(isset($regexprs["comment"]));
+        $this->assertSame("/(\/\/)|($)/", $regexprs["comment"]);
+
+        $this->assertTrue(count($matchmappings) == 3);
+        $this->assertTrue(isset($matchmappings["start"]));
+        $this->assertTrue(count($matchmappings["start"]) == 3);
+        $this->assertTrue(isset($matchmappings["start"]["default_token"]));
+        $this->assertSame("comment.line.double-slash", $matchmappings["start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["start"][0]));
+        $this->assertSame(0, $matchmappings["start"][0]);
+        $this->assertTrue(isset($matchmappings["start"][1]));
+        $this->assertSame(1, $matchmappings["start"][1]);
+
+        $this->assertTrue(count($matchmappings["statement"]) == 2);
+        $this->assertTrue(isset($matchmappings["statement"]["default_token"]));
+        $this->assertSame("text", $matchmappings["statement"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["statement"][0]));
+        $this->assertSame(0, $matchmappings["statement"][0]);
+
+        $this->assertTrue(count($matchmappings["comment"]) == 2);
+        $this->assertTrue(isset($matchmappings["comment"]["default_token"]));
+        $this->assertSame("comment", $matchmappings["comment"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["comment"][0]));
+        $this->assertSame(0, $matchmappings["comment"][0]);
+    }
+
+    /**
+     * Method to test tokenizer_json::prepare_tokenizer with complex matching
+     */
+    public function test_prepare_tokenizer_complex_matching() {
+        $filename = self::get_test_path() . 'valid/prepare/prepare_with_complex_matching_highlight_rules.json';
+        $tokenizerjson = new tokenizer_json($filename);
+
+        $regexprs = testable_tokenizer_base::get_regexprs_from($tokenizerjson);
+        $matchmappings = testable_tokenizer_base::get_matchmappings_from($tokenizerjson);
+
+        $this->assertTrue(count($regexprs) == 1);
+        $this->assertTrue(isset($regexprs["start"]));
+
+        $expected = "/([+-]?\d[\d_]*((\.[\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b)|((?:true|false)\b)|";
+        $expected .= "((?:open(?:\s+))?module(?=\s*\w))|($)/";
+        $this->assertSame($expected, $regexprs["start"]);
+
+        $this->assertTrue(count($matchmappings) == 1);
+        $this->assertTrue(count($matchmappings["start"]) == 4);
+        $this->assertTrue(isset($matchmappings["start"]["default_token"]));
+        $this->assertSame("text", $matchmappings["start"]["default_token"]);
+        $this->assertTrue(isset($matchmappings["start"][0]));
+        $this->assertSame(0, $matchmappings["start"][0]);
+        $this->assertTrue(isset($matchmappings["start"][4]));
+        $this->assertSame(1, $matchmappings["start"][4]);
+        $this->assertTrue(isset($matchmappings["start"][5]));
+        $this->assertSame(2, $matchmappings["start"][5]);
+    }
 
     /**
      * Include a new test case for invalid highlight rules

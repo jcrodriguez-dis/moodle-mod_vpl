@@ -26,16 +26,14 @@ namespace mod_vpl\tokenizer;
 
 use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer;
+use mod_vpl\tokenizer\tokenizer_base;
 
-class tokenizer_json extends tokenizer {
+class tokenizer_json extends tokenizer_base implements tokenizer {
     private string $name = 'default';
     private array $extension = ['no-ext'];
     private bool $checkrules = true;
     private string $inheritrules;
     private bool $setcheckrules;
-
-    private array $matchmappings = [];
-    private array $regexprs = [];
 
     /**
      * Available data types for token's options,
@@ -109,8 +107,11 @@ class tokenizer_json extends tokenizer {
             $rulefilename . ' must have suffix _highlight_rules.json'
         );
 
+        $this->matchmappings = [];
+        $this->regexprs = [];
+
         $this->setcheckrules = $setcheckrules;
-        $this->init_tokenizer($rulefilename);
+        $this->init($rulefilename);
     }
 
     /**
@@ -123,7 +124,7 @@ class tokenizer_json extends tokenizer {
      * @param string $rulefilename filename with all the rules
      * @return void
      */
-    protected function init_tokenizer(string $rulefilename): void {
+    public function init(string $rulefilename): void {
         $jsonobj = self::load_json($rulefilename);
 
         $this->init_check_rules($rulefilename, $jsonobj);
@@ -176,120 +177,15 @@ class tokenizer_json extends tokenizer {
     }
 
     /**
-     * Get all tokens for passed line
+     * Get all tokens for passed line based on Ace Editor
+     * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
      *
      * @param string $line content of the line
      * @param string $startstate state on which stack would start
      * @return array
      */
     public function get_line_tokens(string $line, string $startstate=""): array {
-        $stack = [];
-
-        $currentstate = strcmp($startstate, "") == 0 ? $startstate : "start";
-
-        if (isset($this->states[$currentstate])) {
-            $currentstate = "start";
-        }
-
-        // $state = $this->search_state($this->jsonobj, $currentstate);
-        $state = $this->states[$currentstate];
-        $mapping = $this->matchmappings[$currentstate];
-        $regex = $this->regexprs[$currentstate];
-
-        $token = new token(null, "");
-
-        $matchattempts = 0;
-        $lastindex = 0;
-        $tokens = [];
-
-        while (preg_match($regex, $line, $match, PREG_OFFSET_CAPTURE, $lastindex) != 0) {
-            $type = $mapping["default_token"];
-            $index = $lastindex;
-            $value = $match[0];
-            $match = $match[0];
-            $rule = null;
-
-            if ($index - strlen($value) > $lastindex) {
-                $skipped = substr($line, $lastindex, $index - strlen($value));
-
-                if ($token->type == $type) {
-                    $token->value .= $skipped;
-                } else {
-                    if (isset($token->type)) {
-                        array_push($tokens, $token);
-                    }
-
-                    $token = new token($type, $skipped);
-                }
-            }
-
-            for ($i = 0; $i < strlen($match) - 2; $i++) {
-                if (!isset($match[$i + 1])) {
-                    continue;
-                }
-
-                $rule = $state[$mapping[$i]];
-
-                if (isset($rule->next)) {
-                    $currentstate = !isset($this->states[$rule->next]) ? "start" : $rule->next;
-
-                    $state = $this->states[$currentstate];
-                    $mapping = $this->matchmappings[$currentstate];
-                    $regex = $this->regexprs[$currentstate];
-                    $lastindex = $index;
-                }
-
-                break;
-            }
-
-            if (isset($value)) {
-                if (is_string($value)) {
-                    if (!isset($rule) && $token->type === $type) {
-                        $token->value .= $value;
-                    } else {
-                        if (isset($token->type)) {
-                            array_push($tokens, $token->type);
-                        }
-
-                        $token = new token($type, $value);
-                    }
-                } else if (isset($type)) {
-                    if (isset($token->type)) {
-                        array_push($tokens, $token->type);
-                    }
-
-                    $token = new token(null, "");
-
-                    for ($i = 0; $i < count($type); $i++) {
-                        array_push($tokens, $type[$i]);
-                    }
-                }
-            }
-
-            if ($lastindex == strlen($line)) {
-                break;
-            }
-
-            if ($matchattempts++ > $this->max_token_count) {
-                assertf::assert($matchattempts > 2 * strlen($line), null, "infinite loop found at tokenizer");
-
-                while ($lastindex < strlen($line)) {
-                    if ($token->type) {
-                        array_push($tokens, $token);
-                    }
-
-                    $token = new token(substr($line, $lastindex, $lastindex += 500), "overflow");
-                }
-
-                $currentstate = "start"; $stack = []; break;
-            }
-        }
-
-        if (isset($token->type)) {
-            array_push($tokens, $token);
-        }
-
-        return array("tokens" => $tokens, "state" => count($stack) > 0 ? $stack : $currentstate);
+        return [];
     }
 
     // Preparation based on Ace Editor tokenizer.js
@@ -321,12 +217,14 @@ class tokenizer_json extends tokenizer {
                     if (count($rule->token) == 1 && $matchcount == 1) {
                         $rule->token = $rule->token[0];
                     } else if ($matchcount - 1 != count($rule->token)) {
-                        assertf::showerr($rulefilename, "number of classes and regexp groups doesn't match");
+                        $errmssg = "number of classes and regexp groups doesn't match ";
+                        $errmssg .= ($matchcount - 1) . " != " . count($rule->token);
+                        assertf::showerr($rulefilename, $errmssg);
                         $rule->token = $rule->token[0];
                     } else {
                         $rule->tokenarray = $rule->token;
                         unset($rule->token);
-                        //rule.onMatch = this.$arrayTokens;
+                        // Example: rule.onMatch = this.$arrayTokens;.
                     }
                 }
 
@@ -369,7 +267,7 @@ class tokenizer_json extends tokenizer {
     private static function load_json(string $filename): object {
         $data = file_get_contents($filename);
 
-        // Discard C-style comments and blank lines
+        // Discard C-style comments and blank lines.
         $content = preg_replace('#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|([\s\t]//.*)|(^//.*)#', '', $data);
         $content = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content);
 
@@ -393,7 +291,7 @@ class tokenizer_json extends tokenizer {
     private function init_extension(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->extension)) {
             assertf::assert(
-                is_string($jsonobj->extension) || tokenizer::check_type($jsonobj->extension, "array_string") === true,
+                is_string($jsonobj->extension) || tokenizer_base::check_type($jsonobj->extension, "array_string") === true,
                 $rulefilename, '"extension" option must be a string or an array of strings'
             );
 
@@ -505,7 +403,7 @@ class tokenizer_json extends tokenizer {
                 $typeoption = "";
 
                 foreach (self::TOKENTYPES[$optionname] as $typevalue) {
-                    $condtype = tokenizer::check_type($optionvalue, $typevalue);
+                    $condtype = tokenizer_base::check_type($optionvalue, $typevalue);
 
                     if ($condtype === true) {
                         $istypevalid = true;
@@ -535,7 +433,7 @@ class tokenizer_json extends tokenizer {
                     $errmssg = "invalid token at rule " . $nrule . " of state \"";
                     $errmssg .= $statename . "\" nº" . $nstate;
                     $errmssg = $nnext != -1 ? $errmssg . " (next: " . $nnext . ")" : $errmssg;
-                    assertf::assert(tokenizer::check_token($rule->$optionname, self::TEXTMATETOKENS), $rulefilename, $errmssg);
+                    assertf::assert(tokenizer_base::check_token($rule->$optionname, self::TEXTMATETOKENS), $rulefilename, $errmssg);
                 }
 
                 if (strcmp($optionname, "next") == 0) {
@@ -579,7 +477,7 @@ class tokenizer_json extends tokenizer {
                     $this->states = array_merge($this->states, $newstate);
                 } else {
                     foreach ($srcvalue as $rulesrc) {
-                        if (!tokenizer::contains_rule($this->states[$srcname], $rulesrc)) {
+                        if (!tokenizer_base::contains_rule($this->states[$srcname], $rulesrc)) {
                             $this->states[$srcname][] = $rulesrc;
                         }
                     }

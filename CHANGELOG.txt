@@ -6,7 +6,24 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
-[ VPL 3.5.0++ - 3.0.0 ] - 2022-06-22
+[ VPL 3.5.0++ - 4.0.0 ] - 2022-06-24
+
+    * Added
+
+        - Replace old "tokenizer" class to "tokenizer_base"
+        - Include interface "tokenizer" with required methods
+        - Include at "base_test" a class to be able to use protected methods
+        - Include test cases to check prepare_tokenizer
+        - Include test cases for check_type and check_token
+        - Include test cases for contains_rule
+
+    * Fixed
+
+        - Fix check_token when $token is an empty array
+        - Fix error messages setting filename with basename
+        - Fix codestyle at tokenizer classes and its tests
+
+[ VPL 3.5.0++ - 3.0.0 ] - 2022-06-23
 
     * Added
 
@@ -144,6 +161,7 @@ notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
         - Provide error management
 
     * Fixed
+
         - Update highlight rules JSON file for PHP
 
 [ VPL 3.5.0++ - 1.0.0 ] - 2022-04-22

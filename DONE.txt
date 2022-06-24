@@ -13,6 +13,13 @@ environment:
 
 tokenizer.php:
 
+    2022-06-24
+
+        - Fix errors at prepare_tokens
+        - Replace old "tokenizer" class to "tokenizer_base"
+        - Include interface "tokenizer" with required methods
+        - Include at "base_test" a class to be able to use protected methods
+
     2022-06-23
 
         - Fix prepare_tokenizer method based on Ace Editor
@@ -87,6 +94,13 @@ tokenizer.php:
         - Include asserts for required and possible groups for the options of a rule
 
 tokenizer_test.php:
+
+    2022-06-24
+
+        - Add test cases for check_type, contains_rule, and check_token
+        - Add test cases for tokenizer based on Ace Editor
+        - Add more test cases for check_json_file method
+        - Add more test cases for merge_json_file
 
     2022-06-23
 

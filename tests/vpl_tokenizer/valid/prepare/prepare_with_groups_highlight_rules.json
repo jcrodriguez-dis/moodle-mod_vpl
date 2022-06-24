@@ -1,0 +1,18 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            },
+            {
+                "token": "text",
+                "regex": "(.*)(b)"
+            },
+            {
+                "default_token": "comment"
+            }
+        ]
+    }
+}

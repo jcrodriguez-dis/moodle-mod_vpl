@@ -29,11 +29,11 @@
             },
             {
                 "token": "constant.numeric",
-                "regex": "0([xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\b"
+                "regex": "0([xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\\b"
             },
             {
                 "token": "constant.numeric",
-                "regex": "[+-]?\\d[\\d_]*((\\.[\\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b"
+                "regex": "[+-]?\\d[\\d_]*((\\.[\\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\\b"
             },
             {
                 "token": "constant.language",
