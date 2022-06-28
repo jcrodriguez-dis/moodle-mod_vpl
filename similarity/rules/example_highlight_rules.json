@@ -121,7 +121,7 @@
                 // "Next" is an option used to set the state that tokenizer must go
                 // whether current input matches the "regex" expression. If "next"
                 // is not included, tokenizer would not change current state.
-                "next": "single_line_comment" // type: string | array[object] to define private states
+                "next": "single_line_comment" // type: string
             },
             {
                 "token": "storage.type",

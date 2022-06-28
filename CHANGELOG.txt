@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
+
+[ VPL 3.5.0++ - 5.0.0 ] - 2022-06-28
+
+    * Added
+
+        - Include highlight_rules file for Fortran
+        - Include test cases for get_line_tokens
+        - Include coberture compatibility for VPL plugin
+        - Include test cases to have 100% of code coverage
+
+    * Changed
+
+        - Reduce number of methods at tokenizer_json_test
+        - Rename tokenizer_json to tokenizer
+
+    * Deleted
+
+        - Remove next when it is an array of objects
+        - Delete tokenizer's interface to avoid confunsions
+
+    * Fixed
+
+        - Fix get_line_tokens based on Ace Editor
+        - Fix prepare_tokenizer when $matchcount is less than 3
+        - Fix highlight rules for Java language
+
 [ VPL 3.5.0++ - 4.0.0 ] - 2022-06-24
 
     * Added

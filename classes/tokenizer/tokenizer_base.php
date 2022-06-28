@@ -25,14 +25,8 @@
 namespace mod_vpl\tokenizer;
 
 /**
- * @internal
- *
  * This class was not designed to be used as a real tokenizer,
- * since it does not implements tokenizer interface.
- *
- * Tokenizers which could be useful for real applications must
- * implement the methods defined at tokenizer and must be an
- * extension of this class in order to use its methods
+ * but it has many useful tools used by tokenizers.
  */
 class tokenizer_base {
     protected array $states;
@@ -40,13 +34,19 @@ class tokenizer_base {
     protected array $regexprs;
 
     /**
-     * Empty constructor
+     * @codeCoverageIgnore
+     *
+     * Initialize an empty tokenizer
      */
     public function __construct() {
-
+        $this->states = [];
+        $this->matchmappings = [];
+        $this->regexprs = [];
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * Get states for current tokenizer
      *
      * @return array
@@ -56,6 +56,8 @@ class tokenizer_base {
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * Get matching map for current tokenizer
      *
      * @return array
@@ -65,6 +67,8 @@ class tokenizer_base {
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * Get regex of each state for current tokenizer
      *
      * @return array

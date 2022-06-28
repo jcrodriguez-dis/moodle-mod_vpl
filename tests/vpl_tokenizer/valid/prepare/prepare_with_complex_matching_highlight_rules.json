@@ -12,42 +12,44 @@
             {
                 "token": "keyword",
                 "regex": "(open(\\s+))?module(?=\\s*\\w)",
-                "next": [
-                    {
-                        "token": "paren.lparen",
-                        "regex": "{",
-                        "next": [
-                            {
-                                "token": "paren.rparen",
-                                "regex": "}",
-                                "next": "start"
-                            },
-                            {
-                                "token": "keyword",
-                                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b"
-                            }
-                        ]
-                    },
-                    {
-                        "token": "string.unquoted",
-                        "regex": "\\s+"
-                    },
-                    {
-                        "token": "string.unquoted",
-                        "regex": "\\w+"
-                    },
-                    {
-                        "token": "constant.character",
-                        "regex": "\\."
-                    },
-                    {
-                        "token": "string.unquoted",
-                        "regex": "\\s+"
-                    },
-                    {
-                        "next": "start"
-                    }
-                ]
+                "next": "body-module"
+            }
+        ],
+        "body-module": [
+            {
+                "token": "paren.lparen",
+                "regex": "{",
+                "next": "end-module"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\s+"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\w+"
+            },
+            {
+                "token": "constant.character",
+                "regex": "\\."
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\s+"
+            },
+            {
+                "next": "start"
+            }
+        ],
+        "end-module": [
+            {
+                "token": "paren.rparen",
+                "regex": "}",
+                "next": "start"
+            },
+            {
+                "token": "keyword",
+                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b"
             }
         ]
     }

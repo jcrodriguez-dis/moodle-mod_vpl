@@ -2,7 +2,6 @@
     "name": "tokenizer-java",
     "extension": ".java",
     "check_rules": false,
-    "inherit_rules": "text_highlight_rules",
     "states": {
         "start": [
             {
@@ -35,11 +34,6 @@
                 "regex": "(?:true|false)\\b"
             },
             {
-                "regex": "(open(?:\\s+))?module(?=\\s*\\w)",
-                "token": "keyword",
-                "next": "module-body"
-            },
-            {
                 "token": "identifier",
                 "regex": "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
             },
@@ -68,45 +62,6 @@
             },
             {
                 "default_token": "comment"
-            }
-        ],
-        "module-body": [
-            {
-                "regex": "{",
-                "token": "paren.lparen",
-                "next": "module-end"
-            },
-            {
-                "token": "text",
-                "regex": "\\s+"
-            },
-            {
-                "token": "identifier",
-                "regex": "\\w+"
-            },
-            {
-                "token": "punctuation.operator",
-                "regex": "\\."
-            },
-            {
-                "token": "text",
-                "regex": "\\s+"
-            },
-            {
-                "token": "text",
-                "regex": "",
-                "next": "start"
-            }
-        ],
-        "module-end": [
-            {
-                "regex": "}",
-                "token": "paren.rparen",
-                "next": "start"
-            },
-            {
-                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b",
-                "token": "keyword"
             }
         ]
     }

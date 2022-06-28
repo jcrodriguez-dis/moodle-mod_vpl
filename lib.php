@@ -31,6 +31,8 @@ require_once(dirname(__FILE__).'/list_util.class.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 /**
+ * @codeCoverageIgnore
+ *
  * Create/update grade item for given VPL activity.
  * (Code and comments adapted from Moodle assign)
  *
@@ -75,6 +77,8 @@ function vpl_grade_item_update($instance, $grades=null) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Update activity grades.
  * API and comment taken from Moodle assign.
  *
@@ -128,6 +132,8 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Delete grade_item from a vpl instance+id
  *
  * @param Object $instance of vpl DB with id
@@ -140,6 +146,8 @@ function vpl_delete_grade_item($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Create an event object from a vpl instance+id
  *
  * @param stdClass $instance of vpl DB record
@@ -161,6 +169,8 @@ function vpl_create_event($instance, $id) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Add a new vpl instance and return the id
  *
  * @param Object $instance from the form in mod_form
@@ -182,6 +192,8 @@ function vpl_add_instance($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Update a vpl instance
  *
  * @param object from the form in mod.html
@@ -218,6 +230,8 @@ function vpl_update_instance($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Delete an instance by id
  *
  * @param int $id instance Id
@@ -269,6 +283,7 @@ function vpl_delete_instance( $id ) {
 }
 
 /**
+ * @codeCoverageIgnore
  *
  * @param string $feature
  *            FEATURE_xx constant for requested feature
@@ -302,6 +317,8 @@ function vpl_supports($feature) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return an object with short information about what a user has done with a given particular
  * instance of this module $return->time = the time they did it $return->info = a short text
  * description
@@ -333,6 +350,8 @@ function vpl_user_outline($course, $user, $mod, $instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Print a detailed report of what a user has done with a given particular instance of this
  * module
  *
@@ -349,7 +368,10 @@ function vpl_user_complete($course, $user, $mod, $vpl) {
         $submission->print_grade( true );
     }
 }
+
 /**
+ * @codeCoverageIgnore
+ *
  * Returns all VPL submissions since a given time
  */
 function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
@@ -406,6 +428,9 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
     return true;
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
     // TODO improve.
     global $CFG, $OUTPUT;
@@ -439,6 +464,8 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Given a course_module object, this function returns any "extra" information
  * that may be needed whenprinting this activity in a course listing.
  * See get_array_of_activities() in course/lib.php.
@@ -475,6 +502,8 @@ function vpl_get_coursemodule_info_not_valid($coursemodule) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get icon mapping for font-awesome.
  *
  * @return  array
@@ -541,6 +570,8 @@ function mod_vpl_get_fontawesome_icon_map() {
 
 
 /**
+ * @codeCoverageIgnore
+ *
  * Create e new navigation node with icon
  * @param navigation_node $vplnode
  * @param string $str string to be i18n
@@ -560,6 +591,9 @@ function vpl_navi_node_create(navigation_node $vplnode, $str, $url, $type = navi
     return $node;
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) {
     global $USER;
     $vpl = new mod_vpl( $cm->id );
@@ -619,6 +653,9 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) 
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_extend_settings_navigation(settings_navigation $settings, navigation_node $vplnode) {
     global $CFG, $PAGE, $USER;
     if (! isset( $PAGE->cm->id )) {
@@ -712,6 +749,9 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_scale_used($vplid, $scaleid) {
     global $DB;
     return $scaleid and $DB->record_exists( VPL, array (
@@ -721,6 +761,8 @@ function vpl_scale_used($vplid, $scaleid) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Checks if scale is being used by any instance of VPL. This is used to find out if scale
  * used anywhere
  *
@@ -733,6 +775,10 @@ function vpl_scale_used_anywhere($scaleid) {
             'grade' => "-$scaleid"
     ) );
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_view_actions() {
     return array (
             'view',
@@ -752,6 +798,10 @@ function vpl_get_view_actions() {
             'view previous'
     );
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_post_actions() {
     return array (
             'save submision',
@@ -768,6 +818,8 @@ function vpl_get_post_actions() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Removes all grades from gradebook
  *
  * @param int $courseid
@@ -791,6 +843,8 @@ function vpl_reset_gradebook($courseid, $type = '') {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Remove all user data from a vpl instance
  *
  * @param int $vplid Id of the VPL instance
@@ -828,6 +882,8 @@ function vpl_reset_instance_userdata($vplid) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * This function is used by the reset_course_userdata function in moodlelib. This function
  * will remove all submissions from the specified vpl instance and clean up any related data.
  *
@@ -861,6 +917,8 @@ function vpl_reset_userdata($data) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Implementation of the function for printing the form elements that control whether
  * the course reset functionality affects VPL.
  *
@@ -872,6 +930,8 @@ function vpl_reset_course_form_definition(&$mform) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Course reset form defaults.
  */
 function vpl_reset_course_form_defaults($course) {

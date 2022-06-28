@@ -1,0 +1,38 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "comment.line",
+                "regex": "\\/\\/.*$"
+            },
+            {
+                "token": "comment.multiple",
+                "regex": "\\/\\*",
+                "next": "comment"
+            },
+            {
+                "token": "text",
+                "regex": "\\s+"
+            }
+        ],
+        "comment": [
+            {
+                "token": "text",
+                "regex": ".*[^\\*\\/]"
+            },
+            {
+                "token": "text",
+                "regex": "\\s+"
+            },
+            {
+                "token": "comment",
+                "regex": "\\*\\/",
+                "next": "start"
+            },
+            {
+                "default_token": "comment"
+            }
+        ]
+    }
+}

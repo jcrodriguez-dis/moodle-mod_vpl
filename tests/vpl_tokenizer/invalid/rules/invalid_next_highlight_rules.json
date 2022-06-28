@@ -1,12 +1,9 @@
-// TEST: tested
 {
     "states": {
         "state1": [
             {
                 "token": "keyword.control",
-                "next": [
-                    10
-                ]
+                "next": 10
             }
         ]
     }

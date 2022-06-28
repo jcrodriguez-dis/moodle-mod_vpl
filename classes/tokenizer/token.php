@@ -24,16 +24,19 @@
  */
 namespace mod_vpl\tokenizer;
 
+/**
+ * @codeCoverageIgnore
+ */
 class token {
     /**
      * Type of current token
      */
-    public string $type;
+    public ?string $type;
 
     /**
      * Specific value of current token
      */
-    public string $value;
+    public ?string $value;
 
     /**
      * Creates a new token with passed type and value
@@ -42,16 +45,20 @@ class token {
      * @param ?string $value value of current token
      */
     public function __construct(?string $type, ?string $value) {
-        $this->type = is_null($type) ? "" : $type;
-        $this->value = is_null($value) ? "" : $value;
+        $this->type = $type;
+        $this->value = $value;
     }
 
     /**
-     * Show information about current token
+     * Check if passed token is equals to current one
      *
-     * @return void
+     * @param token $othertoken token to compare with current one
+     * @return bool
      */
-    public function show(): void {
-        echo $this->type . ' ' . $this->value . '<br>';
+    public function equals_to(token $othertoken): bool {
+        return (
+            $othertoken->type === $this->type &&
+            $othertoken->value === $this->value
+        );
     }
 }

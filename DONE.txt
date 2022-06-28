@@ -13,6 +13,20 @@ environment:
 
 tokenizer.php:
 
+    2022-06-28
+
+        - Delete interface for tokenizers and keep just one implementation
+        - Rename tokenizer_json to tokenizer since it is the only implementation for tokenizers
+        - Include coberture compatibility for VPL plugin
+
+    2022-06-26
+
+        - Fix undefined offset when tokenizer is searching the mapping value
+        - Fix duplicated token when a value was skipped
+        - Delete unused code at get_line_tokens and prepare_tokenizer (onMatch and next as a function)
+        - Include a comparator method at token named as equals_to
+        - Set specific data type (string) for type and value at token
+
     2022-06-24
 
         - Fix errors at prepare_tokens
@@ -94,6 +108,18 @@ tokenizer.php:
         - Include asserts for required and possible groups for the options of a rule
 
 tokenizer_test.php:
+
+    2022-06-28
+
+        - Include unit method for parse using declared test cases
+        - Set coberture for tests to know if all lines are being tested (xDebug)
+
+    2022-06-26
+
+        - Reduce number of test cases using arrays with input and output
+        - Include test cases for get_line_tokens
+        - Delete add method and adjust definition of test cases
+        - Update JSON file when next is an array of objects (next will be a string)
 
     2022-06-24
 

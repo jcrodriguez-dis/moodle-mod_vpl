@@ -38,35 +38,47 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
  * @covers \mod_vpl\tokenizer\tokenizer_base
  */
 class tokenizer_base_test extends \advanced_testcase {
-    // Test cases for tokenizer::remove_capturing_groups
-    //
-    // - key   => input value to test
-    // - value => expected result.
-    private static array $testcasesrcg;
+    /**
+     * Test cases for tokenizer::remove_capturing_groups
+     *
+     * - key   => input value to test
+     * - value => expected result.
+     */
+    protected static array $testcasesrcg;
 
-    // Test cases for tokenizer::create_splitter_regex
-    //
-    // - key   => input value to test
-    // - value => expected result.
-    private static array $testcasescsr;
+    /**
+     * Test cases for tokenizer::create_splitter_regex
+     *
+     * - key   => input value to test
+     * - value => expected result
+     */
+    protected static array $testcasescsr;
 
-    // Test cases for tokenizer::check_type
-    //
-    // - key   => available data type
-    // - value => [ true => [ list_of_valid_values ], false => [ list_of_invalid_values ] ].
-    private static array $testcasesckt;
+    /**
+     * Test cases for tokenizer::check_type
+     *
+     * - key   => available data type
+     * - value => [ true => [ list_of_valid_values ], false => [ list_of_invalid_values ] ]
+     */
+    protected static array $testcasesckt;
 
-    // Test cases for tokenizer::check_token
-    //
-    // - key   => expected value to get
-    // - value => list of input tokens to test.
-    private static array $testcasesctk;
+    /**
+     * Test cases for tokenizer::check_token
+     *
+     * - key   => expected value to get
+     * - value => list of input tokens to test
+     */
+    protected static array $testcasesctk;
 
-    // State to use to test tokenizer::contains_rule.
-    private static array $statetosearchrules;
+    /**
+     * State to use to test tokenizer::contains_rule
+     */
+    protected static array $statetosearchrules;
 
-    // Available tokens to use to test tokenizer::check_token.
-    private const AVAILABLETOKENS = [
+    /**
+     * Available tokens to use to test tokenizer::check_token
+     */
+    protected const AVAILABLETOKENS = [
         "text",
         "comment"  => [ "line" ],
         "constant" => [ "character" => [ "escape" ] ],
@@ -106,7 +118,8 @@ class tokenizer_base_test extends \advanced_testcase {
             "array_bool"   => [ true => [ [ true, false, true], [ false ] ], false => [ [ true, "", false ], true ] ],
             "array_string" => [ true => [ [ "example", "", "10"], [ "test" ] ], false => [ [ "10", "", 30 ], "10" ] ],
             "array_array"  => [ true => [ [ [ 10, 20, 30 ] ], [[10]] ], false => [ [ 10, "", 30 ], [10] ] ],
-            "array_object" => [ true => [ [ (object)["h" => 10] ], [(object)[]] ], false => [ [ 10, "", 30 ], 10 ] ]
+            "array_object" => [ true => [ [ (object)["h" => 10] ], [(object)[]] ], false => [ [ 10, "", 30 ], 10 ] ],
+            "array_not_valid_type" => [ false => [ [ 10, 20, 30 ] ] ]
         ];
 
         self::$testcasesctk = [
@@ -159,20 +172,24 @@ class tokenizer_base_test extends \advanced_testcase {
      */
     public function test_check_type() {
         foreach (self::$testcasesckt as $type => $values) {
-            foreach ($values[true] as $validvalue) {
-                $cond = testable_tokenizer_base::check_type($validvalue, $type);
-                $this->assertTrue($cond);
+            if (isset($values[true])) {
+                foreach ($values[true] as $validvalue) {
+                    $cond = testable_tokenizer_base::check_type($validvalue, $type);
+                    $this->assertTrue($cond);
+                }
             }
 
-            foreach ($values[false] as $invalidvalue) {
-                $cond = testable_tokenizer_base::check_type($invalidvalue, $type);
+            if (isset($values[false])) {
+                foreach ($values[false] as $invalidvalue) {
+                    $cond = testable_tokenizer_base::check_type($invalidvalue, $type);
 
-                if (is_bool($cond) === true) {
-                    $this->assertFalse($cond);
-                } else {
-                    $this->assertTrue(is_numeric($cond));
-                    $this->assertTrue($cond >= 0 && $cond < count($invalidvalue));
-                    $this->assertFalse(testable_tokenizer_base::check_type($invalidvalue[$cond], $type));
+                    if (is_bool($cond) === true) {
+                        $this->assertFalse($cond);
+                    } else {
+                        $this->assertTrue(is_numeric($cond));
+                        $this->assertTrue($cond >= 0 && $cond < count($invalidvalue));
+                        $this->assertFalse(testable_tokenizer_base::check_type($invalidvalue[$cond], $type));
+                    }
                 }
             }
         }

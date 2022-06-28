@@ -26,6 +26,9 @@ namespace mod_vpl\util;
 
 use Exception;
 
+/**
+ * @codeCoverageIgnore
+ */
 class assertf {
     /**
      * Flag to enable or disable the colors at error messages.
@@ -36,11 +39,11 @@ class assertf {
     /**
      * Get error message for passed filename and message
      *
-     * @param string $filename location on which error has been thrown
+     * @param ?string $filename location on which error has been thrown
      * @param string $message customized error message
      * @return string
      */
-    public static function get_error(string $filename, string $message): string {
+    public static function get_error(?string $filename, string $message): string {
         if (self::$messagewithcolors) {
             $messagecustomized = isset($filename) ? "\e[1m" . basename($filename) . "\e[0m" : "";
             $messagecustomized .= "\e[1m:\e[0m \e[0;31merror:\e[0m " . $message;

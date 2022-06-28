@@ -8,8 +8,7 @@
                 "regex": "^$"
             },
             {
-                "token": "string.unquoted",
-                "regex": ".*"
+                "default_token": "text"
             }
         ]
     }
