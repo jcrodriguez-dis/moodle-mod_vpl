@@ -13,6 +13,15 @@ environment:
 
 tokenizer.php:
 
+    2022-06-29
+
+        - Fix errors at get_line_tokens and parse
+        - Fix additional token with for (...) {}
+        - Include more test cases for get_line_tokens
+        - Include test cases for parse for empty, one-line, two-line, and four-line file
+        - Fill coverage to 98% at tokenizer files
+        - Fix lots of methods such as get_line_tokens, prepare_tokenizer and so on with new test cases
+
     2022-06-28
 
         - Delete interface for tokenizers and keep just one implementation

@@ -27,6 +27,14 @@ namespace mod_vpl\tokenizer;
 use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer_base;
 
+// @codeCoverageIgnoreStart
+//
+// Adjust this flag in order to avoid showing error messages
+// which are not catched as exceptions. On production, this
+// should be commnented or set to false.
+define('TOKENIZER_ON_TEST', true);
+// @codeCoverageIgnoreEnd
+
 class tokenizer extends tokenizer_base {
     private string $name = 'default';
     private array $extension = ['no-ext'];
@@ -38,7 +46,7 @@ class tokenizer extends tokenizer_base {
      * Maximum number of tokens that tokenizer allow
      * before performance gets worse
      */
-    protected const MAXTOKENCOUNT = 2000;
+    protected int $maxtokencount = 2000;
 
     /**
      * Available data types for token's options,
@@ -136,6 +144,19 @@ class tokenizer extends tokenizer_base {
     }
 
     /**
+     * @codeCoverageIgnore
+     *
+     * Set tokenizer::$maxtokencount whether $maxtokencount is natural
+     *
+     * @param int $maxtokencount natural number to set to $maxtokencount
+     */
+    public function set_max_token_count(int $maxtokencount=0): void {
+        if ($maxtokencount >= 0) {
+            $this->maxtokencount = $maxtokencount;
+        }
+    }
+
+    /**
      * Parse all lines of passed file
      *
      * @param string $filename file to parse
@@ -151,7 +172,8 @@ class tokenizer extends tokenizer_base {
             }
         }
 
-        assertf::assert($hasvalidext, $this->name, $filename . ' must end with one of the extensions ' . implode(',', $this->extension));
+        $extensionsstr = implode(',', $this->extension);
+        assertf::assert($hasvalidext, $this->name, $filename . ' must end with one of the extensions ' . $extensionsstr);
 
         $infolines = array();
         $state = 'start';
@@ -183,11 +205,12 @@ class tokenizer extends tokenizer_base {
      */
     public function get_line_tokens(string $line, string $startstate=""): array {
         $currentstate = strcmp($startstate, "") == 0 ? "start" : $startstate;
-        $state = $this->states[$currentstate];
-        $stack = $tokens = array();
+        $tokens = array();
 
-        if (!isset($state)) {
+        if (!isset($this->states[$currentstate])) {
             $currentstate = "start";
+            $state = $this->states[$currentstate];
+        } else {
             $state = $this->states[$currentstate];
         }
 
@@ -198,6 +221,32 @@ class tokenizer extends tokenizer_base {
         $numchars = 0;
 
         while (preg_match($regex, substr($line, $offset), $matches, PREG_OFFSET_CAPTURE) === 1) {
+            if ($matchattempts++ >= $this->maxtokencount) {
+                // @codeCoverageIgnoreStart
+                if ($matchattempts > 2 * strlen($line)) {
+                    if (!defined('TOKENIZER_ON_TEST') || constant('TOKENIZER_ON_TEST') === false) {
+                        assertf::showerr(null, "infinite loop with " . $startstate . " in tokenizer");
+                    }
+                }
+                // @codeCoverageIgnoreEnd
+
+                while ($numchars < strlen($line)) {
+                    if (isset($token->type) && $numchars < strlen($line)) {
+                        if (strlen($token->value) >= 1) {
+                            $tokens[] = $token;
+                            $numchars += strlen($token->value);
+                        }
+                    }
+
+                    $overflowval = substr($line, $lastindex, 500);
+                    $token = new token("overflow", $overflowval);
+                    $lastindex += 500;
+                }
+
+                $currentstate = "start";
+                break;
+            }
+
             $type = $mapping["default_token"];
             $value = $matches[0][0];
 
@@ -218,8 +267,10 @@ class tokenizer extends tokenizer_base {
                     $token->value .= $skipped;
                 } else {
                     if (isset($token->type) && $numchars < strlen($line)) {
-                        $tokens[] = $token;
-                        $numchars += strlen($token->value);
+                        if (strlen($token->value) >= 1) {
+                            $tokens[] = $token;
+                            $numchars += strlen($token->value);
+                        }
                     }
 
                     $token = new token($type, $skipped);
@@ -230,24 +281,26 @@ class tokenizer extends tokenizer_base {
                 if ($matches[$i + 1][1] != -1) {
                     if (isset($mapping[$i])) {
                         $rule = $state[$mapping[$i]];
-                        $type = $rule->token;
+                        $type = isset($rule->token) ? $rule->token : $rule->token_array;
 
                         if (isset($rule->next)) {
                             $currentstate = $rule->next;
-                            $state = $this->states[$currentstate];
 
-                            if (!isset($state)) {
-                                assertf::showerr(null, "state " . $currentstate . " doesn't exist");
+                            if (!isset($this->states[$currentstate])) {
+                                // @codeCoverageIgnoreStart
+                                if (!defined('TOKENIZER_ON_TEST') || constant('TOKENIZER_ON_TEST') === false) {
+                                    assertf::showerr(null, "state " . $currentstate . " doesn't exist");
+                                }
+                                // @codeCoverageIgnoreEnd
+
                                 $currentstate = "start";
+                                $state = $this->states[$currentstate];
+                            } else {
                                 $state = $this->states[$currentstate];
                             }
 
                             $mapping = $this->matchmappings[$currentstate];
                             $regex = $this->regexprs[$currentstate];
-                            $lastindex = $index;
-                        }
-
-                        if (isset($rule->consume_line_end)) {
                             $lastindex = $index;
                         }
                     }
@@ -256,29 +309,34 @@ class tokenizer extends tokenizer_base {
                 }
             }
 
-            if (isset($value) && isset($type)) {
-                if (is_string($type)) {
+            if (isset($value)) {
+                if (isset($type) && is_string($type)) {
                     if ((!isset($rule) || isset($rule->merge) && $rule->merge !== false) && $token->type === $type) {
                         $token->value .= $value;
                     } else {
                         if (isset($token->type) && $numchars < strlen($line)) {
-                            $tokens[] = $token;
-                            $numchars += strlen($token->value);
+                            if (strlen($token->value) >= 1) {
+                                $tokens[] = $token;
+                                $numchars += strlen($token->value);
+                            }
                         }
 
                         $token = new token($type, $value);
                     }
                 } else {
                     if (isset($token->type) && $numchars < strlen($line)) {
-                        $tokens[] = $token;
-                        $numchars += strlen($token->value);
+                        if (strlen($token->value) >= 1) {
+                            $tokens[] = $token;
+                            $numchars += strlen($token->value);
+                        }
                     }
 
                     $token = new token(null, "");
+                    $tokenarray = tokenizer_base::get_token_array($type, $value, $regex);
 
-                    for ($i = 0; $i < count($type); $i++) {
-                        $tokens[] = $type[$i];
-                        // Use? $numchars += strlen($token->value);.
+                    foreach ($tokenarray as $tokensplit) {
+                        $tokens[] = $tokensplit;
+                        $numchars += strlen($tokensplit->value);
                     }
                 }
             }
@@ -288,38 +346,16 @@ class tokenizer extends tokenizer_base {
             }
 
             $lastindex = $index;
-
-            if ($matchattempts++ > self::MAXTOKENCOUNT) {
-                if ($matchattempts > 2 * strlen($line)) {
-                    assertf::showerr(null, "infinite loop with " . $startstate . " in tokenizer");
-                }
-
-                while ($lastindex < strlen($line)) {
-                    if (isset($token->type) && $numchars < strlen($line)) {
-                        $tokens[] = $token;
-                        $numchars += strlen($token->value);
-                    }
-
-                    $overflowval = substr($line, $lastindex, 500);
-                    $token = new token("overflow", $overflowval);
-                    $lastindex += 500;
-                }
-
-                $currentstate = "start";
-                $stack = [];
-                break;
-            }
         }
 
         if (isset($token->type) && $numchars < strlen($line)) {
-            $tokens[] = $token;
-            $numchars += strlen($token->value);
+            if (strlen(trim($token->value)) >= 1) {
+                $tokens[] = $token;
+                $numchars += strlen($token->value);
+            }
         }
 
-        return [
-            "state"  => count($stack) == 0 ? $currentstate : $stack,
-            "tokens" => $tokens
-        ];
+        return [ "state"  => $currentstate, "tokens" => $tokens ];
     }
 
     // Preparation based on Ace Editor tokenizer.js
@@ -327,7 +363,6 @@ class tokenizer extends tokenizer_base {
     private function prepare_tokenizer(string $rulefilename): void {
         foreach ($this->states as $statename => $rules) {
             $ruleregexpr = array();
-            $splitterrules = array();
             $matchtotal = 0;
 
             $this->matchmappings[$statename] = [ "default_token" => "text" ];
@@ -352,30 +387,29 @@ class tokenizer extends tokenizer_base {
                     if (count($rule->token) == 1 || $matchcount == 1) {
                         $rule->token = $rule->token[0];
                     } else if ($matchcount - 1 != count($rule->token)) {
-                        $errmssg = "number of classes and regexp groups doesn't match ";
-                        $errmssg .= ($matchcount - 1) . " != " . count($rule->token);
-                        assertf::showerr($rulefilename, $errmssg);
+                        // @codeCoverageIgnoreStart
+                        if (!defined('TOKENIZER_ON_TEST') || constant('TOKENIZER_ON_TEST') === false) {
+                            $errmssg = "number of classes and regexp groups doesn't match ";
+                            $errmssg .= ($matchcount - 1) . " != " . count($rule->token);
+                            assertf::showerr($rulefilename, $errmssg);
+                        }
+                        // @codeCoverageIgnoreEnd
+
                         $rule->token = $rule->token[0];
                     } else {
-                        $rule->tokenarray = $rule->token;
+                        $rule->token_array = $rule->token;
                         unset($rule->token);
                     }
                 }
 
                 if ($matchcount > 1) {
-                    if (preg_match("/\\\d/", $rule->regex) === 1) {
-                        $rule->regex = preg_replace_callback("/\\\([0-9]+)/", function($value) use ($matchtotal) {
+                    if (preg_match("/\\\(\d)/", $rule->regex) === 1) {
+                        $adjustedregex = preg_replace_callback("/\\\([0-9]+)/", function($value) use ($matchtotal) {
                             return "\\" . (intval(substr($value[0], 1), 10) + $matchtotal + 1);
                         }, $rule->regex);
                     } else {
                         $matchcount = 1;
                         $adjustedregex = self::remove_capturing_groups($rule->regex);
-                    }
-
-                    if (isset($rule->token)) {
-                        if (!isset($rule->split_regex) && !is_string($rule->token)) {
-                            $splitterrules[] = $rule;
-                        }
                     }
                 }
 
@@ -387,10 +421,6 @@ class tokenizer extends tokenizer_base {
             if (count($ruleregexpr) == 0) {
                 $mapping[0] = 0;
                 $ruleregexpr[] = "$";
-            }
-
-            foreach ($splitterrules as $rule) {
-                $rule->split_regex = $this->create_splitter_regexp($rule->regex);
             }
 
             $this->matchmappings[$statename] = $mapping;

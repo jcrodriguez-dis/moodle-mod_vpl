@@ -1,0 +1,11 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "(a)(b)\\1\\2"
+            }
+        ]
+    }
+}

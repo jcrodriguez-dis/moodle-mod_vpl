@@ -29,6 +29,8 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
 
+use mod_vpl\tokenizer\token;
+
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer_base class.
  *
@@ -39,7 +41,7 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
  */
 class tokenizer_base_test extends \advanced_testcase {
     /**
-     * Test cases for tokenizer::remove_capturing_groups
+     * Test cases for tokenizer_base::remove_capturing_groups
      *
      * - key   => input value to test
      * - value => expected result.
@@ -47,15 +49,7 @@ class tokenizer_base_test extends \advanced_testcase {
     protected static array $testcasesrcg;
 
     /**
-     * Test cases for tokenizer::create_splitter_regex
-     *
-     * - key   => input value to test
-     * - value => expected result
-     */
-    protected static array $testcasescsr;
-
-    /**
-     * Test cases for tokenizer::check_type
+     * Test cases for tokenizer_base::check_type
      *
      * - key   => available data type
      * - value => [ true => [ list_of_valid_values ], false => [ list_of_invalid_values ] ]
@@ -63,7 +57,7 @@ class tokenizer_base_test extends \advanced_testcase {
     protected static array $testcasesckt;
 
     /**
-     * Test cases for tokenizer::check_token
+     * Test cases for tokenizer_base::check_token
      *
      * - key   => expected value to get
      * - value => list of input tokens to test
@@ -71,7 +65,15 @@ class tokenizer_base_test extends \advanced_testcase {
     protected static array $testcasesctk;
 
     /**
-     * State to use to test tokenizer::contains_rule
+     * Test cases for tokenizer_base::check_token
+     *
+     * - key      => integer value, not a real use
+     * - value    => [ input => [ types, value, and regex to test ], output => expected value to get ]
+     */
+    protected static array $testcasesgat;
+
+    /**
+     * State to use to test tokenizer_base::contains_rule
      */
     protected static array $statetosearchrules;
 
@@ -97,15 +99,6 @@ class tokenizer_base_test extends \advanced_testcase {
             "(ab)(d)"      => "(?:ab)(?:d)",
             "(ab)(d)()"    => "(?:ab)(?:d)()",
             "(ax(by))[()]" => "(?:ax(?:by))[()]"
-        ];
-
-        self::$testcasescsr = [
-            "(a)(b)(?=[x)(])"           => "^(a)(b)$",
-            "xc(?=([x)(]))"             => "^xc$",
-            "(xc(?=([x)(])))"           => "^(xc)$",
-            "(?=r)[(?=)](?=([x)(]))"    => "^(?=r)[(?=)]$",
-            "(?=r)[(?=)](\\?=t)"        => "^(?=r)[(?=)](\\?=t)$",
-            "[(?=)](\\?=t)"             => "^[(?=)](\\?=t)$"
         ];
 
         self::$testcasesckt = [
@@ -134,6 +127,36 @@ class tokenizer_base_test extends \advanced_testcase {
             ]
         ];
 
+        self::$testcasesgat = [
+            0 => [ 'input'  => [ 'type' => [ ], 'value' => '', 'regex' => '' ], 'output' => [] ],
+            1 => [ 'input'  => [ 'type' => [ 'type', 'id' ], 'value' => '', 'regex' => '/((?:int))|($)/' ], 'output' => [] ],
+            2 => [ 'input'  => [ 'type' => [ 'type' ], 'value' => '', 'regex' => '/((?:int)(?:a))|($)/' ], 'output' => [] ],
+            3 => [
+                'input'  => [ 'type' => [ 'type' ], 'value' => 'int', 'regex' => '((?:int))|($)' ],
+                'output' => [ new token('type', 'int') ]
+            ],
+            4 => [
+                'input'  => [
+                    'type' => [ 'storage.type', 'text', 'identifier' ],
+                    'value' => 'int a',
+                    'regex' => '/((?:int)(?:\s+)(?:[a-z]))|($)/'
+                ],
+                'output' => [ new token('storage.type', 'int'), new token('text', ' '), new token('identifier', 'a') ]
+            ],
+            5 => [
+                'input' => [
+                    'type' => [ 'id', 'text', 'paren.lparen', 'paren.rparen', 'text', 'paren.lparen' ],
+                    'value' => 'hello () {',
+                    'regex' => '/((?:[a-z]+)(?:\s*)(?:\()(?:\))(?:\s+)(?:\{))|($)/'
+                ],
+                'output' => [
+                    new token('id', 'hello'), new token('text', ' '),
+                    new token('paren.lparen', '('), new token('paren.rparen', ')'),
+                    new token('text', ' '), new token('paren.lparen', '{')
+                ]
+            ]
+        ];
+
         self::$statetosearchrules = [
             (object)["token" => "string.double", "regex" => "\".*\""],
             (object)["token" => "comment", "regex" => "\\/\\/", "next" => "start"],
@@ -142,7 +165,7 @@ class tokenizer_base_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test tokenizer::remove_capturing_groups
+     * Method to test tokenizer_base::remove_capturing_groups
      *
      * Test cases based on Ace Editor unit tests:
      * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer_test.js)
@@ -155,20 +178,7 @@ class tokenizer_base_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test tokenizer::create_splitter_regex
-     *
-     * Test cases based on Ace Editor unit tests:
-     * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer_test.js)
-     */
-    public function test_create_splitter_regex() {
-        foreach (self::$testcasescsr as $src => $expectedregex) {
-            $regex = testable_tokenizer_base::create_splitter_regex($src);
-            $this->assertSame($expectedregex, $regex);
-        }
-    }
-
-    /**
-     * Method to test tokenizer::check_type
+     * Method to test tokenizer_base::check_type
      */
     public function test_check_type() {
         foreach (self::$testcasesckt as $type => $values) {
@@ -196,7 +206,7 @@ class tokenizer_base_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test tokenizer::check_token
+     * Method to test tokenizer_base::check_token
      *
      * Naming conventions are inspired in TextMate manual,
      * see https://macromates.com/manual/en/language_grammars#naming-conventions
@@ -211,7 +221,7 @@ class tokenizer_base_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test tokenizer::contains_rule
+     * Method to test tokenizer_base::contains_rule
      */
     public function test_contains_rule() {
         foreach (self::$statetosearchrules as $rule) {
@@ -222,6 +232,25 @@ class tokenizer_base_test extends \advanced_testcase {
             $invalidrule->dump = "this_change_makes_current_rule_invalid";
             $cond = testable_tokenizer_base::contains_rule(self::$statetosearchrules, $invalidrule);
             $this->assertFalse($cond);
+        }
+    }
+
+    /**
+     * Method to test tokenizer_base::get_array_tokens
+     */
+    public function test_get_array_tokens() {
+        foreach (self::$testcasesgat as $expected) {
+            $type = $expected['input']['type'];
+            $value = $expected['input']['value'];
+            $regex = $expected['input']['regex'];
+            $expectedresult = $expected['output'];
+
+            $result = testable_tokenizer_base::get_token_array($type, $value, $regex);
+            $this->assertTrue(count($expectedresult) === count($result));
+
+            for ($i = 0; $i < count($result); $i++) {
+                $this->assertTrue($result[$i]->equals_to($expectedresult[$i]));
+            }
         }
     }
 }

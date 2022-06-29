@@ -1,0 +1,12 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/",
+                "next": "unexisted_state"
+            }
+        ]
+    }
+}

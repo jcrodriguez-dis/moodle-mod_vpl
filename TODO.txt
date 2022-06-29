@@ -3,10 +3,7 @@ TODO for Plugin VPL 3.5.0++
 ===================================
 
 tokenizer.php:
-    - Fix errors at get_line_tokens and parse
     - Include push and pop
-    - Fix additional token with for (...) {}
 
 tokenizer_test.php:
-    - Include more test cases for get_line_tokens
-    - Include test cases for parse for empty, one-line, two-line, and four-line file
+    - Include methods to set coverage to 100%

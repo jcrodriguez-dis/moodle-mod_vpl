@@ -77,7 +77,15 @@ class tokenizer_test extends \advanced_testcase {
      * key: path of a testable JSON file
      * value: input and expected result of tokenizer::get_line_tokens
      */
-    protected static array $validtestcases;
+    protected static array $getlinetokenstestcases;
+
+    /**
+     * List of valid test cases for tokenizer::get_line_tokens when overflow has been detected
+     *
+     * key: path of a testable JSON file
+     * value: input and expected result of tokenizer::get_line_tokens
+     */
+    protected static array $getlinetokenoverflowstestcases;
 
     /**
      * List of test cases for tokenizer::apply_inheritance
@@ -107,7 +115,7 @@ class tokenizer_test extends \advanced_testcase {
      * Prepare test cases before the execution
      */
     public static function setUpBeforeClass(): void {
-        self::$validtestcases = array(
+        self::$getlinetokenstestcases = array(
             self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
                 [
                     'input' => '/* test comments',
@@ -128,7 +136,7 @@ class tokenizer_test extends \advanced_testcase {
                 [
                     'input' => 'int ',
                     'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int'), new token('text', ' ')
+                        new token('storage.type', 'int')
                     ) ]
                 ]
             ),
@@ -171,7 +179,68 @@ class tokenizer_test extends \advanced_testcase {
                         new token('comment', '*/'),
                     ) ]
                 ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/unexisted_state_highlight_rules.json' => (
+                [
+                    'input' => '// test comment',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('comment', '//'),
+                        new token('text', ' test comment')
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello'),
+                        new token('text', ' '),
+                        new token('paren.lparen', '('),
+                        new token('paren.rparen', ')'),
+                        new token('text', ' '),
+                        new token('paren.lparen', '{')
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello'),
+                        new token('text', ' '),
+                        new token('paren.lparen', '('),
+                        new token('paren.rparen', ')'),
+                        new token('text', ' '),
+                        new token('paren.lparen', '{')
+                    ) ]
+                ]
             )
+        );
+
+        self::$getlinetokenoverflowstestcases = array(
+            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 0,
+                        'value' => '/* test comments',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('overflow', '/* test comments')
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 1,
+                        'value' => 'int a',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int'),
+                        new token('overflow', ' a')
+                    ) ]
+                ]
+            ),
         );
 
         self::$invalidtestcases = array(
@@ -333,16 +402,34 @@ class tokenizer_test extends \advanced_testcase {
                 [
                     "regexprs" => [
                         "start" =>
-                            "/([+-]?\d[\d_]*((\.[\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?" .
-                            "\b)|((?:true|false)\b)|((?:open(?:\s+))?module(?=\s*\w))|($)/",
+                            "/([+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b)|((?:true|false)\b)|" .
+                            "((?:open(?:\s+))?module(?=\s*\w))|($)/",
                         "body-module" => "/({)|(\s+)|(\w+)|(\.)|(\s+)|($)/",
                         "end-module" => "/(})|(\b(?:requires|transitive|exports|opens|to|uses|provides|with)\b)|($)/"
                     ],
                     "matchmappings" => [
-                        "start" => [ "default_token" => "text", 0 => 0, 4 => 1, 5 => 2 ],
+                        "start" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2 ],
                         "body-module" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4 ],
                         "end-module" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
                     ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_one_group_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((?:\/\/))|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((?:int))|($)/"],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_number_ref_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((a)(b)\\2\\3)|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
                 ]
             )
         );
@@ -351,12 +438,7 @@ class tokenizer_test extends \advanced_testcase {
             self::testpath() . 'valid/parse/no_line_highlight_rules.json' => (
                 [
                     'input' => self::testpath() . 'valid/parse/no_line.c',
-                    'output' => [
-                        0 => [
-                            'state' => 'start',
-                            'tokens' => []
-                        ]
-                    ]
+                    'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ]
                 ]
             ),
             self::testpath() . 'valid/parse/one_line_highlight_rules.json' => (
@@ -365,9 +447,7 @@ class tokenizer_test extends \advanced_testcase {
                     'output' => [
                         0 => [
                             'state' => 'start',
-                            'tokens' => [
-                                0 => new token('comment.line', '// This is an example')
-                            ]
+                            'tokens' => [ new token('comment.line', '// This is an example') ]
                         ]
                     ]
                 ]
@@ -378,26 +458,126 @@ class tokenizer_test extends \advanced_testcase {
                     'output' => [
                         0 => [
                             'state' => 'comment',
-                            'tokens' => [
-                                0 => new token('comment', '/*')
-                            ]
+                            'tokens' => [ new token('comment', '/*') ]
                         ],
                         1 => [
                             'state' => 'start',
                             'tokens' => [
-                                0 => new token('comment', '    This is a comment '),
-                                1 => new token('comment', '*/')
+                                new token('comment', '    This is a comment '),
+                                new token('comment', '*/')
                             ]
                         ]
                     ]
                 ]
-            )/*,
+            ),
             self::testpath() . 'valid/parse/more_lines_highlight_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/parse/more_lines.f',
-                    'output' => []
+                    'input' => self::testpath() . 'valid/parse/more_lines.c',
+                    'output' => [
+                        0 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('keyword', '#include'),
+                                new token('constant.other', ' <stdio.h>')
+                            ]
+                        ],
+                        1 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        2 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('storage.type', 'int'), new token('text', ' '),
+                                new token('identifier', 'main'), new token('paren.lparen', '('),
+                                new token('storage.type', 'int'), new token('text', ' '),
+                                new token('identifier', 'nargc'), new token('punctuation.operator', ','),
+                                new token('text', ' '), new token('storage.type', 'char'),
+                                new token('text', ' '), new token('keyword.operator', '*'),
+                                new token('identifier', 'argv'), new token('paren.lparen', '['),
+                                new token('paren.rparen', ']'), new token('paren.rparen', ')')
+                            ]
+                        ],
+                        3 => [ 'state' => 'start', 'tokens' => [ new token('paren.lparen', '{') ] ],
+                        4 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '    '), new token('keyword.control', 'if'),
+                                new token('text', ' '), new token('paren.lparen', '('),
+                                new token('identifier', 'nargc'), new token('text', ' '),
+                                new token('keyword.operator', '>'), new token('text', ' '),
+                                new token('constant.numeric', '1'), new token('paren.rparen', ')')
+                            ]
+                            ],
+                        5 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '    '), new token('paren.lparen', '{') ]
+                        ],
+                        6 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '        '), new token('keyword.control', 'for'),
+                                new token('text', ' '), new token('paren.lparen', '('),
+                                new token('storage.type', 'int'), new token('text', ' '), new token('identifier', 'i'),
+                                new token('text', ' '), new token('keyword.operator', '='),
+                                new token('text', ' '), new token('constant.numeric', '0'),
+                                new token('punctuation.operator', ';'), new token('text', ' '),
+                                new token('identifier', 'i'), new token('text', ' '),
+                                new token('keyword.operator', '<'), new token('text', ' '),
+                                new token('identifier', 'nargc'), new token('punctuation.operator', ';'),
+                                new token('text', ' '), new token('identifier', 'i'),
+                                new token('keyword.operator', '++'), new token('paren.rparen', ')')
+                            ]
+                        ],
+                        7 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '        '), new token('paren.lparen', '{') ]
+                        ],
+                        8 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '            '), new token('support.function.C99.c', 'printf'),
+                                new token('paren.lparen', '('), new token('string.start', '"'),
+                                new token('constant.language.escape', '%d'), new token('constant.language.escape', '\n'),
+                                new token('string.end', '"'), new token('punctuation.operator', ','),
+                                new token('text', ' '), new token('identifier', 'i'),
+                                new token('paren.rparen', ')'), new token('punctuation.operator', ';')
+                            ]
+                        ],
+                        9 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        10 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '            '), new token('comment', '// This is just a comment') ]
+                        ],
+                        11 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '            '), new token('storage.type', 'char'),
+                                new token('text', ' '), new token('keyword.operator', '*'),
+                                new token('identifier', 'str'), new token('text', ' '),
+                                new token('keyword.operator', '='), new token('text', ' '),
+                                new token('string.start', '"'), new token('string', 'Hello world'),
+                                new token('string.end', '"'), new token('punctuation.operator', ';')
+                            ]
+                        ],
+                        12 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '        '), new token('paren.rparen', '}') ]
+                        ],
+                        13 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '    '), new token('paren.rparen', '}') ]
+                        ],
+                        14 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        15 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '    '), new token('keyword.control', 'return'),
+                                new token('text', ' '), new token('constant.numeric', '0'),
+                                new token('punctuation.operator', ';')
+                            ]
+                        ],
+                        16 => [ 'state' => 'start', 'tokens' => [ new token('paren.rparen', '}') ] ]
+                    ]
                 ]
-            )*/
+            )
         );
     }
 
@@ -519,12 +699,55 @@ class tokenizer_test extends \advanced_testcase {
      * Method to test tokenizer::get_line_tokens
      */
     public function test_get_line_tokens() {
-        foreach (self::$validtestcases as $filename => $expectedresult) {
+        foreach (self::$getlinetokenstestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
 
             $tokenizer = new tokenizer($filename);
             $result = $tokenizer->get_line_tokens($input);
+
+            $this->assertTrue(count($result) === 2);
+            $this->assertSame($expectedresult['state'], $result['state']);
+            $this->assertTrue(count($result['tokens']) === count($expectedresult['tokens']));
+
+            for ($i = 0; $i < count($result['tokens']); $i++) {
+                $this->assertTrue($result['tokens'][$i]->equals_to($expectedresult['tokens'][$i]));
+            }
+        }
+    }
+
+    /**
+     * Method to test tokenizer::get_line_tokens when startstate is invalid
+     */
+    public function test_get_line_tokens_with_invalid_startstate() {
+        foreach (self::$getlinetokenstestcases as $filename => $expectedresult) {
+            $input = $expectedresult['input'];
+            $expectedresult = $expectedresult['output'];
+
+            $tokenizer = new tokenizer($filename);
+            $result = $tokenizer->get_line_tokens($input, 'stupid_startstate');
+
+            $this->assertTrue(count($result) === 2);
+            $this->assertSame($expectedresult['state'], $result['state']);
+            $this->assertTrue(count($result['tokens']) === count($expectedresult['tokens']));
+
+            for ($i = 0; $i < count($result['tokens']); $i++) {
+                $this->assertTrue($result['tokens'][$i]->equals_to($expectedresult['tokens'][$i]));
+            }
+        }
+    }
+
+    /**
+     * Method to test tokenizer::get_line_tokens when overflow has been detected
+     */
+    public function test_get_line_tokens_with_overflow() {
+        foreach (self::$getlinetokenoverflowstestcases as $filename => $expectedresult) {
+            $input = $expectedresult['input'];
+            $expectedresult = $expectedresult['output'];
+
+            $tokenizer = new tokenizer($filename);
+            $tokenizer->set_max_token_count($input['max_token_count']);
+            $result = $tokenizer->get_line_tokens($input['value']);
 
             $this->assertTrue(count($result) === 2);
             $this->assertSame($expectedresult['state'], $result['state']);

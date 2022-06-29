@@ -6,6 +6,32 @@ All notable changes to this project will be documented in this file.
 Since this is a non-official ChangeLog, yo may want to see release
 notes section at https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+
 
+[ VPL 3.5.0++ - 5.0.1 ] - 2022-06-29
+
+    * Added
+
+        - More test cases for tokenizer to improve coverage
+        - Provide a setter for $max_token_count (at previous versions: tokenizer::MAXTOKENCOUNT)
+        - Flag at tokenizer to disable error messages of mod_vpl\util\assertf::showerr
+
+    * Changed
+
+        - Adjust coverage with @codeCoverageIgnore
+        - Adjust coverage with @codeCoverageIgnoreStart, and @codeCoverageIgnoreEnd
+
+    * Deleted
+
+        - Remove create_splitter_regex and code at tokenizer::get_line_tokens that uses it
+        - Remove old unit testing for create_splitter_regex
+        - Remove public access at testable_tokenizer_base for create_splitter_regex
+
+    * Fixed
+
+        - Fix errors at get_line_tokens at cases with overflow tokens
+        - Fix get_line_tokens to truly manage regex with capturing groups
+        - Fix errors related to pattern reference at get_line_tokens
+        - Fix data type for type at mod_vpl\tokenizer\token
+        - Fix null tokens at get_line_tokens method
 
 [ VPL 3.5.0++ - 5.0.0 ] - 2022-06-28
 

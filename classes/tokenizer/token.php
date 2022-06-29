@@ -31,7 +31,7 @@ class token {
     /**
      * Type of current token
      */
-    public ?string $type;
+    public $type;
 
     /**
      * Specific value of current token
@@ -41,10 +41,10 @@ class token {
     /**
      * Creates a new token with passed type and value
      *
-     * @param ?string $type type of current token
+     * @param $type type of current token
      * @param ?string $value value of current token
      */
-    public function __construct(?string $type, ?string $value) {
+    public function __construct($type, ?string $value) {
         $this->type = $type;
         $this->value = $value;
     }

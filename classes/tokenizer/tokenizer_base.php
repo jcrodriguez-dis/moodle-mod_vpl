@@ -214,58 +214,39 @@ class tokenizer_base {
     }
 
     /**
-     * Create Splitter Regex based on Ace Editor tokenizer.js
-     * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
+     * Get an array of tokens extracted from capturing groups
      *
-     * @param string $src source string with capturing groups
-     * @return string
+     * @param array  $type list of types for each token
+     * @param string $value expression with values for each group
+     * @param string $regex regular expression with capturing groups
+     * @return array
      */
-    protected static function create_splitter_regexp(string $src): string {
-        if (strpos($src, "(?=") !== false) {
-            $stack = 0;
-            $inchclass = false;
-            $lastcapture = [];
+    protected static function get_token_array(array $type, string $value, string $regex): array {
+        $tokenarray = array();
 
-            $regex = "/(\\.)|(\((?:\?[=!])?)|(\))|([\[\]])/";
-            preg_match_all($regex, $src, $matches, PREG_OFFSET_CAPTURE);
+        if (preg_match_all("/\(\?:/", $regex, $matches, PREG_OFFSET_CAPTURE) >= 1) {
+            if (count($type) === count($matches[0])) {
+                $offset = $matches[0][0][1];
+                $restvalue = $value;
 
-            foreach ($matches[0] as $value) {
-                $valuematch = $value[0];
-                $index = $value[1];
+                for ($i = 0; $i < count($matches[0]); $i++) {
+                    if ($i != count($matches[0]) - 1) {
+                        $length = $matches[0][$i + 1][1] - $offset;
+                        $regexi = "/" . substr($regex, $offset, $length) . "/";
+                        $offset = $matches[0][$i + 1][1];
 
-                if ($inchclass === true) {
-                    $inchclass = strcmp($valuematch, ']') != 0;
-                } else if (preg_match("/([\[\]])/", $valuematch) == 1) {
-                    $inchclass = true;
-                } else if (preg_match("/(\))/", $valuematch) == 1) {
-                    if (isset($lastcapture['stack'])) {
-                        if ($stack == $lastcapture['stack']) {
-                            $lastcapture['end'] = $index + 1;
-                            $lastcapture['stack'] = -1;
-                        }
-
-                        $stack--;
+                        preg_match($regexi, $restvalue, $matchesvalue);
+                        $tokenarray[] = new token($type[$i], $matchesvalue[0]);
+                        $restvalue = substr($restvalue, strlen($matchesvalue[0]));
+                    } else {
+                        $length = strlen($value) - $offset;
+                        $regexi = "/" . substr($regex, $offset, $length) . "/";
+                        $tokenarray[] = new token($type[$i], $restvalue);
                     }
-                } else if (preg_match("/(\((?:\?[=!])?)/", $valuematch, $parenmatches) == 1) {
-                    $stack++;
-
-                    if (strlen($parenmatches[0]) != 1) {
-                        $lastcapture['stack'] = $stack;
-                        $lastcapture['start'] = $index;
-                    }
-                }
-            }
-
-            if (isset($lastcapture['end'])) {
-                if (preg_match("/^\)*$/", substr($src, $lastcapture['end'])) == 1) {
-                    $src = substr($src, 0, $lastcapture['start']) . substr($src, $lastcapture['end']);
                 }
             }
         }
 
-        $src = strcmp($src[0], "^") != 0 ? "^" . $src : $src;
-        $src = strcmp($src[strlen($src) - 1], "$") != 0 ? $src . "$" : $src;
-
-        return $src;
+        return $tokenarray;
     }
 }

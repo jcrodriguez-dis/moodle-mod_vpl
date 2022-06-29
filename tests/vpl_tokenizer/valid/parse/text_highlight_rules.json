@@ -1,0 +1,15 @@
+{
+    "name": "tokenizer-text",
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "constant.character",
+                "regex": "^$"
+            },
+            {
+                "default_token": "text"
+            }
+        ]
+    }
+}
