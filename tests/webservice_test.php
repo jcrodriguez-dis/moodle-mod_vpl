@@ -148,6 +148,8 @@ class webservice_test extends base_test {
                 $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
         }
+        $this->assertIsObject(mod_vpl_webservice::info_parameters());
+        $this->assertIsObject(mod_vpl_webservice::info_returns());
     }
 
     private function internal_test_vpl_webservice_open($id, $files = array(),
@@ -223,6 +225,8 @@ class webservice_test extends base_test {
                 $this->internal_test_vpl_webservice_open($id);
             }
         }
+        $this->assertIsObject(mod_vpl_webservice::open_parameters());
+        $this->assertIsObject(mod_vpl_webservice::open_returns());
     }
 
     private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
@@ -251,5 +255,23 @@ class webservice_test extends base_test {
                 }
             }
         }
+        $this->assertIsObject(mod_vpl_webservice::save_parameters());
+        $this->assertNull(mod_vpl_webservice::save_returns());
+    }
+
+    /**
+     * @covers \mod_vpl_webservice::evaluate
+     */
+    public function test_vpl_webservice_evaluate() {
+        $this->assertIsObject(mod_vpl_webservice::evaluate_parameters());
+        $this->assertIsObject(mod_vpl_webservice::evaluate_returns());
+    }
+
+    /**
+     * @covers \mod_vpl_webservice::get_result
+     */
+    public function test_vpl_webservice_get_result() {
+        $this->assertIsObject(mod_vpl_webservice::get_result_parameters());
+        $this->assertIsObject(mod_vpl_webservice::get_result_returns());
     }
 }
