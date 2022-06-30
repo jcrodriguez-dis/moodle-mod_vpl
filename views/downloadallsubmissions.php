@@ -148,7 +148,7 @@ $zipfilename = tempnam( $dir, 'zip' );
 if ( $zipfilename === false || ! file_exists($zipfilename) ) {
     throw new moodle_exception('cannotopenzip');
 }
-if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
+if ($zip->open( $zipfilename, ZipArchive::OVERWRITE ) === true) {
     $ziperrors = '';
     $nsubmissions = 0;
     foreach ($alldata as $data) {

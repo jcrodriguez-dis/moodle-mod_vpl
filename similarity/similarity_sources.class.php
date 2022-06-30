@@ -420,7 +420,7 @@ class vpl_similarity_preprocess {
         $zip = new ZipArchive();
         $zipfilename = self::get_zip_filepath( $vplid, $zipname );
         $spb->set_value( get_string( 'unzipping', VPL ) );
-        if ($zip->open( $zipfilename )) {
+        if ($zip->open( $zipfilename ) === true) {
             $spb->set_max( $zip->numFiles );
             for ($i = 0; $i < $zip->numFiles; $i ++) {
                 $spb->set_value( $i + 1 );
