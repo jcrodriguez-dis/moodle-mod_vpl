@@ -410,19 +410,24 @@ class file_group_process {
             mkdir($dir, $CFG->directorypermissions, true);
         }
         $zipfilename = tempnam( $dir, 'zip' );
-        if ($zip->open( $zipfilename, ZipArchive::OVERWRITE )) {
-            foreach ($this->getFileList() as $filename) {
-                $data = $this->getFileData( $filename );
-                if ($watermark) {
-                    $data = vpl_watermark::addwm( $data, $filename, $USER->id );
+        $filelist = $this->getFileList();
+        if (count($filelist) > 0) {
+            if ($zip->open( $zipfilename, ZipArchive::OVERWRITE ) === true) {
+                foreach ($filelist as $filename) {
+                    $data = $this->getFileData( $filename );
+                    if ($watermark) {
+                        $data = vpl_watermark::addwm( $data, $filename, $USER->id );
+                    }
+                    $zip->addFromString( $filename, $data );
                 }
-                $zip->addFromString( $filename, $data );
+                $zip->close();
+            } else {
+                return false;
             }
-            $zip->close();
-            return $zipfilename;
         } else {
-            return false;
+            vpl_fwrite($zipfilename, base64_decode("UEsFBgAAAAAAAAAAAAAAAAAAAAAAAA=="));
         }
+        return $zipfilename;
     }
 
     /**
