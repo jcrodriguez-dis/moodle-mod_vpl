@@ -41,6 +41,7 @@ require_once($CFG->dirroot . '/mod/vpl/externallib.php');
 /**
  * Unit tests for VPL webservice.
  * @group mod_vpl
+ * @covers \mod_vpl_webservice
  */
 class webservice_test extends base_test {
     private function vpl_call_service($url, $fun, $request = '') {
@@ -105,9 +106,6 @@ class webservice_test extends base_test {
         }
     }
 
-    /**
-     * @covers \vpl_get_webservice_token
-     */
     public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
@@ -125,9 +123,6 @@ class webservice_test extends base_test {
         }
     }
 
-    /**
-     * @covers \mod_vpl_webservice::info
-     */
     public function test_vpl_webservice_info() {
         foreach ($this->users as $user) {
             $this->setUser($user);
@@ -143,7 +138,7 @@ class webservice_test extends base_test {
             $this->setUser($user);
             try {
                 $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
-                $this->fail('Exception expected');
+                $this->fail('Exception expected calling mod_vpl_webservice::info');
             } catch (Exception $e) {
                 $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
@@ -162,9 +157,6 @@ class webservice_test extends base_test {
         $this->assertEquals($grade, $res['grade']);
     }
 
-    /**
-     * @covers \mod_vpl_webservice::open
-     */
     public function test_vpl_webservice_open() {
         $id = $this->vpldefault->get_course_module()->id;
         foreach ($this->users as $user) {
@@ -238,9 +230,6 @@ class webservice_test extends base_test {
         $this->internal_test_vpl_webservice_open($id, $files);
     }
 
-    /**
-     * @covers \mod_vpl_webservice::save
-     */
     public function test_vpl_webservice_save() {
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');
@@ -259,17 +248,11 @@ class webservice_test extends base_test {
         $this->assertNull(mod_vpl_webservice::save_returns());
     }
 
-    /**
-     * @covers \mod_vpl_webservice::evaluate
-     */
     public function test_vpl_webservice_evaluate() {
         $this->assertIsObject(mod_vpl_webservice::evaluate_parameters());
         $this->assertIsObject(mod_vpl_webservice::evaluate_returns());
     }
 
-    /**
-     * @covers \mod_vpl_webservice::get_result
-     */
     public function test_vpl_webservice_get_result() {
         $this->assertIsObject(mod_vpl_webservice::get_result_parameters());
         $this->assertIsObject(mod_vpl_webservice::get_result_returns());
