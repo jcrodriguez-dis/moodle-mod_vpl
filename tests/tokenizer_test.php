@@ -28,6 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 use mod_vpl\tokenizer\token;
 use mod_vpl\tokenizer\tokenizer;
+use mod_vpl\tokenizer\token_type;
 use mod_vpl\util\assertf;
 use Exception;
 
@@ -64,12 +65,12 @@ class tokenizer_test extends \advanced_testcase {
     protected static array $invalidtestcases;
 
     /**
-     * List of invalid test cases for parse
+     * List of invalid test cases for get_all_tokens
      *
      * key: path of testable JSON file
      * value: expected error message to catch
      */
-    protected static array $invalidparsecases;
+    protected static array $invalidpreparsecases;
 
     /**
      * List of valid test cases for tokenizer::get_line_tokens
@@ -104,10 +105,18 @@ class tokenizer_test extends \advanced_testcase {
     protected static array $preparetestcases;
 
     /**
-     * List of test cases for tokenizer::parse
+     * List of test cases for tokenizer::get_all_tokens
      *
      * key: path of a testable JSON file
      * value: expected list of tokens and state
+     */
+    protected static array $preparsetestcases;
+
+    /**
+     * List of test cases for tokenizer::parse
+     *
+     * key: path of a testable JSON file
+     * value: expected list of tokens
      */
     protected static array $parsetestcases;
 
@@ -115,470 +124,12 @@ class tokenizer_test extends \advanced_testcase {
      * Prepare test cases before the execution
      */
     public static function setUpBeforeClass(): void {
-        self::$getlinetokenstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
-                [
-                    'input' => '/* test comments',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('text', '/* test comments')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
-                [
-                    'input' => 'int',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/two_rules_highlight_rules.json' => (
-                [
-                    'input' => 'int ',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/more_rules_highlight_rules.json' => (
-                [
-                    'input' => 'int a = 10;',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int'), new token('text', ' '),
-                        new token('identifier', 'a'), new token('text', ' '),
-                        new token('keyword.operator', '='), new token('text', ' '),
-                        new token('constant.numeric', '10'), new token('text', ';')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/for_highlight_rules.json' => (
-                [
-                    'input' => 'for (int i = 0; i < 10; i++) {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'for'), new token('text', ' '),
-                        new token('paren.lparen', '('), new token('storage.type', 'int'),
-                        new token('text', ' '), new token('identifier', 'i'),
-                        new token('text', ' '), new token('keyword.operator', '='),
-                        new token('text', ' '), new token('constant.numeric', '0'),
-                        new token('text', ';'), new token('text', ' '),
-                        new token('identifier', 'i'), new token('text', ' '),
-                        new token('keyword.operator', '<'), new token('text', ' '),
-                        new token('constant.numeric', '10'), new token('text', ';'),
-                        new token('text', ' '), new token('identifier', 'i'),
-                        new token('keyword.operator', '++'), new token('paren.rparen', ')'),
-                        new token('text', ' '), new token('paren.lparen', '{')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/two_states_highlight_rules.json' => (
-                [
-                    'input' => '/* test comments */',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('comment.multiple', '/*'),
-                        new token('text', ' test comments '),
-                        new token('comment', '*/'),
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/unexisted_state_highlight_rules.json' => (
-                [
-                    'input' => '// test comment',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('comment', '//'),
-                        new token('text', ' test comment')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/token_array_highlight_rules.json' => (
-                [
-                    'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'hello'),
-                        new token('text', ' '),
-                        new token('paren.lparen', '('),
-                        new token('paren.rparen', ')'),
-                        new token('text', ' '),
-                        new token('paren.lparen', '{')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_highlight_rules.json' => (
-                [
-                    'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'hello'),
-                        new token('text', ' '),
-                        new token('paren.lparen', '('),
-                        new token('paren.rparen', ')'),
-                        new token('text', ' '),
-                        new token('paren.lparen', '{')
-                    ) ]
-                ]
-            )
-        );
-
-        self::$getlinetokenoverflowstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
-                [
-                    'input' => [
-                        'max_token_count' => 0,
-                        'value' => '/* test comments',
-                    ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('overflow', '/* test comments')
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
-                [
-                    'input' => [
-                        'max_token_count' => 1,
-                        'value' => 'int a',
-                    ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int'),
-                        new token('overflow', ' a')
-                    ) ]
-                ]
-            ),
-        );
-
-        self::$invalidtestcases = array(
-            self::testpath() . 'invalid/dump_test.json' => (
-                'file ' . self::testpath()  . 'invalid/dump_test.json must exist'
-            ),
-            self::testpath() . 'invalid/general/not_good_suffix.json' => (
-                self::testpath() . 'invalid/general/not_good_suffix.json' . ' must have suffix _highlight_rules.json'
-            ),
-            self::testpath() . 'invalid/general/empty_highlight_rules.json' => (
-                'file ' . self::testpath() . 'invalid/general/empty_highlight_rules.json' . ' is empty'
-            ),
-            self::testpath() . 'invalid/general/undefined_option_highlight_rules.json' => (
-                'invalid options: example'
-            ),
-            self::testpath() . 'invalid/general/invalid_check_rules_highlight_rules.json' => (
-                '"check_rules" option must be a boolean'
-            ),
-            self::testpath() . 'invalid/general/invalid_extension_no_string_highlight_rules.json' => (
-                '"extension" option must be a string or an array of strings'
-            ),
-            self::testpath() . 'invalid/general/invalid_extension_no_array_highlight_rules.json' => (
-                '"extension" option must be a string or an array of strings'
-            ),
-            self::testpath() . 'invalid/general/invalid_extension_no_dot_highlight_rules.json' => (
-                'extension c must start with .'
-            ),
-            self::testpath() . 'invalid/general/invalid_inherit_rules_highlight_rules.json' => (
-                '"inherit_rules" option must be a string'
-            ),
-            self::testpath() . 'invalid/states/invalid_data_states_highlight_rules.json' => (
-                '"states" option must be an object'
-            ),
-            self::testpath() . 'invalid/states/states_with_no_name_highlight_rules.json' => (
-                'state 0 must have a name'
-            ),
-            self::testpath() . 'invalid/states/state_not_object_highlight_rules.json' => (
-                'state 0 must be an array'
-            ),
-            self::testpath() . 'invalid/states/one_state_with_no_name_highlight_rules.json' => (
-                'state 1 must have a name'
-            ),
-            self::testpath() . 'invalid/rules/invalid_rule_highlight_rules.json' => (
-                'rule 0 of state "state1" nº0 must be an object'
-            ),
-            self::testpath() . 'invalid/rules/invalid_rule_option_value_highlight_rules.json' => (
-                'invalid data type for token at rule 0 of state "state1" nº0'
-            ),
-            self::testpath() . 'invalid/rules/undefined_rule_option_highlight_rules.json' => (
-                'invalid option example at rule 0 of state "state1" nº0'
-            ),
-            self::testpath() . 'invalid/rules/invalid_next_highlight_rules.json' => (
-                'invalid data type for next at rule 0 of state "state1" nº0'
-            ),
-            self::testpath() . 'invalid/rules/regex_not_found_highlight_rules.json' => (
-                'option token must be defined next to regex at rule 0 of state "state1" nº0'
-            ),
-            self::testpath() . 'invalid/rules/token_not_found_highlight_rules.json' => (
-                'option regex must be defined next to token at rule 0 of state "state1" nº0'
-            ),
-            self::testpath() . 'invalid/rules/invalid_token_value_highlight_rules.json' => (
-                'invalid token at rule 0 of state "start" nº0'
-            ),
-            self::testpath() . 'invalid/rules/invalid_default_token_highlight_rules.json' => (
-                'invalid data type for default_token at rule 0 of state "start" nº0'
-            ),
-            self::testpath() . 'invalid/rules/default_token_not_alone_highlight_rules.json' => (
-                'option default_token must be alone at rule 0 of state "start" nº0'
-            ),
-            self::testpath() . 'invalid/general/invalid_json_inheritance_highlight_rules.json' => (
-                'inherit JSON file ' . self::testpath() . 'invalid/general/dump_highlight_rules.json does not exist'
-            )
-        );
-
-        self::$invalidparsecases = array(
-            self::testpath() . 'invalid/general/invalid_file_at_parse_highlight_rules.json' => (
-                [
-                    'input' => 'dump_test.js',
-                    'output' => 'file dump_test.js does not exist',
-                ]
-            ),
-            self::testpath() . 'invalid/general/invalid_ext_at_parse_highlight_rules.json' => (
-                [
-                    'input' => self::testpath() . 'invalid/general/test_ext.java',
-                    'output' => self::testpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
-                ]
-            )
-        );
-
-        self::$mergetestcases = array(
-            self::testpath() . 'valid/merge/merge_one_to_one_state_highlight_rules.json' => (
-                [
-                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
-                ]
-            ),
-            self::testpath() . 'valid/merge/merge_one_to_two_states_highlight_rules.json' => (
-                [
-                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
-                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
-                ]
-            ),
-            self::testpath() . 'valid/merge/merge_two_to_one_states_highlight_rules.json' => (
-                [
-                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
-                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
-                ]
-            ),
-            self::testpath() . 'valid/merge/merge_with_same_states_highlight_rules.json' => (
-                [
-                    "start" => [ 0 => (object)[ "next" => "text-state" ] ],
-                    "text-state" => [
-                        0 => (object)[ "token" => "comment", "regex" => "\\/\\/", ],
-                        1 => (object)[ "token" => "text", "regex" => ".*" ]
-                    ]
-                ]
-            )
-        );
-
-        self::$preparetestcases = array(
-            self::testpath() . 'valid/prepare/prepare_with_one_state_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ] ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_two_states_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/", "another_start" => "/(\/\/)|(\/\*)|($)/" ],
-                    "matchmappings" => [
-                        "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ],
-                        "another_start" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
-                    ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_groups_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/(\/\/)|((?:.*)(?:b))|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "comment", 0 => 0, 1 => 1 ], ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_more_rules_highlight_rules.json' => (
-                [
-                    "regexprs" => [
-                        "start" => "/(\/\/)|((?:void)(?:[a-z]+(?:[a-zA-Z0-9]|_)*)(?:\()(?:\)))|($)/",
-                        "statement" => "/(([a-z]+([a-zA-Z0-9]|_)*))|($)/",
-                        "comment" => "/(\/\/)|($)/"
-                    ],
-                    "matchmappings" => [
-                        "start" => [ "default_token" => "comment.line.double-slash", 0 => 0, 1 => 1 ],
-                        "statement" => [ "default_token" => "text", 0 => 0 ],
-                        "comment" => [ "default_token" => "comment", 0 => 0 ]
-                    ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_complex_matching_highlight_rules.json' => (
-                [
-                    "regexprs" => [
-                        "start" =>
-                            "/([+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b)|((?:true|false)\b)|" .
-                            "((?:open(?:\s+))?module(?=\s*\w))|($)/",
-                        "body-module" => "/({)|(\s+)|(\w+)|(\.)|(\s+)|($)/",
-                        "end-module" => "/(})|(\b(?:requires|transitive|exports|opens|to|uses|provides|with)\b)|($)/"
-                    ],
-                    "matchmappings" => [
-                        "start" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2 ],
-                        "body-module" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4 ],
-                        "end-module" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
-                    ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_one_group_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/((?:\/\/))|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/((?:int))|($)/"],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
-                ]
-            ),
-            self::testpath() . 'valid/prepare/prepare_with_number_ref_highlight_rules.json' => (
-                [
-                    "regexprs" => [ "start" => "/((a)(b)\\2\\3)|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
-                ]
-            )
-        );
-
-        self::$parsetestcases = array(
-            self::testpath() . 'valid/parse/no_line_highlight_rules.json' => (
-                [
-                    'input' => self::testpath() . 'valid/parse/no_line.c',
-                    'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ]
-                ]
-            ),
-            self::testpath() . 'valid/parse/one_line_highlight_rules.json' => (
-                [
-                    'input' => self::testpath() . 'valid/parse/one_line.c',
-                    'output' => [
-                        0 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('comment.line', '// This is an example') ]
-                        ]
-                    ]
-                ]
-            ),
-            self::testpath() . 'valid/parse/two_lines_highlight_rules.json' => (
-                [
-                    'input' => self::testpath() . 'valid/parse/two_lines.java',
-                    'output' => [
-                        0 => [
-                            'state' => 'comment',
-                            'tokens' => [ new token('comment', '/*') ]
-                        ],
-                        1 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('comment', '    This is a comment '),
-                                new token('comment', '*/')
-                            ]
-                        ]
-                    ]
-                ]
-            ),
-            self::testpath() . 'valid/parse/more_lines_highlight_rules.json' => (
-                [
-                    'input' => self::testpath() . 'valid/parse/more_lines.c',
-                    'output' => [
-                        0 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('keyword', '#include'),
-                                new token('constant.other', ' <stdio.h>')
-                            ]
-                        ],
-                        1 => [ 'state' => 'start', 'tokens' => [ ] ],
-                        2 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('storage.type', 'int'), new token('text', ' '),
-                                new token('identifier', 'main'), new token('paren.lparen', '('),
-                                new token('storage.type', 'int'), new token('text', ' '),
-                                new token('identifier', 'nargc'), new token('punctuation.operator', ','),
-                                new token('text', ' '), new token('storage.type', 'char'),
-                                new token('text', ' '), new token('keyword.operator', '*'),
-                                new token('identifier', 'argv'), new token('paren.lparen', '['),
-                                new token('paren.rparen', ']'), new token('paren.rparen', ')')
-                            ]
-                        ],
-                        3 => [ 'state' => 'start', 'tokens' => [ new token('paren.lparen', '{') ] ],
-                        4 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('text', '    '), new token('keyword.control', 'if'),
-                                new token('text', ' '), new token('paren.lparen', '('),
-                                new token('identifier', 'nargc'), new token('text', ' '),
-                                new token('keyword.operator', '>'), new token('text', ' '),
-                                new token('constant.numeric', '1'), new token('paren.rparen', ')')
-                            ]
-                            ],
-                        5 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('text', '    '), new token('paren.lparen', '{') ]
-                        ],
-                        6 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('text', '        '), new token('keyword.control', 'for'),
-                                new token('text', ' '), new token('paren.lparen', '('),
-                                new token('storage.type', 'int'), new token('text', ' '), new token('identifier', 'i'),
-                                new token('text', ' '), new token('keyword.operator', '='),
-                                new token('text', ' '), new token('constant.numeric', '0'),
-                                new token('punctuation.operator', ';'), new token('text', ' '),
-                                new token('identifier', 'i'), new token('text', ' '),
-                                new token('keyword.operator', '<'), new token('text', ' '),
-                                new token('identifier', 'nargc'), new token('punctuation.operator', ';'),
-                                new token('text', ' '), new token('identifier', 'i'),
-                                new token('keyword.operator', '++'), new token('paren.rparen', ')')
-                            ]
-                        ],
-                        7 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('text', '        '), new token('paren.lparen', '{') ]
-                        ],
-                        8 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('text', '            '), new token('support.function.C99.c', 'printf'),
-                                new token('paren.lparen', '('), new token('string.start', '"'),
-                                new token('constant.language.escape', '%d'), new token('constant.language.escape', '\n'),
-                                new token('string.end', '"'), new token('punctuation.operator', ','),
-                                new token('text', ' '), new token('identifier', 'i'),
-                                new token('paren.rparen', ')'), new token('punctuation.operator', ';')
-                            ]
-                        ],
-                        9 => [ 'state' => 'start', 'tokens' => [ ] ],
-                        10 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('text', '            '), new token('comment', '// This is just a comment') ]
-                        ],
-                        11 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('text', '            '), new token('storage.type', 'char'),
-                                new token('text', ' '), new token('keyword.operator', '*'),
-                                new token('identifier', 'str'), new token('text', ' '),
-                                new token('keyword.operator', '='), new token('text', ' '),
-                                new token('string.start', '"'), new token('string', 'Hello world'),
-                                new token('string.end', '"'), new token('punctuation.operator', ';')
-                            ]
-                        ],
-                        12 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('text', '        '), new token('paren.rparen', '}') ]
-                        ],
-                        13 => [
-                            'state' => 'start',
-                            'tokens' => [ new token('text', '    '), new token('paren.rparen', '}') ]
-                        ],
-                        14 => [ 'state' => 'start', 'tokens' => [ ] ],
-                        15 => [
-                            'state' => 'start',
-                            'tokens' => [
-                                new token('text', '    '), new token('keyword.control', 'return'),
-                                new token('text', ' '), new token('constant.numeric', '0'),
-                                new token('punctuation.operator', ';')
-                            ]
-                        ],
-                        16 => [ 'state' => 'start', 'tokens' => [ new token('paren.rparen', '}') ] ]
-                    ]
-                ]
-            )
-        );
+        self::setup_get_line_tokens_cases();
+        self::setup_invalid_cases();
+        self::setup_merge_cases();
+        self::setup_prepare_cases();
+        self::setup_preparse_cases();
+        self::setup_parse_cases();
     }
 
     /**
@@ -704,7 +255,7 @@ class tokenizer_test extends \advanced_testcase {
             $expectedresult = $expectedresult['output'];
 
             $tokenizer = new tokenizer($filename);
-            $result = $tokenizer->get_line_tokens($input);
+            $result = $tokenizer->get_line_tokens($input, "", 0);
 
             $this->assertTrue(count($result) === 2);
             $this->assertSame($expectedresult['state'], $result['state']);
@@ -725,7 +276,7 @@ class tokenizer_test extends \advanced_testcase {
             $expectedresult = $expectedresult['output'];
 
             $tokenizer = new tokenizer($filename);
-            $result = $tokenizer->get_line_tokens($input, 'stupid_startstate');
+            $result = $tokenizer->get_line_tokens($input, 'stupid_startstate', 0);
 
             $this->assertTrue(count($result) === 2);
             $this->assertSame($expectedresult['state'], $result['state']);
@@ -747,7 +298,7 @@ class tokenizer_test extends \advanced_testcase {
 
             $tokenizer = new tokenizer($filename);
             $tokenizer->set_max_token_count($input['max_token_count']);
-            $result = $tokenizer->get_line_tokens($input['value']);
+            $result = $tokenizer->get_line_tokens($input['value'], "", 0);
 
             $this->assertTrue(count($result) === 2);
             $this->assertSame($expectedresult['state'], $result['state']);
@@ -760,16 +311,16 @@ class tokenizer_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test tokenizer::parse when parameters are invalid
+     * Method to test tokenizer::get_all_tokens when parameters are invalid
      */
-    public function test_invalid_parse() {
-        foreach (self::$invalidparsecases as $filename => $expectedresult) {
+    public function test_invalid_get_all_tokens() {
+        foreach (self::$invalidpreparsecases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
             $tokenizer = new tokenizer($filename);
 
             try {
-                $tokenizer->parse($input);
+                $tokenizer->get_all_tokens($input);
             } catch (Exception $exe) {
                 $expectedmssg = assertf::get_error('default', $expectedresult);
                 $this->assertSame($expectedmssg, $exe->getMessage());
@@ -777,6 +328,29 @@ class tokenizer_test extends \advanced_testcase {
             }
 
             $this->fail('An expection was expected');
+        }
+    }
+
+    /**
+     * Method to test tokenizer::get_all_tokens
+     */
+    public function test_get_all_tokens() {
+        foreach (self::$preparsetestcases as $filename => $expectedresult) {
+            $input = $expectedresult['input'];
+            $expectedresult = $expectedresult['output'];
+
+            $tokenizer = new tokenizer($filename);
+            $result = $tokenizer->get_all_tokens($input);
+
+            foreach ($result as $k => $valueforline) {
+                $this->assertTrue(count($valueforline) === 2);
+                $this->assertSame($expectedresult[$k]['state'], $valueforline['state']);
+                $this->assertTrue(count($valueforline['tokens']) === count($expectedresult[$k]['tokens']));
+
+                for ($i = 0; $i < count($valueforline['tokens']); $i++) {
+                    $this->assertTrue($valueforline['tokens'][$i]->equals_to($expectedresult[$k]['tokens'][$i]));
+                }
+            }
         }
     }
 
@@ -791,15 +365,584 @@ class tokenizer_test extends \advanced_testcase {
             $tokenizer = new tokenizer($filename);
             $result = $tokenizer->parse($input);
 
-            foreach ($result as $k => $valueforline) {
-                $this->assertTrue(count($valueforline) === 2);
-                $this->assertSame($expectedresult[$k]['state'], $valueforline['state']);
-                $this->assertTrue(count($valueforline['tokens']) === count($expectedresult[$k]['tokens']));
+            $this->assertTrue(count($result) === count($expectedresult));
+            $this->assertTrue(count($tokenizer->get_tokens()) === count($expectedresult));
 
-                for ($i = 0; $i < count($valueforline['tokens']); $i++) {
-                    $this->assertTrue($valueforline['tokens'][$i]->equals_to($expectedresult[$k]['tokens'][$i]));
-                }
+            for ($i = 0; $i < count($expectedresult); $i++) {
+                $this->assertTrue($result[$i]->equals_to($expectedresult[$i]));
+                $this->assertTrue($tokenizer->get_tokens()[$i]->equals_to($expectedresult[$i]));
             }
         }
+    }
+
+    /**
+     * ==================================
+     * CONSTRUCTOR FOR TEST CASES
+     * ==================================
+     */
+
+    private static function setup_get_line_tokens_cases(): void {
+        self::$getlinetokenstestcases = array(
+            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
+                [
+                    'input' => '/* test comments',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('text', '/* test comments', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
+                [
+                    'input' => 'int',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/two_rules_highlight_rules.json' => (
+                [
+                    'input' => 'int ',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/more_rules_highlight_rules.json' => (
+                [
+                    'input' => 'int a = 10;',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0), new token('text', ' ', 0),
+                        new token('identifier', 'a', 0), new token('text', ' ', 0),
+                        new token('keyword.operator', '=', 0), new token('text', ' ', 0),
+                        new token('constant.numeric', '10', 0), new token('text', ';', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/for_highlight_rules.json' => (
+                [
+                    'input' => 'for (int i = 0; i < 10; i++) {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'for', 0), new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0), new token('storage.type', 'int', 0),
+                        new token('text', ' ', 0), new token('identifier', 'i', 0),
+                        new token('text', ' ', 0), new token('keyword.operator', '=', 0),
+                        new token('text', ' ', 0), new token('constant.numeric', '0', 0),
+                        new token('text', ';', 0), new token('text', ' ', 0),
+                        new token('identifier', 'i', 0), new token('text', ' ', 0),
+                        new token('keyword.operator', '<', 0), new token('text', ' ', 0),
+                        new token('constant.numeric', '10', 0), new token('text', ';', 0),
+                        new token('text', ' ', 0), new token('identifier', 'i', 0),
+                        new token('keyword.operator', '++', 0), new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0), new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/two_states_highlight_rules.json' => (
+                [
+                    'input' => '/* test comments */',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('comment.multiple', '/*', 0),
+                        new token('text', ' test comments ', 0),
+                        new token('comment', '*/', 0),
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/unexisted_state_highlight_rules.json' => (
+                [
+                    'input' => '// test comment',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('comment', '//', 0),
+                        new token('text', ' test comment', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0),
+                        new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0),
+                        new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            )
+        );
+
+        self::$getlinetokenoverflowstestcases = array(
+            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 0,
+                        'value' => '/* test comments',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('overflow', '/* test comments', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 1,
+                        'value' => 'int a',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0),
+                        new token('overflow', ' a', 0)
+                    ) ]
+                ]
+            ),
+        );
+    }
+
+    private static function setup_invalid_cases(): void {
+        self::$invalidtestcases = array(
+            self::testpath() . 'invalid/dump_test.json' => (
+                'file ' . self::testpath()  . 'invalid/dump_test.json must exist'
+            ),
+            self::testpath() . 'invalid/general/not_good_suffix.json' => (
+                self::testpath() . 'invalid/general/not_good_suffix.json' . ' must have suffix _highlight_rules.json'
+            ),
+            self::testpath() . 'invalid/general/empty_highlight_rules.json' => (
+                'file ' . self::testpath() . 'invalid/general/empty_highlight_rules.json' . ' is empty'
+            ),
+            self::testpath() . 'invalid/general/undefined_option_highlight_rules.json' => (
+                'invalid options: example'
+            ),
+            self::testpath() . 'invalid/general/invalid_check_rules_highlight_rules.json' => (
+                '"check_rules" option must be a boolean'
+            ),
+            self::testpath() . 'invalid/general/invalid_extension_no_string_highlight_rules.json' => (
+                '"extension" option must be a string or an array of strings'
+            ),
+            self::testpath() . 'invalid/general/invalid_extension_no_array_highlight_rules.json' => (
+                '"extension" option must be a string or an array of strings'
+            ),
+            self::testpath() . 'invalid/general/invalid_extension_no_dot_highlight_rules.json' => (
+                'extension c must start with .'
+            ),
+            self::testpath() . 'invalid/general/invalid_inherit_rules_highlight_rules.json' => (
+                '"inherit_rules" option must be a string'
+            ),
+            self::testpath() . 'invalid/states/invalid_data_states_highlight_rules.json' => (
+                '"states" option must be an object'
+            ),
+            self::testpath() . 'invalid/states/states_with_no_name_highlight_rules.json' => (
+                'state 0 must have a name'
+            ),
+            self::testpath() . 'invalid/states/state_not_object_highlight_rules.json' => (
+                'state 0 must be an array'
+            ),
+            self::testpath() . 'invalid/states/one_state_with_no_name_highlight_rules.json' => (
+                'state 1 must have a name'
+            ),
+            self::testpath() . 'invalid/rules/invalid_rule_highlight_rules.json' => (
+                'rule 0 of state "state1" nº0 must be an object'
+            ),
+            self::testpath() . 'invalid/rules/invalid_rule_option_value_highlight_rules.json' => (
+                'invalid data type for token at rule 0 of state "state1" nº0'
+            ),
+            self::testpath() . 'invalid/rules/undefined_rule_option_highlight_rules.json' => (
+                'invalid option example at rule 0 of state "state1" nº0'
+            ),
+            self::testpath() . 'invalid/rules/invalid_next_highlight_rules.json' => (
+                'invalid data type for next at rule 0 of state "state1" nº0'
+            ),
+            self::testpath() . 'invalid/rules/regex_not_found_highlight_rules.json' => (
+                'option token must be defined next to regex at rule 0 of state "state1" nº0'
+            ),
+            self::testpath() . 'invalid/rules/token_not_found_highlight_rules.json' => (
+                'option regex must be defined next to token at rule 0 of state "state1" nº0'
+            ),
+            self::testpath() . 'invalid/rules/invalid_token_value_highlight_rules.json' => (
+                'invalid token at rule 0 of state "start" nº0'
+            ),
+            self::testpath() . 'invalid/rules/invalid_default_token_highlight_rules.json' => (
+                'invalid data type for default_token at rule 0 of state "start" nº0'
+            ),
+            self::testpath() . 'invalid/rules/default_token_not_alone_highlight_rules.json' => (
+                'option default_token must be alone at rule 0 of state "start" nº0'
+            ),
+            self::testpath() . 'invalid/general/invalid_json_inheritance_highlight_rules.json' => (
+                'inherit JSON file ' . self::testpath() . 'invalid/general/dump_highlight_rules.json does not exist'
+            )
+        );
+
+        self::$invalidpreparsecases = array(
+            self::testpath() . 'invalid/general/invalid_file_at_preparse_highlight_rules.json' => (
+                [
+                    'input' => 'dump_test.js',
+                    'output' => 'file dump_test.js does not exist',
+                ]
+            ),
+            self::testpath() . 'invalid/general/invalid_ext_at_preparse_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'invalid/general/test_ext.java',
+                    'output' => self::testpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
+                ]
+            )
+        );
+    }
+
+    private static function setup_merge_cases(): void {
+        self::$mergetestcases = array(
+            self::testpath() . 'valid/merge/merge_one_to_one_state_highlight_rules.json' => (
+                [
+                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                ]
+            ),
+            self::testpath() . 'valid/merge/merge_one_to_two_states_highlight_rules.json' => (
+                [
+                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
+                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                ]
+            ),
+            self::testpath() . 'valid/merge/merge_two_to_one_states_highlight_rules.json' => (
+                [
+                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
+                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                ]
+            ),
+            self::testpath() . 'valid/merge/merge_with_same_states_highlight_rules.json' => (
+                [
+                    "start" => [ 0 => (object)[ "next" => "text-state" ] ],
+                    "text-state" => [
+                        0 => (object)[ "token" => "comment", "regex" => "\\/\\/", ],
+                        1 => (object)[ "token" => "text", "regex" => ".*" ]
+                    ]
+                ]
+            )
+        );
+    }
+
+    private static function setup_prepare_cases(): void {
+        self::$preparetestcases = array(
+            self::testpath() . 'valid/prepare/prepare_with_one_state_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ] ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_two_states_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/", "another_start" => "/(\/\/)|(\/\*)|($)/" ],
+                    "matchmappings" => [
+                        "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ],
+                        "another_start" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
+                    ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_groups_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/(\/\/)|((?:.*)(?:b))|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "comment", 0 => 0, 1 => 1 ], ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_more_rules_highlight_rules.json' => (
+                [
+                    "regexprs" => [
+                        "start" => "/(\/\/)|((?:void)(?:[a-z]+(?:[a-zA-Z0-9]|_)*)(?:\()(?:\)))|($)/",
+                        "statement" => "/(([a-z]+([a-zA-Z0-9]|_)*))|($)/",
+                        "comment" => "/(\/\/)|($)/"
+                    ],
+                    "matchmappings" => [
+                        "start" => [ "default_token" => "comment.line.double-slash", 0 => 0, 1 => 1 ],
+                        "statement" => [ "default_token" => "text", 0 => 0 ],
+                        "comment" => [ "default_token" => "comment", 0 => 0 ]
+                    ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_complex_matching_highlight_rules.json' => (
+                [
+                    "regexprs" => [
+                        "start" =>
+                            "/([+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b)|((?:true|false)\b)|" .
+                            "((?:open(?:\s+))?module(?=\s*\w))|($)/",
+                        "body-module" => "/({)|(\s+)|(\w+)|(\.)|(\s+)|($)/",
+                        "end-module" => "/(})|(\b(?:requires|transitive|exports|opens|to|uses|provides|with)\b)|($)/"
+                    ],
+                    "matchmappings" => [
+                        "start" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2 ],
+                        "body-module" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4 ],
+                        "end-module" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
+                    ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_one_group_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((?:\/\/))|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((?:int))|($)/"],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                ]
+            ),
+            self::testpath() . 'valid/prepare/prepare_with_number_ref_highlight_rules.json' => (
+                [
+                    "regexprs" => [ "start" => "/((a)(b)\\2\\3)|($)/" ],
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                ]
+            )
+        );
+    }
+
+    private static function setup_preparse_cases(): void {
+        self::$preparsetestcases = array(
+            self::testpath() . 'valid/get_all_tokens/no_line_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/get_all_tokens/no_line.c',
+                    'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ]
+                ]
+            ),
+            self::testpath() . 'valid/get_all_tokens/one_line_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/get_all_tokens/one_line.c',
+                    'output' => [
+                        0 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('comment.line', '// This is an example', 0) ]
+                        ]
+                    ]
+                ]
+            ),
+            self::testpath() . 'valid/get_all_tokens/two_lines_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/get_all_tokens/two_lines.java',
+                    'output' => [
+                        0 => [
+                            'state' => 'comment',
+                            'tokens' => [ new token('comment', '/*', 0) ]
+                        ],
+                        1 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('comment', '    This is a comment ', 1),
+                                new token('comment', '*/', 1)
+                            ]
+                        ]
+                    ]
+                ]
+            ),
+            self::testpath() . 'valid/get_all_tokens/more_lines_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/get_all_tokens/more_lines.c',
+                    'output' => [
+                        0 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('keyword', '#include', 0),
+                                new token('constant.other', ' <stdio.h>', 0)
+                            ]
+                        ],
+                        1 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        2 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('storage.type', 'int', 2), new token('text', ' ', 2),
+                                new token('identifier', 'main', 2), new token('paren.lparen', '(', 2),
+                                new token('storage.type', 'int', 2), new token('text', ' ', 2),
+                                new token('identifier', 'nargc', 2), new token('punctuation.operator', ',', 2),
+                                new token('text', ' ', 2), new token('storage.type', 'char', 2),
+                                new token('text', ' ', 2), new token('keyword.operator', '*', 2),
+                                new token('identifier', 'argv', 2), new token('paren.lparen', '[', 2),
+                                new token('paren.rparen', ']', 2), new token('paren.rparen', ')', 2)
+                            ]
+                        ],
+                        3 => [ 'state' => 'start', 'tokens' => [ new token('paren.lparen', '{', 3) ] ],
+                        4 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '    ', 4), new token('keyword.control', 'if', 4),
+                                new token('text', ' ', 4), new token('paren.lparen', '(', 4),
+                                new token('identifier', 'nargc', 4), new token('text', ' ', 4),
+                                new token('keyword.operator', '>', 4), new token('text', ' ', 4),
+                                new token('constant.numeric', '1', 4), new token('paren.rparen', ')', 4)
+                            ]
+                            ],
+                        5 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '    ', 5), new token('paren.lparen', '{', 5) ]
+                        ],
+                        6 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '        ', 6), new token('keyword.control', 'for', 6),
+                                new token('text', ' ', 6), new token('paren.lparen', '(', 6),
+                                new token('storage.type', 'int', 6), new token('text', ' ', 6), new token('identifier', 'i', 6),
+                                new token('text', ' ', 6), new token('keyword.operator', '=', 6),
+                                new token('text', ' ', 6), new token('constant.numeric', '0', 6),
+                                new token('punctuation.operator', ';', 6), new token('text', ' ', 6),
+                                new token('identifier', 'i', 6), new token('text', ' ', 6),
+                                new token('keyword.operator', '<', 6), new token('text', ' ', 6),
+                                new token('identifier', 'nargc', 6), new token('punctuation.operator', ';', 6),
+                                new token('text', ' ', 6), new token('identifier', 'i', 6),
+                                new token('keyword.operator', '++', 6), new token('paren.rparen', ')', 6)
+                            ]
+                        ],
+                        7 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '        ', 7), new token('paren.lparen', '{', 7) ]
+                        ],
+                        8 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '            ', 8), new token('support.function', 'printf', 8),
+                                new token('paren.lparen', '(', 8), new token('string.start', '"', 8),
+                                new token('constant.language.escape', '%d', 8), new token('constant.language.escape', '\n', 8),
+                                new token('string.end', '"', 8), new token('punctuation.operator', ',', 8),
+                                new token('text', ' ', 8), new token('identifier', 'i', 8),
+                                new token('paren.rparen', ')', 8), new token('punctuation.operator', ';', 8)
+                            ]
+                        ],
+                        9 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        10 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '            ', 10), new token('comment', '// This is just a comment', 10) ]
+                        ],
+                        11 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '            ', 11), new token('storage.type', 'char', 11),
+                                new token('text', ' ', 11), new token('keyword.operator', '*', 11),
+                                new token('identifier', 'str', 11), new token('text', ' ', 11),
+                                new token('keyword.operator', '=', 11), new token('text', ' ', 11),
+                                new token('string.start', '"', 11), new token('string', 'Hello world', 11),
+                                new token('string.end', '"', 11), new token('punctuation.operator', ';', 11)
+                            ]
+                        ],
+                        12 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '        ', 12), new token('paren.rparen', '}', 12) ]
+                        ],
+                        13 => [
+                            'state' => 'start',
+                            'tokens' => [ new token('text', '    ', 13), new token('paren.rparen', '}', 13) ]
+                        ],
+                        14 => [ 'state' => 'start', 'tokens' => [ ] ],
+                        15 => [
+                            'state' => 'start',
+                            'tokens' => [
+                                new token('text', '    ', 15), new token('keyword.control', 'return', 15),
+                                new token('text', ' ', 15), new token('constant.numeric', '0', 15),
+                                new token('punctuation.operator', ';', 15)
+                            ]
+                        ],
+                        16 => [ 'state' => 'start', 'tokens' => [ new token('paren.rparen', '}', 16) ] ]
+                    ]
+                ]
+            )
+        );
+    }
+
+    private static function setup_parse_cases(): void {
+        self::$parsetestcases = array(
+            self::testpath() . 'valid/parse/no_line_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/parse/no_line.c',
+                    'output' => [ ]
+                ]
+            ),
+            self::testpath() . 'valid/parse/one_line_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/parse/one_line.c',
+                    'output' => [ ]
+                ]
+            ),
+            self::testpath() . 'valid/parse/two_lines_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/parse/two_lines.java',
+                    'output' => [ ]
+                ]
+            ),
+            self::testpath() . 'valid/parse/more_lines_highlight_rules.json' => (
+                [
+                    'input' => self::testpath() . 'valid/parse/more_lines.c',
+                    'output' => [
+                        new token(token_type::RESERVED, '#include', 0),
+                        new token(token_type::LITERAL, ' <stdio.h>', 0),
+                        new token(token_type::RESERVED, 'int', 2),
+                        new token(token_type::IDENTIFIER, 'main', 2),
+                        new token(token_type::OPERATOR, '(', 2),
+                        new token(token_type::RESERVED, 'int', 2),
+                        new token(token_type::IDENTIFIER, 'nargc', 2),
+                        new token(token_type::OPERATOR, ',', 2),
+                        new token(token_type::RESERVED, 'char', 2),
+                        new token(token_type::OPERATOR, '*', 2),
+                        new token(token_type::IDENTIFIER, 'argv', 2),
+                        new token(token_type::OPERATOR, '[', 2),
+                        new token(token_type::OPERATOR, ']', 2),
+                        new token(token_type::OPERATOR, ')', 2),
+                        new token(token_type::OPERATOR, '{', 3),
+                        new token(token_type::RESERVED, 'if', 4),
+                        new token(token_type::OPERATOR, '(', 4),
+                        new token(token_type::IDENTIFIER, 'nargc', 4),
+                        new token(token_type::OPERATOR, '>', 4),
+                        new token(token_type::LITERAL, '1', 4),
+                        new token(token_type::OPERATOR, ')', 4),
+                        new token(token_type::OPERATOR, '{', 5),
+                        new token(token_type::RESERVED, 'for', 6),
+                        new token(token_type::OPERATOR, '(', 6),
+                        new token(token_type::RESERVED, 'int', 6),
+                        new token(token_type::IDENTIFIER, 'i', 6),
+                        new token(token_type::OPERATOR, '=', 6),
+                        new token(token_type::LITERAL, '0', 6),
+                        new token(token_type::OPERATOR, ';', 6),
+                        new token(token_type::IDENTIFIER, 'i', 6),
+                        new token(token_type::OPERATOR, '<', 6),
+                        new token(token_type::IDENTIFIER, 'nargc', 6),
+                        new token(token_type::OPERATOR, ';', 6),
+                        new token(token_type::IDENTIFIER, 'i', 6),
+                        new token(token_type::OPERATOR, '++', 6),
+                        new token(token_type::OPERATOR, ')', 6),
+                        new token(token_type::OPERATOR, '{', 7),
+                        new token(token_type::RESERVED, 'printf', 8),
+                        new token(token_type::OPERATOR, '(', 8),
+                        new token(token_type::LITERAL, '"', 8),
+                        new token(token_type::LITERAL, '%d', 8),
+                        new token(token_type::LITERAL, '\n', 8),
+                        new token(token_type::LITERAL, '"', 8),
+                        new token(token_type::OPERATOR, ',', 8),
+                        new token(token_type::IDENTIFIER, 'i', 8),
+                        new token(token_type::OPERATOR, ')', 8),
+                        new token(token_type::OPERATOR, ';', 8),
+                        new token(token_type::RESERVED, 'char', 11),
+                        new token(token_type::OPERATOR, '*', 11),
+                        new token(token_type::IDENTIFIER, 'str', 11),
+                        new token(token_type::OPERATOR, '=', 11),
+                        new token(token_type::LITERAL, '"Hello world', 11),
+                        new token(token_type::LITERAL, '"', 11),
+                        new token(token_type::OPERATOR, ';', 11),
+                        new token(token_type::OPERATOR, '}', 12),
+                        new token(token_type::OPERATOR, '}', 13),
+                        new token(token_type::RESERVED, 'return', 15),
+                        new token(token_type::LITERAL, '0', 15),
+                        new token(token_type::OPERATOR, ';', 15),
+                        new token(token_type::OPERATOR, '}', 16),
+                    ]
+                ]
+            )
+        );
     }
 }

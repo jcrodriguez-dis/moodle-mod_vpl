@@ -72,35 +72,98 @@ class tokenizer extends tokenizer_base {
     );
 
     /**
-     * Common tokens based on TextMate manual.
-     * Tokenizer would only allow these tokens for "token" option
-     * (more information at https://macromates.com/manual/en/language_grammars#naming-conventions)
+     * Available names for tokens based on TextMate and ACE editor.
+     *
+     * Each token must be declared as one of the vpl_token_type avaiable types
+     * in order to be compatible for similarity classes.
+     *
+     * It is important to notice that if one token's name has not a valid type,
+     * tokenizer would delete it for similarity tests.
+     *
+     * For more information about the meaning of some names, see
+     * https://macromates.com/manual/en/language_grammars at Naming Conventions section
      */
-    protected const TEXTMATETOKENS = array(
-        "comment" => [
-            "line"  => [ "double-slash", "double-dash", "number-sign", "percentage", "character" ],
-            "block" => [ "documentation" ]
-        ],
-        "constant" => [ "numeric", "character" => [ "escape" ], "language", "other" ],
-        "entity" => [
-            "name"  => [ "function", "type", "tag", "section" ],
-            "other" => [ "intherited-class", "attribute-name" ]
-        ],
-        "invalid" => [ "illegal", "deprecated" ],
-        "keyword" => [ "control", "operator", "other" ],
-        "markup" => [
-            "underline" => [ "link" ],
-            "bold", "heading", "italic",
-            "list" => [ "numbered", "unnumbered" ],
-            "quote", "raw", "other"
-        ],
-        "meta",
-        "storage" => [ "type", "modifier" ],
-        "string" => [ "quoted", "single", "double", "triple", "other", "unquoted", "interpolated", "regexp", "other" ],
-        "support" => [ "function", "class", "type", "typedef", "constant", "variable", "other" ],
-        "variable" => [ "parameter", "language", "other" ],
-        "paren" => [ "lparen", "rparen" ],
-        "text"
+    protected array $availabletokens = array(
+        "comment" => null,
+        "comment.line" => null,
+        "comment.line.double-slash" => null,
+        "comment.line.double-dash" => null,
+        "comment.line.number-sign" => null,
+        "comment.line.percentage" => null,
+        "comment.line.character" => null,
+        "comment.block" => null,
+        "comment.block.documentation" => null,
+        "constant" => token_type::LITERAL,
+        "constant.numeric" => token_type::LITERAL,
+        "constant.character" => token_type::LITERAL,
+        "constant.character.escape" => token_type::LITERAL,
+        "constant.language" => token_type::LITERAL,
+        "constant.language.escape" => token_type::LITERAL,
+        "constant.other" => token_type::LITERAL,
+        "entity" => null,
+        "entity.name" => token_type::IDENTIFIER,
+        "entity.name.function" => token_type::IDENTIFIER,
+        "entity.name.type" => token_type::IDENTIFIER,
+        "entity.name.tag" => token_type::RESERVED,
+        "entity.name.section" => token_type::IDENTIFIER,
+        "entity.other" => token_type::IDENTIFIER,
+        "entity.other.inherited-class" => token_type::IDENTIFIER,
+        "entity.other.attribute-name" => token_type::RESERVED,
+        "keyword" => token_type::RESERVED,
+        "keyword.control" => token_type::RESERVED,
+        "keyword.operator" => token_type::OPERATOR,
+        "keyword.other" => token_type::RESERVED,
+        "markup" => null,
+        "markup.underline" => token_type::OTHER,
+        "markup.underline.link" => token_type::OTHER,
+        "markup.bold" => token_type::OTHER,
+        "markup.heading" => token_type::OTHER,
+        "markup.italic" => token_type::OTHER,
+        "markup.list" => token_type::OTHER,
+        "markup.list.numbered" => token_type::OTHER,
+        "markup.list.unnumbered" => token_type::OTHER,
+        "markup.quote" => token_type::OTHER,
+        "markup.raw" => token_type::OTHER,
+        "markup.other" => token_type::OTHER,
+        "meta" => null,
+        "storage" => null,
+        "storage.type" => token_type::RESERVED,
+        "storage.modifier" => token_type::RESERVED,
+        "string" => token_type::LITERAL,
+        "string.quoted" => token_type::LITERAL,
+        "string.quoted.single" => token_type::LITERAL,
+        "string.quoted.double" => token_type::LITERAL,
+        "string.quoted.triple" => token_type::LITERAL,
+        "string.quoted.other" => token_type::LITERAL,
+        "string.unquoted" => token_type::LITERAL,
+        "string.interpolated" => token_type::LITERAL,
+        "string.regexp" => token_type::LITERAL,
+        "string.other" => token_type::LITERAL,
+        "support" => null,
+        "support.function" => token_type::RESERVED,
+        "support.class" => token_type::RESERVED,
+        "support.type" => token_type::RESERVED,
+        "support.constant" => token_type::LITERAL,
+        "support.variable" => token_type::IDENTIFIER,
+        "support.other" => token_type::OTHER,
+        "identifier" => token_type::IDENTIFIER,
+        "variable" => token_type::IDENTIFIER,
+        "variable.parameter" => token_type::IDENTIFIER,
+        "variable.language" => token_type::RESERVED,
+        "variable.other" => token_type::IDENTIFIER,
+        "text" => null,
+        "punctuation" => null,
+        "punctuation.separator" => token_type::OPERATOR,
+        "paren" => token_type::OPERATOR,
+        "paren.lparen" => token_type::OPERATOR,
+        "paren.rparen" => token_type::OPERATOR,
+
+        // VPL types
+        "vpl_identifier" => token_type::IDENTIFIER,
+        "vpl_literal" => token_type::LITERAL,
+        "vpl_operator" => token_type::OPERATOR,
+        "vpl_reserved" => token_type::RESERVED,
+        "vpl_other" => token_type::OTHER
     );
 
     /**
@@ -126,6 +189,7 @@ class tokenizer extends tokenizer_base {
         $jsonobj = self::load_json($rulefilename);
 
         $this->init_check_rules($rulefilename, $jsonobj);
+        $this->init_override_tokens($rulefilename, $jsonobj);
         $this->init_tokenizer_name($rulefilename, $jsonobj);
         $this->init_extension($rulefilename, $jsonobj);
         $this->init_inherit_rules($rulefilename, $jsonobj);
@@ -157,12 +221,40 @@ class tokenizer extends tokenizer_base {
     }
 
     /**
-     * Parse all lines of passed file
+     * Get all tokens for passed filename for similarity
      *
-     * @param string $filename file to parse
+     * @param string $filename file to tokenize
      * @return array
      */
     public function parse(string $filename): array {
+        $tokens = $this->get_all_tokens($filename);
+        $tokensprepared = array();
+
+        foreach ($tokens as $dataofline) {
+            foreach ($dataofline['tokens'] as $token) {
+                $cond = in_array($token->type, array_keys($this->availabletokens));
+                assertf::assert($cond, null, 'token ' . $token->type . ' is not valid');
+                $type = $this->availabletokens[$token->type];
+
+                if (is_null($type) === false) {
+                    $tokensprepared[] = new token(
+                        $type, $token->value, $token->line
+                    );
+                }
+            }
+        }
+
+        $this->tokens = $tokensprepared;
+        return $tokensprepared;
+    }
+
+    /**
+     * Get tokens for each line of $filename
+     *
+     * @param string $filename file to tokenize
+     * @return array
+     */
+    public function get_all_tokens(string $filename): array {
         assertf::assert(file_exists($filename), $this->name, 'file ' . $filename . ' does not exist');
         $hasvalidext = false;
 
@@ -177,12 +269,13 @@ class tokenizer extends tokenizer_base {
 
         $infolines = array();
         $state = 'start';
+        $numline = 0;
 
         if ($file = fopen($filename, 'r')) {
             if (filesize($filename) != 0) {
                 while (!feof($file)) {
                     $textperline = fgets($file);
-                    $infoline = $this->get_line_tokens($textperline, $state);
+                    $infoline = $this->get_line_tokens($textperline, $state, $numline++);
 
                     $state = $infoline["state"];
                     $infolines[] = $infoline;
@@ -201,9 +294,10 @@ class tokenizer extends tokenizer_base {
      *
      * @param string $line content of the line
      * @param string $startstate state on which stack would start
+     * @param int    $numline number of line
      * @return array
      */
-    public function get_line_tokens(string $line, string $startstate=""): array {
+    public function get_line_tokens(string $line, string $startstate="", int $numline): array {
         $currentstate = strcmp($startstate, "") == 0 ? "start" : $startstate;
         $tokens = array();
 
@@ -217,7 +311,7 @@ class tokenizer extends tokenizer_base {
         $mapping = $this->matchmappings[$currentstate];
         $regex = $this->regexprs[$currentstate];
         $offset = $lastindex = $matchattempts = 0;
-        $token = new token(null, "");
+        $token = new token(null, "", -1);
         $numchars = 0;
 
         while (preg_match($regex, substr($line, $offset), $matches, PREG_OFFSET_CAPTURE) === 1) {
@@ -239,7 +333,7 @@ class tokenizer extends tokenizer_base {
                     }
 
                     $overflowval = substr($line, $lastindex, 500);
-                    $token = new token("overflow", $overflowval);
+                    $token = new token("overflow", $overflowval, $numline);
                     $lastindex += 500;
                 }
 
@@ -273,7 +367,7 @@ class tokenizer extends tokenizer_base {
                         }
                     }
 
-                    $token = new token($type, $skipped);
+                    $token = new token($type, $skipped, $numline);
                 }
             }
 
@@ -321,7 +415,7 @@ class tokenizer extends tokenizer_base {
                             }
                         }
 
-                        $token = new token($type, $value);
+                        $token = new token($type, $value, $numline);
                     }
                 } else {
                     if (isset($token->type) && $numchars < strlen($line)) {
@@ -331,8 +425,8 @@ class tokenizer extends tokenizer_base {
                         }
                     }
 
-                    $token = new token(null, "");
-                    $tokenarray = tokenizer_base::get_token_array($type, $value, $regex);
+                    $token = new token(null, "", -1);
+                    $tokenarray = tokenizer_base::get_token_array($numline, $type, $value, $regex);
 
                     foreach ($tokenarray as $tokensplit) {
                         $tokens[] = $tokensplit;
@@ -438,6 +532,36 @@ class tokenizer extends tokenizer_base {
         $jsonobj = json_decode($content);
         assertf::assert(isset($jsonobj), $filename, 'file ' . $filename . ' is empty');
         return $jsonobj;
+    }
+
+    private function init_override_tokens(string $rulefilename, object $jsonobj) {
+        if (isset($jsonobj->override_tokens)) {
+            assertf::assert(
+                is_object($jsonobj->override_tokens), $rulefilename,
+                '"override_tokens" option must be an object'
+            );
+
+            $overridetokens = (array)$jsonobj->override_tokens;
+
+            foreach ($overridetokens as $tokename => $strtokentype) {
+                $tokentype = $this->availabletokens[$strtokentype];
+
+                while (!is_numeric($tokentype)) {
+                    assertf::assert(
+                        isset($this->availabletokens[$strtokentype]),
+                        $rulefilename, $strtokentype . ' does not exist'
+                    );
+
+                    $index = $this->availabletokens[$strtokentype];
+                    $tokentype = $this->availabletokens[$index];
+                    $strtokentype = $this->availabletokens[$strtokentype];
+                }
+
+                $this->availabletokens[$tokename] = $tokentype;
+            }
+
+            unset($jsonobj->override_tokens);
+        }
     }
 
     private function init_tokenizer_name(string $rulefilename, object $jsonobj) {
@@ -578,7 +702,8 @@ class tokenizer extends tokenizer_base {
 
                 if (strcmp($optionname, "token") == 0) {
                     $errmssg = "invalid token at rule " . $nrule . " of state \"" . $statename . "\" nº" . $nstate;
-                    assertf::assert(tokenizer_base::check_token($rule->$optionname, self::TEXTMATETOKENS), $rulefilename, $errmssg);
+                    $cond = tokenizer_base::check_token($rule->$optionname, array_keys($this->availabletokens));
+                    assertf::assert($cond, $rulefilename, $errmssg);
                 }
             }
 

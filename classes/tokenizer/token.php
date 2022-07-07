@@ -28,23 +28,32 @@ namespace mod_vpl\tokenizer;
  * @codeCoverageIgnore
  */
 class token {
+    private static array $hashvalues = [];
+
     /**
      * Type of current token
      */
     public $type;
 
     /**
-     * Specific value of current token
+     * @var ?string Specific value of current token
      */
     public ?string $value;
+
+    /**
+     * @var int Type of current token
+     */
+    public int $line;
 
     /**
      * Creates a new token with passed type and value
      *
      * @param $type type of current token
      * @param ?string $value value of current token
+     * @param int $line number of line of current token
      */
-    public function __construct($type, ?string $value) {
+    public function __construct($type, ?string $value, int $line) {
+        $this->line = $line;
         $this->type = $type;
         $this->value = $value;
     }
@@ -58,7 +67,27 @@ class token {
     public function equals_to(token $othertoken): bool {
         return (
             $othertoken->type === $this->type &&
-            $othertoken->value === $this->value
+            $othertoken->value === $this->value &&
+            $othertoken->line === $this->line
         );
+    }
+
+    /**
+     * Get hashcode for current token
+     *
+     * @return int
+     */
+    public function hash(): int {
+        if (!isset(self::$hashvalues[$this->value])) {
+            self::$hashvalues[$this->value] = mt_rand();
+        }
+
+        return self::$hashvalues[$this->value];
+    }
+    /**
+     * Show token at current output channel
+     */
+    public function show(): void {
+        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br>';
     }
 }

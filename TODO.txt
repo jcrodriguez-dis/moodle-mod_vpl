@@ -1,9 +1,0 @@
-===================================
-TODO for Plugin VPL 3.5.0++
-===================================
-
-tokenizer.php:
-    - Include push and pop
-
-tokenizer_test.php:
-    - Include methods to set coverage to 100%

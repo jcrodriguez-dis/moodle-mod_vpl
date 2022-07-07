@@ -45,10 +45,10 @@ class assertf {
      */
     public static function get_error(?string $filename, string $message): string {
         if (self::$messagewithcolors) {
-            $messagecustomized = isset($filename) ? "\e[1m" . basename($filename) . "\e[0m" : "";
-            $messagecustomized .= "\e[1m:\e[0m \e[0;31merror:\e[0m " . $message;
+            $messagecustomized = isset($filename) ? "\e[1m" . basename($filename) . "\e[0m\e[1m:\e[0m " : "";
+            $messagecustomized .= "\e[0;31merror:\e[0m " . $message;
         } else {
-            $messagecustomized = isset($filename) ? basename($filename) : "";
+            $messagecustomized = isset($filename) ? basename($filename) . ": " : "";
             $messagecustomized .= "error: " . $message;
         }
 

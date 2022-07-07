@@ -30,7 +30,7 @@
                 "regex": "[+-]?[0-9][0-9_]*(?:(?:\\.[0-9_]*)?(?:[eE][+-]?[0-9_]+)?)?[LlSsDdFfYy]?\\b"
             },
             {
-                "token": "constant.language",
+                "token": "constant.language.boolean",
                 "regex": "(?:true|false)\\b"
             },
             {

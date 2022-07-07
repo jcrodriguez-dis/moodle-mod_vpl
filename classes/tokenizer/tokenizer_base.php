@@ -32,6 +32,7 @@ class tokenizer_base {
     protected array $states;
     protected array $matchmappings;
     protected array $regexprs;
+    protected array $tokens;
 
     /**
      * @codeCoverageIgnore
@@ -39,9 +40,21 @@ class tokenizer_base {
      * Initialize an empty tokenizer
      */
     public function __construct() {
+        $this->tokens = [];
         $this->states = [];
         $this->matchmappings = [];
         $this->regexprs = [];
+    }
+
+    /**
+     * @codeCoverageIgnore
+     *
+     * Get tokens for current tokenizer
+     *
+     * @return array
+     */
+    public function get_tokens(): array {
+        return $this->tokens;
     }
 
     /**
@@ -176,22 +189,8 @@ class tokenizer_base {
         }
 
         foreach ($token as $value) {
-            $splitvalues = explode(".", $value);
-            $splitvalues = count($splitvalues) <= 0 ? $value : $splitvalues;
-            $arraytoken = $availabletokens;
-
-            foreach ($splitvalues as $svalue) {
-                if (isset($arraytoken) === true) {
-                    if (isset($arraytoken[$svalue])) {
-                        $arraytoken = $arraytoken[$svalue];
-                    } else if (in_array($svalue, $arraytoken)) {
-                        unset($arraytoken);
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
-                }
+            if (!in_array($value, $availabletokens)) {
+                return false;
             }
         }
 
@@ -216,12 +215,13 @@ class tokenizer_base {
     /**
      * Get an array of tokens extracted from capturing groups
      *
+     * @param int    $numline number of line each token
      * @param array  $type list of types for each token
      * @param string $value expression with values for each group
      * @param string $regex regular expression with capturing groups
      * @return array
      */
-    protected static function get_token_array(array $type, string $value, string $regex): array {
+    protected static function get_token_array(int $numline, array $type, string $value, string $regex): array {
         $tokenarray = array();
 
         if (preg_match_all("/\(\?:/", $regex, $matches, PREG_OFFSET_CAPTURE) >= 1) {
@@ -236,12 +236,12 @@ class tokenizer_base {
                         $offset = $matches[0][$i + 1][1];
 
                         preg_match($regexi, $restvalue, $matchesvalue);
-                        $tokenarray[] = new token($type[$i], $matchesvalue[0]);
+                        $tokenarray[] = new token($type[$i], $matchesvalue[0], $numline);
                         $restvalue = substr($restvalue, strlen($matchesvalue[0]));
                     } else {
                         $length = strlen($value) - $offset;
                         $regexi = "/" . substr($regex, $offset, $length) . "/";
-                        $tokenarray[] = new token($type[$i], $restvalue);
+                        $tokenarray[] = new token($type[$i], $restvalue, $numline);
                     }
                 }
             }

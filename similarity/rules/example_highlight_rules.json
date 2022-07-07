@@ -82,6 +82,19 @@
     // current file's path, and extension must not be defined
     "inherit_rules": "text_highlight_rules",
 
+    // OPTIONAL
+    // Since tokenizer only allows some names for tokens, it is
+    // possible to define new tokens or set a different type
+    // for an existed one. You can check what types of tokens are
+    // at \mod_vpl\tokenizer\token_type. However, it is possible
+    // to unset the type of a token by setting its type to "",
+    // or set the value of a token using an existed token.
+    "override_tokens": {
+        "constant": "constant.numeric",
+        "string.start": "vpl_literal",
+        "string.end": "vpl_literal"
+    },
+
     // REQUIRED
     // List of states that tokenizer uses during its execution.
     // Each state must have a named and an array of rules.
@@ -160,7 +173,7 @@
                 "token": [
                     "storage.type",
                     "entity.name",
-                    "entity.name.function"
+                    "entity.name"
                 ],
                 "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
                 "next": "start"

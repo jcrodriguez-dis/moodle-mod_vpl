@@ -82,9 +82,13 @@ class tokenizer_base_test extends \advanced_testcase {
      */
     protected const AVAILABLETOKENS = [
         "text",
-        "comment"  => [ "line" ],
-        "constant" => [ "character" => [ "escape" ] ],
-        "storage"  => [ "type" ]
+        "comment",
+        "comment.line",
+        "constant",
+        "constant.character",
+        "constant.character.escape",
+        "storage",
+        "storage.type"
     ];
 
     /**
@@ -133,7 +137,7 @@ class tokenizer_base_test extends \advanced_testcase {
             2 => [ 'input'  => [ 'type' => [ 'type' ], 'value' => '', 'regex' => '/((?:int)(?:a))|($)/' ], 'output' => [] ],
             3 => [
                 'input'  => [ 'type' => [ 'type' ], 'value' => 'int', 'regex' => '((?:int))|($)' ],
-                'output' => [ new token('type', 'int') ]
+                'output' => [ new token('type', 'int', 0) ]
             ],
             4 => [
                 'input'  => [
@@ -141,7 +145,7 @@ class tokenizer_base_test extends \advanced_testcase {
                     'value' => 'int a',
                     'regex' => '/((?:int)(?:\s+)(?:[a-z]))|($)/'
                 ],
-                'output' => [ new token('storage.type', 'int'), new token('text', ' '), new token('identifier', 'a') ]
+                'output' => [ new token('storage.type', 'int', 0), new token('text', ' ', 0), new token('identifier', 'a', 0) ]
             ],
             5 => [
                 'input' => [
@@ -150,9 +154,9 @@ class tokenizer_base_test extends \advanced_testcase {
                     'regex' => '/((?:[a-z]+)(?:\s*)(?:\()(?:\))(?:\s+)(?:\{))|($)/'
                 ],
                 'output' => [
-                    new token('id', 'hello'), new token('text', ' '),
-                    new token('paren.lparen', '('), new token('paren.rparen', ')'),
-                    new token('text', ' '), new token('paren.lparen', '{')
+                    new token('id', 'hello', 0), new token('text', ' ', 0),
+                    new token('paren.lparen', '(', 0), new token('paren.rparen', ')', 0),
+                    new token('text', ' ', 0), new token('paren.lparen', '{', 0)
                 ]
             ]
         ];
@@ -245,7 +249,7 @@ class tokenizer_base_test extends \advanced_testcase {
             $regex = $expected['input']['regex'];
             $expectedresult = $expected['output'];
 
-            $result = testable_tokenizer_base::get_token_array($type, $value, $regex);
+            $result = testable_tokenizer_base::get_token_array(0, $type, $value, $regex);
             $this->assertTrue(count($expectedresult) === count($result));
 
             for ($i = 0; $i < count($result); $i++) {

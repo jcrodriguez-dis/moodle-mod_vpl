@@ -3,6 +3,11 @@
     "extension": "no-ext",
     "check_rules": true,
     "inherit_rules": "text_highlight_rules",
+    "override_tokens": {
+        "constant": "vpl_literal",
+        "string.start": "vpl_literal",
+        "string.end": "vpl_literal"
+    },
     "states": {
         "start": [
             {
@@ -33,7 +38,7 @@
                 "token": [
                     "storage.type",
                     "entity.name",
-                    "entity.name.function"
+                    "entity.name"
                 ],
                 "regex": "(function)(\\s+)([a-zA-Z_][a-zA-Z0-9_]*\\b)",
                 "next": "start"

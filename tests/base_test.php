@@ -547,7 +547,7 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
         return tokenizer_base::remove_capturing_groups($src);
     }
 
-    public static function get_token_array(array $type, string $value, string $regex): array {
-        return tokenizer_base::get_token_array($type, $value, $regex);
+    public static function get_token_array(int $numline, array $type, string $value, string $regex): array {
+        return tokenizer_base::get_token_array($numline, $type, $value, $regex);
     }
 }
