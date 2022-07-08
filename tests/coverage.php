@@ -24,28 +24,6 @@ defined('MOODLE_INTERNAL') || die();
  */
 return new class extends phpunit_coverage_info {
     /**
-     * @var array The list of folders relative to the plugin root to whitelist in coverage generation.
-     * @deprecated since Moodle 3.11 MDL-70745 - please don't use this property any more.
-     * @todo MDL-71067 - remove in Moodle 4.3
-     */
-    protected $whitelistfolders = [
-        'classes',
-        'similarity',
-        'forms',
-        'jail',
-        'views'
-    ];
-
-    /**
-     * @var array The list of files relative to the plugin root to whitelist in coverage generation.
-     * @deprecated since Moodle 3.11 MDL-70745 - please don't use this property any more.
-     * @todo MDL-71067 - remove in Moodle 4.3
-     */
-    protected $whitelistfiles = [
-
-    ];
-
-    /**
      * @var array The list of folders relative to the plugin root to include in coverage generation
      */
     protected $includelistfolders = [
@@ -84,6 +62,7 @@ return new class extends phpunit_coverage_info {
         'lib.php',
         'locallib.php',
         'classes/token.php',
+        'classes/token_type.php',
         'classes/assertf.php'
     ];
 };

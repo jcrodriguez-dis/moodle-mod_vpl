@@ -84,6 +84,7 @@ class token {
 
         return self::$hashvalues[$this->value];
     }
+
     /**
      * Show token at current output channel
      */

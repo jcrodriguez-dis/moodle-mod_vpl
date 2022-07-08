@@ -27,9 +27,6 @@ namespace mod_vpl\tokenizer;
 use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\util\assertf;
 
-/**
- * @codeCoverageIgnore
- */
 class tokenizer_factory {
     private static array $tkloaded = array();
 
@@ -37,9 +34,9 @@ class tokenizer_factory {
      * Get tokenizer for passed programming language
      *
      * @param string $namelang name of a programming language
-     * @return tokenizer
+     * @return ?tokenizer|?vpl_tokenizer
      */
-    public static function get(string $namelang): tokenizer {
+    public static function get(string $namelang) {
         $tokenizer = self::get_object($namelang);
 
         if (!isset($tokenizer) || is_null($tokenizer)) {
@@ -50,12 +47,13 @@ class tokenizer_factory {
         return $tokenizer;
     }
 
-    private static function get_require(string $namelang): ?tokenizer {
+    private static function get_require(string $namelang) {
         $include = 'tokenizer_' . $namelang . '.class.php';
+        $include = dirname(__FILE__) . '/../../similarity/' . $include;
 
-        if (file_exists(dirname(__FILE__) . '/' . $include)) {
+        if (file_exists($include) === true) {
             if (!isset(self::$tkloaded[$namelang])) {
-                require_once(dirname(__FILE__) . '/' . $include);
+                require_once($include);
                 $class = 'vpl_tokenizer_' . $namelang;
                 self::$tkloaded[$namelang] = new $class();
             }
@@ -66,7 +64,7 @@ class tokenizer_factory {
         return null;
     }
 
-    private static function get_object(string $namelang): ?tokenizer {
+    private static function get_object(string $namelang) {
         $rulefilename = dirname(__FILE__) . '/../../similarity/rules/';
         $rulefilename .= $namelang . '_highlight_rules.json';
 

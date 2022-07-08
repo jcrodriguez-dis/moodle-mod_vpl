@@ -8,7 +8,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Since this is a non-official Changelog, you may want to see release
 notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+)
 
-## [3.5.0++ - 5.1.0] - 2022-07-01
+## [3.5.0++ - 5.1.1] - 2022-07-08
+
+### Added
+
+- Include test cases for \mod_vpl\tokenizer\tokenizer_factory
+- Include test cases for vpl_tokenizer_factory.class.php
+
+### Deleted
+
+- Remove deprecated arrays at coverage.php
+
+### Changed
+
+- Include extension at vpl_tokenizer_factory to new tokenizer_factory
+- Include extension at vpl_token_type to new token_type
+- Include extension at vpl_token to new token
+
+### Fixed
+
+- Fix tokenizer_factory when loading old tokenizers
+- Adjust vpl_tokenizer_factory to use new tokenizer_factory class
+
+## [3.5.0++ - 5.1.0] - 2022-07-07
 
 ### Added
 

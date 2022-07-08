@@ -158,7 +158,7 @@ class tokenizer extends tokenizer_base {
         "paren.lparen" => token_type::OPERATOR,
         "paren.rparen" => token_type::OPERATOR,
 
-        // VPL types
+        // VPL types.
         "vpl_identifier" => token_type::IDENTIFIER,
         "vpl_literal" => token_type::LITERAL,
         "vpl_operator" => token_type::OPERATOR,

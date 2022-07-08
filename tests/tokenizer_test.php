@@ -819,7 +819,10 @@ class tokenizer_test extends \advanced_testcase {
                         9 => [ 'state' => 'start', 'tokens' => [ ] ],
                         10 => [
                             'state' => 'start',
-                            'tokens' => [ new token('text', '            ', 10), new token('comment', '// This is just a comment', 10) ]
+                            'tokens' => [
+                                new token('text', '            ', 10),
+                                new token('comment', '// This is just a comment', 10)
+                            ]
                         ],
                         11 => [
                             'state' => 'start',

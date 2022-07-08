@@ -25,6 +25,8 @@
 namespace mod_vpl\tokenizer;
 
 /**
+ * @codeCoverageIgnore
+ *
  * List of available tokens used as a fixture to define
  * compatible tokens for similarity
  */
