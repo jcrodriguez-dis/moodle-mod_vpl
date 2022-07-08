@@ -23,10 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+defined('MOODLE_INTERNAL') || die();
+
 use mod_vpl\tokenizer\token;
 use mod_vpl\tokenizer\token_type;
 
-defined('MOODLE_INTERNAL') || die();
 class vpl_token_type extends token_type {
 
 }

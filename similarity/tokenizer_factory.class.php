@@ -16,6 +16,8 @@
 
 use mod_vpl\tokenizer\tokenizer_factory;
 
+require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+
 /**
  * Tokenizer factory class
  *

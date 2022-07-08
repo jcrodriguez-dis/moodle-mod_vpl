@@ -28,7 +28,18 @@ use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer_base;
 
 // @codeCoverageIgnoreStart
-//
+if (!function_exists('str_starts_with')) {
+    function str_starts_with($haystack, $needle) {
+        return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+    }
+}
+
+if (!function_exists('str_ends_with')) {
+    function str_ends_with($haystack, $needle) {
+        return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;
+    }
+}
+
 // Adjust this flag in order to avoid showing error messages
 // which are not catched as exceptions. On production, this
 // should be commnented or set to false.
@@ -223,11 +234,19 @@ class tokenizer extends tokenizer_base {
     /**
      * Get all tokens for passed filename for similarity
      *
-     * @param string $filename file to tokenize
+     * @param string $data content or file to tokenize
+     * @param bool $isfile check if $data is filename
      * @return array
      */
-    public function parse(string $filename): array {
-        $tokens = $this->get_all_tokens($filename);
+    public function parse(string $data, bool $isfile=true): array {
+        if ($isfile === true) {
+            $tokens = $this->get_all_tokens($data);
+        } else {
+            // @codeCoverageIgnoreStart
+            $tokens = [$this->get_line_tokens($data, "start", 0)];
+            // @codeCoverageIgnoreEnd
+        }
+
         $tokensprepared = array();
 
         foreach ($tokens as $dataofline) {

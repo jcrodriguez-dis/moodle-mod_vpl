@@ -14,10 +14,7 @@ notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documenta
 
 - Include test cases for \mod_vpl\tokenizer\tokenizer_factory
 - Include test cases for vpl_tokenizer_factory.class.php
-
-### Deleted
-
-- Remove deprecated arrays at coverage.php
+- Include c_highlight_rules.json at similarity/rules folder
 
 ### Changed
 
@@ -25,8 +22,16 @@ notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documenta
 - Include extension at vpl_token_type to new token_type
 - Include extension at vpl_token to new token
 
+### Deleted
+
+- Remove deprecated arrays at coverage.php
+
 ### Fixed
 
+- Provide support for str_starts_with and str_ends_with for Moodle 4.0.1
+- Include import at tokenizer_factory to use vpl_token at similarity
+- Fix \mod_vpl\tokenizer\tokenizer->parse method to be compatible with similarity classes
+- Fix similarity_base to be compatible with new \mod_vpl\tokenizer\tokenizer->parse
 - Fix tokenizer_factory when loading old tokenizers
 - Adjust vpl_tokenizer_factory to use new tokenizer_factory class
 

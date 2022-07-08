@@ -74,7 +74,7 @@ class vpl_similarity_base {
         // Get tokenizer for this language.
         $tok = $this->get_tokenizer();
         // Parse code.
-        $tok->parse( $data );
+        $tok->parse( $data, false );
         // Normalize parsed data transforming or removing code.
         $tokens = $tok->get_tokens();
         $tokens = $this->sintax_normalize( $tokens );
