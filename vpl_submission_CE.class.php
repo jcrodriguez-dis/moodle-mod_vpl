@@ -289,10 +289,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $info = "#!/bin/bash\n";
         $info .= vpl_bash_export( 'VPL_LANG', vpl_get_lang( true ) );
         $info .= vpl_bash_export( 'MOODLE_USER_ID',  $subinstance->userid );
-        if (! $vpl->is_group_activity()) {
-            if ($user = $DB->get_record( 'user', array ( 'id' => $subinstance->userid ) )) {
-                $info .= vpl_bash_export( 'MOODLE_USER_NAME', $vpl->fullname( $user, false ) );
-                $info .= vpl_bash_export( 'MOODLE_USER_EMAIL', $user->email );
+        if ($user = $DB->get_record( 'user', array ( 'id' => $subinstance->userid ) )) {
+            $info .= vpl_bash_export( 'MOODLE_USER_NAME', $vpl->fullname( $user, false ) );
+            $info .= vpl_bash_export( 'MOODLE_USER_EMAIL', $user->email );
+        }
+        if ($vpl->is_group_activity()) {
+            if ($group = $DB->get_record( 'groups', array ( 'id' => $subinstance->groupid ) )) {
+                $info .= vpl_bash_export( 'MOODLE_GROUP_ID',  $subinstance->groupid );
+                $info .= vpl_bash_export( 'MOODLE_GROUP_NAME', $group->name );
             }
         }
         if ($type == 2) { // If evaluation add information.
