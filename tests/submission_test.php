@@ -26,6 +26,7 @@
 namespace mod_vpl;
 
 use \mod_vpl_submission;
+use \mod_vpl_submission_CE;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -64,5 +65,54 @@ class submission_test extends base_test {
         $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade( - 4 )'));
         $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade( - 4.0 )'));
         $this->assertEquals('- Title with grade', mod_vpl_submission::remove_grade_reduction('- Title with grade(-.0010)'));
+    }
+    /**
+     * Method to test mod_vpl_submission_CE::adaptbinaryfiles
+     * @covers \mod_vpl_submission_CE::adaptbinaryfiles
+     */
+    public function test_adaptbinaryfiles() {
+        $data = new \stdClass();
+        $data->filestodelete = [];
+        $files = [];
+        mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
+        $this->assertCount(0, $files);
+        $this->assertCount(0, $data->filestodelete);
+        $this->assertCount(0, $data->files);
+        $this->assertCount(0, $data->fileencoding);
+
+        $data = new \stdClass();
+        $data->filestodelete = [];
+        $files = ['a.c' => 'a', 'b.c' => 'b'];
+        mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
+        $this->assertCount(2, $files);
+        $this->assertEquals('', $files['a.c']);
+        $this->assertEquals('', $files['b.c']);
+        $this->assertCount(0, $data->filestodelete);
+        $this->assertCount(2, $data->files);
+        $this->assertEquals('a', $data->files['a.c']);
+        $this->assertEquals('b', $data->files['b.c']);
+        $this->assertCount(2, $data->files);
+        $this->assertEquals('a', $data->files['a.c']);
+        $this->assertEquals('b', $data->files['b.c']);
+        $this->assertCount(2, $data->fileencoding);
+        $this->assertEquals(0, $data->fileencoding['a.c']);
+        $this->assertEquals(0, $data->fileencoding['b.c']);
+
+        $data = new \stdClass();
+        $data->filestodelete = ['algo' => 1];
+        $files = ['a.c' => 'a', 'a.jpg' => 'b'];
+        mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
+        $this->assertCount(2, $files);
+        $this->assertEquals('', $files['a.c']);
+        $this->assertEquals('', $files['a.jpg']);
+        $this->assertCount(2, $data->filestodelete);
+        $this->assertEquals(1, $data->filestodelete['algo']);
+        $this->assertEquals(1, $data->filestodelete['a.jpg.b64']);
+        $this->assertCount(2, $data->files);
+        $this->assertEquals('a', $data->files['a.c']);
+        $this->assertEquals(base64_encode('b'), $data->files['a.jpg.b64']);
+        $this->assertCount(2, $data->fileencoding);
+        $this->assertEquals(0, $data->fileencoding['a.c']);
+        $this->assertEquals(1, $data->fileencoding['a.jpg.b64']);
     }
 }

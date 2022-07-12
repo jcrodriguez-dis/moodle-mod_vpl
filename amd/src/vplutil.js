@@ -800,7 +800,15 @@ define(
             }
             return VPLUtil.showMessage(message, currentOptions);
         };
-
+        /**
+         * Request an action to de server: save, run, debug, evaluate, update, getresult, etc.
+         * @param {string} action Name of action to request.
+         * @param {string} title The title that shows the progress dialog
+         * @param {object} data Data to send to the server
+         * @param {string} URL URL to the server entry point, lacking action
+         * @param {boolean} noDialog If true then no dialog is shown
+         * @returns {deferred} Defferred object
+         */
         VPLUtil.requestAction = function(action, title, data, URL, noDialog) {
             var deferred = $.Deferred();
             var request = null;
@@ -1068,15 +1076,18 @@ define(
          * Run a command in a execution server with input/output using a WebSocket
          * @param {string} URL to VPL editor services in Moodle server
          * @param {string} command Command to run in execution server
-         * @returns {object} deferred. Use done() to set handler to receive the WebSocket. Use fail to set error handler.
+         * @param {array.<{name: string, contents: string, encoding: number}>} files
+         *         array of objects name, contents and encoding 0 => UTF-8, 1 => Base64
+         * @returns {object} deferred.
+         *         Use done() to set handler to receive the WebSocket. Use fail to set error handler.
          */
-        VPLUtil.directRun = function(URL, command) {
+        VPLUtil.directRun = function(URL, command, files) {
             var deferred = $.Deferred();
             $.ajax({
                 async: true,
                 type: "POST",
                 url: URL + 'directrun',
-                'data': JSON.stringify({"command": command}),
+                'data': JSON.stringify({"command": command, "files": files}),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
             }).done(function(result) {
@@ -1087,7 +1098,7 @@ define(
                     VPLUtil.setProtocol(response);
                     var ws = new WebSocket(response.executionURL);
                     log.debug('Conecting with:' + response.executionURL);
-                    deferred.resolve(ws);
+                    deferred.resolve({processid: response.processid, homepath: response.homepath, connection: ws});
                 }
             }).fail(function(jqXHR, textStatus, errorThrown) {
                 var message = 'Connection fail' + ': ' + textStatus;
@@ -1107,28 +1118,30 @@ define(
          * @param {object} data to send to server
          */
          VPLUtil.directRunTest = function(URL, command, data) {
-            VPLUtil.directRun(URL, command)
-                .done(function(ws) {
+            var files = [{name: 'a.c', contents: 'int main(){return 0;}', encoding: 0},
+                         {name: 'b.c', contents: 'int f(){return 1;}', encoding: 0}];
+            VPLUtil.directRun(URL, command, files)
+                .done(function(result) {
                     var mcount = 0;
-                    ws.onopen = function() {
-                        log.debug("Ws open");
+                    result.connection.onopen = function() {
+                        log.debug("Ws open " + result.homepath + " processid " + result.processid);
                         if (data != undefined) {
-                            ws.send(data);
+                            result.connection.send(data);
                         }
                         setTimeout(function() { //  Close test if open for more than 10 minutes.
-                            ws.close();
+                            result.connection.close();
                         }, 60 * 10 * 1000);
                     };
-                    ws.onmessage = function(event) {
+                    result.connection.onmessage = function(event) {
                         log.debug("WS Message (" + ++mcount + "): " + event.data);
                         if (mcount >= 10) {
-                            ws.close();
+                            result.connection.close();
                         }
                     };
-                    ws.onerror = function(event) {
+                    result.connection.onerror = function(event) {
                         log.debug("WS error: " + event);
                     };
-                    ws.onclose = function(event) {
+                    result.connection.onclose = function(event) {
                         log.debug("WS close: " + event.code + " " + event.reason);
                     };
                 })

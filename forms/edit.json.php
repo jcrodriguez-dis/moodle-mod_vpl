@@ -127,7 +127,8 @@ try {
             $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
             break;
         case 'directrun':
-            $result->response = mod_vpl_edit::directrun( $vpl, $userid, $actiondata->command);
+            $files = mod_vpl_edit::filesfromide( $actiondata->files );
+            $result->response = mod_vpl_edit::directrun( $vpl, $userid, $actiondata->command, $files);
             break;
         default:
             throw new Exception( 'ajax action error: ' + $action );

@@ -152,12 +152,7 @@ class mod_vpl_edit {
      * @return boolean True if updated
      */
     public static function update(mod_vpl $vpl, int $userid, int $processid, array & $files) {
-        $lastsub = $vpl->last_user_submission( $userid );
-        if (! $lastsub) {
-            throw new Exception( get_string( 'nosubmission', VPL ) );
-        }
-        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
-        return $submission->update($processid, $files);
+        return mod_vpl_submission_CE::update($vpl->get_instance()->id, $userid, $processid, $files);
     }
 
     /**
@@ -331,7 +326,8 @@ class mod_vpl_edit {
      * @param string $command
      * @throws Exception
      */
-    public static function directrun($vpl, $userid, $command) {
+    public static function directrun($vpl, $userid, $command, $files) {
+        $executefilename = '.vpl_directrun.sh';
         $maxmemory = 1000 * 1000 * 1000;
         $localservers = $vpl->get_instance()->jailservers;
         $error = '';
@@ -345,18 +341,19 @@ class mod_vpl_edit {
             throw new Exception( $men );
         }
         $data = new stdClass();
-        $data->files = ['directrun.sh' => <<<DIRECTRUNCODE
+        $data->filestodelete = [];
+        mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
+        $data->files[$executefilename] = <<<DIRECTRUNCODE
 #!/bin/bash
 cat > vpl_execution <<CONTENTS
 #!/bin/bash
 $command
 CONTENTS
 chmod +x vpl_execution
-DIRECTRUNCODE
-            ];
-        $data->execute = 'directrun.sh';
-        $data->filestodelete = ['directrun.sh' => 1 ];
-        $data->fileencoding = ['directrun.sh' => 0 ];
+DIRECTRUNCODE;
+        $data->filestodelete[$executefilename] = 1;
+        $data->fileencoding[$executefilename] = 0;
+        $data->execute = $executefilename;
         $plugin = new stdClass();
         require(dirname( __FILE__ ) . '/../version.php');
         $pluginversion = $plugin->version;
@@ -384,6 +381,7 @@ DIRECTRUNCODE
         $response->port = $jailresponse['port'];
         $response->securePort = $jailresponse['secureport'];
         $response->wsProtocol = get_config('mod_vpl')->websocket_protocol;
+        $response->homepath = $jailresponse['homepath'];
         $vplid = $vpl->get_instance()->id;
         $adminticket = $jailresponse['adminticket'];
         $response->processid = vpl_running_processes::set( $userid, $server, $vplid, $adminticket );
