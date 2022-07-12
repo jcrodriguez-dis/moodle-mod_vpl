@@ -1,6 +1,8 @@
+// Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/c_cpp_highlight_rules.js>
+// made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
-    "name": "c_cpp_tokenizer",
-    "extension": [ ".c", ".h", ".cpp", ".c++", ".hpp", ".h++" ],
+    "name": "c_tokenizer",
+    "extension": [ ".c", ".h" ],
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
     "states": {
@@ -14,6 +16,11 @@
                 "token": "comment",
                 "regex": "\\/\\/",
                 "next": "singleLineComment"
+            },
+            {
+                "token": "comment.block.documentation",
+                "regex": "\\/\\*(\\*?)",
+                "next": "start"
             },
             {
                 "token": "comment",
@@ -44,12 +51,17 @@
             },
             {
                 "token": "keyword",
-                "regex": "#\\s*(?:include|import|pragma|line|define|undef)\\b",
+                "regex": "#\\s*(?:define)\\b",
+                "next": "directive-define"
+            },
+            {
+                "token": "keyword",
+                "regex": "#\\s*(?:include|pragma|line|undef|ifdef|ifndef)\\b",
                 "next": "directive"
             },
             {
                 "token": "keyword",
-                "regex": "#\\s*(?:endif|if|ifdef|else|elif|ifndef)\\b"
+                "regex": "#\\s*(?:endif|if|else|elif)\\b"
             },
             {
                 "token": "support.function",
@@ -57,23 +69,19 @@
             },
             {
                 "token": "keyword.control",
-                "regex":  "break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while|catch|operator|try|throw|using"
+                "regex": "break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while"
             },
             {
                 "token": "storage.type",
-                "regex":  "asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|class|wchar_t|template|char16_t|char32_t"
+                "regex": "bool|_Bool|size_t|char|double|float|long|short|typedef|int|enum|struct|signed|unsigned|void|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|_Complex|_Imaginary"
             },
             {
                 "token": "keyword.operator",
-                "regex": "and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|const_cast|dynamic_cast|reinterpret_cast|static_cast|sizeof|namespace"
-            },
-            {
-                "token": "variable.language",
-                "regex": "this"
+                "regex": "sizeof"
             },
             {
                 "token": "constant.language",
-                "regex": "NULL|true|false|TRUE|FALSE|nullptr"
+                "regex": "NULL|true|false|TRUE|FALSE"
             },
             {
                 "token": "identifier",
@@ -158,6 +166,13 @@
                 "default_token": "comment"
             }
         ],
+        "directive-define": [
+            {
+                "token": "identifier",
+                "regex": "\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\((?:.*,?)\\)",
+                "next": "directive"
+            }
+        ],
         "directive": [
             {
                 "token": "constant.other",
@@ -185,6 +200,9 @@
             {
                 "token": "constant.other",
                 "regex": "[^\\\\\\/]+",
+                "next": "start"
+            },
+            {
                 "next": "start"
             }
         ]

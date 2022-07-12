@@ -1,0 +1,13 @@
+{
+    "override_tokens": {
+
+    },
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}

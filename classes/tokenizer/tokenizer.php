@@ -47,11 +47,11 @@ define('TOKENIZER_ON_TEST', true);
 // @codeCoverageIgnoreEnd
 
 class tokenizer extends tokenizer_base {
-    private string $name = 'default';
-    private array $extension = ['no-ext'];
-    private bool $checkrules = true;
-    private string $inheritrules;
-    private bool $setcheckrules;
+    protected string $name = 'default';
+    protected array $extension = ['no-ext'];
+    protected bool $checkrules = true;
+    protected string $inheritrules;
+    protected bool $setcheckrules;
 
     /**
      * Maximum number of tokens that tokenizer allow
@@ -80,6 +80,14 @@ class tokenizer extends tokenizer_base {
     protected const REQUIREDGROUPRULEOPTIONS = array(
         "token"         => ["regex"],
         "regex"         => ["token"],
+    );
+
+    /**
+     * List of all VPL token types used at override_tokens
+     */
+    protected const VPLTOKENTYPES = array(
+        "vpl_identifier", "vpl_literal", "vpl_operator",
+        "vpl_reserved", "vpl_other", "vpl_null"
     );
 
     /**
@@ -174,7 +182,8 @@ class tokenizer extends tokenizer_base {
         "vpl_literal" => token_type::LITERAL,
         "vpl_operator" => token_type::OPERATOR,
         "vpl_reserved" => token_type::RESERVED,
-        "vpl_other" => token_type::OTHER
+        "vpl_other" => token_type::OTHER,
+        "vpl_null" => null, // Same as "" at JSON files.
     );
 
     /**
@@ -257,7 +266,7 @@ class tokenizer extends tokenizer_base {
 
                 if (is_null($type) === false) {
                     $tokensprepared[] = new token(
-                        $type, $token->value, $token->line
+                        $type, trim($token->value), $token->line
                     );
                 }
             }
@@ -317,7 +326,7 @@ class tokenizer extends tokenizer_base {
      * @return array
      */
     public function get_line_tokens(string $line, string $startstate="", int $numline): array {
-        $currentstate = strcmp($startstate, "") == 0 ? "start" : $startstate;
+        $currentstate = strcmp($startstate, "") === 0 ? "start" : $startstate;
         $tokens = array();
 
         if (!isset($this->states[$currentstate])) {
@@ -329,9 +338,8 @@ class tokenizer extends tokenizer_base {
 
         $mapping = $this->matchmappings[$currentstate];
         $regex = $this->regexprs[$currentstate];
-        $offset = $lastindex = $matchattempts = 0;
+        $offset = $lastindex = $matchattempts = $numchars = 0;
         $token = new token(null, "", -1);
-        $numchars = 0;
 
         while (preg_match($regex, substr($line, $offset), $matches, PREG_OFFSET_CAPTURE) === 1) {
             if ($matchattempts++ >= $this->maxtokencount) {
@@ -344,13 +352,7 @@ class tokenizer extends tokenizer_base {
                 // @codeCoverageIgnoreEnd
 
                 while ($numchars < strlen($line)) {
-                    if (isset($token->type) && $numchars < strlen($line)) {
-                        if (strlen($token->value) >= 1) {
-                            $tokens[] = $token;
-                            $numchars += strlen($token->value);
-                        }
-                    }
-
+                    self::add_token($tokens, $token, $numchars, $line);
                     $overflowval = substr($line, $lastindex, 500);
                     $token = new token("overflow", $overflowval, $numline);
                     $lastindex += 500;
@@ -379,13 +381,7 @@ class tokenizer extends tokenizer_base {
                 if ($token->type === $type) {
                     $token->value .= $skipped;
                 } else {
-                    if (isset($token->type) && $numchars < strlen($line)) {
-                        if (strlen($token->value) >= 1) {
-                            $tokens[] = $token;
-                            $numchars += strlen($token->value);
-                        }
-                    }
-
+                    self::add_token($tokens, $token, $numchars, $line);
                     $token = new token($type, $skipped, $numline);
                 }
             }
@@ -424,26 +420,14 @@ class tokenizer extends tokenizer_base {
 
             if (isset($value)) {
                 if (isset($type) && is_string($type)) {
-                    if ((!isset($rule) || isset($rule->merge) && $rule->merge !== false) && $token->type === $type) {
+                    if (!isset($rule) && $token->type === $type) {
                         $token->value .= $value;
                     } else {
-                        if (isset($token->type) && $numchars < strlen($line)) {
-                            if (strlen($token->value) >= 1) {
-                                $tokens[] = $token;
-                                $numchars += strlen($token->value);
-                            }
-                        }
-
+                        self::add_token($tokens, $token, $numchars, $line);
                         $token = new token($type, $value, $numline);
                     }
                 } else {
-                    if (isset($token->type) && $numchars < strlen($line)) {
-                        if (strlen($token->value) >= 1) {
-                            $tokens[] = $token;
-                            $numchars += strlen($token->value);
-                        }
-                    }
-
+                    self::add_token($tokens, $token, $numchars, $line);
                     $token = new token(null, "", -1);
                     $tokenarray = tokenizer_base::get_token_array($numline, $type, $value, $regex);
 
@@ -454,20 +438,17 @@ class tokenizer extends tokenizer_base {
                 }
             }
 
-            if ($lastindex >= strlen($line) || $offset >= strlen($line)) {
+            $condexit = $lastindex >= strlen($line) || $offset >= strlen($line);
+            $condexit = $condexit || $numchars >= strlen($line);
+
+            if ($condexit === true) {
                 break;
             }
 
             $lastindex = $index;
         }
 
-        if (isset($token->type) && $numchars < strlen($line)) {
-            if (strlen(trim($token->value)) >= 1) {
-                $tokens[] = $token;
-                $numchars += strlen($token->value);
-            }
-        }
-
+        self::add_token($tokens, $token, $numchars, $line, true);
         return [ "state"  => $currentstate, "tokens" => $tokens ];
     }
 
@@ -541,6 +522,17 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    private static function add_token(array &$tokens, token $token, int &$numchars, string $line, bool $settrim=false): void {
+        if (isset($token->type) && $numchars < strlen($line)) {
+            $cond = !$settrim ? strlen($token->value) >= 1 : strlen(trim($token->value)) >= 1;
+
+            if ($cond === true) {
+                $tokens[] = $token;
+                $numchars += strlen($token->value);
+            }
+        }
+    }
+
     private static function load_json(string $filename): object {
         $data = file_get_contents($filename);
 
@@ -555,27 +547,29 @@ class tokenizer extends tokenizer_base {
 
     private function init_override_tokens(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->override_tokens)) {
-            assertf::assert(
-                is_object($jsonobj->override_tokens), $rulefilename,
-                '"override_tokens" option must be an object'
-            );
+            if ($this->checkrules === true) {
+                assertf::assert(
+                    is_object($jsonobj->override_tokens), $rulefilename,
+                    '"override_tokens" option must be an object'
+                );
+            }
 
             $overridetokens = (array)$jsonobj->override_tokens;
 
             foreach ($overridetokens as $tokename => $strtokentype) {
-                $tokentype = $this->availabletokens[$strtokentype];
-
-                while (!is_numeric($tokentype)) {
+                if ($this->checkrules === true) {
                     assertf::assert(
-                        isset($this->availabletokens[$strtokentype]),
-                        $rulefilename, $strtokentype . ' does not exist'
+                        !in_array($tokename, self::VPLTOKENTYPES),
+                        $rulefilename, $tokename . ' could not be overrided'
                     );
 
-                    $index = $this->availabletokens[$strtokentype];
-                    $tokentype = $this->availabletokens[$index];
-                    $strtokentype = $this->availabletokens[$strtokentype];
+                    assertf::assert(
+                        isset($this->availabletokens[$strtokentype]) || strcmp($strtokentype, 'vpl_null') == 0,
+                        $rulefilename, $strtokentype . ' does not exist'
+                    );
                 }
 
+                $tokentype = $this->availabletokens[$strtokentype];
                 $this->availabletokens[$tokename] = $tokentype;
             }
 
@@ -585,10 +579,12 @@ class tokenizer extends tokenizer_base {
 
     private function init_tokenizer_name(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->name)) {
-            assertf::assert(
-                is_string($jsonobj->name), $rulefilename,
-                '"name" option must be a string'
-            );
+            if ($this->checkrules === true) {
+                assertf::assert(
+                    is_string($jsonobj->name), $rulefilename,
+                    '"name" option must be a string'
+                );
+            }
 
             $this->name = $jsonobj->name;
             unset($jsonobj->name);
@@ -597,10 +593,12 @@ class tokenizer extends tokenizer_base {
 
     private function init_extension(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->extension)) {
-            assertf::assert(
-                is_string($jsonobj->extension) || tokenizer_base::check_type($jsonobj->extension, "array_string") === true,
-                $rulefilename, '"extension" option must be a string or an array of strings'
-            );
+            if ($this->checkrules === true) {
+                assertf::assert(
+                    is_string($jsonobj->extension) || tokenizer_base::check_type($jsonobj->extension, "array_string") === true,
+                    $rulefilename, '"extension" option must be a string or an array of strings'
+                );
+            }
 
             if (is_string($jsonobj->extension)) {
                 $this->extension = [$jsonobj->extension];
@@ -608,10 +606,12 @@ class tokenizer extends tokenizer_base {
                 $this->extension = $jsonobj->extension;
             }
 
-            foreach ($this->extension as $ext) {
-                if (strcmp($ext, 'no-ext') != 0) {
-                    $errmssg = 'extension ' . $ext . ' must start with .';
-                    assertf::assert(str_starts_with($ext, '.'), $rulefilename, $errmssg);
+            if ($this->checkrules === true) {
+                foreach ($this->extension as $ext) {
+                    if (strcmp($ext, 'no-ext') != 0) {
+                        $errmssg = 'extension ' . $ext . ' must start with .';
+                        assertf::assert(str_starts_with($ext, '.'), $rulefilename, $errmssg);
+                    }
                 }
             }
 

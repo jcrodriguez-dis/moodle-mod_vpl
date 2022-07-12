@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Since this is a non-official Changelog, you may want to see release
 notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+)
 
+## [3.5.0++ - 5.1.2] - 2022-07-12
+
+### Added
+
+- Include more test cases for override_tokens
+- Include "vpl_null" as a valid token for override_tokens (same as "")
+- Include restriction to avoid the override of vpl_ token names
+- Include tokenizer for C, C++, Fortran, Ada, and Scheme (not tested)
+- Include behat tests for similarity for each new tokenizer
+
+### Changed
+
+- Improve test_static_check to include output with expected tokens for behat
+- Private attributes at \mod_vpl\tokenizer\tokenizer are now protected
+- Reduce CRAP index for get_line_tokens and now coverage is 100%
+
+### Fixed
+
+- Improve Java, Ada, and Fortran highlighter rules (not tested)
+- Fix checkrules at new options (extension, name, and override_tokens)
+- Fix init method for override_tokens at \mod_vpl\tokenizer\tokenizer
+
 ## [3.5.0++ - 5.1.1] - 2022-07-08
 
 ### Added

@@ -73,20 +73,12 @@ class tokenizer_test extends \advanced_testcase {
     protected static array $invalidpreparsecases;
 
     /**
-     * List of valid test cases for tokenizer::get_line_tokens
+     * List of test cases for tokenizer::init_override_tokens
      *
      * key: path of a testable JSON file
-     * value: input and expected result of tokenizer::get_line_tokens
+     * value: expected list of override tokens
      */
-    protected static array $getlinetokenstestcases;
-
-    /**
-     * List of valid test cases for tokenizer::get_line_tokens when overflow has been detected
-     *
-     * key: path of a testable JSON file
-     * value: input and expected result of tokenizer::get_line_tokens
-     */
-    protected static array $getlinetokenoverflowstestcases;
+    protected static array $overridetokenscases;
 
     /**
      * List of test cases for tokenizer::apply_inheritance
@@ -103,6 +95,22 @@ class tokenizer_test extends \advanced_testcase {
      * value: expected regexprs and matchmappings
      */
     protected static array $preparetestcases;
+
+    /**
+     * List of valid test cases for tokenizer::get_line_tokens
+     *
+     * key: path of a testable JSON file
+     * value: input and expected result of tokenizer::get_line_tokens
+     */
+    protected static array $getlinetokenstestcases;
+
+    /**
+     * List of valid test cases for tokenizer::get_line_tokens when overflow has been detected
+     *
+     * key: path of a testable JSON file
+     * value: input and expected result of tokenizer::get_line_tokens
+     */
+    protected static array $getlinetokenoverflowstestcases;
 
     /**
      * List of test cases for tokenizer::get_all_tokens
@@ -124,10 +132,11 @@ class tokenizer_test extends \advanced_testcase {
      * Prepare test cases before the execution
      */
     public static function setUpBeforeClass(): void {
-        self::setup_get_line_tokens_cases();
         self::setup_invalid_cases();
+        self::setup_override_tokens_cases();
         self::setup_merge_cases();
         self::setup_prepare_cases();
+        self::setup_get_line_tokens_cases();
         self::setup_preparse_cases();
         self::setup_parse_cases();
     }
@@ -155,17 +164,46 @@ class tokenizer_test extends \advanced_testcase {
 
     /**
      * Method to test tokenizer::__construct with files located at similary folder
+     *
+     * This test also provides output files at /tests/vpl_tokenizer/behat
+     * with expected tokens for behat tests just for manual check.
      */
     public function test_static_check() {
         try {
             $dir = dirname(__FILE__) . '/../similarity/rules';
+            $dirbehat = dirname(__FILE__) . '/behat/datafiles/similarity/';
+            $outputdir = self::testpath() . 'behat/';
 
             $scanarr = scandir($dir);
             $filesarr = array_diff($scanarr, array('.', '..'));
+            $extincluded = array();
 
             foreach ($filesarr as $filename) {
                 $filename = $dir . '/' . $filename;
-                new tokenizer($filename, false);
+
+                if (!is_dir($filename)) {
+                    $tokenizer = new tokenizer($filename, false);
+                    $extensions = testable_tokenizer::get_extensions($tokenizer);
+
+                    foreach ($extensions as $ext) {
+                        if (!isset($extincluded[$ext])) {
+                            $parsefilename = $dirbehat . substr($ext, 1) . '_similarity' . $ext;
+
+                            if (file_exists($parsefilename)) {
+                                $tokenswithvpl = $tokenizer->parse($parsefilename);
+
+                                $outputfilenamewithvpl = $outputdir . 'with_vpl/tokens_' . substr($ext, 1) . '.txt';
+                                file_put_contents($outputfilenamewithvpl, print_r($tokenswithvpl, true));
+
+                                $tokenswithoutvpl = $tokenizer->get_all_tokens($parsefilename);
+                                $outputfilenamewithoutvpl = $outputdir . 'without_vpl/tokens_' . substr($ext, 1) . '.txt';
+                                file_put_contents($outputfilenamewithoutvpl, print_r($tokenswithoutvpl, true));
+                            }
+
+                            $extincluded[$ext] = true;
+                        }
+                    }
+                }
             }
         } catch (Exception $exe) {
             $this->fail($exe->getMessage() . "\n");
@@ -186,6 +224,21 @@ class tokenizer_test extends \advanced_testcase {
             }
 
             $this->fail('An expection was expected');
+        }
+    }
+
+    /**
+     * Method to test tokenizer::override_tokens
+     */
+    public function test_override_tokens() {
+        foreach (self::$overridetokenscases as $filename => $expectedtokens) {
+            $tokenizer = new tokenizer($filename);
+            $availabletokens = testable_tokenizer::get_available_tokens($tokenizer);
+
+            foreach ($expectedtokens as $tokename => $tokentype) {
+                $this->assertTrue(isset($availabletokens[$tokename]));
+                $this->assertSame($tokentype, $availabletokens[$tokename]);
+            }
         }
     }
 
@@ -381,136 +434,6 @@ class tokenizer_test extends \advanced_testcase {
      * ==================================
      */
 
-    private static function setup_get_line_tokens_cases(): void {
-        self::$getlinetokenstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
-                [
-                    'input' => '/* test comments',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('text', '/* test comments', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
-                [
-                    'input' => 'int',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/two_rules_highlight_rules.json' => (
-                [
-                    'input' => 'int ',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/more_rules_highlight_rules.json' => (
-                [
-                    'input' => 'int a = 10;',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0), new token('text', ' ', 0),
-                        new token('identifier', 'a', 0), new token('text', ' ', 0),
-                        new token('keyword.operator', '=', 0), new token('text', ' ', 0),
-                        new token('constant.numeric', '10', 0), new token('text', ';', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/for_highlight_rules.json' => (
-                [
-                    'input' => 'for (int i = 0; i < 10; i++) {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'for', 0), new token('text', ' ', 0),
-                        new token('paren.lparen', '(', 0), new token('storage.type', 'int', 0),
-                        new token('text', ' ', 0), new token('identifier', 'i', 0),
-                        new token('text', ' ', 0), new token('keyword.operator', '=', 0),
-                        new token('text', ' ', 0), new token('constant.numeric', '0', 0),
-                        new token('text', ';', 0), new token('text', ' ', 0),
-                        new token('identifier', 'i', 0), new token('text', ' ', 0),
-                        new token('keyword.operator', '<', 0), new token('text', ' ', 0),
-                        new token('constant.numeric', '10', 0), new token('text', ';', 0),
-                        new token('text', ' ', 0), new token('identifier', 'i', 0),
-                        new token('keyword.operator', '++', 0), new token('paren.rparen', ')', 0),
-                        new token('text', ' ', 0), new token('paren.lparen', '{', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/two_states_highlight_rules.json' => (
-                [
-                    'input' => '/* test comments */',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('comment.multiple', '/*', 0),
-                        new token('text', ' test comments ', 0),
-                        new token('comment', '*/', 0),
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/unexisted_state_highlight_rules.json' => (
-                [
-                    'input' => '// test comment',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('comment', '//', 0),
-                        new token('text', ' test comment', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/token_array_highlight_rules.json' => (
-                [
-                    'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'hello', 0),
-                        new token('text', ' ', 0),
-                        new token('paren.lparen', '(', 0),
-                        new token('paren.rparen', ')', 0),
-                        new token('text', ' ', 0),
-                        new token('paren.lparen', '{', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_highlight_rules.json' => (
-                [
-                    'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('identifier', 'hello', 0),
-                        new token('text', ' ', 0),
-                        new token('paren.lparen', '(', 0),
-                        new token('paren.rparen', ')', 0),
-                        new token('text', ' ', 0),
-                        new token('paren.lparen', '{', 0)
-                    ) ]
-                ]
-            )
-        );
-
-        self::$getlinetokenoverflowstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
-                [
-                    'input' => [
-                        'max_token_count' => 0,
-                        'value' => '/* test comments',
-                    ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('overflow', '/* test comments', 0)
-                    ) ]
-                ]
-            ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
-                [
-                    'input' => [
-                        'max_token_count' => 1,
-                        'value' => 'int a',
-                    ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0),
-                        new token('overflow', ' a', 0)
-                    ) ]
-                ]
-            ),
-        );
-    }
-
     private static function setup_invalid_cases(): void {
         self::$invalidtestcases = array(
             self::testpath() . 'invalid/dump_test.json' => (
@@ -527,6 +450,9 @@ class tokenizer_test extends \advanced_testcase {
             ),
             self::testpath() . 'invalid/general/invalid_check_rules_highlight_rules.json' => (
                 '"check_rules" option must be a boolean'
+            ),
+            self::testpath() . 'invalid/general/invalid_name_highlight_rules.json' => (
+                '"name" option must be a string'
             ),
             self::testpath() . 'invalid/general/invalid_extension_no_string_highlight_rules.json' => (
                 '"extension" option must be a string or an array of strings'
@@ -581,6 +507,15 @@ class tokenizer_test extends \advanced_testcase {
             ),
             self::testpath() . 'invalid/general/invalid_json_inheritance_highlight_rules.json' => (
                 'inherit JSON file ' . self::testpath() . 'invalid/general/dump_highlight_rules.json does not exist'
+            ),
+            self::testpath() . 'invalid/general/invalid_override_tokens_highlight_rules.json' => (
+                '"override_tokens" option must be an object'
+            ),
+            self::testpath() . 'invalid/general/invalid_token_at_override_tokens_highlight_rules.json' => (
+                'this_is_not_a_good_token_name does not exist'
+            ),
+            self::testpath() . 'invalid/general/vpl_type_not_overrided_highlight_rules.json' => (
+                'vpl_literal could not be overrided'
             )
         );
 
@@ -595,6 +530,35 @@ class tokenizer_test extends \advanced_testcase {
                 [
                     'input' => self::testpath() . 'invalid/general/test_ext.java',
                     'output' => self::testpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
+                ]
+            )
+        );
+    }
+
+    private static function setup_override_tokens_cases(): void {
+        self::$overridetokenscases = array(
+            self::testpath() . 'valid/override_tokens/empty_override_tokens_highlight_rules.json' => [ ],
+            self::testpath() . 'valid/override_tokens/one_override_token_highlight_rules.json' => (
+                [
+                    'comment' => token_type::LITERAL
+                ]
+            ),
+            self::testpath() . 'valid/override_tokens/two_override_token_highlight_rules.json' => (
+                [
+                    'comment' => token_type::LITERAL,
+                    'comment.line' => token_type::LITERAL
+                ]
+            ),
+            self::testpath() . 'valid/override_tokens/two_complex_override_token_highlight_rules.json' => (
+                [
+                    'string.start' => token_type::LITERAL,
+                    'string.end' => token_type::LITERAL
+                ]
+            ),
+            self::testpath() . 'valid/override_tokens/complex_override_token_highlight_rules.json' => (
+                [
+                    'string.start' => token_type::LITERAL,
+                    'string.end' => token_type::LITERAL
                 ]
             )
         );
@@ -859,6 +823,136 @@ class tokenizer_test extends \advanced_testcase {
         );
     }
 
+    private static function setup_get_line_tokens_cases(): void {
+        self::$getlinetokenstestcases = array(
+            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
+                [
+                    'input' => '/* test comments',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('text', '/* test comments', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
+                [
+                    'input' => 'int',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/two_rules_highlight_rules.json' => (
+                [
+                    'input' => 'int ',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/more_rules_highlight_rules.json' => (
+                [
+                    'input' => 'int a = 10;',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0), new token('text', ' ', 0),
+                        new token('identifier', 'a', 0), new token('text', ' ', 0),
+                        new token('keyword.operator', '=', 0), new token('text', ' ', 0),
+                        new token('constant.numeric', '10', 0), new token('text', ';', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/for_highlight_rules.json' => (
+                [
+                    'input' => 'for (int i = 0; i < 10; i++) {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'for', 0), new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0), new token('storage.type', 'int', 0),
+                        new token('text', ' ', 0), new token('identifier', 'i', 0),
+                        new token('text', ' ', 0), new token('keyword.operator', '=', 0),
+                        new token('text', ' ', 0), new token('constant.numeric', '0', 0),
+                        new token('text', ';', 0), new token('text', ' ', 0),
+                        new token('identifier', 'i', 0), new token('text', ' ', 0),
+                        new token('keyword.operator', '<', 0), new token('text', ' ', 0),
+                        new token('constant.numeric', '10', 0), new token('text', ';', 0),
+                        new token('text', ' ', 0), new token('identifier', 'i', 0),
+                        new token('keyword.operator', '++', 0), new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0), new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/two_states_highlight_rules.json' => (
+                [
+                    'input' => '/* test comments */',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('comment.multiple', '/*', 0),
+                        new token('text', ' test comments ', 0),
+                        new token('comment', '*/', 0),
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/unexisted_state_highlight_rules.json' => (
+                [
+                    'input' => '// test comment',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('comment', '//', 0),
+                        new token('text', ' test comment', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0),
+                        new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_highlight_rules.json' => (
+                [
+                    'input' => 'hello () {',
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('identifier', 'hello', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '(', 0),
+                        new token('paren.rparen', ')', 0),
+                        new token('text', ' ', 0),
+                        new token('paren.lparen', '{', 0)
+                    ) ]
+                ]
+            )
+        );
+
+        self::$getlinetokenoverflowstestcases = array(
+            self::testpath() . 'valid/get_line_tokens/no_matchs_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 0,
+                        'value' => '/* test comments',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('overflow', '/* test comments', 0)
+                    ) ]
+                ]
+            ),
+            self::testpath() . 'valid/get_line_tokens/one_rule_highlight_rules.json' => (
+                [
+                    'input' => [
+                        'max_token_count' => 1,
+                        'value' => 'int a',
+                    ],
+                    'output' => [ 'state' => 'start', 'tokens' => array(
+                        new token('storage.type', 'int', 0),
+                        new token('overflow', ' a', 0)
+                    ) ]
+                ]
+            ),
+        );
+    }
+
     private static function setup_parse_cases(): void {
         self::$parsetestcases = array(
             self::testpath() . 'valid/parse/no_line_highlight_rules.json' => (
@@ -884,7 +978,7 @@ class tokenizer_test extends \advanced_testcase {
                     'input' => self::testpath() . 'valid/parse/more_lines.c',
                     'output' => [
                         new token(token_type::RESERVED, '#include', 0),
-                        new token(token_type::LITERAL, ' <stdio.h>', 0),
+                        new token(token_type::LITERAL, '<stdio.h>', 0),
                         new token(token_type::RESERVED, 'int', 2),
                         new token(token_type::IDENTIFIER, 'main', 2),
                         new token(token_type::OPERATOR, '(', 2),

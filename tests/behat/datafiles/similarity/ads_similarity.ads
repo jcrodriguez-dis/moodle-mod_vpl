@@ -1,0 +1,132 @@
+----------------------------------------------------------------
+--                                                            --
+--            V E C T O R . O F . I N T E G E R S             --
+--                                                            --
+--                Carlos Santana Rodríguez                    --
+--                David Parreño Barbuzano                     --
+--                                                            --
+----------------------------------------------------------------
+
+--package Vector_Of_Integers with SPARK_Mode is
+--
+--   -------------------------------------------------
+--   -- Types/subtypes and Global variables section --
+--   -------------------------------------------------
+--
+--   subtype Index_T is Positive range 1 .. Positive'Last;
+--
+--   subtype Elem_T is Integer;
+--
+--   type Vector_T is array (Index_T range <>) of Elem_T;
+--
+--   Default_From : Index_T := 1; Default_To : Index_T := 10;
+--   -- They are useful when a great number of vectors are going to be
+--   -- created with the same range value. Besides, these values can't
+--   -- change the range of old vectors, but they can be used to specify
+--   -- the range during the creation of new vectors, as it is shown in
+--   -- the following example:
+--   --
+--   -- V : Vector_T (Default_From .. Default_To) := (others => 0);
+--
+--   -------------------------------------
+--   -- Boolean expressions for vectors --
+--   -------------------------------------
+--
+--   function Is_Empty (V : Vector_T) return Boolean is (V'Length = 0);
+--
+--   function Is_Range_Equal (V1, V2 : Vector_T) return Boolean is
+--      (V1'First = V2'First and then V1'Last = V2'Last);
+--
+--   ---------------------------------------
+--   -- Manipulation for global variables --
+--   ---------------------------------------
+--
+--   procedure Change_From_To (From, To : in Index_T) with
+--     Global         => (In_Out => (Default_From, Default_To)),
+--     Depends        => (Default_From => (Default_From, From, To),
+--                        Default_To   => (Default_To, From, To)),
+--     Contract_Cases => (From < To  => Default_From = From
+--                                      and then Default_To = To,
+--                        others     => Default_From = Default_From'Old
+--                                      and then Default_To = Default_To'Old);
+--
+--   -------------------------------------
+--   -- Arithmetic procedures/functions --
+--   -------------------------------------
+--
+--   function Add (V1, V2 : in Vector_T) return Vector_T with
+--     Global  => null,
+--     Depends => (Add'Result => (V1,V2)),
+--     Pre     => Is_Range_Equal(V1, V2) and then
+--                V1'Last < Index_T'Last and then
+--                V1'First < V1'Last and then
+--                (for all J in V1'Range =>
+--                  (if V2(J) in 0 .. Elem_T'Last then
+--                      V1(J) <= Elem_T'Last - V2(J)
+--                   else
+--                      V1(J) >= Elem_T'First - V2(J))),
+--     Post    => (for all J in V1'Range =>
+--                  Add'Result(J) = V1(J) + V2(J));
+--
+--   procedure Subtract (V       : out Vector_T;
+--                       V1, V2  : in  Vector_T) with
+--     Global  => null,
+--     Depends => (V => (V, V1, V2)),
+--     Pre     => Is_Range_Equal (V1, V2) and then
+--                V'First = V1'First and then V'Last = V1'Last and then
+--                V'Last < Index_T'Last and then V'First < V'Last and then
+--                (for all J in V'Range =>
+--                   (V2(J) in Elem_T'First + 1 .. Elem_T'Last and then
+--                   (if V2(J) in 0 .. Elem_T'Last then
+--                      V1(J) >= Elem_T'First + V2(J)
+--                    else
+--                      V1(J) <= Elem_T'Last + V2(J)))),
+--      Post   => (for all J in V'Range =>
+--                   V(J) = V1 (J) - V2 (J));
+--
+--   -----------------------------------------
+--   -- Procedures/functions for comparison --
+--   -----------------------------------------
+--
+--   function Compare (V1, V2 : in Vector_T) return Boolean with
+--     Global  => null,
+--     Depends => (Compare'Result => (V1, V2)),
+--     Post    => (if Compare'Result = False then
+--                   not Is_Range_Equal(V1, V2) or else
+--                   (for some J in V1'Range => V1 (J) /= V2 (J))
+--                else
+--                   Is_Range_Equal(V1, V2) or else
+--                   (for all J in V1'Range => V1 (J) = V2 (J)));
+--
+--   -----------------------------------------
+--   -- Manipulation operations for vectors --
+--   -----------------------------------------
+--
+--   procedure Shift_Left_And_Put_Zero (V   : in out Vector_T;
+--                                      Pos : in Index_T) with
+--     Global  => null,
+--     Depends => (V => (V, Pos)),
+--     Pre     => not Is_Empty (V) and then
+--                Pos >= V'First and then
+--                Pos < V'Last,
+--     Post    => V(Pos) = V'Old(Pos+1) and then
+--                V(Pos+1) = 0 and then
+--                (for all J in V'Range =>
+--                   (if J /= Pos and then J /= Pos+1 then
+--                        V(J) = V'Old(J)));
+--
+--   procedure Shift_Left (V   : in out Vector_T;
+--                         Pos : in Index_T) with
+--     Global  => null,
+--     Depends => (V => (V, Pos)),
+--     Pre     => not Is_Empty (V) and then
+--                Pos >= V'First and then
+--                Pos < V'Last,
+--     Post    => (for all J in Pos .. V'Last-1 =>
+--                   V(J) = V'Old(J+1)) and then
+--                (if Pos /= V'First then
+--                  (for all J in V'First .. Pos-1 =>
+--                     V(J) = V'Old(J)));
+--
+--end Vector_Of_Integers;
+--

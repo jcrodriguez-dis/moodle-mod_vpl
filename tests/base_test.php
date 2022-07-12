@@ -24,6 +24,7 @@
 
 namespace mod_vpl;
 
+use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\tokenizer\tokenizer_base;
 use \stdClass;
 
@@ -516,7 +517,7 @@ class testable_vpl extends \mod_vpl {
 
 /**
  * Class to use instead of tokenizer_base.
- * This derived class of tokenizer_base expose protected methods as public to test it.
+ * This derived class of tokenizer_base expose protected methods as public to test it
  */
 class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
     public static function get_states_from($tokenizer): array {
@@ -549,5 +550,19 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
 
     public static function get_token_array(int $numline, array $type, string $value, string $regex): array {
         return tokenizer_base::get_token_array($numline, $type, $value, $regex);
+    }
+}
+
+/**
+ * Class to use instead of tokenizer.
+ * This derived class of tokenizer expose protected methods as public to test it
+ */
+class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
+    public static function get_extensions($tokenizer): array {
+        return $tokenizer->extension;
+    }
+
+    public static function get_available_tokens($tokenizer): array {
+        return $tokenizer->availabletokens;
     }
 }
