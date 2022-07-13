@@ -2,7 +2,7 @@
 // made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
     "name": "ada-tokenizer",
-    "extension": [ ".adb", ".ads" ],
+    "extension": [ ".adb", ".ads", ".ada" ],
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
     "states": {

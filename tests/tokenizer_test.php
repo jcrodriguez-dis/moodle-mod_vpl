@@ -29,6 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 use mod_vpl\tokenizer\token;
 use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\tokenizer\token_type;
+use mod_vpl\tokenizer\tokenizer_factory;
 use mod_vpl\util\assertf;
 use Exception;
 
@@ -171,44 +172,28 @@ class tokenizer_test extends \advanced_testcase {
     public function test_static_check() {
         try {
             $dir = dirname(__FILE__) . '/../similarity/rules';
-            $dirbehat = dirname(__FILE__) . '/behat/datafiles/similarity/';
-            $outputdir = self::testpath() . 'behat/';
 
             $scanarr = scandir($dir);
             $filesarr = array_diff($scanarr, array('.', '..'));
-            $extincluded = array();
 
             foreach ($filesarr as $filename) {
-                $filename = $dir . '/' . $filename;
+                if (!is_dir($dir . '/' . $filename)) {
+                    $namelang = preg_split("/_/", $filename)[0];
 
-                if (!is_dir($filename)) {
-                    $tokenizer = new tokenizer($filename, false);
+                    $tokenizer = tokenizer_factory::get($namelang, true);
                     $extensions = testable_tokenizer::get_extensions($tokenizer);
+                    self::get_behat($tokenizer, $extensions, true);
 
-                    foreach ($extensions as $ext) {
-                        if (!isset($extincluded[$ext])) {
-                            $parsefilename = $dirbehat . substr($ext, 1) . '_similarity' . $ext;
-
-                            if (file_exists($parsefilename)) {
-                                $tokenswithvpl = $tokenizer->parse($parsefilename);
-
-                                $outputfilenamewithvpl = $outputdir . 'with_vpl/tokens_' . substr($ext, 1) . '.txt';
-                                file_put_contents($outputfilenamewithvpl, print_r($tokenswithvpl, true));
-
-                                $tokenswithoutvpl = $tokenizer->get_all_tokens($parsefilename);
-                                $outputfilenamewithoutvpl = $outputdir . 'without_vpl/tokens_' . substr($ext, 1) . '.txt';
-                                file_put_contents($outputfilenamewithoutvpl, print_r($tokenswithoutvpl, true));
-                            }
-
-                            $extincluded[$ext] = true;
-                        }
-                    }
+                    $tokenizer = tokenizer_factory::get($namelang, false);
+                    self::get_behat($tokenizer, $extensions, false);
                 }
             }
         } catch (Exception $exe) {
             $this->fail($exe->getMessage() . "\n");
         }
     }
+
+
 
     /**
      * Method to test tokenizer::init with invalid files
@@ -427,12 +412,6 @@ class tokenizer_test extends \advanced_testcase {
             }
         }
     }
-
-    /**
-     * ==================================
-     * CONSTRUCTOR FOR TEST CASES
-     * ==================================
-     */
 
     private static function setup_invalid_cases(): void {
         self::$invalidtestcases = array(
@@ -1041,5 +1020,37 @@ class tokenizer_test extends \advanced_testcase {
                 ]
             )
         );
+    }
+
+    private static function get_behat($tokenizer, array $extensions, bool $isnew): void {
+        $outputdir = self::testpath() . 'behat/';
+        $dirbehat = dirname(__FILE__) . '/behat/datafiles/similarity/';
+        $extincluded = array();
+
+        foreach ($extensions as $ext) {
+            if (!isset($extincluded[$ext])) {
+                $parsefilename = $dirbehat . substr($ext, 1) . '_similarity' . $ext;
+
+                if (file_exists($parsefilename)) {
+                    if ($isnew === true) {
+                        $tokens = $tokenizer->parse($parsefilename);
+                        $outputfilename = $outputdir . 'new_tokenizer/with_vpl/tokens_' . substr($ext, 1) . '.txt';
+                        file_put_contents($outputfilename, print_r($tokens, true));
+
+                        $tokens = $tokenizer->get_all_tokens($parsefilename);
+                        $outputfilename = $outputdir . 'new_tokenizer/without_vpl/tokens_' . substr($ext, 1) . '.txt';
+                        file_put_contents($outputfilename, print_r($tokens, true));
+                    } else {
+                        $data = file_get_contents($parsefilename);
+                        $tokenizer->parse($data, false);
+                        $tokens = $tokenizer->get_tokens();
+                        $outputfilename = $outputdir . 'old_tokenizer/tokens_' . substr($ext, 1) . '.txt';
+                        file_put_contents($outputfilename, print_r($tokens, true));
+                    }
+                }
+
+                $extincluded[$ext] = true;
+            }
+        }
     }
 }

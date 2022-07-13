@@ -1,14 +1,14 @@
 // Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/c_cpp_highlight_rules.js>
 // made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
-    "name": "cpp_tokenizer",
-    "extension": [ ".c", ".h", ".cpp", ".hpp", ".c++", ".h++" ],
+    "name": "cpp-tokenizer",
+    "extension": [ ".cpp", ".cc", ".C", ".c++", ".hxx", ".H" ],
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
     "states": {
         "start": [
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "\\/\\/$",
                 "next": "start"
             },
@@ -18,14 +18,9 @@
                 "next": "singleLineComment"
             },
             {
-                "token": "comment.block.documentation",
-                "regex": "\\/\\*(?=\\*)",
-                "next": "start"
-            },
-            {
-                "token": "comment",
-                "regex": "\\/\\*",
-                "next": "comment"
+                "token": "comment.block",
+                "regex": "\\/\\*(\\*?)",
+                "next": "multipleLineComment"
             },
             {
                 "token": "string",
@@ -64,27 +59,27 @@
             },
             {
                 "token": "keyword.control",
-                "regex": "break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while|catch|operator|try|throw|using"
+                "regex": "(?:break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while|catch|operator|try|throw|using)\\b"
             },
             {
                 "token": "storage.type",
-                "regex": "asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|class|wchar_t|template|char16_t|char32_t"
+                "regex": "(?:asm|__asm__|auto|bool|_Bool|char|_Complex|double|enum|float|_Imaginary|int|int8_t|int16_t|int32_t|int64_t|long|short|signed|size_t|struct|typedef|uint8_t|uint16_t|uint32_t|uint64_t|union|unsigned|void|class|wchar_t|template|char16_t|char32_t)\\b"
             },
             {
                 "token": "storage.modifier",
-                "regex":  "const|extern|register|restrict|static|volatile|inline|private|protected|public|friend|explicit|virtual|export|mutable|typename|constexpr|new|delete|alignas|alignof|decltype|noexcept|thread_local"
+                "regex":  "(?:const|extern|register|restrict|static|volatile|inline|private|protected|public|friend|explicit|virtual|export|mutable|typename|constexpr|new|delete|alignas|alignof|decltype|noexcept|thread_local)\\b"
             },
             {
                 "token": "keyword.operator",
-                "regex": "and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|const_cast|dynamic_cast|reinterpret_cast|static_cast|sizeof|namespace"
+                "regex": "(?:and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|const_cast|dynamic_cast|reinterpret_cast|static_cast|sizeof|namespace)\\b"
             },
             {
                 "token": "variable.language",
-                "regex": "this"
+                "regex": "(?:this)\\b"
             },
             {
                 "token": "constant.language",
-                "regex": "NULL|true|false|TRUE|FALSE|nullptr"
+                "regex": "(?:NULL|true|false|TRUE|FALSE|nullptr)\\b"
             },
             {
                 "token": "identifier",
@@ -92,11 +87,11 @@
             },
             {
                 "token": "keyword.operator",
-                "regex": "--|\\+\\+|<<=|>>=|>>>=|<>|&&|\\|\\||\\?:|[*%\\/\\+\\-&\\^|~!<>=]=?"
+                "regex": "--|\\+\\+|<<=|>>=|>>>=|<>|&&|<<|>>|\\|\\||\\?:|\\->|[*%\\/\\+\\-&\\^|~!<>=]=?"
             },
             {
                 "token": "keyword.operator",
-                "regex": "\\?|:|,|;|\\."
+                "regex": "\\?|::|,|;|\\."
             },
             {
                 "token": "paren.lparen",
@@ -144,29 +139,29 @@
                 "default_token": "string"
             }
         ],
-        "comment": [
+        "singleLineComment": [
             {
-                "token": "comment",
-                "regex": "\\*\\/",
+                "token": "comment.line",
+                "regex": "\\$",
+                "next": "singleLineComment"
+            },
+            {
+                "token": "comment.line",
+                "regex": "$",
                 "next": "start"
             },
             {
                 "default_token": "comment"
             }
         ],
-        "singleLineComment": [
+        "multipleLineComment": [
             {
-                "token": "comment",
-                "regex": "\\$",
-                "next": "singleLineComment"
-            },
-            {
-                "token": "comment",
-                "regex": "$",
+                "token": "comment.block",
+                "regex": "\\*\\/",
                 "next": "start"
             },
             {
-                "default_token": "comment"
+                "default_token": "comment.block"
             }
         ],
         "directive": [
@@ -194,7 +189,7 @@
                 "next": "start"
             },
             {
-                "token": "constant.other",
+                "token": "identifier",
                 "regex": "[^\\\\\\/]+",
                 "next": "start"
             }

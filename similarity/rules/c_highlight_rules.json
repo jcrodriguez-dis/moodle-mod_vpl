@@ -1,14 +1,14 @@
 // Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/c_cpp_highlight_rules.js>
 // made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
-    "name": "c_tokenizer",
+    "name": "c-tokenizer",
     "extension": [ ".c", ".h" ],
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
     "states": {
         "start": [
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "\\/\\/$",
                 "next": "start"
             },
@@ -18,14 +18,9 @@
                 "next": "singleLineComment"
             },
             {
-                "token": "comment.block.documentation",
+                "token": "comment.block",
                 "regex": "\\/\\*(\\*?)",
-                "next": "start"
-            },
-            {
-                "token": "comment",
-                "regex": "\\/\\*",
-                "next": "comment"
+                "next": "multipleLineComment"
             },
             {
                 "token": "string",
@@ -51,12 +46,7 @@
             },
             {
                 "token": "keyword",
-                "regex": "#\\s*(?:define)\\b",
-                "next": "directive-define"
-            },
-            {
-                "token": "keyword",
-                "regex": "#\\s*(?:include|pragma|line|undef|ifdef|ifndef)\\b",
+                "regex": "#\\s*(?:include|pragma|line|undef|ifdef|define|ifndef)\\b",
                 "next": "directive"
             },
             {
@@ -69,19 +59,23 @@
             },
             {
                 "token": "keyword.control",
-                "regex": "break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while"
+                "regex": "(?:break|case|continue|default|do|else|for|goto|if|_Pragma|return|switch|while)\\b"
+            },
+            {
+                "token": "storage.modifier",
+                "regex":  "(?:const|extern|static|volatile|inline)\\b"
             },
             {
                 "token": "storage.type",
-                "regex": "bool|_Bool|size_t|char|double|float|long|short|typedef|int|enum|struct|signed|unsigned|void|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|_Complex|_Imaginary"
+                "regex": "(?:bool|_Bool|size_t|char|double|float|long|short|typedef|int|enum|struct|signed|unsigned|void|int8_t|int16_t|int32_t|int64_t|uint8_t|uint16_t|uint32_t|uint64_t|_Complex|_Imaginary)\\b"
             },
             {
                 "token": "keyword.operator",
-                "regex": "sizeof"
+                "regex": "(?:sizeof)\\b"
             },
             {
                 "token": "constant.language",
-                "regex": "NULL|true|false|TRUE|FALSE"
+                "regex": "(?:NULL|true|false|TRUE|FALSE)\\b"
             },
             {
                 "token": "identifier",
@@ -141,36 +135,29 @@
                 "default_token": "string"
             }
         ],
-        "comment": [
-            {
-                "token": "comment",
-                "regex": "\\*\\/",
-                "next": "start"
-            },
-            {
-                "default_token": "comment"
-            }
-        ],
         "singleLineComment": [
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "\\$",
                 "next": "singleLineComment"
             },
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "$",
                 "next": "start"
             },
             {
-                "default_token": "comment"
+                "default_token": "comment.line"
             }
         ],
-        "directive-define": [
+        "multipleLineComment": [
             {
-                "token": "identifier",
-                "regex": "\\s*[a-zA-Z_$][a-zA-Z0-9_$]*\\((?:.*,?)\\)",
-                "next": "directive"
+                "token": "comment.block",
+                "regex": "\\*\\/",
+                "next": "start"
+            },
+            {
+                "default_token": "comment.block"
             }
         ],
         "directive": [
@@ -200,9 +187,6 @@
             {
                 "token": "constant.other",
                 "regex": "[^\\\\\\/]+",
-                "next": "start"
-            },
-            {
                 "next": "start"
             }
         ]

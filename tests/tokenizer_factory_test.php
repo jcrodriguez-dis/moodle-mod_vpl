@@ -77,50 +77,64 @@ class tokenizer_factory_test extends \advanced_testcase {
      */
     public function test_old_tokenizer() {
         $tokenizer = tokenizer_factory::get('prolog');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('vpl_tokenizer_prolog', get_class($tokenizer));
+        $this->test_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = tokenizer_factory::get('prolog');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('vpl_tokenizer_prolog', get_class($tokenizer));
-    }
-
-    /**
-     * Method to test tokenizer_factory::get when old tokenizer is used
-     */
-    public function test_old_tokenizer_with_vpl() {
-        $tokenizer = vpl_tokenizer_factory::get('prolog');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('vpl_tokenizer_prolog', get_class($tokenizer));
+        $this->test_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = vpl_tokenizer_factory::get('prolog');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('vpl_tokenizer_prolog', get_class($tokenizer));
+        $this->test_tokenizer($tokenizer, 'prolog', false);
+
+        $tokenizer = vpl_tokenizer_factory::get('prolog');
+        $this->test_tokenizer($tokenizer, 'prolog', false);
     }
 
     /**
      * Method to test tokenizer_factory::get when new tokenizer is used
      */
     public function test_new_tokenizer() {
-        $tokenizer = tokenizer_factory::get('java');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
+        $tokenizerlangs = self::get_tokenizer_langs();
 
-        $tokenizer = tokenizer_factory::get('java');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
+        foreach ($tokenizerlangs as $namelang) {
+            $tokenizer = tokenizer_factory::get($namelang);
+            $this->test_tokenizer($tokenizer, $namelang, true);
+
+            $tokenizer = tokenizer_factory::get($namelang);
+            $this->test_tokenizer($tokenizer, $namelang, true);
+
+            $tokenizer = vpl_tokenizer_factory::get($namelang);
+            $this->test_tokenizer($tokenizer, $namelang, true);
+
+            $tokenizer = vpl_tokenizer_factory::get($namelang);
+            $this->test_tokenizer($tokenizer, $namelang, true);
+        }
     }
 
-    /**
-     * Method to test tokenizer_factory::get when new tokenizer is used
-     */
-    public function test_new_tokenizer_with_vpl() {
-        $tokenizer = vpl_tokenizer_factory::get('java');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
+    private function test_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
+        if ($newtokenizer === false) {
+            $this->assertTrue(isset($tokenizer) === true);
+            $this->assertSame('vpl_tokenizer_' . $namelang, get_class($tokenizer));
+        } else {
+            $this->assertTrue(isset($tokenizer) === true);
+            $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
+            $this->assertSame($namelang . '-tokenizer', testable_tokenizer::get_name($tokenizer));
+        }
+    }
 
-        $tokenizer = vpl_tokenizer_factory::get('java');
-        $this->assertTrue(isset($tokenizer) === true);
-        $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
+    private static function get_tokenizer_langs(): array {
+        $dir = dirname(__FILE__) . '/../similarity/rules';
+        $scanarr = scandir($dir);
+        $filesarr = array_diff($scanarr, array('.', '..'));
+
+        $tokenizerlangs = array();
+
+        foreach ($filesarr as $filename) {
+            if (!is_dir($dir . '/' . $filename)) {
+                $namelang = preg_split("/_/", $filename)[0];
+                $tokenizerlangs[] = $namelang;
+            }
+        }
+
+        return $tokenizerlangs;
     }
 }

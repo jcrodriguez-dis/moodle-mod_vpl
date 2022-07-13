@@ -1,4 +1,19 @@
-package body Vector_Of_Integers with SPARK_Mode is
+-- This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
+--
+-- VPL for Moodle is free software: you can redistribute it and/or modify
+-- it under the terms of the GNU General Public License as published by
+-- the Free Software Foundation, either version 3 of the License, or
+-- (at your option) any later version.
+--
+-- VPL for Moodle is distributed in the hope that it will be useful,
+-- but WITHOUT ANY WARRANTY; without even the implied warranty of
+-- MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+-- GNU General Public License for more details.
+--
+-- You should have received a copy of the GNU General Public License
+-- along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>
+
+package body Vector_Of_Integers is
 
    procedure Change_From_To (From, To : in Index_T) is
    begin
@@ -16,16 +31,6 @@ package body Vector_Of_Integers with SPARK_Mode is
 
       while J <= V1'Last loop
          V3(J) := V1(J) + V2(J);
-
-         pragma Loop_Variant(Increases => J);
-         pragma Loop_Invariant(J in V1'Range);
-
-         pragma Loop_Invariant(for all K in V1'First .. J =>
-                                 V3(K) = V1(K) + V2(K));
-         pragma Loop_Invariant(if J /= V1'Last then
-                                  (for all K in J+1 .. V1'Last =>
-                                     V3(K) = 0));
-
          J := J+1;
       end loop;
 
@@ -40,17 +45,6 @@ package body Vector_Of_Integers with SPARK_Mode is
 
       while J <= V'Last loop
          V (J) := V1 (J) - V2 (J);
-
-         pragma Loop_Variant(Increases => J);
-         pragma Loop_Invariant(J in V'Range);
-
-         pragma Loop_Invariant
-           (for all K in J'Loop_Entry .. J =>
-              V (K) = V1 (K) - V2 (K));
-         pragma Loop_Invariant
-           (for all K in J+1 .. V'Last =>
-              V (K) = 0);
-
          J := J + 1;
       end loop;
    end Subtract;
@@ -82,15 +76,6 @@ package body Vector_Of_Integers with SPARK_Mode is
    begin
       for J in Pos .. V'Last-1 loop
          Shift_Left_And_Put_Zero(V, J);
-
-         pragma Loop_Invariant(if V'First /= Pos then
-                                 (for all K in V'First .. Pos-1 =>
-                                    V(K) = V'Loop_Entry(K)));
-         pragma Loop_Invariant(for all K in Pos .. J =>
-                                 V(K) = V'Loop_Entry(K+1));
-         pragma Loop_Invariant(if J /= V'Last-1 then
-                                 (for all K in J+2 .. V'Last =>
-                                    V(K) = V'Loop_Entry(K)));
       end loop;
    end Shift_Left;
 

@@ -8,6 +8,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Since this is a non-official Changelog, you may want to see release
 notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+)
 
+## [3.5.0++ - 5.1.3] - 2022-07-13
+
+### Changed
+
+- Option to set the order to check the tokenizer created by tokenizer_factory
+- Store tokens of Behat test files for old and new tokenizers
+- Improve tests at tokenizer_factory_test when tokenizer_factory is used
+- Reduce number of lines at tokenizer_factory_test
+
+### Fixed
+
+- Fix some errors of tokenizer comparing old to new one
+- Improve rules for all available languages for similarity
+
 ## [3.5.0++ - 5.1.2] - 2022-07-12
 
 ### Added

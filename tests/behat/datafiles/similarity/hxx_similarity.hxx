@@ -15,18 +15,14 @@
     along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>
 */
 
-#include <stdlib.h>
-
-typedef size_t nat_t;
-
-int* vecsum(nat_t *v1, nat_t *v2, nat_t len1, nat_t len2);
-
-int* vecsub(nat_t *v1, nat_t *v2, nat_t len1, nat_t len2);
-
-int* vecprod(nat_t *v1, nat_t *v2, nat_t len1, nat_t len2);
-
-int* vecdiv(nat_t *v1, nat_t *v2, nat_t len1, nat_t len2);
-
-int cumsum(nat_t *vec, nat_t length);
-
-int cumprod(nat_t *vec, nat_t length);
+class VectorOfIntegers
+{
+public:
+    VectorOfIntegers(int length);
+    void set(int index, int value);
+    int get(int index);
+    int length();
+private:
+    int *vector;
+    int length;
+}

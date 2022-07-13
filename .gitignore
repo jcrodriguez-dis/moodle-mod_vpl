@@ -1,1 +1,2 @@
-test/vpl_tokenizer/behat/*.txt
+test/vpl_tokenizer/behat/*/tokens_*.txt
+test/vpl_tokenizer/behat/*/*/tokens_*.txt

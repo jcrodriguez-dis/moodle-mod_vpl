@@ -1,7 +1,7 @@
 // Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/fortran_highlight_rules.js>
 // made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
-    "name": "tokenizer_fortran",
+    "name": "fortran-tokenizer",
     "extension": [ ".f", ".F" ],
     "check_rules": false,
     "states": {

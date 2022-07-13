@@ -1,7 +1,7 @@
 // Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/java_highlight_rules.js>
 // made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
 {
-    "name": "tokenizer-java",
+    "name": "java-tokenizer",
     "extension": ".java",
     "check_rules": false,
     "inherit_rules": "text_highlight_rules",
@@ -11,7 +11,7 @@
     "states": {
         "start": [
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "\\/\\/$",
                 "next": "start"
             },
@@ -21,14 +21,9 @@
                 "next": "singleLineComment"
             },
             {
-                "token": "comment.block.documentation",
-                "regex": "\\/\\*(?=\\*)",
-                "next": "start"
-            },
-            {
-                "token": "comment",
-                "regex": "\\/\\*",
-                "next": "comment"
+                "token": "comment.block",
+                "regex": "\\/\\*(\\*?)",
+                "next": "multipleLineComment"
             },
             {
                 "token": "string",
@@ -46,30 +41,25 @@
                 "token": "constant.numeric",
                 "regex": "[+-]?[0-9][0-9_]*(?:(?:\\.[0-9_]*)?(?:[eE][+-]?[0-9_]+)?)?[LlSsDdFfYy]?\\b"
             },
-            /*{
-                "regex": "(open(?:\\s+))?module(?=\\s*\\w)",
-                "token": "keyword",
-                "next": "module-body"
-            },*/
             {
                 "token": "variable.language",
                 "regex": "this"
             },
             {
                 "token": "keyword",
-                "regex": "abstract|continue|for|new|switch|assert|default|goto|package|synchronized|boolean|do|if|private|this|break|double|implements|protected|throw|byte|else|import|public|throws|case|enum|instanceof|return|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|const|float|native|super|while|var"
+                "regex": "(?:abstract|continue|for|new|switch|assert|default|goto|package|synchronized|boolean|do|if|private|this|break|double|implements|protected|throw|byte|else|import|public|throws|case|enum|instanceof|return|transient|catch|extends|int|short|try|char|final|interface|static|void|class|finally|long|strictfp|volatile|const|float|native|super|while|var)\\b"
             },
             {
                 "token": "constant.language",
-                "regex": "null|Infinity|NaN|undefined"
+                "regex": "(?:null|Infinity|NaN|undefined)\\b"
             },
             {
                 "token": "support.function",
-                "regex": "AbstractMethodError|AssertionError|ClassCircularityError|ClassFormatError|Deprecated|EnumConstantNotPresentException|ExceptionInInitializerError|IllegalAccessError|IllegalThreadStateException|InstantiationError|InternalError|NegativeArraySizeException|NoSuchFieldError|Override|Process|ProcessBuilder|SecurityManager|StringIndexOutOfBoundsException|SuppressWarnings|TypeNotPresentException|UnknownError|UnsatisfiedLinkError|UnsupportedClassVersionError|VerifyError|InstantiationException|IndexOutOfBoundsException|ArrayIndexOutOfBoundsException|CloneNotSupportedException|NoSuchFieldException|IllegalArgumentException|NumberFormatException|SecurityException|Void|InheritableThreadLocal|IllegalStateException|InterruptedException|NoSuchMethodException|IllegalAccessException|UnsupportedOperationException|Enum|StrictMath|Package|Compiler|Readable|Runtime|StringBuilder|Math|IncompatibleClassChangeError|NoSuchMethodError|ThreadLocal|RuntimePermission|ArithmeticException|NullPointerException|Long|Integer|Short|Byte|Double|Number|Float|Character|Boolean|StackTraceElement|Appendable|StringBuffer|Iterable|ThreadGroup|Runnable|Thread|IllegalMonitorStateException|StackOverflowError|OutOfMemoryError|VirtualMachineError|ArrayStoreException|ClassCastException|LinkageError|NoClassDefFoundError|ClassNotFoundException|RuntimeException|Exception|ThreadDeath|Error|Throwable|System|ClassLoader|Cloneable|Class|CharSequence|Comparable|String|Object"
+                "regex": "\\b(?:AbstractMethodError|AssertionError|ClassCircularityError|ClassFormatError|Deprecated|EnumConstantNotPresentException|ExceptionInInitializerError|IllegalAccessError|IllegalThreadStateException|InstantiationError|InternalError|NegativeArraySizeException|NoSuchFieldError|Override|Process|ProcessBuilder|SecurityManager|StringIndexOutOfBoundsException|SuppressWarnings|TypeNotPresentException|UnknownError|UnsatisfiedLinkError|UnsupportedClassVersionError|VerifyError|InstantiationException|IndexOutOfBoundsException|ArrayIndexOutOfBoundsException|CloneNotSupportedException|NoSuchFieldException|IllegalArgumentException|NumberFormatException|SecurityException|Void|InheritableThreadLocal|IllegalStateException|InterruptedException|NoSuchMethodException|IllegalAccessException|UnsupportedOperationException|Enum|StrictMath|Package|Compiler|Readable|Runtime|StringBuilder|Math|IncompatibleClassChangeError|NoSuchMethodError|ThreadLocal|RuntimePermission|ArithmeticException|NullPointerException|Long|Integer|Short|Byte|Double|Number|Float|Character|Boolean|StackTraceElement|Appendable|StringBuffer|Iterable|ThreadGroup|Runnable|Thread|IllegalMonitorStateException|StackOverflowError|OutOfMemoryError|VirtualMachineError|ArrayStoreException|ClassCastException|LinkageError|NoClassDefFoundError|ClassNotFoundException|RuntimeException|Exception|ThreadDeath|Error|Throwable|System|ClassLoader|Cloneable|Class|CharSequence|Comparable|String|Object)\\b"
             },
             {
                 "token": "constant.language.boolean",
-                "regex": "true|false"
+                "regex": "(?:true|false)\\b"
             },
             {
                 "token": "keyword.operator",
@@ -100,69 +90,30 @@
                 "regex": "\\s+"
             }
         ],
-        "comment": [
-            {
-                "token": "comment",
-                "regex": "\\*\\/",
-                "next": "start"
-            },
-            {
-                "default_token": "comment"
-            }
-        ],
         "singleLineComment": [
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "\\$",
                 "next": "singleLineComment"
             },
             {
-                "token": "comment",
+                "token": "comment.line",
                 "regex": "$",
                 "next": "start"
             },
             {
-                "default_token": "comment"
-            }
-        ]/*,
-        "module-body": [
-            {
-                "regex": "{",
-                "token": "paren.lparen",
-                "next": "module-end"
-            },
-            {
-                "token": "text",
-                "regex": "\\s+"
-            },
-            {
-                "token": "identifier",
-                "regex": "\\w+"
-            },
-            {
-                "token": "punctuation.operator",
-                "regex": "\\."
-            },
-            {
-                "token": "text",
-                "regex": "\\s+"
-            },
-            {
-                "token": "text",
-                "regex": "",
-                "next": "start"
+                "default_token": "comment.line"
             }
         ],
-        "module-end": [
+        "multipleLineComment": [
             {
-                "regex": "}",
-                "token": "paren.rparen",
+                "token": "comment.block",
+                "regex": "\\*\\/",
                 "next": "start"
             },
             {
-                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b",
-                "token": "keyword"
+                "default_token": "comment.block"
             }
-        ]*/
+        ]
     }
 }

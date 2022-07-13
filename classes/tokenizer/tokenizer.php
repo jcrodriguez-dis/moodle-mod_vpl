@@ -265,9 +265,11 @@ class tokenizer extends tokenizer_base {
                 $type = $this->availabletokens[$token->type];
 
                 if (is_null($type) === false) {
-                    $tokensprepared[] = new token(
-                        $type, trim($token->value), $token->line
-                    );
+                    if (strlen(trim($token->value)) > 0) {
+                        $tokensprepared[] = new token(
+                            $type, trim($token->value), $token->line
+                        );
+                    }
                 }
             }
         }

@@ -558,6 +558,10 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
  * This derived class of tokenizer expose protected methods as public to test it
  */
 class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
+    public static function get_name($tokenizer): string {
+        return $tokenizer->name;
+    }
+
     public static function get_extensions($tokenizer): array {
         return $tokenizer->extension;
     }

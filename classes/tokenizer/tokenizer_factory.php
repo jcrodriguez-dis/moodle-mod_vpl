@@ -34,14 +34,24 @@ class tokenizer_factory {
      * Get tokenizer for passed programming language
      *
      * @param string $namelang name of a programming language
+     * @param bool $trynew specify the order to try to generate tokenizers
      * @return ?tokenizer|?vpl_tokenizer
      */
-    public static function get(string $namelang) {
-        $tokenizer = self::get_object($namelang);
+    public static function get(string $namelang, bool $trynew=true) {
+        if ($trynew === true) {
+            $tokenizer = self::get_object($namelang);
 
-        if (!isset($tokenizer) || is_null($tokenizer)) {
+            if (!isset($tokenizer) || is_null($tokenizer)) {
+                $tokenizer = self::get_require($namelang);
+                assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
+            }
+        } else {
             $tokenizer = self::get_require($namelang);
-            assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
+
+            if (!isset($tokenizer) || is_null($tokenizer)) {
+                $tokenizer = self::get_object($namelang);
+                assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
+            }
         }
 
         return $tokenizer;
