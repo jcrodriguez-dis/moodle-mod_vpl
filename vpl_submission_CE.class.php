@@ -409,8 +409,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @param array $files Array of files to adapt key=>filename value=>file data, remove values
      */
     public static function adaptbinaryfiles($data, &$files) {
-        $fileencoding = array();
-        $encodefiles = array ();
+        $fileencoding = [];
+        $encodefiles = [];
+        if (empty($data->filestodelete)) {
+            $data->filestodelete = [];
+        }
         foreach ($files as $filename => $filedata) {
             if (vpl_is_binary( $filename )) {
                 $encodefiles[$filename . '.b64'] = base64_encode( $filedata );
@@ -420,7 +423,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $fileencoding[$filename] = 0;
                 $encodefiles[$filename] = $filedata;
             }
-            $data->files[$filename] = '';
+            $files[$filename] = '';
         }
         $data->files = $encodefiles;
         $data->fileencoding = $fileencoding;
@@ -505,7 +508,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $server = $processinfo->server;
         $data = new stdClass();
-        $data->filestodelete = [];
         self::adaptbinaryfiles($data, $files);
         $data->adminticket = $processinfo->adminticket;
         try {
