@@ -1368,7 +1368,7 @@ class mod_vpl {
      * @param $info string title and last nav option
      */
     public function print_header($info = '') {
-        global $PAGE, $OUTPUT;
+        global $PAGE, $OUTPUT, $CFG;
         if (self::$headerisout) {
             return;
         }
@@ -1377,17 +1377,20 @@ class mod_vpl {
             $tittle .= ' ' . $info;
         }
         $PAGE->set_title( $this->get_course()->fullname . ' ' . $tittle );
-        $PAGE->set_pagelayout( 'incourse' );
+        $PAGE->set_pagelayout( 'standard' );
         $PAGE->set_heading( $this->get_course()->fullname );
         if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
         }
+        if ( $CFG->version >= 2022041900) { // Check for Moodle 4
+            $PAGE->activityheader->disable();
+        }
         echo $OUTPUT->header();
         self::$headerisout = true;
     }
     public function print_header_simple($info = '') {
-        global $OUTPUT, $PAGE;
+        global $OUTPUT, $PAGE, $CFG;
         if (self::$headerisout) {
             return;
         }
@@ -1400,6 +1403,9 @@ class mod_vpl {
         if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
+        }
+        if ( $CFG->version >= 2022041900) { // Check for Moodle 4
+            $PAGE->activityheader->disable();
         }
         echo $OUTPUT->header();
         self::$headerisout = true;
