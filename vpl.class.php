@@ -1383,7 +1383,7 @@ class mod_vpl {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
         }
-        if ( $CFG->version >= 2022041900) { // Check for Moodle 4
+        if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
             $PAGE->activityheader->disable();
         }
         echo $OUTPUT->header();
@@ -1404,7 +1404,7 @@ class mod_vpl {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
         }
-        if ( $CFG->version >= 2022041900) { // Check for Moodle 4
+        if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
             $PAGE->activityheader->disable();
         }
         echo $OUTPUT->header();
