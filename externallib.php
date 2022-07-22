@@ -161,16 +161,17 @@ class mod_vpl_webservice extends external_api {
         $files = mod_vpl_edit::get_submitted_files( $vpl, $USER->id, $compilationexecution );
         // Adapt array of name => value content to format array of objects {name, data}.
         $files = mod_vpl_edit::files2object( $files );
-        $ret = array (
+        $ret = [
                 'files' => $files,
                 'compilation' => '',
                 'evaluation' => '',
                 'grade' => ''
-        );
-        if ($compilationexecution && $vpl->get_instance()->evaluate) {
-            $ret['compilation'] = $compilationexecution->compilation;
-            $ret['evaluation'] = $compilationexecution->evaluation;
-            $ret['grade'] = $compilationexecution->grade;
+        ];
+        $attributes = ['compilation', 'evaluation', 'grade'];
+        foreach ($attributes as $attribute) {
+            if (isset($compilationexecution->$attribute)) {
+                $ret[$attribute] = $compilationexecution->$attribute;
+            }
         }
         return $ret;
     }
@@ -260,11 +261,18 @@ if the websocket client send something to the server then the evaluation is stop
             throw new Exception( get_string( 'notavailable' ) );
         }
         $compilationexecution = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
-        return array (
-                'compilation' => $compilationexecution->compilation,
-                'evaluation' => $compilationexecution->evaluation,
-                'grade' => $compilationexecution->grade
-        );
+        $ret = [
+            'compilation' => '',
+            'evaluation' => '',
+            'grade' => ''
+        ];
+        $attributes = ['compilation', 'evaluation', 'grade'];
+        foreach ($attributes as $attribute) {
+            if (isset($compilationexecution->$attribute)) {
+                $ret[$attribute] = $compilationexecution->$attribute;
+            }
+        }
+        return $ret;
     }
     public static function get_result_returns() {
         return new external_single_structure( array (
