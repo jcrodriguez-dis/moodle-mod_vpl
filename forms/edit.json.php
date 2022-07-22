@@ -88,7 +88,12 @@ try {
             break;
         case 'update':
             $files = mod_vpl_edit::filesfromide( $actiondata->files );
-            $result->response = mod_vpl_edit::update($vpl, $userid, $actiondata->processid, $files);
+            $filestodelete = isset($actiondata->filestodelete) ? $actiondata->filestodelete : [];
+            $result->response = mod_vpl_edit::update($vpl,
+                                                     $userid,
+                                                     $actiondata->processid,
+                                                     $files,
+                                                     $filestodelte);
             break;
         case 'resetfiles':
             $files = mod_vpl_edit::get_requested_files( $vpl );

@@ -151,8 +151,8 @@ class mod_vpl_edit {
      * @throws Exception
      * @return boolean True if updated
      */
-    public static function update(mod_vpl $vpl, int $userid, int $processid, array & $files) {
-        return mod_vpl_submission_CE::update($vpl->get_instance()->id, $userid, $processid, $files);
+    public static function update(mod_vpl $vpl, int $userid, int $processid, array & $files, $filestodelete = []) {
+        return mod_vpl_submission_CE::update($vpl->get_instance()->id, $userid, $processid, $files, $filestodelete);
     }
 
     /**
@@ -328,7 +328,7 @@ class mod_vpl_edit {
      */
     public static function directrun($vpl, $userid, $command, $files) {
         $executefilename = '.vpl_directrun.sh';
-        $maxmemory = 1000 * 1000 * 1000;
+        $maxmemory = 2000 * 1000 * 1000;
         $localservers = $vpl->get_instance()->jailservers;
         $error = '';
         $server = vpl_jailserver_manager::get_server( $maxmemory, $localservers, $error );
@@ -341,7 +341,6 @@ class mod_vpl_edit {
             throw new Exception( $men );
         }
         $data = new stdClass();
-        $data->filestodelete = [];
         mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
         $data->files[$executefilename] = <<<DIRECTRUNCODE
 #!/bin/bash

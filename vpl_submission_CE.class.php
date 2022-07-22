@@ -498,7 +498,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return boolean True if updated
      */
 
-    public static function update($vpl, $userid, $processid, $files) {
+    public static function update($vpl, $userid, $processid, $files,  $filestodelete = []) {
         $data = new stdClass();
         $data->files = $files;
         $vplid = $vpl->get_instance()->id;
@@ -508,6 +508,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $server = $processinfo->server;
         $data = new stdClass();
+        $data->filestodelete = [];
+        foreach ($filestodelete as $filename) {
+            $data->filestodelete[$filename] = 1;
+        }
         self::adaptbinaryfiles($data, $files);
         $data->adminticket = $processinfo->adminticket;
         try {
