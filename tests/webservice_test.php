@@ -240,7 +240,7 @@ class webservice_test extends base_test {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
                 } catch (Exception $e) {
-                    throw new \Exception("Saving submission default vpl users " . $e);
+                    throw new \Exception("Saving submission " . $e);
                 }
             }
         }
@@ -249,12 +249,102 @@ class webservice_test extends base_test {
     }
 
     public function test_vpl_webservice_evaluate() {
+        $id = $this->vpldefault->get_course_module()->id;
+        $password = $this->vpldefault->get_instance()->password;
+        $executionfiles = $this->vpldefault->get_execution_fgm();
+        $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
+        $this->assertTrue($added);
+        $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
+        foreach ($this->students as $user) {
+            $this->setUser($user);
+            if ( $this->vpldefault->is_submit_able() ) {
+                try {
+                    $this->internal_test_vpl_webservice_save($id, $files, $password);
+                    mod_vpl_webservice::evaluate($id, $password);
+                } catch (Exception $e) {
+                    throw new \Exception("Evaluation " . $e);
+                }
+            }
+        }
         $this->assertIsObject(mod_vpl_webservice::evaluate_parameters());
         $this->assertIsObject(mod_vpl_webservice::evaluate_returns());
     }
 
     public function test_vpl_webservice_get_result() {
+        $id = $this->vpldefault->get_course_module()->id;
+        $password = $this->vpldefault->get_instance()->password;
+        $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
+        $executionfiles = $this->vpldefault->get_execution_fgm();
+        $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
+        $this->assertTrue($added);
+        foreach ($this->students as $user) {
+            $this->setUser($user);
+            if ( $this->vpldefault->is_submit_able() ) {
+                try {
+                    $this->internal_test_vpl_webservice_save($id, $files, $password);
+                    mod_vpl_webservice::evaluate($id, $password);
+                    sleep(2);
+                    mod_vpl_webservice::get_result($id, $password);
+                } catch (Exception $e) {
+                    throw new \Exception("Evaluation " . $e);
+                }
+            }
+        }
         $this->assertIsObject(mod_vpl_webservice::get_result_parameters());
         $this->assertIsObject(mod_vpl_webservice::get_result_returns());
+    }
+
+    /**
+     * Cheks API Exceptions
+     */
+    public function test_vpl_webservice_exeptions() {
+        $ok = false;
+        $this->setUser($this->editingteachers[0]);
+
+        $parms = ['name' => 'forbidden net', 'requirednet' => '1.1.1.1'];
+        $forbbidennet = $this->create_instance($parms);
+
+        $parms = ['name' => 'Not visible'];
+        $notvisible = $this->create_instance($parms, ['visible' => 0]);
+
+        $parms = ['name' => 'With password', 'password' => 'password'];
+        $withpassword = $this->create_instance($parms);
+
+        $parms = ['name' => 'Closed', 'duedate' => 1000];
+        $closed = $this->create_instance($parms);
+
+        $parms = ['name' => 'Example', 'example' => 1];
+        $example = $this->create_instance($parms);
+
+        $parms = ['name' => 'Nocopy', 'restrictededitor' => 1];
+        $nocopy = $this->create_instance($parms);
+
+        $parms = ['name' => 'Not evaluable', 'evaluate' => 0];
+        $notevaluable = $this->create_instance($parms);
+
+        $this->setUser($this->students[0]);
+        try {
+            mod_vpl_webservice::info($forbbidennet->get_course_module()->id, '');
+            $this->fail('Exception expected netrequired');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        try {
+            mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
+            $this->fail('Exception expected not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The initial_checks if request come from IP in required IP/Network.
+        // The info if not is_visible().
+        // The save if example or restrictededitor.
+        // The save is_submit_able().
+        // The open is_visible().
+        // The evaluate is_submit_able().
+        // The evaluate example or evaluate.
+        // The evaluate monitorPath.
+        // The get_result is_submit_able.
+        // The get_result example  or restrictededitor or evaluate.
+        $this->assertTrue($ok == true);
     }
 }

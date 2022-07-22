@@ -189,7 +189,7 @@ class base_test extends \advanced_testcase {
 
     protected function setup_default_instance() {
         $this->setUser($this->editingteachers[0]);
-        $parms = array('name' => 'default');
+        $parms = ['name' => 'default', 'evaluate' => 1];
         $this->vpldefault = $this->create_instance($parms);
     }
 
