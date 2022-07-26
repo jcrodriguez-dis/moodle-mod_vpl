@@ -93,7 +93,7 @@ class tokenizer_factory_test extends \advanced_testcase {
      * Method to test tokenizer_factory::get when new tokenizer is used
      */
     public function test_new_tokenizer() {
-        $tokenizerlangs = self::get_tokenizer_langs();
+        $tokenizerlangs = tokenizer_similarity_utils::get_tokenizer_langs();
 
         foreach ($tokenizerlangs as $namelang) {
             $tokenizer = tokenizer_factory::get($namelang);
@@ -117,24 +117,6 @@ class tokenizer_factory_test extends \advanced_testcase {
         } else {
             $this->assertTrue(isset($tokenizer) === true);
             $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
-            $this->assertSame($namelang . '-tokenizer', testable_tokenizer::get_name($tokenizer));
         }
-    }
-
-    private static function get_tokenizer_langs(): array {
-        $dir = dirname(__FILE__) . '/../similarity/rules';
-        $scanarr = scandir($dir);
-        $filesarr = array_diff($scanarr, array('.', '..'));
-
-        $tokenizerlangs = array();
-
-        foreach ($filesarr as $filename) {
-            if (!is_dir($dir . '/' . $filename)) {
-                $namelang = preg_split("/_/", $filename)[0];
-                $tokenizerlangs[] = $namelang;
-            }
-        }
-
-        return $tokenizerlangs;
     }
 }

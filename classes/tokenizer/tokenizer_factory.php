@@ -46,12 +46,14 @@ class tokenizer_factory {
                 assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
             }
         } else {
+            // @codeCoverageIgnoreStart
             $tokenizer = self::get_require($namelang);
 
             if (!isset($tokenizer) || is_null($tokenizer)) {
                 $tokenizer = self::get_object($namelang);
                 assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
             }
+            // @codeCoverageIgnoreEnd
         }
 
         return $tokenizer;
@@ -75,8 +77,8 @@ class tokenizer_factory {
     }
 
     private static function get_object(string $namelang) {
-        $rulefilename = dirname(__FILE__) . '/../../similarity/rules/';
-        $rulefilename .= $namelang . '_highlight_rules.json';
+        $rulefilename = dirname(__FILE__) . '/../../similarity/tokenizer_rules/';
+        $rulefilename .= $namelang . '_tokenizer_rules.json';
 
         if (file_exists($rulefilename) === true) {
             if (!isset(self::$tkloaded[$rulefilename])) {

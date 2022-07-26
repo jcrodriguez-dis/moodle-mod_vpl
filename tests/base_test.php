@@ -24,8 +24,6 @@
 
 namespace mod_vpl;
 
-use mod_vpl\tokenizer\tokenizer;
-use mod_vpl\tokenizer\tokenizer_base;
 use \stdClass;
 
 defined('MOODLE_INTERNAL') || die();
@@ -516,6 +514,28 @@ class testable_vpl extends \mod_vpl {
 }
 
 /**
+ * Utilities for tokenizer/similarity tests
+ */
+class tokenizer_similarity_utils {
+    public static function get_tokenizer_langs(): array {
+        $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
+        $scanarr = scandir($dir);
+        $filesarr = array_diff($scanarr, array('.', '..'));
+
+        $tokenizerlangs = array();
+
+        foreach ($filesarr as $filename) {
+            if (!is_dir($dir . '/' . $filename)) {
+                $namelang = preg_split("/_/", $filename)[0];
+                $tokenizerlangs[] = $namelang;
+            }
+        }
+
+        return $tokenizerlangs;
+    }
+}
+
+/**
  * Class to use instead of tokenizer_base.
  * This derived class of tokenizer_base expose protected methods as public to test it
  */
@@ -533,23 +553,23 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
     }
 
     public static function check_type($value, string $typename) {
-        return tokenizer_base::check_type($value, $typename);
+        return \mod_vpl\tokenizer\tokenizer_base::check_type($value, $typename);
     }
 
     public static function contains_rule(array $state, object $rule): bool {
-        return tokenizer_base::contains_rule($state, $rule);
+        return \mod_vpl\tokenizer\tokenizer_base::contains_rule($state, $rule);
     }
 
     public static function check_token($token, array $availabletokens): bool {
-        return tokenizer_base::check_token($token, $availabletokens);
+        return \mod_vpl\tokenizer\tokenizer_base::check_token($token, $availabletokens);
     }
 
     public static function remove_capturing_groups(string $src): string {
-        return tokenizer_base::remove_capturing_groups($src);
+        return \mod_vpl\tokenizer\tokenizer_base::remove_capturing_groups($src);
     }
 
     public static function get_token_array(int $numline, array $type, string $value, string $regex): array {
-        return tokenizer_base::get_token_array($numline, $type, $value, $regex);
+        return \mod_vpl\tokenizer\tokenizer_base::get_token_array($numline, $type, $value, $regex);
     }
 }
 
@@ -558,6 +578,10 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
  * This derived class of tokenizer expose protected methods as public to test it
  */
 class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
+    public static function get_max_token_count_from($tokenizer): int {
+        return $tokenizer->get_max_token_count();
+    }
+
     public static function get_name($tokenizer): string {
         return $tokenizer->name;
     }
@@ -568,5 +592,15 @@ class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
 
     public static function get_available_tokens($tokenizer): array {
         return $tokenizer->availabletokens;
+    }
+}
+
+/**
+ * Class to use instead of similarity_factory.
+ * This derived class of similarity expose protected methods as public to test it
+ */
+class testable_similarity_factory extends \mod_vpl\similarity\similarity_factory {
+    public static function get_available_languages(): array {
+        return \mod_vpl\similarity\similarity_factory::get_available_languages();
     }
 }

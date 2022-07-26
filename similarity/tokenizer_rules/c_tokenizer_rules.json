@@ -4,7 +4,7 @@
     "name": "c-tokenizer",
     "extension": [ ".c", ".h" ],
     "check_rules": false,
-    "inherit_rules": "text_highlight_rules",
+    "inherit_rules": "text_tokenizer_rules",
     "states": {
         "start": [
             {
@@ -83,11 +83,11 @@
             },
             {
                 "token": "keyword.operator",
-                "regex": "--|\\+\\+|<<=|>>=|>>>=|<>|&&|\\|\\||\\?:|[*%\\/\\+\\-&\\^|~!<>=]=?"
+                "regex": "--|\\+\\+|<<=|>>=|>>>=|<>|&&|\\|\\||\\?:|\\->|[*%\\/\\+\\-&\\^|~!<>=]=?"
             },
             {
                 "token": "keyword.operator",
-                "regex": "\\?|:|,|;|\\."
+                "regex": "\\?:|,|;|\\."
             },
             {
                 "token": "paren.lparen",

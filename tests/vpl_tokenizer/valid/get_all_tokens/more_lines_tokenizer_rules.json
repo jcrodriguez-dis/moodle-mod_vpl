@@ -2,7 +2,12 @@
     "name": "c_cpp_tokenizer",
     "extension": [ ".c", ".h", ".cpp", ".c++", ".hpp", ".h++" ],
     "check_rules": false,
-    "inherit_rules": "text_highlight_rules",
+    "inherit_rules": "text_tokenizer_rules",
+    "override_tokens": {
+        "string": "vpl_literal",
+        "string.start": "string",
+        "string.end": "string.start"
+    },
     "states": {
         "start": [
             {
@@ -25,12 +30,12 @@
                 "regex": "'(?:\\\\(?:['\"?\\\\abfnrtv]|[0-7]{1,3}|x[a-fA-F\\d]{2}|u[a-fA-F\\d]{4}U[a-fA-F\\d]{8}|.)|.)?'"
             },
             {
-                "token": "string",
+                "token": "string.start",
                 "regex": "\"",
                 "next": "qqstring"
             },
             {
-                "token": "string",
+                "token": "string.start",
                 "regex": "R\"\\(",
                 "next": "rawString"
             },
@@ -84,7 +89,7 @@
                 "regex": "--|\\+\\+|<<=|>>=|>>>=|<>|&&|\\|\\||\\?:|[*%\\/\\+\\-&\\^|~!<>=]=?"
             },
             {
-                "token": "keyword.operator",
+                "token": "punctuation.operator",
                 "regex": "\\?|:|,|;|\\."
             },
             {
@@ -115,7 +120,7 @@
                 "regex": "%(\\d+\\$)?[#0\\- +']*[,;:_]?((-?\\d+)|\\*(-?\\d+\\$)?)?(\\.((-?\\d+)|\\*(-?\\d+\\$)?)?)?(hh|h|ll|l|j|t|z|q|L|vh|vl|v|hv|hl)?(\\[[^\"\\]]+\\]|[diouxXDOUeEfFgGaACcSspn%])"
             },
             {
-                "token": "string",
+                "token": "string.end",
                 "regex": "\"|$",
                 "next": "start"
             },
@@ -125,7 +130,7 @@
         ],
         "rawString": [
             {
-                "token": "string",
+                "token": "string.end",
                 "regex": "\\)\"",
                 "next": "start"
             },
@@ -160,11 +165,11 @@
         ],
         "directive": [
             {
-                "token": "constant.other",
+                "token": "constant.other.multiline",
                 "regex": "\\\\"
             },
             {
-                "token": "constant.other",
+                "token": "constant.other.multiline",
                 "regex": ".*\\\\"
             },
             {

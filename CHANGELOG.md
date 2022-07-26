@@ -8,6 +8,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 Since this is a non-official Changelog, you may want to see release
 notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documentation/vpl-3.4.3+)
 
+## [3.5.0++ - 5.1.4] - 2022-07-26
+
+### Added
+
+- Include \mod_vpl\similarity\similarity_factory.php to create generic, old, and new tokenizers
+- Include \mod_vpl\similarity\similarity_generic.php to test similarity for unexisted classes
+- Include one scenario for each programming language at similarity.feature
+- Include similarity_base at \mod_vpl\similarity
+- Include option to update max_token_count for \mod_vpl\tokenizer\tokenizer
+
+### Changed
+
+- Replace prefix "_highlight_rules" to "tokenizer_rules"
+- Rename directory "similarity/rules" to "similarity/tokenizer_rules"
+- Update background at similarity.feature to improve performance
+- Refactor C++ rules to inherit C tokenizer rules
+
+### Fixed
+
+- Fix settings at similarity.feature when search is for multiples files of different languages
+- Fix inherit_rules to also consider override_tokens
+- Fix override_tokens to also consider inheritance
+- Fix similarity_factory including PHP unit tests
+
 ## [3.5.0++ - 5.1.3] - 2022-07-13
 
 ### Changed
@@ -16,6 +40,7 @@ notes section at [Official VPL documentation](https://vpl.dis.ulpgc.es/documenta
 - Store tokens of Behat test files for old and new tokenizers
 - Improve tests at tokenizer_factory_test when tokenizer_factory is used
 - Reduce number of lines at tokenizer_factory_test
+- Extend similarity_factory.class.php to new similarity_factory
 
 ### Fixed
 

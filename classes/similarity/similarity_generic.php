@@ -15,18 +15,34 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Similarity object factory classes
+ * Generic similarity class based on tokenizer
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2022 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+namespace mod_vpl\similarity;
 
-defined('MOODLE_INTERNAL') || die();
+use \mod_vpl\tokenizer\tokenizer_factory;
 
-use \mod_vpl\similarity\similarity_factory;
+/**
+ * @codeCoverageIgnore
+ */
+class similarity_generic extends similarity_base {
+    private string $tokenizerclass;
+    private int $typenumber;
 
-class vpl_similarity_factory extends similarity_factory {
+    public function __construct(string $tokenizerclass) {
+        $this->tokenizerclass = $tokenizerclass;
+        $this->typenumber = 50 + abs(crc32($tokenizerclass));
+    }
 
+    public function get_type() {
+        return $this->typenumber;
+    }
+
+    public function get_tokenizer() {
+        return tokenizer_factory::get($this->tokenizerclass);
+    }
 }

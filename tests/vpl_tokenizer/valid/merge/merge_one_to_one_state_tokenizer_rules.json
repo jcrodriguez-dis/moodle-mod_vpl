@@ -1,7 +1,7 @@
 // TEST: tested
 {
     "check_rules": false,
-    "inherit_rules": "inherit_rules_one_state_highlight_rules",
+    "inherit_rules": "inherit_rules_one_state_tokenizer_rules",
     "states": {
         "start": [
             {

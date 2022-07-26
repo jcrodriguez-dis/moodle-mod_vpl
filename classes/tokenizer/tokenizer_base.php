@@ -175,7 +175,7 @@ class tokenizer_base {
     }
 
     /**
-     * Check data type of token based on TextMate
+     * Check data type of token
      *
      * @param string|array $token value for a token
      * @param array $availabletokens list of available tokens

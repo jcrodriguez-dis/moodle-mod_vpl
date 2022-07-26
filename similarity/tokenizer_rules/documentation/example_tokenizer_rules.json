@@ -14,7 +14,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Example of a highlight rules declaration
+ * Example of a tokenizer rules declaration
  *
  *  Tokenizer needs to know what is the lexic that defines
  *  a programming language. This JSON file would contain all
@@ -23,9 +23,9 @@
  *
  *  The example is just a brief demostration of the tools that
  *  tokenizer allows in order to define a set of rules. For more
- *  information about highlight rules, please see <...>.
+ *  information about tokenizer rules, please see <...>.
  *
- *  This syntax is based on Ace Editor highlight rules files. To
+ *  This syntax is based on Ace Editor tokenizer rules files. To
  *  know more about them, go to <https://ace.c9.io/>
  */
 {
@@ -42,11 +42,11 @@
      */
 
     /**
-     * Before talking about the content of a highlight rules file,
+     * Before talking about the content of a tokenizer rules file,
      * it is important to know some basic requirements:
      *
-     *  - Highlight rules must be defined at a JSON file
-     *  - The name of the file must end with "_highlight_rules.json"
+     *  - tokenizer rules must be defined at a JSON file
+     *  - The name of the file must end with "_tokenizer_rules.json"
      *  - Some options are secundary, so default values would be used if they're not defined
      */
 
@@ -54,7 +54,7 @@
     // This option is not required, but could be useful since
     // would define a name for the tokenizer. The tokenizer's
     // name would be "default" whether "name" option is not
-    // defined at highlight rules file.
+    // defined at tokenizer rules file.
     "name": "example-tokenizer",
 
     // OPTIONAL
@@ -70,7 +70,7 @@
     // OPTIONAL
     // Tokenizer would first check if rules are correctly declared.
     // This may cause a slower execution whether there are so many
-    // highlight rules, so you could skip this step specifying this
+    // tokenizer rules, so you could skip this step specifying this
     // option. If check_rules has not been declared, its value would be true
     "check_rules": true,
 
@@ -80,7 +80,7 @@
     // property by simply insert an empty value or not declaring it.
     // It is important to notice that file would be searched from
     // current file's path, and extension must not be defined
-    "inherit_rules": "text_highlight_rules",
+    "inherit_rules": "text_tokenizer_rules",
 
     // OPTIONAL
     // Since tokenizer only allows some names for tokens, it is
@@ -95,6 +95,12 @@
         "string.end": "vpl_literal"
     },
 
+    // OPTIONAL
+    // Using this advanced option, it is possible to override the
+    // maximum number of tokens allowed during the parse phase.
+    // Values must be positive integer numbers.
+    "max_token_count": 2000,
+
     // REQUIRED
     // List of states that tokenizer uses during its execution.
     // Each state must have a named and an array of rules.
@@ -105,7 +111,7 @@
     "states": {
         // Start state
         //
-        //  Initial state on which execution begins. A highlight
+        //  Initial state on which execution begins. A tokenizer
         //  rules file would be considered as invalid wether this
         //  state has not been defined locally or at inheritance.
         "start": [
@@ -150,10 +156,10 @@
         ],
         // Example of a state different than start
         //
-        //  Since highlighter acts as a state machine, a new
+        //  Since tokenizerer acts as a state machine, a new
         //  state won't be checked unless one of the regex's
         //  blocks of current state has a next field and matches.
-        //  In other words, highlighter would check constanly the
+        //  In other words, tokenizerer would check constanly the
         //  actual state until a next token has been actived
         //
         "single_line_comment": [

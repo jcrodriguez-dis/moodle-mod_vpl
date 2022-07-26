@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tokenizer for highlight rules JSON files
+ * Tokenizer for tokenizer rules JSON files
  *
  * @package mod_vpl
  * @copyright 2022 David Parreño Barbuzano
@@ -52,6 +52,7 @@ class tokenizer extends tokenizer_base {
     protected bool $checkrules = true;
     protected string $inheritrules;
     protected bool $setcheckrules;
+    protected array $rawoverridetokens = [];
 
     /**
      * Maximum number of tokens that tokenizer allow
@@ -187,6 +188,39 @@ class tokenizer extends tokenizer_base {
     );
 
     /**
+     * @codeCoverageIgnore
+     *
+     * Get availabletokens for current tokenizer
+     *
+     * @return array
+     */
+    protected function get_override_tokens(): array {
+        return $this->availabletokens;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     *
+     * Get rawoverridetokens for current tokenizer
+     *
+     * @return array
+     */
+    protected function get_raw_override_tokens(): array {
+        return $this->rawoverridetokens;
+    }
+
+    /**
+     * @codeCoverageIgnore
+     *
+     * Get maxtokencount for current tokenizer
+     *
+     * @return int
+     */
+    protected function get_max_token_count(): int {
+        return $this->maxtokencount;
+    }
+
+    /**
      * Creates a new instance of \mod_vpl\tokenizer\tokenizer class
      *
      * @param string $rulefilename JSON file with highlight rules
@@ -201,18 +235,19 @@ class tokenizer extends tokenizer_base {
         );
 
         assertf::assert(
-            str_ends_with($rulefilename, '_highlight_rules.json'), $rulefilename,
-            $rulefilename . ' must have suffix _highlight_rules.json'
+            str_ends_with($rulefilename, '_tokenizer_rules.json'), $rulefilename,
+            $rulefilename . ' must have suffix _tokenizer_rules.json'
         );
 
         $this->setcheckrules = $setcheckrules;
         $jsonobj = self::load_json($rulefilename);
 
         $this->init_check_rules($rulefilename, $jsonobj);
+        $this->init_inherit_rules($rulefilename, $jsonobj);
         $this->init_override_tokens($rulefilename, $jsonobj);
+        $this->init_max_token_count($rulefilename, $jsonobj);
         $this->init_tokenizer_name($rulefilename, $jsonobj);
         $this->init_extension($rulefilename, $jsonobj);
-        $this->init_inherit_rules($rulefilename, $jsonobj);
         $this->init_states($rulefilename, $jsonobj);
 
         $restoptions = get_object_vars($jsonobj);
@@ -223,8 +258,8 @@ class tokenizer extends tokenizer_base {
             assertf::assert($areinvalidoptions == false, $rulefilename, $errmssg);
         }
 
-        self::prepare_tokenizer($rulefilename);
         $this->apply_inheritance();
+        self::prepare_tokenizer($rulefilename);
     }
 
     /**
@@ -547,6 +582,25 @@ class tokenizer extends tokenizer_base {
         return $jsonobj;
     }
 
+    private function init_max_token_count(string $rulefilename, object $jsonobj) {
+        if (isset($jsonobj->max_token_count)) {
+            if ($this->checkrules === true) {
+                assertf::assert(
+                    is_numeric($jsonobj->max_token_count), $rulefilename,
+                    '"max_token_count" option must be numeric'
+                );
+
+                assertf::assert(
+                    $jsonobj->max_token_count >= 0, $rulefilename,
+                    '"max_token_count" option must be a positive integer'
+                );
+            }
+
+            $this->set_max_token_count($jsonobj->max_token_count);
+            unset($jsonobj->max_token_count);
+        }
+    }
+
     private function init_override_tokens(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->override_tokens)) {
             if ($this->checkrules === true) {
@@ -557,6 +611,7 @@ class tokenizer extends tokenizer_base {
             }
 
             $overridetokens = (array)$jsonobj->override_tokens;
+            $this->rawoverridetokens = $overridetokens;
 
             foreach ($overridetokens as $tokename => $strtokentype) {
                 if ($this->checkrules === true) {
@@ -576,6 +631,18 @@ class tokenizer extends tokenizer_base {
             }
 
             unset($jsonobj->override_tokens);
+        }
+
+        // Inherit override_tokens before checking rules
+        if (!empty($this->inheritrules)) {
+            $inherittokenizer = new tokenizer($this->inheritrules);
+            $src = $inherittokenizer->get_override_tokens();
+            $rawsrc = $inherittokenizer->get_raw_override_tokens();
+
+            foreach (array_keys($rawsrc) as $tokename) {
+                $tokentype = $src[$tokename];
+                $this->availabletokens[$tokename] = $tokentype;
+            }
         }
     }
 

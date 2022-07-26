@@ -1,0 +1,11 @@
+{
+    "max_token_count": 10,
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}

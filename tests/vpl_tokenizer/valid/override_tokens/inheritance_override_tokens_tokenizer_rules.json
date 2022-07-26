@@ -1,0 +1,14 @@
+{
+    "inherit_rules": "complex_override_token_tokenizer_rules",
+    "override_tokens": {
+        "comment": "vpl_literal"
+    },
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "#"
+            }
+        ]
+    }
+}
