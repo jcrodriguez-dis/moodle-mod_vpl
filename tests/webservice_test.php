@@ -147,6 +147,48 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::info_returns());
     }
 
+    public function test_vpl_webservice_info_exceptions() {
+        $ok = false;
+        $this->setUser($this->editingteachers[0]);
+
+        $parms = ['name' => 'forbidden net', 'requirednet' => '1.1.1.1'];
+        $forbbidennet = $this->create_instance($parms);
+
+        $parms = ['name' => 'With password', 'password' => 'password'];
+        $withpassword = $this->create_instance($parms);
+
+        $parms = ['name' => 'Not visible'];
+        $notvisible = $this->create_instance($parms);
+
+        $this->setUser($this->students[0]);
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::info($forbbidennet->get_course_module()->id, '');
+            $this->fail('Exception expected netrequired');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::info($withpassword->get_course_module()->id, 'bad password');
+            $this->fail('Exception expected if bad password');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not is_visible().
+        try {
+            set_coursemodule_visible($notvisible->get_course_module()->id, false );
+            get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
+            mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
+            $this->fail('Exception expected if not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        $this->assertIsObject($ok);
+        $this->setUser($this->editingteachers[0]);
+        mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
+    }
+
     private function internal_test_vpl_webservice_open($id, $files = array(),
             $compilation ='', $evaluation = '',
             $grade ='', $password = '') {
@@ -221,6 +263,48 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::open_returns());
     }
 
+    public function test_vpl_webservice_open_exceptions() {
+        $ok = false;
+        $this->setUser($this->editingteachers[0]);
+
+        $parms = ['name' => 'forbidden net', 'requirednet' => '1.1.1.1'];
+        $forbbidennet = $this->create_instance($parms);
+
+        $parms = ['name' => 'With password', 'password' => 'password'];
+        $withpassword = $this->create_instance($parms);
+
+        $parms = ['name' => 'Not visible'];
+        $notvisible = $this->create_instance($parms, ['visible' => 0]);
+
+        $this->setUser($this->students[0]);
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::open($forbbidennet->get_course_module()->id, '');
+            $this->fail('Exception expected netrequired');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::open($withpassword->get_course_module()->id, 'bad password');
+            $this->fail('Exception expected if bad password');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not is_visible().
+        try {
+            set_coursemodule_visible($notvisible->get_course_module()->id, false );
+            get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
+            mod_vpl_webservice::open($notvisible->get_course_module()->id, '');
+            $this->fail('Exception expected if not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        $this->assertIsObject($ok);
+        $this->setUser($this->editingteachers[0]);
+        mod_vpl_webservice::open($notvisible->get_course_module()->id, '');
+    }
+
     private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
         $filesarray = array();
         foreach ($files as $name => $data) {
@@ -248,6 +332,80 @@ class webservice_test extends base_test {
         $this->assertNull(mod_vpl_webservice::save_returns());
     }
 
+    public function test_vpl_webservice_save_exceptions() {
+        $ok = false;
+        $this->setUser($this->editingteachers[0]);
+
+        $parms = ['name' => 'forbidden net', 'requirednet' => '1.1.1.1'];
+        $forbbidennet = $this->create_instance($parms);
+
+        $parms = ['name' => 'With password', 'password' => 'password'];
+        $withpassword = $this->create_instance($parms);
+
+        $parms = ['name' => 'Not visible'];
+        $notvisible = $this->create_instance($parms, ['visible' => 0]);
+
+        $parms = ['name' => 'Closed', 'duedate' => 1000];
+        $closed = $this->create_instance($parms);
+
+        $parms = ['name' => 'Example', 'example' => 1];
+        $example = $this->create_instance($parms);
+
+        $parms = ['name' => 'Nocopy', 'restrictededitor' => 1];
+        $nocopy = $this->create_instance($parms);
+        $files = [ ['name' => 'a.c', 'data' => '// Comment'] ];
+        $this->setUser($this->students[0]);
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::save($forbbidennet->get_course_module()->id, $files, '');
+            $this->fail('Exception expected netrequired');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::save($withpassword->get_course_module()->id, $files, 'bad password');
+            $this->fail('Exception expected if bad password');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not is_visible().
+        try {
+            set_coursemodule_visible($notvisible->get_course_module()->id, false );
+            get_fast_modinfo($notvisible->get_course_module()->course, 0, true);;
+            mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
+            $this->fail('Exception expected if not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if closed.
+        try {
+            mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
+            $this->fail('Exception expected if closed');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if example.
+        try {
+            mod_vpl_webservice::save($example->get_course_module()->id, $files, '');
+            $this->fail('Exception expected if example');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not external copy.
+        try {
+            mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
+            $this->fail('Exception expected if not external copy');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        $this->assertIsObject($ok);
+        $this->setUser($this->editingteachers[0]);
+        mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
+        mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
+        mod_vpl_webservice::save($closed->get_course_module()->id, $files, '');
+    }
+
     public function test_vpl_webservice_evaluate() {
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
@@ -268,6 +426,107 @@ class webservice_test extends base_test {
         }
         $this->assertIsObject(mod_vpl_webservice::evaluate_parameters());
         $this->assertIsObject(mod_vpl_webservice::evaluate_returns());
+    }
+
+    public function change_activity($instance, $teacher, $student, $changes) {
+        foreach ($changes as $atribute => $value) {
+            $instance->$atribute = $value;
+        }
+        $this->setUser($teacher);
+        vpl_update_instance($instance);
+        $this->setUser($student);
+    }
+    public function test_vpl_webservice_evaluate_exceptions() {
+        $ok = false;
+        $this->setUser($this->editingteachers[0]);
+
+        $parms = ['name' => 'Test activity'];
+        $activity = $this->create_instance($parms);
+
+        $this->setUser($this->students[0]);
+        $cid = $activity->get_course_module()->id;
+        $instance = $activity->get_instance();
+        $instance->instance = $instance->id; // Adds attibute required for vpl_update_instance
+        // No submission.
+        try {
+            mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
+            $this->fail('Exception expected no submission');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+
+        $files = [['name' => 'a.c', 'data' => "//\n"]];
+        mod_vpl_webservice::save($cid, $files, '');
+
+        // The initial_checks if request come from IP in required IP/Network.
+        $changes = ['requirednet' => '1.1.1.1', 'evaluate' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::evaluate($cid, '');
+            $this->fail('Exception expected netrequired');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+
+        $changes = ['requirednet' => '', 'password' => 'password'];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        // The initial_checks if request come from IP in required IP/Network.
+        try {
+            mod_vpl_webservice::evaluate($cid, 'bad password');
+            $this->fail('Exception expected if bad password');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not is_visible().
+        $parms = ['name' => 'Not visible', 'evaluate' => 1];
+        $notvisible = $this->create_instance($parms);
+        set_coursemodule_visible($notvisible->get_course_module()->id, false );
+        get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
+        try {
+            mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
+            $this->fail('Exception expected if not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not evaluable.
+        $changes = ['evaluate' => 0, 'password' => ''];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::evaluate($cid, '');
+            $this->fail('Exception expected if not evaluable');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if example.
+        $changes = ['evaluate' => 1, 'example' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::evaluate($cid, '');
+            $this->fail('Exception expected if example');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if closed.
+        $changes = ['duedate' => 1, 'example' => 0];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::evaluate($cid, '');
+            $this->fail('Exception expected if closed');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        $this->assertIsObject($ok);
+        $this->setUser($this->editingteachers[0]);
+        mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
+        mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
+        mod_vpl_webservice::save($activity->get_course_module()->id, $files, '');
+        $changes = ['duedate' => 0, 'evaluate' => 0];
+        $this->change_activity($instance, $this->editingteachers[0], $this->editingteachers[0], $changes);
+        mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
+        $changes = ['duedate' => 1, 'evaluate' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->editingteachers[0], $changes);
+        mod_vpl_webservice::save($activity->get_course_module()->id, $files, '');
+        mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
     }
 
     public function test_vpl_webservice_get_result() {
@@ -294,57 +553,99 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::get_result_returns());
     }
 
-    /**
-     * Cheks API Exceptions
-     */
-    public function test_vpl_webservice_exeptions() {
+    public function test_vpl_webservice_get_result_exeptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
 
-        $parms = ['name' => 'forbidden net', 'requirednet' => '1.1.1.1'];
-        $forbbidennet = $this->create_instance($parms);
-
-        $parms = ['name' => 'Not visible'];
-        $notvisible = $this->create_instance($parms, ['visible' => 0]);
-
-        $parms = ['name' => 'With password', 'password' => 'password'];
-        $withpassword = $this->create_instance($parms);
-
-        $parms = ['name' => 'Closed', 'duedate' => 1000];
-        $closed = $this->create_instance($parms);
-
-        $parms = ['name' => 'Example', 'example' => 1];
-        $example = $this->create_instance($parms);
-
-        $parms = ['name' => 'Nocopy', 'restrictededitor' => 1];
-        $nocopy = $this->create_instance($parms);
-
-        $parms = ['name' => 'Not evaluable', 'evaluate' => 0];
-        $notevaluable = $this->create_instance($parms);
+        $parms = ['name' => 'Test activity'];
+        $activity = $this->create_instance($parms);
 
         $this->setUser($this->students[0]);
+        $cid = $activity->get_course_module()->id;
+        $instance = $activity->get_instance();
+        $instance->instance = $instance->id; // Adds attibute required for vpl_update_instance
+        // No submission.
         try {
-            mod_vpl_webservice::info($forbbidennet->get_course_module()->id, '');
+            mod_vpl_webservice::get_result($activity->get_course_module()->id, '');
+            $this->fail('Exception expected no submission');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+
+        $files = [['name' => 'a.c', 'data' => "//\n"]];
+        mod_vpl_webservice::save($cid, $files, '');
+
+        // The initial_checks if request come from IP in required IP/Network.
+        $changes = ['requirednet' => '1.1.1.1', 'evaluate' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected netrequired');
         } catch (Exception $e) {
             $ok = $e;
         }
+
+        $changes = ['requirednet' => '', 'password' => 'password'];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        // The initial_checks if request come from IP in required IP/Network.
         try {
-            mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
-            $this->fail('Exception expected not visible');
+            mod_vpl_webservice::get_result($cid, 'bad password');
+            $this->fail('Exception expected if bad password');
         } catch (Exception $e) {
             $ok = $e;
         }
-        // The initial_checks if request come from IP in required IP/Network.
         // The info if not is_visible().
-        // The save if example or restrictededitor.
-        // The save is_submit_able().
-        // The open is_visible().
-        // The evaluate is_submit_able().
-        // The evaluate example or evaluate.
-        // The evaluate monitorPath.
-        // The get_result is_submit_able.
-        // The get_result example  or restrictededitor or evaluate.
-        $this->assertTrue($ok == true);
+        $parms = ['name' => 'Not visible', 'evaluate' => 1];
+        $notvisible = $this->create_instance($parms);
+        set_coursemodule_visible($notvisible->get_course_module()->id, false );
+        get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
+        try {
+            mod_vpl_webservice::get_result($notvisible->get_course_module()->id, '');
+            $this->fail('Exception expected if not visible');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if not evaluable.
+        $changes = ['evaluate' => 0, 'password' => ''];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::get_result($cid, '');
+            $this->fail('Exception expected if not evaluable');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if example.
+        $changes = ['evaluate' => 1, 'example' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::get_result($cid, '');
+            $this->fail('Exception expected if example');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        // The info if closed.
+        $changes = ['duedate' => 1, 'example' => 0];
+        $this->change_activity($instance, $this->editingteachers[0], $this->students[0], $changes);
+        try {
+            mod_vpl_webservice::get_result($cid, '');
+            $this->fail('Exception expected if closed');
+        } catch (Exception $e) {
+            $ok = $e;
+        }
+        $this->assertIsObject($ok);
+        $this->setUser($this->editingteachers[0]);
+        mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
+        mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
+        mod_vpl_webservice::get_result($notvisible->get_course_module()->id, '');
+        mod_vpl_webservice::save($activity->get_course_module()->id, $files, '');
+        $changes = ['duedate' => 0, 'evaluate' => 0];
+        $this->change_activity($instance, $this->editingteachers[0], $this->editingteachers[0], $changes);
+        mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
+        mod_vpl_webservice::get_result($activity->get_course_module()->id, '');
+        $changes = ['duedate' => 1, 'evaluate' => 1];
+        $this->change_activity($instance, $this->editingteachers[0], $this->editingteachers[0], $changes);
+        mod_vpl_webservice::save($activity->get_course_module()->id, $files, '');
+        mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
+        mod_vpl_webservice::get_result($activity->get_course_module()->id, '');
     }
 }

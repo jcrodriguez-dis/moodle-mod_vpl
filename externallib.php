@@ -122,7 +122,7 @@ class mod_vpl_webservice extends external_api {
             throw new Exception( get_string( 'notavailable' ) );
         }
         $instance = $vpl->get_instance();
-        if ($instance->example or $instance->restrictededitor) {
+        if ($instance->example or ($instance->restrictededitor && ! $vpl->has_capability(VPL_MANAGE_CAPABILITY))) {
             throw new Exception( get_string( 'notavailable' ) );
         }
         // Adapts to the file format VPL3.2.
@@ -133,6 +133,7 @@ class mod_vpl_webservice extends external_api {
         }
         mod_vpl_edit::save( $vpl, $USER->id, $files );
     }
+
     public static function save_returns() {
         return null;
     }
@@ -205,16 +206,15 @@ class mod_vpl_webservice extends external_api {
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();
-        if (! $vpl->is_submit_able()) {
-            throw new Exception( get_string( 'notavailable' ) );
-        }
-        if ($instance->example or ! $instance->evaluate) {
-            throw new Exception( get_string( 'notavailable' ) );
+        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+            if (! $vpl->is_submit_able()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
+            if ($instance->example or ! $instance->evaluate) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
         }
         $res = mod_vpl_edit::execute( $vpl, $USER->id, 'evaluate' );
-        if ( empty($res->monitorPath) ) {
-            throw new Exception( get_string( 'notavailable' ) );
-        }
         $monitorurl = 'ws://' . $res->server . ':' . $res->port . '/' . $res->monitorPath;
         $smonitorurl = 'wss://' . $res->server . ':' . $res->securePort . '/' . $res->monitorPath;
         return array ( 'monitorURL' => $monitorurl, 'smonitorURL' => $smonitorurl  );
@@ -254,11 +254,13 @@ if the websocket client send something to the server then the evaluation is stop
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();
-        if (! $vpl->is_submit_able()) {
-            throw new Exception( get_string( 'notavailable' ) );
-        }
-        if ($instance->example or $instance->restrictededitor or ! $instance->evaluate) {
-            throw new Exception( get_string( 'notavailable' ) );
+        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+            if (! $vpl->is_submit_able()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
+            if ($instance->example or ! $instance->evaluate) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
         }
         $compilationexecution = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
         $ret = [
