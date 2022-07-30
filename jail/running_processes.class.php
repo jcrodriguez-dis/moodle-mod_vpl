@@ -84,17 +84,17 @@ class vpl_running_processes {
         }
         $DB->delete_records( self::TABLE, $parms );
     }
+    /**
+     * Returns records of processes registered in a course
+     * @param int $courseid ID of the course
+     * @return array[] Array of DB records.
+     */
     public static function lanched_processes($courseid) {
         global $DB;
-        // Clean old processes.
-        // TODO: save the maximum time and delete based on it.
-        $old = time() - (60 * 60); // One hour.
-        $DB->delete_records_select(self::TABLE, "start_time < ?", array($old));
-
         $sql = 'SELECT {vpl_running_processes}.* FROM {vpl_running_processes}';
         $sql .= ' INNER JOIN {vpl} ON {vpl_running_processes}.vpl = {vpl}.id';
         $sql .= ' WHERE {vpl}.course = ?;';
-        $param = array ( $courseid );
+        $param = [ $courseid ];
         return $DB->get_records_sql( $sql, $param );
     }
 }
