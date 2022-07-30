@@ -117,7 +117,7 @@ try {
         case 'run':
         case 'debug':
         case 'evaluate':
-            if (! $instance->$action and ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+            if (! $instance->$action && ! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
             $result->response = mod_vpl_edit::execute( $vpl, $userid, $action, $actiondata );

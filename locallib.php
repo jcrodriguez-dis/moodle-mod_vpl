@@ -156,9 +156,9 @@ function vpl_delete_dir($dirname) {
             }
             closedir( $dd );
             foreach ($list as $name) {
-                $ret = vpl_delete_dir( $dirname . '/' . $name ) and $ret;
+                $ret = vpl_delete_dir( $dirname . '/' . $name ) && $ret;
             }
-            $ret = rmdir( $dirname ) and $ret;
+            $ret = rmdir( $dirname ) && $ret;
         } else {
             $ret = unlink( $dirname );
         }
@@ -945,7 +945,7 @@ function vpl_get_webservice_token($vpl) {
             'userid' => $USER->id,
             'externalserviceid' => $service->id
     ) );
-    if (! empty( $tokenrecord ) and $tokenrecord->validuntil < $now) {
+    if (! empty( $tokenrecord ) && $tokenrecord->validuntil < $now) {
         unset( $tokenrecord ); // Will be delete before creating a new one.
     }
     if (empty( $tokenrecord )) {

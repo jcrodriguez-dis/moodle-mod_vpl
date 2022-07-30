@@ -122,7 +122,7 @@ class mod_vpl_webservice extends external_api {
             throw new Exception( get_string( 'notavailable' ) );
         }
         $instance = $vpl->get_instance();
-        if ($instance->example or ($instance->restrictededitor && ! $vpl->has_capability(VPL_MANAGE_CAPABILITY))) {
+        if ($instance->example || ($instance->restrictededitor && ! $vpl->has_capability(VPL_MANAGE_CAPABILITY))) {
             throw new Exception( get_string( 'notavailable' ) );
         }
         // Adapts to the file format VPL3.2.
@@ -210,7 +210,7 @@ class mod_vpl_webservice extends external_api {
             if (! $vpl->is_submit_able()) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
-            if ($instance->example or ! $instance->evaluate) {
+            if ($instance->example || ! $instance->evaluate) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
         }
@@ -258,7 +258,7 @@ if the websocket client send something to the server then the evaluation is stop
             if (! $vpl->is_submit_able()) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
-            if ($instance->example or ! $instance->evaluate) {
+            if ($instance->example || ! $instance->evaluate) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
         }

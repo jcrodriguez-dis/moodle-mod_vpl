@@ -100,7 +100,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         // Insert the choice record.
         $newitemid = $DB->insert_record ( 'vpl', $data );
         // Immediately after inserting "activity" record, call this.
-        if (isset($data->basedon) and $data->basedon > 0 and isset($data->basedonname)) {
+        if (isset($data->basedon) && $data->basedon > 0 && isset($data->basedonname)) {
             $this->basedonnames[$newitemid] = $data->basedonname;
         }
         $this->apply_activity_instance ( $newitemid );
@@ -114,7 +114,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     private function process_groupfile($data, $path) {
         $data = ( object ) $data;
         $filename = $data->name;
-        if ( isset($data->encoding) and ($data->encoding == 1) ) {
+        if ( isset($data->encoding) && ($data->encoding == 1) ) {
             $content = base64_decode($data->content);
             if ( substr($filename, -4) === '.b64' ) { // For backware compatibility.
                 $filename = substr($filename, 0, strlen($filename) - 4);

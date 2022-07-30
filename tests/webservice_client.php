@@ -169,7 +169,7 @@ $newres = vpl_call_service( $serviceurl, 'mod_vpl_save', $body );
 
 echo '<h3>Reread file to test saved files</h3>';
 $newres = vpl_call_service( $serviceurl, 'mod_vpl_open' );
-if (! isset( $res->files ) or ! isset( $newres->files ) or $res->files != $newres->files) {
+if (! isset( $res->files ) || ! isset( $newres->files ) || $res->files != $newres->files) {
     echo "Error";
 } else {
     echo "OK";
