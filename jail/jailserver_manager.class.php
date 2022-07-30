@@ -104,15 +104,19 @@ class vpl_jailserver_manager {
                     }
                 }
             } else {
-                $response = xmlrpc_decode( $rawresponse, "UTF-8" );
-                if (is_array( $response )) {
-                    if (xmlrpc_is_fault( $response )) {
-                        $error = 'XMLRPC is fault: ' . s( $response["faultString"] );
-                    } else {
-                        return $response;
-                    }
+                if (! function_exists('xmlrpc_decode')) {
+                    $error = 'Requires execution server version >= 3 or PHP with XHTML-RPC support';
                 } else {
-                    $error = 'HTTP error ' . s( strip_tags( $rawresponse ) );
+                    $response = xmlrpc_decode( $rawresponse, "UTF-8" );
+                    if (is_array( $response )) {
+                        if (xmlrpc_is_fault( $response )) {
+                            $error = 'XMLRPC is fault: ' . s( $response["faultString"] );
+                        } else {
+                            return $response;
+                        }
+                    } else {
+                        $error = 'HTTP error ' . s( strip_tags( $rawresponse ) );
+                    }
                 }
             }
             return false;
