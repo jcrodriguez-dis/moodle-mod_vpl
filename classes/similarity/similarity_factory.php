@@ -88,44 +88,17 @@ class similarity_factory {
      * Returns an object of a class derived from similarity_base to process a file of a type.
      *
      * @param string $type File type
-     * @param int $firsttry specify the first method to try to generate similarity classes
      * @return object Object of a class derived from similarity_base
      */
-    private static function get_object(string $type, int $firsttry=0) {
-        if ($firsttry === 0) {
-            $similarityclass = self::get_with_similarity_class($type);
+    private static function get_object(string $type) {
+        $similarityclass = self::get_with_similarity_class($type);
+
+        if (!isset($similarityclass)) {
+            $similarityclass = self::get_with_generic($type);
 
             if (!isset($similarityclass)) {
-                $similarityclass = self::get_with_generic($type);
-
-                if (!isset($similarityclass)) {
-                    $similarityclass = self::get_with_old_similarity_class($type);
-                }
-            }
-        } else {
-            // @codeCoverageIgnoreStart
-            if ($firsttry === 1) {
-                $similarityclass = self::get_with_generic($type);
-
-                if (!isset($similarityclass)) {
-                    $similarityclass = self::get_with_similarity_class($type);
-
-                    if (!isset($similarityclass)) {
-                        $similarityclass = self::get_with_old_similarity_class($type);
-                    }
-                }
-            } else if ($firsttry === 2) {
                 $similarityclass = self::get_with_old_similarity_class($type);
-
-                if (!isset($similarityclass)) {
-                    $similarityclass = self::get_with_similarity_class($type);
-
-                    if (!isset($similarityclass)) {
-                        $similarityclass = self::get_with_generic($type);
-                    }
-                }
             }
-            // @codeCoverageIgnoreEnd
         }
 
         return $similarityclass;
@@ -142,7 +115,8 @@ class similarity_factory {
     }
 
     private static function get_with_generic(string $type) {
-        $tokenizerrule = dirname(__FILE__) . '/../../similarity/tokenizer_rules/' . $type . '_tokenizer_rules.json';
+        $tokenizerrule = dirname(__FILE__) . '/../../similarity/tokenizer_rules/';
+        $tokenizerrule .= $type . '_tokenizer_rules.json';
 
         if (file_exists($tokenizerrule) === true) {
             return new similarity_generic($type);
@@ -153,8 +127,10 @@ class similarity_factory {
 
     private static function get_with_old_similarity_class(string $type) {
         if (!isset(self::$classloaded[$type])) {
+            $include = dirname(__FILE__) . '/../../similarity/similarity_';
+            $include .= $type . '.class.php';
+
             try {
-                $include = dirname(__FILE__) . '/../../similarity/similarity_' . $type . '.class.php';
                 require_once($include);
                 self::$classloaded[$type] = true;
             // @codeCoverageIgnoreStart
@@ -172,15 +148,14 @@ class similarity_factory {
      * Get similarity class for passed programming language
      *
      * @param string $namelang name of a programming language
-     * @param int $firsttry specify the first method to try to generate similarity classes
      * @return ?similariy|?vpl_similarity|?similarity_generic
      */
-    public static function get(string $filename, int $firsttry=0) {
+    public static function get(string $filename) {
         $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $type = self::ext2type($ext);
 
         if ($type != false) {
-            return self::get_object($type, $firsttry);
+            return self::get_object($type);
         } else {
             return null;
         }

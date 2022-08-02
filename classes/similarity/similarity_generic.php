@@ -30,12 +30,15 @@ use \mod_vpl\tokenizer\tokenizer_factory;
  * @codeCoverageIgnore
  */
 class similarity_generic extends similarity_base {
+    private static int $lasttypenumber = 50;
+    private static array $typenumbers = [];
+
     private string $tokenizerclass;
     private int $typenumber;
 
     public function __construct(string $tokenizerclass) {
         $this->tokenizerclass = $tokenizerclass;
-        $this->typenumber = 50 + abs(crc32($tokenizerclass));
+        $this->typenumber = self::get_type_number($tokenizerclass);
     }
 
     public function get_type() {
@@ -44,5 +47,13 @@ class similarity_generic extends similarity_base {
 
     public function get_tokenizer() {
         return tokenizer_factory::get($this->tokenizerclass);
+    }
+
+    private static function get_type_number($tokenizerclass) {
+        if (!isset(self::$typenumbers[$tokenizerclass])) {
+            self::$typenumbers[$tokenizerclass] = self::$lasttypenumber++;
+        }
+
+        return self::$typenumbers[$tokenizerclass];
     }
 }

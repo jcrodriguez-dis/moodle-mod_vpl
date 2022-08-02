@@ -1,6 +1,6 @@
 Main developer: Juan Carlos Rodriguez-del-Pino, jc.rodriguezdelpino@ulpgc.es
 
-Tokenizer: David Parreño Barbuzano, david.parreno101@alu.ulpgc.es
+Tokenizer: David Parreño Barbuzano, losedavidpb@gmail.com
 
 Translations:
     Catalan: Antonio Piedras Morente

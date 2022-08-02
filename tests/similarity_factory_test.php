@@ -98,70 +98,58 @@ class similarity_factory_test extends \advanced_testcase {
      * Method to test similarity_factory::get when generic_similarity is used
      */
     public function test_get_with_generic_similarity() {
-        $tokenizerlangs = tokenizer_similarity_utils::get_tokenizer_langs();
+        $filelang = 'test_file.java';
 
-        foreach ($tokenizerlangs as $namelang) {
-            if (similarity_factory::ext2type($namelang) !== false) {
-                $filelang = 'test_file.' . $namelang;
+        $similarityclass = similarity_factory::get($filelang, 1);
+        $this->test_similarity($similarityclass, 'java', 1);
 
-                $similarityclass = similarity_factory::get($filelang, 1);
-                $this->test_similarity($similarityclass, $namelang, 1);
+        $similarityclass = similarity_factory::get($filelang, 1);
+        $this->test_similarity($similarityclass, 'java', 1);
 
-                $similarityclass = similarity_factory::get($filelang, 1);
-                $this->test_similarity($similarityclass, $namelang, 1);
+        $similarityclass = vpl_similarity_factory::get($filelang, 1);
+        $this->test_similarity($similarityclass, 'java', 1);
 
-                $similarityclass = vpl_similarity_factory::get($filelang, 1);
-                $this->test_similarity($similarityclass, $namelang, 1);
-
-                $similarityclass = vpl_similarity_factory::get($filelang, 1);
-                $this->test_similarity($similarityclass, $namelang, 1);
-            }
-        }
+        $similarityclass = vpl_similarity_factory::get($filelang, 1);
+        $this->test_similarity($similarityclass, 'java', 1);
     }
 
     /**
      * Method to test similarity_factory::get when old similarity is used
      */
     public function test_get_with_old_similarity() {
-        $tokenizerlangs = testable_similarity_factory::get_available_languages();
+        $filelang = 'test_file.pl';
 
-        foreach ($tokenizerlangs as $namelang) {
-            if (similarity_factory::ext2type($namelang) !== false) {
-                $filelang = 'test_file.' . $namelang;
+        $similarityclass = similarity_factory::get($filelang);
+        $this->test_similarity($similarityclass, 'prolog', 2);
 
-                $similarityclass = similarity_factory::get($filelang, 2);
-                $this->test_similarity($similarityclass, $namelang, 2);
+        $similarityclass = similarity_factory::get($filelang);
+        $this->test_similarity($similarityclass, 'prolog', 2);
 
-                $similarityclass = similarity_factory::get($filelang, 2);
-                $this->test_similarity($similarityclass, $namelang, 2);
+        $similarityclass = vpl_similarity_factory::get($filelang);
+        $this->test_similarity($similarityclass, 'prolog', 2);
 
-                $similarityclass = vpl_similarity_factory::get($filelang, 2);
-                $this->test_similarity($similarityclass, $namelang, 2);
-
-                $similarityclass = vpl_similarity_factory::get($filelang, 2);
-                $this->test_similarity($similarityclass, $namelang, 2);
-            }
-        }
+        $similarityclass = vpl_similarity_factory::get($filelang);
+        $this->test_similarity($similarityclass, 'prolog', 2);
     }
 
     private function test_similarity($similarityclass, $namelang, $similaritytype=null) {
         $this->assertTrue(isset($similarityclass) === true);
-        $strsimilarityclass = get_class($similarityclass);
 
-        if (is_numeric($similaritytype)) {
-            if ($similaritytype === 0) {
-                $this->assertSame('mod_vpl\similarity\similarity_' . $namelang, $strsimilarityclass);
-            } else if ($similaritytype === 1) {
-                $this->assertSame('mod_vpl\similarity\similarity_generic', $strsimilarityclass);
-            } else if ($similaritytype === 2) {
-                $this->assertSame('vpl_similarity_' . $namelang, $strsimilarityclass);
-            }
-        } else {
+        $similarityclasses = [
+            'mod_vpl\similarity\similarity_' . $namelang,
+            'mod_vpl\similarity\similarity_generic',
+            'vpl_similarity_' . $namelang
+        ];
+
+        if (!is_numeric($similaritytype)) {
             $this->assertTrue(
-                strcmp('mod_vpl\similarity\similarity_' . $namelang, $strsimilarityclass) == 0 ||
-                strcmp('mod_vpl\similarity\similarity_generic', $strsimilarityclass) == 0 ||
-                strcmp('vpl_similarity_' . $namelang, $strsimilarityclass) == 0
+                strcmp($similarityclasses[0], get_class($similarityclass)) == 0 ||
+                strcmp($similarityclasses[1], get_class($similarityclass)) == 0 ||
+                strcmp($similarityclasses[2], get_class($similarityclass)) == 0
             );
+        } else {
+            $expectedclass = $similarityclasses[$similaritytype];
+            $this->assertSame($expectedclass, get_class($similarityclass));
         }
     }
 }
