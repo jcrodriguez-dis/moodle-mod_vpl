@@ -283,8 +283,8 @@ class mod_vpl_edit {
      */
     public static function retrieve_result(mod_vpl $vpl, int $userid, $processid = -1) {
         if ($processid == -1) { // To keep previous behaviour.
-            $processinfo = vpl_running_processes::get($userid, $vpl->get_instance()->id);
-            if ($processinfo == null) { // No process to cancel.
+            $processinfo = vpl_running_processes::get_run($userid, $vpl->get_instance()->id);
+            if ($processinfo == false) { // No process to cancel.
                 throw new Exception( get_string( 'serverexecutionerror', VPL ) );
             } else {
                 $processid = $processinfo->id;
@@ -320,6 +320,26 @@ class mod_vpl_edit {
     }
 
     /**
+     * Request to stop the direct run for this user and vpl activity if any
+     * @param mod_vpl $vpl
+     * @param int $userid
+     */
+    public static function stopdirectrun($vplid, $userid) {
+        $processes = vpl_running_processes::get_directrun($userid, $vplid);
+        foreach ($processes as $process) {
+            try {
+                $data = new \stdClass();
+                $data->adminticket = $process->adminticket;
+                $request = vpl_jailserver_manager::get_action_request('stop', $data);
+                vpl_jailserver_manager::get_response( $data->server, $request, $error );
+            } catch ( Exception $e ) {
+                debugging( "Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER );
+            }
+            vpl_running_processes::delete( $userid, $vplid, $process->adminticket);
+        }
+    }
+
+    /**
      * Request the direct run code in an execution server
      * @param mod_vpl $vpl
      * @param int $userid
@@ -327,6 +347,8 @@ class mod_vpl_edit {
      * @throws Exception
      */
     public static function directrun($vpl, $userid, $command, $files) {
+        $vplid = $vpl->get_instance()->id;
+        self::stopdirectrun($vplid, $userid);
         $executefilename = '.vpl_directrun.sh';
         $maxmemory = 2000 * 1000 * 1000;
         $localservers = $vpl->get_instance()->jailservers;
@@ -381,9 +403,13 @@ DIRECTRUNCODE;
         $response->securePort = $jailresponse['secureport'];
         $response->wsProtocol = get_config('mod_vpl')->websocket_protocol;
         $response->homepath = $jailresponse['homepath'];
-        $vplid = $vpl->get_instance()->id;
-        $adminticket = $jailresponse['adminticket'];
-        $response->processid = vpl_running_processes::set( $userid, $server, $vplid, $adminticket );
+        $process = new stdClass();
+        $process->userid = $userid;
+        $process->vpl = $vplid;
+        $process->adminticket = $jailresponse['adminticket'];
+        $process->server = $server;
+        $process->type = 3;
+        $response->processid = vpl_running_processes::set( $process );
         return $response;
     }
 }

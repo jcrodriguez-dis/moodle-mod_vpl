@@ -390,7 +390,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     public function jailreaction($action, $processinfo = false) {
         if ($processinfo === false) {
             $vplid = $this->vpl->get_instance()->id;
-            $processinfo = vpl_running_processes::get( $this->get_instance()->userid, $vplid);
+            $processinfo = vpl_running_processes::get_run( $this->get_instance()->userid, $vplid);
         }
         if ($processinfo === false) {
             throw new Exception( 'Process not found' );
@@ -480,10 +480,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $response->wsProtocol = $plugincfg->websocket_protocol;
         $response->VNCpassword = substr( $jailresponse['executionticket'], 0, 8 );
         $instance = $this->get_instance();
-        $userid = $instance->userid;
-        $vplid = $instance->vpl;
-        $adminticket = $jailresponse['adminticket'];
-        $response->processid = vpl_running_processes::set($userid, $jailserver, $vplid, $adminticket);
+        $process = new stdClass();
+        $process->userid = $instance->userid;
+        $process->vpl = $instance->vpl; // The vplid.
+        $process->adminticket = $jailresponse['adminticket'];
+        $process->server = $jailserver;
+        $process->type = $type;
+        $response->processid = vpl_running_processes::set($process);
         return $response;
     }
 
@@ -503,7 +506,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->files = $files;
         $vplid = $vpl->get_instance()->id;
         $processinfo = vpl_running_processes::get_by_id($vplid, $userid, $processid);
-        if ($processinfo == null) { // No process => no update.
+        if ($processinfo == false) { // No process => no update.
             return false;
         }
         $server = $processinfo->server;
@@ -525,7 +528,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     public function retrieveresult($processid) {
         $vplid = $this->vpl->get_instance()->id;
         $processinfo = vpl_running_processes::get_by_id($vplid, $this->instance->userid, $processid);
-        if ($processinfo == null) { // No process to cancel.
+        if ($processinfo == false) { // No process found.
             throw new Exception( get_string( 'serverexecutionerror', VPL ) );
         }
         $response = $this->jailreaction( 'getresult', $processinfo );
@@ -562,11 +565,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $vplid = $this->vpl->get_instance()->id;
         $userid = $this->get_instance()->userid;
         if ($processid == -1) {
-            $processinfo = vpl_running_processes::get( $userid, $vplid);
+            $processinfo = vpl_running_processes::get_run( $userid, $vplid);
         } else {
             $processinfo = vpl_running_processes::get_by_id( $vplid, $userid, $processid );
         }
-        if ($processinfo == null) { // No process to cancel.
+        if ($processinfo == false) { // No process to cancel.
             return;
         }
         try {
