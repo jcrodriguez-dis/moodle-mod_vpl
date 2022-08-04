@@ -263,6 +263,7 @@ class privacy_provider_test extends base_test {
                 'userid' => $userid,
                 'vpl' => $vplid,
                 'server' => 'https://www.server' . $i . '.com',
+                'type' => 0,
                 'start_time' => time(),
                 'adminticket' => 'secret',
             );

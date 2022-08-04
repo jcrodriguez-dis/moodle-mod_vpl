@@ -432,6 +432,24 @@ function xmldb_vpl_upgrade_2021061600() {
 }
 
 /**
+ * Upgrades VPL to 4.0.0 (2022080312) version
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2022080312() {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+    // Define field type of process to be added to vpl_running_processes.
+    $table = new xmldb_table('vpl_running_processes');
+    $field = new xmldb_field('type', XMLDB_TYPE_INTEGER, '4', null, true, false, '0', 'vpl');
+
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -474,6 +492,10 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     if ($oldversion < 2021061600) {
         xmldb_vpl_upgrade_2021061600();
         upgrade_mod_savepoint(true, 2021061600, 'vpl');
+    }
+    if ($oldversion < 2022080312) {
+        xmldb_vpl_upgrade_2022080312();
+        upgrade_mod_savepoint(true, 2022080312, 'vpl');
     }
     return true;
 }

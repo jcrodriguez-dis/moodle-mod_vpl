@@ -244,7 +244,6 @@ class provider implements \core_privacy\local\metadata\provider,
     public static function export_user_running_processes_data(content_writer $contentwriter, int $vplid, int $userid) {
         // Get the vpl submissions related to the user.
         $runningprocesses = self::get_running_processes_by_vpl_and_user($vplid, $userid);
-        $zipfilename = get_string('submission', 'vpl') . '.zip';
         $subcontextsecuence = 1;
         foreach ($runningprocesses as $runningprocess) {
             $subcontext = [ get_string('privacy:runningprocesspath', 'vpl', $subcontextsecuence++) ];
