@@ -551,7 +551,7 @@ function mod_vpl_get_fontawesome_icon_map() {
  */
 function vpl_navi_node_create(navigation_node $vplnode, $str, $url, $type = navigation_node::NODETYPE_LEAF , $comp = 'mod_vpl' ) {
     $stri18n = get_string($str, $comp);
-    $node = $vplnode->create( $stri18n, $url, $type, null, null, new pix_icon( $str, '', 'mod_vpl') );
+    $node = $vplnode->create( $stri18n, $url, $type, null, null, new pix_icon( 'i/settings', get_string($str, 'mod_vpl'), 'mod_vpl') );
     if ( $type == navigation_node::NODETYPE_BRANCH ) {
         $node->collapse = true;
         $node->forceopen = false;
