@@ -117,8 +117,11 @@ $urlbase = new moodle_url( '/mod/vpl/index.php', array (
         'sort' => $sort,
         'sortdir' => $sortdir
 ) );
-
-$activities = get_array_of_activities($COURSE->id);
+if (method_exists('course_modinfo', 'get_array_of_activities')) { // TODO remove is not needed.
+    $activities = course_modinfo::get_array_of_activities($COURSE, true);
+} else {
+    $activities = get_array_of_activities($COURSE->id);
+}
 $sectionnames = array();
 foreach ($activities as $activity) {
     if ( $activity->mod == 'vpl' ) {
