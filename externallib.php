@@ -34,11 +34,14 @@ require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
 class mod_vpl_webservice extends external_api {
     private static function initial_checks($id, $password) {
         $vpl = new mod_vpl( $id );
-        if (! $vpl->pass_network_check()) {
-            throw new Exception( get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr() );
-        }
-        if (! $vpl->pass_password_check( $password )) {
-            throw new Exception( get_string( 'requiredpassword', VPL ) );
+        if (! $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+            if (! $vpl->pass_network_check()) {
+                $message = get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr();
+                throw new Exception( $message );
+            }
+            if (! $vpl->pass_password_check( $password )) {
+                throw new Exception( get_string( 'requiredpassword', VPL ) );
+            }
         }
         return $vpl;
     }
@@ -144,22 +147,29 @@ class mod_vpl_webservice extends external_api {
     public static function open_parameters() {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
-                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
+                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
+                'userid' => new external_value( PARAM_INT, 'User ID', VALUE_DEFAULT, -1 )
         ) );
     }
-    public static function open($id, $password) {
+    public static function open($id, $password, $userid) {
         global $USER;
-        self::validate_parameters( self::open_parameters(), array (
+        self::validate_parameters( self::open_parameters(), [
                 'id' => $id,
-                'password' => $password
-        ) );
+                'password' => $password,
+                'userid' => $userid
+        ] );
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
+        if ($userid == -1) {
+            $userid = $USER->id;
+        } else {
+            $vpl->require_capability( VPL_GRADE_CAPABILITY );
+        }
         if (! $vpl->is_visible()) {
             throw new Exception( get_string( 'notavailable' ) );
         }
         $compilationexecution = new stdClass();
-        $files = mod_vpl_edit::get_submitted_files( $vpl, $USER->id, $compilationexecution );
+        $files = mod_vpl_edit::get_submitted_files( $vpl, $userid, $compilationexecution );
         // Adapt array of name => value content to format array of objects {name, data}.
         $files = mod_vpl_edit::files2object( $files );
         $ret = [
