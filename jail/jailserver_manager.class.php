@@ -211,6 +211,9 @@ class vpl_jailserver_manager {
      */
     public static function get_action_request(string $action, object $data): string {
         $plugincfg = get_config('mod_vpl');
+        if ( empty($plugincfg->use_xmlrpc) ) {
+            $plugincfg->use_xmlrpc = false;
+        }
         if ($plugincfg->use_xmlrpc && function_exists('xmlrpc_encode_request' )) {
             return xmlrpc_encode_request( $action, $data, ['encoding' => 'UTF-8'] );
         } else {
