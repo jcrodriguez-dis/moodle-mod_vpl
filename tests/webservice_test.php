@@ -134,7 +134,7 @@ class webservice_test extends base_test {
                 $this->internal_test_files($rqfiles->getallfiles(), $res['reqfiles']);
             }
         }
-        foreach ($this->users as $user) {
+        foreach ($this->students as $user) {
             $this->setUser($user);
             try {
                 $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
@@ -142,6 +142,10 @@ class webservice_test extends base_test {
             } catch (Exception $e) {
                 $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
+        }
+        foreach ($this->teachers as $user) {
+            $this->setUser($user);
+            $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
         }
         $this->assertIsObject(mod_vpl_webservice::info_parameters());
         $this->assertIsObject(mod_vpl_webservice::info_returns());
@@ -191,8 +195,8 @@ class webservice_test extends base_test {
 
     private function internal_test_vpl_webservice_open($id, $files = array(),
             $compilation ='', $evaluation = '',
-            $grade ='', $password = '') {
-        $res = mod_vpl_webservice::open($id, $password);
+            $grade ='', $password = '', $userid = -1) {
+        $res = mod_vpl_webservice::open($id, $password, $userid);
         $this->internal_test_files($files, $res['files']);
         $this->assertEquals($compilation, $res['compilation']);
         $this->assertEquals($evaluation, $res['evaluation']);
@@ -259,6 +263,62 @@ class webservice_test extends base_test {
                 $this->internal_test_vpl_webservice_open($id);
             }
         }
+        // Checks new parameter userid.
+        $allteachers = array_merge($this->teachers, $this->editingteachers);
+        foreach ($allteachers as $teacher) {
+            $this->setUser($teacher);
+            $id = $this->vplonefile->get_course_module()->id;
+            foreach ($this->users as $user) {
+                if ($user == $this->students[0]) {
+                    $files = array('a.c' => "int main(){\nprintf(\"Hola\");\n}");
+                } else {
+                    $files = array('a.c' => "int main(){\n}");
+                }
+                $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+            }
+            $id = $this->vplmultifile->get_course_module()->id;
+            foreach ($this->users as $user) {
+                if ($user == $this->students[0]) {
+                    $files = array(
+                        'a.c' => "int main(){\nprintf(\"Hola1\");\n}",
+                        'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                        'b.h' => "#define MV 4\n",
+                    );
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                } else if ($user == $this->students[1]) {
+                    $files = array(
+                        'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
+                        'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                        'b.h' => "#define MV 5\n",
+                    );
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                } else {
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                }
+            }
+            $id = $this->vplteamwork->get_course_module()->id;
+            $guser0 = $this->students[0]->groupasigned;
+            $guser1 = $this->students[1]->groupasigned;
+            foreach ($this->students as $user) {
+                if ( $guser0 == $user->groupasigned ) {
+                    $files = array(
+                        'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
+                        'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                        'b.h' => "#define MV 8\n",
+                    );
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                } else if ( $guser1 == $user->groupasigned) {
+                    $files = array(
+                        'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
+                        'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
+                        'b.h' => "#define MV 9\n",
+                    );
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                } else {
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                }
+            }
+        }
         $this->assertIsObject(mod_vpl_webservice::open_parameters());
         $this->assertIsObject(mod_vpl_webservice::open_returns());
     }
@@ -279,14 +339,14 @@ class webservice_test extends base_test {
         $this->setUser($this->students[0]);
         // The initial_checks if request come from IP in required IP/Network.
         try {
-            mod_vpl_webservice::open($forbbidennet->get_course_module()->id, '');
+            mod_vpl_webservice::open($forbbidennet->get_course_module()->id, '', -1);
             $this->fail('Exception expected netrequired');
         } catch (Exception $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
-            mod_vpl_webservice::open($withpassword->get_course_module()->id, 'bad password');
+            mod_vpl_webservice::open($withpassword->get_course_module()->id, 'bad password', -1);
             $this->fail('Exception expected if bad password');
         } catch (Exception $e) {
             $ok = $e;
@@ -295,14 +355,14 @@ class webservice_test extends base_test {
         try {
             set_coursemodule_visible($notvisible->get_course_module()->id, false );
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
-            mod_vpl_webservice::open($notvisible->get_course_module()->id, '');
+            mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
             $this->fail('Exception expected if not visible');
         } catch (Exception $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
         $this->setUser($this->editingteachers[0]);
-        mod_vpl_webservice::open($notvisible->get_course_module()->id, '');
+        mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
     }
 
     private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
