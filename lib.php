@@ -296,11 +296,11 @@ function vpl_supports($feature) {
             return true;
         case FEATURE_ADVANCED_GRADING :
             return false;
-        case @FEATURE_MOD_PURPOSE:
-            return @MOD_PURPOSE_ASSESSMENT;
         default :
-            if (defined('FEATURE_MOD_PURPOSE') && $feature == FEATURE_MOD_PURPOSE) {
-                return MOD_PURPOSE_ASSESSMENT;
+            if (defined('FEATURE_MOD_PURPOSE')) {
+                if ($feature == FEATURE_MOD_PURPOSE) {
+                    return MOD_PURPOSE_ASSESSMENT;
+                }
             }
             return null;
     }
