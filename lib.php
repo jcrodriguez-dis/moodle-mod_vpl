@@ -148,16 +148,64 @@ function vpl_delete_grade_item($instance) {
  */
 function vpl_create_event($instance, $id) {
     $event = new stdClass();
+    $event->eventtype = 'VPL duedate';
+    $event->type = CALENDAR_EVENT_TYPE_ACTION;
     $event->name = $instance->name;
     $event->description = $instance->shortdescription;
     $event->format = FORMAT_PLAIN;
     $event->courseid = $instance->course;
+    $event->groupid = 0;
+    $event->userid = 0;
     $event->modulename = VPL;
     $event->instance = $id;
-    $event->eventtype = 'duedate';
     $event->timestart = $instance->duedate;
     $event->timesort = $instance->duedate;
+    $event->timeduration = 0;
+    $event->priority = null;
     return $event;
+}
+
+/**
+ * Callback function to determine if the event is visible for the current user.
+ *
+ * @param calendar_event $event
+ * @return bool Returns true if the event is visible, false if not visible.
+ */
+function mod_vpl_core_calendar_is_event_visible(calendar_event $event) {
+    $vpl = new mod_vpl(null, $event->instance);
+    return $vpl->is_visible();
+}
+
+/**
+ * Callback function to set the event action if available.
+ *
+ * @param calendar_event $event
+ * @param \core_calendar\action_factory $factory objet to generate the action
+ * @return \core_calendar\action_factory|null The action object or null
+ */
+function mod_vpl_core_calendar_provide_event_action(calendar_event $event,
+                                                    \core_calendar\action_factory $factory) {
+    $vpl = new mod_vpl(null, $event->instance);
+    if ($vpl->is_visible()) {
+        $text = get_string('edit', VPL);
+        $cmid = $vpl->get_course_module()->id;
+        $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
+        return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
+    } else {
+        return null;
+    }
+}
+
+/**
+ * Callback function to know if the event must show its item count.
+ *
+ * @param calendar_event $event
+ * @param int $itemcount item count.
+ * @return bool True if the event must show the item count.
+ */
+function mod_vpl_core_calendar_event_action_shows_item_count(calendar_event $event,
+                                                    int $itemcount = 0) {
+    return $itemcount < 0; // Must always return false.
 }
 
 /**
