@@ -1351,10 +1351,17 @@ class mod_vpl {
      * prepare_page initialy
      */
     public function prepare_page($url = false, $parms = array()) {
-        global $PAGE;
+        global $PAGE, $CFG;
         $PAGE->set_cm( $this->get_course_module(), $this->get_course(), $this->get_instance() );
         if ($url) {
             $PAGE->set_url( new moodle_url('/mod/vpl/' . $url, $parms) );
+        }
+        if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
+            if ($url == 'view.php') {
+                $PAGE->activityheader->set_description('');
+            } else {
+                $PAGE->activityheader->disable();
+            }
         }
     }
 
@@ -1368,7 +1375,7 @@ class mod_vpl {
      * @param $info string title and last nav option
      */
     public function print_header($info = '') {
-        global $PAGE, $OUTPUT, $CFG;
+        global $PAGE, $OUTPUT;
         if (self::$headerisout) {
             return;
         }
@@ -1383,14 +1390,11 @@ class mod_vpl {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
         }
-        if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
-            $PAGE->activityheader->disable();
-        }
         echo $OUTPUT->header();
         self::$headerisout = true;
     }
     public function print_header_simple($info = '') {
-        global $OUTPUT, $PAGE, $CFG;
+        global $OUTPUT, $PAGE;
         if (self::$headerisout) {
             return;
         }
@@ -1403,9 +1407,6 @@ class mod_vpl {
         if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
-        }
-        if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
-            $PAGE->activityheader->disable();
         }
         echo $OUTPUT->header();
         self::$headerisout = true;
