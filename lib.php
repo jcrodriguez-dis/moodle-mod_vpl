@@ -148,7 +148,7 @@ function vpl_delete_grade_item($instance) {
  */
 function vpl_create_event($instance, $id) {
     $event = new stdClass();
-    $event->eventtype = 'VPL duedate';
+    $event->eventtype = VPL_EVENT_TYPE_DUE;
     $event->type = CALENDAR_EVENT_TYPE_ACTION;
     $event->name = $instance->name;
     $event->description = $instance->shortdescription;
@@ -221,11 +221,14 @@ function vpl_add_instance($instance) {
     $id = $DB->insert_record( VPL, $instance );
     // Add event.
     if ($instance->duedate) {
-        calendar_event::create( vpl_create_event( $instance, $id ) );
+        calendar_event::create( vpl_create_event( $instance, $id ), false );
     }
     // Add grade to grade book.
     $instance->id = $id;
     vpl_grade_item_update( $instance );
+    if (!empty($instance->completionexpected)) {
+        \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $id, $instance->completionexpected);
+    }
     return $id;
 }
 
@@ -241,27 +244,31 @@ function vpl_update_instance($instance) {
     vpl_truncate_vpl( $instance );
     $instance->id = $instance->instance;
     // Update event.
-    $event = vpl_create_event( $instance, $instance->id );
-    if ($eventid = $DB->get_field( 'event', 'id', array (
-            'modulename' => VPL,
-            'instance' => $instance->id,
-            'priority' => null
-    ) )) {
+    $event = vpl_create_event($instance, $instance->id);
+    $searchfields = [
+        'modulename' => VPL,
+        'instance' => $instance->id,
+        'eventtype' => VPL_EVENT_TYPE_DUE,
+    ];
+    if ($eventid = $DB->get_field( 'event', 'id', $searchfields)) {
         $event->id = $eventid;
         $calendarevent = calendar_event::load( $eventid );
         if ($instance->duedate) {
-            $calendarevent->update( $event );
+            $calendarevent->update($event, false);
         } else {
             $calendarevent->delete();
         }
     } else {
         if ($instance->duedate) {
-            calendar_event::create( $event );
+            calendar_event::create($event, false);
         }
     }
     $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
     $instance->cmidnumber = $cm->id;
     vpl_grade_item_update( $instance );
+    $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
+    \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $instance->id, $completionexpected);
+
     return $DB->update_record( VPL, $instance );
 }
 
