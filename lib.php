@@ -150,7 +150,7 @@ function vpl_create_event($instance, $id) {
     $event = new stdClass();
     $event->eventtype = VPL_EVENT_TYPE_DUE;
     $event->type = CALENDAR_EVENT_TYPE_ACTION;
-    $event->name = $instance->name;
+    $event->name = get_string('dueevent', VPL, $instance->name);
     $event->description = $instance->shortdescription;
     $event->format = FORMAT_PLAIN;
     $event->courseid = $instance->course;
@@ -187,7 +187,7 @@ function mod_vpl_core_calendar_provide_event_action(calendar_event $event,
                                                     \core_calendar\action_factory $factory) {
     $vpl = new mod_vpl(null, $event->instance);
     if ($vpl->is_visible()) {
-        $text = get_string('edit', VPL);
+        $text = get_string('dueeventaction', VPL);
         $cmid = $vpl->get_course_module()->id;
         $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
         return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
@@ -209,6 +209,22 @@ function mod_vpl_core_calendar_event_action_shows_item_count(calendar_event $eve
 }
 
 /**
+ * Callback to fetch the activity event type lang string.
+ *
+ * @param string $eventtype The event type.
+ * @return lang_string The event type lang string.
+ */
+function mod_mod_core_calendar_get_event_action_string(string $eventtype): string {
+
+    if ($eventtype == VPL_EVENT_TYPE_DUE) {
+        return get_string('calendardue', VPL);
+    } else { // Must be an event of type submission expected on.
+        return get_string('calendarexpectedon', VPL);
+    }
+}
+
+
+/**
  * Add a new vpl instance and return the id
  *
  * @param Object $instance from the form in mod_form
@@ -227,9 +243,42 @@ function vpl_add_instance($instance) {
     $instance->id = $id;
     vpl_grade_item_update( $instance );
     if (!empty($instance->completionexpected)) {
-        \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $id, $instance->completionexpected);
+        $cmid = $instance->coursemodule;
+        $completionexpected = $instance->completionexpected;
+        \core_completion\api::update_completion_date_event($cmid, 'vpl', $instance, $completionexpected);
     }
     return $id;
+}
+
+/**
+ * Updates a vpl instance event.
+ *
+ * @param object $instance VPL DB record
+ * @return boolean OK
+ */
+function vpl_update_instance_event($instance) {
+    global $DB, $CFG;
+    require_once($CFG->dirroot . '/calendar/lib.php');
+    $event = vpl_create_event($instance, $instance->id);
+    $searchfields = [
+        'modulename' => VPL,
+        'instance' => $instance->id,
+        'eventtype' => VPL_EVENT_TYPE_DUE,
+        'priority' => null
+    ];
+    if ($eventid = $DB->get_field( 'event', 'id', $searchfields)) {
+        $event->id = $eventid;
+        $calendarevent = \calendar_event::load( $eventid );
+        if ($instance->duedate) {
+            $calendarevent->update($event, false);
+        } else {
+            $calendarevent->delete();
+        }
+    } else {
+        if ($instance->duedate) {
+            \calendar_event::create($event, false);
+        }
+    }
 }
 
 /**
@@ -239,35 +288,15 @@ function vpl_add_instance($instance) {
  * @return boolean OK
  */
 function vpl_update_instance($instance) {
-    global $CFG, $DB;
-    require_once($CFG->dirroot . '/calendar/lib.php');
+    global $DB;
     vpl_truncate_vpl( $instance );
     $instance->id = $instance->instance;
-    // Update event.
-    $event = vpl_create_event($instance, $instance->id);
-    $searchfields = [
-        'modulename' => VPL,
-        'instance' => $instance->id,
-        'eventtype' => VPL_EVENT_TYPE_DUE,
-    ];
-    if ($eventid = $DB->get_field( 'event', 'id', $searchfields)) {
-        $event->id = $eventid;
-        $calendarevent = calendar_event::load( $eventid );
-        if ($instance->duedate) {
-            $calendarevent->update($event, false);
-        } else {
-            $calendarevent->delete();
-        }
-    } else {
-        if ($instance->duedate) {
-            calendar_event::create($event, false);
-        }
-    }
+    vpl_update_instance_event($instance);
     $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
     $instance->cmidnumber = $cm->id;
     vpl_grade_item_update( $instance );
     $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
-    \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $instance->id, $completionexpected);
+    \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $instance, $completionexpected);
 
     return $DB->update_record( VPL, $instance );
 }
@@ -895,7 +924,6 @@ function vpl_reset_instance_userdata($vplid) {
  * @return array status array
  */
 function vpl_reset_userdata($data) {
-    global $CFG;
     $status = array ();
     if ($data->reset_vpl_submissions) {
         $componentstr = get_string( 'modulenameplural', VPL );
