@@ -33,8 +33,8 @@ try {
     $vpl = new mod_vpl( $id );
     $vpl->require_capability( VPL_MANAGE_CAPABILITY );
     $filegroup = $vpl->get_execution_fgm();
-    $filegroup->download_files( $vpl->get_printable_name() );
+    $filegroup->download_files( $vpl->get_name() );
     die();
 } catch ( Exception $e ) {
-    vpl_redirect(´´, $e->getMessage(), 'error' );
+    vpl_redirect('', $e->getMessage(), 'error' );
 }

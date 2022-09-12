@@ -85,7 +85,7 @@ try {
     $plugincfg = get_config('mod_vpl');
     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
     $fgm = $submission->get_submitted_fgm();
-    $fgm->download_files( $vpl->get_printable_name() , $watermark);
+    $fgm->download_files( $vpl->get_name() , $watermark);
 } catch ( Exception $e ) {
     $vpl->prepare_page( 'views/downloadsubmission.php', array (
             'id' => $id

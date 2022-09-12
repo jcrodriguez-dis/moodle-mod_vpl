@@ -36,7 +36,7 @@ try {
         vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
     } else {
         $filegroup = $vpl->get_required_fgm();
-        $filegroup->download_files( $vpl->get_printable_name() );
+        $filegroup->download_files( $vpl->get_name() );
     }
     die();
 } catch ( Exception $e ) {
