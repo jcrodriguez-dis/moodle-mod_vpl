@@ -351,7 +351,7 @@ class mod_vpl {
      *
      * @return string with name+(grouping name)
      */
-    public function get_printable_name() {
+    public function get_name() {
         global $CFG;
         $ret = $this->instance->name;
         if (! empty( $CFG->enablegroupings ) && ($this->cm->groupingid > 0)) {
@@ -360,7 +360,16 @@ class mod_vpl {
                 $ret .= ' (' . $grouping->name . ')';
             }
         }
-        return format_string($ret);
+        return $ret;
+    }
+
+    /**
+     * get instance filtered name with groupping name if available
+     *
+     * @return string with name+(grouping name)
+     */
+    public function get_printable_name() {
+        return format_string($this->get_name());
     }
 
     /**
@@ -1605,8 +1614,10 @@ class mod_vpl {
      * Show vpl name
      */
     public function print_name() {
-        global $OUTPUT;
-        echo $OUTPUT->heading($this->get_printable_name());
+        global $OUTPUT, $CFG;
+        if ( $CFG->version < 2022041900) {
+            echo $OUTPUT->heading($this->get_printable_name());
+        }
     }
 
     public function str_restriction($str, $value = null, $raw = false, $comp = 'mod_vpl') {
@@ -2083,11 +2094,13 @@ class mod_vpl {
                     if (isset($override->duedate) && !$delete) {
                         if ($target == 'userid') {
                             $userorgroupname = fullname($DB->get_record( 'user', array('id' => $userorgroupid) ));
+                            $strname = 'overridefor';
                         } else {
                             $userorgroupname = groups_get_group($userorgroupid)->name;
+                            $strname = 'overrideforgroup';
                         }
                         $newevent = vpl_create_event($this->instance, $this->instance->id);
-                        $newevent->name = get_string('overridefor', VPL, array(
+                        $newevent->name = get_string($strname, VPL, array(
                                 'base' => $newevent->name,
                                 'for' => $userorgroupname
                         ));
