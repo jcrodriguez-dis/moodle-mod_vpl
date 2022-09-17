@@ -40,6 +40,7 @@ define( 'VPL_ADDINSTANCE_CAPABILITY', 'mod/vpl:addinstance' );
 define( 'VPL_SETJAILS_CAPABILITY', 'mod/vpl:setjails' );
 define( 'VPL_MANAGE_CAPABILITY', 'mod/vpl:manage' );
 define( 'VPL_EVENT_TYPE_DUE', 'duedate');
+define( 'VPL_LOCK_TIMEOUT', 10);
 
 require_once(dirname(__FILE__).'/vpl.class.php');
 
@@ -1022,4 +1023,47 @@ function vpl_agregate_overrides($overridesseparated) {
         }
     }
     return $overrides;
+}
+
+/**
+ * Calls a function with lock.
+ * @param string $locktype Name of the lock type (unique)
+ * @param string $resource Name of the resourse (unique)
+ * @param string $function Name of the function to call
+ * @param array $parms Parameters to pass to the function
+ * @return mixed Value returned by the function or throw exception
+ */
+function vpl_call_with_lock(string $locktype, string $resource, string $function, array $parms) {
+    $lockfactory = \core\lock\lock_config::get_lock_factory($locktype);
+    if ($lock = $lockfactory->get_lock($resource, VPL_LOCK_TIMEOUT)) {
+        try {
+            $result = $function(...$parms);
+            $lock->release();
+            return $result;
+        } catch (Exception $e) {
+            $lock->release();
+            throw $e;
+        }
+    } else {
+        throw new moodle_exception('locktimeout');
+    }
+    return false;
+}
+
+/**
+ * Calls a function with DB transactions.
+ * @param string $function Name of the function to call
+ * @param array $parms Parameters to pass to the function
+ * @return mixed Value returned by the function or throw exception
+ */
+function vpl_call_with_transaction(string $function, array $parms) {
+    global $DB;
+    $transaction = $DB->start_delegated_transaction();
+    try {
+        $result = $function(...$parms);
+        $transaction->allow_commit();
+        return $result;
+    } catch (Exception $e) {
+        $transaction->rollback($e);
+    }
 }
