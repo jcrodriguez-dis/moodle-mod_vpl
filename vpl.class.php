@@ -660,24 +660,24 @@ class mod_vpl {
     }
 
     /**
-     * Check and submission
+     * Internal checks and adds submission if possible. Removes unneeded submissions.
      *
-     * @param
-     *            $userid
-     * @param $data Object
-     *            with submitted data
-     * @param & $error
-     *            string
-     * @return false or submission id
+     * @param Object $vpl
+     * @param int $userid
+     * @param array & $files submitted files
+     * @param string $comments
+     * @param string & $error Error message
+     * @return int|false Submission id or false if error
      */
-    public function add_submission($userid, & $files, $comments, & $error) {
+    public static function internal_add_submission($vpl, $userid, & $files, $comments, & $error) {
         global $USER, $DB;
-        if (! $this->pass_submission_restriction( $files, $error )) {
+        if (! $vpl->pass_submission_restriction( $files, $error )) {
+            $error = get_string('notavailable');
             return false;
         }
         $group = false;
-        if ($this->is_group_activity()) {
-            $group = $this->get_usergroup($userid);
+        if ($vpl->is_group_activity()) {
+            $group = $vpl->get_usergroup($userid);
             if ($group === false) {
                 $error = get_string( 'notsaved', VPL ) . "\n" . get_string( 'inconsistentgroup', VPL );
                 return false;
@@ -685,37 +685,29 @@ class mod_vpl {
         }
         $submittedby = '';
         if ($USER->id != $userid ) {
-            if ($this->has_capability( VPL_MANAGE_CAPABILITY ) || ($this->has_capability(
+            if ($vpl->has_capability( VPL_MANAGE_CAPABILITY ) || ($vpl->has_capability(
                     VPL_GRADE_CAPABILITY ) )) {
-                if (! $this->is_group_activity() ) {
-                    $user = $DB->get_record( 'user', array (
-                            'id' => $USER->id
-                    ) );
-                    $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
-                    if (strpos($comments, $submittedby) === 0 ) {
-                        $submittedby = '';
-                    }
+                $user = $DB->get_record( 'user', ['id' => $USER->id ] );
+                $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
+                if (strpos($comments, $submittedby) === 0 ) {
+                    $submittedby = '';
                 }
             } else {
-                $error = get_string( 'notsaved', VPL ) . "\n" . get_string( 'inconsistentgroup', VPL );
+                $error = get_string( 'notsaved', VPL );
                 return false;
             }
         }
-        $saveduserid = $this->is_group_activity() ? $USER->id : $userid;
         $lastsub = false;
-        $lock = new \mod_vpl\util\lock($this->get_users_data_directory() . '/' . $saveduserid);
-        if (($lastsubins = $this->last_user_submission( $userid )) !== false) {
-            $lastsub = new mod_vpl_submission( $this, $lastsubins );
+        if (($lastsubins = $vpl->last_user_submission( $userid )) !== false) {
+            $lastsub = new mod_vpl_submission( $vpl, $lastsubins );
             if ($lastsub->is_equal_to( $files, $submittedby . $comments )) {
-                $lock->__destruct();
                 return $lastsubins->id;
             }
         }
-        ignore_user_abort( true );
         // Create submission record.
         $submissiondata = new stdClass();
-        $submissiondata->vpl = $this->get_instance()->id;
-        $submissiondata->userid = $saveduserid;
+        $submissiondata->vpl = $vpl->get_instance()->id;
+        $submissiondata->userid = $userid;
         $submissiondata->datesubmitted = time();
         $submissiondata->comments = $submittedby . $comments;
         if ( $lastsubins !== false ) {
@@ -727,26 +719,50 @@ class mod_vpl {
         $submissionid = $DB->insert_record( 'vpl_submissions', $submissiondata, true );
         if (! $submissionid) {
             $error = get_string( 'notsaved', VPL ) . "\ninserting vpl_submissions record";
-            $lock->__destruct();
             return false;
         }
         // Save files.
-        $submission = new mod_vpl_submission( $this, $submissionid );
+        $submission = new mod_vpl_submission( $vpl, $submissionid );
         try {
             $submission->set_submitted_file( $files, $lastsub );
         } catch (file_exception $fe) {
-            $DB->delete_records( VPL_SUBMISSIONS, array ('id' => $submissionid));
+            $DB->delete_records( VPL_SUBMISSIONS, ['id' => $submissionid]);
             $error = $fe->getMessage();
-            $lock->__destruct();
             return false;
         }
         $submission->remove_grade();
-        // If no submitted by grader and not group activity, remove near submmissions.
+        // If no submitted by grader, remove near submmissions.
         if ($USER->id == $userid) {
-            $this->delete_overflow_submissions( $userid );
+            $vpl->delete_overflow_submissions( $userid );
         }
-        $lock->__destruct();
         return $submissionid;
+    }
+    /**
+     * Checks and adds submission if possible. Removes unneeded submissions.
+     *
+     * @param int $userid
+     * @param array & $files submitted files
+     * @param string $comments
+     * @param string & $error Error message
+     * @return int|false Submission id or false if error
+     */
+    public function add_submission($userid, & $files, $comments, & $error) {
+        global $USER;
+        if ($USER->id != $userid ) {
+            if (!$this->has_capability( VPL_MANAGE_CAPABILITY ) &&
+                !$this->has_capability( VPL_GRADE_CAPABILITY )) {
+                    $error = get_string('notavailable');
+                    return false;
+            }
+        }
+        $vplid = $this->get_instance()->id;
+        $locktype = 'vpl:submission';
+        $resource = "$vplid:$userid";
+        $funcname = 'mod_vpl::internal_add_submission';
+        $parms = [$this, $userid, $files, $comments, $error];
+        $result = vpl_call_with_lock($locktype, $resource, $funcname, $parms );
+        $error = $parms[4];
+        return $result;
     }
 
     /**
@@ -758,7 +774,6 @@ class mod_vpl {
      */
     public function user_submissions($userid, $groupifga = true) {
         global $DB;
-
         if ($groupifga && $this->is_group_activity()) {
             $group = $this->get_usergroup($userid);
             if ($group) {
