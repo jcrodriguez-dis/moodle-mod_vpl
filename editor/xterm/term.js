@@ -676,72 +676,76 @@ Terminal.prototype.fixMobile = function(document) {
   inputElement.autocorrect = 'off';
   inputElement.wrap = 'off';
   inputElement.spellcheck = 'false';
-  
+
   document.appendChild(inputElement);
 
-  Terminal._textarea =  inputElement;
+  Terminal._textarea = inputElement;
 
   setTimeout(function() {
     inputElement.focus();
   }, 200);
   var resetValue = "_________________________________________________________";
   var lastValue = resetValue;
-  function readInput(){
+  /**
+   * Read text input from user.
+   */
+  function readInput() {
       var value = inputElement.value;
-      if(value == lastValue && value == resetValue) {
+      if (value == lastValue) {
           return;
       }
-      var l = Math.min(value.length,lastValue.length);
+      var l = inputElement.selectionEnd;
       var mod = 0;
-      for ( mod = 0; mod < l ; mod++){
-          if (value.charAt(i) != lastValue.charAt(i)){
+      for (mod = 0; mod < l; mod++) {
+          if (value.charAt(mod) != lastValue.charAt(mod)) {
               break;
-          } 
+          }
       }
-      for ( var i = lastValue.length-1; i >= value.length ; i--){
+      var i;
+      for (i = lastValue.length - 1; i >= value.length; i--) {
           self.send('\x7f'); // Backspace
       }
-      for ( var i = mod; i < value.length ; i++){
-          self.send(value.charAt(i)); 
+      for (i = mod; i < l; i++) {
+          self.send(value.charAt(i));
       }
       lastValue = value;
-      if(value.length > 500 || value.length == 0) {
+      if (value.length > 500 || value.length == 0) {
           inputElement.blur();
           setTimeout(function() {
               inputElement.focus();
               inputElement.value = resetValue;
               lastValue = resetValue;
-              try { inputElement.setSelectionRange(resetValue.length, resetValue.length); }
-              catch (err) {}
+              try {
+                 inputElement.setSelectionRange(resetValue.length, resetValue.length);
+              // eslint-disable-next-line no-empty
+              } catch (err) {
+              }
           }, 10);
       }
   }
-  function resetInput(){
+  function resetInput() {
       inputElement.value = resetValue;
       lastValue = resetValue;
       inputElement.focus();
       try { inputElement.setSelectionRange(resetValue.length, resetValue.length); }
       catch (err) {}      
   }
-/*  if (this.isAndroid && this.isFirefox) {
-    resetInput();
-    on(inputElement, 'change', function() {
-        readInput();
-    });
-    on(inputElement, 'input', function(e) {
-        console.log(e.isComposing + ' ' + inputElement.value);
-        readInput();
-    });
-    on(inputElement, 'keydown', function(e) {
-        
-        if(!(e.which <= 64 || (e.which >= 91 && e.which <= 95) || (e.which >= 123 && e.which <= 126) )) {
-            self.send('\x7f'); // Backspace
-        }
-    },true);
-    on(inputElement, 'focus', function() {
-        resetInput();
-    });
-  }*/
+  resetInput();
+  on(inputElement, 'change', function() {
+      readInput();
+  });
+  on(inputElement, 'input', function(e) {
+      // console.log(e.isComposing + ' ' + inputElement.value);
+      readInput();
+  });
+ /* on(inputElement, 'keydown', function(e) {
+      if (!(e.which <= 64 || (e.which >= 91 && e.which <= 95) || (e.which >= 123 && e.which <= 126))) {
+          self.send('\x7f'); // Backspace
+      }
+  }, true);*/
+  on(inputElement, 'focus', function() {
+      resetInput();
+  });
 };
 
 /**
@@ -755,10 +759,10 @@ Terminal.insertStyle = function(document, bg, fg) {
   var head = document.getElementsByTagName('head')[0];
   if (!head) return;
 
-  var style = document.createElement('style');
+  style = document.createElement('style');
   style.id = 'term-style';
 
-  // textContent doesn't work well with IE for <style> elements.
+  // The textContent doesn't work well with IE for <style> elements.
   style.innerHTML = ''
     + '.terminal {\n'
     + '  float: left;\n'
@@ -795,9 +799,9 @@ Terminal.insertStyle = function(document, bg, fg) {
  */
 
 Terminal.prototype.open = function(parent) {
-  var self = this
-    , i = 0
-    , div;
+  var self = this;
+  var i = 0;
+  var div;
 
   this.parent = parent || this.parent;
 
@@ -812,13 +816,15 @@ Terminal.prototype.open = function(parent) {
 
   // Parse user-agent strings.
   if (this.context.navigator && this.context.navigator.userAgent) {
-    this.isMac = !!~this.context.navigator.userAgent.indexOf('Mac');
-    this.isIpad = !!~this.context.navigator.userAgent.indexOf('iPad');
-    this.isIphone = !!~this.context.navigator.userAgent.indexOf('iPhone');
-    this.isAndroid = !!~this.context.navigator.userAgent.indexOf('Android');
-    this.isFirefox = !!~this.context.navigator.userAgent.indexOf('Firefox');
-    this.isMobile = this.isIpad || this.isIphone || this.isAndroid;
-    this.isMSIE = !!~this.context.navigator.userAgent.indexOf('MSIE');
+    var userAgent = this.context.navigator.userAgent;
+    this.isMac = userAgent.indexOf('Mac') != -1;
+    this.isIpad = userAgent.indexOf('iPad') != -1;
+    this.isIphone = userAgent.indexOf('iPhone') != -1;
+    this.isAndroid = userAgent.indexOf('Android') != -1;
+    this.isFirefox = userAgent.indexOf('Firefox') != -1;
+    this.isSmartTV = userAgent.search(/smart[-_]?tv/i) != -1;
+    this.isMobile = this.isIpad || this.isIphone || this.isAndroid || this.isSmartTV;
+    this.isMSIE = userAgent.indexOf('MSIE');
   }
 
   // Create our main terminal element.
@@ -916,7 +922,7 @@ Terminal.prototype.open = function(parent) {
 
   // Figure out whether boldness affects
   // the character width of monospace fonts.
-  if (Terminal.brokenBold == null) {
+  if (Terminal.brokenBold === null) {
     Terminal.brokenBold = isBoldBroken(this.document);
   }
 
