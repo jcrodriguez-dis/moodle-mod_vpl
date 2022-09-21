@@ -18,7 +18,7 @@ if [ "$1" == "version" ] ; then
 fi
 get_first_source_file mzn
 if [ "$PROGRAM" == "minizinc" ] ; then
-	SOLVER=--solver Gecode
+	SOLVER="--solver Gecode"
 fi
 DATAFILEBASE=$(basename "$FIRST_SOURCE_FILE" .mzn)
 if [ -f "$DATAFILEBASE.dzn" ] ; then
