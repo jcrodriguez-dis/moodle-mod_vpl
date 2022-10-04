@@ -1376,15 +1376,16 @@ class mod_vpl {
      */
     public function prepare_page($url = false, $parms = array()) {
         global $PAGE, $CFG;
-        $PAGE->set_cm( $this->get_course_module(), $this->get_course(), $this->get_instance() );
+        // Next line resolve problem of classic theme not showing setting menu.
+        require_login($this->get_course(), false, $this->get_course_module());
         if ($url) {
             $PAGE->set_url( new moodle_url('/mod/vpl/' . $url, $parms) );
         }
         if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
+            $PAGE->activityheader->set_description('');
+            $PAGE->activityheader->set_hidecompletion($url != 'view.php');
             if ($url == 'view.php') {
-                $PAGE->activityheader->set_description('');
-            } else {
-                $PAGE->activityheader->disable();
+                $PAGE->activityheader->set_title('');
             }
         }
     }
