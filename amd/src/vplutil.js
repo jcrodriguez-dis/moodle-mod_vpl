@@ -563,8 +563,8 @@ define(
         };
         (function() {
             var menuIcons = {
-                'filelist': 'folder-o',
-                'filelistclose': 'folder-open-o',
+                'filelist': 'folder-open-o',
+                'filelistclose': 'folder-o',
                 'new': 'file-code-o',
                 'rename': 'pencil',
                 'delete': 'trash',
@@ -610,7 +610,9 @@ define(
                 'send': 'send',
                 'theme':  'paint-brush',
                 'user': 'user',
-                'fontsize': 'text-height'
+                'fontsize': 'text-height',
+                'close-rightpanel': 'caret-square-o-right',
+                'open-rightpanel': 'caret-square-o-left'
             };
             VPLUtil.genIcon = function(icon, size) {
                 if (!menuIcons[icon]) {
