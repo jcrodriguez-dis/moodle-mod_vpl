@@ -449,7 +449,34 @@ define(
                             throw str('incorrect_file_name');
                         }
                         if (VPLUtil.isBlockly(oldname) != VPLUtil.isBlockly(newname)) {
-                            throw str('incorrect_file_name');
+                            if (files[pos].getContent() > '') {
+                                showMessage(str('delete_file_fq', oldname), {
+                                    ok: function() {
+                                        var file = {
+                                            name: newname,
+                                            contents: '',
+                                            encoding: 0
+                                        };
+                                        fileManager.deleteFile(oldname, showError);
+                                        var fileResult = fileManager.addFile(file, false, updateMenu, showErrorMessage);
+                                        if (fileResult) {
+                                            fileManager.gotoFileName(newname);
+                                        }
+                                    }
+                                });
+                            } else {
+                                var file = {
+                                    name: newname,
+                                    contents: '',
+                                    encoding: 0
+                                };
+                                fileManager.deleteFile(oldname, showError);
+                                var fileResult = fileManager.addFile(file, false, updateMenu, showError);
+                                if (fileResult) {
+                                    fileManager.gotoFileName(newname);
+                                }
+                            }
+                            return true;
                         }
                         files[pos].setFileName(newname);
                     } catch (e) {
@@ -461,7 +488,7 @@ define(
                     VPLUtil.delay('updateFileList', self.updateFileList);
                     return true;
                 };
-                this.deleteFile = function(name, ok, showError) {
+                this.deleteFile = function(name, showError) {
                     var pos = this.fileNameExists(name);
                     if (pos == -1) {
                         showError(str('filenotdeleted', name));
@@ -533,6 +560,17 @@ define(
                     }
                     if (fpos >= 0) {
                         var line = tag.data('line');
+                        if (typeof line == 'undefined') {
+                            line = 'c';
+                        }
+                        self.gotoFile(fpos, line);
+                        return true;
+                    }
+                    return false;
+                };
+                this.gotoFileName = function(fname, line) {
+                    var fpos = this.fileNameExists(fname);
+                    if (fpos >= 0) {
                         if (typeof line == 'undefined') {
                             line = 'c';
                         }
@@ -795,9 +833,11 @@ define(
                             }
                         }
                     }
+                    $('#vpl_ide_rightpanel').show();
                 } else {
                     resultContainer.hide();
                     resultContainer.vplVisible = false;
+                    $('#vpl_ide_rightpanel').hide();
                 }
                 VPLUtil.delay('autoResizeTab', autoResizeTab);
             };
@@ -962,9 +1002,9 @@ define(
                     tabs.css('left', 0);
                 }
                 if (resultContainer.vplVisible) {
-                    var rigth = resultContainer.outerWidth() + tabsAir;
-                    oldWidth += rigth;
-                    newWidth -= rigth;
+                    var right = resultContainer.outerWidth() + tabsAir;
+                    oldWidth += right;
+                    newWidth -= right;
                     if (newWidth < 100) {
                         planb = true;
                     }
@@ -1203,7 +1243,7 @@ define(
                     }
                 });
                 for (var i = 0; i < toDeleteList.length; i++) {
-                    fileManager.deleteFile(toDeleteList[i], false, showErrorMessage);
+                    fileManager.deleteFile(toDeleteList[i], showErrorMessage);
                 }
                 VPLUtil.delay('updateMenu', updateMenu);
                 VPLUtil.delay('updateFileList', fileManager.updateFileList);
@@ -1709,6 +1749,38 @@ define(
                     VPLUtil.delay('autoResizeTab', autoResizeTab);
                 }
             });
+            menuButtons.add({
+                name: 'rightpanel',
+                icon: 'close-rightpanel',
+                originalAction: function() {
+                    if (resultContainer.vplVisible) {
+                        resultContainer.hide();
+                        resultContainer.vplVisible = false;
+                        menuButtons.setText('rightpanel', 'open-rightpanel', VPLUtil.str('rightpanel'));
+                    } else {
+                        menuButtons.setText('rightpanel', 'close-rightpanel', VPLUtil.str('rightpanel'));
+                        resultContainer.show();
+                        resultContainer.vplVisible = true;
+                    }
+                    VPLUtil.delay('autoResizeTab', autoResizeTab);
+                },
+                bindKey: {
+                    win: 'Ctrl-M',
+                    mac: 'Ctrl-M'
+                }
+            });
+            var rightpanelstyle = "position:absolute;right:0;top:60px;z-index:100;margin:3px";
+            tr.append('<span style="' + rightpanelstyle + '">' + menuButtons.getHTML('rightpanel') + '</span>');
+            var rightPanelButton = $('#vpl_ide_rightpanel');
+            menuButtons.setText('rightpanel', 'close-rightpanel', VPLUtil.str('rightpanel'));
+
+            rightPanelButton.button();
+            rightPanelButton.css('padding', '0');
+            $('#vpl_ide_rightpanel.ui-button-text').css('padding', '0');
+            rightPanelButton.on('click', function() {
+                menuButtons.launchAction('rightpanel');
+            });
+            rightPanelButton.hide();
             menu.addClass("ui-widget-header ui-corner-all");
             var menuHtml = "";
             menuHtml += menuButtons.getHTML('more');
