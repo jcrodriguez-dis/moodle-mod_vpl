@@ -379,7 +379,6 @@ define(
                 var fileManager = self.getFileManager();
                 if (self.generator != '') {
                     VPLUtil.log('Blockly generate ' + self.generator);
-                    var code = Blockly[self.generator].workspaceToCode(self.workspaceInstance);
                     var fid = fileManager.fileNameExists(self.generatedFilename);
                     // Try to create generated code file.
                     if (fid == -1) {
@@ -391,6 +390,7 @@ define(
                         fid = fileManager.fileNameExists(self.generatedFilename);
                     }
                     if (fid != -1) {
+                        var code = Blockly[self.generator].workspaceToCode(self.workspaceInstance);
                         var fileGenerated = fileManager.getFile(fid);
                         if (fileGenerated.getContent() != code) {
                             fileGenerated.setContent(code);
@@ -572,12 +572,12 @@ define(
                         startScale: 1.0,
                         maxScale: 3,
                         minScale: 0.2,
-                        scaleSpeed: 0.3
+                        scaleSpeed: 1.05
                     }
                 };
                 this.workspaceInstance = Blockly.inject(this.bdiv, options);
                 this.setToolbox();
-                this.firstContent = true;
+                this.firstContent = code > '';
                 self.workspaceInstance.addChangeListener(self.changeCode);
                 this.setContent(code);
                 VPLUtil.adjustBlockly(self.workspaceInstance, 10, 10);
@@ -585,6 +585,7 @@ define(
                 self.workspaceInstance.scrollY = 0;
                 Blockly.svgResize(self.workspaceInstance);
                 Blockly.resizeSvgContents(self.workspaceInstance);
+                self.setFileName(self.getFileName());
                 self.adjustSize();
                 // Must return false. Do not change it.
                 return false;
