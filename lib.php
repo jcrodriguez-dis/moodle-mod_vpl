@@ -214,7 +214,7 @@ function mod_vpl_core_calendar_event_action_shows_item_count(calendar_event $eve
  * @param string $eventtype The event type.
  * @return lang_string The event type lang string.
  */
-function mod_mod_core_calendar_get_event_action_string(string $eventtype): string {
+function mod_vpl_core_calendar_get_event_action_string(string $eventtype): string {
 
     if ($eventtype == VPL_EVENT_TYPE_DUE) {
         return get_string('calendardue', VPL);
@@ -296,7 +296,7 @@ function vpl_update_instance($instance) {
     $instance->cmidnumber = $cm->id;
     vpl_grade_item_update( $instance );
     $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
-    \core_completion\api::update_completion_date_event($instance->coursemodule, 'vpl', $instance, $completionexpected);
+    \core_completion\api::update_completion_date_event($instance->cmidnumber, 'vpl', $instance, $completionexpected);
 
     return $DB->update_record( VPL, $instance );
 }
@@ -732,16 +732,16 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
             $parms = array ( 'id' => $cmid );
         }
         $url = new moodle_url( '/mod/vpl/forms/testcasesfile.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'testcases', $url);
+        $node = vpl_navi_node_create($vplnode, 'testcases', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
         $url = new moodle_url( '/mod/vpl/forms/executionoptions.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'executionoptions', $url);
+        $node = vpl_navi_node_create($vplnode, 'executionoptions', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
         $url = new moodle_url( '/mod/vpl/forms/requiredfiles.php', $parms );
-        $node = vpl_navi_node_create($vplnode, 'requestedfiles', $url);
+        $node = vpl_navi_node_create($vplnode, 'requestedfiles', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
 
-        if ( $CFG->release >= 4.0 ) { // Remove submenu for compatibility with Moodle >= 4.0.
+        if ( $CFG->release >= '4.0' ) { // Remove submenu for compatibility with Moodle >= 4.0.
             $advance = $vplnode;
             $keybefore = $fkn;
         } else {
@@ -749,32 +749,31 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
             $vplnode->add_node( $advance, $fkn );
             $keybefore = null;
         }
-
         $url = new moodle_url( '/mod/vpl/forms/executionfiles.php', $parms );
-        $node = vpl_navi_node_create($advance, 'executionfiles', $url);
+        $node = vpl_navi_node_create($advance, 'executionfiles', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/executionlimits.php', $parms );
-        $node = vpl_navi_node_create($advance, 'maxresourcelimits', $url);
+        $node = vpl_navi_node_create($advance, 'maxresourcelimits', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/executionkeepfiles.php', $parms );
-        $node = vpl_navi_node_create($advance, 'keepfiles', $url);
+        $node = vpl_navi_node_create($advance, 'keepfiles', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms );
-        $node = vpl_navi_node_create($advance, 'variations', $url);
+        $node = vpl_navi_node_create($advance, 'variations', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/overrides.php', $parms );
-        $node = vpl_navi_node_create($advance, 'overrides', $url);
+        $node = vpl_navi_node_create($advance, 'overrides', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/views/checkjailservers.php', $parms );
-        $node = vpl_navi_node_create($advance, 'check_jail_servers', $url);
+        $node = vpl_navi_node_create($advance, 'check_jail_servers', $url, navigation_node::TYPE_SETTING);
         $advance->add_node( $node, $keybefore );
         if ($setjails) {
             $url = new moodle_url( '/mod/vpl/forms/local_jail_servers.php', $parms );
-            $node = vpl_navi_node_create($advance, 'local_jail_servers', $url);
+            $node = vpl_navi_node_create($advance, 'local_jail_servers', $url, navigation_node::TYPE_SETTING);
             $advance->add_node( $node, $keybefore );
         }
 
-        if ( $CFG->release >= 4.0 ) { // Remove submenu for compatibility with Moodle >= 4.0.
+        if ( $CFG->release >= '4.' ) { // Remove submenu for compatibility with Moodle >= 4.0.
             $testact = $vplnode;
         } else {
             $testact = vpl_navi_node_create($vplnode, 'test', null);
@@ -782,10 +781,10 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         }
 
         $url = new moodle_url( '/mod/vpl/forms/submission.php', $parms );
-        $node = vpl_navi_node_create($testact, 'submission', $url);
+        $node = vpl_navi_node_create($testact, 'submission', $url, navigation_node::TYPE_SETTING);
         $testact->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/forms/edit.php', $parms );
-        $node = vpl_navi_node_create($testact, 'edit', $url);
+        $node = vpl_navi_node_create($testact, 'edit', $url, navigation_node::TYPE_SETTING);
         $testact->add_node( $node, $keybefore );
         if ( $userid != $USER->id ) { // Auto grading has sense?
             $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
@@ -793,10 +792,10 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
             $testact->add_node( $node, $keybefore );
         }
         $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parms );
-        $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url);
+        $node = vpl_navi_node_create($testact, 'previoussubmissionslist', $url, navigation_node::TYPE_SETTING);
         $testact->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/index.php', array ('id' => $PAGE->cm->course));
-        $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url);
+        $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
     }
 }
