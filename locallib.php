@@ -892,7 +892,7 @@ function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
  */
 function vpl_get_version() {
     static $version = '';
-    if (! isset( $version )) {
+    if ($version === '' && false) { // Removed version information.
         $plugin = new stdClass();
         require_once(dirname( __FILE__ ) . '/version.php');
         $version = $plugin->release;
