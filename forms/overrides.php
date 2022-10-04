@@ -39,12 +39,12 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
     global $OUTPUT, $PAGE;
     if ($editing == $overrideid) {
         vpl_include_jsfile('override.js');
-        $save = '<span class="btn-link override-action-button" onclick="VPL.submitOverrideForms();">' .
+        $save = '<a href="#" onclick="VPL.submitOverrideForms();">' .
                     $OUTPUT->pix_icon( 'save', get_string('save'), 'mod_vpl' ) .
-                '</span>';
-        $cancel = '<span class="btn-link override-action-button" onclick="VPL.cancelOverrideForms();">' .
+                '</a>';
+        $cancel = '<a href="#" onclick="VPL.cancelOverrideForms();">' .
                     $OUTPUT->pix_icon( 'cancel', get_string('cancel'), 'mod_vpl' ) .
-                '</span>';
+                '</a>';
         return $save . $cancel;
     } else if ($editing === null) {
         $edit = '<a href="?id=' . $id . '&edit=' . $overrideid . '">' .
