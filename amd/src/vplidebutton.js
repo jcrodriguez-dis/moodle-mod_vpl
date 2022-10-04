@@ -124,7 +124,7 @@ define(
                     }
 
                     var html = "<a id='vpl_ide_" + buttonName + "' href='#' title='" + title + "'>";
-                    html += VPLUtil.genIcon(buttonName) + "</a>";
+                    html += VPLUtil.genIcon(buttons[buttonName].icon) + "</a>";
                     return html;
                 }
             };
