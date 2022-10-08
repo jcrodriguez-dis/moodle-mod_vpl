@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Basic utilities for tokenizer
+ * VPLT:: Basic utilities for tokenizer
  *
  * @package mod_vpl
  * @copyright 2022 David Parreño Barbuzano

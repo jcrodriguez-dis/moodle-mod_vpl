@@ -40,6 +40,7 @@ use \vpl_tokenizer_factory;
  * Unit tests for \mod_vpl\tokenizer\tokenizer_factory class.
  *
  * @group mod_vpl
+ * @group mod_vpl_vplt
  * @group mod_vpl_tokenizer
  * @group mod_vpl_tokenizer_base
  * @group mod_vpl_tokenizer_factory

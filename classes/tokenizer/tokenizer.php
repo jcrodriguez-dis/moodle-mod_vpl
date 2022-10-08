@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Tokenizer for tokenizer rules JSON files
+ * VPLT:: Tokenizer for tokenizer rules JSON files
  *
  * @package mod_vpl
  * @copyright 2022 David Parreño Barbuzano
@@ -362,7 +362,8 @@ class tokenizer extends tokenizer_base {
      * @param int    $numline number of line
      * @return array
      */
-    public function get_line_tokens(string $line, string $startstate="", int $numline): array {
+    public function get_line_tokens(string $line, string $startstate, int $numline): array {
+        $startstate = !isset($startstate) ? "" : $startstate;
         $currentstate = strcmp($startstate, "") === 0 ? "start" : $startstate;
         $tokens = array();
 

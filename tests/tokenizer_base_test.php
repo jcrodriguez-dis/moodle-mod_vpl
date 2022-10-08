@@ -35,6 +35,7 @@ use mod_vpl\tokenizer\token;
  * Unit tests for \mod_vpl\tokenizer\tokenizer_base class.
  *
  * @group mod_vpl
+ * @group mod_vpl_vplt
  * @group mod_vpl_tokenizer
  * @group mod_vpl_tokenizer_base
  * @covers \mod_vpl\tokenizer\tokenizer_base

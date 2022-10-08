@@ -37,6 +37,7 @@ use \vpl_similarity_factory;
  * Unit tests for \mod_vpl\similarity\similarity_factory class.
  *
  * @group mod_vpl
+ * @group mod_vpl_vplt
  * @group mod_vpl_similarity
  * @group mod_vpl_similarity_factory
  */

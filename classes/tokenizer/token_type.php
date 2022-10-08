@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Token types for tokenizers
+ * VPLT:: Token types for tokenizers
  *
  * @package mod_vpl
  * @copyright 2022 David Parreño Barbuzano

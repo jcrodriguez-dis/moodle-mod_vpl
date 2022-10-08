@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
  * Unit tests for \mod_vpl\tokenizer\tokenizer class.
  *
  * @group mod_vpl
+ * @group mod_vpl_vplt
  * @group mod_vpl_tokenizer
  * @group mod_vpl_tokenizer_ext
  * @covers \mod_vpl\tokenizer\tokenizer
