@@ -500,7 +500,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @throws Exception
      * @return boolean True if updated
      */
-
     public static function update($vpl, $userid, $processid, $files,  $filestodelete = []) {
         $data = new stdClass();
         $data->files = $files;

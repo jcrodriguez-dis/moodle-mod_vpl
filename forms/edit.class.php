@@ -152,7 +152,7 @@ class mod_vpl_edit {
      * @return boolean True if updated
      */
     public static function update(mod_vpl $vpl, int $userid, int $processid, array & $files, $filestodelete = []) {
-        return mod_vpl_submission_CE::update($vpl->get_instance()->id, $userid, $processid, $files, $filestodelete);
+        return mod_vpl_submission_CE::update($vpl, $userid, $processid, $files, $filestodelete);
     }
 
     /**

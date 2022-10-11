@@ -93,7 +93,7 @@ try {
                                                      $userid,
                                                      $actiondata->processid,
                                                      $files,
-                                                     $filestodelte);
+                                                     $filestodelete);
             break;
         case 'resetfiles':
             $files = mod_vpl_edit::get_requested_files( $vpl );
