@@ -119,7 +119,11 @@ class webservice_test extends base_test {
         $this->assertEquals(count($files), count($filesarray));
         foreach ($filesarray as $file) {
             $this->assertTrue(isset($files[$file['name']]));
-            $this->assertEquals($file['data'], $files[$file['name']]);
+            if(isset($file['encoding']) && $file['encoding'] == 1) {
+                $this->assertEquals(base64_decode($file['data']), $files[$file['name']]);
+            } else {
+                $this->assertEquals($file['data'], $files[$file['name']]);
+            }
         }
     }
 
@@ -368,7 +372,16 @@ class webservice_test extends base_test {
     private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
         $filesarray = array();
         foreach ($files as $name => $data) {
-            $filesarray[] = array('name' => $name, 'data' => $data);
+            $file = [];
+            $file['name'] = $name;
+            if ( vpl_is_binary($name)) {
+                $file['encoding'] = 1;
+                $file['data'] = base64_encode($data);
+            } else {
+                $file['encoding'] = 0;
+                $file['data'] = $data;
+            }
+            $filesarray[] = $file;
         }
         mod_vpl_webservice::save($id, $filesarray, $password);
         $this->internal_test_vpl_webservice_open($id, $files);
@@ -377,6 +390,29 @@ class webservice_test extends base_test {
     public function test_vpl_webservice_save() {
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');
+        $password = $this->vpldefault->get_instance()->password;
+        foreach (array_merge($this->students, $this->teachers) as $user) {
+            $this->setUser($user);
+            if ( $this->vpldefault->is_submit_able() ) {
+                try {
+                    $this->internal_test_vpl_webservice_save($id, $files, $password);
+                } catch (Exception $e) {
+                    throw new \Exception("Saving submission " . $e);
+                }
+            }
+        }
+        $this->assertIsObject(mod_vpl_webservice::save_parameters());
+        $this->assertNull(mod_vpl_webservice::save_returns());
+    }
+    public function test_vpl_webservice_save_binary() {
+        global $CFG;
+        $id = $this->vpldefault->get_course_module()->id;
+        $filename = 'logo.png';
+        $fullfilename = $CFG->dirroot . '/mod/vpl/tests/behat/datafiles/' . $filename;
+        $this->assertFileExists($fullfilename);
+        $data = file_get_contents($fullfilename);
+        $this->assertTrue(strlen($data) > 1000);
+        $files = [ $filename => $data];
         $password = $this->vpldefault->get_instance()->password;
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
