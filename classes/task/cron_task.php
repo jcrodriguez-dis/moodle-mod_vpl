@@ -68,23 +68,19 @@ class cron_task extends \core\task\scheduled_task {
     }
 
     /**
-     * Run assignment cron.
+     * Makes visible VPL activities that are starting now.
      */
-    public function execute() {
-        global $CFG;
+    public function make_visible() {
+        global $CFG, $DB;
         require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
         require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-        global $DB;
-        $rebuilds = array ();
+        $rebuilds = [];
         $now = time();
         $sql = 'SELECT id, startdate, duedate, course, name FROM {vpl}
                     WHERE startdate < ?
                           and startdate >= ?
                           and (duedate > startdate or duedate = 0)';
-        $parms = array (
-                $now + self::STARTDATE_RANGE,
-                $now
-        );
+        $parms = [$now + self::STARTDATE_RANGE, $now];
         $vpls = $DB->get_records_sql( $sql, $parms );
         foreach ($vpls as $instance) {
             if (! instance_is_visible( VPL, $instance )) {
@@ -100,6 +96,24 @@ class cron_task extends \core\task\scheduled_task {
         foreach ($rebuilds as $courseid) {
             rebuild_course_cache( $courseid );
         }
+    }
+
+    /**
+     * Removes processes started 1 day ago
+     */
+    public function remove_old_processes() {
+        global $CFG;
+        require_once($CFG->dirroot . '/jail/running_processes.class.php');
+        \vpl_running_processes::remove_old_processes(60 * 60 * 24);
+        return true;
+    }
+
+    /**
+     * Run VPL cron.
+     */
+    public function execute() {
+        $this->make_visible();
+        $this->remove_old_processes();
         return true;
     }
 }
