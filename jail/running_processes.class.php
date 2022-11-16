@@ -23,11 +23,16 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+
+defined('MOODLE_INTERNAL') || die();
+require_once( './jailserver_manager.class.php');
+
 /**
- * Class that manage the Table of running processes
+ * Class that manage the Table of running processes.
  *
- * @author juanca
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
+
 class vpl_running_processes {
     const TABLE = 'vpl_running_processes';
     /**
@@ -114,5 +119,25 @@ class vpl_running_processes {
         $sql .= ' WHERE {vpl}.course = ?;';
         $param = [ $courseid ];
         return $DB->get_records_sql( $sql, $param );
+    }
+
+    /**
+     * Cleans table removing old processes
+     */
+    public static function remove_old_processes(int $timeout) {
+        global $DB;
+        $timelimit = time() - $timeout;
+        $sql = 'SELECT * FROM {vpl_running_processes} WHERE start_time < ?;';
+        $param = [ $timelimit ];
+        $oldprocesses = $DB->get_records_sql( $sql, $param, 0, 20);
+        foreach($oldprocesses as $processinfo) {
+            $server = $processinfo->server;
+            $data = new stdClass();
+            $data->adminticket = $processinfo->adminticket;
+            $request = vpl_jailserver_manager::get_action_request( 'stop', $data);
+            $error = '';
+            vpl_jailserver_manager::get_response( $server, $request, $error );
+            $DB->delete_records(self::TABLE, ['id' => $processinfo->id]);
+        }
     }
 }
