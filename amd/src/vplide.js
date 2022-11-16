@@ -1607,7 +1607,7 @@ define(
                                     title: str('saving'),
                                     icon: 'alert',
                                     yes: function() {
-                                        data.version = response.version;
+                                        data.version = 0;
                                         doSave();
                                     }
                                 });
