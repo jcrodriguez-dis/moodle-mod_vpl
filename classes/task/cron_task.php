@@ -103,7 +103,7 @@ class cron_task extends \core\task\scheduled_task {
      */
     public function remove_old_processes() {
         global $CFG;
-        require_once($CFG->dirroot . '/jail/running_processes.class.php');
+        require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
         \vpl_running_processes::remove_old_processes(60 * 60 * 24);
         return true;
     }
