@@ -25,7 +25,7 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-require_once( './jailserver_manager.class.php');
+require_once( __DIR__ . '/jailserver_manager.class.php');
 
 /**
  * Class that manage the Table of running processes.
@@ -127,10 +127,10 @@ class vpl_running_processes {
     public static function remove_old_processes(int $timeout) {
         global $DB;
         $timelimit = time() - $timeout;
-        $sql = 'SELECT * FROM {vpl_running_processes} WHERE start_time < ?;';
+        $sql = 'SELECT * FROM {vpl_running_processes} WHERE start_time < ?';
         $param = [ $timelimit ];
         $oldprocesses = $DB->get_records_sql( $sql, $param, 0, 20);
-        foreach($oldprocesses as $processinfo) {
+        foreach ($oldprocesses as $processinfo) {
             $server = $processinfo->server;
             $data = new stdClass();
             $data->adminticket = $processinfo->adminticket;
