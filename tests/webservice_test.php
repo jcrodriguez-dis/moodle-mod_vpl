@@ -119,7 +119,7 @@ class webservice_test extends base_test {
         $this->assertEquals(count($files), count($filesarray));
         foreach ($filesarray as $file) {
             $this->assertTrue(isset($files[$file['name']]));
-            if(isset($file['encoding']) && $file['encoding'] == 1) {
+            if (isset($file['encoding']) && $file['encoding'] == 1) {
                 $this->assertEquals(base64_decode($file['data']), $files[$file['name']]);
             } else {
                 $this->assertEquals($file['data'], $files[$file['name']]);
