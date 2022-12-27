@@ -91,7 +91,7 @@ class locallib_test extends \advanced_testcase {
         $fpath = $testdir . '/nf.bbb';
         chmod($fpath, 0000);
         try {
-            if (file_get_contents($fpath) == text) {
+            if (file_get_contents($fpath) == $text) {
                 $chmodusefull = false;
             } else {
                 $chmodusefull = true;
