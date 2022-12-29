@@ -41,11 +41,12 @@ class vpl_jailserver_manager {
         }
         $plugincfg = get_config('mod_vpl');
         $ch = curl_init();
+        $contenttype = $request[0] == '{' ? 'application/json' : 'text/xml';
         curl_setopt( $ch, CURLOPT_URL, $server );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_POST, 1 );
         curl_setopt( $ch, CURLOPT_HTTPHEADER, array (
-                'Content-type: text/xml;charset=UTF-8',
+                "Content-type: {$contenttype};charset=UTF-8",
                 'User-Agent: VPL ' . vpl_get_version()
         ) );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
@@ -79,7 +80,7 @@ class vpl_jailserver_manager {
         $idtime = hrtime();
         self::$lastjsonrpcid = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
         $rpcobject->id = self::$lastjsonrpcid;
-        return json_encode($rpcobject);
+        return json_encode($rpcobject, JSON_UNESCAPED_UNICODE);
     }
 
     public static function get_response($server, $request, &$error = null, $fresh = false) {
@@ -105,12 +106,12 @@ class vpl_jailserver_manager {
                 }
             } else {
                 if (! function_exists('xmlrpc_decode')) {
-                    $error = 'Requires execution server version >= 3 or PHP with XHTML-RPC support';
+                    $error = 'Requires execution server version >= 3 or PHP with XML-RPC support';
                 } else {
                     $response = xmlrpc_decode( $rawresponse, "UTF-8" );
                     if (is_array( $response )) {
                         if (xmlrpc_is_fault( $response )) {
-                            $error = 'XMLRPC is fault: ' . s( $response["faultString"] );
+                            $error = 'XML-RPC is fault: ' . s( $response["faultString"] );
                         } else {
                             return $response;
                         }
@@ -210,12 +211,18 @@ class vpl_jailserver_manager {
      * @return string
      */
     public static function get_action_request(string $action, object $data): string {
+        global $CFG;
         $plugincfg = get_config('mod_vpl');
         if ( empty($plugincfg->use_xmlrpc) ) {
             $plugincfg->use_xmlrpc = false;
         }
         if ($plugincfg->use_xmlrpc && function_exists('xmlrpc_encode_request' )) {
-            return xmlrpc_encode_request( $action, $data, ['encoding' => 'UTF-8'] );
+            $outputoptions = [
+                'escaping' => 'markup',
+                'encoding' => 'UTF-8',
+                'verbosity' => 'newlines_only'
+            ];
+            return xmlrpc_encode_request( $action, $data, $outputoptions);
         } else {
             return self::jsonrpc_encode( $action, $data);
         }
