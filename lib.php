@@ -31,7 +31,7 @@ require_once(dirname(__FILE__).'/list_util.class.php');
 require_once($CFG->dirroot.'/course/lib.php');
 
 /**
- * Create/update grade item for given VPL activity.
+ * Creates/updates grade item for given VPL activity.
  * (Code and comments adapted from Moodle assign)
  *
  * @param stdClass $instance VPL record with extra cmidnumber
@@ -75,7 +75,7 @@ function vpl_grade_item_update($instance, $grades=null) {
 }
 
 /**
- * Update activity grades.
+ * Updates activity grades.
  * API and comment taken from Moodle assign.
  *
  * @param stdClass $instance   of VPL database record
@@ -128,7 +128,7 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
 }
 
 /**
- * Delete grade_item from a vpl instance+id
+ * Deletes grade_item from a vpl instance+id
  *
  * @param Object $instance of vpl DB with id
  */
@@ -140,7 +140,7 @@ function vpl_delete_grade_item($instance) {
 }
 
 /**
- * Create an event object from a vpl instance+id
+ * Creates an event object from a vpl instance+id
  *
  * @param stdClass $instance of vpl DB record
  * @param int $id vpl DB record id
@@ -225,7 +225,7 @@ function mod_vpl_core_calendar_get_event_action_string(string $eventtype): strin
 
 
 /**
- * Add a new vpl instance and return the id
+ * Adds a new vpl instance and return the id
  *
  * @param Object $instance from the form in mod_form
  * @return int id of the new vpl
@@ -282,7 +282,7 @@ function vpl_update_instance_event($instance) {
 }
 
 /**
- * Update a vpl instance
+ * Updates a vpl instance
  *
  * @param object from the form in mod.html
  * @return boolean OK
@@ -302,7 +302,7 @@ function vpl_update_instance($instance) {
 }
 
 /**
- * Delete an instance by id
+ * Deletes an instance by id
  *
  * @param int $id instance Id
  * @return boolean OK
@@ -353,34 +353,24 @@ function vpl_delete_instance( $id ) {
 }
 
 /**
- *
- * @param string $feature
- *            FEATURE_xx constant for requested feature
+ * Returns if VPL support the requested feature.
+ * @param string $feature FEATURE_* constant for requested feature
  * @return mixed True if module supports feature, null if doesn't know
  */
 function vpl_supports($feature) {
     switch ($feature) {
-        case FEATURE_GROUPS :
-            return true;
-        case FEATURE_GROUPINGS :
-            return true;
-        case FEATURE_MOD_INTRO :
-            return true;
-        case FEATURE_COMPLETION_TRACKS_VIEWS : // TODO FEATURE_COMPLETION_TRACKS_VIEWS.
-            return false;
-        case FEATURE_COMPLETION_HAS_RULES : // TODO FEATURE_COMPLETION_HAS_RULES.
-            return false;
-        case FEATURE_GRADE_HAS_GRADE :
-            return true;
-        case FEATURE_GRADE_OUTCOMES :
-            return true;
-        case FEATURE_BACKUP_MOODLE2 :
-            return true;
-        case FEATURE_SHOW_DESCRIPTION :
-            return true;
-        case FEATURE_ADVANCED_GRADING :
-            return false;
-        default :
+        case FEATURE_GROUPS: return true;
+        case FEATURE_GROUPINGS: return true;
+        case FEATURE_MOD_INTRO: return true;
+        case FEATURE_COMPLETION_TRACKS_VIEWS: return false;
+        case FEATURE_COMPLETION_HAS_RULES: return false;
+        case FEATURE_GRADE_HAS_GRADE: return true;
+        case FEATURE_GRADE_OUTCOMES: return true;
+        case FEATURE_BACKUP_MOODLE2: return true;
+        case FEATURE_SHOW_DESCRIPTION: return true;
+        case FEATURE_ADVANCED_GRADING: return false;
+        case FEATURE_CONTROLS_GRADE_VISIBILITY: return true;
+        default:
             if (defined('FEATURE_MOD_PURPOSE')) {
                 if ($feature == FEATURE_MOD_PURPOSE) {
                     return MOD_PURPOSE_ASSESSMENT;
@@ -391,7 +381,7 @@ function vpl_supports($feature) {
 }
 
 /**
- * Return an object with short information about what a user has done with a given particular
+ * Returns an object with short information about what a user has done with a given particular
  * instance of this module $return->time = the time they did it $return->info = a short text
  * description
  */
@@ -422,7 +412,7 @@ function vpl_user_outline($course, $user, $mod, $instance) {
 }
 
 /**
- * Print a detailed report of what a user has done with a given particular instance of this
+ * Prints a detailed report of what a user has done with a given particular instance of this
  * module
  *
  */
@@ -630,7 +620,7 @@ function mod_vpl_get_fontawesome_icon_map() {
 
 
 /**
- * Create e new navigation node with icon
+ * Creates e new navigation node with icon
  * @param navigation_node $vplnode
  * @param string $str string to be i18n
  * @param moodle_url $url
@@ -879,7 +869,7 @@ function vpl_reset_gradebook($courseid, $type = '') {
 }
 
 /**
- * Remove all user data from a vpl instance
+ * Removes all user data from a vpl instance
  *
  * @param int $vplid Id of the VPL instance
  * @return void
