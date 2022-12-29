@@ -41,13 +41,16 @@ END_OF_INI
 
 #Generate router
 cat >> .router.php << 'END_OF_PHP'
-<?php $path=urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
-$file='.'.$path;
-if(is_file($file) || is_file($file.'/index.php') || is_file($file.'/index.html') ){
-    unset($path,$file);
-    return false;
+<?php
+$path = urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
+$file = '.' . $path;
+if(is_file($file) ||
+   is_file($file . '/index.php') ||
+   is_file($file . '/index.html') ){
+      unset($path, $file);
+      return false;
 }
-$pclean=htmlentities($path);
+$pclean = htmlentities($path);
 http_response_code(404);
 header(':', true, 404);
 ?>
