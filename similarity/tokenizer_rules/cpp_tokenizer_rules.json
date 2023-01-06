@@ -1,0 +1,53 @@
+// Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/c_cpp_highlight_rules.js>
+// made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
+{
+    "name": "cpp-tokenizer",
+    "extension": [ ".cpp", ".cc", ".C", ".c++", ".hxx", ".H" ],
+    "check_rules": false,
+    "inherit_rules": "c_tokenizer_rules",
+    "states": {
+        "start": [
+            {
+                "token": "keyword",
+                "regex": "#\\s*(?:include|import|pragma|line|define|undef)\\b",
+                "next": "directive"
+            },
+            {
+                "token": "keyword",
+                "regex": "#\\s*(?:endif|if|ifdef|else|elif|ifndef)\\b"
+            },
+            {
+                "token": "keyword.control",
+                "regex": "(?:catch|operator|try|throw|using)\\b"
+            },
+            {
+                "token": "storage.type",
+                "regex": "(?:asm|__asm__|auto|union|class|wchar_t|template|char16_t|char32_t)\\b"
+            },
+            {
+                "token": "storage.modifier",
+                "regex":  "(?:register|restrict|private|protected|public|friend|explicit|virtual|export|mutable|typename|constexpr|new|delete|alignas|alignof|decltype|noexcept|thread_local)\\b"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "(?:and|and_eq|bitand|bitor|compl|not|not_eq|or|or_eq|typeid|xor|xor_eq|const_cast|dynamic_cast|reinterpret_cast|static_cast|sizeof|namespace)\\b"
+            },
+            {
+                "token": "variable.language",
+                "regex": "(?:this)\\b"
+            },
+            {
+                "token": "constant.language",
+                "regex": "(?:nullptr)\\b"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "<<|>>"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "::"
+            }
+        ]
+    }
+}

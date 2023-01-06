@@ -1,0 +1,56 @@
+{
+    "states": {
+        "start": [
+            {
+                "token": "constant.numeric",
+                "regex": "[+-]?\\d[\\d_]*((\\.[\\d_]*)?([eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\\b"
+            },
+            {
+                "token": "constant.language",
+                "regex": "(true|false)\\b"
+            },
+            {
+                "token": "keyword",
+                "regex": "(open(\\s+))?module(?=\\s*\\w)",
+                "next": "body-module"
+            }
+        ],
+        "body-module": [
+            {
+                "token": "paren.lparen",
+                "regex": "{",
+                "next": "end-module"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\s+"
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\w+"
+            },
+            {
+                "token": "constant.character",
+                "regex": "\\."
+            },
+            {
+                "token": "string.unquoted",
+                "regex": "\\s+"
+            },
+            {
+                "next": "start"
+            }
+        ],
+        "end-module": [
+            {
+                "token": "paren.rparen",
+                "regex": "}",
+                "next": "start"
+            },
+            {
+                "token": "keyword",
+                "regex": "\\b(requires|transitive|exports|opens|to|uses|provides|with)\\b"
+            }
+        ]
+    }
+}

@@ -1,0 +1,11 @@
+{
+    "extension": [ ".c", ".h" ],
+    "states": {
+        "start": [
+            {
+                "token": "comment.line",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}

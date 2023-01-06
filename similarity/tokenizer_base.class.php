@@ -25,36 +25,17 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class vpl_token_type {
-    const RESERVED = 1;
-    const IDENTIFIER = 2;
-    const OPERATOR = 3;
-    const LITERAL = 4;
-    const OTHER = 5;
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
+
+class vpl_token_type extends token_type {
+
 }
-class vpl_token {
-    public $type;
-    public $value;
-    public $line;
-    private static $hashvalues = array ();
-    private static function get_hash($value) {
-        if (! isset( self::$hashvalues[$value] )) {
-            self::$hashvalues[$value] = mt_rand();
-        }
-        return self::$hashvalues[$value];
-    }
-    public function __construct($type, $value, $line) {
-        $this->type = $type;
-        $this->value = $value;
-        $this->line = $line;
-    }
-    public function hash() {
-        return self::get_hash( $this->value );
-    }
-    public function show() {
-        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br>';
-    }
+
+class vpl_token extends token {
+
 }
+
 class vpl_tokenizer_base {
     const CR = "\r";
     const LF = "\n";

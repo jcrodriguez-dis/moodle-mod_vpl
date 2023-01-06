@@ -41,6 +41,9 @@ require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php')
 /**
  * Unit tests for vpl_similarity_preprocess class.
  * @group mod_vpl
+ * @group mod_vpl_vplt
+ * @group mod_vpl_similarity
+ * @group mod_vpl_similarity_preprocess
  */
 class similarity_test extends base_test {
 

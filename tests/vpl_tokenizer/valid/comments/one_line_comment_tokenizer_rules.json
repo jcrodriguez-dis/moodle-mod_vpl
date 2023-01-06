@@ -1,0 +1,18 @@
+// TEST: tested
+// Just one line comment 0
+{
+    // Just one line comment 1
+    "states": {
+        // Just one line comment 2
+        // Just one line comment 3
+        "start": [
+            {
+                "token": "comment",
+                // Just one line comment 4
+                "regex": "\\/\\/"
+            }
+        ]
+        // Just one line comment 5
+    }
+}
+// Just one line comment 6

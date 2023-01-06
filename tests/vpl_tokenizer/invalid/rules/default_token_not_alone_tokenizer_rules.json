@@ -1,0 +1,11 @@
+{
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "//",
+                "default_token": "comment"
+            }
+        ]
+    }
+}

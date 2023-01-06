@@ -1,0 +1,13 @@
+{
+    "override_tokens": {
+        "comment": "vpl_literal"
+    },
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}

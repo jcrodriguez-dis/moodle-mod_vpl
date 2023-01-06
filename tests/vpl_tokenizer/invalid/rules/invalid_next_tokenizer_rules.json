@@ -1,0 +1,10 @@
+{
+    "states": {
+        "state1": [
+            {
+                "token": "keyword.control",
+                "next": 10
+            }
+        ]
+    }
+}

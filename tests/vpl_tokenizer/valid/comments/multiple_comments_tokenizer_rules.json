@@ -1,0 +1,21 @@
+// TEST: tested
+// This is an empty file and this comment should
+// be ignored, so JSON object wouldn't have content
+{
+    "states": {
+        "start": [
+            /*
+
+                    Multiple-line comment
+
+                */
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}
+/* Multiple-line comment
+
+*/

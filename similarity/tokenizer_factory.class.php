@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use mod_vpl\tokenizer\tokenizer_factory;
+
+require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+
 /**
  * Tokenizer factory class
  *
@@ -23,15 +27,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-class vpl_tokenizer_factory {
-    private static $classloaded = array ();
-    public static function get($type) {
-        if (! isset( self::$classloaded[$type] )) {
-            $include = 'tokenizer_' . $type . '.class.php';
-            require_once(dirname( __FILE__ ) . '/' . $include);
-            $class = 'vpl_tokenizer_' . $type;
-            self::$classloaded[$type] = new $class();
-        }
-        return self::$classloaded[$type];
-    }
+class vpl_tokenizer_factory extends tokenizer_factory {
+
 }

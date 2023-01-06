@@ -1,0 +1,15 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "storage.type",
+                "regex": "int|float|bool|char\\b"
+            },
+            {
+                "token": "text",
+                "regex": "\\s+"
+            }
+        ]
+    }
+}

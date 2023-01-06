@@ -36,7 +36,8 @@ return new class extends phpunit_coverage_info {
     protected $includelistfolders = [
         'classes/privacy',
         'classes/task',
-        'classes/util'
+        'classes/util',
+        'similarity',
     ];
 
     /** @var array The list of files relative to the plugin root included in coverage report. */
@@ -54,5 +55,12 @@ return new class extends phpunit_coverage_info {
     protected $excludelistfolders = [];
 
     /** @var array The list of files relative to the plugin root to excludelist in coverage generation. */
-    protected $excludelistfiles = [];
+    protected $excludelistfiles = [
+        'externallib.php',
+        'lib.php',
+        'locallib.php',
+        'classes/token.php',
+        'classes/token_type.php',
+        'classes/assertf.php'
+    ];
 };

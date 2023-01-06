@@ -488,6 +488,21 @@ class base_test extends \advanced_testcase {
             $this->assertNotEmpty($this->create_instance());
         }
     }
+
+    /**
+     * Call protected method of passed object
+     *
+     * @param $obj object with protected methods
+     * @param $name name of the method
+     * @param array $args list of parameters
+     * @return mixed
+     */
+    public static function call_method($obj, $name, array $args) {
+        $class = new \ReflectionClass($obj);
+        $method = $class->getMethod($name);
+        $method->setAccessible(true);
+        return $method->invokeArgs($obj, $args);
+    }
 }
 
 /**
@@ -496,4 +511,96 @@ class base_test extends \advanced_testcase {
  */
 class testable_vpl extends \mod_vpl {
 
+}
+
+/**
+ * Utilities for tokenizer/similarity tests
+ */
+class tokenizer_similarity_utils {
+    public static function get_tokenizer_langs(): array {
+        $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
+        $scanarr = scandir($dir);
+        $filesarr = array_diff($scanarr, array('.', '..'));
+
+        $tokenizerlangs = array();
+
+        foreach ($filesarr as $filename) {
+            if (!is_dir($dir . '/' . $filename)) {
+                $namelang = preg_split("/_/", $filename)[0];
+                $tokenizerlangs[] = $namelang;
+            }
+        }
+
+        return $tokenizerlangs;
+    }
+}
+
+/**
+ * Class to use instead of tokenizer_base.
+ * This derived class of tokenizer_base expose protected methods as public to test it
+ */
+class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
+    public static function get_states_from($tokenizer): array {
+        return $tokenizer->get_states();
+    }
+
+    public static function get_matchmappings_from($tokenizer): array {
+        return $tokenizer->get_matchmappings();
+    }
+
+    public static function get_regexprs_from($tokenizer): array {
+        return $tokenizer->get_regexprs();
+    }
+
+    public static function check_type($value, string $typename) {
+        return \mod_vpl\tokenizer\tokenizer_base::check_type($value, $typename);
+    }
+
+    public static function contains_rule(array $state, object $rule): bool {
+        return \mod_vpl\tokenizer\tokenizer_base::contains_rule($state, $rule);
+    }
+
+    public static function check_token($token, array $availabletokens): bool {
+        return \mod_vpl\tokenizer\tokenizer_base::check_token($token, $availabletokens);
+    }
+
+    public static function remove_capturing_groups(string $src): string {
+        return \mod_vpl\tokenizer\tokenizer_base::remove_capturing_groups($src);
+    }
+
+    public static function get_token_array(int $numline, array $type, string $value, string $regex): array {
+        return \mod_vpl\tokenizer\tokenizer_base::get_token_array($numline, $type, $value, $regex);
+    }
+}
+
+/**
+ * Class to use instead of tokenizer.
+ * This derived class of tokenizer expose protected methods as public to test it
+ */
+class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
+    public static function get_max_token_count_from($tokenizer): int {
+        return $tokenizer->get_max_token_count();
+    }
+
+    public static function get_name($tokenizer): string {
+        return $tokenizer->name;
+    }
+
+    public static function get_extensions($tokenizer): array {
+        return $tokenizer->extension;
+    }
+
+    public static function get_available_tokens($tokenizer): array {
+        return $tokenizer->availabletokens;
+    }
+}
+
+/**
+ * Class to use instead of similarity_factory.
+ * This derived class of similarity expose protected methods as public to test it
+ */
+class testable_similarity_factory extends \mod_vpl\similarity\similarity_factory {
+    public static function get_available_languages(): array {
+        return \mod_vpl\similarity\similarity_factory::get_available_languages();
+    }
 }

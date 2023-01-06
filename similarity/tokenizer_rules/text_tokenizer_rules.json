@@ -1,0 +1,17 @@
+// Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/text_highlight_rules.js>
+// made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
+{
+    "name": "text-tokenizer",
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "constant.character",
+                "regex": "^$"
+            },
+            {
+                "default_token": "text"
+            }
+        ]
+    }
+}

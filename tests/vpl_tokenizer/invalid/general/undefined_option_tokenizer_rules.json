@@ -1,0 +1,11 @@
+{
+    "states": {
+        "start": [
+            {
+                "token": "comment",
+                "regex": "//"
+            }
+        ]
+    },
+    "example": 10
+}

@@ -1,0 +1,9 @@
+{
+    "states": {
+        "start": [
+            {
+                "default_token": 10
+            }
+        ]
+    }
+}

@@ -45,6 +45,8 @@ define( 'VPL_LOCK_TIMEOUT', 10);
 require_once(dirname(__FILE__).'/vpl.class.php');
 
 /**
+ * @codeCoverageIgnore
+ *
  * Set get vpl session var
  *
  * @param string $varname
@@ -71,6 +73,8 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Create directory if not exist
  *
  * @param $dir string path to directory
@@ -86,6 +90,8 @@ function vpl_create_dir($dir) {
 
 
 /**
+ * @codeCoverageIgnore
+ *
  * Open/create a file and its dir
  *
  * @param $filename string path to file
@@ -115,6 +121,8 @@ function vpl_fopen($filename) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Open/create a file and its dir and write contents
  *
  * @param string $filename. Path to the file to open
@@ -122,7 +130,6 @@ function vpl_fopen($filename) {
  * @exception file_exception
  * @return void
  */
-
 function vpl_fwrite($filename, $contents) {
     if ( is_file($filename) ) {
         unlink($filename);
@@ -137,6 +144,8 @@ function vpl_fwrite($filename, $contents) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Recursively delete a directory
  *
  * @return bool All delete
@@ -169,6 +178,8 @@ function vpl_delete_dir($dirname) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Outputs a zip file and removes it. Must be called before any other output
  *
  * @param string $zipfilename. Name of the ZIP file with the data
@@ -207,6 +218,8 @@ function vpl_output_zip($zipfilename, $name) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get lang code @parm $bashadapt true adapt lang to bash LANG (default false)
  *
  * @return string
@@ -280,6 +293,8 @@ function vpl_get_lang($bashadapt = false) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * generate URL to page with params
  *
  * @param $page string
@@ -307,6 +322,8 @@ function vpl_abs_href() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * generate URL to page with params
  *
  * @param $page string
@@ -334,6 +351,8 @@ function vpl_mod_href() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * generate URL relative page with params
  *
  * @param $page string
@@ -359,6 +378,8 @@ function vpl_rel_url() {
     return $url;
 }
 /**
+ * @codeCoverageIgnore
+ *
  * Add a parm to a url
  *
  * @param $url string
@@ -376,6 +397,8 @@ function vpl_url_add_param($url, $parm, $value) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Print a message and redirect
  *
  * @param string $link. The URL to redirect to
@@ -395,6 +418,8 @@ function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Inmediate redirect
  *
  * @param string $url URL to redirect to
@@ -417,6 +442,8 @@ function vpl_inmediate_redirect($url) {
     die();
 }
 /**
+ * @codeCoverageIgnore
+ *
  * Set JavaScript file from subdir jscript to be load
  *
  * @param $file string
@@ -431,6 +458,8 @@ function vpl_include_jsfile($file, $defer = true) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Set JavaScript code to be included
  *
  * @param $jscript string
@@ -449,6 +478,8 @@ function vpl_include_js($jscript) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Popup message box to show text
  *
  * @param string $text to show. It use s() to sanitize text
@@ -468,6 +499,10 @@ function vpl_js_alert($text, $print = true) {
         return $ret;
     }
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_select_time($maximum = null) {
     $minute = 60;
     if ($maximum === null) { // Default value.
@@ -497,6 +532,8 @@ function vpl_get_select_time($maximum = null) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Converts a size in byte to string in Kb, Mb, Gb and Tb.
  * Follows IEC "Prefixes for binary multiples".
  *
@@ -535,6 +572,8 @@ function vpl_conv_size_to_string($size) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return the array key after or equal to value
  *
  * @param $array
@@ -557,6 +596,8 @@ function vpl_get_array_key($array, int $value) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Returns un array with the format [size in bytes] => size in text.
  * The first element is [0] => select.
  *
@@ -602,6 +643,8 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Detects end of line separator.
  *
  * @param string& $data Text to check.
@@ -621,12 +664,17 @@ function vpl_detect_newline(&$data) {
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_notice(string $text, $type = 'success') {
     global $OUTPUT;
     echo $OUTPUT->notification($text, $type);
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Remove trailing right zeros from a float as string
  *
  * @param string $value float to remove right zeros
@@ -641,6 +689,8 @@ function vpl_rtzeros($value) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Generate an array with index an values $url.index
  *
  * @param string $url base
@@ -656,6 +706,8 @@ function vpl_select_index($url, $array) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Generate an array ready to be use in $OUTPUT->select_url
  *
  * @param string $url base
@@ -669,12 +721,18 @@ function vpl_select_array($url, $array) {
     }
     return $ret;
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_fileextension($filename) {
     return pathinfo( $filename, PATHINFO_EXTENSION );
 }
 
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get if filename has image extension
  * @param string $filename
  * @return boolean
@@ -684,6 +742,8 @@ function vpl_is_image($filename) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get if filename has binary extension or binary data
  * @param string $filename
  * @param string &$data file contents
@@ -705,6 +765,8 @@ function vpl_is_binary($filename, &$data = false) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return data encoded to base64
  * @param string $filename
  * @param string &$data file contents
@@ -715,6 +777,8 @@ function vpl_encode_binary($filename, &$data) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return data decoded from base64
  * @param string $filename
  * @param string &$data file contents
@@ -725,6 +789,8 @@ function vpl_decode_binary($filename, $data) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return if path is valid
  * @param string $path
  * @return boolean
@@ -743,6 +809,8 @@ function vpl_is_valid_path_name($path) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Return if file or directory name is valid
  * @param string $name
  * @return boolean
@@ -761,6 +829,8 @@ function vpl_is_valid_file_name($name) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Truncate string to the limit passed
  * @param string &$string
  * @param int $limit
@@ -772,6 +842,9 @@ function vpl_truncate_string(&$string, $limit) {
     $string = substr( $string, 0, $limit - 3 ) . '...';
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
         return 'export ' . $var . '=' . $value . "\n";
@@ -781,6 +854,8 @@ function vpl_bash_export($var, $value) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * For debug purpose
  * Return content of vars ready to HTML
  */
@@ -794,6 +869,8 @@ function vpl_s() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Truncate string fields of the VPL table
  * @param $instance object with the record
  * @return void
@@ -810,6 +887,8 @@ function vpl_truncate_vpl($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Truncate string fields of the variations table
  * @param $instance object with the record
  * @return void
@@ -819,6 +898,8 @@ function vpl_truncate_variations($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Truncate string fields of the running_processes table
  * @param $instance object with the record
  * @return void
@@ -828,6 +909,8 @@ function vpl_truncate_running_processes($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Truncate string fields of the jailservers table
  * @param $instance object with the record
  * @return void
@@ -838,6 +921,8 @@ function vpl_truncate_jailservers($instance) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Check if IP is within networks
  *
  * @param $networks string with conma separate networks
@@ -857,6 +942,8 @@ function vpl_check_network($networks, $ip = false) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get awesome icon for action
  * @param String $id
  * @return string
@@ -873,6 +960,8 @@ function vpl_get_awesome_icon($str, $classes = '') {
 
 
 /**
+ * @codeCoverageIgnore
+ *
  * Create a new tabobject for navigation
  * @param String $id
  * @param string|moodle_url $href
@@ -887,6 +976,8 @@ function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get version string
  * @return string
  */
@@ -901,6 +992,8 @@ function vpl_get_version() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Polyfill for getting user picture fields
  * @return string List of fields separated by "," u.field
  */
@@ -912,6 +1005,9 @@ function vpl_get_picture_fields() {
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_webservice_available() {
     global $DB, $USER, $CFG;
     if ($USER->id <= 2) {
@@ -926,6 +1022,10 @@ function vpl_get_webservice_available() {
     ) );
     return ! empty( $service );
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_webservice_token($vpl) {
     global $DB, $USER, $CFG;
     $now = time();
@@ -984,6 +1084,10 @@ function vpl_get_webservice_token($vpl) {
     }
     return $tokenrecord->token;
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_webservice_urlbase($vpl) {
     global $CFG;
     $token = vpl_get_webservice_token( $vpl );
@@ -995,6 +1099,7 @@ function vpl_get_webservice_urlbase($vpl) {
 }
 
 /**
+ * @codeCoverageIgnore
  * Agregate usersids and groupsids of array of objects of override assigned records
  * @param array $overridesseparated of objects of records
  * @return array

@@ -1,0 +1,10 @@
+{
+    "states": {
+        "start": [
+            {
+                "token": "hello",
+                "regex": ".*"
+            }
+        ]
+    }
+}

@@ -25,55 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-class vpl_filetype {
-    // TODO implement new types.
-    private static $sstr = array (
-            'h' => 'cpp',
-            'hxx' => 'cpp',
-            'c' => 'c',
-            'js' => 'c', // JavaScript as C.
-            'cc' => 'cpp',
-            'C' => 'cpp',
-            'cpp' => 'cpp',
-            'cs' => 'cpp', // C# as C++.
-            'ads' => 'ada',
-            'adb' => 'ada',
-            'ada' => 'ada',
-            'java' => 'java',
-            'Java' => 'java',
-            'scm' => 'scheme',
-            'pl' => 'prolog',
-            'scala' => 'scala',
-            'py' => 'python',
-            'm' => 'matlab',
-            'html' => 'html',
-            'htm' => 'html'
-    );
-    public static function str($ext) {
-        if (isset( self::$sstr[$ext] )) {
-            return self::$sstr[$ext];
-        } else {
-            return false;
-        }
-    }
-}
-class vpl_similarity_factory {
-    private static $classloaded = array ();
-    private static function get_object($type) {
-        if (! isset( self::$classloaded[$type] )) {
-            $include = 'similarity_' . $type . '.class.php';
-            require_once($include);
-            self::$classloaded[$type] = true;
-        }
-        $class = 'vpl_similarity_' . $type;
-        return new $class();
-    }
-    public static function get($filename) {
-        $ext = pathinfo( $filename, PATHINFO_EXTENSION );
-        if ($type = vpl_filetype::str( $ext )) {
-            return self::get_object( $type );
-        } else {
-            return null;
-        }
-    }
+use \mod_vpl\similarity\similarity_factory;
+
+class vpl_similarity_factory extends similarity_factory {
+
 }

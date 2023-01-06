@@ -23,6 +23,9 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+ /**
+  * @codeCoverageIgnore
+  */
 class mod_vpl_generator extends testing_module_generator {
     public function create_instance($record = null, array $options = null) {
         // Normalize parameter $record to object.

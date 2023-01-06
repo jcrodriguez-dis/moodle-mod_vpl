@@ -31,6 +31,9 @@ require_once(dirname( __FILE__ ) . '/locallib.php');
 require_once(dirname( __FILE__ ) . '/forms/edit.class.php');
 require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
 
+/**
+ * @codeCoverageIgnore
+ */
 class mod_vpl_webservice extends external_api {
     /**
      * Returns VPL activity object for coursemodule id.

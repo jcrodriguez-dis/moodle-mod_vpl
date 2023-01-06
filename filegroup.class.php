@@ -28,7 +28,6 @@ require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once(dirname(__FILE__).'/similarity/watermark.class.php');
 
-
 class file_group_process {
     /**
      * Name of file list
@@ -443,4 +442,3 @@ class file_group_process {
         }
     }
 }
-

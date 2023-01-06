@@ -439,7 +439,10 @@ function vpl_user_complete($course, $user, $mod, $vpl) {
         $submission->print_grade( true );
     }
 }
+
 /**
+ * @codeCoverageIgnore
+ *
  * Returns all VPL submissions since a given time
  */
 function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $courseid, $cmid, $userid = 0, $groupid = 0) {
@@ -496,6 +499,9 @@ function vpl_get_recent_mod_activity(&$activities, &$index, $timestart, $coursei
     return true;
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames, $viewfullnames) {
     // TODO improve.
     global $CFG, $OUTPUT;
@@ -529,6 +535,8 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Given a course_module object, this function returns any "extra" information
  * that may be needed whenprinting this activity in a course listing.
  * See get_array_of_activities() in course/lib.php.
@@ -565,6 +573,8 @@ function vpl_get_coursemodule_info_not_valid($coursemodule) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Get icon mapping for font-awesome.
  *
  * @return  array
@@ -650,6 +660,9 @@ function vpl_navi_node_create(navigation_node $vplnode, $str, $url, $type = navi
     return $node;
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) {
     global $USER;
     $vpl = new mod_vpl( $cm->id );
@@ -709,6 +722,9 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) 
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_extend_settings_navigation(settings_navigation $settings, navigation_node $vplnode) {
     global $CFG, $PAGE, $USER;
     if (! isset( $PAGE->cm->id )) {
@@ -801,6 +817,9 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     }
 }
 
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_scale_used($vplid, $scaleid) {
     global $DB;
     return $scaleid && $DB->record_exists( VPL, [
@@ -810,6 +829,8 @@ function vpl_scale_used($vplid, $scaleid) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Checks if scale is being used by any instance of VPL. This is used to find out if scale
  * used anywhere
  *
@@ -822,6 +843,10 @@ function vpl_scale_used_anywhere($scaleid) {
             'grade' => "-$scaleid"
     ] );
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_view_actions() {
     return [
             'view',
@@ -841,6 +866,10 @@ function vpl_get_view_actions() {
             'view previous'
     ];
 }
+
+/**
+ * @codeCoverageIgnore
+ */
 function vpl_get_post_actions() {
     return [
             'save submision',
@@ -857,6 +886,8 @@ function vpl_get_post_actions() {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Removes all grades from gradebook
  *
  * @param int $courseid
@@ -917,6 +948,8 @@ function vpl_reset_instance_userdata($vplid) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * This function is used by the reset_course_userdata function in moodlelib. This function
  * will remove all submissions from the specified vpl instance and clean up any related data.
  *
@@ -949,6 +982,8 @@ function vpl_reset_userdata($data) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Implementation of the function for printing the form elements that control whether
  * the course reset functionality affects VPL.
  *
@@ -960,6 +995,8 @@ function vpl_reset_course_form_definition(&$mform) {
 }
 
 /**
+ * @codeCoverageIgnore
+ *
  * Course reset form defaults.
  */
 function vpl_reset_course_form_defaults($course) {

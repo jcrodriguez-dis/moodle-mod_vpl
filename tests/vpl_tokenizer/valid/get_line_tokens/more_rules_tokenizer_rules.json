@@ -1,0 +1,35 @@
+{
+    "check_rules": false,
+    "states": {
+        "start": [
+            {
+                "token": "constant.numeric",
+                "regex": "0(?:[xX][0-9a-fA-F][0-9a-fA-F_]*|[bB][01][01_]*)[LlSsDdFfYy]?\\b"
+            },
+            {
+                "token": "constant.numeric",
+                "regex": "[+-]?[0-9][0-9_]*(?:(?:\\.[0-9_]*)?(?:[eE][+-]?[0-9_]+)?)?[LlSsDdFfYy]?\\b"
+            },
+            {
+                "token": "constant.language.boolean",
+                "regex": "(?:true|false)\\b"
+            },
+            {
+                "token": "storage.type",
+                "regex": "int|float|boolean|double|long|char\\b"
+            },
+            {
+                "token": "identifier",
+                "regex": "[a-zA-Z_$][a-zA-Z0-9_$]*\\b"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "!|\\$|%|&|\\||\\^|\\*|\\/|\\-\\-|\\-|\\+\\+|\\+|~|===|==|=|!=|!==|<=|>=|<<=|>>=|>>>=|<>|<|>|!|&&|\\|\\||\\?|\\:|\\*=|\\/=|%=|\\+=|\\-=|&=|\\|=|\\^=|\\b(?:in|instanceof|new|delete|typeof|void)"
+            },
+            {
+                "token": "text",
+                "regex": "\\s+"
+            }
+        ]
+    }
+}

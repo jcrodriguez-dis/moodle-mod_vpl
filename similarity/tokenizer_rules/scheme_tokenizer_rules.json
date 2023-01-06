@@ -1,0 +1,86 @@
+// Highlighter rules based on Ace Editor <https://github.com/ajaxorg/ace/blob/master/lib/ace/mode/scheme_highlight_rules.js>
+// made by David Parreño Barbuzano <david.parreno101@alu.ulpgc.es>
+{
+    "name": "scheme-tokenizer",
+    "extension": [ ".scm", ".ss" ],
+    "check_rules": false,
+    "override_tokens": {
+        "storage.type.function-type.scheme": "storage.type",
+        "entity.name.function.scheme": "entity.name.function",
+        "punctuation.definition.constant.character.scheme": "vpl_literal",
+        "punctuation.definition.variable.scheme": "vpl_identifier",
+        "variable.other.global.scheme": "vpl_identifier",
+        "constant.character.escape.scheme": "constant.character.escape"
+    },
+    "states": {
+        "start": [
+            {
+                "token" : "comment",
+                "regex" : ";.*$"
+            },
+            {
+                "token": ["storage.type.function-type.scheme", "text", "entity.name.function.scheme"],
+                "regex": "(?:\\b(?:(define|define-syntax|define-macro))\\b)(\\s+)((?:\\w|\\-|\\!|\\?)*)"
+            },
+            {
+                "token": "punctuation.definition.constant.character.scheme",
+                "regex": "#:\\S+"
+            },
+            {
+                "token": ["punctuation.definition.variable.scheme", "variable.other.global.scheme", "punctuation.definition.variable.scheme"],
+                "regex": "(\\*)(\\S*)(\\*)"
+            },
+            {
+                "token" : "constant.numeric",
+                "regex" : "#[xXoObB][0-9a-fA-F]+"
+            },
+            {
+                "token" : "constant.numeric",
+                "regex" : "[+-]?\\d+(?:(?:\\.\\d*)?(?:[eE][+-]?\\d+)?)?"
+            },
+            {
+                "token": "keyword.control",
+                "regex": "case|do|let|loop|if|else|when"
+            },
+            {
+                "token": "keyword.operator",
+                "regex": "eq?|eqv?|equal?|and|or|not|null?"
+            },
+            {
+                "token": "constant.language",
+                "regex": "#t|#f"
+            },
+            {
+                "token": "support.function",
+                "regex": "cons|car|cdr|cond|lambda|lambda*|syntax-rules|format|set!|quote|eval|append|list|list?|member?|load"
+            },
+            {
+                "token": "identifier",
+                "regex": "[a-zA-Z_#][a-zA-Z0-9_\\-\\?\\!\\*]*"
+            },
+            {
+                "token" : "string",
+                "regex" : "\"(?=.)",
+                "next"  : "qqstring"
+            }
+        ],
+        "qqstring": [
+            {
+                "token": "constant.character.escape.scheme",
+                "regex": "\\\\."
+            },
+            {
+                "token" : "string",
+                "regex" : "[^\"\\\\]+"
+            }, {
+                "token" : "string",
+                "regex" : "\\\\$",
+                "next"  : "qqstring"
+            }, {
+                "token" : "string",
+                "regex" : "\"|$",
+                "next"  : "start"
+            }
+        ]
+    }
+}

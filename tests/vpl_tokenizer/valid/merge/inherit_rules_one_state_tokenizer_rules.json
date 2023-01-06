@@ -1,0 +1,12 @@
+// TEST: tested
+{
+    "check_rules": false,
+    "states": {
+        "text-state": [
+            {
+                "token": "text",
+                "regex": ".*"
+            }
+        ]
+    }
+}

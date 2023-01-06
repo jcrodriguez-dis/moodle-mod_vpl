@@ -1,0 +1,16 @@
+{
+    "inherit_rules": "inherit_rules_one_state_tokenizer_rules",
+    "states": {
+        "start": [
+            {
+                "next": "text-state"
+            }
+        ],
+        "text-state": [
+            {
+                "token": "comment",
+                "regex": "\\/\\/"
+            }
+        ]
+    }
+}

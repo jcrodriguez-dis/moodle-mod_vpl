@@ -1,5 +1,7 @@
 Main developer: Juan Carlos Rodriguez-del-Pino, jc.rodriguezdelpino@ulpgc.es
 
+VPL Tokenizer: David Parreño Barbuzano, losedavidpb@gmail.com
+
 Translations:
     Catalan: Antonio Piedras Morente
     Japanese: Imaizumi Takashi
