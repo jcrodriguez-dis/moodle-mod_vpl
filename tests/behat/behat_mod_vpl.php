@@ -79,9 +79,9 @@ class behat_mod_vpl extends behat_base {
         $script = "(function() {";
         if ( $type === false ) {
             $type = '';
-            $contentesc = str_replace ("\n", '\n', str_replace ('"', '\"', $contents));
+            $contentsesc = addcslashes($contents, "\\\"'\r\n\t\f");
             // Testing framework does not accept heredoc syntax.
-                $script .= "var filedata = \"$contentesc\";";
+            $script .= "var filedata = \"$contentsesc\";";
         } else {
             $contentb64 = base64_encode($contents);
             $script .= "
