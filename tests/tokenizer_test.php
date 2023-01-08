@@ -1062,7 +1062,8 @@ class tokenizer_test extends \advanced_testcase {
     }
 
     private static function get_behat($tokenizer, array $extensions, bool $isnew): void {
-        $outputdir = self::testpath() . 'behat/';
+        global $CFG;
+        $outputdir = $CFG->dataroot . '/temp/vpl/';
         $dirbehat = dirname(__FILE__) . '/behat/datafiles/similarity/';
         $extincluded = array();
 
@@ -1074,17 +1075,17 @@ class tokenizer_test extends \advanced_testcase {
                     if ($isnew === true) {
                         $tokens = $tokenizer->parse($parsefilename);
                         $outputfilename = $outputdir . 'new_tokenizer/with_vpl/tokens_' . substr($ext, 1) . '.txt';
-                        file_put_contents($outputfilename, print_r($tokens, true));
+                        vpl_fwrite($outputfilename, json_encode($tokens, JSON_UNESCAPED_UNICODE));
 
                         $tokens = $tokenizer->get_all_tokens($parsefilename);
                         $outputfilename = $outputdir . 'new_tokenizer/without_vpl/tokens_' . substr($ext, 1) . '.txt';
-                        file_put_contents($outputfilename, print_r($tokens, true));
+                        vpl_fwrite($outputfilename, json_encode($tokens, JSON_UNESCAPED_UNICODE));
                     } else {
                         $data = file_get_contents($parsefilename);
                         $tokenizer->parse($data, false);
                         $tokens = $tokenizer->get_tokens();
                         $outputfilename = $outputdir . 'old_tokenizer/tokens_' . substr($ext, 1) . '.txt';
-                        file_put_contents($outputfilename, print_r($tokens, true));
+                        vpl_fwrite($outputfilename, json_encode($tokens, JSON_UNESCAPED_UNICODE));
                     }
                 }
 
