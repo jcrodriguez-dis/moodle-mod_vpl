@@ -16,6 +16,8 @@
 
 use mod_vpl\tokenizer\tokenizer_factory;
 
+defined('MOODLE_INTERNAL') || die();
+
 require_once(dirname(__FILE__).'/tokenizer_base.class.php');
 
 /**

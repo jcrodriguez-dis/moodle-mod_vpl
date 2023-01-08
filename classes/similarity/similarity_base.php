@@ -102,13 +102,13 @@ abstract class similarity_base {
         $this->vecfrec = array();
         $this->hashes = array();
 
-        // Prepare tokens using tokenizer
+        // Prepare tokens using tokenizer.
         $tok = $this->get_tokenizer();
         $tok->parse($data, false);
         $tokens = $tok->get_tokens();
         $this->sintax_normalize($tokens);
 
-        // Prepare hashes before its calculation
+        // Prepare hashes before its calculation.
         $last = array();
 
         for ($i = 0; $i < self::HASH_SIZE; $i++) {
@@ -116,7 +116,7 @@ abstract class similarity_base {
         }
 
         // Process tokens to get vector of frecuencies, size
-        // and values for the hash table
+        // and values for the hash table.
         foreach ($tokens as $token) {
             if ($token->type == token_type::OPERATOR) {
                 // Calculate hashes table.

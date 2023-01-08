@@ -40,6 +40,7 @@ use \vpl_similarity_factory;
  * @group mod_vpl_vplt
  * @group mod_vpl_similarity
  * @group mod_vpl_similarity_factory
+ * @covers \mod_vpl\similarity\similarity_factory
  */
 class similarity_factory_test extends \advanced_testcase {
     /**

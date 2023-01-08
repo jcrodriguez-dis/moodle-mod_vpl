@@ -23,8 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 use \mod_vpl\similarity\similarity_factory;
 
 class vpl_similarity_factory extends similarity_factory {

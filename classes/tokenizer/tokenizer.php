@@ -634,7 +634,7 @@ class tokenizer extends tokenizer_base {
             unset($jsonobj->override_tokens);
         }
 
-        // Inherit override_tokens before checking rules
+        // Inherit override_tokens before checking rules.
         if (!empty($this->inheritrules)) {
             $inherittokenizer = new tokenizer($this->inheritrules);
             $src = $inherittokenizer->get_override_tokens();
