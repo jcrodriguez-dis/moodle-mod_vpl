@@ -137,7 +137,7 @@ function vpl_fwrite($filename, $contents) {
     $fd = vpl_fopen( $filename );
     $res = ftruncate ( $fd, 0);
     $res = $res && (fwrite( $fd, $contents ) !== false);
-    $res = $res && fclose( $fd );
+    $res = fclose( $fd ) && $res;
     if ($res === false) {
         throw new file_exception('storedfileproblem', 'Error writing a file in VPL');
     }
