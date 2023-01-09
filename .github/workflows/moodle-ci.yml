@@ -109,7 +109,7 @@ jobs:
       
       - name: Install valgrind
         if: ${{ always() }}
-        run: sudo apt install -y valgrind
+        run: sudo apt-get install -y valgrind
 
       - name: VPL evaluate program
         if: ${{ always() }}
