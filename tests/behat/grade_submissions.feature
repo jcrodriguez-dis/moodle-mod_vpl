@@ -32,7 +32,7 @@ Feature: In a VPL activity teacher grade submissions
     And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I follow "Edit"
     And I click on ".ui-dialog-titlebar-close" in VPL
-    And I drop the file "similar.c" on "#vpl_tabs" in VPL
+    And I drop the file "hello.c" on "#vpl_tabs" in VPL
     And I click on "#vpl_ide_save" in VPL
     And I log out
 
