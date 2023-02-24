@@ -1,0 +1,51 @@
+version: "3"
+services:
+  mariadb:
+    image: bitnami/mariadb:10.6
+    environment:
+      - MARIADB_USER=bitnami_moodle_user
+      - MARIADB_PASSWORD=bitnami_mariadb_pass
+      - MARIADB_ROOT_PASSWORD=bitnami_mariadb_root_pass
+      - MARIADB_DATABASE=bitnami_moodle
+      - MARIADB_CHARACTER_SET=utf8mb4
+      - MARIADB_COLLATE=utf8mb4_unicode_ci
+    volumes:
+      - "mariadb_data:/bitnami/mariadb"
+  moodle:
+    build: .
+    ports:
+      - 80:8080
+      - 443:8443
+    environment:
+      - BITNAMI_DEBUG=true
+      - MOODLE_DATABASE_HOST=mariadb
+      - MOODLE_DATABASE_PORT_NUMBER=3306
+      - MOODLE_DATABASE_USER=bitnami_moodle_user
+      - MOODLE_DATABASE_NAME=bitnami_moodle
+      - MOODLE_DATABASE_PASSWORD=bitnami_mariadb_pass
+      - MOODLE_DATABASE_ROOT_PASSWORD=bitnami_mariadb_root_pass
+      - MOODLE_SITE_NAME=Moodle v4
+      - MOODLE_USERNAME=vpl_user
+      - MOODLE_PASSWORD=vpl_pass
+    volumes:
+      - "moodle_data:/bitnami/moodle"
+      - "moodledata_data:/bitnami/moodledata"
+    depends_on:
+      - mariadb
+  jail:
+    image: vpl-jail
+    cap_add:
+      - SYS_ADMIN
+    ports:
+      - 81:81
+      - 444:444
+    environment:
+      - JAIL_PORT=81
+      - JAIL_SECURE_PORT=444
+      - JAIL_URL_PASS=secret
+    depends_on:
+      - moodle
+volumes:
+  mariadb_data:
+  moodle_data:
+  moodledata_data:
