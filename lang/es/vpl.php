@@ -24,7 +24,7 @@ $string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada
 <p>Para usar una conexión cifrada con los servidores de ejecución usted debe aceptar sus certificados de seguridad.</p>
 <p>Si no quiere aceptar los certificados o tiene problemas con ese proceso, puede
 probar a usar una conexión http (no cifrada) u otro navegador.</p>
-<p>Por favor, pulse sobre los siguientes enlaces (Sevidor #) y acepte los certificados ofrecidos.</p>';
+<p>Por favor, pulse sobre los siguientes enlaces (Servidor #) y acepte los certificados ofrecidos.</p>';
 $string['addfile'] = 'Añadir fichero';
 $string['advanced'] = 'Avanzado';
 $string['allfiles'] = 'Todos los ficheros';
