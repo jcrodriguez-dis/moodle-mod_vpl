@@ -20,7 +20,7 @@
 $string['about'] = 'Acerca de';
 $string['acceptcertificates'] = 'Aceptar certificados auto firmados';
 $string['acceptcertificates_description'] = 'Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';
-$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.<p/>
+$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.</p>
 <p>Para usar una conexión cifrada con los servidores de ejecución usted debe aceptar sus certificados de seguridad.</p>
 <p>Si no quiere aceptar los certificados o tiene problemas con ese proceso, puede
 probar a usar una conexión http (no cifrada) u otro navegador.</p>
@@ -388,14 +388,14 @@ $string['local_jail_servers_help'] = '<p>Aquí se establecen los servidores de e
 <p>Si se quiere impedir que esta actividad y las que se basen en ella no use los servidores especificados en las actividades derivadas ni
 los especificados globalmente, añada al final una línea que contenga "end_of_jails".
 </p>';
-$string['modulename_help'] = '<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:
+$string['modulename_help'] = '<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:</p>
 <ul>
 <li>Posibilidad de editar el código fuente en el navegador.</li>
 <li>Posibilidad de ejecutar las prácticas de forma interactiva desde el navegador.</li>
 <li>Posibilidad de ejecutar pruebas que revisen las prácticas.</li>
 <li>Búsqueda de similitud entre prácticas para el control del plagio.</li>
 <li>Restricciones de entrega de prácticas que limitan el corta y pega de código externo.</li>
-</ul></p>
+</ul>
 <p><a href="http://vpl.dis.ulpgc.es">Página oficial de Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
 $string['requestedfiles_help'] = '<p>Aquí se fijan nombres y contenido inicial para los ficheros requeridos.</p>
