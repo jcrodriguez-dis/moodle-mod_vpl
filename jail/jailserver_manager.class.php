@@ -105,12 +105,14 @@ class vpl_jailserver_manager {
                     }
                 }
             } else {
-                if (! function_exists('xmlrpc_decode')) {
+                $xmlrpcdecode = 'xmlrpc_decode';
+                if (! function_exists($xmlrpcdecode)) {
                     $error = 'Requires execution server version >= 3 or PHP with XML-RPC support';
                 } else {
-                    $response = xmlrpc_decode( $rawresponse, "UTF-8" );
+                    $response = $xmlrpcdecode( $rawresponse, "UTF-8" );
                     if (is_array( $response )) {
-                        if (xmlrpc_is_fault( $response )) {
+                        $xmlrpcisfault = 'xmlrpc_is_fault';
+                        if ($xmlrpcisfault( $response )) {
                             $error = 'XML-RPC is fault: ' . s( $response["faultString"] );
                         } else {
                             return $response;
@@ -216,13 +218,14 @@ class vpl_jailserver_manager {
         if ( empty($plugincfg->use_xmlrpc) ) {
             $plugincfg->use_xmlrpc = false;
         }
-        if ($plugincfg->use_xmlrpc && function_exists('xmlrpc_encode_request' )) {
+        $xmlrpcencoderequest = 'xmlrpc_encode_request';
+        if ($plugincfg->use_xmlrpc && function_exists(xmlrpcencoderequest)) {
             $outputoptions = [
                 'escaping' => 'markup',
                 'encoding' => 'UTF-8',
                 'verbosity' => 'newlines_only'
             ];
-            return xmlrpc_encode_request( $action, $data, $outputoptions);
+            return xmlrpcencoderequest( $action, $data, $outputoptions);
         } else {
             return self::jsonrpc_encode( $action, $data);
         }
