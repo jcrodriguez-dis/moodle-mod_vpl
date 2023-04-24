@@ -52,7 +52,7 @@ class mod_vpl_password_form extends moodleform {
                 $mform->setType( $parm, PARAM_INT );
             }
         }
-        $mform->addElement( 'password', 'password', get_string( 'password' ) );
+        $mform->addElement( 'passwordunmask', 'password', get_string( 'password' ) );
         $mform->setType( 'password', PARAM_TEXT );
         $mform->setDefault( 'password', '' );
         $this->add_action_buttons(false, get_string('continue'));
