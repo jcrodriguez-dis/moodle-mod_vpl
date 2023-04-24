@@ -1,6 +1,6 @@
 name: VPL CI
 
-on: workflow_dispatch
+on: [push]
 
 jobs:
   test:
