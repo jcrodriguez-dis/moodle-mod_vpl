@@ -60,7 +60,7 @@ class vpl_sh_ace extends vpl_sh_base {
             $code .= '</pre>';
             echo $code;
             $code = '<h4 ';
-            $code .= " id='code${tid}load' style='text-align:center'>";
+            $code .= " id='code{$tid}load' style='text-align:center'>";
             $code .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
             $code .= '</h4>';
             echo $code;
