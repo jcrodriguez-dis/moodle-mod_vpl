@@ -38,7 +38,9 @@ Feature: List submissions of students
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     When I follow "Submissions list"
     Then I should see "VPL activity 1"
-    And I should see "Surname"
+    And I should see "Submitted on"
+    But I should not see "Error"
+    And I should not see " is deprecated"
 
   @javascript
   Scenario: An non-editing teacher sees Submissions list
@@ -47,7 +49,9 @@ Feature: List submissions of students
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     When I follow "Submissions list"
     Then I should see "VPL activity 1"
-    And I should see "Surname"
+    And I should see "Submitted on"
+    But I should not see "Error"
+    And I should not see " is deprecated"
 
   @javascript
   Scenario: An editing teacher download submissions
