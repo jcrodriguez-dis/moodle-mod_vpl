@@ -47,19 +47,4 @@ abstract class base extends \core\event\base {
         $event = self::create( $eventinfo );
         $event->trigger();
     }
-    public function get_legacy_logdata() {
-        $urltext = '';
-        $url = $this->get_url();
-        if ($url != null) {
-            $urltext = $url->out( false );
-        }
-        return array (
-                $this->courseid,
-                VPL,
-                $this->legacyaction,
-                $urltext,
-                $this->get_description(),
-                $this->contextinstanceid
-        );
-    }
 }
