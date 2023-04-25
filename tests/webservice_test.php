@@ -107,6 +107,9 @@ class webservice_test extends base_test {
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
@@ -128,6 +131,9 @@ class webservice_test extends base_test {
         }
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_info() {
         foreach ($this->users as $user) {
             $this->setUser($user);
@@ -156,6 +162,9 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::info_returns());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_info_exceptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
@@ -208,6 +217,9 @@ class webservice_test extends base_test {
         $this->assertEquals($grade, $res['grade']);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_open() {
         $id = $this->vpldefault->get_course_module()->id;
         foreach ($this->users as $user) {
@@ -328,6 +340,9 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::open_returns());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_open_exceptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
@@ -388,6 +403,9 @@ class webservice_test extends base_test {
         $this->internal_test_vpl_webservice_open($id, $files);
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_save() {
         $id = $this->vpldefault->get_course_module()->id;
         $files = array('a.c' => '#include <content.h>\n');
@@ -405,6 +423,10 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::save_parameters());
         $this->assertNull(mod_vpl_webservice::save_returns());
     }
+
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_save_binary() {
         global $CFG;
         $id = $this->vpldefault->get_course_module()->id;
@@ -429,6 +451,9 @@ class webservice_test extends base_test {
         $this->assertNull(mod_vpl_webservice::save_returns());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_save_exceptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
@@ -503,6 +528,9 @@ class webservice_test extends base_test {
         mod_vpl_webservice::save($closed->get_course_module()->id, $files, '');
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_evaluate() {
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
@@ -533,6 +561,10 @@ class webservice_test extends base_test {
         vpl_update_instance($instance);
         $this->setUser($student);
     }
+
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_evaluate_exceptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
@@ -626,6 +658,9 @@ class webservice_test extends base_test {
         mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_get_result() {
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
@@ -650,6 +685,9 @@ class webservice_test extends base_test {
         $this->assertIsObject(mod_vpl_webservice::get_result_returns());
     }
 
+    /**
+     * @runInSeparateProcess
+     */
     public function test_vpl_webservice_get_result_exeptions() {
         $ok = false;
         $this->setUser($this->editingteachers[0]);
