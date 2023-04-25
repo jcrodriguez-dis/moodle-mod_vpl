@@ -45,7 +45,7 @@ class override_base extends base {
             $vplinstance = $vpl->get_instance();
             $info = array (
                     'objectid' => $overrideid,
-                    'contextid' => $vpl->get_context()->id,
+                    'context' => $vpl->get_context(),
                     'courseid' => $vplinstance->course,
                     'other' => array('vplid' => $vplinstance->id),
             );

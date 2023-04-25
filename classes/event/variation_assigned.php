@@ -39,7 +39,7 @@ class variation_assigned extends variation_base {
         $vplinstance = $vpl->get_instance();
         $info = array (
             'objectid' => $varid,
-            'contextid' => $vpl->get_context()->id,
+            'context' => $vpl->get_context(),
             'relateduserid' => $userid,
             'courseid' => $vplinstance->course,
             'other' => array('vplid' => $vplinstance->id),
