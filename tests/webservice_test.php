@@ -42,6 +42,7 @@ require_once($CFG->dirroot . '/mod/vpl/externallib.php');
  * Unit tests for VPL webservice.
  * @group mod_vpl
  * @covers \mod_vpl_webservice
+ * @runTestsInSeparateProcesses
  */
 class webservice_test extends base_test {
     private function vpl_call_service($url, $fun, $request = '') {
@@ -106,6 +107,7 @@ class webservice_test extends base_test {
         }
     }
 
+    
     public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
