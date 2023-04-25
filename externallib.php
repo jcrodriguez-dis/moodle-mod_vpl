@@ -139,18 +139,18 @@ class mod_vpl_webservice extends external_api {
     public static function info_returns() {
         return new external_single_structure( array (
                 'name' => new external_value( PARAM_TEXT, 'Name' ),
-                'shortdescription' => new external_value( PARAM_TEXT, 'Short description' ),
-                'intro' => new external_value( PARAM_RAW, 'Full description' ),
-                'introformat' => new external_value( PARAM_INT, 'Description format' ),
-                'reqpassword' => new external_value( PARAM_INT, 'Activity requiere password' ),
-                'example' => new external_value( PARAM_INT, 'Activity is an example' ),
-                'restrictededitor' => new external_value( PARAM_INT, 'Activity edition is restricted' ),
-                'maxfiles' => new external_value( PARAM_INT, 'Maximum number of file acepted' ),
+                'shortdescription' => new external_value( PARAM_TEXT, 'Short description', VALUE_REQUIRED),
+                'intro' => new external_value( PARAM_RAW, 'Full description', VALUE_REQUIRED),
+                'introformat' => new external_value( PARAM_INT, 'Description format', VALUE_REQUIRED ),
+                'reqpassword' => new external_value( PARAM_INT, 'Activity requiere password', VALUE_REQUIRED),
+                'example' => new external_value( PARAM_INT, 'Activity is an example', VALUE_REQUIRED),
+                'restrictededitor' => new external_value( PARAM_INT, 'Activity edition is restricted', VALUE_REQUIRED),
+                'maxfiles' => new external_value( PARAM_INT, 'Maximum number of file acepted', VALUE_REQUIRED),
                 'reqfiles' => new external_multiple_structure( new external_single_structure( array (
                         'name' => new external_value( PARAM_TEXT, 'File name' ),
                         'data' => new external_value( PARAM_RAW, 'File content' ),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64' )
-                ) ) )
+                ) ), '', VALUE_REQUIRED)
         ) );
     }
 
@@ -164,7 +164,7 @@ class mod_vpl_webservice extends external_api {
                         'name' => new external_value( PARAM_RAW, 'File name' ),
                         'data' => new external_value( PARAM_RAW, 'File content' ),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', false )
-                ) ) ),
+                ) ), '', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
         ) );
     }
@@ -244,10 +244,10 @@ class mod_vpl_webservice extends external_api {
                         'name' => new external_value( PARAM_TEXT, 'File name' ),
                         'data' => new external_value( PARAM_RAW, 'File content' ),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64' )
-                ) ) ),
-                'compilation' => new external_value( PARAM_RAW, 'Compilation result' ),
-                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result' ),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade' )
+                ) ), '', VALUE_REQUIRED),
+                'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
+                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
         ) );
     }
 
@@ -294,8 +294,8 @@ The jail send information as text in this format:
 'close': the conection is to be closed.
 if the websocket client send something to the server then the evaluation is stopped.";
         return new external_single_structure( array (
-                'monitorURL' => new external_value( PARAM_RAW, $desc ),
-                'smonitorURL' => new external_value( PARAM_RAW, $desc ),
+                'monitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
+                'smonitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
         ) );
     }
 
@@ -341,9 +341,9 @@ if the websocket client send something to the server then the evaluation is stop
     }
     public static function get_result_returns() {
         return new external_single_structure( array (
-                'compilation' => new external_value( PARAM_RAW, 'Compilation result' ),
-                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result' ),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade' )
+                'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
+                'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
         ) );
     }
 }
