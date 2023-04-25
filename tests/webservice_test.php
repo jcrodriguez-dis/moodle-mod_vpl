@@ -107,7 +107,6 @@ class webservice_test extends base_test {
         }
     }
 
-    
     public function test_vpl_webservice_token() {
         $this->assertTrue(vpl_get_webservice_token( $this->vpldefault ) > "" );
         $this->assertTrue(vpl_get_webservice_token( $this->vplnotavailable ) > "" );
