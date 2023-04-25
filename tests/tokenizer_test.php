@@ -400,12 +400,14 @@ class tokenizer_test extends \advanced_testcase {
             $result = $tokenizer->get_all_tokens($input);
 
             foreach ($result as $k => $valueforline) {
-                $this->assertTrue(count($valueforline) === 2);
+                $this->assertEquals(2, count($valueforline));
                 $this->assertSame($expectedresult[$k]['state'], $valueforline['state']);
-                $this->assertTrue(count($valueforline['tokens']) === count($expectedresult[$k]['tokens']));
+                $expectedtokens = $expectedresult[$k]['tokens'];
+                $resulttokens = $valueforline['tokens'];
+                $this->assertEquals(count($expectedtokens), count($resulttokens));
 
-                for ($i = 0; $i < count($valueforline['tokens']); $i++) {
-                    $this->assertTrue($valueforline['tokens'][$i]->equals_to($expectedresult[$k]['tokens'][$i]));
+                for ($i = 0; $i < count($resulttokens); $i++) {
+                    $this->assertEquals($expectedtokens[$i], $resulttokens[$i], "File $filename $k");
                 }
             }
         }
