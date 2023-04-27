@@ -54,7 +54,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * @return string
      */
-    protected static function testpath(): string {
+    protected static function gettestpath(): string {
         return dirname(__FILE__) . '/vpl_tokenizer/';
     }
 
@@ -156,7 +156,7 @@ class tokenizer_test extends \advanced_testcase {
      * Method to test tokenizer::discard_comments
      */
     public function test_discard_comments() {
-        $dir = self::testpath() . 'valid/comments';
+        $dir = self::gettestpath() . 'valid/comments';
 
         $scanarr = scandir($dir);
         $filesarr = array_diff($scanarr, array('.', '..'));
@@ -436,106 +436,106 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_invalid_cases(): void {
         self::$invalidtestcases = array(
-            self::testpath() . 'invalid/dump_test.json' => (
-                'file ' . self::testpath()  . 'invalid/dump_test.json must exist'
+            self::gettestpath() . 'invalid/dump_test.json' => (
+                'file ' . self::gettestpath()  . 'invalid/dump_test.json must exist'
             ),
-            self::testpath() . 'invalid/general/not_good_suffix.json' => (
-                self::testpath() . 'invalid/general/not_good_suffix.json' . ' must have suffix _tokenizer_rules.json'
+            self::gettestpath() . 'invalid/general/not_good_suffix.json' => (
+                self::gettestpath() . 'invalid/general/not_good_suffix.json' . ' must have suffix _tokenizer_rules.json'
             ),
-            self::testpath() . 'invalid/general/empty_tokenizer_rules.json' => (
-                'file ' . self::testpath() . 'invalid/general/empty_tokenizer_rules.json' . ' is empty'
+            self::gettestpath() . 'invalid/general/empty_tokenizer_rules.json' => (
+                'file ' . self::gettestpath() . 'invalid/general/empty_tokenizer_rules.json' . ' is empty'
             ),
-            self::testpath() . 'invalid/general/undefined_option_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/undefined_option_tokenizer_rules.json' => (
                 'invalid options: example'
             ),
-            self::testpath() . 'invalid/general/invalid_check_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_check_rules_tokenizer_rules.json' => (
                 '"check_rules" option must be a boolean'
             ),
-            self::testpath() . 'invalid/general/invalid_max_token_count_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_max_token_count_tokenizer_rules.json' => (
                 '"max_token_count" option must be numeric'
             ),
-            self::testpath() . 'invalid/general/invalid_number_max_token_count_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_number_max_token_count_tokenizer_rules.json' => (
                 '"max_token_count" option must be a positive integer'
             ),
-            self::testpath() . 'invalid/general/invalid_name_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_name_tokenizer_rules.json' => (
                 '"name" option must be a string'
             ),
-            self::testpath() . 'invalid/general/invalid_extension_no_string_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_extension_no_string_tokenizer_rules.json' => (
                 '"extension" option must be a string or an array of strings'
             ),
-            self::testpath() . 'invalid/general/invalid_extension_no_array_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_extension_no_array_tokenizer_rules.json' => (
                 '"extension" option must be a string or an array of strings'
             ),
-            self::testpath() . 'invalid/general/invalid_extension_no_dot_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_extension_no_dot_tokenizer_rules.json' => (
                 'extension c must start with .'
             ),
-            self::testpath() . 'invalid/general/invalid_inherit_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_inherit_rules_tokenizer_rules.json' => (
                 '"inherit_rules" option must be a string'
             ),
-            self::testpath() . 'invalid/states/invalid_data_states_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/states/invalid_data_states_tokenizer_rules.json' => (
                 '"states" option must be an object'
             ),
-            self::testpath() . 'invalid/states/states_with_no_name_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/states/states_with_no_name_tokenizer_rules.json' => (
                 'state 0 must have a name'
             ),
-            self::testpath() . 'invalid/states/state_not_object_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/states/state_not_object_tokenizer_rules.json' => (
                 'state 0 must be an array'
             ),
-            self::testpath() . 'invalid/states/one_state_with_no_name_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/states/one_state_with_no_name_tokenizer_rules.json' => (
                 'state 1 must have a name'
             ),
-            self::testpath() . 'invalid/rules/invalid_rule_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/invalid_rule_tokenizer_rules.json' => (
                 'rule 0 of state "state1" nº0 must be an object'
             ),
-            self::testpath() . 'invalid/rules/invalid_rule_option_value_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/invalid_rule_option_value_tokenizer_rules.json' => (
                 'invalid data type for token at rule 0 of state "state1" nº0'
             ),
-            self::testpath() . 'invalid/rules/undefined_rule_option_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/undefined_rule_option_tokenizer_rules.json' => (
                 'invalid option example at rule 0 of state "state1" nº0'
             ),
-            self::testpath() . 'invalid/rules/invalid_next_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/invalid_next_tokenizer_rules.json' => (
                 'invalid data type for next at rule 0 of state "state1" nº0'
             ),
-            self::testpath() . 'invalid/rules/regex_not_found_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/regex_not_found_tokenizer_rules.json' => (
                 'option token must be defined next to regex at rule 0 of state "state1" nº0'
             ),
-            self::testpath() . 'invalid/rules/token_not_found_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/token_not_found_tokenizer_rules.json' => (
                 'option regex must be defined next to token at rule 0 of state "state1" nº0'
             ),
-            self::testpath() . 'invalid/rules/invalid_token_value_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/invalid_token_value_tokenizer_rules.json' => (
                 'invalid token at rule 0 of state "start" nº0'
             ),
-            self::testpath() . 'invalid/rules/invalid_default_token_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/invalid_default_token_tokenizer_rules.json' => (
                 'invalid data type for default_token at rule 0 of state "start" nº0'
             ),
-            self::testpath() . 'invalid/rules/default_token_not_alone_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/rules/default_token_not_alone_tokenizer_rules.json' => (
                 'option default_token must be alone at rule 0 of state "start" nº0'
             ),
-            self::testpath() . 'invalid/general/invalid_json_inheritance_tokenizer_rules.json' => (
-                'inherit JSON file ' . self::testpath() . 'invalid/general/dump_tokenizer_rules.json does not exist'
+            self::gettestpath() . 'invalid/general/invalid_json_inheritance_tokenizer_rules.json' => (
+                'inherit JSON file ' . self::gettestpath() . 'invalid/general/dump_tokenizer_rules.json does not exist'
             ),
-            self::testpath() . 'invalid/general/invalid_override_tokens_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_override_tokens_tokenizer_rules.json' => (
                 '"override_tokens" option must be an object'
             ),
-            self::testpath() . 'invalid/general/invalid_token_at_override_tokens_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_token_at_override_tokens_tokenizer_rules.json' => (
                 'this_is_not_a_good_token_name does not exist'
             ),
-            self::testpath() . 'invalid/general/vpl_type_not_overrided_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/vpl_type_not_overrided_tokenizer_rules.json' => (
                 'vpl_literal could not be overrided'
             )
         );
 
         self::$invalidpreparsecases = array(
-            self::testpath() . 'invalid/general/invalid_file_at_preparse_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_file_at_preparse_tokenizer_rules.json' => (
                 [
                     'input' => 'dump_test.js',
                     'output' => 'file dump_test.js does not exist',
                 ]
             ),
-            self::testpath() . 'invalid/general/invalid_ext_at_preparse_tokenizer_rules.json' => (
+            self::gettestpath() . 'invalid/general/invalid_ext_at_preparse_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'invalid/general/test_ext.java',
-                    'output' => self::testpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
+                    'input' => self::gettestpath() . 'invalid/general/test_ext.java',
+                    'output' => self::gettestpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
                 ]
             )
         );
@@ -543,38 +543,38 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_max_token_count_cases(): void {
         self::$maxtokencountcases = array(
-            self::testpath() . 'valid/max_token_count/max_token_count_zero_tokenizer_rules.json' => 0,
-            self::testpath() . 'valid/max_token_count/max_token_count_ten_tokenizer_rules.json' => 10
+            self::gettestpath() . 'valid/max_token_count/max_token_count_zero_tokenizer_rules.json' => 0,
+            self::gettestpath() . 'valid/max_token_count/max_token_count_ten_tokenizer_rules.json' => 10
         );
     }
 
     private static function setup_override_tokens_cases(): void {
         self::$overridetokenscases = array(
-            self::testpath() . 'valid/override_tokens/empty_override_tokens_tokenizer_rules.json' => [ ],
-            self::testpath() . 'valid/override_tokens/one_override_token_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/override_tokens/empty_override_tokens_tokenizer_rules.json' => [ ],
+            self::gettestpath() . 'valid/override_tokens/one_override_token_tokenizer_rules.json' => (
                 [
                     'comment' => token_type::LITERAL
                 ]
             ),
-            self::testpath() . 'valid/override_tokens/two_override_token_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/override_tokens/two_override_token_tokenizer_rules.json' => (
                 [
                     'comment' => token_type::LITERAL,
                     'comment.line' => token_type::LITERAL
                 ]
             ),
-            self::testpath() . 'valid/override_tokens/two_complex_override_token_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/override_tokens/two_complex_override_token_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
                     'string.end' => token_type::LITERAL
                 ]
             ),
-            self::testpath() . 'valid/override_tokens/complex_override_token_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/override_tokens/complex_override_token_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
                     'string.end' => token_type::LITERAL
                 ]
             ),
-            self::testpath() . 'valid/override_tokens/inheritance_override_tokens_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/override_tokens/inheritance_override_tokens_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
                     'string.end' => token_type::LITERAL,
@@ -586,27 +586,27 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_merge_cases(): void {
         self::$mergetestcases = array(
-            self::testpath() . 'valid/merge/merge_one_to_one_state_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/merge/merge_one_to_one_state_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
                     "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
                 ]
             ),
-            self::testpath() . 'valid/merge/merge_one_to_two_states_tokenizer_rules.json' => (
-                [
-                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
-                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
-                ]
-            ),
-            self::testpath() . 'valid/merge/merge_two_to_one_states_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/merge/merge_one_to_two_states_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
                     "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
                     "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
                 ]
             ),
-            self::testpath() . 'valid/merge/merge_with_same_states_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/merge/merge_two_to_one_states_tokenizer_rules.json' => (
+                [
+                    "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
+                    "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                ]
+            ),
+            self::gettestpath() . 'valid/merge/merge_with_same_states_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "next" => "text-state" ] ],
                     "text-state" => [
@@ -620,13 +620,13 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_prepare_cases(): void {
         self::$preparetestcases = array(
-            self::testpath() . 'valid/prepare/prepare_with_one_state_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_one_state_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/" ],
                     "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ] ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_two_states_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_two_states_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/", "another_start" => "/(\/\/)|(\/\*)|($)/" ],
                     "matchmappings" => [
@@ -635,13 +635,13 @@ class tokenizer_test extends \advanced_testcase {
                     ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_groups_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_groups_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/(\/\/)|((?:.*)(?:b))|($)/" ],
                     "matchmappings" => [ "start" => [ "default_token" => "comment", 0 => 0, 1 => 1 ], ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_more_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_more_rules_tokenizer_rules.json' => (
                 [
                     "regexprs" => [
                         "start" => "/(\/\/)|((?:void)(?:[a-z]+(?:[a-zA-Z0-9]|_)*)(?:\()(?:\)))|($)/",
@@ -655,7 +655,7 @@ class tokenizer_test extends \advanced_testcase {
                     ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_complex_matching_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_complex_matching_tokenizer_rules.json' => (
                 [
                     "regexprs" => [
                         "start" =>
@@ -671,19 +671,19 @@ class tokenizer_test extends \advanced_testcase {
                     ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_one_group_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_one_group_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((?:\/\/))|($)/" ],
                     "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((?:int))|($)/"],
                     "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
                 ]
             ),
-            self::testpath() . 'valid/prepare/prepare_with_number_ref_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/prepare/prepare_with_number_ref_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((a)(b)\\2\\3)|($)/" ],
                     "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
@@ -694,15 +694,15 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_preparse_cases(): void {
         self::$preparsetestcases = array(
-            self::testpath() . 'valid/get_all_tokens/no_line_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_all_tokens/no_line_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/get_all_tokens/no_line.c',
+                    'input' => self::gettestpath() . 'valid/get_all_tokens/no_line.c',
                     'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ]
                 ]
             ),
-            self::testpath() . 'valid/get_all_tokens/one_line_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_all_tokens/one_line_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/get_all_tokens/one_line.c',
+                    'input' => self::gettestpath() . 'valid/get_all_tokens/one_line.c',
                     'output' => [
                         0 => [
                             'state' => 'start',
@@ -711,9 +711,9 @@ class tokenizer_test extends \advanced_testcase {
                     ]
                 ]
             ),
-            self::testpath() . 'valid/get_all_tokens/two_lines_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_all_tokens/two_lines_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/get_all_tokens/two_lines.java',
+                    'input' => self::gettestpath() . 'valid/get_all_tokens/two_lines.java',
                     'output' => [
                         0 => [
                             'state' => 'comment',
@@ -729,9 +729,9 @@ class tokenizer_test extends \advanced_testcase {
                     ]
                 ]
             ),
-            self::testpath() . 'valid/get_all_tokens/more_lines_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_all_tokens/more_lines_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/get_all_tokens/more_lines.c',
+                    'input' => self::gettestpath() . 'valid/get_all_tokens/more_lines.c',
                     'output' => [
                         0 => [
                             'state' => 'start',
@@ -845,7 +845,7 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_get_line_tokens_cases(): void {
         self::$getlinetokenstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
                 [
                     'input' => '/* test comments',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -853,7 +853,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
                 [
                     'input' => 'int',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -861,7 +861,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/two_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/two_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'int ',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -869,7 +869,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/more_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/more_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'int a = 10;',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -880,7 +880,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/for_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/for_tokenizer_rules.json' => (
                 [
                     'input' => 'for (int i = 0; i < 10; i++) {',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -899,7 +899,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/two_states_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/two_states_tokenizer_rules.json' => (
                 [
                     'input' => '/* test comments */',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -909,7 +909,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/unexisted_state_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/unexisted_state_tokenizer_rules.json' => (
                 [
                     'input' => '// test comment',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -918,7 +918,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/token_array_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/token_array_tokenizer_rules.json' => (
                 [
                     'input' => 'hello () {',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -931,7 +931,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/token_array_two_rules_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/token_array_two_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'hello () {',
                     'output' => [ 'state' => 'start', 'tokens' => array(
@@ -947,7 +947,7 @@ class tokenizer_test extends \advanced_testcase {
         );
 
         self::$getlinetokenoverflowstestcases = array(
-            self::testpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
                 [
                     'input' => [
                         'max_token_count' => 0,
@@ -958,7 +958,7 @@ class tokenizer_test extends \advanced_testcase {
                     ) ]
                 ]
             ),
-            self::testpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
                 [
                     'input' => [
                         'max_token_count' => 1,
@@ -975,27 +975,27 @@ class tokenizer_test extends \advanced_testcase {
 
     private static function setup_parse_cases(): void {
         self::$parsetestcases = array(
-            self::testpath() . 'valid/parse/no_line_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/parse/no_line_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/parse/no_line.c',
+                    'input' => self::gettestpath() . 'valid/parse/no_line.c',
                     'output' => [ ]
                 ]
             ),
-            self::testpath() . 'valid/parse/one_line_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/parse/one_line_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/parse/one_line.c',
+                    'input' => self::gettestpath() . 'valid/parse/one_line.c',
                     'output' => [ ]
                 ]
             ),
-            self::testpath() . 'valid/parse/two_lines_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/parse/two_lines_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/parse/two_lines.java',
+                    'input' => self::gettestpath() . 'valid/parse/two_lines.java',
                     'output' => [ ]
                 ]
             ),
-            self::testpath() . 'valid/parse/more_lines_tokenizer_rules.json' => (
+            self::gettestpath() . 'valid/parse/more_lines_tokenizer_rules.json' => (
                 [
-                    'input' => self::testpath() . 'valid/parse/more_lines.c',
+                    'input' => self::gettestpath() . 'valid/parse/more_lines.c',
                     'output' => [
                         new token(token_type::RESERVED, '#include', 0),
                         new token(token_type::LITERAL, '<stdio.h>', 0),

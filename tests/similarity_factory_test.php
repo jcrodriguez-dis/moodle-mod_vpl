@@ -82,16 +82,16 @@ class similarity_factory_test extends \advanced_testcase {
                 $filelang = 'test_file.' . $namelang;
 
                 $similarityclass = similarity_factory::get($filelang);
-                $this->test_similarity($similarityclass, $namelang);
+                $this->check_similarity($similarityclass, $namelang);
 
                 $similarityclass = similarity_factory::get($filelang);
-                $this->test_similarity($similarityclass, $namelang);
+                $this->check_similarity($similarityclass, $namelang);
 
                 $similarityclass = vpl_similarity_factory::get($filelang);
-                $this->test_similarity($similarityclass, $namelang);
+                $this->check_similarity($similarityclass, $namelang);
 
                 $similarityclass = vpl_similarity_factory::get($filelang);
-                $this->test_similarity($similarityclass, $namelang);
+                $this->check_similarity($similarityclass, $namelang);
             }
         }
     }
@@ -103,16 +103,16 @@ class similarity_factory_test extends \advanced_testcase {
         $filelang = 'test_file.java';
 
         $similarityclass = similarity_factory::get($filelang, 1);
-        $this->test_similarity($similarityclass, 'java', 1);
+        $this->check_similarity($similarityclass, 'java', 1);
 
         $similarityclass = similarity_factory::get($filelang, 1);
-        $this->test_similarity($similarityclass, 'java', 1);
+        $this->check_similarity($similarityclass, 'java', 1);
 
         $similarityclass = vpl_similarity_factory::get($filelang, 1);
-        $this->test_similarity($similarityclass, 'java', 1);
+        $this->check_similarity($similarityclass, 'java', 1);
 
         $similarityclass = vpl_similarity_factory::get($filelang, 1);
-        $this->test_similarity($similarityclass, 'java', 1);
+        $this->check_similarity($similarityclass, 'java', 1);
     }
 
     /**
@@ -122,19 +122,19 @@ class similarity_factory_test extends \advanced_testcase {
         $filelang = 'test_file.pl';
 
         $similarityclass = similarity_factory::get($filelang);
-        $this->test_similarity($similarityclass, 'prolog', 2);
+        $this->check_similarity($similarityclass, 'prolog', 2);
 
         $similarityclass = similarity_factory::get($filelang);
-        $this->test_similarity($similarityclass, 'prolog', 2);
+        $this->check_similarity($similarityclass, 'prolog', 2);
 
         $similarityclass = vpl_similarity_factory::get($filelang);
-        $this->test_similarity($similarityclass, 'prolog', 2);
+        $this->check_similarity($similarityclass, 'prolog', 2);
 
         $similarityclass = vpl_similarity_factory::get($filelang);
-        $this->test_similarity($similarityclass, 'prolog', 2);
+        $this->check_similarity($similarityclass, 'prolog', 2);
     }
 
-    private function test_similarity($similarityclass, $namelang, $similaritytype=null) {
+    private function check_similarity($similarityclass, $namelang, $similaritytype=null) {
         $this->assertTrue(isset($similarityclass) === true);
 
         $similarityclasses = [

@@ -78,16 +78,16 @@ class tokenizer_factory_test extends \advanced_testcase {
      */
     public function test_old_tokenizer() {
         $tokenizer = tokenizer_factory::get('prolog');
-        $this->test_tokenizer($tokenizer, 'prolog', false);
+        $this->check_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = tokenizer_factory::get('prolog');
-        $this->test_tokenizer($tokenizer, 'prolog', false);
+        $this->check_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = vpl_tokenizer_factory::get('prolog');
-        $this->test_tokenizer($tokenizer, 'prolog', false);
+        $this->check_tokenizer($tokenizer, 'prolog', false);
 
         $tokenizer = vpl_tokenizer_factory::get('prolog');
-        $this->test_tokenizer($tokenizer, 'prolog', false);
+        $this->check_tokenizer($tokenizer, 'prolog', false);
     }
 
     /**
@@ -98,20 +98,20 @@ class tokenizer_factory_test extends \advanced_testcase {
 
         foreach ($tokenizerlangs as $namelang) {
             $tokenizer = tokenizer_factory::get($namelang);
-            $this->test_tokenizer($tokenizer, $namelang, true);
+            $this->check_tokenizer($tokenizer, $namelang, true);
 
             $tokenizer = tokenizer_factory::get($namelang);
-            $this->test_tokenizer($tokenizer, $namelang, true);
+            $this->check_tokenizer($tokenizer, $namelang, true);
 
             $tokenizer = vpl_tokenizer_factory::get($namelang);
-            $this->test_tokenizer($tokenizer, $namelang, true);
+            $this->check_tokenizer($tokenizer, $namelang, true);
 
             $tokenizer = vpl_tokenizer_factory::get($namelang);
-            $this->test_tokenizer($tokenizer, $namelang, true);
+            $this->check_tokenizer($tokenizer, $namelang, true);
         }
     }
 
-    private function test_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
+    private function check_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
         if ($newtokenizer === false) {
             $this->assertTrue(isset($tokenizer) === true);
             $this->assertSame('vpl_tokenizer_' . $namelang, get_class($tokenizer));
