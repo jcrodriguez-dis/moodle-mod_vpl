@@ -1,6 +1,6 @@
 name: VPL CI
 
-on: [push]
+on: [workflow_dispatch]
 
 jobs:
   test:
@@ -28,9 +28,13 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.4', '8.0', '8.1']
-        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_311_STABLE', 'MOODLE_401_STABLE', 'master']
+        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_311_STABLE', 'MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'master']
         database: [pgsql, mariadb]
         exclude:
+          - php: 7.4
+            moodle-branch: MOODLE_402_STABLE
+          - php: 7.4
+            moodle-branch: master
           - php: 8.0
             moodle-branch: MOODLE_39_STABLE
           - php: 8.1
@@ -39,8 +43,13 @@ jobs:
             moodle-branch: MOODLE_311_STABLE
           - php: 8.1
             moodle-branch: MOODLE_401_STABLE
-          - php: 7.4
-            moodle-branch: master
+          - database: pgsql
+            moodle-branch: MOODLE_311_STABLE
+          - database: pgsql
+            moodle-branch: MOODLE_401_STABLE
+          - database: pgsql
+            moodle-branch: MOODLE_402_STABLE
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v2
