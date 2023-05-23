@@ -481,7 +481,7 @@ class mod_vpl {
      */
     public function pass_password_check($passset = '') {
         $password = $this->get_password();
-        if ($password > '') {
+        if ($password > '' && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             global $SESSION;
             $passwordmd5 = $this->get_password_md5();
             $passvar = 'vpl_password_' . $this->instance->id;
@@ -503,7 +503,7 @@ class mod_vpl {
                 } else {
                     $SESSION->$passattempt = 1;
                 }
-                // Wait vpl_attempt_number seg to limit force brute crack.
+                // Wait vpl_password_attempt seconds to limit force brute crack.
                 sleep( $SESSION->$passattempt );
             }
             return false;
@@ -685,8 +685,8 @@ class mod_vpl {
         }
         $submittedby = '';
         if ($USER->id != $userid ) {
-            if ($vpl->has_capability( VPL_MANAGE_CAPABILITY ) || ($vpl->has_capability(
-                    VPL_GRADE_CAPABILITY ) )) {
+            if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) ||
+                $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                 $user = $DB->get_record( 'user', ['id' => $USER->id ] );
                 $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
                 if (strpos($comments, $submittedby) === 0 ) {
