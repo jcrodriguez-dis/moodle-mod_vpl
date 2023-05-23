@@ -165,10 +165,11 @@ class mod_vpl_webservice extends external_api {
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
                 ) ), 'Files', VALUE_REQUIRED),
-                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
+                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
+                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:manage capability)' , VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
-    public static function save($id, $files = array(), $password = '') {
+    public static function save($id, $files = array(), $password = '', $userid = -1) {
         global $USER;
         self::validate_parameters( self::save_parameters(), array (
                 'id' => $id,
@@ -176,9 +177,14 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password
         ) );
         $vpl = self::initial_checks( $id, $password );
-        $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-        if (! $vpl->is_submit_able()) {
-            throw new Exception( get_string( 'notavailable' ) );
+        if ($userid == -1) {
+            $userid = $USER->id;
+            $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+            if (! $vpl->is_submit_able()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
+        } else {
+            $vpl->require_capability( VPL_MANAGE_CAPABILITY );
         }
         $instance = $vpl->get_instance();
         if ($instance->example || ($instance->restrictededitor && ! $vpl->has_capability(VPL_MANAGE_CAPABILITY))) {
@@ -186,7 +192,7 @@ class mod_vpl_webservice extends external_api {
         }
         // Adapts to the file format VPL3.2.
         $files = self::decode_files($files);
-        mod_vpl_edit::save( $vpl, $USER->id, $files );
+        mod_vpl_edit::save( $vpl, $userid, $files );
     }
 
     public static function save_returns() {
@@ -200,10 +206,10 @@ class mod_vpl_webservice extends external_api {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, 'User ID', VALUE_DEFAULT, -1 )
+                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
-    public static function open($id, $password, $userid) {
+    public static function open($id, $password = '', $userid = -1) {
         global $USER;
         self::validate_parameters( self::open_parameters(), [
                 'id' => $id,
@@ -214,11 +220,11 @@ class mod_vpl_webservice extends external_api {
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if ($userid == -1) {
             $userid = $USER->id;
+            if (! $vpl->is_visible()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
         } else {
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
-        }
-        if (! $vpl->is_visible()) {
-            throw new Exception( get_string( 'notavailable' ) );
         }
         $compilationexecution = new stdClass();
         $files = mod_vpl_edit::get_submitted_files( $vpl, $userid, $compilationexecution );
@@ -257,27 +263,36 @@ class mod_vpl_webservice extends external_api {
     public static function evaluate_parameters() {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
-                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
+                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
+                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
-    public static function evaluate($id, $password) {
+    public static function evaluate($id, $password = ' ', $userid = -1) {
         global $USER;
         self::validate_parameters( self::evaluate_parameters(), array (
                 'id' => $id,
-                'password' => $password
+                'password' => $password,
+                'userid' => $userid
         ) );
         $vpl = self::initial_checks( $id, $password );
-        $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-        $instance = $vpl->get_instance();
-        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+        if ($userid == -1) {
+            $userid = $USER->id;
+            $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+            if (! $vpl->is_visible()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
             if (! $vpl->is_submit_able()) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
             if ($instance->example || ! $instance->evaluate) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
+        } else {
+            $vpl->require_capability( VPL_GRADE_CAPABILITY );
         }
-        $res = mod_vpl_edit::execute( $vpl, $USER->id, 'evaluate' );
+
+        $instance = $vpl->get_instance();
+        $res = mod_vpl_edit::execute( $vpl, $userid, 'evaluate' );
         $monitorurl = 'ws://' . $res->server . ':' . $res->port . '/' . $res->monitorPath;
         $smonitorurl = 'wss://' . $res->server . ':' . $res->securePort . '/' . $res->monitorPath;
         return array ( 'monitorURL' => $monitorurl, 'smonitorURL' => $smonitorurl  );
@@ -305,27 +320,36 @@ if the websocket client send something to the server then the evaluation is stop
     public static function get_result_parameters() {
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
-                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
+                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
+                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
         ) );
     }
-    public static function get_result($id, $password) {
+    public static function get_result($id, $password = ' ', $userid = -1) {
         global $USER;
         self::validate_parameters( self::get_result_parameters(), array (
                 'id' => $id,
-                'password' => $password
+                'password' => $password,
+                'userid' => $userid
         ) );
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();
-        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+        if ($userid == -1) {
+            $userid = $USER->id;
+            $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+            if (! $vpl->is_visible()) {
+                throw new Exception( get_string( 'notavailable' ) );
+            }
             if (! $vpl->is_submit_able()) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
             if ($instance->example || ! $instance->evaluate) {
                 throw new Exception( get_string( 'notavailable' ) );
             }
+        } else {
+            $vpl->require_capability( VPL_GRADE_CAPABILITY );
         }
-        $compilationexecution = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
+        $compilationexecution = mod_vpl_edit::retrieve_result( $vpl, $userid);
         $ret = [
             'compilation' => '',
             'evaluation' => '',
