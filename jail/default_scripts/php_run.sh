@@ -55,7 +55,7 @@ $path = urldecode(parse_url($_SERVER["REQUEST_URI"],PHP_URL_PATH));
 $file = '.' . $path;
 if(is_file($file) ||
    is_file($file . '/index.php') ||
-   is_file($file . '/index.html') {
+   is_file($file . '/index.html')) {
       unset($path, $file);
       return false;
 }
