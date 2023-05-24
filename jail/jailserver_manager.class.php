@@ -219,13 +219,13 @@ class vpl_jailserver_manager {
             $plugincfg->use_xmlrpc = false;
         }
         $xmlrpcencoderequest = 'xmlrpc_encode_request';
-        if ($plugincfg->use_xmlrpc && function_exists(xmlrpcencoderequest)) {
+        if ($plugincfg->use_xmlrpc && function_exists($xmlrpcencoderequest)) {
             $outputoptions = [
                 'escaping' => 'markup',
                 'encoding' => 'UTF-8',
                 'verbosity' => 'newlines_only'
             ];
-            return xmlrpcencoderequest( $action, $data, $outputoptions);
+            return $xmlrpcencoderequest( $action, $data, $outputoptions);
         } else {
             return self::jsonrpc_encode( $action, $data);
         }
