@@ -278,23 +278,25 @@ class mod_vpl_webservice extends external_api {
                 'userid' => $userid
         ) );
         $vpl = self::initial_checks( $id, $password );
+        $instance = $vpl->get_instance();
         if ($userid == -1) {
             $userid = $USER->id;
             $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-            if (! $vpl->is_visible()) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
-            if (! $vpl->is_submit_able()) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
-            if ($instance->example || ! $instance->evaluate) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
         } else {
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
         }
+        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
+            if (! $vpl->is_visible()) {
+                throw new Exception( get_string('notavailable') );
+            }
+            if (! $vpl->is_submit_able()) {
+                throw new Exception( get_string('notavailable') );
+            }
+            if ($instance->example || ! $instance->evaluate) {
+                throw new Exception( get_string('notavailable') );
+            }
+        }
 
-        $instance = $vpl->get_instance();
         $res = mod_vpl_edit::execute( $vpl, $userid, 'evaluate' );
         $monitorurl = 'ws://' . $res->server . ':' . $res->port . '/' . $res->monitorPath;
         $smonitorurl = 'wss://' . $res->server . ':' . $res->securePort . '/' . $res->monitorPath;
@@ -341,17 +343,19 @@ if the websocket client send something to the server then the evaluation is stop
         if ($userid == -1) {
             $userid = $USER->id;
             $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
-            if (! $vpl->is_visible()) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
-            if (! $vpl->is_submit_able()) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
-            if ($instance->example || ! $instance->evaluate) {
-                throw new Exception( get_string( 'notavailable' ) );
-            }
         } else {
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
+        }
+        if (! $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
+            if (! $vpl->is_visible()) {
+                throw new Exception( get_string('notavailable') );
+            }
+            if (! $vpl->is_submit_able()) {
+                throw new Exception( get_string('notavailable') );
+            }
+            if ($instance->example || ! $instance->evaluate) {
+                throw new Exception( get_string('notavailable') );
+            }
         }
         $compilationexecution = mod_vpl_edit::retrieve_result( $vpl, $userid);
         $ret = [
