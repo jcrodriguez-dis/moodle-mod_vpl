@@ -6,7 +6,7 @@
 #         Juan Vega Rodriguez
 #         Miguel Viera González
 
-# @vpl_script_description Using "go run" with first file
+# @vpl_script_description Using "go build -o" with first file
 # load common script and check programs
 
 . common_script.sh
@@ -18,5 +18,12 @@ if [ "$1" == "version" ] ; then
 	exit
 fi
 export GOPATH=~/
+mkdir bin &> /dev/null
+mkdir pkg &> /dev/null
+
 get_first_source_file go
-go build -o vpl_execution "$FIRST_SOURCE_FILE"
+go build -o go_program "$FIRST_SOURCE_FILE"
+cat common_script.sh > vpl_execution
+echo "export GOPATH=~/" >>vpl_execution
+echo "./go_program" >>vpl_execution
+chmod +x vpl_execution
