@@ -1,5 +1,5 @@
 *.txt text eol=lf
-*.java ext eol=lf
+*.java text eol=lf
 *.json text eol=lf
 *.js text eol=lf
 *.xml text eol=lf
