@@ -158,6 +158,7 @@ class mod_vpl_webservice extends external_api {
      * save function. save/submit the students files
      */
     public static function save_parameters() {
+        $descuserid = 'User ID to use (required mod/vpl:manage capability)';
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED),
                 'files' => new external_multiple_structure( new external_single_structure( array (
@@ -166,7 +167,7 @@ class mod_vpl_webservice extends external_api {
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
                 ) ), 'Files', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:manage capability)' , VALUE_DEFAULT, -1 )
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
     public static function save($id, $files = array(), $password = '', $userid = -1) {
@@ -203,10 +204,11 @@ class mod_vpl_webservice extends external_api {
      * open function. return the student's submitted files
      */
     public static function open_parameters() {
+        $descuserid = 'User ID to use (required mod/vpl:grade capability)';
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
+                'userid' => new external_value( PARAM_INT, $descuserid, VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
     public static function open($id, $password = '', $userid = -1) {
@@ -261,10 +263,11 @@ class mod_vpl_webservice extends external_api {
      * evaluate function. evaluate the student's submitted files
      */
     public static function evaluate_parameters() {
+        $descuserid = 'User ID to use (required mod/vpl:grade capability)';
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
         ), 'Parameters', VALUE_REQUIRED );
     }
     public static function evaluate($id, $password = ' ', $userid = -1) {
@@ -318,10 +321,11 @@ if the websocket client send something to the server then the evaluation is stop
      * get_result function. retrieve the result of the evaluation
      */
     public static function get_result_parameters() {
+        $descuserid = 'User ID to use (required mod/vpl:grade capability)';
         return new external_function_parameters( array (
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, 'User ID to use (required mod/vpl:grade capability)' , VALUE_DEFAULT, -1 )
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
         ) );
     }
     public static function get_result($id, $password = ' ', $userid = -1) {
