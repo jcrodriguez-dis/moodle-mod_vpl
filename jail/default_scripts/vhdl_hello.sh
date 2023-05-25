@@ -1,7 +1,7 @@
 #!/bin/bash
 # This file is part of VPL for Moodle
 # VHDL language Hello source code
-# Copyright 2018 Juan Carlos Rodríguez-del-Pino
+# Copyright 2023 Juan Carlos Rodríguez-del-Pino
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
@@ -19,6 +19,7 @@ begin
     begin
         write(hello, string'("Hello from VHDL language!"));
         writeline(output, hello);
+        wait;
     end process;
 end message;
 END_OF_FILE
