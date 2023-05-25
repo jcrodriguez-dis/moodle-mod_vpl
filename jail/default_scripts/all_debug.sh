@@ -46,6 +46,7 @@ do
 	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
+	rm vpl_wexecution vpl_execution vpl_webexecution 2> /dev/null
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		let "NG=NG+1"
@@ -57,6 +58,11 @@ do
 	elif [ -f vpl_execution ] ; then
 		echo -n " Compiled for run with TUI => removed"
 		rm vpl_execution
+		let "NNG=NNG+1"
+		LANGNGEN="$LANGNGEN $LANGUAGE"
+	elif [ -f vpl_webexecution ] ; then
+		echo -n " Compiled for run Web App => removed"
+		rm vpl_webexecution
 		let "NNG=NNG+1"
 		LANGNGEN="$LANGNGEN $LANGUAGE"
 	else
