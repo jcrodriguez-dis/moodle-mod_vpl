@@ -93,9 +93,9 @@ if [ "$(command -v jgrasp)" != "" ] ; then
 	mv vpl_execution vpl_wexecution
 elif [ "$(command -v ddd)" != "" ] ; then
 	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
-	mkdir .ddd
-	mkdir .ddd/sessions
-	mkdir .ddd/themes
+	mkdir .ddd &>/dev/null
+	mkdir .ddd/sessions &>/dev/null
+	mkdir .ddd/themes &>/dev/null
 	cat >.ddd/init <<END_OF_FILE
 Ddd*splashScreen: off
 Ddd*startupTips: off
