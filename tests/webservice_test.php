@@ -18,7 +18,7 @@
  * Unit tests VPL web service
  *
  * @package mod_vpl
- * @copyright  Juan Carlos Rodríguez-del-Pino
+ * @copyright Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 /**
  * Unit tests for VPL webservice.
  * @group mod_vpl
+ * @group mod_vpl_webservice
  * @covers \mod_vpl_webservice
  * @runTestsInSeparateProcesses
  */
@@ -101,6 +102,13 @@ class webservice_test extends base_test {
                 'functionname' => $fn) );
         }
         $this->setUser($this->students[1]);
+    }
+
+    /**
+     * Restore the use_xmlrpc plugin configuration setting
+     */
+    protected function tearDown(): void {
+        set_config('use_xmlrpc', FALSE, 'mod_vpl');
     }
 
     /**
@@ -411,7 +419,7 @@ class webservice_test extends base_test {
         mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
     }
 
-    private function internal_test_vpl_webservice_save($id, $files = array(), $password = '') {
+    private function internal_test_vpl_webservice_save($id, $files = array(), $password = '', $userid = -1) {
         $filesarray = array();
         foreach ($files as $name => $data) {
             $file = [];
@@ -425,8 +433,8 @@ class webservice_test extends base_test {
             }
             $filesarray[] = $file;
         }
-        mod_vpl_webservice::save($id, $filesarray, $password);
-        $this->internal_test_vpl_webservice_open($id, $files);
+        mod_vpl_webservice::save($id, $filesarray, $password, $userid);
+        $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $userid);
     }
 
     /**
@@ -450,6 +458,28 @@ class webservice_test extends base_test {
                 } catch (Exception $e) {
                     throw new \Exception("Saving submission " . $e);
                 }
+            }
+        }
+        $files = ['b.c' => '#include <content.h>\n'];
+        $password = $this->vpldefault->get_instance()->password;
+        $teacher = $this->editingteachers[0];
+        $this->setUser($teacher);
+        foreach (array_merge($this->students, $this->teachers) as $user) {
+            try {
+                $files['b.c'] = $files['b.c'] . $user->id;
+                $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id);
+            } catch (Exception $e) {
+                throw new \Exception("Saving submission " . $e);
+            }
+        }
+        $files = ['b.c' => '#include <content.h>\n'];
+        foreach (array_merge($this->students, $this->teachers) as $user) {
+            $this->setUser($user);
+            try {
+                $files['b.c'] = $files['b.c'] . $user->id;
+                $this->internal_test_vpl_webservice_open($id, $files, $password);
+            } catch (Exception $e) {
+                throw new \Exception("Saving submission " . $e);
             }
         }
         $this->assertIsObject(mod_vpl_webservice::save_parameters());
@@ -587,14 +617,17 @@ class webservice_test extends base_test {
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
         $this->assertTrue($added);
         $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
-        foreach ($this->students as $user) {
-            $this->setUser($user);
-            if ( $this->vpldefault->is_submit_able() ) {
-                try {
-                    $this->internal_test_vpl_webservice_save($id, $files, $password);
-                    mod_vpl_webservice::evaluate($id, $password);
-                } catch (Exception $e) {
-                    throw new \Exception("Evaluation " . $e);
+        foreach ([FALSE, TRUE] as $xmlrpc) {
+            set_config('use_xmlrpc', $xmlrpc, 'mod_vpl');
+            foreach ($this->students as $user) {
+                $this->setUser($user);
+                if ( $this->vpldefault->is_submit_able() ) {
+                    try {
+                        $this->internal_test_vpl_webservice_save($id, $files, $password);
+                        mod_vpl_webservice::evaluate($id, $password);
+                    } catch (Exception $e) {
+                        throw new \Exception("Evaluation " . $e);
+                    }
                 }
             }
         }
