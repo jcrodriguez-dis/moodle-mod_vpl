@@ -132,7 +132,7 @@ if ( isset($_POST['cancel']) ) {
                 'id' => $fromform->varid,
                 'vpl' => $vplid
         ) )) {
-            \mod_vpl\event\variation_deleted::log( $vpl, $fromform->varid );
+            \mod_vpl\event\variation_deleted::logvpl( $vpl, $fromform->varid );
             $DB->delete_records( VPL_ASSIGNED_VARIATIONS, array (
                     'variation' => $fromform->varid
             ) );
@@ -147,7 +147,7 @@ if ( isset($_POST['cancel']) ) {
             $fromform->description = $fromform->description0['text'];
             vpl_truncate_variations( $fromform );
             if ($vid = $DB->insert_record( VPL_VARIATIONS, $fromform )) {
-                \mod_vpl\event\variation_added::log( $vpl, $vid );
+                \mod_vpl\event\variation_added::logvpl( $vpl, $vid );
             } else {
                 throw new moodle_exception('error:recordnotinserted', 'mod_vpl', VPL_VARIATIONS);
             }
@@ -163,7 +163,7 @@ if ( isset($_POST['cancel']) ) {
                 $fromform->description = $fromform->{$fieldname}['text'];
                 vpl_truncate_variations( $fromform );
                 $DB->update_record( VPL_VARIATIONS, $fromform );
-                \mod_vpl\event\variation_updated::log( $vpl, $fromform->varid );
+                \mod_vpl\event\variation_updated::logvpl( $vpl, $fromform->varid );
                 vpl_redirect( $href, get_string('updated', '', $fromform->identification) );
             } else {
                 throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL_VARIATIONS);

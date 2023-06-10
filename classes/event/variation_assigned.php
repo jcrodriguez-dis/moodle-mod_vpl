@@ -35,15 +35,4 @@ class variation_assigned extends variation_base {
     public function get_description() {
         return $this->get_description_mod( 'assigned' );
     }
-    public static function log($vpl, $varid = null, $userid = null) {
-        $vplinstance = $vpl->get_instance();
-        $info = array (
-            'objectid' => $varid,
-            'context' => $vpl->get_context(),
-            'relateduserid' => $userid,
-            'courseid' => $vplinstance->course,
-            'other' => array('vplid' => $vplinstance->id),
-        );
-        parent::log( $info );
-    }
 }

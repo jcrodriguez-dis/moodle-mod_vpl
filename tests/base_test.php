@@ -302,7 +302,6 @@ class base_test extends \advanced_testcase {
         // Add a submission.
         $this->setUser($this->students[0]);
         $userid = $this->students[0]->id;
-        $this->vplvariations->get_variation($userid);
         $files = array(
                 'a.c' => "int main(){\nprintf(\"Hola3\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
@@ -316,7 +315,6 @@ class base_test extends \advanced_testcase {
         // Add other submission.
         $this->setUser($this->students[1]);
         $userid = $this->students[1]->id;
-        $this->vplvariations->get_variation($userid);
         $files = array(
                 'a.c' => "int main(){\nprintf(\"Hola4\");\n}",
                 'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",

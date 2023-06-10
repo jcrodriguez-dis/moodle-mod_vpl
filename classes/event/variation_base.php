@@ -39,18 +39,17 @@ class variation_base extends base {
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = VPL_VARIATIONS;
     }
-    public static function log($vpl, $varid = null) {
-        if (is_array($vpl)) {
-            $info = $vpl;
-        } else {
-            $vplinstance = $vpl->get_instance();
-            $info = array (
-                'objectid' => $varid,
-                'context' => $vpl->get_context(),
-                'courseid' => $vplinstance->course,
-                'other' => array('vplid' => $vplinstance->id),
-            );
-        }
+    public static function logvpl($vpl, $varid, $userid = null) {
+        global $USER;
+        $vplinstance = $vpl->get_instance();
+        $info = [
+            'objectid' => $varid,
+            'context' => $vpl->get_context(),
+            'courseid' => $vplinstance->course,
+            'userid' => $USER->id,
+            'relateduserid' => $userid,
+            'other' => array('vplid' => $vplinstance->id),
+        ];
         parent::log( $info );
     }
     public function get_url() {
