@@ -192,7 +192,8 @@ class mod_vpl {
                     ) )) {
                 throw new moodle_exception('invalidcourseid');
             }
-            if (! $this->cm = get_coursemodule_from_instance( VPL, $this->instance->id, $this->course->id )) {
+            $this->cm = get_coursemodule_from_instance( VPL, $this->instance->id, $this->course->id );
+            if (! ($this->cm)) {
                 vpl_notice( get_string( 'invalidcoursemodule', 'error' ) . ' VPL id=' . $a );
                 // Don't stop on error. This let delete a corrupted course.
             } else {
@@ -892,7 +893,7 @@ class mod_vpl {
      * Get last user submission
      *
      * @param int $userid
-     * @return FALSE/object
+     * @return false/object
      *
      */
     public function last_user_submission($userid) {
@@ -1915,15 +1916,10 @@ class mod_vpl {
         }
         $varassigned = $DB->get_record(
                 VPL_ASSIGNED_VARIATIONS,
-                array (
-                        'vpl' => $this->instance->id,
-                        'userid' => $userid
-                ) );
+                ['vpl' => $this->instance->id, 'userid' => $userid]
+            );
         if ($varassigned === false) { // Variation not assigned.
-            $variations = $DB->get_records( VPL_VARIATIONS,
-                    array (
-                            'vpl' => $this->instance->id
-                    ) );
+            $variations = $DB->get_records( VPL_VARIATIONS, ['vpl' => $this->instance->id]);
             if (count( $variations ) == 0) { // No variation set.
                 return false;
             }
@@ -1937,7 +1933,7 @@ class mod_vpl {
             if (! $DB->insert_record( VPL_ASSIGNED_VARIATIONS, $assign )) {
                 throw new moodle_exception('invalidcoursemodule');
             }
-            \mod_vpl\event\variation_assigned::log( $this, $variation->id, $userid);
+            \mod_vpl\event\variation_assigned::logvpl( $this, $variation->id, $userid);
         } else {
             $variation = $DB->get_record(
                     VPL_VARIATIONS,

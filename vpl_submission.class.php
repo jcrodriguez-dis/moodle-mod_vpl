@@ -563,16 +563,15 @@ class mod_vpl_submission {
 
     /**
      *
-     * @var array of users(graders) objects
+     * @var array cache of users(graders) objects
      */
     protected static $graders = array ();
 
     /**
      * Return user from DB with cache (automatic grader info for $id===0)
      *
-     * @param
-     *            $id
-     * @return FALSE/user object
+     * @param $id Grader id (user id record) or 0 for automatic grader
+     * @return false/user object
      */
     public static function get_grader($id) {
         global $DB;
