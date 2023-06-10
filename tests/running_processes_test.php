@@ -87,6 +87,7 @@ class running_processes_test extends base_test {
     protected function tearDown(): void {
         global $DB;
         $DB->delete_records(self::TABLE);
+        parent::tearDown();
     }
 
     protected function check_record($expected, $actual) {

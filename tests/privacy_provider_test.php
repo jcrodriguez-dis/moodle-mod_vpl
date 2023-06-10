@@ -45,6 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * Unit tests for \mod_vpl\privacy\provider class.
  *
  * @group mod_vpl
+ * @group mod_vpl_privacy_provider
  * @covers \mod_vpl\privacy\provider
  */
 class privacy_provider_test extends base_test {
@@ -63,6 +64,7 @@ class privacy_provider_test extends base_test {
         parent::setUp();
         $this->setupinstances();
         $this->provider = new testable_provider();
+        $this->setUser($this->students[2]);
         $res = $this->vplvariations->get_variation($this->students[2]->id);
         if ($res === false) {
             $this->fail();
@@ -80,10 +82,17 @@ class privacy_provider_test extends base_test {
         $gradeinfo->grade = 5;
         $gradeinfo->comments = '- Well done!';
         $sub = new mod_vpl_submission($this->vplonefile, $submissionid);
-        $sub->set_grade($gradeinfo);
+        if (! $sub->set_grade($gradeinfo)) {
+            $this->fail($error);
+        }
         $subrecord = $this->vplteamwork->last_user_submission($this->students[1]->id);
-        $sub = new mod_vpl_submission($this->vplonefile, $subrecord);
-        $sub->set_grade($gradeinfo);
+        if ($subrecord === false) {
+            $this->fail($error);
+        }
+        $sub = new mod_vpl_submission($this->vplteamwork, $subrecord);
+        if (! $sub->set_grade($gradeinfo)) {
+            $this->fail($error);
+        }
     }
 
     /**
@@ -124,7 +133,7 @@ class privacy_provider_test extends base_test {
             $userid = $users[$i]->id;
             $vpls = $usersvpls[$i];
             $contexts = $this->provider->get_contexts_for_userid($userid);
-            $this->assertCount(count($vpls), $contexts, "User {$users[$i]->username}");
+            $this->assertEquals(count($vpls), $contexts->count(), "User {$users[$i]->username}");
             $this->check_vpls_contexts($vpls, $contexts, "User {$users[$i]->username}");
         }
     }
@@ -215,6 +224,7 @@ class privacy_provider_test extends base_test {
         $this->assertEquals($gradestr, $data->grade);
 
         $data = $writer->get_data([get_string('privacy:variationpath', 'vpl')]);
+        $this->setUser($this->students[2]);
         $userid = $this->students[2]->id;
         $res = $this->vplvariations->get_variation($userid);
         $this->assertEquals($res->vpl, $data->vpl);
@@ -352,7 +362,7 @@ class privacy_provider_test extends base_test {
      * Method to test provider::delete_data_for_user.
      */
     public function test_delete_data_for_user() {
-        // The editing teacher 0 graded the submission of student 1. Teacher 0 must goes first to simplify tests.
+        // The editingteacher0 graded the submission of student 1. editingteacher0 must goes first to simplify tests.
         $users = [$this->editingteachers[0], $this->students[0], $this->students[1], $this->students[2],  $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplteamwork],
@@ -361,42 +371,54 @@ class privacy_provider_test extends base_test {
             [$this->vplvariations, $this->vploverrides],
             []
         ];
-
+        for ($i = 0; $i < count($users); $i++) {
+            $userid = $users[$i]->id;
+            $vpls = $usersvpls[$i];
+            $contexts = $this->provider->get_contexts_for_userid($userid);
+            $this->assertEquals(count($vpls), $contexts->count(), "User {$users[$i]->username}");
+            $this->check_vpls_contexts($vpls, $contexts, "User {$users[$i]->username}");
+        }
         // Remove first context of each user.
         for ($n = 0; $n < count($users); $n++) {
-            $contexts = array();
+            $contextids = [];
+            $user = $users[$n];
             if (count($usersvpls[$n]) > 0) {
-                $contexts = array($usersvpls[$n][0]->get_context()->id);
+                $contextids = [$usersvpls[$n][0]->get_context()->id];
                 array_splice($usersvpls[$n], 0, 1);
+                $approved = new \core_privacy\local\request\approved_contextlist($user, 'mod_vpl', $contextids);
+                $this->assertEquals(1, $approved->count(), "User {$user->username}");
+                $userid = $user->id;
+                $ncontextsbefore = $this->provider->get_contexts_for_userid($userid)->count();
+                $this->provider->delete_data_for_user($approved);
+                $ncontextsafter = $this->provider->get_contexts_for_userid($userid)->count();
+                $this->assertEquals($ncontextsbefore - 1, $ncontextsafter, "User {$user->username}");
             }
-            $approved = new \core_privacy\local\request\approved_contextlist($users[$n], 'mod_vpl', $contexts);
-
-            $this->provider->delete_data_for_user($approved);
 
             for ($i = 0; $i < count($users); $i++) {
                 $userid = $users[$i]->id;
                 $vpls = $usersvpls[$i];
                 $contexts = $this->provider->get_contexts_for_userid($userid);
-                $this->assertCount(count($vpls), $contexts, "User {$users[$i]->username}");
+                $this->assertEquals(count($vpls), $contexts->count(), "User {$users[$i]->username}");
                 $this->check_vpls_contexts($vpls, $contexts, "User {$users[$i]->username}");
             }
         }
         // Remove all context of each user.
         for ($n = 0; $n < count($users); $n++) {
-            $contexts = array();
+            $contextids = [];
+            $info = "";
             foreach ($usersvpls[$n] as $vpl) {
-                $contexts[] = $vpl->get_context()->id;
+                $contextids[] = $vpl->get_context()->id;
+                $info .= $vpl->get_instance()->name . " | ";
             }
-            $usersvpls[$n] = [];
-            $approved = new \core_privacy\local\request\approved_contextlist($users[$n], 'mod_vpl', $contexts);
-
+            $approved = new \core_privacy\local\request\approved_contextlist($users[$n], 'mod_vpl', $contextids);
+            $this->assertEquals(count($usersvpls[$n]), $approved->count(), "User {$users[$n]->username} {$info}");
             $this->provider->delete_data_for_user($approved);
-
+            $usersvpls[$n] = [];
             for ($i = 0; $i < count($users); $i++) {
                 $userid = $users[$i]->id;
                 $vpls = $usersvpls[$i];
                 $contexts = $this->provider->get_contexts_for_userid($userid);
-                $this->assertCount(count($vpls), $contexts, "User {$users[$i]->username}");
+                $this->assertEquals(count($vpls), $contexts->count(), "User {$users[$i]->username}");
                 $this->check_vpls_contexts($vpls, $contexts, "User {$users[$i]->username}");
             }
         }

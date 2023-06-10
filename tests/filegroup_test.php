@@ -87,6 +87,7 @@ class filegroup_test extends \advanced_testcase {
      */
     protected function tearDown(): void {
         vpl_delete_dir($this->basedir);
+        parent::tearDown();
     }
 
     /**

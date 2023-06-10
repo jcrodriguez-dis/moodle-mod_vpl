@@ -52,6 +52,7 @@ class util_lock_test extends \advanced_testcase {
      */
     protected function tearDown(): void {
         $this->assertTrue(vpl_delete_dir($this->basedir));
+        parent::tearDown();
     }
     /**
      * Method to test creating locks

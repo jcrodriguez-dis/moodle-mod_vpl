@@ -108,7 +108,8 @@ class webservice_test extends base_test {
      * Restore the use_xmlrpc plugin configuration setting
      */
     protected function tearDown(): void {
-        set_config('use_xmlrpc', FALSE, 'mod_vpl');
+        set_config('use_xmlrpc', false, 'mod_vpl');
+        parent::tearDown();
     }
 
     /**
@@ -617,7 +618,7 @@ class webservice_test extends base_test {
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
         $this->assertTrue($added);
         $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
-        foreach ([FALSE, TRUE] as $xmlrpc) {
+        foreach ([false, true] as $xmlrpc) {
             set_config('use_xmlrpc', $xmlrpc, 'mod_vpl');
             foreach ($this->students as $user) {
                 $this->setUser($user);
