@@ -497,7 +497,7 @@ define(
             var shortTimeout = 20;
             var longTimeout = 100;
             var numberDelayed = 0;
-            VPLUtil.delay = function(id, func, arg1, arg2) {
+            var internalDelay = function(timeout, id, func, arg1, arg2) {
                 if (typeof delayedActions[id] != 'undefined') {
                     clearTimeout(delayedActions[id]);
                     numberDelayed--;
@@ -507,25 +507,19 @@ define(
                     numberDelayed--;
                     func(arg1, arg2);
                     delete delayedActions[id];
-                }, shortTimeout);
+                }, timeout);
+            };
+            VPLUtil.delay = function(id, func, arg1, arg2) {
+                internalDelay(shortTimeout, id, func, arg1, arg2);
             };
             VPLUtil.longDelay = function(id, func, arg1, arg2) {
-                if (typeof delayedActions[id] != 'undefined') {
-                    clearTimeout(delayedActions[id]);
-                    numberDelayed--;
-                }
-                numberDelayed++;
-                delayedActions[id] = setTimeout(function() {
-                    numberDelayed--;
-                    func(arg1, arg2);
-                    delete delayedActions[id];
-                }, longTimeout);
+                internalDelay(longTimeout, id, func, arg1, arg2);
             };
             var setAfterTimeout = function(id, func, arg1, arg2) {
                 if (typeof afterAllActions[id] != 'undefined') {
                     clearTimeout(afterAllActions[id]);
                 }
-                return setTimeout(function() {
+                afterAllActions[id] = setTimeout(function() {
                         if (numberDelayed > 0) {
                             afterAllActions[id] = setAfterTimeout(id, func, arg1, arg2);
                         } else {
@@ -535,7 +529,7 @@ define(
                     }, longTimeout);
             };
             VPLUtil.afterAll = function(id, func, arg1, arg2) {
-                afterAllActions[id] = setAfterTimeout(id, func, arg1, arg2);
+                setAfterTimeout(id, func, arg1, arg2);
             };
         })();
         VPLUtil.iconModified = function() {
@@ -1182,7 +1176,7 @@ define(
             /**
              * Generate attribute href for the editor in sh
              * @param {int} i Index of sh
-             * @return {strng} href
+             * @return {string} href
              */
             function getHref(i) {
                 if (typeof sh[i].getTagId === 'undefined') {
@@ -1427,20 +1421,24 @@ define(
             var files = [];
             var results = [];
             var shs = [];
+            var nFileGroupHighlighter = 0;
             /**
              * Constructor for submission highlighter
              * @param {Array} files Files to show highlighted
              * @param {Array} results Output
              */
-            function SubmissionHighlighter(files, results) {
-                var self = this;
-                this.files = files;
-                this.results = results;
-                setTimeout(function() {
-                              self.highlight();
-                           }, 10);
+            function FileGroupHighlighter(files, results) {
+                this.files = files.slice();
+                this.results = results.slice();
+                files = [];
+                results = [];
+                this.shFiles = [];
+                this.shFileNames = [];
+                nFileGroupHighlighter++;
+                this.highlight();
             }
-            SubmissionHighlighter.prototype.highlightBlockly = function(preid) {
+
+            FileGroupHighlighter.prototype.highlightBlockly = function(preid) {
                 VPLUtil.loadScript(['../editor/blockly/blockly_compressed.js',
                     '../editor/blockly/msg/js/en.js',
                     '../editor/blockly/blocks_compressed.js']
@@ -1470,7 +1468,8 @@ define(
                     tag.html(h);
                 });
             };
-            SubmissionHighlighter.prototype.highlight = function() {
+
+            FileGroupHighlighter.prototype.highlight = function() {
                 var self = this;
                 var needAce = false;
                 var files = this.files;
@@ -1490,16 +1489,21 @@ define(
                         });
                     return;
                 }
-                var results = this.results;
-                var shFiles = [];
-                var shFileNames = [];
-                for (let i = 0; i < files.length; i++) {
-                    let file = files[i];
-                    let preid = 'code' + file.tagId;
-                    if (VPLUtil.isBlockly(file.fileName)) {
-                        self.highlightBlockly(preid);
-                        continue;
-                    }
+                VPLUtil.delay("FFGH." + nFileGroupHighlighter, function() {
+                    self.highlightStep(0);
+                });
+            };
+
+            FileGroupHighlighter.prototype.highlightStep = function(pos) {
+                if (pos >= this.files.length) {
+                    this.resultStep(0);
+                    return;
+                }
+                let file = this.files[pos];
+                let preid = 'code' + file.tagId;
+                if (VPLUtil.isBlockly(file.fileName)) {
+                    this.highlightBlockly(preid);
+                } else {
                     var ext = VPLUtil.fileExtension(file.fileName);
                     var lang = VPLUtil.langType(ext);
                     $('#' + preid).show();
@@ -1522,16 +1526,28 @@ define(
                         return this.vplTagId;
                     };
                     sh.vplTagId = file.tagId;
-                    shFiles.push(sh);
-                    shFileNames.push(file.fileName);
+                    this.shFiles.push(sh);
+                    this.shFileNames.push(file.fileName);
                     shs[file.tagId] = sh;
                 }
-                for (var ri = 0; ri < results.length; ri++) {
-                    var tag = document.getElementById(results[ri].tagId);
-                    var text = tag.textContent || tag.innerText;
-                    tag.innerHTML = VPLUtil.processResult(text, shFileNames, shFiles,
-                                                           results[ri].noFormat, results[ri].folding);
+                var self = this;
+                VPLUtil.delay(preid + ".next", function() {
+                    self.highlightStep(pos + 1);
+                });
+            };
+
+            FileGroupHighlighter.prototype.resultStep = function(pos) {
+                if (pos >= this.results.length) {
+                    return;
                 }
+                var result = this.results[pos];
+                var tag = document.getElementById(this.result.tagId);
+                var text = tag.textContent || tag.innerText;
+                tag.innerHTML = VPLUtil.processResult(text, this.shFileNames, this.shFiles,
+                    result.noFormat, result.folding);
+                VPLUtil.delay(tag + ".next", function() {
+                    self.resultStep(pos + 1);
+                });
             };
 
             VPLUtil.addResults = function(tagId, noFormat, folding) {
@@ -1547,9 +1563,7 @@ define(
                  });
             };
             VPLUtil.syntaxHighlight = function() {
-                new SubmissionHighlighter(files, results);
-                files = [];
-                results = [];
+                new FileGroupHighlighter(files, results);
             };
             VPLUtil.flEventHandler = function(event) {
                 var tag = event.target.getAttribute('href').substring(1);
