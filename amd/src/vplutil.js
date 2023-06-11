@@ -1540,8 +1540,9 @@ define(
                 if (pos >= this.results.length) {
                     return;
                 }
+                var self = this;
                 var result = this.results[pos];
-                var tag = document.getElementById(this.result.tagId);
+                var tag = document.getElementById(result.tagId);
                 var text = tag.textContent || tag.innerText;
                 tag.innerHTML = VPLUtil.processResult(text, this.shFileNames, this.shFiles,
                     result.noFormat, result.folding);
