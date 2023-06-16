@@ -99,7 +99,7 @@ function vpl_call_service($url, $fun, $request = '') {
         return $error;
     } else {
         curl_close( $ch );
-        $res = json_decode( $rawresponse );
+        $res = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
         vpl_call_print($fun, $res);
         return $res;
     }

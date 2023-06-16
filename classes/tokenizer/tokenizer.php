@@ -578,7 +578,7 @@ class tokenizer extends tokenizer_base {
         $content = preg_replace('#(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)|([\s\t]//.*)|(^//.*)#', '', $data);
         $content = preg_replace("/(^[\r\n]*|[\r\n]+)[\s\t]*[\r\n]+/", "\n", $content);
 
-        $jsonobj = json_decode($content);
+        $jsonobj = json_decode($content, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
         assertf::assert(isset($jsonobj), $filename, 'file ' . $filename . ' is empty');
         return $jsonobj;
     }

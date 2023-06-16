@@ -68,7 +68,7 @@ class webservice_test extends base_test {
             return $error;
         } else {
             curl_close( $ch );
-            return json_decode( $rawresponse );
+            return json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
         }
     }
 

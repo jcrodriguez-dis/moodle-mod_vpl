@@ -94,7 +94,7 @@ class vpl_jailserver_manager {
             curl_close( $ch );
             $error = '';
             if ($rawresponse[0] == '{') {
-                $response = json_decode( $rawresponse );
+                $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
                     $error = 'JSONRPC response is fault: ' . json_last_error_msg();
                 } else {

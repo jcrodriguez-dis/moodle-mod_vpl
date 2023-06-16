@@ -33,7 +33,7 @@ $result->preferences = (object)[];
 try {
     require_login();
     $rawdata = file_get_contents( "php://input" );
-    $actiondata = json_decode( $rawdata );
+    $actiondata = json_decode( $rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE );
     if ( isset($actiondata->fontSize) ) {
         $fontsize = (int) $actiondata->fontSize;
         $fontsize = min(max(1, $actiondata->fontSize), 48);
