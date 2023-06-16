@@ -303,20 +303,25 @@ class mod_vpl_edit {
      * @param mod_vpl $vpl
      * @param int $userid
      * @param int $processid
-     * @throws Exception
+     * @return string The message of not canceled or empty string
      */
     public static function cancel($vpl, $userid, int $processid) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );
         if (! $lastsub && ! $example) {
-            throw new Exception( get_string( 'nosubmission', VPL ) );
+            return get_string( 'nosubmission', VPL );
         }
-        if ($example) {
-            $submission = new mod_vpl_example_CE( $vpl );
-        } else {
-            $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+        try {
+            if ($example) {
+                $submission = new mod_vpl_example_CE( $vpl );
+            } else {
+                $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+            }
+            $submission->cancelProcess($processid);
+        } catch ( Exception $e ) {
+            return $e->getMessage();
         }
-        $submission->cancelProcess($processid);
+        return '';
     }
 
     /**
