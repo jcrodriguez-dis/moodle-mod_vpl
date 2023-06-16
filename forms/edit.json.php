@@ -58,7 +58,7 @@ try {
         throw new Exception( "Ajax POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawdatasize)" );
     }
     \mod_vpl\util\phpconfig::increase_memory_limit();
-    $actiondata = json_decode( $rawdata );
+    $actiondata = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE );
     if (! $vpl->is_submit_able()) {
         throw new Exception( get_string( 'notavailable' ) );
     }
@@ -126,7 +126,7 @@ try {
             $result->response = mod_vpl_edit::retrieve_result( $vpl, $userid, $actiondata->processid );
             break;
         case 'cancel':
-            $result->response = mod_vpl_edit::cancel( $vpl, $userid, $actiondata->processid );
+            $result->response->error = mod_vpl_edit::cancel( $vpl, $userid, $actiondata->processid );
             break;
         case 'getjails':
             $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
@@ -138,11 +138,16 @@ try {
         default:
             throw new Exception( 'ajax action error: ' + $action );
     }
-    $duedate = $vpl->get_effective_setting('duedate', $userid);
-    $timeleft = $duedate - time();
-    $hour = 60 * 60;
-    if ( $duedate > 0 && $timeleft > -$hour ) {
-        $result->response->timeLeft = $timeleft;
+    if ($result->response === null) {
+        $result->success = false;
+        $result->error = "Response is null for $action";
+    } else {
+        $duedate = $vpl->get_effective_setting('duedate', $userid);
+        $timeleft = $duedate - time();
+        $hour = 60 * 60;
+        if ( $duedate > 0 && $timeleft > -$hour ) {
+            $result->response->timeLeft = $timeleft;
+        }
     }
 } catch ( Exception $e ) {
     $result->success = false;

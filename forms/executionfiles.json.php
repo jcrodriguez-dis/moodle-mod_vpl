@@ -51,7 +51,7 @@ try {
             'action' => $action
     ) ) );
     echo $OUTPUT->header(); // Send headers.
-    $actiondata = json_decode( file_get_contents( 'php://input' ) );
+    $actiondata = json_decode(file_get_contents( 'php://input' ), null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     switch ($action) {
         case 'save' :
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
@@ -84,7 +84,7 @@ try {
             $result->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );
             break;
         case 'cancel' :
-            $result->response = mod_vpl_edit::cancel( $vpl, $USER->id );
+            $result->response->error = mod_vpl_edit::cancel( $vpl, $USER->id );
             break;
         case 'getjails' :
             $result->response->servers = vpl_jailserver_manager::get_https_server_list( $vpl->get_instance()->jailservers );
