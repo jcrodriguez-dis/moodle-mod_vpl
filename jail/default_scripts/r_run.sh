@@ -8,13 +8,12 @@
 # @vpl_script_description Using default R
 # load common script and check programs
 . common_script.sh
-check_program Rscript
+check_program R
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "R --version | head -n3" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version 3
 fi
+
+check_program Rscript
 #Select first file
 get_first_source_file r R
 #compile

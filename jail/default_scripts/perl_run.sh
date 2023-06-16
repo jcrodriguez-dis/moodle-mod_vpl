@@ -10,10 +10,7 @@
 . common_script.sh
 check_program perl
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "perl -v | head -n5" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v 5
 fi
 get_source_files perl prl pl pm
 IFS=$'\n'

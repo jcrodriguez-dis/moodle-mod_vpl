@@ -9,10 +9,7 @@
 . common_script.sh
 check_program clisp
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "clisp --version | head -n1" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version 1
 fi
 get_first_source_file lisp lsp
 cat common_script.sh > vpl_execution

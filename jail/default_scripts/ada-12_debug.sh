@@ -15,7 +15,7 @@ if [ "$1" == "version" ] ; then
 fi
 
 get_first_source_file adb
-
+exit
 # compile
 gnat make -gnat12 -gnatW8 -q -g -o program "$FIRST_SOURCE_FILE"
 if [ -f program ] ; then

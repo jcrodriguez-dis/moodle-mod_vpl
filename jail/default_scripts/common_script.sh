@@ -54,7 +54,9 @@ function wait_end {
 # $1: version command line switch (e.g. -version)
 # $2: number of lines to show. Default 2
 function get_program_version {
+	local OUTPUTFILE
 	local nhl
+	echo $PROGRAM $1 $2
 	if [ "$2" == "" ] ; then
 		nhl=2
 	else
@@ -65,7 +67,9 @@ function get_program_version {
 	if [ "$1" == "unknown" ] ; then
 		echo "echo \"$PROGRAM version unknown\"" >> vpl_execution
 	else
-		echo "$PROGRAM $1 | head -n $nhl" >> vpl_execution
+		OUTPUTFILE=.stdoutput
+		echo "$PROGRAM $1 1> $OUTPUTFILE 2>/dev/null < /dev/null" >> vpl_execution
+		echo "cat $OUTPUTFILE | head -n $nhl" >> vpl_execution
 	fi
 	chmod +x vpl_execution
 	exit

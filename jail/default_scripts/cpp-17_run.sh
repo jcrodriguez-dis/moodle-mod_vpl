@@ -10,10 +10,7 @@
 . common_script.sh
 check_program g++
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "g++ --version | head -n2" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi 
 get_source_files cpp C
 # Generate file with source files

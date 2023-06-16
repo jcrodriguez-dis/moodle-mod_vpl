@@ -10,13 +10,9 @@
 . common_script.sh
 check_program gnat
 
-# compile
 if [ "$1" == "version" ] ; then
-    echo "#!/bin/bash" > vpl_execution
-    echo "gnat 1>.aux 2>/dev/null" >> vpl_execution
-    echo "cat .aux | head -n2" >> vpl_execution
-    chmod +x vpl_execution
-else
-    get_first_source_file adb
-    gnat make -gnatW8 -q -o vpl_execution "$FIRST_SOURCE_FILE"
+    get_program_version -v
 fi
+get_first_source_file adb
+# compile
+gnat make -gnat2012 -gnatW8 -q -o vpl_execution "$FIRST_SOURCE_FILE"

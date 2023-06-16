@@ -10,14 +10,11 @@
 . common_script.sh
 check_program gcc
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "gcc --version | head -n2" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi 
 get_source_files c
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Compile
-eval gcc -std=c11 -pedantic -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil 
+gcc -std=c11 -pedantic -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil 
 rm .vpl_source_files

@@ -10,10 +10,7 @@
 . common_script.sh
 check_program gfortran
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "gfortran --version | head -n2" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi 
 
 get_source_files f for f90 f95 f03

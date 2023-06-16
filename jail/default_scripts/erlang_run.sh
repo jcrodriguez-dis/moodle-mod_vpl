@@ -9,13 +9,10 @@
 #load common script and check programs
 . common_script.sh
 check_program erl
-check_program escript
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "erl +V" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version +V
 fi
+check_program escript
 get_first_source_file erl
 erlc "$FIRST_SOURCE_FILE" < /dev/null
 cat common_script.sh > vpl_execution

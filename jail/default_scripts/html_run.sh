@@ -13,10 +13,7 @@
 check_program php php5
 PHP=$PROGRAM
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "$PHP -v" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v
 fi
 
 compile_typescript

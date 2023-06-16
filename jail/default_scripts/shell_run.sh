@@ -9,10 +9,7 @@
 # load common script and check programs
 . common_script.sh
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "bash --version | head -n3" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version 3
 fi
 get_first_source_file sh
 cat common_script.sh > vpl_execution

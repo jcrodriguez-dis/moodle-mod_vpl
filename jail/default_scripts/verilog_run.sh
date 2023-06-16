@@ -10,10 +10,7 @@
 . common_script.sh
 check_program iverilog
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "iverilog -V | head -n3" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -V 3
 fi
 get_source_files v
 generate_file_of_files .vpl_source_files NOQUOTE

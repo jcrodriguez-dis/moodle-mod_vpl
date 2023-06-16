@@ -10,10 +10,7 @@
 . common_script.sh
 check_program bash
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "bash --version | head -n3" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version 3
 fi
 cp ./common_script.sh vpl_execution
 cat vpl_environment.sh >> vpl_execution

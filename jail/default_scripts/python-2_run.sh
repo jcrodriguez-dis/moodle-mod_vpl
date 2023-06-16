@@ -10,10 +10,7 @@
 . common_script.sh
 check_program python2
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "python2 --version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi
 get_first_source_file py
 cat common_script.sh > vpl_execution

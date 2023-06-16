@@ -32,13 +32,11 @@ function hasMain {
 . common_script.sh
 
 check_program javac
-check_program java
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "javac -version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -version
 fi 
+
+check_program java
 
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then

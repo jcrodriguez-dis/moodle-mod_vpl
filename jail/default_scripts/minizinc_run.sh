@@ -11,10 +11,7 @@
 . common_script.sh
 check_program minizinc mzn-fzn
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "$PROGRAM --version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi
 get_first_source_file mzn
 if [ "$PROGRAM" == "minizinc" ] ; then

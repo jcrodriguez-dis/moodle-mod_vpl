@@ -12,13 +12,9 @@ check_program fpc gpc
 if [ "$1" == "version" ] ; then
 	PROPATH=$(command -v fpc 2>/dev/null)
 	if [ "$PROGRAM" == "gpc" ] ; then
-		echo "#!/bin/bash" > vpl_execution
-		echo "gpc --version" >> vpl_execution
-		chmod +x vpl_execution
+		get_program_version --version
 	else
-		echo "#!/bin/bash" > vpl_execution
-		echo "fpc -h | head -n2" >> vpl_execution
-		chmod +x vpl_execution
+		get_program_version -h
 	fi
 	exit 0;
 fi 

@@ -10,10 +10,7 @@
 . common_script.sh
 check_program nodejs
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "nodejs -v" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v
 fi
 get_first_source_file js
 cat common_script.sh > vpl_execution

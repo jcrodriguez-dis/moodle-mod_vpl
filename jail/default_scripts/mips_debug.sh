@@ -8,6 +8,9 @@
 # @vpl_script_description MIPS R2000/R3000 using xspim emulator 
 # load common script and check programs
 . common_script.sh
+if [ "$1" == "version" ] ; then
+	exit
+fi
 check_program xspim
 get_source_files s
 cat common_script.sh > vpl_wexecution

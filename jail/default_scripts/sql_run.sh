@@ -11,7 +11,7 @@
 check_program sqlite3
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
-	echo "echo -n \"sqlite3 \"" >> vpl_execution
+	echo "echo -n \"SQLite3 \"" >> vpl_execution
 	echo "sqlite3 -version" >> vpl_execution
 	chmod +x vpl_execution
 	exit

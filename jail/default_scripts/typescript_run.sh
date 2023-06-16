@@ -9,14 +9,10 @@
 # load common script and check programs
 . common_script.sh
 check_program tsc
-check_program nodejs
-
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "tsc -v" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v
 fi
+check_program nodejs
 export TERM=dump
 get_source_files ts
 SAVEIFS=$IFS

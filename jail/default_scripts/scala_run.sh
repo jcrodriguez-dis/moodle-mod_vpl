@@ -13,10 +13,7 @@
 check_program scala
 check_program scalac
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "scalac -version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -version
 fi
 get_source_files scala
 # Generate file with source files

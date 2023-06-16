@@ -11,10 +11,7 @@
 check_program mono
 check_program csc mcs
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "$PROGRAM --version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version --version
 fi 
 [ "$PROGRAM" == "mcs" ] && export PKGDOTNET="-pkg:dotnet"
 get_source_files cs

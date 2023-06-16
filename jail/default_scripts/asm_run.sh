@@ -10,11 +10,9 @@
 . common_script.sh
 check_program nasm
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "nasm -v" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version -v
 fi
+
 PBITS=32
 uname -a | grep "x86_64" &> /dev/null
 if [ "$?" == "0" ] ; then

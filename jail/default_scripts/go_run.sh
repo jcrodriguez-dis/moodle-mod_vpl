@@ -12,10 +12,7 @@
 . common_script.sh
 check_program go
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "go version" >> vpl_execution
-	chmod +x vpl_execution
-	exit
+	get_program_version version
 fi
 export GOPATH=~/
 mkdir bin &> /dev/null

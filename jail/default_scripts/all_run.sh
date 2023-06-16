@@ -5,9 +5,10 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Run a "hello world" program of all programming languages available
+# @vpl_script_description Run a "hello world" program for each programming language available
 
-cp common_script.sh common_script.sav
+COMMON_SCRIPT_SAVED=.common_script.sav
+cp common_script.sh $COMMON_SCRIPT_SAVED
 cat common_script.sh > all_execute
 . common_script.sh
 #Remove student files
@@ -27,7 +28,7 @@ do
 	echo -n "$LANGUAGE:"
 	rm .curerror &>/dev/null
 	. $HELLOSCRIPT &>.curerror
-	cp common_script.sav common_script.sh
+	cp $COMMON_SCRIPT_SAVED common_script.sh
 	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
