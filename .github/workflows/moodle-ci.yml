@@ -119,7 +119,7 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        if: ${{ always() }}
+        if: ${{ matrix.moodle-branch > 'MOODLE_4' || matrix.moodle-branch == 'master' }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
