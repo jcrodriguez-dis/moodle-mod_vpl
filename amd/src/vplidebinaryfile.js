@@ -80,6 +80,9 @@ define(
             this.close = function() {
                 this.setOpen(false);
             };
+            this.langSelection = function() {
+                this.setLang('Binary');
+            };
         };
     }
 );

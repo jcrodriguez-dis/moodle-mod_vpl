@@ -92,6 +92,7 @@ class vpl_editor_util {
             <div id="vpl_tabs_scroll">
                 <ul id="vpl_tabs_ul"></ul>
             </div>
+            <span class="vpl_ide_status"></span>
         </div>
         <div id="vpl_results" class="vpl_ide_results">
             <div id="vpl_results_accordion"></div>

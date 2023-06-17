@@ -655,6 +655,9 @@ define(
                 }
                 return data;
             };
+            this.langSelection = function() {
+                this.setLang('Blockly');
+            };
         };
     }
 );

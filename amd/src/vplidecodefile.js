@@ -175,11 +175,9 @@ define(
                     return;
                 }
                 var ext = VPLUtil.fileExtension(this.getFileName());
-                var lang = 'text';
-                if (ext !== '') {
-                    lang = VPLUtil.langType(ext);
-                }
+                var lang = (ext !== '') ? VPLUtil.langType(ext) : 'text';
                 session.setMode("ace/mode/" + lang);
+                this.setLang(lang);
             };
             this.getEditor = function() {
                 if (!this.isOpen()) {
