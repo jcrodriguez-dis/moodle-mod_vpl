@@ -31,13 +31,13 @@
     VPL.submitOverrideForms = function() {
         var users = [];
         var groups = [];
-        for(var [name, value] of new FormData(document.getElementById(usersForm))) {
+        for (var [name, value] of new FormData(document.getElementById(usersForm))) {
             if (name == 'users[]') {
                 users.push(value);
             } else if (name == 'groups[]') {
                 groups.push(value);
             }
-        };
+        }
         document.querySelector('#' + optionsForm + ' [name=userids]').value = users.join(',');
         document.querySelector('#' + optionsForm + ' [name=groupids]').value = groups.join(',');
         document.querySelector('#' + optionsForm + ' [name=submitbutton]').click();
