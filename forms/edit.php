@@ -119,6 +119,7 @@ $options['minfiles'] = count( $reqfilelist );
 if ($options['example']) {
     $options['maxfiles'] = $options['minfiles'];
 }
+$options['readOnlyFiles'] = $vpl->get_readonly_files();
 $options['saved'] = $lastsub && ! $copy;
 if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );

@@ -108,6 +108,7 @@ define(
                     fileName = name;
                     self.change();
                 }
+                this.setReadOnly(fileManager.isReadOnly(name));
                 if (!this.isOpen()) {
                     return true;
                 }
@@ -122,11 +123,12 @@ define(
                     fn = fn.substring(0, 16) + '...';
                 }
                 var html = (modified ? VPLUtil.iconModified() : '') + fn;
-                if (this.getTabPos() < fileManager.minNumberOfFiles) {
+                if (this.isReadOnly()) {
+                    html = html + VPLUtil.iconReadOnly();
+                } else if (this.getTabPos() < fileManager.minNumberOfFiles) {
                     html = html + VPLUtil.iconRequired();
-                } else {
-                    html = html + VPLUtil.iconClose();
                 }
+                html = html + VPLUtil.iconClose();
                 $(tabnameid + ' a').html(html);
                 if (fn != name) {
                     $(tabnameid + ' a').attr('title', name);
@@ -167,6 +169,7 @@ define(
             };
             this.gotoLine = VPLUtil.doNothing;
             this.setReadOnly = VPLUtil.doNothing;
+            this.isReadOnly = VPLUtil.returnFalse;
             this.focus = VPLUtil.doNothing;
             this.blur = VPLUtil.doNothing;
             this.undo = VPLUtil.doNothing;

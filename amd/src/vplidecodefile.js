@@ -82,6 +82,9 @@ define(
                     editor.setReadOnly(s);
                 }
             };
+            this.isReadOnly = function() {
+                return readOnly;
+            };
             this.focus = function() {
                 if (!this.isOpen()) {
                     return;

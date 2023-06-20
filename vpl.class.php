@@ -348,6 +348,17 @@ class mod_vpl {
     }
 
     /**
+     * Return the list of readonly files for students
+     * 
+     * @return array readonly files for students
+     */
+    public function get_readonly_files() {
+        $exeflist = $this->get_execution_files();
+        $reqflist = $this->get_required_files();
+        return array_values(array_intersect($exeflist, $reqflist));
+    }
+
+    /**
      * get instance name with groupping name if available
      *
      * @return string with name+(grouping name)

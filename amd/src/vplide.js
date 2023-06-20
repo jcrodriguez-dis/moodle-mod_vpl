@@ -50,6 +50,7 @@ define(
             var maxNumberOfFiles = options.maxfiles || 0;
             var restrictedEdit = options.restrictededitor || options.example;
             var readOnly = options.example;
+            var readOnlyFiles = options.readOnlyFiles;
             var isTeacher = options.isTeacher;
             var fullScreen = false;
             var scrollBarWidth = VPLUtil.scrollBarWidth();
@@ -251,6 +252,7 @@ define(
                 this.dropHandler = dropHandler;
                 this.dragoverHandler = dragoverHandler;
                 this.readOnly = readOnly;
+                this.readOnlyFiles = readOnlyFiles;
                 this.restrictedEdit = restrictedEdit;
                 this.adjustTabsTitles = adjustTabsTitles;
                 this.minNumberOfFiles = minNumberOfFiles;
@@ -287,6 +289,9 @@ define(
                 this.removeTab = function(fid) {
                     tabsUl.find('#vpl_tab_name' + fid).remove();
                     tabs.find('#vpl_file' + fid).remove();
+                };
+                this.isReadOnly = function(fileName) {
+                    return this.readOnly || this.readOnlyFiles.indexOf(fileName) != -1;
                 };
                 this.open = function(pos) {
                     var file;
@@ -389,7 +394,7 @@ define(
                     }
                     var pos = this.fileNameExists(file.name);
                     if (pos != -1) {
-                        if (replace) {
+                        if (replace && !files[pos].isReadOnly()) {
                             files[pos].setContent(file.contents);
                             self.setModified();
                             ok();
@@ -693,7 +698,9 @@ define(
                                     if (file.isModified()) {
                                         line = VPLUtil.iconModified() + line;
                                     }
-                                    if (fd.pos < minNumberOfFiles) {
+                                    if (file.isReadOnly()) {
+                                        line = line + VPLUtil.iconReadOnly();
+                                    } else if (fd.pos < minNumberOfFiles) {
                                         line = line + VPLUtil.iconRequired();
                                     }
                                     lines.push(indent + line);

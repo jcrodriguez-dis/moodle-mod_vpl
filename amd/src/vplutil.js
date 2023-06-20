@@ -552,6 +552,11 @@ define(
             html += '<i class="fa fa-shield"></i>' + '</span> ';
             return html;
         };
+        VPLUtil.iconReadOnly = function() {
+            var html = ' <span title="' + VPLUtil.str('readOnly') + '" class="vpl_ide_charicon">';
+            html += '<i class="fa fa-lock"></i>' + '</span> ';
+            return html;
+        };
         VPLUtil.iconFolder = function() {
             return '<i class="fa fa-folder-open-o"></i>';
         };

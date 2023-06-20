@@ -48,6 +48,7 @@ $options['resetfiles'] = false;
 $options['minfiles'] = 0;
 $options['maxfiles'] = 1000;
 $options['saved'] = true;
+$options['readOnlyFiles'] = [];
 
 vpl_editor_util::generate_requires($vpl, $options);
 
