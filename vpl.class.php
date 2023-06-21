@@ -349,7 +349,7 @@ class mod_vpl {
 
     /**
      * Return the list of readonly files for students
-     * 
+     *
      * @return array readonly files for students
      */
     public function get_readonly_files() {

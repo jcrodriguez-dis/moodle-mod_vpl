@@ -25,12 +25,25 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when an override is created.
+ */
 class override_created extends override_base {
+    /**
+     * Initialize the override creation event.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'c';
         $this->legacyaction = 'created override';
     }
+
+    /**
+     * Get the event description.
+     *
+     * @return string The event description.
+     */
     public function get_description() {
         return $this->get_description_mod( 'created' );
     }

@@ -15,7 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Activity base class.
+ * Activity base class of analytics indicator.
+ *
  * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
@@ -53,7 +54,11 @@ abstract class activity_base extends \core_analytics\local\indicator\community_o
     protected function feedback_check_grades() {
         return true;
     }
-
+    /**
+     * Returns the list of the events names of submissions
+     *
+     * @return array of events names
+     */
     protected function feedback_submitted_events() {
         return ['\mod_vpl\event\submission_uploaded'];
     }
