@@ -26,8 +26,23 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * The base abstract class for VPL events.
+ */
 abstract class base extends \core\event\base {
+    /**
+     * The legacy action.
+     *
+     * @var string
+     */
     protected $legacyaction = '';
+    /**
+     * Get the base URL for a script.
+     *
+     * @param string $script The script name.
+     * @return \moodle_url The URL object.
+     */
     protected function get_url_base($script) {
         $parms = array (
                 'id' => $this->contextinstanceid
@@ -37,12 +52,27 @@ abstract class base extends \core\event\base {
         }
         return new \moodle_url( '/mod/vpl/' . $script, $parms );
     }
+    /**
+     * Get the event description.
+     *
+     * @return string The event description.
+     */
     public function get_description() {
         return '';
     }
+    /**
+     * Get the event URL.
+     *
+     * @return \moodle_url The event URL.
+     */
     public function get_url() {
         return null;
     }
+    /**
+     * Log an event.
+     *
+     * @param array $eventinfo The event information.
+     */
     public static function log($eventinfo) {
         $event = self::create( $eventinfo );
         $event->trigger();

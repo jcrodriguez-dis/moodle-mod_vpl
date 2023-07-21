@@ -15,7 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Social breadth indicator of VPL.
+ * Social breadth analytics indicator of VPL.
+ *
  * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
@@ -27,7 +28,8 @@
 namespace mod_vpl\analytics\indicator;
 
 /**
- * Social breadth indicator of VPL.
+ * Social breadth analytics indicator of VPL.
+ *
  * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
@@ -56,7 +58,8 @@ class social_breadth extends activity_base {
 
     /**
      * Returns the indicator breadth level.
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     *
+     * @param \cm_info $cm unused
      * @return int
      */
     public function get_social_breadth_level(\cm_info $cm) {

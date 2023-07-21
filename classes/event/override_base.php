@@ -25,19 +25,42 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * The base class for VPL overrides events.
+ */
 class override_base extends base {
+    /**
+     * Get the object ID mapping.
+     *
+     * @return array The object ID mapping.
+     */
     public static function get_objectid_mapping() {
         return array('db' => VPL_OVERRIDES, 'restore' => VPL_OVERRIDES);
     }
+    /**
+     * Get the other mapping.
+     *
+     * @return bool False, indicating there is nothing to map.
+     */
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
     }
+    /**
+     * Initialize the override event.
+     */
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = VPL_OVERRIDES;
     }
+    /**
+     * Log an override event.
+     *
+     * @param mixed $vpl The VPL instance or an array of information.
+     * @param int|null $overrideid The override ID.
+     */
     public static function log($vpl, $overrideid = null) {
         if (is_array($vpl)) {
             $info = $vpl;
@@ -52,9 +75,20 @@ class override_base extends base {
         }
         parent::log( $info );
     }
+    /**
+     * Get the URL for the override.
+     *
+     * @return \moodle_url The URL object.
+     */
     public function get_url() {
         return $this->get_url_base( 'view.php' );
     }
+    /**
+     * Get the description of the override event for a specific action.
+     *
+     * @param string $mod The action.
+     * @return string The description of the override.
+     */
     public function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $mod;
         $desc .= ' override with id ' . $this->objectid . ' of VPL activity with id ' . $this->other['vplid'];

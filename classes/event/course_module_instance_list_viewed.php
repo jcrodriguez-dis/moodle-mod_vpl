@@ -24,5 +24,8 @@
  */
 namespace mod_vpl\event;
 
+/**
+ * Event class for when a course module instance list is viewed.
+ */
 class course_module_instance_list_viewed extends \core\event\course_module_instance_list_viewed {
 }

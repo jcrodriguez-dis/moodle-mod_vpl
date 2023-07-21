@@ -42,6 +42,8 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     protected $basedonnames = array();
 
     /**
+     * Returns the id of basedon activity using its activity name
+     *
      * @param Object $data VPL DB instance
      * @return int|boolean id of basedon activity or false
      */

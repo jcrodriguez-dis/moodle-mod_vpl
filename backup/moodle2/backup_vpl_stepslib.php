@@ -92,9 +92,10 @@ class backup_nested_filegroup extends backup_nested_element {
     }
 
     /**
-     * {@inheritDoc}
-     * @see backup_nested_element::get_iterator()
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * Returns list of backup files as iterator
+     *
+     * @param object $processor unused
+     * @return object backup array iterator
      */
     protected function get_iterator($processor) {
         global $CFG;
