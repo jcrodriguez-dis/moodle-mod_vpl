@@ -28,98 +28,103 @@
 
 defined( 'MOODLE_INTERNAL' ) || die();
 
-$capabilities = array (
-        'mod/vpl:view' => array ( // Allows to view complete vpl description.
+$capabilities = [
+        'mod/vpl:view' => [ // Allows to view complete vpl description.
                 'riskbitmask' => 0,
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PREVENT,
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
+                ]
+        ],
 
-        'mod/vpl:submit' => array ( // Allows to submit a vpl assingment.
+        'mod/vpl:submit' => [ // Allows to submit a vpl assingment.
                 'riskbitmask' => 0,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_ALLOW,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
+                ]
+        ],
 
-        'mod/vpl:grade' => array ( // Allows to grade a vpl submission.
+        'mod/vpl:grade' => [ // Allows to grade a vpl submission.
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_PREVENT,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
-        'mod/vpl:similarity' => array ( // Allows to show submissions similarity.
+                ]
+        ],
+
+        'mod/vpl:similarity' => [ // Allows to show submissions similarity.
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'read',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_PREVENT,
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
-        'mod/vpl:addinstance' => array ( // Allows to add new vpl instance.
-                'riskbitmask' => RISK_SPAM | RISK_XSS,
+                ]
+        ],
+
+        'mod/vpl:addinstance' => [ // Allows to add new vpl instance.
+                'riskbitmask' => RISK_XSS,
                 'captype' => 'write',
-                'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'contextlevel' => CONTEXT_COURSE,
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_PROHIBIT,
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
-        'mod/vpl:manage' => array ( // Allows to manage a vpl instance.
+                ],
+                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+        ],
+
+        'mod/vpl:manage' => [ // Allows to manage a vpl instance.
                 'riskbitmask' => RISK_SPAM | RISK_XSS | RISK_PERSONAL,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_PROHIBIT,
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        ),
-        'mod/vpl:setjails' => array ( // Allows to set the jails for a vpl instance.
+                ]
+        ],
+
+        'mod/vpl:setjails' => [ // Allows to set the jails for a vpl instance.
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'write',
                 'contextlevel' => CONTEXT_MODULE,
-                'archetypes' => array (
+                'archetypes' => [
                         'guest' => CAP_PROHIBIT,
                         'student' => CAP_PROHIBIT,
                         'teacher' => CAP_PROHIBIT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
                         'manager' => CAP_ALLOW
-                )
-        )
-);
+                ]
+        ]
+];
