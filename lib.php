@@ -310,7 +310,7 @@ function vpl_update_instance($instance) {
 function vpl_delete_instance( $id ) {
     global $DB, $CFG;
 
-    $instance = $DB->get_record( VPL, array ( "id" => $id ) );
+    $instance = $DB->get_record(VPL, ["id" => $id]);
     if ( $instance === false ) {
         return false;
     }
@@ -322,11 +322,7 @@ function vpl_delete_instance( $id ) {
     vpl_delete_grade_item( $instance );
 
     // Delete relate event.
-    $DB->delete_records( 'event',
-            array (
-                    'modulename' => VPL,
-                    'instance' => $id
-            ) );
+    $DB->delete_records('event', ['modulename' => VPL, 'instance' => $id]);
 
     // Delete all related records.
     $tables = [
@@ -337,17 +333,11 @@ function vpl_delete_instance( $id ) {
             VPL_ASSIGNED_OVERRIDES
     ];
     foreach ($tables as $table) {
-        $DB->delete_records( $table, array ('vpl' => $id) );
+        $DB->delete_records($table, ['vpl' => $id]);
     }
 
-    // Reset basedon $id to 0.
-    $resetbasedon = 'UPDATE {vpl}
-                         set basedon = 0
-                         WHERE basedon = :vplid';
-    $DB->execute($resetbasedon, array ( 'vplid' => $id ));
-
     // Delete vpl record.
-    $DB->delete_records( VPL, array ( 'id' => $id ) );
+    $DB->delete_records( VPL, ['id' => $id] );
 
     return true;
 }
