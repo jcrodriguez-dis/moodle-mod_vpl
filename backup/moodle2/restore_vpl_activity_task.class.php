@@ -119,10 +119,15 @@ class restore_vpl_activity_task extends restore_activity_task {
         $data = $DB->get_record ( 'vpl', array (
                 'id' => $id
         ) );
-        if ($data != false) {
+        if ($data != false && $data->basedon) {
             $data->basedon = $this->structurestep->get_mappingid ( 'vpl', $data->basedon );
             if ($data->basedon == false ) {
                 $data->basedon = $this->structurestep->get_baseon_by_name($data);
+            }
+            if ($data->basedon == false ) {
+                $basedonname = $this->structurestep->get_baseon_name($data);
+                $error = get_string('basedon_missed', 'vpl', $basedonname);
+                $data->name .= " ($error)";
             }
             $DB->update_record ( 'vpl', $data );
         }
