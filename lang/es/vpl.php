@@ -20,11 +20,11 @@
 $string['about'] = 'Acerca de';
 $string['acceptcertificates'] = 'Aceptar certificados auto firmados';
 $string['acceptcertificates_description'] = 'Si sus servidores de ejecución NO están usando certificados auto firmados desmarque';
-$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.<p/>
+$string['acceptcertificatesnote'] = '<p>Usted está usando una conexión cifrada.</p>
 <p>Para usar una conexión cifrada con los servidores de ejecución usted debe aceptar sus certificados de seguridad.</p>
 <p>Si no quiere aceptar los certificados o tiene problemas con ese proceso, puede
 probar a usar una conexión http (no cifrada) u otro navegador.</p>
-<p>Por favor, pulse sobre los siguientes enlaces (Sevidor #) y acepte los certificados ofrecidos.</p>';
+<p>Por favor, pulse sobre los siguientes enlaces (Servidor #) y acepte los certificados ofrecidos.</p>';
 $string['addfile'] = 'Añadir fichero';
 $string['advanced'] = 'Avanzado';
 $string['allfiles'] = 'Todos los ficheros';
@@ -165,14 +165,14 @@ $string['maxfilesize'] = 'Tamaño máximo de cada fichero de subida';
 $string['maxfilesizeexceeded'] = 'Superado el tamaño máximo de los ficheros';
 $string['maximumperiod'] = 'Periodo máximo {$a}';
 $string['maxresourcelimits'] = 'Límites máximos de recursos de ejecución';
-$string['maxsimilarityoutput'] = 'Máxima salida por similaridad';
+$string['maxsimilarityoutput'] = 'Máxima salida por similitud';
 $string['menucheck_jail_servers'] = 'Comprobación servidores ejecución';
 $string['menuexecutionfiles'] = 'Ficheros ejecución';
 $string['menuexecutionoptions'] = 'Opciones';
 $string['menukeepfiles'] = "Ficheros a mantener";
 $string['menulocal_jail_servers'] = 'Servidores ejecución locales';
 $string['menuresourcelimits'] = 'Límites de recursos';
-$string['minsimlevel'] = 'Nivel de similaridad mínima a mostrar';
+$string['minsimlevel'] = 'Nivel de similitud mínima a mostrar';
 $string['moduleconfigtitle'] = 'Configuración del módulo VPL';
 $string['modulename'] = 'Laboratorio virtual de programación';
 $string['modulenameplural'] = 'Laboratorios virtuales de programación';
@@ -263,7 +263,7 @@ $string['scanactivity'] = 'Actividad';
 $string['scandirectory'] = 'Directorio';
 $string['scanningdir'] = 'Examinando el directorio ...';
 $string['scanoptions'] = 'Opciones de búsqueda';
-$string['scanother'] = 'Buscar similaridad en otras fuentes';
+$string['scanother'] = 'Buscar similitudes en otras fuentes';
 $string['scanzipfile'] = 'Fichero zip';
 $string['sebkeys'] = 'Clave(s) de examen SEB';
 $string['sebkeys_help'] = 'Las claves de examen SEB se obtienen de los ficheros .seb<br>Este mecanismo es más seguro que sólo comprobar el navegador.<br>https://safeexambrowser.org';
@@ -275,7 +275,7 @@ $string['server'] = 'Servidor';
 $string['serverexecutionerror'] = 'Error en el servidor de ejecución';
 $string['shortdescription'] = 'Descripción corta';
 $string['shortcuts'] = 'Atajos de teclado';
-$string['similarity'] = 'Similaridad';
+$string['similarity'] = 'Similitud';
 $string['similarto'] = 'Similar a';
 $string['startdate'] = 'Disponibilidad';
 $string['starting'] = 'Iniciando';
@@ -319,11 +319,11 @@ $string['varidentification'] = 'Identificación';
 $string['visiblegrade'] = 'Mostrar evaluación';
 $string['vpl:addinstance'] = 'Añade nuevas actividades VPL';
 $string['vpl:grade'] = 'Evaluar una entrega';
-$string['vpl:manage'] = 'Gestionar un vpl';
+$string['vpl:manage'] = 'Gestionar un VPL';
 $string['vpl:setjails'] = 'Establece servidores de ejecución para instancias concretas de VPL';
 $string['vpl:similarity'] = 'Buscar similiudes entre entregas';
 $string['vpl:submit'] = 'Hacer entregas';
-$string['vpl:view'] = 'Ver la descripción completa de un vpl';
+$string['vpl:view'] = 'Ver la descripción completa de un VPL';
 $string['vpl'] = 'Laboratorio virtual de programación';
 $string['VPL_COMPILATIONFAILED'] = 'La compilación o preparación de la ejecución ha fallado';
 $string['vpl_debug.sh'] = "Prepara la depuración del programa";
@@ -388,14 +388,14 @@ $string['local_jail_servers_help'] = '<p>Aquí se establecen los servidores de e
 <p>Si se quiere impedir que esta actividad y las que se basen en ella no use los servidores especificados en las actividades derivadas ni
 los especificados globalmente, añada al final una línea que contenga "end_of_jails".
 </p>';
-$string['modulename_help'] = '<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:
+$string['modulename_help'] = '<p>VPL permite la gestión de prácticas de programación teniendo como características más destacadas:</p>
 <ul>
 <li>Posibilidad de editar el código fuente en el navegador.</li>
 <li>Posibilidad de ejecutar las prácticas de forma interactiva desde el navegador.</li>
 <li>Posibilidad de ejecutar pruebas que revisen las prácticas.</li>
 <li>Búsqueda de similitud entre prácticas para el control del plagio.</li>
 <li>Restricciones de entrega de prácticas que limitan el corta y pega de código externo.</li>
-</ul></p>
+</ul>
 <p><a href="http://vpl.dis.ulpgc.es">Página oficial de Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
 $string['requestedfiles_help'] = '<p>Aquí se fijan nombres y contenido inicial para los ficheros requeridos.</p>
