@@ -303,6 +303,7 @@ $string['scanningdir'] = 'Scanning directory ...';
 $string['scanoptions'] = 'Scan options';
 $string['scanother'] = 'Scan similarities in added sources';
 $string['scanzipfile'] = 'Zip file';
+$string['search:activity'] = 'Virtual Programming Lab - activity information';
 $string['sebkeys'] = 'SEB exam Key/s';
 $string['sebkeys_help'] = 'SEB exam key(s) (max 3) obtained from .seb file<br>It is more reliable than only browser check.<br>https://safeexambrowser.org';
 $string['sebrequired'] = 'SEB browser required';
