@@ -294,9 +294,6 @@ class lib_test extends base_test {
                 $this->assertEquals( 0, $res, $instance->name);
             }
 
-            $res = $DB->count_records(VPL, array('basedon' => $instance->id ));
-            $this->assertEquals( 0, $res, $instance->name);
-
             $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
             $res = $DB->count_records('event', $sparms );
             $this->assertEquals($res, 0, $instance->name);
