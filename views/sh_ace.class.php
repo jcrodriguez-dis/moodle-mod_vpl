@@ -64,8 +64,8 @@ class vpl_sh_ace extends vpl_sh_base {
             $code .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
             $code .= '</h4>';
             echo $code;
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', array($tid, $filename, $theme, $showln, $nl));
-
+            $parms = [$tid, $filename, $theme, $showln, $nl];
+            vpl_sh_factory::syntaxhighlight_file($parms);
         }
     }
 }
