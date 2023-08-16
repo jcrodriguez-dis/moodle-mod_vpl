@@ -176,15 +176,29 @@ class mod_vpl {
      * @param int $id The id of the register to get from the table
      * @return object this the register or null if not found
      */
-    protected static function get_db_record($table, $id) {
+    public static function get_db_record($table, $id) {
         global $DB;
-        if (! isset($instancescache[$table])) {
-            $instancescache[$table] = [];
+        if (! isset(self::$instancescache[$table])) {
+            self::$instancescache[$table] = [];
         }
-        if (! isset($instancescache[$table][$id])) {
-            $instancescache[$table][$id] = $DB->get_record($table, ["id" => $id]);
+        if (! isset(self::$instancescache[$table][$id])) {
+            self::$instancescache[$table][$id] = $DB->get_record($table, ["id" => $id]);
         }
-        return $instancescache[$table][$id];
+        return self::$instancescache[$table][$id];
+    }
+    /**
+     * Remove one record or all records from cache
+     *
+     * @param string $table Table name
+     * @param int $id The id of the register to get from the table
+     * @return void
+     */
+    public static function reset_db_cache($table = 'all', $id = -1) {
+        if ($table == 'all') {
+            self::$instancescache = [];
+        } else {
+            unset(self::$instancescache[$table][$id]);
+        }
     }
 
     /**
