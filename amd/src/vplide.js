@@ -264,9 +264,9 @@ define(
                 this.getClipboard = function() {
                     return localClipboard;
                 };
-                this.getTabPos = function(file) {
+                this.getTabPos = function(fileId) {
                     for (var i = 0; i < openFiles.length; i++) {
-                        if (openFiles[i] == file) {
+                        if (openFiles[i].getId() == fileId) {
                             return i;
                         }
                     }
@@ -312,28 +312,27 @@ define(
                     VPLUtil.delay('updateFileList', self.updateFileList);
                     VPLUtil.delay('updateMenu', updateMenu);
                 };
-                this.close = function(file) {
+                this.closeFile = function(file) {
                     if (!file.isOpen()) {
                         return;
                     }
                     var pos;
                     var fid = file.getId();
                     file.close();
+                    VPLUtil.hideIDEStatus();
                     self.removeTab(fid);
-                    var ptab = self.getTabPos(file);
+                    var ptab = self.getTabPos(fid);
                     openFiles.splice(ptab, 1);
                     tabs.tabs('refresh');
                     adjustTabsTitles(false);
                     self.fileListVisible(true);
                     VPLUtil.delay('updateFileList', self.updateFileList);
                     VPLUtil.delay('adjustTabsTitles', adjustTabsTitles, false);
-                    if (openFiles.length > ptab) {
-                        pos = self.getFilePosById(openFiles[ptab].getId());
-                        self.gotoFile(pos, 'c');
-                        return;
+                    if (openFiles.length == ptab) {
+                        ptab--;
                     }
-                    if (ptab > 0) {
-                        pos = self.getFilePosById(openFiles[ptab - 1].getId());
+                    if (ptab >= 0 && openFiles.length > ptab) {
+                        pos = self.getFilePosById(openFiles[ptab].getId());
                         self.gotoFile(pos, 'c');
                         return;
                     }
@@ -439,7 +438,7 @@ define(
                         if (pos == -1) {
                             throw new Error("Internal error: File name not found");
                         }
-                        if (pos < minNumberOfFiles) {
+                        if (files[pos].getId() < minNumberOfFiles) {
                             throw new Error("Internal error: Renaming requested filename");
                         }
                         if (files[pos].getFileName() == newname) {
@@ -499,13 +498,16 @@ define(
                         showError(str('filenotdeleted', name));
                         return false;
                     }
-                    if (pos < minNumberOfFiles) {
+                    if (files[pos].getId() < minNumberOfFiles) {
                         showError(str('filenotdeleted', name));
                         return false;
                     }
-                    self.setModified();
-                    self.close(files[pos]);
+                    this.setModified();
+                    this.closeFile(files[pos]);
                     files.splice(pos, 1);
+                    if (openFiles.length == 0) {
+                        VPLUtil.hideIDEStatus();
+                    }
                     VPLUtil.delay('updateFileList', self.updateFileList);
                     return true;
                 };
@@ -700,7 +702,7 @@ define(
                                     }
                                     if (file.isReadOnly()) {
                                         line = line + VPLUtil.iconReadOnly();
-                                    } else if (fd.pos < minNumberOfFiles) {
+                                    } else if (file.getId() < minNumberOfFiles) {
                                         line = line + VPLUtil.iconRequired();
                                     }
                                     lines.push(indent + line);
@@ -719,7 +721,7 @@ define(
                     fileListContent.html('<div>' + html + '</div>');
                 };
                 tabsUl.on('click', 'span.vpl_ide_closeicon', function() {
-                    fileManager.close(fileManager.currentFile());
+                    fileManager.closeFile(fileManager.currentFile());
                 });
                 tabsUl.on('dblclick', 'span.vpl_ide_closeicon', menuButtons.getAction('delete'));
                 tabsUl.on('dblclick', 'a', menuButtons.getAction('rename'));
@@ -1079,7 +1081,7 @@ define(
                 var newfile = fileManager.addFile(file, false, updateMenu, showErrorMessage);
                 if (newfile) {
                     fileManager.open(newfile);
-                    tabs.tabs('option', 'active', fileManager.getTabPos(newfile));
+                    tabs.tabs('option', 'active', fileManager.getTabPos(newfile.getId()));
                     newfile.focus();
                     return true;
                 }
@@ -1208,7 +1210,7 @@ define(
                     var files = fileManager.getFiles();
                     for (var i = 0; i < files.length; i++) {
                         var file = $('<li id="vpl_fsort_' + i + '"class="ui-widget-content"></li>');
-                        if (i < minNumberOfFiles) {
+                        if (files[i].getId() < minNumberOfFiles) {
                             file.addClass('ui-state-disabled');
                         }
                         file.text((i + 1) + '-' + files[i].getFileName());
@@ -1396,7 +1398,7 @@ define(
                 name: 'rename',
                 originalAction: function() {
                     var file = fileManager.currentFile();
-                    if (file && fileManager.getFilePosById(file.getId()) >= minNumberOfFiles) {
+                    if (file && file.getId() >= minNumberOfFiles) {
                         dialogRename.dialog('open');
                     }
                 },
@@ -1434,7 +1436,7 @@ define(
                     if (!file) {
                         return;
                     }
-                    fileManager.close(file);
+                    fileManager.closeFile(file);
                 },
                 bindKey: {
                     win: 'Alt-W',
@@ -1889,9 +1891,8 @@ define(
                     }
                     return;
                 }
-                var id = fileManager.getFilePosById(file.getId());
-                menuButtons.enable('rename', id >= minNumberOfFiles && nfiles !== 0);
-                menuButtons.enable('delete', id >= minNumberOfFiles && nfiles !== 0);
+                menuButtons.enable('rename', file.getId() >= minNumberOfFiles && nfiles !== 0);
+                menuButtons.enable('delete', file.getId() >= minNumberOfFiles && nfiles !== 0);
                 menuButtons.enable('undo', file.hasUndo());
                 menuButtons.enable('redo', file.hasRedo());
                 menuButtons.enable('select_all', file.hasSelectAll());

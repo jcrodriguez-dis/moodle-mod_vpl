@@ -63,8 +63,8 @@ define(
                 if (self.notAdded(buttonName)) {
                     return;
                 }
-                var cl = 'bt_extrahtml';
-                var btag = $('#vpl_ide_' + buttonName + ' i');
+                var cl = 'vpl_bt_extrahtml';
+                var btag = $('#vpl_ide_' + buttonName);
                 if (btag.find('.' + cl).length == 0) {
                     btag.append(' <span class="' + cl + '"><span>');
                 }
@@ -107,10 +107,13 @@ define(
                         bindKey: button.bindKey,
                         exec: button.action
                     };
-                    var platform = "win";
-                    if (navigator.platform.startsWith("Mac")) {
-                        platform = "mac";
+                    var platformStr = '';
+                    if (navigator.userAgentData) {
+                        platformStr = navigator.userAgentData.platform;
+                    } else if (navigator.platform) {
+                        platformStr = navigator.platform;
                     }
+                    var platform = platformStr.startsWith("Mac") ? "mac" : "win";
                     button.key = button.bindKey[platform];
                 }
             };

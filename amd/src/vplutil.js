@@ -210,8 +210,8 @@ define(
                 end = VPLUtil.doNothing;
             }
             if (typeof JUnzip == 'undefined') {
-                VPLUtil.loadScript(['../editor/zip/inflate.js',
-                    '../editor/zip/unzip.js']
+                VPLUtil.loadScript(['/zip/inflate.js',
+                    '/zip/unzip.js']
                 , function() {
                     VPLUtil.readZipFile(data, save, progressBar, end);
                 });
@@ -390,75 +390,148 @@ define(
         })();
         (function() {
             var maplang = {
-                'abap': 'abap',
-                'abc': 'abc',
-                'ada': 'ada', 'ads': 'ada', 'adb': 'ada',
-                'as': 'actionscript', 'as3': 'actionscript',
-                'asm': 'assembly_x86',
-                'bash': 'sh',
-                'bat': 'batchfile',
-                'c': 'c_cpp', 'C': 'c_cpp', 'cc': 'c_cpp', 'cpp': 'c_cpp', 'c++': 'c_cpp',
-                'hxx': 'c_cpp', 'h': 'c_cpp', 'H': 'c_cpp',
-                'cases': 'cases',
-                'cbl': 'cobol', 'cob': 'cobol',
-                'coffee': 'coffee',
-                'clj': 'clojure',
-                'cs': 'csharp',
-                'css': 'css',
-                'd': 'd',
-                'dart': 'dart',
-                'e': 'eiffel',
-                'erl': 'erlang', 'hrl': 'erlang',
-                'f': 'fortran', 'f77': 'fortran', 'f90': 'fortran', 'for': 'fortran',
-                'go': 'golang',
-                'groovy': 'groovy',
-                'gv': 'dot',
-                'hs': 'haskell',
-                'htm': 'html', 'html': 'html',
-                'hx': 'haxe',
-                'java': 'java',
-                'jl': 'julia',
-                'js': 'javascript',
-                'json': 'json',
-                'jsp': 'jsp',
-                'jsx': 'jsx',
-                'kt': 'kotlin', 'kts': 'kotlin',
-                'm': 'matlab',
-                'md': 'markdown',
-                'less': 'less',
-                'lisp': 'lisp', 'lsp': 'lisp',
-                'lua': 'lua',
-                'pas': 'pascal', 'p': 'pascal',
-                'perl': 'perl', 'prl': 'perl',
-                'php': 'php',
-                'pro': 'prolog', 'pl': 'prolog',
-                'py': 'python',
-                'R': 'r', 'r': 'r',
-                'rb': 'ruby', 'ruby': 'ruby',
-                's': 'assembly_x86',
-                'sass': 'sass',
-                'scala': 'scala',
-                'scm': 'scheme',
-                'scss': 'scss',
-                'sh': 'sh',
-                'swift': 'swift',
-                'sql': 'sql',
-                'svg': 'svg',
-                'tex': 'tex',
+                'Abap': 'abap',
+                'ABC': 'abc',
+                'Ada': 'ada',
+                'ActionScript': 'actionscript',
+                'x86 assembly': 'assembly_x86',
+                'Bash': 'sh',
+                'Batch': 'batchfile',
+                'C': 'c_cpp',
+                'C++': 'c_cpp',
+                'VPL cases': 'cases',
+                'Cobol': 'cobol',
+                'CoffeeScript': 'coffee',
+                'Clojure': 'clojure',
+                'CSharp': 'csharp',
+                'CSS': 'css',
+                'D': 'd',
+                'Dart': 'dart',
+                'Eiffel': 'eiffel',
+                'Erlang': 'erlang',
+                'Fortran': 'fortran',
+                'Go': 'golang',
+                'Groovy': 'groovy',
+                'Dot': 'dot',
+                'Haskell': 'haskell',
+                'HTML': 'html',
+                'Haxe': 'haxe',
+                'Java': 'java',
+                'Julia': 'julia',
+                'JavaScript': 'javascript',
+                'JSON': 'json',
+                'JSP': 'jsp',
+                'JSX': 'jsx',
+                'Kotlin': 'kotlin',
+                'Matlab': 'matlab',
+                'Markdown': 'markdown',
+                'Less': 'less',
+                'LISP': 'lisp',
+                'Lua': 'lua',
+                'Pascal': 'pascal',
+                'Perl': 'perl',
+                'PHP': 'php',
+                'Prolog': 'prolog',
+                'Python': 'python',
+                'R': 'r',
+                'Ruby': 'ruby',
+                'SASS': 'sass',
+                'Scala': 'scala',
+                'Scheme': 'scheme',
+                'SCSS': 'scss',
+                'Bash/shell': 'sh',
+                'Swift': 'swift',
+                'SQL': 'sql',
+                'SVG': 'svg',
+                'TeX': 'tex',
                 'tcl': 'tcl',
-                'ts': 'typescript',
-                'twig': 'twig',
-                'vbs': 'vbscript',
-                'v': 'verilog', 'vh': 'verilog',
-                'vhd': 'vhdl', 'vhdl': 'vhdl',
-                'xml': 'xml',
-                'yaml': 'yaml'
+                'TypeScript': 'typescript',
+                'Twig': 'twig',
+                'VBScript': 'vbscript',
+                'Verilog': 'verilog',
+                'VHDL': 'vhdl',
+                'XML': 'xml',
+                'Yaml': 'yaml'
+            };
+            var mapname = {
+                'abap': 'Abap',
+                'abc': 'ABC',
+                'ada': 'Ada', 'ads': 'Ada', 'adb': 'Ada',
+                'as': 'ActionScript', 'as3': 'ActionScript',
+                'asm': 'x86 assembly',
+                'bash': 'Bash',
+                'bat': 'Batch',
+                'c': 'C', 'C': 'C++', 'cc': 'C++', 'cpp': 'C++', 'c++': 'C++',
+                'hxx': 'C++', 'h': 'C', 'H': 'C++',
+                'cases': 'VPL cases',
+                'cbl': 'Cobol', 'cob': 'Cobol',
+                'coffee': 'CoffeeScript',
+                'clj': 'Clojure',
+                'cs': 'CSharp',
+                'css': 'CSS',
+                'd': 'D',
+                'dart': 'Dart',
+                'e': 'Eiffel',
+                'erl': 'Erlang', 'hrl': 'Erlang',
+                'f': 'Fortran', 'f77': 'Fortran', 'f90': 'Fortran', 'for': 'Fortran',
+                'go': 'Go',
+                'groovy': 'Groovy',
+                'gv': 'Dot',
+                'hs': 'Haskell',
+                'htm': 'HTML', 'html': 'HTML',
+                'hx': 'Haxe',
+                'java': 'Java',
+                'jl': 'Julia',
+                'js': 'JavaScript',
+                'json': 'JSON',
+                'jsp': 'JSP',
+                'jsx': 'JSX',
+                'kt': 'Kotlin', 'kts': 'Kotlin',
+                'm': 'Matlab',
+                'md': 'Markdown',
+                'less': 'Less',
+                'lisp': 'LISP', 'lsp': 'LISP',
+                'lua': 'Lua',
+                'pas': 'Pascal', 'p': 'Pascal',
+                'perl': 'Perl', 'prl': 'Perl',
+                'php': 'PHP',
+                'pro': 'Prolog', 'pl': 'Prolog',
+                'py': 'Python',
+                'R': 'R', 'r': 'R',
+                'rb': 'Ruby', 'ruby': 'Ruby',
+                's': 'x86 assembly',
+                'sass': 'SASS',
+                'scala': 'Scala',
+                'scm': 'Scheme',
+                'scss': 'SCSS',
+                'sh': 'Bash/shell',
+                'swift': 'Swift',
+                'sql': 'SQL',
+                'svg': 'SVG',
+                'tex': 'TeX',
+                'tcl': 'TCL',
+                'ts': 'TypeScript',
+                'twig': 'Twig',
+                'vbs': 'VBSscript',
+                'v': 'Verilog', 'vh': 'Verilog',
+                'vhd': 'VHDL', 'vhdl': 'VHDL',
+                'xml': 'XML',
+                'yaml': 'YAML'
+            };
+            VPLUtil.getLangNames = function() {
+                return Object.assign({}, mapname);
             };
             VPLUtil.langType = function(ext) {
-                if (ext in maplang) {
-                    return maplang[ext];
+                if (ext in mapname) {
+                    return maplang[mapname[ext]];
                 }
                 return 'plain_text';
+            };
+            VPLUtil.langName = function(ext) {
+                if (ext in mapname) {
+                    return mapname[ext];
+                }
+                return 'Plain text';
             };
         })();
         (function() {
@@ -1403,6 +1476,19 @@ define(
                 return scriptsLoaded[scriptURL] == 2;
             };
         })();
+        VPLUtil.hideIDEStatus = function() {
+            VPLUtil.delay('updateIDEStatus', function() {
+                $('.vpl_ide_status').hide();
+            });
+        };
+
+        VPLUtil.showIDEStatus = function(status) {
+            VPLUtil.delay('updateIDEStatus', function() {
+                $('.vpl_ide_status').text(status);
+                $('.vpl_ide_status').show();
+            });
+        };
+
         VPLUtil.adjustBlockly = function(work, offx, offy) {
             var blocks = work.getAllBlocks();
             var miy = 20000;
@@ -1444,9 +1530,9 @@ define(
             }
 
             FileGroupHighlighter.prototype.highlightBlockly = function(preid) {
-                VPLUtil.loadScript(['../editor/blockly/blockly_compressed.js',
-                    '../editor/blockly/msg/js/en.js',
-                    '../editor/blockly/blocks_compressed.js']
+                VPLUtil.loadScript(['/blockly/blockly_compressed.js',
+                    '/blockly/msg/js/en.js',
+                    '/blockly/blocks_compressed.js']
                 , function() {
                     var tag = $('#' + preid);
                     var c = tag.html();
@@ -1488,7 +1574,7 @@ define(
                     }
                 }
                 if (needAce && typeof ace === 'undefined') {
-                    VPLUtil.loadScript(['../editor/ace9/ace.js'],
+                    VPLUtil.loadScript(['/ace9/ace.js'],
                         function() {
                            self.highlight();
                         });

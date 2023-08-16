@@ -317,7 +317,7 @@ define(
             };
             this.init = function() {
                 if (typeof Terminal === 'undefined') {
-                    VPLUtil.loadScript(['../../vpl/editor/xterm/term.js'], function() {
+                    VPLUtil.loadScript(['/xterm/term.js'], function() {
                                                                                self.init();
                                                                            });
                     return;

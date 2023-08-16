@@ -125,7 +125,7 @@ define(
                 var html = (modified ? VPLUtil.iconModified() : '') + fn;
                 if (this.isReadOnly()) {
                     html = html + VPLUtil.iconReadOnly();
-                } else if (this.getTabPos() < fileManager.minNumberOfFiles) {
+                } else if (this.getId() < fileManager.minNumberOfFiles) {
                     html = html + VPLUtil.iconRequired();
                 }
                 html = html + VPLUtil.iconClose();
@@ -167,10 +167,11 @@ define(
                 }
                 return false;
             };
+            this.updateStatus = VPLUtil.hideIDEStatus;
             this.gotoLine = VPLUtil.doNothing;
             this.setReadOnly = VPLUtil.doNothing;
             this.isReadOnly = VPLUtil.returnFalse;
-            this.focus = VPLUtil.doNothing;
+            this.focus = VPLUtil.hideIDEStatus;
             this.blur = VPLUtil.doNothing;
             this.undo = VPLUtil.doNothing;
             this.redo = VPLUtil.doNothing;
