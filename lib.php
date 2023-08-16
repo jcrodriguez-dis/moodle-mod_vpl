@@ -166,14 +166,15 @@ function vpl_create_event($instance, $id) {
 }
 
 /**
- * Callback function to determine if the event is visible for the current user.
+ * Callback function to determine if the event is visible for the $userid or current user.
  *
  * @param calendar_event $event
+ * @param int $userid optional.
  * @return bool Returns true if the event is visible, false if not visible.
  */
-function mod_vpl_core_calendar_is_event_visible(calendar_event $event) {
+function mod_vpl_core_calendar_is_event_visible(calendar_event $event, $userid = false) {
     $vpl = new mod_vpl(null, $event->instance);
-    return $vpl->is_visible();
+    return $vpl->is_visible($userid);
 }
 
 /**
