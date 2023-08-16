@@ -369,6 +369,15 @@ pre.vpl_terminal {
     font-weight: bold;
 }
 
+.vpl_bt_extrahtml {
+    font-weight: 550;
+}
+
 .vpl_dimmed {
     opacity: 0.3;
+}
+
+.vpl_ide_status {
+    opacity: 0.8;
+    z-index:100;
 }
