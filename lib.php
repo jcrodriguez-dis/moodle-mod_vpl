@@ -339,7 +339,7 @@ function vpl_delete_instance( $id ) {
 
     // Delete vpl record.
     $DB->delete_records( VPL, ['id' => $id] );
-
+    mod_vpl::reset_db_cache(VPL, $id);
     return true;
 }
 
