@@ -318,8 +318,8 @@ define(
             this.init = function() {
                 if (typeof Terminal === 'undefined') {
                     VPLUtil.loadScript(['/xterm/term.js'], function() {
-                                                                               self.init();
-                                                                           });
+                            self.init();
+                        });
                     return;
                 }
                 terminal = new Terminal({
