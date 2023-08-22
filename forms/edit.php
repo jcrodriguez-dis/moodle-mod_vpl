@@ -129,12 +129,12 @@ if ($lastsub) {
 if ($copy && $grader) {
     $userid = $USER->id;
 }
-vpl_editor_util::generate_requires($vpl, $options);
+vpl_editor_util::generate_jquery();
 $vpl->print_header( get_string( 'edit', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
-
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $userid);
-
+vpl_editor_util::generate_requires($vpl, $options);
 $vpl->print_footer();
+
