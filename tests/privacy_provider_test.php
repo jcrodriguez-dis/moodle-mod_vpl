@@ -405,14 +405,17 @@ class privacy_provider_test extends base_test {
         // Remove all context of each user.
         for ($n = 0; $n < count($users); $n++) {
             $contextids = [];
+            $user = $users[$n];
             $info = "";
             foreach ($usersvpls[$n] as $vpl) {
                 $contextids[] = $vpl->get_context()->id;
                 $info .= $vpl->get_instance()->name . " | ";
             }
-            $approved = new \core_privacy\local\request\approved_contextlist($users[$n], 'mod_vpl', $contextids);
-            $this->assertEquals(count($usersvpls[$n]), $approved->count(), "User {$users[$n]->username} {$info}");
+            $approved = new \core_privacy\local\request\approved_contextlist($user, 'mod_vpl', $contextids);
+            $this->assertEquals(count($usersvpls[$n]), $approved->count(), "User {$user->username} {$info}");
             $this->provider->delete_data_for_user($approved);
+            $ncontextsafter = $this->provider->get_contexts_for_userid($userid)->count();
+            $this->assertEquals(0, $ncontextsafter, "User {$user->username} {$info}");
             $usersvpls[$n] = [];
             for ($i = 0; $i < count($users); $i++) {
                 $userid = $users[$i]->id;
