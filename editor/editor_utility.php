@@ -24,11 +24,15 @@
  */
 
 class vpl_editor_util {
+    private static $jquerynoload = true;
     public static function generate_jquery() {
         global $PAGE;
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('ui');
-        $PAGE->requires->jquery_plugin('ui-css');
+        if (self::$jquerynoload) {
+            $PAGE->requires->jquery();
+            $PAGE->requires->jquery_plugin('ui');
+            $PAGE->requires->jquery_plugin('ui-css');
+            self::$jquerynoload = false;
+        }
     }
     public static function generate_requires_evaluation() {
         global $PAGE;
@@ -52,12 +56,6 @@ class vpl_editor_util {
         $options['isGroupActivity'] = $vpl->is_group_activity();
         $options['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
         self::generate_jquery();
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/xterm/term.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ace.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/ace9/ext-language_tools.js' ) );
         $opt = new stdClass();
         $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor';
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
