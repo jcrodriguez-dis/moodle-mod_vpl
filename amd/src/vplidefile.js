@@ -26,11 +26,12 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
         'mod_vpl/vplidecodefile',
         'mod_vpl/vplideblocklyfile',
         'mod_vpl/vplidebinaryfile',
     ],
-    function($, jqui, VPLUtil, codeExtension, blocklyExtension, binaryExtension) {
+    function($, jqui, VPLUtil, VPLUI, codeExtension, blocklyExtension, binaryExtension) {
         return function(id, name, value, fileManager, vplIdeInstance) {
             var tid = "#vpl_file" + id;
             var tabnameid = "#vpl_tab_name" + id;
@@ -122,13 +123,13 @@ define(
                 if (fn.length > 20) {
                     fn = fn.substring(0, 16) + '...';
                 }
-                var html = (modified ? VPLUtil.iconModified() : '') + fn;
+                var html = (modified ? VPLUI.iconModified() : '') + fn;
                 if (this.isReadOnly()) {
-                    html = html + VPLUtil.iconReadOnly();
+                    html = html + VPLUI.iconReadOnly();
                 } else if (this.getId() < fileManager.minNumberOfFiles) {
-                    html = html + VPLUtil.iconRequired();
+                    html = html + VPLUI.iconRequired();
                 }
-                html = html + VPLUtil.iconClose();
+                html = html + VPLUI.iconClose();
                 $(tabnameid + ' a').html(html);
                 if (fn != name) {
                     $(tabnameid + ' a').attr('title', name);
@@ -167,11 +168,11 @@ define(
                 }
                 return false;
             };
-            this.updateStatus = VPLUtil.hideIDEStatus;
+            this.updateStatus = VPLUI.hideIDEStatus;
             this.gotoLine = VPLUtil.doNothing;
             this.setReadOnly = VPLUtil.doNothing;
             this.isReadOnly = VPLUtil.returnFalse;
-            this.focus = VPLUtil.hideIDEStatus;
+            this.focus = VPLUI.hideIDEStatus;
             this.blur = VPLUtil.doNothing;
             this.undo = VPLUtil.doNothing;
             this.redo = VPLUtil.doNothing;

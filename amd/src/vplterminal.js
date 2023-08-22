@@ -28,9 +28,10 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
         'mod_vpl/vplclipboard'
     ],
-    function($, jqui, VPLUtil, VPLClipboard) {
+    function($, jqui, VPLUtil, VPLUI, VPLClipboard) {
         if (typeof VPLTerminal !== 'undefined') {
             return VPLTerminal;
         }
@@ -229,8 +230,8 @@ define(
                     terminal.stopBlink();
                 }
             };
-            var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
-            var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
+            var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
+            var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
             clipboard = new VPLClipboard('vpl_dialog_terminal_clipboard', HTMLUpdateClipboard, function() {
                     updateClipboard();
                     document.execCommand('copy');
@@ -281,7 +282,7 @@ define(
                 },
                 dialogClass: 'vpl_ide vpl_vnc',
                 create: function() {
-                    titleText = VPLUtil.setTitleBar(tdialog, 'console', 'console',
+                    titleText = VPLUI.setTitleBar(tdialog, 'console', 'console',
                             ['clipboard', 'keyboard', 'theme'],
                             [openClipboard,
                             function() {

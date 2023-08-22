@@ -27,7 +27,7 @@
 define(
     [
         'jquery',
-        'mod_vpl/vplutil',
+        'mod_vpl/vplutil'
     ],
     function($, VPLUtil) {
         return function() {

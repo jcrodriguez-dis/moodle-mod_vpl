@@ -29,10 +29,11 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
         'mod_vpl/vplclipboard',
         'core/log'
     ],
-    function($, jqui, VPLUtil, VPLClipboard, console) {
+    function($, jqui, VPLUtil, VPLUI, VPLClipboard, console) {
         window.INCLUDE_URI = "../editor/noVNC/include/";
         /**
          * Load VNC Script after the Util ("util.js" is loaded
@@ -131,8 +132,8 @@ define(
                 clipboard.setEntry1(clipboard.getEntry1());
                 document.execCommand('copy');
             }
-            var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
-            var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
+            var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
+            var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
             clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
                     lostFocus);
             canvas.on('click', function(e) {
@@ -175,7 +176,7 @@ define(
                 height: 'auto',
                 dialogClass: 'vpl_ide vpl_vnc',
                 create: function() {
-                    titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
+                    titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
                             keyboardButton]);
                 },
                 dragStop: controlDialogSize,

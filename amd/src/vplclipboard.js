@@ -25,9 +25,10 @@ define(
     [
         'jquery',
         'jqueryui',
-        'mod_vpl/vplutil'
+        'mod_vpl/vplutil',
+        'mod_vpl/vplui'
     ],
-    function($, jqui, VPLUtil) {
+    function($, jqui, VPLUtil, VPLUI) {
         var VPLClipboard = function(dialogId, hlabel1, action1, hlabel2, action2, onFocus) {
             var tdialog = $('#' + dialogId);
             var label1 = tdialog.find('.vpl_clipboard_label1');
@@ -74,7 +75,7 @@ define(
                 return entry2.val();
             };
             var titleTag = tdialog.siblings().find('.ui-dialog-title');
-            var clipboardTitle = VPLUtil.genIcon('clipboard', 'sw');
+            var clipboardTitle = VPLUI.genIcon('clipboard', 'sw');
             clipboardTitle += ' ' + VPLUtil.str('clipboard');
             titleTag.html(clipboardTitle);
             tdialog.parent().css('overflow', ''); // Fix problem with JQuery.
