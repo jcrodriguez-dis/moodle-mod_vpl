@@ -115,7 +115,8 @@ $string['manualgrading'] = 'Qualificació manual';
 
 $string['allsubmissions'] = 'Tots els lliuraments';
 $string['gradedbyuser'] = 'Avaluades per l\'usuari';
-$string['variation'] = 'Variació {$a}';
+$string['variation_n'] = 'Variació {$a}';
+$string['variation_n_i'] = 'Variació {$a->number}: {$a->identification}';
 $string['variations'] = 'Variacions';
 $string['usevariations'] = 'Usa variacions';
 $string['variationtitle'] = 'Títol de variació';

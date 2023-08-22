@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_variations
 Feature: In an VPL activity, editing teacher change variations
   In order to define/modify/delete activity variations
   As an editing teacher
@@ -37,7 +37,6 @@ Feature: In an VPL activity, editing teacher change variations
       | id_variationtitle | My variation title text |
     And I press "Save"
     Then I should see "Updated My variation title text"
-    Then I press "Continue"
     Then I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should not see "My variation title text"
@@ -52,13 +51,11 @@ Feature: In an VPL activity, editing teacher change variations
       | id_usevariations | 1 |
       | id_variationtitle | My variation title text |
     And I press "Save"
-    Then I press "Continue"
+    When I click on "Add" "link" in the "region-main" "region"
     And I set the following fields to these values:
       | id_identification | variation-code |
-      | id_description0 | This is a variation description |
-    And I click on "form + form input[value='Save']" in VPL
-    Then I should see "Saved"
-    Then I press "Continue"
+      | id_description | This is a variation description |
+    And I press "Save"
     Then I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Variations"
@@ -67,8 +64,9 @@ Feature: In an VPL activity, editing teacher change variations
     And I should see "My variation title text"
     And I should see "This is a variation description"
     Then I navigate to "Variations" in current page administration
+    When I click on "Edit" "link" in the "region-main" "region"
     And I accept confirm in VPL
-    And I click on "form + form input[value='Delete']" in VPL
+    And I press "Delete"
     Then I should see "Deleted"
     Then I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
