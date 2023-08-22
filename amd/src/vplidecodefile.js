@@ -27,8 +27,9 @@ define(
     [
         'jquery',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
     ],
-    function($, VPLUtil) {
+    function($, VPLUtil, VPLUI) {
         return function() {
             var self = this;
             var editor = null;
@@ -209,7 +210,7 @@ define(
                 }
                 text += "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
                 text += " " + VPLUtil.langName(VPLUtil.fileExtension(name));
-                VPLUtil.showIDEStatus(text);
+                VPLUI.showIDEStatus(text);
             };
 
             this.open = function() {

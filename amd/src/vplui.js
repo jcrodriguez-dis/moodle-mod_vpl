@@ -46,10 +46,9 @@ define(
                 end = VPLUtil.doNothing;
             }
             if (typeof JUnzip == 'undefined') {
-                VPLUtil.loadScript(['/zip/inflate.js',
-                    '/zip/unzip.js']
+                VPLUtil.loadScript(['/zip/inflate.js', '/zip/unzip.js']
                 , function() {
-                    VPLUtil.readZipFile(data, save, progressBar, end);
+                    VPLUI.readZipFile(data, save, progressBar, end);
                 });
                 return;
             }
@@ -448,7 +447,7 @@ define(
             return messageDialog;
         };
         VPLUI.showErrorMessage = function(message, options) {
-            var currentOptions = $.extend({}, VPLUtil.dialogbaseOptions, {
+            var currentOptions = $.extend({}, VPLUI.dialogbaseOptions, {
                 title: VPLUtil.str('error'),
                 icon: 'alert'
             });
