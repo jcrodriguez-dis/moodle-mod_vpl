@@ -296,7 +296,8 @@ class mod_vpl {
     public function update() {
         global $DB;
         $this->instance->timemodified = time();
-        return $DB->update_record( VPL, $this->instance );
+        self::reset_db_cache(VPL, $this->instance->id);
+        return $DB->update_record(VPL, $this->instance);
     }
 
     /**
@@ -1457,7 +1458,7 @@ class mod_vpl {
         'previoussubmissionslist' => 'report',
         'submissionslist' => 'report',
         'downloadsubmission' => 'popup',
-        'gradesubmission' => 'popup',
+        'gradesubmission' => 'admin',
         'diff' => 'popup',
         'index' => 'incourse',
     ];
@@ -1481,7 +1482,6 @@ class mod_vpl {
             $PAGE->set_pagetype('mod-vpl-' . $action);
         }
         $PAGE->set_pagelayout(self::get_pagelayout($action));
-        echo $action . ' ' . self::get_pagelayout($action);
         if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
             $PAGE->activityheader->set_description('');
             $PAGE->activityheader->set_hidecompletion($url != 'view.php');
@@ -2036,10 +2036,8 @@ class mod_vpl {
         global $DB;
         $html = '';
         require_once(dirname( __FILE__ ) . '/views/show_hide_div.class.php');
-        $variations = $DB->get_records( VPL_VARIATIONS, array (
-            'vpl' => $this->instance->id
-        ) );
-        if (count( $variations ) > 0) {
+        $variations = $DB->get_records(VPL_VARIATIONS, ['vpl' => $this->instance->id]);
+        if (count($variations) > 0) {
             $div = new vpl_hide_show_div();
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
@@ -2053,7 +2051,7 @@ class mod_vpl {
             }
             $number = 1;
             foreach ($variations as $variation) {
-                $html .= '<b>' . get_string( 'variation', VPL, $number ) . '</b>: ';
+                $html .= '<b>' . get_string( 'variation_n', VPL, $number ) . '</b>: ';
                 $html .= s($variation->identification) . '<br>';
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
