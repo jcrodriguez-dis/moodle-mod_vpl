@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['mod_vpl/vplutil', 'mod_vpl/vplui'], function(VPLUtil, VPLUI) {
+define(['mod_vpl/vplui'], function(VPLUI) {
     return {
         init: function(options) {
             options.next = function() {
