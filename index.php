@@ -405,6 +405,9 @@ if ($totalsubs > 0) {
     $row[key( $row )] = get_string( 'total' );
     $row[] = $totalsubs;
     $row[] = $totalgraded;
+    if ($detailedmore) {
+        $row[] = '';
+    }
     $table->data[] = $row;
 }
 echo "<br>";
