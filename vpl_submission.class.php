@@ -209,11 +209,9 @@ class mod_vpl_submission {
      */
     public function delete() {
         global $DB;
-        \mod_vpl\event\submission_deleted::log( $this );
-        vpl_delete_dir( $this->get_data_directory() );
-        $DB->delete_records( 'vpl_submissions', array (
-                'id' => $this->instance->id
-        ) );
+        \mod_vpl\event\submission_deleted::log($this);
+        vpl_delete_dir($this->get_data_directory());
+        $DB->delete_records('vpl_submissions', ['id' => $this->instance->id]);
     }
 
     /**
@@ -225,6 +223,39 @@ class mod_vpl_submission {
         return $this->instance->dategraded > 0;
     }
 
+    private static $gradecache = [];
+    public static function load_gradebook_grades($vpl) {
+        $cm = $vpl->get_course_module();
+        $currentgroup = groups_get_activity_group($cm, true);
+        $users = $vpl->get_students($currentgroup);
+        $usersids = array_keys($users);
+        $courseid = $vpl->get_course()->id;
+        $vplid = $vpl->get_instance()->id;
+        $grades = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $usersids);
+        if (!isset(self::$gradecache[$vplid])) {
+            self::$gradecache[$vplid] = [];
+        }
+        self::$gradecache[$vplid] += $grades->items[0]->grades;
+    }
+    public static function reset_gradebook_cache() {
+        self::$gradecache = [];
+    }
+
+    public function get_gradebook_grade($userid = 0) {
+        $vplid = $this->vpl->get_instance()->id;
+        if ($userid == 0) {
+            $userid = $this->instance->userid;
+        }
+        if (!isset(self::$gradecache[$vplid][$userid])) {
+            $courseid = $this->vpl->get_course()->id;
+            $grades = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $userid);
+            if (! isset($grades->items[0]->grades[$userid])) {
+                return false;
+            }
+            self::$gradecache[$vplid][$userid] = $grades->items[0]->grades[$userid];
+        }
+        return self::$gradecache[$vplid][$userid];
+    }
     /**
      * Remove grade
      *
@@ -235,25 +266,20 @@ class mod_vpl_submission {
         global $DB;
         ignore_user_abort( true );
         if ($this->vpl->is_group_activity()) {
-            $usersid = array ();
-            foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
-                $usersid[] = $user->id;
-            }
+            $usersid = array_keys($this->vpl->get_group_members($this->instance->groupid));
         } else {
-            $usersid = array (
-                    $this->instance->userid
-            );
+            $usersid = [$this->instance->userid];
         }
-        $grades = array ();
-        $gradeinfo = array ();
-        $gradeinfo['userid'] = $this->instance->userid;
-        $gradeinfo['rawgrade'] = null;
-        $gradeinfo['feedback'] = '';
+        $grades = [];
         foreach ($usersid as $userid) {
+            $gradeinfo = [];
             $gradeinfo['userid'] = $userid;
+            $gradeinfo['rawgrade'] = null;
+            $gradeinfo['feedback'] = '';
             $grades[$userid] = $gradeinfo;
         }
         $vplinstance = $this->vpl->get_instance();
+        self::reset_gradebook_cache();
         if (vpl_grade_item_update( $vplinstance, $grades ) != GRADE_UPDATE_OK) {
             return false;
         }
@@ -387,14 +413,9 @@ class mod_vpl_submission {
             $this->instance->grader = $USER->id;
         }
         if ($this->vpl->is_group_activity()) {
-            $usersid = array ();
-            foreach ($this->vpl->get_group_members( $this->instance->groupid ) as $user) {
-                $usersid[] = $user->id;
-            }
+            $usersid = array_keys($this->vpl->get_group_members($this->instance->groupid));
         } else {
-            $usersid = array (
-                    $this->instance->userid
-            );
+            $usersid = [$this->instance->userid];
         }
         $this->instance->dategraded = time();
         if ($scaleid != 0) {
@@ -417,8 +438,8 @@ class mod_vpl_submission {
                 unlink( $fn );
             }
             // Update gradebook.
-            $grades = array ();
-            $gradeinfo = array ();
+            $grades = [];
+            $gradeinfo = [];
             // If no grade then don't set rawgrade and feedback.
             if ( $scaleid != 0 ) {
                 $gradeinfo['rawgrade'] = $this->reduce_grade($info->grade);
@@ -433,8 +454,9 @@ class mod_vpl_submission {
             $gradeinfo['datesubmitted'] = $this->instance->datesubmitted;
             $gradeinfo['dategraded'] = $this->instance->dategraded;
             foreach ($usersid as $userid) {
-                $gradeinfo['userid'] = $userid;
-                $grades[$userid] = $gradeinfo;
+                $usergrade = $gradeinfo + [];
+                $usergrade['userid'] = $userid;
+                $grades[$userid] = $usergrade;
             }
             if (vpl_grade_item_update( $this->vpl->get_instance(), $grades ) != GRADE_UPDATE_OK ) {
                 return false;
@@ -442,11 +464,8 @@ class mod_vpl_submission {
             // The function vpl_grade_item_update say OK but may be overridden.
             // Check if grade is overridden by comparing save time.
             // Other option is checking the grade_item state.
-            $vplinstance = $this->vpl->get_instance();
-            $gradesaved = grade_get_grades($vplinstance->course, 'mod', 'vpl',
-                    $vplinstance->id, $usersid[0]);
             try {
-                $dategraded = $gradesaved->items[0]->grades[$usersid[0]]->dategraded;
+                $dategraded = $this->get_gradebook_grade($usersid[0])->dategraded;
             } catch (Exception $e) {
                 return false;
             }
@@ -624,13 +643,10 @@ class mod_vpl_submission {
                 if (! function_exists( 'grade_get_grades' )) {
                     require_once($CFG->libdir . '/gradelib.php');
                 }
-                $userid = $this->get_userid();
-                $grades = grade_get_grades($vplinstance->course, 'mod', 'vpl',
-                        $vplinstance->id, $userid);
+                $gradeobj = $this->get_gradebook_grade();
                 try {
-                    $gradeobj = $grades->items[0]->grades[$userid];
                     $gradestr = $gradeobj->str_long_grade;
-                    if ( $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
+                    if ($this->vpl->has_capability(VPL_GRADE_CAPABILITY)) {
                         $gradestr .= $gradeobj->hidden ? (' <b>' . get_string( 'hidden', 'core_grades' )) . '</b>' : '';
                         $gradestr .= $gradeobj->locked ? (' <b>' . get_string( 'locked', 'core_grades' )) . '</b>' : '';
                         $gradestr .= $gradeobj->overridden ? (' <b>' . get_string( 'overridden', 'core_grades' )) . '</b>' : '';
