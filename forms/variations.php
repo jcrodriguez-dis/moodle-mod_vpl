@@ -167,7 +167,7 @@ if ($varid == -13) { // No variation, basic form.
             if ($vid = $DB->insert_record(VPL_VARIATIONS, $fromform )) {
                 \mod_vpl\event\variation_added::logvpl($vpl, $vid );
             } else {
-                throw new moodle_exception('error:recordnotinserted', 'mod_vpl', VPL_VARIATIONS);
+                throw new moodle_exception('error:recordnotinserted', 'mod_vpl', '', VPL_VARIATIONS);
             }
             vpl_notice(get_string('saved', VPL));
             print_basic_html($form, $vpl);
@@ -190,7 +190,7 @@ if ($varid == -13) { // No variation, basic form.
                 vpl_notice(get_string('deleted'));
                 print_basic_html($form, $vpl);
             } else {
-                throw new moodle_exception('error:recordnotdeleted', 'mod_vpl', VPL_VARIATIONS);
+                throw new moodle_exception('error:recordnotdeleted', 'mod_vpl', '', VPL_VARIATIONS);
             }
         } else { // Update record.
             if ($DB->get_record(VPL_VARIATIONS, ['id' => $fromform->varid, 'vpl' => $vplid])) { // Check consistence.
@@ -203,7 +203,7 @@ if ($varid == -13) { // No variation, basic form.
                 vpl_notice(get_string('updated', '', $fromform->identification));
                 print_basic_html($form, $vpl);
             } else {
-                throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL_VARIATIONS);
+                throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
             }
         }
     } else {
@@ -215,7 +215,7 @@ if ($varid == -13) { // No variation, basic form.
             $mform->set_data( $variation );
             $mform->display();
         } else {
-            throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL_VARIATIONS);
+            throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
         }
     }
 }

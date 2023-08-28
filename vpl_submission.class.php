@@ -306,7 +306,7 @@ class mod_vpl_submission {
         $this->instance->grade = null;
         $fn = $this->get_gradecommentsfilename();
         if (! $DB->update_record( VPL_SUBMISSIONS, $this->instance )) {
-            throw new moodle_exception( 'error:recordnotupdated', 'mod_vpl', VPL_SUBMISSIONS );
+            throw new moodle_exception( 'error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS );
         } else {
             if (file_exists( $fn )) {
                 unlink( $fn );
@@ -500,7 +500,7 @@ class mod_vpl_submission {
             }
         }
         if (! $DB->update_record( 'vpl_submissions', $this->instance )) {
-            throw new moodle_exception( 'error:recordnotupdated', 'mod_vpl', VPL_SUBMISSIONS );
+            throw new moodle_exception( 'error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS );
         }
         return true;
     }

@@ -226,7 +226,7 @@ class mod_vpl {
         } else {
             $this->instance = self::get_db_record(VPL, $a);
             if (! $this->instance) {
-                throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL);
+                throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL.$a);
             }
             $this->course = self::get_db_record("course", $this->instance->course);
             if (!$this->course ) {
