@@ -94,7 +94,7 @@ function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) 
  *
  * @return int Bytes archived
  */
-function vpl_add_CE_to_zip($zip, $submission, $zipdirname) {
+function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
     $total = 0;
     $instance = $submission->get_instance();
     $cecg = $submission->getce();
@@ -208,7 +208,7 @@ if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
             $sourcedir = $submission->get_submission_directory();
             $sizearchived += vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
             $zipsubdirname = $zipdirname . $date . '.ceg/';
-            $sizearchived += vpl_add_CE_to_zip($zip, $submission, $zipsubdirname);
+            $sizearchived += vpl_add_ce_to_zip($zip, $submission, $zipsubdirname);
         }
         // To keep de memory used low, the zip file is closed and reopened.
         if ($sizearchived > SIZE_TRIGGER) {
