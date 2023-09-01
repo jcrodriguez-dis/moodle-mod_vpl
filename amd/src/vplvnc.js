@@ -34,21 +34,18 @@ define(
         'core/log'
     ],
     function($, jqui, VPLUtil, VPLUI, VPLClipboard, console) {
-        window.INCLUDE_URI = "../editor/noVNC/include/";
-        /**
-         * Load VNC Script after the Util ("util.js" is loaded
-         */
-        function loadVNCScripts() {
-            if (typeof Util == 'undefined') {
-                VPLUtil.delay('loadVNCScripts', loadVNCScripts);
-            } else {
-                Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
-                "keysymdef.js", "keyboard.js", "input.js", "display.js",
-                "jsunzip.js", "rfb.js", "keysym.js"]);
-            }
-        }
-        VPLUtil.delay('loadVNCScripts', loadVNCScripts);
         var VPLVNCClient = function(VNCDialogId, str) {
+            window.INCLUDE_URI = VPLUtil.options.scriptPath + "/noVNC/include/";
+            if (typeof Util == 'undefined') {
+                VPLUtil.loadScript(['/noVNC/include/util.js'],
+                    function() {
+                        VPLUtil.log('/noVNC/include/util.js loaded', true);
+                        Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
+                        "keysymdef.js", "keyboard.js", "input.js", "display.js",
+                        "jsunzip.js", "rfb.js", "keysym.js"]);
+                    }
+                );
+            }
             var self = this;
             var rfb;
             var title = '';
