@@ -124,7 +124,7 @@ OLDDIR=$(pwd)
 cd $(dirname $0)
 writeHeading "TDSPT Testing default Student's program tester of VPL for Moodle"
 export ORIGINDIR="../../jail/default_scripts"
-export TESTDIR="test"
+export TESTDIR="vpl_test.test"
 export CASESDIR="cases"
 export VPLTESTOUTPUT=".vpl_test_output"
 export VPLTESTERRORS=".vpl_test_errors"
