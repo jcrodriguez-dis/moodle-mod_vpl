@@ -64,11 +64,11 @@ class mod_vpl_executionoptions_form extends moodleform {
     }
 
     protected function get_runlist() {
-        return $this->get_dirlist('../jail/default_scripts', '_run.sh');
+        return $this->get_dirlist(vpl_get_scripts_dir(), '_run.sh');
     }
 
     protected function get_debuglist() {
-        return $this->get_dirlist('../jail/default_scripts', '_debug.sh');
+        return $this->get_dirlist(vpl_get_scripts_dir(), '_debug.sh');
     }
 
     protected function definition() {
