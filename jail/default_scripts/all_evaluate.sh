@@ -38,9 +38,16 @@ do
 	./$RUNSCRIPT version >> $ERRORSREPORT
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution $LANGEXE
-		echo "cp $COMMON_SCRIPT_SAVED common_script.sh" >> all_execute
-		echo "echo \"-$LANGUAGE\"" >> all_execute
-		echo "./$LANGEXE" >> all_execute
+		cat >>all_execute <<END_SCRIPT
+		cp $COMMON_SCRIPT_SAVED common_script.sh
+		echo "-$LANGUAGE"
+		./$LANGEXE &> .version.txt
+		if [ "\$?" == "0" ] ; then
+			cat .version.txt
+		else
+			echo "Error getting version of $LANGUAGE"
+		fi
+END_SCRIPT
 	elif [ -f vpl_wexecution ] ; then
 		echo "Error: generating $LANGUAGE compiler/interpreter version" >> $ERRORSREPORT
 	fi
