@@ -29,7 +29,9 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 global $CFG, $DB;
 require_once($CFG->libdir.'/formslib.php');
 
-
+/**
+ * Class to define variation activation and variation title form
+ */
 class mod_vpl_variation_option_form extends moodleform {
     protected function definition() {
         $mform = & $this->_form;
@@ -46,6 +48,9 @@ class mod_vpl_variation_option_form extends moodleform {
     }
 }
 
+/**
+ * Class to define variation add and edit form
+ */
 class mod_vpl_variation_form extends moodleform {
     protected $varid;
     protected $number;
@@ -88,10 +93,19 @@ class mod_vpl_variation_form extends moodleform {
         $mform->addGroup( $buttongroup );
     }
 }
-function get_edit_variation_html($variation, $cmid, $number) {
+/**
+ * Returns HTML of a variation in the variation page
+ *
+ * @param object $variation DB register.
+ * @param object $cmid of the VPL activity.
+ * @param int $number secuential number of the variation in the page
+ * @return string HTML
+ */
+function get_variation_with_edit_html($variation, $cmid, $number) {
     global $OUTPUT;
+    $anchor = "vpl_variation_{$cmid}_{$number}";
     $parms = ['number' => $number, 'identification' => s($variation->identification)];
-    $html = "<hr><b>" . get_string( 'variation_n_i', VPL, $parms ) . '</b> ';
+    $html = "<hr id='$anchor'><b>" . get_string( 'variation_n_i', VPL, $parms ) . '</b> ';
     $parms = ['id' => $cmid, 'varid' => $variation->id, 'number' => $number];
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('edit');
@@ -99,16 +113,46 @@ function get_edit_variation_html($variation, $cmid, $number) {
     $html .= $OUTPUT->box( $variation->description );
     return $html;
 }
-function get_add_variation_html($id) {
-    $parms = ['id' => $id, 'varid' => -1, 'number' => 0];
+
+/**
+ * Returns HTML link to show a variation in the variation page
+ *
+ * @param object $variation DB register.
+ * @param object $cmid of the VPL activity.
+ * @param int $number secuential number of the variation in the page
+ * @return string HTML
+ */
+function get_link_variation_html($variation, $cmid, $number) {
+    global $OUTPUT;
+    $parms = ['id' => $cmid];
+    $anchor = "vpl_variation_{$cmid}_{$number}";
+    $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms, $anchor);
+    $parms = ['number' => $number, 'identification' => s($variation->identification)];
+    $btext = get_string( 'variation_n_i', VPL, $parms );
+    return html_writer::link($url, $btext, array('class' => 'btn btn-secondary'));
+}
+/**
+ * Returns HTML link to add a new variation for this activity
+ *
+ * @param object $cmid of the VPL activity.
+ * @return string HTML
+ */
+function get_add_variation_html($cmid) {
+    $parms = ['id' => $cmid, 'varid' => -1, 'number' => 0];
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('add');
-    $html = html_writer::link($url, $btext, array('class' => 'btn btn-primary')) . '<br>';
+    $html = html_writer::link($url, $btext, array('class' => 'btn btn-primary'));
     return $html;
 }
 
+/**
+ * Prints HTML showing the link to add a new variation for this activity
+ *
+ * @param object $form form to show
+ * @param object $vpl current VPL activity
+ */
 function print_basic_html($form, $vpl) {
-    global $DB;
+    global $DB, $OUTPUT;
     $form->set_data($vpl->get_instance());
     $form->display();
     $list = $DB->get_records('vpl_variations', ['vpl' => $vpl->get_instance()->id]);
@@ -117,7 +161,12 @@ function print_basic_html($form, $vpl) {
     echo get_add_variation_html($id);
     $number = 1;
     foreach ($list as $variation) {
-        echo get_edit_variation_html($variation, $id, $number);
+        echo ' ' . get_link_variation_html($variation, $id, $number);
+        $number ++;
+    }
+    $number = 1;
+    foreach ($list as $variation) {
+        echo get_variation_with_edit_html($variation, $id, $number);
         $number ++;
     }
 }
