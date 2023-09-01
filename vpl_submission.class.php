@@ -225,17 +225,21 @@ class mod_vpl_submission {
 
     private static $gradecache = [];
     public static function load_gradebook_grades($vpl) {
-        $cm = $vpl->get_course_module();
-        $currentgroup = groups_get_activity_group($cm, true);
-        $users = $vpl->get_students($currentgroup);
-        $usersids = array_keys($users);
-        $courseid = $vpl->get_course()->id;
-        $vplid = $vpl->get_instance()->id;
-        $grades = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $usersids);
-        if (!isset(self::$gradecache[$vplid])) {
-            self::$gradecache[$vplid] = [];
+        if ($vpl->get_grade() != 0) {
+            $cm = $vpl->get_course_module();
+            $currentgroup = groups_get_activity_group($cm, true);
+            $users = $vpl->get_students($currentgroup);
+            $usersids = array_keys($users);
+            $courseid = $vpl->get_course()->id;
+            $vplid = $vpl->get_instance()->id;
+            $grades = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $usersids);
+            if (!isset(self::$gradecache[$vplid])) {
+                self::$gradecache[$vplid] = [];
+            }
+            if ($grades) {
+                self::$gradecache[$vplid] += $grades->items[0]->grades;
+            }
         }
-        self::$gradecache[$vplid] += $grades->items[0]->grades;
     }
     public static function reset_gradebook_cache() {
         self::$gradecache = [];
@@ -257,7 +261,7 @@ class mod_vpl_submission {
         return self::$gradecache[$vplid][$userid];
     }
     /**
-     * Remove grade
+     * Remove grade.
      *
      * @return true if removed and false if not
      */
@@ -316,7 +320,7 @@ class mod_vpl_submission {
     }
 
     /**
-     * Get current grade reduction
+     * Get current grade reduction.
      *
      * @param & $reduction
      *          value or factor
@@ -342,7 +346,7 @@ class mod_vpl_submission {
         }
     }
     /**
-     * String with the reduction policy
+     * String with the reduction policy.
      *
      * @return string reduction policy in HTML format
      */
@@ -372,7 +376,7 @@ class mod_vpl_submission {
     }
 
     /**
-     * Reduce grade based en number of evaluations
+     * Reduce grade based en number of evaluations.
      *
      * @param float $grade value
      * @return float new grade
