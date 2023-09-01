@@ -137,3 +137,7 @@ jobs:
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_vpl_evaluate.sh
+      
+      - name: Tests tester of automatic evaluation of students' programs
+        if: ${{ always() }}
+        run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
