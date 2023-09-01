@@ -1,4 +1,10 @@
 #!/bin/bash
+# This file is part of VPL for Moodle
+# Default evaluate script for VPL
+# Copyright (C) 2024 onwards Juan Carlos Rodríguez-del-Pino
+# License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+# Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+
 CHECK_MARK="\u2713";
 X_MARK="\u274C";
 function writeHeading {
@@ -102,8 +108,9 @@ function runAllTests {
 	echo "$npass of $ntests tests passed"
 	return $finalResult
 }
+INIDIR="$(pwd)"
+cd "$(dirname $0)"
 OLDDIR="$(pwd)"
-cd $(dirname $0)
 writeHeading "Testing automatic program test for VPL for Moodle"
 export ORIGINDIR="$OLDDIR/../../jail/default_scripts"
 export TESTDIR="$OLDDIR/vpl_test.test"
@@ -114,5 +121,5 @@ export VPL_GRADEMAX="10"
 cd $CASESDIR
 runAllTests
 finalResult=$?
-cd $OLDDIR
+cd $INIDIR
 exit $finalResult
