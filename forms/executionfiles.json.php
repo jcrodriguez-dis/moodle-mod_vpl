@@ -78,7 +78,10 @@ try {
         case 'run' :
         case 'debug' :
         case 'evaluate' :
-            $result->response = mod_vpl_edit::execute( $vpl, $USER->id, $action, $actiondata );
+            if ($action == 'evaluate') {
+                $action = "test_evaluate";
+            }
+            $result->response = mod_vpl_edit::execute($vpl, $USER->id, $action, $actiondata );
             break;
         case 'retrieve' :
             $result->response = mod_vpl_edit::retrieve_result( $vpl, $USER->id );

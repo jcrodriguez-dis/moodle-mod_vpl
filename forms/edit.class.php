@@ -248,8 +248,16 @@ class mod_vpl_edit {
      * @return Object with execution information
      */
     public static function execute($vpl, $userid, $action, $options = array()) {
+        global $USER;
         $example = $vpl->get_instance()->example;
-        $lastsub = $vpl->last_user_submission( $userid );
+        if ($action == 'test_evaluate') {
+            $lastsub = new stdClass();
+            $lastsub->vpl = $vpl->get_instance()->id;
+            $lastsub->id = 0;
+            $lastsub->userid = $USER->id;
+        } else {
+            $lastsub = $vpl->last_user_submission($userid);
+        }
         if (! $lastsub && ! $example) {
             throw new Exception( get_string( 'nosubmission', VPL ) );
         }
@@ -258,16 +266,9 @@ class mod_vpl_edit {
         } else {
             $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         }
-        $code = array (
-                'run' => 0,
-                'debug' => 1,
-                'evaluate' => 2
-        );
-        $traslate = array (
-                'run' => 'run',
-                'debug' => 'debugged',
-                'evaluate' => 'evaluated'
-        );
+        $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
+        $traslate = ['run' => 'run', 'debug' => 'debugged',
+                     'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated'];
         $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
         return $submission->run( $code[$action], $options );
@@ -285,7 +286,7 @@ class mod_vpl_edit {
         if ($processid == -1) { // To keep previous behaviour.
             $processinfo = vpl_running_processes::get_run($userid, $vpl->get_instance()->id);
             if ($processinfo == false) { // No process to cancel.
-                throw new Exception( get_string( 'serverexecutionerror', VPL ) );
+                throw new Exception( get_string('serverexecutionerror', VPL) . ' No process to cancel');
             } else {
                 $processid = $processinfo->id;
             }
@@ -413,7 +414,7 @@ DIRECTRUNCODE;
         $process->vpl = $vplid;
         $process->adminticket = $jailresponse['adminticket'];
         $process->server = $server;
-        $process->type = 3;
+        $process->type = 4;
         $response->processid = vpl_running_processes::set( $process );
         return $response;
     }

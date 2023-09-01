@@ -45,7 +45,7 @@ class vpl_running_processes {
      */
     public static function get_run(int $userid, ?int $vplid = null, ?string $adminticket = null) {
         global $DB;
-        $select = 'userid = :userid AND type <> 3';
+        $select = 'userid = :userid AND type <> 4';
         $params = ['userid' => $userid];
         if ( $vplid !== null ) {
             $params['vpl'] = $vplid;
@@ -66,7 +66,7 @@ class vpl_running_processes {
      */
     public static function get_directrun(int $userid, ?int $vplid = null) {
         global $DB;
-        $params = [ 'userid' => $userid, 'type' => 3 ];
+        $params = [ 'userid' => $userid, 'type' => 4 ];
         if ($vplid !== null) {
             $params['vpl'] = $vplid;
         }
