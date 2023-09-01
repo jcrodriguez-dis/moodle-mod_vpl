@@ -574,7 +574,7 @@ define(
             var deferred = $.Deferred();
             var defail = function(m) {
                 deferred.reject(m);
-                if(ws !== null) {
+                if (ws !== null) {
                     ws.close();
                 }
             };
