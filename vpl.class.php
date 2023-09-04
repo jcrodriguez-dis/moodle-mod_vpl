@@ -651,7 +651,7 @@ class mod_vpl {
      *
      * @return bool
      */
-    protected function pass_seb_check() {
+    public function pass_seb_check() {
         $inst = $this->get_instance();
         $fail = $inst->sebrequired > 0;
         $fail = $fail && strpos($_SERVER['HTTP_USER_AGENT'], 'SEB') === false;
