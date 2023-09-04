@@ -1126,11 +1126,18 @@ define(
             }));
             VPLUI.setDialogTitleIcon(dialogRename, 'rename');
 
+            var dialogComments = $('#vpl_ide_dialog_comments');
+            var oldStudentComments = '';
             dialogButtons[str('ok')] = function() {
+                if (oldStudentComments != $('#vpl_ide_input_comments').val()) {
+                    fileManager.setModified();
+                }
                 $(this).dialog('close');
             };
-            var dialogComments = $('#vpl_ide_dialog_comments');
             dialogComments.dialog($.extend({}, dialogbaseOptions, {
+                open: function() {
+                    oldStudentComments = $('#vpl_ide_input_comments').val();
+                },
                 title: str('comments'),
                 width: '40em',
                 buttons: dialogButtons
