@@ -345,6 +345,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return object $data object updated.
      */
     public static function prepare_execution_evaluation_tests($data) {
+        // Changes resources limits to maximum.
+        $plugincfg = get_config('mod_vpl');
+        $data->maxtime = (int) $plugincfg->maxexetime;
+        $data->maxfilesize = (int) $plugincfg->maxexefilesize;
+        $data->maxmemory = (int) $plugincfg->maxexememory;
+        $data->maxprocesses = (int) $plugincfg->maxexeprocesses;
+        // Selects test files.
         $vpl = new mod_vpl(false, $data->activityid);
         $efg = $vpl->get_execution_fgm();
         $usevariations = $vpl->get_instance()->usevariations;
@@ -376,7 +383,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $data->submittedlist = [];
         $data->pln = self::get_pln($testfilelist);
-        // Write local environment.
+        // Write local environment for each solution.
         foreach ($casefilelist as $casedir => $casefilenames) {
             $localenvironment = self::get_bash_expor_for_subfiles($casefilenames);
             $localenvironmentfile = self::DIR_TEST_EVALUATION . '/' . $casedir . '/.localenvironment.sh';
