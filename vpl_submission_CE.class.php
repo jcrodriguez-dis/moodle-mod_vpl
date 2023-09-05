@@ -296,7 +296,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($firstcall) { // No recursive call.
             $data->activityid = $vplinstance->id;
             $data->type = $type;
-            // Limit resource to maximum.
+            // Limit resources to minimum.
             $data->maxtime = min($data->maxtime, (int) $plugincfg->maxexetime );
             $data->maxfilesize = min($data->maxfilesize, (int) $plugincfg->maxexefilesize );
             $data->maxmemory = min($data->maxmemory, (int) $plugincfg->maxexememory );
@@ -436,6 +436,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $info .= self::get_bash_expor_for_subfiles($data->submittedlist);
         }
         // Add identifications of variations if exist.
+        $info .= vpl_bash_export('VPL_VARIATION', '-');
         $vplinstance = $vpl->get_instance();
         $usevariations = $vplinstance->usevariations;
         if ($usevariations) {
@@ -460,18 +461,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $premadescripts = self::get_scripts($vpl, $data);
         for ($i = 0; $i <= $data->type; $i ++) {
             $filename = self::$scriptlist[$i];
-            if (isset($data->files[$filename]) && trim($data->files[$filename]) > '') {
-                // Custom script, fixes if no shebang => adding bash.
-                if (substr($data->files[$filename], 0, 2) != '#!') {
+            if (isset($data->files[$filename]) && trim($data->files[$filename]) > '') { // Use custom script.
+                if (substr($data->files[$filename], 0, 2) != '#!') { // Fixes script adding bash if no shebang.
                     $data->files[$filename] = "#!/bin/bash\n" . $data->files[$filename];
                 }
-            } else if (isset($premadescripts[$filename])) {
-                $filedata = $premadescripts[$filename];
-                if (trim($filedata) > '') {
-                    $data->files[$filename] = $filedata;
-                    $data->filestodelete[$filename] = 1;
-                    unset($premadescripts[$filename]);
-                }
+                unset($premadescripts[$filename]);
             }
         }
         foreach ($premadescripts as $filename => $filedata) {
