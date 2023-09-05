@@ -182,16 +182,38 @@ function mod_vpl_core_calendar_is_event_visible(calendar_event $event, $userid =
  *
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory objet to generate the action
+ * @param int $userid (optional) User id for checking capabilities, etc.
  * @return \core_calendar\action_factory|null The action object or null
  */
 function mod_vpl_core_calendar_provide_event_action(calendar_event $event,
-                                                    \core_calendar\action_factory $factory) {
+                                                    \core_calendar\action_factory $factory,
+                                                    $userid = 0) {
+    global $USER;
+    if ($userid == 0) {
+        $userid = $USER->id;
+    }
     $vpl = new mod_vpl(null, $event->instance);
-    if ($vpl->is_visible()) {
-        $text = get_string('dueeventaction', VPL);
-        $cmid = $vpl->get_course_module()->id;
-        $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
-        return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
+    $vplduedate = $vpl->get_effective_setting('duedate', $userid);
+    $showdue = 60 * 60 * 12; // Half day.
+    if ($vplduedate > 0 && (($vplduedate + $showdue) < time())) {
+        return null;
+    }
+    if ($vpl->is_visible($userid)) {
+        if ($vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+            $text = get_string('submissionslist', VPL);
+            $cmid = $vpl->get_course_module()->id;
+            $link = new \moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid]);
+            return $factory->create_instance($text, $link, 1, true);
+        } else {
+            if ($vpl->last_user_submission( $userid ) !== false) {
+                return null;
+            } else {
+                $text = get_string('dueeventaction', VPL);
+                $cmid = $vpl->get_course_module()->id;
+                $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
+                return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
+            }
+        }
     } else {
         return null;
     }
