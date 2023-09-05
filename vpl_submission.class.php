@@ -891,47 +891,74 @@ class mod_vpl_submission {
     const COMMENTTAG = 'Comment :=>>';
     const BEGINCOMMENTTAG = '<|--';
     const ENDCOMMENTTAG = '--|>';
-    public function proposedgrade($text) {
-        $ret = '';
-        $nl = vpl_detect_newline( $text );
-        $lines = explode( $nl, $text );
-        foreach ($lines as $line) {
-            if (strpos( $line, self::GRADETAG ) === 0) {
-                $ret = trim( substr( $line, strlen( self::GRADETAG ) ) );
+    public static function find_proposedgrade($text) {
+        if (PHP_EOL == "\r\n") { // Fix for Windows
+            $text = str_replace("\n", "\r\n", $text);
+        }
+        $grademark = '';
+        $reggrademark = "/^Grade :=>>(.*)$/m";
+        $offset = 0;
+        while (true) {
+            $matches = [];
+            $res = preg_match($reggrademark, $text, $matches, PREG_OFFSET_CAPTURE, $offset);
+            if ( $res == 1) {
+                $grademark = trim($matches[1][0]);
+                $offset = $matches[1][1];
+            } else {
+                break;
             }
         }
-        return $ret;
+        return $grademark;
     }
-    public function proposedcomment($text) {
-        $incomment = false;
-        $ret = '';
-        $nl = vpl_detect_newline( $text );
-        $lines = explode( $nl, $text );
-        foreach ($lines as $line) {
-            $line = rtrim( $line ); // Remove \r, spaces & tabs.
-            $tline = trim( $line );
-            if ($incomment) {
-                if ($tline == self::ENDCOMMENTTAG) {
-                    $incomment = false;
+
+    public function proposedgrade($text) {
+        return self::find_proposedgrade($text);
+    }
+
+    public static function find_proposedcomment($text) {
+        if (PHP_EOL == "\r\n") { // Fix for Windows
+            $text = str_replace("\n", "\r\n", $text);
+        }
+        $comments = '';
+        $startcommentreg = '/^(Comment :=>>(.*)|'. preg_quote(self::BEGINCOMMENTTAG) . ')$/m';
+        $endcommentreg = '/^' . preg_quote(self::ENDCOMMENTTAG) . '$/m';
+        $offset = 0;
+        while (true) {
+            $matches = [];
+            $result = preg_match($startcommentreg, $text, $matches, PREG_OFFSET_CAPTURE, $offset);
+            if ( $result == 1) {
+                $found = $matches[1][0];
+                if ( $found == self::BEGINCOMMENTTAG ) { // Block comment start.
+                    $posstart = $matches[1][1] + strlen(self::BEGINCOMMENTTAG) + 1;
+                    $result = preg_match($endcommentreg, $text, $matches, PREG_OFFSET_CAPTURE, $posstart);
+                    if ($result == 1) { // Block comment end.
+                        $offset = $matches[0][1];
+                        $comments .= substr($text, $posstart, $offset - $posstart);
+                        $offset += strlen(self::ENDCOMMENTTAG) + 1;
+                    } else { // End of block comment not found.
+                        $comments .= substr($text, $posstart);
+                        break;
+                    }
                 } else {
-                    $ret .= $line . "\n";
+                    $found = $matches[2][0] . "\n";
+                    $comments .= $found;
+                    $offset = $matches[1][1] + strlen(self::COMMENTTAG) + strlen($found);
                 }
             } else {
-                if (strpos( $line, self::COMMENTTAG ) === 0) {
-                    $ret .= substr( $line, strlen( self::COMMENTTAG ) ) . "\n";
-                } else if ($tline == self::BEGINCOMMENTTAG) {
-                    $incomment = true;
-                }
+                break;
             }
         }
-        return $ret;
+        return $comments;
+    }
+
+    public function proposedcomment($text) {
+        return self::find_proposedcomment($text);
     }
 
     /**
      * Add link to file line format filename:linenumber:
      *
-     * @param
-     *            text to be converted
+     * @param string $text Text to be converted
      * @return string text with links
      */
     public function add_filelink($text) {
@@ -961,11 +988,12 @@ class mod_vpl_submission {
         return $ret;
     }
     /**
-     * Convert compilation/execution result to HTML
+     * Convert last comment compilation/execution result to HTML.
      *
-     * @param
-     *            text to be converted
-     * @return string HTML
+     * @param string $title Title of comment.
+     * @param string &$comment Comment to change.
+     * @param bool $dropdown Show as dropdown or not.
+     * @return string HTML.
      */
     private function get_last_comment($title, &$comment, $dropdown) {
         $html = '';
@@ -992,8 +1020,8 @@ class mod_vpl_submission {
     /**
      * Convert compilation/execution result to HTML
      *
-     * @param
-     *            text to be converted
+     * @param string $text to be converted
+     * @param bool Show as dropdown or not.
      * @return string HTML
      */
     public function result_to_html($text, $dropdown = true) {
@@ -1188,14 +1216,10 @@ class mod_vpl_submission {
     /**
      * Get compilation, execution and proposed grade from array
      *
-     * @param $response array
-     *            response from server
-     * @param
-     *            $compilation
-     * @param
-     *            $execution
-     * @param
-     *            $grade
+     * @param array $response Response from server
+     * @param string &$compilation in HTML
+     * @param string &$execution in HTML
+     * @param string &$grade in HTML
      * @return void
      */
     public function get_ce_html($response, &$compilation, &$execution, &$grade, $dropdown, $returnrawexecution = false) {
