@@ -313,6 +313,7 @@ foreach ($list as $uginfo) {
                     $subinstance->gradesortable = $prograde;
                 }
             }
+            $result = []; // Dispose array.
         }
         // I know that subinstance isn't the correct place to put nsubmissions but is the easy.
         if (isset( $submissionsnumber[$uginfo->id] )) {
@@ -466,6 +467,7 @@ foreach ($alldata as $data) {
                     $text .= ' (' . $prograde . ')';
                 }
             }
+            $result = []; // Dispose array.
             $text = '<div id="g' . $subid . '">' . $text . '</div>';
             if ($subinstance->grader == $USER->id) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
@@ -509,6 +511,7 @@ foreach ($alldata as $data) {
                     $text = get_string( 'proposedgrade', VPL, $submission->get_grade_core( $prograde ) );
                 }
             }
+            $result = []; // Dispose array.
             if ($text == '') {
                 $text = get_string( 'nograde' );
             }
