@@ -21,7 +21,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define(['mod_vpl/vplutil'], function(VPLUtil) {
+define(['mod_vpl/vplui'], function(VPLUI) {
     return {
         init: function(options) {
             options.next = function() {
@@ -34,7 +34,7 @@ define(['mod_vpl/vplutil'], function(VPLUtil) {
              * @param {string} message Message to shohw in dialog.
              */
             function showErrorMessage(message) {
-                VPLUtil.showErrorMessage(message, {
+                VPLUI.showErrorMessage(message, {
                     next: options.next
                 });
             }
@@ -47,10 +47,10 @@ define(['mod_vpl/vplutil'], function(VPLUtil) {
                 },
             };
             action = function() {
-                VPLUtil.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
+                VPLUI.requestAction('evaluate', 'evaluating', {}, options.ajaxurl)
                 .done(
                         function(response) {
-                            VPLUtil.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
+                            VPLUI.webSocketMonitor(response, 'evaluate', 'evaluating', executionActions)
                             .done(options.next)
                             .fail(showErrorMessage);
                         }

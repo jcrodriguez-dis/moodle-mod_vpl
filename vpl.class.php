@@ -149,55 +149,104 @@ class mod_vpl {
     protected $requiredfgm;
 
     /**
-     * Internal var object to execution file group manager
+     * An internal var object of the execution file group manager
      *
      * @var object of file group manager
      */
     protected $executionfgm;
 
     /**
+     * An internal array of messages describing errors found
+     *
+     * @var string[]
+     */
+    protected $errors = [];
+
+    /**
+     * An internal array of DB instances cached
+     *
+     * @var object[]
+     */
+    protected static $instancescache = [];
+
+    /**
+     * Returns a record instance, cached or from DB
+     *
+     * @param string $table Table name
+     * @param int $id The id of the register to get from the table
+     * @return object this the register or null if not found
+     */
+    public static function get_db_record($table, $id) {
+        global $DB;
+        if (! isset(self::$instancescache[$table])) {
+            self::$instancescache[$table] = [];
+        }
+        if (! isset(self::$instancescache[$table][$id])) {
+            self::$instancescache[$table][$id] = $DB->get_record($table, ["id" => $id]);
+        }
+        return self::$instancescache[$table][$id];
+    }
+    /**
+     * Remove one record or all records from cache
+     *
+     * @param string $table Table name
+     * @param int $id The id of the register to get from the table
+     * @return void
+     */
+    public static function reset_db_cache($table = 'all', $id = -1) {
+        if ($table == 'all') {
+            self::$instancescache = [];
+        } else {
+            unset(self::$instancescache[$table][$id]);
+        }
+    }
+
+    /**
      * Constructor
      *
-     * @param $id int
-     *            optional course_module id
-     * @param $a int
-     *            optional module instance id
+     * @param int $id optional course_module id
+     * @param int $a optional VPL instance id
      */
     public function __construct($id, $a = null) {
         global $DB;
         if ($id) {
-            if (! $this->cm = get_coursemodule_from_id( VPL, $id )) {
+            $this->cm = get_coursemodule_from_id(VPL, $id);
+            if (! $this->cm) {
                 throw new moodle_exception('invalidcoursemodule');
             }
-            if (! $this->course = $DB->get_record( "course", array (
-                    "id" => $this->cm->course
-            ) )) {
+            $this->course = self::get_db_record("course", $this->cm->course);
+            if (! $this->course) {
                 throw new moodle_exception('invalidcourseid');
             }
-            if (! $this->instance = $DB->get_record( VPL, array (
-                    "id" => $this->cm->instance
-            ) )) {
+            $this->instance = self::get_db_record(VPL, $this->cm->instance);
+            if (! $this->instance) {
                 throw new moodle_exception('invalidcoursemodule');
             }
             $this->instance->cmidnumber = $this->cm->id;
         } else {
-            if (! $this->instance = $DB->get_record( VPL, array (
-                    "id" => $a
-            ) )) {
-                throw new moodle_exception('error:inconsistency', 'mod_vpl', VPL);
+            $this->instance = self::get_db_record(VPL, $a);
+            if (! $this->instance) {
+                throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL.$a);
             }
-            if (! $this->course = $DB->get_record( "course",
-                    array (
-                            "id" => $this->instance->course
-                    ) )) {
+            $this->course = self::get_db_record("course", $this->instance->course);
+            if (!$this->course ) {
                 throw new moodle_exception('invalidcourseid');
             }
             $this->cm = get_coursemodule_from_instance( VPL, $this->instance->id, $this->course->id );
             if (! ($this->cm)) {
-                vpl_notice( get_string( 'invalidcoursemodule', 'error' ) . ' VPL id=' . $a );
                 // Don't stop on error. This let delete a corrupted course.
+                $this->errors[] = get_string( 'invalidcoursemodule', 'error' );
             } else {
                 $this->instance->cmidnumber = $this->cm->id;
+            }
+        }
+        if (! $this->basedon_is_ok()) {
+            // Don't stop on error. This allow to repare based on chain.
+            if (! self::get_db_record(VPL, $this->instance->basedon)) {
+                $this->errors[] = get_string('basedon_deleted', VPL);
+                $this->instance->basedon = 0; // Avoid missing VPL errors.
+            } else {
+                $this->errors[] = get_string('basedon_chain_broken', VPL);
             }
         }
         $this->requiredfgm = null;
@@ -247,7 +296,8 @@ class mod_vpl {
     public function update() {
         global $DB;
         $this->instance->timemodified = time();
-        return $DB->update_record( VPL, $this->instance );
+        self::reset_db_cache(VPL, $this->instance->id);
+        return $DB->update_record(VPL, $this->instance);
     }
 
     /**
@@ -348,6 +398,17 @@ class mod_vpl {
     }
 
     /**
+     * Return the list of readonly files for students
+     *
+     * @return array readonly files for students
+     */
+    public function get_readonly_files() {
+        $exeflist = $this->get_execution_files();
+        $reqflist = $this->get_required_files();
+        return array_values(array_intersect($exeflist, $reqflist));
+    }
+
+    /**
      * get instance name with groupping name if available
      *
      * @return string with name+(grouping name)
@@ -360,6 +421,9 @@ class mod_vpl {
             if ($grouping !== false) {
                 $ret .= ' (' . $grouping->name . ')';
             }
+        }
+        if (count($this->errors)) {
+            $ret .= ' (' . get_string('error') . ')';
         }
         return $ret;
     }
@@ -396,7 +460,7 @@ class mod_vpl {
      */
     public function get_fulldescription_with_basedon() {
         $ret = '';
-        if ($this->instance->basedon) { // Show recursive varaitions.
+        if ($this->instance->basedon) { // Show recursive variations.
             $basevpl = new mod_vpl( false, $this->instance->basedon );
             $ret .= $basevpl->get_fulldescription_with_basedon();
         }
@@ -583,15 +647,25 @@ class mod_vpl {
     }
 
     /**
-     * Checks SEB restrictions and shows error if not passed
-     * @return void
+     * Checks SEB restrictions returns true if passed.
+     *
+     * @return bool
      */
-    protected function seb_check() {
+    public function pass_seb_check() {
         $inst = $this->get_instance();
         $fail = $inst->sebrequired > 0;
         $fail = $fail && strpos($_SERVER['HTTP_USER_AGENT'], 'SEB') === false;
         $fail = $fail || ! $this->is_sebkey_valid();
-        if ( $fail ) {
+        return ! $fail;
+    }
+
+    /**
+     * Checks SEB restrictions and shows error if not passed.
+     *
+     * @return void
+     */
+    protected function seb_check() {
+        if ( ! $this->pass_seb_check() ) {
             $str = get_string( 'sebrequired_help', VPL );
             if ( constant( 'AJAX_SCRIPT') ) {
                 throw new Exception( $str );
@@ -604,7 +678,7 @@ class mod_vpl {
     }
 
     /**
-     * Return true if is set to use SEB
+     * Return true if is set to use SEB.
      * @return void
      */
     protected function use_seb() {
@@ -688,7 +762,7 @@ class mod_vpl {
         if ($USER->id != $userid ) {
             if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) ||
                 $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
-                $user = $DB->get_record( 'user', ['id' => $USER->id ] );
+                $user = self::get_db_record('user', $USER->id);
                 $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
                 if (strpos($comments, $submittedby) === 0 ) {
                     $submittedby = '';
@@ -1045,15 +1119,19 @@ class mod_vpl {
      *
      * @return bool
      */
-    public function is_visible() {
+    public function is_visible($userid = false) {
+        global $USER;
+        if (empty($userid)) {
+            $userid = $USER->id;
+        }
         $cm = $this->get_course_module();
-        $modinfo = get_fast_modinfo( $cm->course );
+        $modinfo = get_fast_modinfo($cm->course, $userid);
         $ret = true;
-        $ret = $ret && $modinfo->get_cm( $cm->id )->uservisible;
-        $ret = $ret && $this->has_capability( VPL_VIEW_CAPABILITY );
+        $ret = $ret && $modinfo->get_cm($cm->id)->uservisible;
+        $ret = $ret && $this->has_capability(VPL_VIEW_CAPABILITY, $userid);
         // Grader and manager always view.
-        $ret = $ret || $this->has_capability( VPL_GRADE_CAPABILITY );
-        $ret = $ret || $this->has_capability( VPL_MANAGE_CAPABILITY );
+        $ret = $ret || $this->has_capability(VPL_GRADE_CAPABILITY, $userid);
+        $ret = $ret || $this->has_capability(VPL_MANAGE_CAPABILITY, $userid);
         return $ret;
     }
 
@@ -1078,7 +1156,7 @@ class mod_vpl {
     }
 
     /**
-     * is group activity
+     * Is a group activity?
      *
      * @return bool
      */
@@ -1092,20 +1170,18 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @param
-     *            user object return HTML code to show user picture
-     * @return String
+     * Return HTML code to show user picture and user fullname
+     * @param object $user DB instance
+     * @return string HTML code
      */
     public function user_fullname_picture($user) {
         return $this->user_picture( $user ) . ' ' . $this->fullname( $user );
     }
 
     /**
-     *
-     * @param
-     *            user object return HTML code to show user picture
-     * @return String
+     * Return HTML code to show user picture
+     * @param object $user DB instance
+     * @return string HTML code
      */
     public function user_picture($user) {
         global $OUTPUT;
@@ -1118,12 +1194,10 @@ class mod_vpl {
     }
 
     /**
-     * return formated name of user or group
+     * Return formated name of user or group
      *
-     * @param
-     *            user object
-     * @param
-     *            withlink boolean. if true and is group add link to group. Default true
+     * @param object $user
+     * @param bool $withlink if true and is group activity add link to group. Default true.
      * @return String
      */
     public function fullname($user, $withlink = true) {
@@ -1289,9 +1363,7 @@ class mod_vpl {
         if (! isset( $this->scale )) {
             if ($this->get_grade() < 0) {
                 $gradeid = - $this->get_grade();
-                $this->scale = $DB->get_record( 'scale', array (
-                        'id' => $gradeid
-                ) );
+                $this->scale = self::get_db_record( 'scale', $gradeid);
             } else {
                 $this->scale = false;
             }
@@ -1372,6 +1444,31 @@ class mod_vpl {
         echo $OUTPUT->footer();
     }
 
+    protected static $pagelayoutmap = [
+        'executionfiles' => 'admin',
+        'executionlimits' => 'admin',
+        'executionoptions' => 'admin',
+        'local_jail_servers' => 'admin',
+        'override' => 'admin',
+        'requiredfiles' => 'admin',
+        'testcasesfile' => 'admin',
+        'listsimilarity' => 'report',
+        'activityworkinggraph' => 'report',
+        'checkjailservers' => 'report',
+        'previoussubmissionslist' => 'report',
+        'submissionslist' => 'report',
+        'downloadsubmission' => 'popup',
+        'gradesubmission' => 'admin',
+        'diff' => 'popup',
+        'index' => 'incourse',
+    ];
+
+    public function get_pagelayout($action) {
+        if (isset(self::$pagelayoutmap[$action])) {
+            return self::$pagelayoutmap[$action];
+        }
+        return 'standard';
+    }
     /**
      * prepare_page initialy
      */
@@ -1379,9 +1476,12 @@ class mod_vpl {
         global $PAGE, $CFG;
         // Next line resolve problem of classic theme not showing setting menu.
         require_login($this->get_course(), false, $this->get_course_module());
+        $action = basename($url, '.php');
         if ($url) {
             $PAGE->set_url( new moodle_url('/mod/vpl/' . $url, $parms) );
+            $PAGE->set_pagetype('mod-vpl-' . $action);
         }
+        $PAGE->set_pagelayout(self::get_pagelayout($action));
         if ( $CFG->version >= 2022041900) { // Checks is running on Moodle 4.
             $PAGE->activityheader->set_description('');
             $PAGE->activityheader->set_hidecompletion($url != 'view.php');
@@ -1395,6 +1495,7 @@ class mod_vpl {
     public static function header_is_out() {
         return self::$headerisout;
     }
+
     /**
      * print header
      *
@@ -1410,7 +1511,6 @@ class mod_vpl {
             $tittle .= ' ' . $info;
         }
         $PAGE->set_title( $this->get_course()->fullname . ' ' . $tittle );
-        $PAGE->set_pagelayout( 'standard' );
         $PAGE->set_heading( $this->get_course()->fullname );
         if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             $PAGE->set_popup_notification_allowed(false);
@@ -1418,6 +1518,9 @@ class mod_vpl {
         }
         echo $OUTPUT->header();
         self::$headerisout = true;
+        foreach ($this->errors as $errormessage) {
+            vpl_notice($errormessage, 'error');
+        }
     }
     public function print_header_simple($info = '') {
         global $OUTPUT, $PAGE;
@@ -1429,13 +1532,15 @@ class mod_vpl {
             $tittle .= ' ' . $info;
         }
         $PAGE->set_title( $this->get_course()->fullname . ' ' . $tittle );
-        $PAGE->set_pagelayout( 'popup' );
         if ( $this->use_seb() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
             $PAGE->set_popup_notification_allowed(false);
             $PAGE->set_pagelayout('secure');
         }
         echo $OUTPUT->header();
         self::$headerisout = true;
+        foreach ($this->errors as $errormessage) {
+            vpl_notice($errormessage, 'error');
+        }
     }
     /**
      * Print heading action with help
@@ -1507,9 +1612,7 @@ class mod_vpl {
                 if ($userid == $USER->id) {
                     $maintabs[] = vpl_create_tabobject( $tabname, $href, 'test' );
                 } else {
-                    $user = $DB->get_record( 'user', array (
-                            'id' => $userid
-                    ) );
+                    $user = self::get_db_record( 'user', $userid);
                     if ($this->is_group_activity()) {
                         $text = vpl_get_awesome_icon('group') . ' ';
                     } else {
@@ -1574,9 +1677,7 @@ class mod_vpl {
                 }
                 // Show user picture if this activity require password.
                 if (! isset( $user ) && $this->instance->password > '') {
-                    $user = $DB->get_record( 'user', array (
-                            'id' => $userid
-                    ) );
+                    $user = self::get_db_record('user', $userid);
                 }
                 if (isset( $user )) {
                     echo '<div style="position:absolute; right:50px; z-index:50;">';
@@ -1637,6 +1738,15 @@ class mod_vpl {
         }
     }
 
+    /**
+     * Return a VPL setting.
+     *
+     * @param string $str setting string i18n to get descriptoin
+     * @param string $value setting value, default null
+     * @param string $raw if set use raw instead off $str string, default false
+     * @param string $comp component for i18n, default mod_vpl
+     * @return string HTML
+     */
     public function str_restriction($str, $value = null, $raw = false, $comp = 'mod_vpl') {
         $html = '<b>';
         if ($raw) {
@@ -1653,43 +1763,57 @@ class mod_vpl {
     }
 
     /**
-     * Print one VPL setting
+     * Return a VPL setting with icon
      * @param string $str setting string i18n to get descriptoin
      * @param string $value setting value, default null
      * @param boolean $raw if true $str if raw string, default false
      * @param boolean $newline if true print new line after setting, default false
      */
-    public function print_restriction($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
-        echo vpl_get_awesome_icon($str);
-        echo $this->str_restriction($str, $value, $raw, $comp);
+    public function str_restriction_with_icon($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
+        $html = vpl_get_awesome_icon($str);
+        $html .= $this->str_restriction($str, $value, $raw, $comp);
         if ( $newline ) {
-            echo '<br>';
+            $html .= '<br>';
         } else {
-            echo '. ';
+            $html .= '. ';
         }
+        return $html;
     }
 
     /**
-     * Show vpl submission period
+     * Return vpl submission period.
      * @param int $userid (optional) Show for given user, current user if null.
+     * @return string HTML
      */
-    public function print_submission_period($userid = null) {
+    public function str_submission_period($userid = null) {
+        $html = '';
         $startdate = $this->get_effective_setting('startdate', $userid);
         if ($startdate) {
-            $this->print_restriction( 'startdate', userdate( $startdate ) );
+            $html .= $this->str_restriction_with_icon( 'startdate', userdate( $startdate ) );
         }
         $duedate = $this->get_effective_setting('duedate', $userid);
         if ($duedate) {
-            $this->print_restriction( 'duedate', userdate( $duedate ) );
+            $html .= $this->str_restriction_with_icon( 'duedate', userdate( $duedate ) );
         }
+        return $html;
     }
 
     /**
-     * Show vpl submission restriction
+     * Show vpl submission period.
      * @param int $userid (optional) Show for given user, current user if null.
      */
-    public function print_submission_restriction($userid = null) {
+    public function print_submission_period($userid = null) {
+        echo $this->str_submission_period($userid);
+    }
+
+    /**
+     * Return vpl submission restriction.
+     * @param int $userid (optional) Show for given user, current user if null.
+     * @return string HTML
+     */
+    public function str_submission_restriction($userid = null) {
         global $CFG, $USER;
+        $html = '';
         $filegroup = $this->get_required_fgm();
         $files = $filegroup->getfilelist();
         if (count( $files )) {
@@ -1708,15 +1832,15 @@ class mod_vpl {
             $link .= '">';
             $link .= get_string( 'download', VPL );
             $link .= '</a>)';
-            $this->print_restriction( 'requestedfiles', $text . $link );
+            $html .= $this->str_restriction_with_icon( 'requestedfiles', $text . $link );
         }
         $instance = $this->get_instance();
         if (count( $files ) != $instance->maxfiles) {
-            $this->print_restriction( 'maxfiles' );
+            $html .= $this->str_restriction_with_icon( 'maxfiles' );
         }
         if ($instance->maxfilesize) {
             $mfs = $this->get_maxfilesize();
-            $this->print_restriction( 'maxfilesize', vpl_conv_size_to_string( $mfs ) );
+            $html .= $this->str_restriction_with_icon( 'maxfilesize', vpl_conv_size_to_string( $mfs ) );
         }
         $worktype = $instance->worktype;
         $values = array (
@@ -1724,19 +1848,20 @@ class mod_vpl {
                 1 => vpl_get_awesome_icon('group'). ' ' .get_string( 'groupwork', VPL )
         );
         if ($worktype) {
-            $this->print_restriction( 'worktype', $values[$worktype] . ' ' . $this->fullname( $USER ) );
+            $html .= $this->str_restriction_with_icon( 'worktype', $values[$worktype] . ' ' . $this->fullname( $USER ) );
         } else {
-            $this->print_restriction( 'worktype', $values[$worktype] );
+            $html .= $this->str_restriction_with_icon( 'worktype', $values[$worktype] );
         }
         $stryes = get_string( 'yes' );
         $strno = get_string( 'no' );
         if ($instance->example) {
-            $this->print_restriction( 'isexample', $stryes );
+            $html .= $this->str_restriction_with_icon( 'isexample', $stryes );
         }
         $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
+        $strgradessettings = get_string('gradessettings', 'core_grades');
         if ($grader) {
             require_once($CFG->libdir . '/gradelib.php');
-            echo vpl_get_awesome_icon('grade');
+            $html .= vpl_get_awesome_icon('grade');
             if ($gie = $this->get_grade_info()) {
                 if ($gie->scaleid == 0) {
                     $info = get_string('grademax', 'core_grades')
@@ -1748,81 +1873,87 @@ class mod_vpl {
                 } else {
                     $info = get_string( 'typescale', 'core_grades' );
                 }
-                $this->print_restriction( get_string( 'gradessettings', 'core_grades' ), $info, true );
+                $html .= $this->str_restriction_with_icon( $strgradessettings, $info, true );
             } else {
-                $this->print_restriction( get_string( 'gradessettings', 'core_grades' ), get_string( 'nograde' ), true );
+                $html .= $this->str_restriction_with_icon( $strgradessettings, get_string('nograde'), true );
             }
         }
-        $this->print_gradereduction($userid);
+        $html .= $this->str_gradereduction($userid);
         if ($grader) {
             if (trim( $instance->password ) > '') {
-                $this->print_restriction( 'password', $stryes, false, true, 'moodle' );
+                $html .= $this->str_restriction_with_icon( 'password', $stryes, false, true, 'moodle' );
             }
             if (trim( $instance->requirednet ) > '') {
-                $this->print_restriction( 'requirednet', s( $instance->requirednet ));
+                $html .= $this->str_restriction_with_icon( 'requirednet', s( $instance->requirednet ));
             }
             if ( $instance->sebrequired > 0) {
-                $this->print_restriction('sebrequired', $stryes );
+                $html .= $this->str_restriction_with_icon('sebrequired', $stryes );
             }
             if (trim( $instance->sebkeys ) > '') {
-                $this->print_restriction('sebkeys', $stryes );
+                $html .= $this->str_restriction_with_icon('sebkeys', $stryes );
             }
             if ($instance->restrictededitor) {
-                $this->print_restriction( 'restrictededitor', $stryes );
+                $html .= $this->str_restriction_with_icon( 'restrictededitor', $stryes );
             }
             if (! $this->get_course_module()->visible) {
-                echo vpl_get_awesome_icon('hidden') . ' ';
-                $this->print_restriction( get_string( 'visible' ), $strno, true );
+                $html .= vpl_get_awesome_icon('hidden') . ' ';
+                $html .= $this->str_restriction_with_icon( get_string( 'visible' ), $strno, true );
             }
             if ($instance->basedon) {
-                try {
-                    $basedon = new mod_vpl( null, $instance->basedon );
-                    $link = '<a href="';
-                    $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
-                    $link .= '">';
-                    $link .= $basedon->get_printable_name();
-                    $link .= '</a>';
-                    $this->print_restriction( 'basedon', $link );
-                } catch (Exception $e) {
-                    $this->print_restriction( 'basedon', $e->getMessage() );
-                }
+                $basedon = new mod_vpl( null, $instance->basedon );
+                $link = '<a href="';
+                $link .= vpl_mod_href( 'view.php', 'id', $basedon->cm->id );
+                $link .= '">';
+                $link .= $basedon->get_printable_name();
+                $link .= '</a>';
+                $html .= $this->str_restriction_with_icon( 'basedon', $link );
             }
             $noyes = array (
                     $strno,
                     $stryes
             );
-            $this->print_restriction( 'run', $noyes[$instance->run], false, false );
+            $html .= $this->str_restriction_with_icon( 'run', $noyes[$instance->run], false, false );
             if ($instance->runscript) {
-                $this->print_restriction( 'runscript', strtoupper($instance->runscript), false, false );
+                $html .= $this->str_restriction_with_icon( 'runscript', strtoupper($instance->runscript), false, false );
             }
             if ($instance->debug) {
-                $this->print_restriction( 'debug', $noyes[1], false, false );
+                $html .= $this->str_restriction_with_icon( 'debug', $noyes[1], false, false );
             }
             if ($instance->debugscript) {
-                $this->print_restriction( 'debugscript', strtoupper($instance->debugscript), false, false );
+                $html .= $this->str_restriction_with_icon( 'debugscript', strtoupper($instance->debugscript), false, false );
             }
-            $this->print_restriction( 'evaluate', $noyes[$instance->evaluate], false,
+            $html .= $this->str_restriction_with_icon( 'evaluate', $noyes[$instance->evaluate], false,
                     ! ($instance->evaluate && $instance->evaluateonsubmission) );
             if ($instance->evaluate && $instance->evaluateonsubmission) {
-                $this->print_restriction( 'evaluateonsubmission', $noyes[1] );
+                $html .= $this->str_restriction_with_icon( 'evaluateonsubmission', $noyes[1] );
             }
             if ($instance->automaticgrading) {
-                $this->print_restriction( 'automaticgrading', $noyes[1], false, false );
+                $html .= $this->str_restriction_with_icon( 'automaticgrading', $noyes[1], false, false );
             }
             if ($instance->maxexetime) {
-                $this->print_restriction( 'maxexetime', $instance->maxexetime . ' s', false, false );
+                $html .= $this->str_restriction_with_icon( 'maxexetime', $instance->maxexetime . ' s', false, false );
             }
             if ($instance->maxexememory) {
-                $this->print_restriction( 'maxexememory', vpl_conv_size_to_string( $instance->maxexememory ), false, false );
+                $size = vpl_conv_size_to_string($instance->maxexememory);
+                $html .= $this->str_restriction_with_icon('maxexememory', $size, false, false);
             }
             if ($instance->maxexefilesize) {
-                $this->print_restriction( 'maxexefilesize', vpl_conv_size_to_string( $instance->maxexefilesize ), false,
-                        false );
+                $size = vpl_conv_size_to_string($instance->maxexefilesize);
+                $html .= $this->str_restriction_with_icon('maxexefilesize', $size, false, false);
             }
             if ($instance->maxexeprocesses) {
-                $this->print_restriction( 'maxexeprocesses', null, false, false );
+                $html .= $this->str_restriction_with_icon( 'maxexeprocesses', null, false, false );
             }
         }
+        return $html;
+    }
+
+    /**
+     * Show vpl submission restriction
+     * @param int $userid (optional) Show for given user, current user if null.
+     */
+    public function print_submission_restriction($userid = null) {
+        echo $this->str_submission_restriction($userid);
     }
 
     /**
@@ -1838,23 +1969,29 @@ class mod_vpl {
     }
 
     /**
-     * Print grade reduction
+     * Return grade reduction in HTML format
      * @param int $userid (optional) Print for given user, current user if null.
-     * @param boolean $return If true, return result instead of printing it.
+     * @return string HTML
      */
-    public function print_gradereduction($userid = null, $return = false) {
+    public function str_gradereduction($userid = null) {
+        $html = '';
         $reductionbyevaluation = $this->get_effective_setting('reductionbyevaluation', $userid);
         if ($reductionbyevaluation > 0) {
-            $html = $this->str_restriction( 'reductionbyevaluation', $reductionbyevaluation);
+            $html .= $this->str_restriction( 'reductionbyevaluation', $reductionbyevaluation);
             $freeevaluations = $this->get_effective_setting('freeevaluations', $userid);
             if ( $freeevaluations > 0) {
                 $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
             }
-            if ( $return ) {
-                return $html;
-            }
-            echo $html . '<br>';
+            $html .= $html . '<br>';
         }
+        return $html;
+    }
+    /**
+     * Print grade reduction
+     * @param int $userid (optional) Print for given user, current user if null.
+     */
+    public function print_gradereduction($userid = null) {
+        echo $this->str_gradereduction($userid);
     }
 
     /**
@@ -1871,6 +2008,26 @@ class mod_vpl {
     }
 
     /**
+     * Checks if the chain of basedon activities is ok.
+     * @return true/false
+     */
+    public function basedon_is_ok() {
+        global $DB;
+        $checked = 0;
+        $instance = $this->get_instance();
+        while ($instance->basedon) {
+            $instance = self::get_db_record(VPL, $instance->basedon);
+            if (!$instance) {
+                return false;
+            }
+            if ($checked++ > 100) { // Possible recursive definition.
+                return false;
+            }
+        }
+        return true;
+    }
+
+    /**
      * Gets html for all variations defined in activity
      * @return string
      */
@@ -1879,10 +2036,8 @@ class mod_vpl {
         global $DB;
         $html = '';
         require_once(dirname( __FILE__ ) . '/views/show_hide_div.class.php');
-        $variations = $DB->get_records( VPL_VARIATIONS, array (
-                'vpl' => $this->instance->id
-        ) );
-        if (count( $variations ) > 0) {
+        $variations = $DB->get_records(VPL_VARIATIONS, ['vpl' => $this->instance->id]);
+        if (count($variations) > 0) {
             $div = new vpl_hide_show_div();
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
@@ -1896,7 +2051,7 @@ class mod_vpl {
             }
             $number = 1;
             foreach ($variations as $variation) {
-                $html .= '<b>' . get_string( 'variation', VPL, $number ) . '</b>: ';
+                $html .= '<b>' . get_string( 'variation_n', VPL, $number ) . '</b>: ';
                 $html .= s($variation->identification) . '<br>';
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
@@ -1935,11 +2090,7 @@ class mod_vpl {
             }
             \mod_vpl\event\variation_assigned::logvpl( $this, $variation->id, $userid);
         } else {
-            $variation = $DB->get_record(
-                    VPL_VARIATIONS,
-                    array (
-                            'id' => $varassigned->variation
-                    ) );
+            $variation = self::get_db_record(VPL_VARIATIONS, $varassigned->variation);
             if ($variation == false || $variation->vpl != $varassigned->vpl) { // Checks consistency.
                 $DB->delete_records(
                     VPL_ASSIGNED_VARIATIONS,
@@ -2105,7 +2256,7 @@ class mod_vpl {
                     $currenteventid = $DB->get_field( 'event', 'id', $params ); // Get current calendar event.
                     if (isset($override->duedate) && !$delete) {
                         if ($target == 'userid') {
-                            $userorgroupname = fullname($DB->get_record( 'user', array('id' => $userorgroupid) ));
+                            $userorgroupname = fullname(self::get_db_record( 'user', $userorgroupid));
                             $strname = 'overridefor';
                         } else {
                             $userorgroupname = groups_get_group($userorgroupid)->name;

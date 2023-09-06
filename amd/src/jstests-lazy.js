@@ -144,6 +144,16 @@ define(
                 })();
             }
         });
+        tests.push({
+            'name': "VPLUtil langType",
+            'test': function() {
+                var mapnames = VPLUtil.getLangNames();
+                for (var ext in mapnames) {
+                    assert(VPLUtil.langType(ext) != 'plain_text', 'VPLUtil.langType');
+                }
+                assert(VPLUtil.langType('otra cosa') == 'plain_text', 'VPLUtil.langType');
+            }
+        });
         runTests();
         return {
             start: function() {

@@ -5,24 +5,24 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load VPL environment vars
+# Load VPL environment vars.
 . common_script.sh
-if [ "$SECONDS" = "" ] ; then
-	export SECONDS=20
+if [ "$VPL_MAXTIME" = "" ] ; then
+	export VPL_MAXTIME=20
 fi
-let VPL_MAXTIME=$SECONDS-5;
+let VPL_MAXTIME=$VPL_MAXTIME+5;
 if [ "$VPL_GRADEMIN" = "" ] ; then
 	export VPL_GRADEMIN=0
 	export VPL_GRADEMAX=10
 fi
 
-#exist run script?
+# Does exist the run script?
 if [ ! -s vpl_run.sh ] ; then
 	echo "I'm sorry, but I haven't a default action to evaluate the type of submitted files"
 else
-	#avoid conflict with C++ compilation
+	# Avoid conflict with C++ compilation.
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
-	#Prepare run
+	# Prepare the run script/program (vpl_execution)
 	./vpl_run.sh &>>vpl_compilation_error.txt
 	cat vpl_compilation_error.txt
 	if [ -f vpl_execution ] ; then
@@ -30,7 +30,7 @@ else
 		if [ -f vpl_evaluate.cases ] ; then
 			mv vpl_evaluate.cases evaluate.cases
 		else
-			echo "Error need file 'vpl_evaluate.cases' to make an evaluation"
+			echo "Error: I need the file 'vpl_evaluate.cases' to do the evaluation."
 			exit 1
 		fi
 		mv vpl_evaluate.cpp.save vpl_evaluate.cpp
@@ -44,17 +44,19 @@ else
 			echo "./.vpl_tester" >> vpl_execution
 		fi
 	else
-		echo "#!/bin/bash" >> vpl_execution
-		echo "echo" >> vpl_execution
-		echo "echo '<|--'" >> vpl_execution
-		echo "echo '-$VPL_COMPILATIONFAILED'" >> vpl_execution
-		if [ -f vpl_wexecution ] ; then
-			echo "echo '======================'" >> vpl_execution
-			echo "echo 'It seems you are trying to test a program with a graphic user interface'" >> vpl_execution
-		fi
-		echo "echo '--|>'" >> vpl_execution		
-		echo "echo" >> vpl_execution		
-		echo "echo 'Grade :=>>$VPL_GRADEMIN'" >> vpl_execution
+		(
+			echo "#!/bin/bash"
+			echo "echo"
+			echo "echo '<|--'"
+			echo "echo '-$VPL_COMPILATIONFAILED'"
+			if [ -f vpl_wexecution ] ; then
+				echo "echo '======================'"
+				echo "echo 'It seems you are trying to test a program with a graphic user interface.'"
+			fi
+			echo "echo '--|>'"
+			echo "echo"
+			echo "echo 'Grade :=>>$VPL_GRADEMIN'"
+		) > vpl_execution
 	fi
 	chmod +x vpl_execution
 fi

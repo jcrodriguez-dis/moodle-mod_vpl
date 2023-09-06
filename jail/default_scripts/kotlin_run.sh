@@ -13,7 +13,9 @@ check_program kotlinc
 if [ "$1" == "version" ] ; then
 	echo "#!/bin/bash" > vpl_execution
 	echo "kotlinc -version &> .kotlinc_version" >> vpl_execution
+	echo "result=\$?"
 	echo "cat .kotlinc_version | sed 's/.*kotlin/kotlin/'" >> vpl_execution
+	echo "exit \$result"
 	chmod +x vpl_execution
 	exit
 fi
@@ -25,9 +27,10 @@ echo "-d vpl_execution.jar" >> .vpl_kotlin_command_line
 cat .vpl_source_files >> .vpl_kotlin_command_line
 # Compile
 kotlinc @.vpl_kotlin_command_line
-if [ "$?" -ne "0" ] ; then
+result=$?
+if [ "$result" -ne "0" ] ; then
 	echo "Not compiled"
- 	exit 0
+ 	exit $result
 fi
 cat common_script.sh > vpl_execution
 echo "java -jar vpl_execution.jar \$@" >> vpl_execution

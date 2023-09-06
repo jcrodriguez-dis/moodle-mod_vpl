@@ -101,7 +101,7 @@ if (! $subinstance) {
 $submissionid = $subinstance->id;
 
 if ($vpl->get_instance()->id != $subinstance->vpl) {
-    throw new moodle_exception('error:inconsistency', 'mod_vpl', 'vpl_submission');
+    throw new moodle_exception('error:inconsistency', 'mod_vpl', '', 'vpl_submission');
 }
 
 // Display submission.

@@ -24,11 +24,15 @@
  */
 
 class vpl_editor_util {
+    private static $jquerynoload = true;
     public static function generate_jquery() {
         global $PAGE;
-        $PAGE->requires->jquery();
-        $PAGE->requires->jquery_plugin('ui');
-        $PAGE->requires->jquery_plugin('ui-css');
+        if (self::$jquerynoload) {
+            $PAGE->requires->jquery();
+            $PAGE->requires->jquery_plugin('ui');
+            $PAGE->requires->jquery_plugin('ui-css');
+            self::$jquerynoload = false;
+        }
     }
     public static function generate_requires_evaluation() {
         global $PAGE;
@@ -52,11 +56,10 @@ class vpl_editor_util {
         $options['isGroupActivity'] = $vpl->is_group_activity();
         $options['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
         self::generate_jquery();
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/inflate.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/zip/unzip.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/xterm/term.js' ) );
-        $PAGE->requires->js( new moodle_url( '/mod/vpl/editor/noVNC/include/util.js' ) );
-        $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', array($tagid, $options));
+        $opt = new stdClass();
+        $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor';
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
+        $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', [$tagid, $options]);
     }
     public static function print_js_i18n() {
         global $CFG;
@@ -92,7 +95,9 @@ class vpl_editor_util {
             <div id="vpl_tabs_scroll">
                 <ul id="vpl_tabs_ul"></ul>
             </div>
-            <span class="vpl_ide_status"></span>
+            <span class="vpl_ide_status ui-button ui-corner-all ui-widget"
+                  style="display:none;position:absolute;padding:1px;
+                        margin:3px;right:20px;bottom:20px;font-size:80%;"></span>
         </div>
         <div id="vpl_results" class="vpl_ide_results">
             <div id="vpl_results_accordion"></div>

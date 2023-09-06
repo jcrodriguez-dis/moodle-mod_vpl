@@ -53,7 +53,8 @@ function vpl_user_zip_dirname( $name ) {
 }
 
 /**
- * Adds files to zip
+ * Adds new files to the zip file.
+ * Returns bytes archived
  *
  * @param ZipArchive         $zip        Object that represents a zip file.
  * @param string             $sourcedir  Source directory name
@@ -61,29 +62,69 @@ function vpl_user_zip_dirname( $name ) {
  * @param file_group_process $fgm        Object that manages group of files
  * @param string             $ziperrors  Output message if error
  *
- * @return void
+ * @return int Bytes archived
  */
 function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {
+    $total = 0;
     foreach ($fgm->getFileList() as $filename) {
         $source = file_group_process::encodeFileName( $filename );
         $filepathorigen = $sourcedir . $source;
         $filepathtarget = $zipdirname . $filename;
         if ( ! file_exists($filepathorigen) ) {
             $ziperrors .= 'Warning: file "'.$filepathorigen . "\" does not exists\n";
-            $zip->addFromString( $filepathtarget, '' );
+            $zip->addFromString($filepathtarget, '');
             continue;
         }
-        if ( ! $zip->addFromString( $filepathtarget, file_get_contents($filepathorigen) ) ) {
+        $data = file_get_contents($filepathorigen);
+        $total += strlen($data);
+        if ( ! $zip->addFromString($filepathtarget, $data) ) {
             $ziperrors .= 'File "'.$filepathorigen . '" in "' . $filepathtarget . '" ';
             $ziperrors .= 'generate ' . $zip->getStatusString () ."\n";
         }
     }
+    return $total;
+}
+
+/**
+ * Adds new files to the zip file.
+ * Returns bytes archived
+ *
+ * @param ZipArchive         $zip        Object that represents a zip file.
+ * @param string             $zipdirname Zip directory name
+ *
+ * @return int Bytes archived
+ */
+function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
+    $total = 0;
+    $instance = $submission->get_instance();
+    $cecg = $submission->getce();
+    $cecg['gradecomments'] = $submission->get_grade_comments();
+    $cecg['usercomments'] = $instance->comments;
+    $cecg['grade'] = $instance->grade;
+    if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
+        $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > '') {
+        if ( $cecg['compilation'] !== 0 ) {
+            $zip->addFromString( $zipdirname. 'compilation' . '.txt', $cecg['compilation']);
+            $total += strlen($cecg['compilation']);
+        }
+        if ( $cecg['executed'] == 1 ) {
+            $zip->addFromString( $zipdirname . 'execution' . '.txt', $cecg['execution']);
+            $total += strlen($cecg['execution']);
+        }
+        foreach (['gradecomments', 'usercomments', 'grade'] as $ele) {
+            if ( $cecg[$ele] !== '' ) {
+                $zip->addFromString( $zipdirname . $ele . '.txt', $cecg[$ele]);
+                $total += strlen($cecg[$ele]);
+            }
+        }
+    }
+    return $total;
 }
 
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $all = optional_param( 'all', 0, PARAM_INT );
-
+const SIZE_TRIGGER = 64 * 1024 * 1024; // 64Mb.
 $vpl = new mod_vpl( $id );
 $cm = $vpl->get_course_module();
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
@@ -110,16 +151,16 @@ if ($all) {
     $asortedsubmissions = $vpl->all_last_user_submission();
 }
 // Organize information by user id.
-$submissions = array();
+$submissions = [];
 foreach ($asortedsubmissions as $instance) {
     if (! isset($submissions[$instance->$idfiels])) {
-        $submissions[$instance->$idfiels] = array();
+        $submissions[$instance->$idfiels] = [];
     }
     $submissions[$instance->$idfiels][] = $instance;
 }
 
 // Get all information by user.
-$alldata = array ();
+$alldata = [];
 foreach ($list as $uginfo) {
     if (! isset($submissions[$uginfo->id])) {
         continue;
@@ -131,7 +172,7 @@ foreach ($list as $uginfo) {
         $data->uginfo->firstname = 'Group';
         $data->uginfo->lastname = $uginfo->name;
     }
-    $usersubmissions = array();
+    $usersubmissions = [];
     foreach ($submissions[$uginfo->id] as $subinstance) {
         $usersubmissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
     }
@@ -148,9 +189,10 @@ $zipfilename = tempnam( $dir, 'zip' );
 if ( $zipfilename === false || ! file_exists($zipfilename) ) {
     throw new moodle_exception('cannotopenzip');
 }
-if ($zip->open( $zipfilename, ZipArchive::OVERWRITE ) === true) {
+if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
     $ziperrors = '';
     $nsubmissions = 0;
+    $sizearchived = 0;
     foreach ($alldata as $data) {
         $user = $data->uginfo;
         $zipdirname = vpl_user_zip_dirname($user->lastname . ' ' . $user->firstname);
@@ -160,35 +202,22 @@ if ($zip->open( $zipfilename, ZipArchive::OVERWRITE ) === true) {
         $zipdirname .= '/';
         foreach ($data->submissions as $submission) {
             $nsubmissions ++;
-            $zipsubdirname = $zipdirname;
             $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted );
-            $zipsubdirname .= $date . '/';
+            $zipsubdirname = $zipdirname. $date . '/';
             $fgm = $submission->get_submitted_fgm();
             $sourcedir = $submission->get_submission_directory();
-
-            vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
-            $instance = $submission->get_instance();
-            $cecg = $submission->getce();
-            $cecg['gradecomments'] = $submission->get_grade_comments();
-            $cecg['usercomments'] = $instance->comments;
-            $cecg['grade'] = $instance->grade;
-            if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
-                $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > '') {
-                $zipsubdirname = $zipdirname . $date . '.ceg/';
-                if ( $cecg['compilation'] !== 0 ) {
-                    $zip->addFromString( $zipsubdirname. 'compilation' . '.txt', $cecg['compilation']);
-                }
-                if ( $cecg['executed'] == 1 ) {
-                    $zip->addFromString( $zipsubdirname . 'execution' . '.txt', $cecg['execution']);
-                }
-                $elements = array('gradecomments', 'usercomments', 'grade');
-                foreach ($elements as $ele) {
-                    if ( $cecg[$ele] !== '' ) {
-                        $zip->addFromString( $zipsubdirname . $ele . '.txt', $cecg[$ele]);
-                    }
-                }
-            }
+            $sizearchived += vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
+            $zipsubdirname = $zipdirname . $date . '.ceg/';
+            $sizearchived += vpl_add_ce_to_zip($zip, $submission, $zipsubdirname);
         }
+        // To keep de memory used low, the zip file is closed and reopened.
+        if ($sizearchived > SIZE_TRIGGER) {
+            $zip->close();
+            $zip = new ZipArchive();
+            $zip->open($zipfilename);
+            $sizearchived = 0;
+        }
+        unset($data->submissions);
     }
     $date = date(DATE_W3C);
     $nusers = count($alldata);

@@ -1,4 +1,10 @@
 #!/bin/bash
+# This file is part of VPL for Moodle
+# Default evaluate script for VPL
+# Copyright (C) 2024 onwards Juan Carlos Rodríguez-del-Pino
+# License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+# Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+
 CHECK_MARK="\u2713";
 X_MARK="\u274C";
 function writeHeading {
@@ -121,10 +127,10 @@ function runAllTests {
 	return $finalResult
 }
 OLDDIR=$(pwd)
-cd $(dirname $0)
+cd "$(dirname $0)"
 writeHeading "TDSPT Testing default Student's program tester of VPL for Moodle"
 export ORIGINDIR="../../jail/default_scripts"
-export TESTDIR="test"
+export TESTDIR="vpl_test.test"
 export CASESDIR="cases"
 export VPLTESTOUTPUT=".vpl_test_output"
 export VPLTESTERRORS=".vpl_test_errors"

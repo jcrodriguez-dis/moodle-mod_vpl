@@ -28,18 +28,25 @@ class vpl_sh_factory {
     public static function include_js() {
         global $PAGE;
         global $CFG;
-        $opt = new stdClass();
-        $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
-        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', array($opt));
+        if ( ! self::$loaded ) {
+            $opt = new stdClass();
+            $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
+            self::$loaded = true;
+        }
     }
     public static function syntaxhighlight() {
         global $PAGE;
-        if ( ! self::$loaded ) {
-            self::include_js();
-            self::$loaded = true;
-        }
+        self::include_js();
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlight');
     }
+
+    public static function syntaxhighlight_file($parms) {
+        global $PAGE;
+        self::include_js();
+        $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', $parms);
+    }
+
     public static function get_object($type) {
         if (! isset( self::$cache[$type] )) {
             require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');

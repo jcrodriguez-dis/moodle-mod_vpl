@@ -283,7 +283,7 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     * Delete all user data for the specified user, in the specified contexts.
+     * Delete user data in the list of given contexts.
      *
      * @param approved_contextlist $contextlist a list of contexts approved for deletion.
      */

@@ -27,8 +27,9 @@ define(
     [
         'jquery',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
     ],
-    function($, VPLUtil) {
+    function($, VPLUtil, VPLUI) {
         return function() {
             var self = this;
             var editor = null;
@@ -75,12 +76,16 @@ define(
                 editor.gotoLine(line, 0);
                 editor.scrollToLine(line, true);
                 editor.focus();
+                this.updateStatus();
             };
             this.setReadOnly = function(s) {
                 readOnly = s;
                 if (this.isOpen()) {
                     editor.setReadOnly(s);
                 }
+            };
+            this.isReadOnly = function() {
+                return readOnly;
             };
             this.focus = function() {
                 if (!this.isOpen()) {
@@ -90,6 +95,7 @@ define(
                 // Workaround to remove JQwery-UI background color.
                 $(tid).removeClass('ui-widget-content ui-tabs-panel');
                 editor.focus();
+                this.updateStatus();
             };
             this.blur = function() {
                 if (!this.isOpen()) {
@@ -191,11 +197,27 @@ define(
                 }
                 editor.setTheme("ace/theme/" + theme);
             };
+            this.updateStatus = function() {
+                if (!this.isOpen()) {
+                    return;
+                }
+                var text = '';
+                var pos = editor.getCursorPosition();
+                var fullname = this.getFileName();
+                var name = VPLUtil.getFileName(fullname);
+                if (fullname.length > 20 || name != fullname) {
+                    text = fullname + ' ';
+                }
+                text += "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
+                text += " " + VPLUtil.langName(VPLUtil.fileExtension(name));
+                VPLUI.showIDEStatus(text);
+            };
+
             this.open = function() {
                 this.showFileName();
                 if (typeof ace === 'undefined') {
-                    VPLUtil.loadScript(['../editor/ace9/ace.js',
-                        '../editor/ace9/ext-language_tools.js'],
+                    VPLUtil.loadScript(['/ace9/ace.js',
+                        '/ace9/ext-language_tools.js'],
                         function() {
                             self.open();
                         });
@@ -242,6 +264,9 @@ define(
                 editor.on('change', function() {
                     self.change();
                 });
+                session.selection.on('changeCursor', function() {
+                    self.updateStatus();
+                });
                 // Try to grant dropHandler installation.
                 setTimeout(addEventDrop, 5);
                 // Save previous onPaste and change for a new one.
@@ -264,6 +289,7 @@ define(
                 $(tid).find('div.ace_scroller').css('position', 'static');
                 this.adjustSize();
                 $(tid).find('div.ace_scroller').css('position', 'absolute');
+                this.updateStatus();
                 return editor;
             };
             this.close = function() {

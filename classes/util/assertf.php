@@ -34,7 +34,7 @@ class assertf {
      * Flag to enable or disable the colors at error messages.
      * This option must be false at production.
      */
-    public static bool $messagewithcolors = true;
+    public static bool $messagewithcolors = false;
 
     /**
      * Get error message for passed filename and message

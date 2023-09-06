@@ -15,7 +15,8 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Cognitive depth indicator of VPL.
+ * Cognitive depth analytics indicator of VPL.
+ *
  * Inspired by/copy from mod_assign 2017 David Monllao {@link http://www.davidmonllao.com}
  *
  * @package mod_vpl
@@ -27,7 +28,7 @@
 namespace mod_vpl\analytics\indicator;
 
 /**
- * Cognitive depth indicator of VPL.
+ * Cognitive depth analytics indicator of VPL.
  *
  * @package mod_vpl
  * @copyright 2018 onward Juan Carlos Rodríguez-del-Pino
@@ -57,6 +58,7 @@ class cognitive_depth extends activity_base {
     /**
      * Returns the indicator cognite level.
      *
+     * @param \cm_info $cm unused
      * @return int
      */
     public function get_cognitive_depth_level(\cm_info $cm) {

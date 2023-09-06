@@ -50,6 +50,7 @@ $options['resetfiles'] = false;
 $options['minfiles'] = 1;
 $options['maxfiles'] = 1;
 $options['saved'] = true;
+$options['readOnlyFiles'] = [];
 
 vpl_editor_util::generate_requires($vpl, $options);
 $vpl->print_header( get_string( 'testcases', VPL ) );

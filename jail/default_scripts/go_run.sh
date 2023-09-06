@@ -14,13 +14,13 @@ check_program go
 if [ "$1" == "version" ] ; then
 	get_program_version version
 fi
-export GOPATH=~/
+export GOPATH=$(pwd)
 mkdir bin &> /dev/null
 mkdir pkg &> /dev/null
 
 get_first_source_file go
 go build -o go_program "$FIRST_SOURCE_FILE"
 cat common_script.sh > vpl_execution
-echo "export GOPATH=~/" >>vpl_execution
+echo "export GOPATH=$(pwd)" >>vpl_execution
 echo "./go_program" >>vpl_execution
 chmod +x vpl_execution

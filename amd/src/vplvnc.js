@@ -29,25 +29,23 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui',
         'mod_vpl/vplclipboard',
         'core/log'
     ],
-    function($, jqui, VPLUtil, VPLClipboard, console) {
-        window.INCLUDE_URI = "../editor/noVNC/include/";
-        /**
-         * Load VNC Script after the Util ("util.js" is loaded
-         */
-        function loadVNCScripts() {
-            if (typeof Util == 'undefined') {
-                VPLUtil.delay('loadVNCScripts', loadVNCScripts);
-            } else {
-                Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
-                "keysymdef.js", "keyboard.js", "input.js", "display.js",
-                "jsunzip.js", "rfb.js", "keysym.js"]);
-            }
-        }
-        VPLUtil.delay('loadVNCScripts', loadVNCScripts);
+    function($, jqui, VPLUtil, VPLUI, VPLClipboard, console) {
         var VPLVNCClient = function(VNCDialogId, str) {
+            window.INCLUDE_URI = VPLUtil.options.scriptPath + "/noVNC/include/";
+            if (typeof Util == 'undefined') {
+                VPLUtil.loadScript(['/noVNC/include/util.js'],
+                    function() {
+                        VPLUtil.log('/noVNC/include/util.js loaded', true);
+                        Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
+                        "keysymdef.js", "keyboard.js", "input.js", "display.js",
+                        "jsunzip.js", "rfb.js", "keysym.js"]);
+                    }
+                );
+            }
             var self = this;
             var rfb;
             var title = '';
@@ -131,8 +129,8 @@ define(
                 clipboard.setEntry1(clipboard.getEntry1());
                 document.execCommand('copy');
             }
-            var HTMLUpdateClipboard = VPLUtil.genIcon('copy', 'sw') + ' ' + str('copy');
-            var HTMLPaste = VPLUtil.genIcon('paste', 'sw') + ' ' + str('paste');
+            var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
+            var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
             clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
                     lostFocus);
             canvas.on('click', function(e) {
@@ -175,7 +173,7 @@ define(
                 height: 'auto',
                 dialogClass: 'vpl_ide vpl_vnc',
                 create: function() {
-                    titleText = VPLUtil.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
+                    titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
                             keyboardButton]);
                 },
                 dragStop: controlDialogSize,

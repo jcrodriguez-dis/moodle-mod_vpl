@@ -40,6 +40,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 /**
  * Unit tests for submission class.
  * @group mod_vpl
+ * @group mod_vpl_submission
  */
 class submission_test extends base_test {
 
@@ -114,5 +115,82 @@ class submission_test extends base_test {
         $this->assertCount(2, $data->fileencoding);
         $this->assertEquals(0, $data->fileencoding['a.c']);
         $this->assertEquals(1, $data->fileencoding['a.jpg.b64']);
+    }
+
+    /**
+     * Method to test mod_vpl_submission::find_proposedgrade in evaluation
+     * @covers \mod_vpl_submission::find_proposedgrade
+     */
+    public function test_find_proposedgrade() {
+        $text = '';
+        $expected = '';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+
+        $text = 'Grade :=>> value ';
+        $expected = 'value';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+
+        $text = "noGrade :=>> bad\nGrade :=>> value\nGrade :=>> correct \n Grade :=>> incorrect";
+        $expected = 'correct';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+
+        $text = "noGrade :=>> bad\r\nGrade :=>> value\r\nGrade :=>> correct \r\n Grade :=>> incorrect";
+        $expected = 'correct';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+
+        $text = "noGrade :=>> bad\nGrade :=>> 4.86\ngrade :=>> correct \nGrade  :=>> incorrect";
+        $expected = '4.86';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+
+        $text = "noGrade :=>> bad\r\nGrade :=>> 4.86\ngrade :=>> correct \nGrade  :=>> incorrect";
+        $expected = '4.86';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
+    }
+
+    /**
+     * Method to test mod_vpl_submission::find_proposedcomment in evaluation
+     * @covers \mod_vpl_submission::find_proposedcomment
+     */
+    public function test_find_proposedcomment() {
+        $text = '';
+        $expected = '';
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = 'Comment :=>>Comment in a line';
+        $expected = "Comment in a line\n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = 'Comment :=>>--- Comment in a line other staff   ';
+        $expected = "--- Comment in a line other staff   \n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "\nComment :=>>--- Comment in a line other staff   \n No usefull thing\n\nGrade :=>> correct ";
+        $expected = "--- Comment in a line other staff   \n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "\r\nComment :=>>--- Comment in a line other staff   \r\n No usefull thing\r\n\r\nGrade :=>> correct ";
+        $expected = "--- Comment in a line other staff   \n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "<|--\ncomment1\n--|>";
+        $expected = "comment1\n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "<|--\ncomment1\n--|>\n<|--\ncomment2\n--|>";
+        $expected = "comment1\ncomment2\n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "lkj fsd\n<|--\ncomment1\n--|>\n k \n<|--\ncomment2\n--|>\n\ndh f";
+        $expected = "comment1\ncomment2\n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "lkj fsd\n<|--\n comment1 \n--|>\nComment :=>>Comment in a line\n k \n<|--\n comment3 \n--|>\n\ndh f";
+        $expected = " comment1 \nComment in a line\n comment3 \n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
+
+        $text = "l f\r\n<|--\n comment1 \n--|>\r\nComment :=>>Comment in a line\n k
+                 \r\n<|--\r\n comment3 \r\n--|>\r\n\r\nd f\r";
+        $expected = " comment1 \nComment in a line\n comment3 \n";
+        $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));
     }
 }

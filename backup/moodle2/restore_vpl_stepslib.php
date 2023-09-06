@@ -42,14 +42,29 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     protected $basedonnames = array();
 
     /**
+     * Returns the name of the basedon activity
+     *
+     * @param Object $data VPL DB instance
+     * @return string name of basedon activity or empty string
+     */
+    public function get_baseon_name($data) {
+        if ( isset($this->basedonnames[$data->id]) ) {
+            return $this->basedonnames[$data->id];
+        }
+        return '';
+    }
+
+    /**
+     * Returns the id of basedon activity using its activity name
+     *
      * @param Object $data VPL DB instance
      * @return int|boolean id of basedon activity or false
      */
     public function get_baseon_by_name($data) {
         global $DB;
-        if ( isset($this->basedonnames[$data->id]) ) {
-            $basedonname = $this->basedonnames[$data->id];
-            $basedon = $DB->get_record( 'vpl', array ( 'course' => $data->course, 'name' => $basedonname ));
+        $basedonname = $this->get_baseon_name($data);
+        if ( $basedonname ) {
+            $basedon = $DB->get_record('vpl', ['course' => $data->course, 'name' => $basedonname]);
             if ( $basedon != false ) {
                 return $basedon->id;
             }

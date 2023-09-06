@@ -27,7 +27,7 @@
 define(
     [
         'jquery',
-        'mod_vpl/vplutil',
+        'mod_vpl/vplutil'
     ],
     function($, VPLUtil) {
         return function() {
@@ -529,16 +529,16 @@ define(
                 if (self.blocklyNotLoaded) {
                     VPLUtil.loadScript(
                         [
-                            '../editor/blockly/blockly_compressed.js',
-                            '../editor/blockly/msg/js/en.js',
-                            '../editor/blockly/blocks_compressed.js',
-                            '../editor/blockly/python_compressed.js',
-                            '../editor/blockly/javascript_compressed.js',
-                            '../editor/blockly/php_compressed.js',
-                            '../editor/blockly/lua_compressed.js',
-                            '../editor/blockly/dart_compressed.js',
-                            '../editor/acorn/acorn.js',
-                            '../editor/acorn/interpreter.js',
+                            '/blockly/blockly_compressed.js',
+                            '/blockly/msg/js/en.js',
+                            '/blockly/blocks_compressed.js',
+                            '/blockly/python_compressed.js',
+                            '/blockly/javascript_compressed.js',
+                            '/blockly/php_compressed.js',
+                            '/blockly/lua_compressed.js',
+                            '/blockly/dart_compressed.js',
+                            '/acorn/acorn.js',
+                            '/acorn/interpreter.js',
                         ],
                         function() {
                             VPLUtil.log('Blocklyloaded', true);

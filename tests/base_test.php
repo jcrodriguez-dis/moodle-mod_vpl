@@ -157,6 +157,14 @@ class base_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Setup function - we will create a course and add an assign instance to it.
+     */
+    protected function tearDown(): void {
+        \mod_vpl::reset_db_cache();
+        parent::tearDown();
+    }
+
     protected $vpldefault = null;
     protected $vplnotavailable = null;
     protected $vplonefile = null;

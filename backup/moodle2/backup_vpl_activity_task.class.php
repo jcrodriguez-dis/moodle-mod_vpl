@@ -27,8 +27,7 @@ defined ( 'MOODLE_INTERNAL' ) || die ();
 require_once(dirname ( __FILE__ ) . '/backup_vpl_stepslib.php');
 
 /**
- * VPL backup task class that provides all the settings and steps to perform one
- * complete backup of the activity
+ * VPL backup task class that provides all the settings and steps to perform it
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino

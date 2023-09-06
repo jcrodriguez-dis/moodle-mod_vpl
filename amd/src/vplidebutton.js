@@ -26,8 +26,9 @@ define(
         'jquery',
         'jqueryui',
         'mod_vpl/vplutil',
+        'mod_vpl/vplui'
     ],
-    function($, jqui, VPLUtil) {
+    function($, jqui, VPLUtil, VPLUI) {
         if (typeof VPLIDEButtons !== 'undefined') {
             return VPLIDEButtons;
         }
@@ -57,14 +58,14 @@ define(
                     title += ' (' + buttons[buttonName].key + ')';
                 }
                 $('#vpl_ide_' + buttonName).attr('title', title);
-                $('#vpl_ide_' + buttonName + ' i').replaceWith(VPLUtil.genIcon(icon));
+                $('#vpl_ide_' + buttonName + ' i').replaceWith(VPLUI.genIcon(icon));
             };
             this.setExtracontent = function(buttonName, html) {
                 if (self.notAdded(buttonName)) {
                     return;
                 }
-                var cl = 'bt_extrahtml';
-                var btag = $('#vpl_ide_' + buttonName + ' i');
+                var cl = 'vpl_bt_extrahtml';
+                var btag = $('#vpl_ide_' + buttonName);
                 if (btag.find('.' + cl).length == 0) {
                     btag.append(' <span class="' + cl + '"><span>');
                 }
@@ -107,10 +108,13 @@ define(
                         bindKey: button.bindKey,
                         exec: button.action
                     };
-                    var platform = "win";
-                    if (navigator.platform.startsWith("Mac")) {
-                        platform = "mac";
+                    var platformStr = '';
+                    if (navigator.userAgentData) {
+                        platformStr = navigator.userAgentData.platform;
+                    } else if (navigator.platform) {
+                        platformStr = navigator.platform;
                     }
+                    var platform = platformStr.startsWith("Mac") ? "mac" : "win";
                     button.key = button.bindKey[platform];
                 }
             };
@@ -124,7 +128,7 @@ define(
                     }
 
                     var html = "<a id='vpl_ide_" + buttonName + "' href='#' title='" + title + "'>";
-                    html += VPLUtil.genIcon(buttons[buttonName].icon) + "</a>";
+                    html += VPLUI.genIcon(buttons[buttonName].icon) + "</a>";
                     return html;
                 }
             };
@@ -329,7 +333,7 @@ define(
                     } else {
                         updatePrecision(tl);
                     }
-                    var thtml = '<span class="' + cssclass + '">' + VPLUtil.genIcon('timeleft');
+                    var thtml = '<span class="' + cssclass + '">' + VPLUI.genIcon('timeleft');
                     if (show) {
                         thtml += ' ' + VPLUtil.getTimeLeft(tl);
                     }

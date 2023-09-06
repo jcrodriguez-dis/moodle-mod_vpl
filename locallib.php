@@ -24,23 +24,23 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-define( 'VPL', 'vpl' );
-define( 'VPL_SUBMISSIONS', 'vpl_submissions' );
-define( 'VPL_JAILSERVERS', 'vpl_jailservers' );
-define( 'VPL_RUNNING_PROCESSES', 'vpl_running_processes' );
-define( 'VPL_VARIATIONS', 'vpl_variations' );
-define( 'VPL_ASSIGNED_VARIATIONS', 'vpl_assigned_variations' );
-define( 'VPL_OVERRIDES', 'vpl_overrides' );
-define( 'VPL_ASSIGNED_OVERRIDES', 'vpl_assigned_overrides' );
-define( 'VPL_GRADE_CAPABILITY', 'mod/vpl:grade' );
-define( 'VPL_VIEW_CAPABILITY', 'mod/vpl:view' );
-define( 'VPL_SUBMIT_CAPABILITY', 'mod/vpl:submit' );
-define( 'VPL_SIMILARITY_CAPABILITY', 'mod/vpl:similarity' );
-define( 'VPL_ADDINSTANCE_CAPABILITY', 'mod/vpl:addinstance' );
-define( 'VPL_SETJAILS_CAPABILITY', 'mod/vpl:setjails' );
-define( 'VPL_MANAGE_CAPABILITY', 'mod/vpl:manage' );
-define( 'VPL_EVENT_TYPE_DUE', 'duedate');
-define( 'VPL_LOCK_TIMEOUT', 10);
+const VPL = 'vpl';
+const VPL_SUBMISSIONS = 'vpl_submissions';
+const VPL_JAILSERVERS = 'vpl_jailservers';
+const VPL_RUNNING_PROCESSES = 'vpl_running_processes';
+const VPL_VARIATIONS = 'vpl_variations';
+const VPL_ASSIGNED_VARIATIONS = 'vpl_assigned_variations';
+const VPL_OVERRIDES = 'vpl_overrides';
+const VPL_ASSIGNED_OVERRIDES = 'vpl_assigned_overrides';
+const VPL_GRADE_CAPABILITY = 'mod/vpl:grade';
+const VPL_VIEW_CAPABILITY = 'mod/vpl:view';
+const VPL_SUBMIT_CAPABILITY = 'mod/vpl:submit';
+const VPL_SIMILARITY_CAPABILITY = 'mod/vpl:similarity';
+const VPL_ADDINSTANCE_CAPABILITY = 'mod/vpl:addinstance';
+const VPL_SETJAILS_CAPABILITY = 'mod/vpl:setjails';
+const VPL_MANAGE_CAPABILITY = 'mod/vpl:manage';
+const VPL_EVENT_TYPE_DUE = 'duedate';
+const VPL_LOCK_TIMEOUT = 10;
 
 require_once(dirname(__FILE__).'/vpl.class.php');
 
@@ -847,10 +847,19 @@ function vpl_truncate_string(&$string, $limit) {
  */
 function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
-        return 'export ' . $var . '=' . $value . "\n";
+        $ret = "export $var=$value\n";
+    } else if (is_array($value)) {
+        $ret = "export $var=( ";
+        foreach ($value as $data) {
+            $ret .= '"' . str_replace('"', '\"', $data) . '" ';
+        }
+        $ret .= ")\n";
     } else {
-        return 'export ' . $var . "='" . str_replace( "'", "'\"'\"'", $value ) . "'\n";
+        $ret = "export $var=\"";
+        $ret .= str_replace('"', '\"', $value);
+        $ret .= "\"\n";
     }
+    return $ret;
 }
 
 /**
@@ -1171,4 +1180,15 @@ function vpl_call_with_transaction(string $function, array $parms) {
     } catch (Exception $e) {
         $transaction->rollback($e);
     }
+}
+
+/**
+ * Return full path to the directory of scripts.
+ *
+ * @return string
+ * @codeCoverageIgnore
+ */
+function vpl_get_scripts_dir() {
+    global $CFG;
+    return $CFG->dirroot . '/mod/vpl/jail/default_scripts';
 }

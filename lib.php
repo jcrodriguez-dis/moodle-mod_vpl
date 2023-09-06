@@ -166,14 +166,15 @@ function vpl_create_event($instance, $id) {
 }
 
 /**
- * Callback function to determine if the event is visible for the current user.
+ * Callback function to determine if the event is visible for the $userid or current user.
  *
  * @param calendar_event $event
+ * @param int $userid optional.
  * @return bool Returns true if the event is visible, false if not visible.
  */
-function mod_vpl_core_calendar_is_event_visible(calendar_event $event) {
+function mod_vpl_core_calendar_is_event_visible(calendar_event $event, $userid = false) {
     $vpl = new mod_vpl(null, $event->instance);
-    return $vpl->is_visible();
+    return $vpl->is_visible($userid);
 }
 
 /**
@@ -181,16 +182,38 @@ function mod_vpl_core_calendar_is_event_visible(calendar_event $event) {
  *
  * @param calendar_event $event
  * @param \core_calendar\action_factory $factory objet to generate the action
+ * @param int $userid (optional) User id for checking capabilities, etc.
  * @return \core_calendar\action_factory|null The action object or null
  */
 function mod_vpl_core_calendar_provide_event_action(calendar_event $event,
-                                                    \core_calendar\action_factory $factory) {
+                                                    \core_calendar\action_factory $factory,
+                                                    $userid = 0) {
+    global $USER;
+    if ($userid == 0) {
+        $userid = $USER->id;
+    }
     $vpl = new mod_vpl(null, $event->instance);
-    if ($vpl->is_visible()) {
-        $text = get_string('dueeventaction', VPL);
-        $cmid = $vpl->get_course_module()->id;
-        $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
-        return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
+    $vplduedate = $vpl->get_effective_setting('duedate', $userid);
+    $showdue = 60 * 60 * 12; // Half day.
+    if ($vplduedate > 0 && (($vplduedate + $showdue) < time())) {
+        return null;
+    }
+    if ($vpl->is_visible($userid)) {
+        if ($vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+            $text = get_string('submissionslist', VPL);
+            $cmid = $vpl->get_course_module()->id;
+            $link = new \moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid]);
+            return $factory->create_instance($text, $link, 1, true);
+        } else {
+            if ($vpl->last_user_submission( $userid ) !== false) {
+                return null;
+            } else {
+                $text = get_string('dueeventaction', VPL);
+                $cmid = $vpl->get_course_module()->id;
+                $link = new \moodle_url('/mod/vpl/forms/edit.php', ['id' => $cmid]);
+                return $factory->create_instance($text, $link, 1, $vpl->is_submit_able());
+            }
+        }
     } else {
         return null;
     }
@@ -310,7 +333,7 @@ function vpl_update_instance($instance) {
 function vpl_delete_instance( $id ) {
     global $DB, $CFG;
 
-    $instance = $DB->get_record( VPL, array ( "id" => $id ) );
+    $instance = $DB->get_record(VPL, ["id" => $id]);
     if ( $instance === false ) {
         return false;
     }
@@ -322,11 +345,7 @@ function vpl_delete_instance( $id ) {
     vpl_delete_grade_item( $instance );
 
     // Delete relate event.
-    $DB->delete_records( 'event',
-            array (
-                    'modulename' => VPL,
-                    'instance' => $id
-            ) );
+    $DB->delete_records('event', ['modulename' => VPL, 'instance' => $id]);
 
     // Delete all related records.
     $tables = [
@@ -337,18 +356,12 @@ function vpl_delete_instance( $id ) {
             VPL_ASSIGNED_OVERRIDES
     ];
     foreach ($tables as $table) {
-        $DB->delete_records( $table, array ('vpl' => $id) );
+        $DB->delete_records($table, ['vpl' => $id]);
     }
 
-    // Reset basedon $id to 0.
-    $resetbasedon = 'UPDATE {vpl}
-                         set basedon = 0
-                         WHERE basedon = :vplid';
-    $DB->execute($resetbasedon, array ( 'vplid' => $id ));
-
     // Delete vpl record.
-    $DB->delete_records( VPL, array ( 'id' => $id ) );
-
+    $DB->delete_records( VPL, ['id' => $id] );
+    mod_vpl::reset_db_cache(VPL, $id);
     return true;
 }
 

@@ -65,7 +65,7 @@ class running_processes_test extends base_test {
         $this->evaluate->type = 2;
         $this->evaluate->adminticket = 'fkdshdlkfskj34';
         $this->directrun = clone $this->run;
-        $this->directrun->type = 3;
+        $this->directrun->type = 4;
         $this->directrun->adminticket = 'fkdshdlkfskj7';
         $this->otheruserrun = clone $this->run;
         $this->otheruserrun->userid = $this->students[1]->id;

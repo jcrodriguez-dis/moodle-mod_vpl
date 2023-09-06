@@ -108,6 +108,7 @@ class behat_mod_vpl extends behat_base {
      */
     public function i_drop_the_file_contening_on_in_vpl($filename, $contents, $selector) {
         // Testing framework does not accept heredoc syntax.
+        $contents = str_replace("\\n", "\n", $contents);
         $scriptfile = $this->generate_drop_file($filename, $contents, 'file');
         $script = "(function() {
             var file;

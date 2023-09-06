@@ -305,9 +305,11 @@ class locallib_test extends \advanced_testcase {
      */
     public function test_vpl_bash_export() {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
-        $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
-        $this->assertEquals("export ALGO='te\" \$xt'\n", vpl_bash_export('ALGO', 'te" $xt'));
-        $this->assertEquals("export ALGO='te'\"'\"''\"'\"'xt'\"'\"''\n", vpl_bash_export('ALGO', "te''xt'"));
+        $this->assertEquals("export ALGO=\"text\"\n", vpl_bash_export('ALGO', 'text'));
+        $this->assertEquals("export ALGO=\"te\\\" \$'xt\"\n", vpl_bash_export('ALGO', 'te" $\'xt'));
+        $this->assertEquals("export ALGO=\"te''xt'\"\n", vpl_bash_export('ALGO', "te''xt'"));
+        $res = vpl_bash_export('a', [ "te''xt'", 'te" $\'xt']);
+        $this->assertEquals("export a=( \"te''xt'\" \"te\\\" \$'xt\" )\n", $res);
     }
 
     /**
@@ -329,27 +331,5 @@ class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_valid_file_name('a/b'));
         $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
-    }
-
-    /**
-     * @covers \vpl_check_network
-     */
-    public function test_vpl_check_network() {
-        // Tests exact IPs.
-        $this->assertTrue(vpl_check_network('1.2.3.4', '1.2.3.4'));
-        $this->assertFalse(vpl_check_network('199.193.245.44', '199.193.245.4'));
-        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44', '199.193.245.44'));
-        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44', '1.2.3.4'));
-        $this->assertFalse(vpl_check_network('1.2.3.4, 199.193.245.44', '1.2.3.41'));
-        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44, 77.77.88.99', '77.77.88.99'));
-        $this->assertTrue(vpl_check_network('1.2.3.4, 199.193.245.44, 77.77.88.99', '199.193.245.44'));
-        // Tests subnets.
-        $this->assertTrue(vpl_check_network('1.2.3', '1.2.3.4'));
-        $this->assertFalse(vpl_check_network('199.193', '199.194.245.4'));
-        $this->assertTrue(vpl_check_network('1.2, 199.193.245.', '199.193.245.44'));
-        $this->assertTrue(vpl_check_network('1.2, 199.193.245.44', '1.2.3.4'));
-        $this->assertFalse(vpl_check_network('1.2.3., 199.193.245.44', '1.2.33.4'));
-        $this->assertTrue(vpl_check_network('1.2.3, 199.193.245.44, 77.', '77.77.88.99'));
-        $this->assertTrue(vpl_check_network('1.2.3.4, 199., 77.77.88.99', '199.193.245.44'));
     }
 }

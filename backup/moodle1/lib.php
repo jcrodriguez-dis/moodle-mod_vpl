@@ -25,12 +25,12 @@
  */
 
 /**
- * VPL conversion handler
+ * VPL moodle1 backup conversion handler
+ *
  * @copyright 2012 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 class moodle1_mod_vpl_handler extends moodle1_mod_handler {
 
     /**
@@ -54,7 +54,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
     /**
      * Declare the paths in moodle.xml we are able to convert
      *
-     * The method returns list of {@link convert_path} instances.
+     * The method returns list of {@ link convert_path} instances.
      * For each path returned, the corresponding conversion method must be
      * defined.
      *
@@ -62,7 +62,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      * actually exist in the file. The last element with the module name was
      * appended by the moodle1_converter class.
      *
-     * @return array of {@link convert_path} instances
+     * @return array of {@ link convert_path} instances
      */
     public function get_paths() {
         return array (
@@ -247,7 +247,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/VARIATIONS/VARIATIONS/VARIATION
      * data available
-     * @parm array $data variant instance
+     * @param array $data variant instance
      */
     public function process_vpl_variation($data) {
         $this->write_xml ( 'variation', $data, array (
@@ -263,7 +263,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
         $this->xmlwriter->begin_tag ( 'submissions' );
     }
     /**
-     *
+     * Write en tag of vpl submissions
      */
     public function on_vpl_submissions_end() {
         $this->xmlwriter->end_tag ( 'submissions' );
@@ -287,7 +287,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
 
     /**
      * This is executed every time we have one /MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/SUBMISSIONS/SUBMISSION
-     * data available
+     * @param array $data available
      */
     public function process_vpl_submission($data) {
         $this->xmlwriter->begin_tag ( 'submission', $data, array (

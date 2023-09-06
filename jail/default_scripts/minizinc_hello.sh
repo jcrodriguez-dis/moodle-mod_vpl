@@ -12,3 +12,4 @@ solve maximize x;
 output [ "Hello from Minizinc constraint modeling language" ];
 END_OF_FILE
 export VPL_SUBFILE0="minizinc test/minizinc message.mzn"
+export VPL_HELLO_MODE="yes"

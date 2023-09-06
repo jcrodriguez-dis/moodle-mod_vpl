@@ -128,7 +128,7 @@
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
         <FIELD NAME="vpl" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="VPL id"/>
-        <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="Type of process (0 run, 1 debug, 2 evalaute, 3 directrun)"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="Type of process (0 run, 1 debug, 2 evalaute, 4 directrun)"/>
         <FIELD NAME="server" TYPE="char" LENGTH="256" NOTNULL="true" SEQUENCE="false" COMMENT="URL jail server"/>
         <FIELD NAME="start_time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Start time of process"/>
         <FIELD NAME="adminticket" TYPE="char" LENGTH="64" NOTNULL="true" SEQUENCE="false" COMMENT="Admin ticket to control process"/>
