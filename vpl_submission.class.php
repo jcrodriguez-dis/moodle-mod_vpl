@@ -887,16 +887,15 @@ class mod_vpl_submission {
         }
         $this->get_submitted_fgm()->print_files();
     }
+
     const GRADETAG = 'Grade :=>>';
     const COMMENTTAG = 'Comment :=>>';
     const BEGINCOMMENTTAG = '<|--';
     const ENDCOMMENTTAG = '--|>';
-    public static function find_proposedgrade($text) {
-        if (PHP_EOL == "\r\n") { // Fix for Windows
-            $text = str_replace("\n", "\r\n", $text);
-        }
+
+    public static function find_proposedgrade(&$text) {
+        $reggrademark = '/^Grade :=>>(.*)$/m';
         $grademark = '';
-        $reggrademark = "/^Grade :=>>(.*)$/m";
         $offset = 0;
         while (true) {
             $matches = [];
@@ -911,17 +910,20 @@ class mod_vpl_submission {
         return $grademark;
     }
 
-    public function proposedgrade($text) {
+    public function proposedgrade(&$text) {
         return self::find_proposedgrade($text);
     }
 
-    public static function find_proposedcomment($text) {
-        if (PHP_EOL == "\r\n") { // Fix for Windows
-            $text = str_replace("\n", "\r\n", $text);
+    public static function find_proposedcomment(&$text) {
+        $usecrnl = vpl_detect_newline($text) == "\r\n";
+        if ($usecrnl) {
+            $startcommentreg = '/^(Comment :=>>([^\\r\\n]*)|<\\|--)\\r?$/m';
+            $endcommentreg = '/^--\\|>\\r?$/m';
+        } else {
+            $startcommentreg = '/^(Comment :=>>(.*)|<\\|--)$/m';
+            $endcommentreg = '/^--\\|>$/m';
         }
         $comments = '';
-        $startcommentreg = '/^(Comment :=>>(.*)|'. preg_quote(self::BEGINCOMMENTTAG) . ')$/m';
-        $endcommentreg = '/^' . preg_quote(self::ENDCOMMENTTAG) . '$/m';
         $offset = 0;
         while (true) {
             $matches = [];
@@ -929,12 +931,16 @@ class mod_vpl_submission {
             if ( $result == 1) {
                 $found = $matches[1][0];
                 if ( $found == self::BEGINCOMMENTTAG ) { // Block comment start.
-                    $posstart = $matches[1][1] + strlen(self::BEGINCOMMENTTAG) + 1;
+                    $posstart = $matches[0][1] + strlen($matches[0][0]) + 1;
                     $result = preg_match($endcommentreg, $text, $matches, PREG_OFFSET_CAPTURE, $posstart);
                     if ($result == 1) { // Block comment end.
                         $offset = $matches[0][1];
-                        $comments .= substr($text, $posstart, $offset - $posstart);
-                        $offset += strlen(self::ENDCOMMENTTAG) + 1;
+                        $blockcomment = substr($text, $posstart, $offset - $posstart);
+                        if ($usecrnl) {
+                            $blockcomment = str_replace("\r\n", "\n", $blockcomment);
+                        }
+                        $comments .= $blockcomment;
+                        $offset += strlen($matches[0][0]) + 1;
                     } else { // End of block comment not found.
                         $comments .= substr($text, $posstart);
                         break;
@@ -942,7 +948,7 @@ class mod_vpl_submission {
                 } else {
                     $found = $matches[2][0] . "\n";
                     $comments .= $found;
-                    $offset = $matches[1][1] + strlen(self::COMMENTTAG) + strlen($found);
+                    $offset = $matches[0][1] + strlen($matches[0][0]) + 1;
                 }
             } else {
                 break;
@@ -951,7 +957,7 @@ class mod_vpl_submission {
         return $comments;
     }
 
-    public function proposedcomment($text) {
+    public function proposedcomment(&$text) {
         return self::find_proposedcomment($text);
     }
 
@@ -1087,7 +1093,7 @@ class mod_vpl_submission {
                 }
                 $comment .= '<br>';
             } else { // Regular text.
-                $comment .= $this->add_filelink( s( $line ) ) . '<br>';
+                $comment .= $this->add_filelink(s($line)) . '<br>';
             }
         }
         if (strlen( $casetoshow ) > 0) {
