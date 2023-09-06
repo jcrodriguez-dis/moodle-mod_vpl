@@ -385,7 +385,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->pln = self::get_pln($testfilelist);
         // Write local environment for each solution.
         foreach ($casefilelist as $casedir => $casefilenames) {
-            $localenvironment = self::get_bash_expor_for_subfiles($casefilenames);
+            $localenvironment = self::get_bash_export_for_subfiles($casefilenames);
             $localenvironmentfile = self::DIR_TEST_EVALUATION . '/' . $casedir . '/.localenvironment.sh';
             $data->files[$localenvironmentfile] = $localenvironment;
         }
@@ -433,7 +433,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $info .= vpl_bash_export('VPL_COMPILATIONFAILED', get_string('VPL_COMPILATIONFAILED', VPL));
         if (isset($data->submittedlist)) {
-            $info .= self::get_bash_expor_for_subfiles($data->submittedlist);
+            $info .= self::get_bash_export_for_subfiles($data->submittedlist);
         }
         // Add identifications of variations if exist.
         $info .= vpl_bash_export('VPL_VARIATION', '-');
@@ -490,7 +490,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @param array $filelist
      * @return string bash code to generate VPL_SUBFILE vars.
      */
-    public static function get_bash_expor_for_subfiles($filelist) {
+    public static function get_bash_export_for_subfiles($filelist) {
         $bashcode = '';
         $filenames = '';
         $num = 0;
