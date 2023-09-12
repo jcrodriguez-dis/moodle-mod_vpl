@@ -21,7 +21,7 @@ fi
 # Globals vars and initial actions
 export pass_symbol='✅'
 export fail_symbol='❌'
-export bug_symbol='🪲'
+export bug_symbol='🐞'
 export ERRORS=''
 export number_format="([0-9]+([.][0-9]*)?|[.][0-9]+)"
 export directory_format="/(pass|fail)- *([^-]*) *(-$number_format)?$"
@@ -29,11 +29,13 @@ export home_dir=$(pwd)
 export oldtest_dir='vpl_evaluation_tests'
 export test_dir='.vpl_evaluation_tests'
 export compilation_results='.vpl_compilation_results.txt'
+export compilation_errors='.vpl_compilation_errors.txt'
 export evaluation_results='.vpl_evaluation_results.txt'
 export escaped_home_dir=$(echo $home_dir | sed "s/\//\\\\\//g")
-export vpl_check_evaluation_help="
+export vpl_evaluation_test_help='.vpl_evaluation_test_help'
+cat <<'FILE_END' >> "$home_dir/$vpl_evaluation_test_help"
 <|--
--Testing Automatic Evaluation of a VPL Activity
+-MANUAL: Testing Automatic Evaluation of a VPL Activity
 This guide walks you through the steps to configure tests to check the automated evaluation in a VPL activity.
 The aim of these checks is to test the automatic evaluation of different solutions and present the resultant outcomes.
 For accurate evaluation:
@@ -59,16 +61,12 @@ If there are variations in the activity, then within vpl_evaluation_tests, creat
 VPL will automatically delete the vpl_evaluation_tests directory in any scenario other than the evaluation check.
 This measure ensures students cannot access the directory, safeguarding the integrity of the solutions.
 --|>
-"
-function add_error {
-	ERRORS="$ERRORS$1
-"
-}
 
-function show_errors {
-	echo "❄ Configuration errors $bug_symbol found
-$ERRORS
-"
+FILE_END
+
+function add_error {
+	[[ ! -s $compilation_errors ]] && (echo "$fail_symbol Configuration errors found $bug_symbol" >> "$home_dir/$compilation_errors")
+	echo  "$1" >> "$home_dir/$compilation_errors"
 }
 
 function copy_configuration {
@@ -122,65 +120,60 @@ function compile_solutions_tests {
 	local solution=
 	local correct=
 	if [[ ! -d $1 ]] ; then
-		add_error "🪲 Directory of solutions ($1) not found."
+		add_error "$bug_symbol Directory of solutions ($1) not found."
 		return
 	fi
 	# Find configuration errors
 	for solution in $solutions ; do
 		if [ ! -d "$solution" ] ; then
-			add_error "🪲 Found a file instead of a solution diretory ($solution)."
+			add_error "$bug_symbol Found a file instead of a solution diretory ($solution)."
 			rm "$solution"
 			continue
 		fi
 		if [[ $solution =~ $directory_format ]] ; then
 			[[ ${BASH_REMATCH[1]} = "pass" ]] && correct="$solution"
 		else
-			add_error "🪲 Found a directory that does not match solution diretory format $directory_format ($solution)."
+			add_error "$bug_symbol Found a directory that does not match solution diretory format $directory_format ($solution)."
 			rm -R "$solution"
 		fi
 	done
 	if [[ $correct = "" ]] ; then
-		add_error "🪲 No correct solution is set for the $variation problem. Please, add a correct solution."
+		add_error "$bug_symbol No correct solution is set for the $variation problem. Please, add a correct solution."
 	fi
 	for solution in $solutions ; do
 		[[ -d "$solution" ]] && compile_a_solution_test "$solution"
 	done
 }
 let ntest=0
-echo "❄ Using '$VPL_PLN' programming language (or custom code) to run solutions"
+echo "❄ Using '$VPL_PLN' programming language (or custom code) to run solutions" >> "$home_dir/$compilation_results"
 if [[ -d "$home_dir/$oldtest_dir" ]] ; then
 	mv "$home_dir/$oldtest_dir" "$home_dir/$test_dir"
 	if [[ "$VPL_VARIATIONS" != "" ]] ; then
 		for variation in ${VPL_VARIATIONS[@]} ; do
-			echo "⤨ Preparing variation: $variation"
+			echo "⤨ Preparing variation: $variation" >> "$home_dir/$compilation_results"
 			compile_solutions_tests "$home_dir/$test_dir/$variation"
 		done
 	else
 		compile_solutions_tests "$home_dir/$test_dir"
 	fi
 else
-	add_error "🪲 The required directory $oldtest_dir doesn't exist."
+	add_error "$bug_symbol The required directory $oldtest_dir doesn't exist."
 fi
 cp common_script.sh vpl_execution
-if [[ $ERRORS != "" ]] ; then
-	show_errors
-	[ -s "$home_dir/$compilation_results" ] && cat "$home_dir/$compilation_results"
-	echo "export compile_solution_test=\"$vpl_check_evaluation_help\"" >> vpl_execution
-	echo "echo \"$vpl_check_evaluation_help\""  >> vpl_execution
-	chmod +x vpl_execution
-	exit
-fi
-[ -s "$home_dir/$compilation_results" ] && cat "$home_dir/$compilation_results"
+
 cat <<'SCRIPT_END' >>vpl_execution
 export pass_symbol='✅'
 export fail_symbol='❌'
-export bug_symbol='🪲'
+export bug_symbol='🐞'
+export star_symbol='⭐'
 export number_format=" *([0-9]+([.][0-9]*)?|[.][0-9]+) *"
 export directory_format="/(pass|fail)- *([^-]*) *(-$number_format)?$"
 export home_dir=$(pwd)
 export test_dir='.vpl_evaluation_tests'
 export compilation_results='.vpl_compilation_results.txt'
 export evaluation_results='.vpl_evaluation_results.txt'
+export compilation_errors='.vpl_compilation_errors.txt'
+export vpl_evaluation_test_help='.vpl_evaluation_test_help'
 
 function echo_VPL {
 	echo '<|--'
@@ -254,6 +247,23 @@ function run_solutions_tests {
 		run_a_solution_test "$solution"
 	done
 }
+
+# If compilation erros stop
+if [[ -s "$home_dir/$compilation_errors" ]] ; then
+	echo '<|--'
+	cat "$home_dir/$compilation_errors"
+	[ -s "$home_dir/$compilation_results" ] && cat "$home_dir/$compilation_results"
+	cat "$home_dir/$vpl_evaluation_test_help"
+	echo '--|>'
+	exit
+fi
+
+if [ -s "$home_dir/$compilation_results" ] ; then
+	echo '<|--'
+	cat "$home_dir/$compilation_results"
+	echo '--|>'
+fi
+
 let ntest=0
 let ntestfail=0
 if [[ "$VPL_VARIATIONS" != "" ]] ; then
@@ -264,10 +274,10 @@ else
 	run_solutions_tests "$home_dir/$test_dir"
 fi
 if [[ $ntestfail -gt 0 ]] ; then
-	echo_line_VPL "- ⭐ Final report: $fail_symbol $ntestfail failed of $ntest tests."
+	echo_line_VPL "- $star_symbol Final report: $fail_symbol $ntestfail failed of $ntest tests."
 	global_mark=$VPL_GRADEMIN
 else
-	echo_line_VPL "- ⭐ Final report: $pass_symbol All $ntest tests passed."
+	echo_line_VPL "- $star_symbol Final report: $pass_symbol All $ntest tests passed."
 	global_mark=$VPL_GRADEMAX
 fi
 
