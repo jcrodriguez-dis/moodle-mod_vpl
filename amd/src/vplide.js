@@ -1542,18 +1542,14 @@ define(
             menuButtons.add({
                 name: 'fullscreen',
                 originalAction: function() {
-                    var tags = 'header, nav, footer, aside, .dropdown, #page-header, div.navbar, #nav-drawer';
-                    tags += ', div.tabtree, #dock, .breadcrumb-nav, .moodle-actionmenu';
                     if (fullScreen) {
                         rootObj.removeClass('vpl_ide_root_fullscreen');
                         $('body').removeClass('vpl_body_fullscreen');
                         menuButtons.setText('fullscreen', 'fullscreen');
-                        $(tags).show();
                         $('#vpl_ide_user').hide();
                         fullScreen = false;
                     } else {
                         $('body').addClass('vpl_body_fullscreen').scrollTop(0);
-                        $(tags).hide();
                         rootObj.addClass('vpl_ide_root_fullscreen');
                         menuButtons.setText('fullscreen', 'regularscreen');
                         if (options.username) {

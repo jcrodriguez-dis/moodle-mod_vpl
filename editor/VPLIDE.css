@@ -10,10 +10,6 @@
     width: 100%;
 }
 
-.vpl_body_fullscreen {
-    overflow: hidden;
-}
-
 .vpl_ide_root_fullscreen {
     background-color: white;
     height: 100%;
@@ -22,6 +18,46 @@
     top: 0;
     width: 100%;
     z-index: 90;
+}
+
+.vpl_body_fullscreen {
+    overflow: hidden;
+}
+
+/* Using vpl_body_fullscreen class to get fullscreen */ 
+.vpl_body_fullscreen .block {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen header {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #dock {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .back-to-top {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #nav-drawer {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen nav {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .d-print-none {
+    display: none;
+    visibility: hidden;
 }
 
 .vpl_ide_dialog {
