@@ -18,7 +18,7 @@ fi
 
 # Does exist the run script?
 if [ ! -s vpl_run.sh ] ; then
-	echo "I'm sorry, but I haven't a default action to evaluate the type of submitted files"
+	echo "I apologize, but I do not find a default action to run the submitted file types."
 else
 	# Avoid conflict with C++ compilation.
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
