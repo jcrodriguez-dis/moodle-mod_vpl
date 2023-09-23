@@ -84,6 +84,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'r' => 'r',
         'R' => 'r',
         'rb' => 'ruby',
+        'rs' => 'rust',
         'ruby' => 'ruby',
         'ts' => 'typescript'
     ];
@@ -135,7 +136,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Return the script to manage the action and detected language
      *
-     * @param string $scripttype 'run','debug', 'evaluate' o 'test_evaluate'
+     * @param string $scripttype 'run', 'debug', 'evaluate' or 'test_evaluate'
      * @param string $detectedpln Programming Language Name
      * @param object $data Execution data with script field if used
      *
@@ -166,7 +167,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Return the scripts to manage the action and detected language
      *
      * @param object $vpl VPL activity
-     * @param string $detectedpln Programming language name detected
      * @param object $data Execution data with execution type and script fields if used
      *
      * @return array key=>filename value =>filedata
@@ -175,10 +175,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $detectedpln = $data->pln;
         $type = $data->type;
         $ret = [];
+        $ret['vpl_run.sh'] = self::get_script('run', $detectedpln, $data);
         if ($type == 1) {
             $ret['vpl_debug.sh'] = self::get_script('debug', $detectedpln, $data);
-        } else {
-            $ret['vpl_run.sh'] = self::get_script('run', $detectedpln, $data);
         }
         if ($type >= 2) {
             $ret['vpl_evaluate.sh'] = self::get_script('evaluate', $detectedpln, $data);
@@ -202,7 +201,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                         $ret[$filename] = file_get_contents( $dirpath . '/' .$filename );
                     }
                 }
-                closedir( $dirlst );
+                closedir($dirlst);
             }
         }
         return $ret;
@@ -212,6 +211,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Recopile base execution data to be send to the jail
      *
      * @param mod_vpl $vpl. VPl instance to process.
+     * @param int $type. Execution type code
      * @param array $vplused=[]. List of based on instances, usefull to avoid infinite recursion.
      * @return object with files, limits, interactive and other info
      */
@@ -323,8 +323,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         // Get programming language.
         $data->pln = self::get_pln($submittedlist);
-        // Adapt Java and HTML memory limit.
-        if ($data->pln == 'java' || $data->pln == 'html') {
+        // Adapts Java memory limit.
+        if ($data->pln == 'java') {
             $javaoffset = 128 * 1024 * 1024; // Checked at Ubuntu 12.04 64 and CentOS 6.5 64.
             if ($data->maxmemory + $javaoffset > $data->maxmemory) {
                 $data->maxmemory += $javaoffset;
@@ -345,11 +345,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return object $data object updated.
      */
     public static function prepare_execution_evaluation_tests($data) {
-        // Changes resources limits to maximum.
+        // Changes resources limits to maximum, but not memory.
         $plugincfg = get_config('mod_vpl');
         $data->maxtime = (int) $plugincfg->maxexetime;
         $data->maxfilesize = (int) $plugincfg->maxexefilesize;
-        $data->maxmemory = (int) $plugincfg->maxexememory;
         $data->maxprocesses = (int) $plugincfg->maxexeprocesses;
         // Selects test files.
         $vpl = new mod_vpl(false, $data->activityid);
@@ -594,7 +593,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Run, debug, evaluate
      *
-     * @param int $type (0=run, 1=debug, evaluate=2)
+     * @param int $type (0=run, 1=debug, evaluate=2, test_evaluate=3)
      */
     public function run($type, $options = array()) {
         // Stop current task if one.
