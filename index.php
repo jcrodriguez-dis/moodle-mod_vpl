@@ -127,7 +127,7 @@ $PAGE->set_pagelayout('incourse');
 echo $OUTPUT->header();
 echo $OUTPUT->heading( $strvpls );
 
-$einfo = array ( 'context' => \context_course::instance( $course->id ) );
+$einfo = ['context' => \context_course::instance( $course->id )];
 $event = \mod_vpl\event\course_module_instance_list_viewed::create( $einfo );
 $event->trigger();
 
@@ -142,16 +142,13 @@ $urlparms = [
 
 $urlbase = new moodle_url( '/mod/vpl/index.php', $urlparms);
 
-if (method_exists('course_modinfo', 'get_array_of_activities')) { // TODO remove is not needed.
-    $activities = course_modinfo::get_array_of_activities($COURSE, true);
-} else {
-    $activities = get_array_of_activities($COURSE->id);
-}
+$activities = get_array_of_activities($course->id);
+
 $sectionnames = array();
 foreach ($activities as $activity) {
     if ( $activity->mod == 'vpl' ) {
         $section = $activity->section;
-        $sectionnames[$section] = get_section_name($COURSE->id, $section);
+        $sectionnames[$section] = get_section_name($course->id, $section);
     }
 }
 
@@ -413,8 +410,10 @@ if ($totalsubs > 0) {
 echo "<br>";
 echo html_writer::table( $table );
 
-$url = new moodle_url( '/mod/vpl/views/checkvpls.php', array ('id' => $id) );
-$string = get_string( 'checkall' );
-echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
+if (is_siteadmin() || has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
+    $url = new moodle_url( '/mod/vpl/views/checkvpls.php', array ('id' => $id) );
+    $string = get_string( 'checkall' );
+    echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
+}
 
 echo $OUTPUT->footer();
