@@ -15,7 +15,7 @@ if [ "$1" == "version" ] ; then
 fi
 get_source_files c
 # compile
-. vpl_run.sh n "-g -O0"
+./vpl_run.sh n "-g -O0"
 if [ -f vpl_execution ] ; then
 	mv vpl_execution vpl_program
 	cat common_script.sh > vpl_execution
@@ -39,4 +39,6 @@ Ddd*saveHistoryOnExit: off
 END_OF_FILE
 		mv vpl_execution vpl_wexecution
 	fi
+else
+	echo "Compilation process doesn't generate an execution file"
 fi
