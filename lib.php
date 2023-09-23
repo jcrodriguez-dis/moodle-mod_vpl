@@ -550,44 +550,6 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
 /**
  * @codeCoverageIgnore
  *
- * Given a course_module object, this function returns any "extra" information
- * that may be needed whenprinting this activity in a course listing.
- * See get_array_of_activities() in course/lib.php.
- *
- * @param $coursemodule object
- *            The coursemodule object (record).
- * @return object An object on information that the coures will know about
- *      (most noticeably, an icon). fields all optional extra, icon, name.
- */
-
-function vpl_get_coursemodule_info_not_valid($coursemodule) {
-    global $CFG;
-    $ret = new stdClass();
-    $ret->icon = $CFG->wwwroot.'/mod/vpl/icon.gif';
-    $vpl = new mod_vpl($coursemodule->id);
-    $instance = $vpl->get_instance();
-    if ($instance->example) { // Is example.
-        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_yellow.gif';
-        $ret->name = $vpl->get_instance()->name.' '.get_string('example', VPL);
-        return;
-    }
-    if ($instance->grade == 0) { // Not grade_able .
-        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_green.gif';
-        return;
-    }
-    if ($instance->automaticgrading) { // Automatic grading.
-        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_red.gif';
-    }
-    if ($instance->duedate > 0 && $instance->duedate < time()) { // Closed.
-        $ret->icon = $CFG->wwwroot.'/mod/vpl/icon_black.gif';
-        return;
-    }
-    return $ret;
-}
-
-/**
- * @codeCoverageIgnore
- *
  * Get icon mapping for font-awesome.
  *
  * @return  array
