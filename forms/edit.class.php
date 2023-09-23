@@ -239,7 +239,7 @@ class mod_vpl_edit {
     }
 
     /**
-     * Request the execution (run|debug|evaluate) of a user's submission
+     * Request the execution (run|debug|evaluate|test_evaluate) of a user's submission or test_evaluate
      * @param mod_vpl $vpl
      * @param int $userid
      * @param string $action
@@ -247,21 +247,14 @@ class mod_vpl_edit {
      * @throws Exception
      * @return Object with execution information
      */
-    public static function execute($vpl, $userid, $action, $options = array()) {
+    public static function execute($vpl, $userid, $action, $options = []) {
         global $USER;
         $example = $vpl->get_instance()->example;
-        if ($action == 'test_evaluate') {
-            $lastsub = new stdClass();
-            $lastsub->vpl = $vpl->get_instance()->id;
-            $lastsub->id = 0;
-            $lastsub->userid = $USER->id;
-        } else {
-            $lastsub = $vpl->last_user_submission($userid);
-        }
-        if (! $lastsub && ! $example) {
+        $lastsub = $vpl->last_user_submission($userid);
+        if (! $lastsub && ! $example && $action != 'test_evaluate') {
             throw new Exception( get_string( 'nosubmission', VPL ) );
         }
-        if ($example) {
+        if ($example || ! $lastsub) {
             $submission = new mod_vpl_example_CE( $vpl );
         } else {
             $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
@@ -293,9 +286,10 @@ class mod_vpl_edit {
         }
         $lastsub = $vpl->last_user_submission( $userid );
         if (! $lastsub) {
-            throw new Exception( get_string( 'nosubmission', VPL ) );
+            $submission = new mod_vpl_example_CE($vpl);
+        } else {
+            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
         }
-        $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         return $submission->retrieveResult($processid);
     }
 
@@ -309,11 +303,8 @@ class mod_vpl_edit {
     public static function cancel($vpl, $userid, int $processid) {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission( $userid );
-        if (! $lastsub && ! $example) {
-            return get_string( 'nosubmission', VPL );
-        }
         try {
-            if ($example) {
+            if ($example || ! $lastsub) {
                 $submission = new mod_vpl_example_CE( $vpl );
             } else {
                 $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
