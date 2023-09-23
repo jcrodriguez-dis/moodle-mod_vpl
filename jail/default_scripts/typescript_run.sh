@@ -13,7 +13,7 @@ if [ "$1" == "version" ] ; then
 	get_program_version -v
 fi
 check_program nodejs
-export TERM=dump
+export TERM=dumb
 get_source_files ts
 SAVEIFS=$IFS
 IFS=$'\n'
