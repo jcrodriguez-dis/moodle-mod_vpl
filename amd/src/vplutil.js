@@ -285,6 +285,7 @@ define(
                 'Python': 'python',
                 'R': 'r',
                 'Ruby': 'ruby',
+                'Rust': 'rust',
                 'SASS': 'sass',
                 'Scala': 'scala',
                 'Scheme': 'scheme',
@@ -350,6 +351,7 @@ define(
                 'py': 'Python',
                 'R': 'R', 'r': 'R',
                 'rb': 'Ruby', 'ruby': 'Ruby',
+                'rs': 'Rust',
                 's': 'x86 assembly',
                 'sass': 'SASS',
                 'scala': 'Scala',
@@ -784,7 +786,8 @@ define(
                     scripts.shift();
                     VPLUtil.loadScript(scripts, end);
                 } else {
-                    VPLUtil.log('Error loading js ' + scriptURL + ' ' + scriptsLoaded[scriptURL]);
+                    var fullScriptPath = VPLUtil.options.scriptPath + scriptURL;
+                    VPLUtil.log('Loading js ' +  fullScriptPath + ' (state ' + scriptsLoaded[scriptURL] + ')');
                     setTimeout(function() {
                                   VPLUtil.loadScript(scripts, end);
                                }, 50);
