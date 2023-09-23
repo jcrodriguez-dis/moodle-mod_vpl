@@ -46,15 +46,16 @@ $PAGE->set_heading( $course->fullname );
 echo $OUTPUT->header();
 echo $OUTPUT->heading( get_string('checkall'));
 
-$einfo = array ( 'context' => \context_course::instance( $course->id ),
+$einfo = ['context' => \context_course::instance( $course->id ),
         'objectid' => $course->id,
         'userid' => $USER->id
-);
+];
 \mod_vpl\event\vpl_checkvpls::log( $einfo );
 $admin = is_siteadmin();
+$ovpls = [];
 if ($admin) {
     $ovpls = $DB->get_records( VPL, array(), 'id' );
-} else {
+} else if (has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
     $ovpls = get_all_instances_in_course( VPL, $course );
 }
 
