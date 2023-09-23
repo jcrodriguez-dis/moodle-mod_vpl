@@ -35,6 +35,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
         global $USER;
         $fake = new stdClass();
         $fake->userid = $USER->id;
+        $fake->id = 0;
         $fake->vpl = $vpl->get_instance()->id;
         parent::__construct( $vpl, $fake );
     }
@@ -58,6 +59,5 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
      * @return void
      */
     public function savece($result) {
-        // Paranoic removed.
     }
 }
