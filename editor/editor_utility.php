@@ -113,6 +113,17 @@ class vpl_editor_util {
                 class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
+    <div id="vpl_ide_dialog_renamedir" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_renamedirectory">
+                <?php p(get_string('rename'));?></label> <input
+                type="text" id="vpl_ide_input_renamedirectory"
+                name="vpl_ide_input_renamedirectory" value=""
+                class="ui-widget-content ui-corner-all" autofocus />
+                <input type="hidden" id="vpl_ide_input_olddirectoryname" value=""/>
+        </fieldset>
+    </div>
     <div id="vpl_ide_dialog_rename" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset>
@@ -340,6 +351,7 @@ class vpl_editor_util {
                 'lists',
                 'math',
                 'text',
+                'shrightpanel',
                 'start',
                 'startanimate',
                 'stop',

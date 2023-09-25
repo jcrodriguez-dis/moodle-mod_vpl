@@ -317,6 +317,7 @@ $string['server'] = 'Server';
 $string['serverexecutionerror'] = 'Server execution error';
 $string['shortdescription'] = 'Short description';
 $string['shortcuts'] = 'Keyboard shortcuts';
+$string['shrightpanel'] = 'Show/hide right panel';
 $string['similarity'] = 'Similarity';
 $string['similarto'] = 'Similar to';
 $string['startdate'] = 'Available from';

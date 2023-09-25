@@ -166,6 +166,7 @@ define(
             var tabs = $('#vpl_tabs');
             var resultContainer = $('#vpl_results');
             var result = $('#vpl_results_accordion');
+            var renameDiretoryAction = VPLUtil.doNothing;
             fileListContainer.vplMinWidth = 80;
             resultContainer.vplMinWidth = 100;
             /**
@@ -439,7 +440,7 @@ define(
                         if (pos == -1) {
                             throw new Error("Internal error: File name not found");
                         }
-                        if (files[pos].getId() < minNumberOfFiles) {
+                        if (files[pos].getId() < this.minNumberOfFiles) {
                             throw new Error("Internal error: Renaming requested filename");
                         }
                         if (files[pos].getFileName() == newname) {
@@ -486,6 +487,65 @@ define(
                         files[pos].setFileName(newname);
                     } catch (e) {
                         showError(str('filenotrenamed', newname) + ': ' + e);
+                        return false;
+                    }
+                    self.setModified();
+                    adjustTabsTitles(false);
+                    VPLUtil.delay('updateFileList', self.updateFileList);
+                    return true;
+                };
+                this.directoryExists = function (dirName) {
+                    var checkName = dirName.toLowerCase() + '/';
+                    for (var i = 0; i < files.length; i++) {
+                        if (files[i].getFileName().toLowerCase().startsWith(checkName)) {
+                            return true;
+                        }
+                    }
+                    return false;
+                };
+                this.renameDirectory = function(oldName, newName, showError) {
+                    if (oldName == newName) {
+                        return;
+                    }
+                    try {
+                        if (! this.directoryExists(oldName)) {
+                            throw new Error("Trying to rename a directory that doesn't exist: " + oldName);
+                        }
+                        if (! VPLUtil.validPath(newName + '/file.txt')) {
+                            throw str('incorrect_file_name');
+                        }
+                        // Prepare new names
+                        var oldNameLength = oldName.length + 1;
+                        var checkDirName = oldName.toLowerCase() + '/';
+                        var newFileNames = [];
+                        for (var i = 0; i < files.length; i++) {
+                            var fileName = files[i].getFileName();
+                            if (fileName.toLowerCase().startsWith(checkDirName)) {
+                                if (files[i].getId() < this.minNumberOfFiles) { // Renaming required filename
+                                    throw str('incorrect_file_name');
+                                }
+                                newFileNames[i] = newName + '/' + fileName.substr(oldNameLength);
+                            }
+                        }
+                        if (this.directoryExists(newName)) { // Checks if the merge is possible (no repeated names)
+                            var oldNames = [];
+                            for (var i = 0; i < files.length; i++) {
+                                oldNames[files[i].getFileName().toLowerCase()] = true;
+                            }
+                            for (var i = 0; i < files.length; i++) {
+                                if (newFileNames[i] && oldNames[newFileNames[i].toLowerCase()]) {
+                                    throw str('incorrect_file_name');
+                                }
+                            }
+                        }
+                        // Set ne file names
+                        for (var i = 0; i < newFileNames.length; i++) {
+                            if (newFileNames[i]) {
+                                files[i].setFileName(newFileNames[i]);
+                            }
+                        }
+                    } catch (e) {
+                        showError(str('filenotrenamed', newName) + ': ' + e);
                         return false;
                     }
                     self.setModified();
@@ -687,7 +747,11 @@ define(
                             if (dir.content.hasOwnProperty(name)) {
                                 var fd = dir.content[name];
                                 if (fd.isDir) {
-                                    lines.push(indent + VPLUI.iconFolder() + VPLUtil.sanitizeText(name));
+                                    var sname = VPLUtil.sanitizeText(name);
+                                    var attrs = 'href="#" data-dirname="' + sname + '" ';
+                                    var dirline = indent;
+                                    dirline += '<a ' + attrs + '>' + VPLUI.iconFolder() + sname + '</a>';
+                                    lines.push(dirline);
                                     lister(fd, indent + dirIndent, lines);
                                 } else {
                                     var file = fd.content;
@@ -726,8 +790,8 @@ define(
                 });
                 tabsUl.on('dblclick', 'span.vpl_ide_closeicon', menuButtons.getAction('delete'));
                 tabsUl.on('dblclick', 'a', menuButtons.getAction('rename'));
-                fileListContent.on('dblclick', 'a', menuButtons.getAction('rename'));
-
+                fileListContent.on('dblclick', 'a[data-fileid]', menuButtons.getAction('rename'));
+                fileListContent.on('dblclick', 'a[data-dirname]', renameDiretoryAction);
             }
             this.updateEvaluationNumber = function(res) {
                 if (typeof res.nevaluations != 'undefined') {
@@ -843,11 +907,11 @@ define(
                             }
                         }
                     }
-                    $('#vpl_ide_rightpanel').show();
+                    $('#vpl_ide_shrightpanel').show();
                 } else {
                     resultContainer.hide();
                     resultContainer.vplVisible = false;
-                    $('#vpl_ide_rightpanel').hide();
+                    $('#vpl_ide_shrightpanel').hide();
                 }
                 VPLUtil.delay('autoResizeTab', autoResizeTab);
             };
@@ -1126,6 +1190,33 @@ define(
             }));
             VPLUI.setDialogTitleIcon(dialogRename, 'rename');
 
+            var dialogRenameDirectory = $('#vpl_ide_dialog_renamedir');
+            /**
+             * The event handler for rename a directory
+             * @param {Object} event
+             */
+            function renameDirectoryHandler(event) {
+                if (!(event.type == 'click' || ((event.type == 'keypress') && event.keyCode == 13))) {
+                    return;
+                }
+                dialogRenameDirectory.dialog('close');
+                fileManager.renameDirectory($('#vpl_ide_input_olddirectoryname').val(),
+                        $('#vpl_ide_input_renamedirectory').val(), showErrorMessage);
+                event.preventDefault();
+            }
+            dialogRenameDirectory.find('input').on('keypress', renameDirectoryHandler);
+            dialogButtons[str('ok')] = renameDirectoryHandler;
+            dialogRenameDirectory.dialog($.extend({}, dialogbaseOptions, {
+                title: str('rename_directory'),
+                buttons: dialogButtons
+            }));
+            VPLUI.setDialogTitleIcon(dialogRenameDirectory, 'filelist');
+            renameDiretoryAction = function(event) {
+                var dirname = event.target.getAttribute('data-dirname');
+                $('#vpl_ide_input_olddirectoryname').val(dirname);
+                $('#vpl_ide_input_renamedirectory').val(dirname);
+                dialogRenameDirectory.dialog('open');
+            };
             var dialogComments = $('#vpl_ide_dialog_comments');
             var oldStudentComments = '';
             dialogButtons[str('ok')] = function() {
@@ -1763,15 +1854,15 @@ define(
                 }
             });
             menuButtons.add({
-                name: 'rightpanel',
+                name: 'shrightpanel',
                 icon: 'close-rightpanel',
                 originalAction: function() {
                     if (resultContainer.vplVisible) {
                         resultContainer.hide();
                         resultContainer.vplVisible = false;
-                        menuButtons.setText('rightpanel', 'open-rightpanel', VPLUtil.str('rightpanel'));
+                        menuButtons.setText('shrightpanel', 'open-rightpanel', VPLUtil.str('shrightpanel'));
                     } else {
-                        menuButtons.setText('rightpanel', 'close-rightpanel', VPLUtil.str('rightpanel'));
+                        menuButtons.setText('shrightpanel', 'close-rightpanel', VPLUtil.str('shrightpanel'));
                         resultContainer.show();
                         resultContainer.vplVisible = true;
                     }
@@ -1783,15 +1874,15 @@ define(
                 }
             });
             var rightpanelstyle = "position:absolute;right:0;top:60px;z-index:100;margin:3px";
-            tr.append('<span style="' + rightpanelstyle + '">' + menuButtons.getHTML('rightpanel') + '</span>');
-            var rightPanelButton = $('#vpl_ide_rightpanel');
-            menuButtons.setText('rightpanel', 'close-rightpanel', VPLUtil.str('rightpanel'));
+            tr.append('<span style="' + rightpanelstyle + '">' + menuButtons.getHTML('shrightpanel') + '</span>');
+            var rightPanelButton = $('#vpl_ide_shrightpanel');
+            menuButtons.setText('shrightpanel', 'close-rightpanel', VPLUtil.str('shrightpanel'));
 
             rightPanelButton.button();
             rightPanelButton.css('padding', '0');
-            $('#vpl_ide_rightpanel.ui-button-text').css('padding', '0');
+            $('#vpl_ide_shrightpanel.ui-button-text').css('padding', '0');
             rightPanelButton.on('click', function() {
-                menuButtons.launchAction('rightpanel');
+                menuButtons.launchAction('shrightpanel');
             });
             rightPanelButton.hide();
             menu.addClass("ui-widget-header ui-corner-all");

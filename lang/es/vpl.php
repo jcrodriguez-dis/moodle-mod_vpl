@@ -279,6 +279,7 @@ $string['server'] = 'Servidor';
 $string['serverexecutionerror'] = 'Error en el servidor de ejecución';
 $string['shortdescription'] = 'Descripción corta';
 $string['shortcuts'] = 'Atajos de teclado';
+$string['shrightpanel'] = 'Muestra/oculta panel derecho';
 $string['similarity'] = 'Similitud';
 $string['similarto'] = 'Similar a';
 $string['startdate'] = 'Disponibilidad';
