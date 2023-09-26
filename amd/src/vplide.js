@@ -387,7 +387,7 @@ define(
                 };
                 this.addFile = function(file, replace, ok, showError) {
                     if ((typeof file.name != 'string') || !VPLUtil.validPath(file.name)) {
-                        showError(str('incorrect_file_name') + ' (' + file.name + ')');
+                        showError(str('incorrect_file_name') + '\n(' + file.name + ')');
                         return false;
                     }
                     if (replace !== true) {
@@ -411,7 +411,7 @@ define(
                         return false;
                     }
                     if (files.length >= maxNumberOfFiles) {
-                        showError(str('maxfilesexceeded') + ' (' + maxNumberOfFiles + ')');
+                        showError(str('maxfilesexceeded') + '\n(' + maxNumberOfFiles + ')');
                         return false;
                     }
                     var fid = VPLUtil.getUniqueId();
@@ -486,7 +486,7 @@ define(
                         }
                         files[pos].setFileName(newname);
                     } catch (e) {
-                        showError(str('filenotrenamed', newname) + ': ' + e);
+                        showError(str('filenotrenamed', oldname) + '\n' + e);
                         return false;
                     }
                     self.setModified();
@@ -512,7 +512,7 @@ define(
                             throw new Error("Trying to rename a directory that doesn't exist: " + oldName);
                         }
                         if (! VPLUtil.validPath(newName + '/file.txt')) {
-                            throw str('incorrect_file_name');
+                            throw str('incorrect_directory_name');
                         }
                         // Prepare new names
                         var oldNameLength = oldName.length + 1;
@@ -538,14 +538,14 @@ define(
                                 }
                             }
                         }
-                        // Set ne file names
+                        // Set the new file names
                         for (var i = 0; i < newFileNames.length; i++) {
                             if (newFileNames[i]) {
                                 files[i].setFileName(newFileNames[i]);
                             }
                         }
                     } catch (e) {
-                        showError(str('filenotrenamed', newName) + ': ' + e);
+                        showError(str('directory_not_renamed', oldName) + '\n' + e);
                         return false;
                     }
                     self.setModified();
