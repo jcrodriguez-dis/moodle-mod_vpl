@@ -5,8 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-CHECK_MARK="\u2713";
-X_MARK="\u274C";
+CHECK_MARK="✅";
+X_MARK="❌";
 function writeHeading {
 	echo -e "\e[37;42m RUN \e[39;49m \e[34m$1\e[39m"
 }
@@ -56,54 +56,65 @@ function runTest {
 function evalTest {
 	local result=0
 	local mark=''
-	cd $TESTDIR
+	cd "$TESTDIR"
 	if [ ! -x vpl_execution ] ; then
-	    writeError "$X_MARK"
-		writeError "Test $1 failed: evaluation program compilation failed"
-		cat $VPLTESTERRORS
+	    write "$X_MARK"
+		write "Test $1 failed: evaluation program compilation failed" >2
+		cat "$VPLTESTERRORS" >2
 		result=1
 	else
 		mark=$(grep -E 'Grade :=>>' "$VPLTESTOUTPUT" | tail -n1 | sed 's/Grade :=>> *//i')
 		if [ "$mark" != "$VPL_GRADEMAX" ] ; then
-		    writeError "$X_MARK"
+		    write "$X_MARK"
 			result=1
 			if [ -s "$VPLTESTERRORS" ] ; then
-			    echo "The program has generated the following errors"
-			    cat $VPLTESTERRORS
+			    echo "The program has generated the following errors" >2
+			    cat "$VPLTESTERRORS" >2
 			else
-		    	cat "$VPLTESTOUTPUT"
+		    	cat "$VPLTESTOUTPUT" >2
 			fi
 		fi
 	fi
 	if [ "$mark" == "$VPL_GRADEMAX" ] ; then
-	    writeInfo "$CHECK_MARK"
+	    write "$CHECK_MARK"
 	fi
-    rm -Rf $TESTDIR
+    rm -Rf "$TESTDIR"
     return $result
 }
 
 function runAllTests {
+	local test_errors="$CASESDIR/.test_errors.txt"
 	local ntests=0
 	local npass=0
     local finalResult=0
-	cd $CASESDIR
+	local expectedResult="0"
+	cd "$CASESDIR"
 	local cases=$(ls -d *.cases | sed 's/\.cases$//')
 	for case in $cases
 	do
+		if [ "$(echo "$case" | sed 's/fail.*$//')" == "" ] ; then
+			expectedResult="1"
+		else
+			expectedResult="0"
+		fi
 		let ntests=ntests+1
-		initTest $case
-		runTest $case
-		evalTest $case
-		if [ "$?" != "0" ] ; then
+		initTest "$case"
+		runTest "$case"
+		evalTest "$case" 2>> "$test_errors"
+		if [ "$?" != "$expectedResult" ] ; then
+			echo "   ➡ $X_MARK"
 			finalResult=1
 		else
+			echo "   ➡ $CHECK_MARK"
 			let npass=npass+1
 		fi
 	done
 	if [ "$npass" == "$ntests" ] ; then
-		echo -n "OK "
+		echo -n "OK all "
 	else
-		echo -n "Fail "
+		echo
+		cat "$test_errors"
+		echo -n "Fail only "
 	fi
 	echo "$npass of $ntests tests passed"
 	return $finalResult
