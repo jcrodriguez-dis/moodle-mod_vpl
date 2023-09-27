@@ -92,7 +92,7 @@ function get_select_detailedmore($urlbase, $value = '0') {
     return $select;
 }
 
-global $COURSE, $USER, $DB, $PAGE, $OUTPUT;
+global $USER, $DB, $PAGE, $OUTPUT;
 
 $id = required_param( 'id', PARAM_INT ); // Course id.
 
@@ -142,7 +142,11 @@ $urlparms = [
 
 $urlbase = new moodle_url( '/mod/vpl/index.php', $urlparms);
 
-$activities = get_array_of_activities($course->id);
+if (method_exists('course_modinfo', 'get_array_of_activities')) { // TODO remove is not needed.
+    $activities = course_modinfo::get_array_of_activities($course, true);
+} else {
+    $activities = get_array_of_activities($course->id);
+}
 
 $sectionnames = [];
 foreach ($activities as $activity) {
@@ -259,10 +263,7 @@ $student = $student && ! $nograde;
 if ($sort > '') {
     $corder = new vpl_list_util();
     $corder->set_order( $sort, $sortdir == 'down' );
-    usort( $vpls, [
-            $corder,
-            'cpm',
-    ] );
+    usort($vpls, [$corder, 'cpm']);
 }
 
 // Generate table.
@@ -301,7 +302,7 @@ if ($detailedmore) {
     $table->align[] = 'left';
 }
 
-$baseurlsection = vpl_abs_href( '/course/view.php', 'id', $COURSE->id );
+$baseurlsection = vpl_abs_href( '/course/view.php', 'id', $course->id );
 $table->data = [];
 $totalsubs = 0;
 $totalgraded = 0;
