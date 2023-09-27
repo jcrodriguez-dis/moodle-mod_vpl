@@ -787,7 +787,7 @@ define(
                     VPLUtil.loadScript(scripts, end);
                 } else {
                     var fullScriptPath = VPLUtil.options.scriptPath + scriptURL;
-                    VPLUtil.log('Loading js ' +  fullScriptPath + ' (state ' + scriptsLoaded[scriptURL] + ')');
+                    VPLUtil.log('Loading js ' + fullScriptPath + ' (state ' + scriptsLoaded[scriptURL] + ')');
                     setTimeout(function() {
                                   VPLUtil.loadScript(scripts, end);
                                }, 50);

@@ -494,7 +494,7 @@ define(
                     VPLUtil.delay('updateFileList', self.updateFileList);
                     return true;
                 };
-                this.directoryExists = function (dirName) {
+                this.directoryExists = function(dirName) {
                     var checkName = dirName.toLowerCase() + '/';
                     for (var i = 0; i < files.length; i++) {
                         if (files[i].getFileName().toLowerCase().startsWith(checkName)) {
@@ -505,20 +505,21 @@ define(
                 };
                 this.renameDirectory = function(oldName, newName, showError) {
                     if (oldName == newName) {
-                        return;
+                        return false;
                     }
                     try {
-                        if (! this.directoryExists(oldName)) {
+                        if (!this.directoryExists(oldName)) {
                             throw new Error("Trying to rename a directory that doesn't exist: " + oldName);
                         }
-                        if (! VPLUtil.validPath(newName + '/file.txt')) {
+                        if (!VPLUtil.validPath(newName + '/file.txt')) {
                             throw str('incorrect_directory_name');
                         }
                         // Prepare new names
                         var oldNameLength = oldName.length + 1;
                         var checkDirName = oldName.toLowerCase() + '/';
                         var newFileNames = [];
-                        for (var i = 0; i < files.length; i++) {
+                        var i;
+                        for (i = 0; i < files.length; i++) {
                             var fileName = files[i].getFileName();
                             if (fileName.toLowerCase().startsWith(checkDirName)) {
                                 if (files[i].getId() < this.minNumberOfFiles) { // Renaming required filename
@@ -529,17 +530,17 @@ define(
                         }
                         if (this.directoryExists(newName)) { // Checks if the merge is possible (no repeated names)
                             var oldNames = [];
-                            for (var i = 0; i < files.length; i++) {
+                            for (i = 0; i < files.length; i++) {
                                 oldNames[files[i].getFileName().toLowerCase()] = true;
                             }
-                            for (var i = 0; i < files.length; i++) {
+                            for (i = 0; i < files.length; i++) {
                                 if (newFileNames[i] && oldNames[newFileNames[i].toLowerCase()]) {
                                     throw str('incorrect_file_name');
                                 }
                             }
                         }
                         // Set the new file names
-                        for (var i = 0; i < newFileNames.length; i++) {
+                        for (i = 0; i < newFileNames.length; i++) {
                             if (newFileNames[i]) {
                                 files[i].setFileName(newFileNames[i]);
                             }
@@ -743,25 +744,26 @@ define(
                      * @param {Array} lines Output. Each line contains the HTML to represent an IDE file
                      */
                     function lister(dir, indent, lines) {
-                        for (var name in dir.content) {
+                        var name, fd, sname, attrs, dirline, file, path, line;
+                        for (name in dir.content) {
                             if (dir.content.hasOwnProperty(name)) {
-                                var fd = dir.content[name];
+                                fd = dir.content[name];
                                 if (fd.isDir) {
-                                    var sname = VPLUtil.sanitizeText(name);
-                                    var attrs = 'href="#" data-dirname="' + sname + '" ';
-                                    var dirline = indent;
+                                    sname = VPLUtil.sanitizeText(name);
+                                    attrs = 'href="#" data-dirname="' + sname + '" ';
+                                    dirline = indent;
                                     dirline += '<a ' + attrs + '>' + VPLUI.iconFolder() + sname + '</a>';
                                     lines.push(dirline);
                                     lister(fd, indent + dirIndent, lines);
                                 } else {
-                                    var file = fd.content;
-                                    var sname = VPLUtil.sanitizeText(name);
-                                    var path = VPLUtil.sanitizeText(file.getFileName());
+                                    file = fd.content;
+                                    sname = VPLUtil.sanitizeText(name);
+                                    path = VPLUtil.sanitizeText(file.getFileName());
                                     if (file.isOpen()) {
                                         sname = '<b>' + sname + '</b>';
                                     }
-                                    var attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
-                                    var line = '<a ' + attrs + '>' + sname + '</a>';
+                                    attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
+                                    line = '<a ' + attrs + '>' + sname + '</a>';
                                     if (file.isModified()) {
                                         line = VPLUI.iconModified() + line;
                                     }
