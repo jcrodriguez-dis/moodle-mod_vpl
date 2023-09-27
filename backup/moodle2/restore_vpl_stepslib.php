@@ -39,7 +39,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     /**
      * @var array of names of VPL basedon activities indexed by id of linked activities
      */
-    protected $basedonnames = array();
+    protected $basedonnames = [];
 
     /**
      * Returns the name of the basedon activity
@@ -77,7 +77,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      * @see restore_structure_step::define_structure()
      */
     protected function define_structure() {
-        $paths = array ();
+        $paths = [];
         $userinfo = $this->get_setting_value ( 'userinfo' );
 
         $paths[] = new restore_path_element ( 'vpl', '/activity/vpl' );
@@ -246,9 +246,9 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $vplid = $this->get_new_parentid ( 'vpl' );
         $subid = $this->get_new_parentid ( 'submission' );
         if ($sub === false || $sub->id != $subid) {
-            $sub = $DB->get_record ( 'vpl_submissions', array (
-                    'id' => $subid
-            ), 'id,userid,vpl' );
+            $sub = $DB->get_record ( 'vpl_submissions', [
+                    'id' => $subid,
+            ], 'id,userid,vpl' );
         }
         if ($sub === false) {
             throw new Exception ( 'Submission record not found ' . $subid );

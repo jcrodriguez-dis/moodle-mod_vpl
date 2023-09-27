@@ -60,25 +60,25 @@ class filegroup_test extends \advanced_testcase {
         $this->gpfiles = new \file_group_process($this->basedir . 'files');
         $this->gpdirectory = new \file_group_process($this->basedir . 'directory', 100, 4);
 
-        $this->gponefilecontents = array('one file.txt' => "One file contents");
+        $this->gponefilecontents = ['one file.txt' => "One file contents"];
         $this->gponefile->addallfiles($this->gponefilecontents);
 
-        $this->gpfilescontents = array(
+        $this->gpfilescontents = [
                 'first file.txt' => "First file contents",
                 'Second file.txt' => "Second file contents",
-                'Third file.txt' => "Third  file contents"
-        );
+                'Third file.txt' => "Third  file contents",
+        ];
         $this->gpfiles->addallfiles($this->gpfilescontents);
 
-        $this->gpdirectorycontents = array(
+        $this->gpdirectorycontents = [
                 'a sub dir/first file.txt' => "First file contents",
                 'a sub dir/Second file.txt' => "Second file contents",
                 'b/c/d/Third file.txt' => "Third  file contents",
                 'b/c/d/Fourth file.txt' => "Fourth  file contents",
                 'Other file.txt' => "Other  file contents",
                 'b/Other file.txt' => "Other  file contents",
-                'b/c/Other file.txt' => "Other  file contents"
-        );
+                'b/c/Other file.txt' => "Other  file contents",
+        ];
         $this->gpdirectory->addallfiles($this->gpdirectorycontents);
     }
 
@@ -96,16 +96,16 @@ class filegroup_test extends \advanced_testcase {
     public function test_addallfiles() {
         $otherempty = new \file_group_process($this->basedir . 'emptyother', 0, 0);
         $otherfiles = new \file_group_process($this->basedir . 'filesother');
-        $otherempty->addallfiles(array(), $this->basedir . 'empty');
-        $this->assertEquals(array(), $otherempty->getallfiles());
-        $otherempty->addallfiles(array(), $this->basedir . 'files');
-        $this->assertEquals(array(), $otherempty->getallfiles());
-        $files = array(
+        $otherempty->addallfiles([], $this->basedir . 'empty');
+        $this->assertEquals([], $otherempty->getallfiles());
+        $otherempty->addallfiles([], $this->basedir . 'files');
+        $this->assertEquals([], $otherempty->getallfiles());
+        $files = [
             'first file.txt' => "First file contents",
             'Second file2.txt' => "Second file contents",
             'Third file.txt' => "",
             'Last file.txt' => "Algo",
-        );
+        ];
         $otherfiles->addallfiles($this->gpfilescontents, $this->basedir . 'files');
         $this->assertEquals($this->gpfilescontents, $otherfiles->getallfiles());
     }
@@ -134,15 +134,15 @@ class filegroup_test extends \advanced_testcase {
      * Method to test file_group_process::read_list
      */
     public function test_read_list() {
-        $filelist = array();
+        $filelist = [];
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpempty->getfilelistname()));
-        $filelist = array('one file.txt');
+        $filelist = ['one file.txt'];
         $this->assertEquals($filelist, \file_group_process::read_list($this->gponefile->getfilelistname()));
-        $filelist = array('first file.txt', 'Second file.txt', 'Third file.txt');
+        $filelist = ['first file.txt', 'Second file.txt', 'Third file.txt'];
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpfiles->getfilelistname()));
-        $filelist = array('a sub dir/first file.txt', 'a sub dir/Second file.txt',
+        $filelist = ['a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
-                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt');
+                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt', ];
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
     }
 
@@ -150,26 +150,26 @@ class filegroup_test extends \advanced_testcase {
      * Method to test file_group_process::write_list
      */
     public function test_write_list() {
-        $filelist = array('algo.txt');
+        $filelist = ['algo.txt'];
         \file_group_process::write_list($this->gpempty->getfilelistname(), $filelist);
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpempty->getfilelistname()));
-        $filelist = array();
+        $filelist = [];
         \file_group_process::write_list($this->gponefile->getfilelistname(), $filelist);
         $this->assertEquals($filelist, \file_group_process::read_list($this->gponefile->getfilelistname()));
-        $filelist = array('first file.txt', 'Second file.txt', 'Third file.txt', 'first file1.txt',
-                          'Second file1.txt', 'Third file1.txt');
+        $filelist = ['first file.txt', 'Second file.txt', 'Third file.txt', 'first file1.txt',
+                          'Second file1.txt', 'Third file1.txt', ];
         \file_group_process::write_list($this->gpfiles->getfilelistname(), $filelist);
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpfiles->getfilelistname()));
-        $filelist = array('a sub dir/first file.txt', 'a sub dir/Second file.txt',
+        $filelist = ['a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
-                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt');
+                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt', ];
         \file_group_process::write_list($this->gpdirectory->getfilelistname(), $filelist);
         $this->assertEquals($filelist, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
-        $other = array(
+        $other = [
                 'aaa/bb/ccc/first file.txt',
                 'aaa/bb/Second file.txt',
-                'aaaThird file.txt'
-        );
+                'aaaThird file.txt',
+        ];
         \file_group_process::write_list($this->gpdirectory->getfilelistname(), $other);
         $this->assertEquals($other, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
     }
@@ -203,7 +203,7 @@ class filegroup_test extends \advanced_testcase {
         $this->internal_test_one_addfile($this->gponefile, 'one file.txt', 'algo distinto', true);
         $this->internal_test_one_addfile($this->gponefile, 'otrofile.txt', 'algo distinto', false);
         $this->gponefile->deleteallfiles();
-        $this->assertEquals(array(), $this->gponefile->getfilelist());
+        $this->assertEquals([], $this->gponefile->getfilelist());
         $this->internal_test_one_addfile($this->gponefile, 'otrofile.txt', 'algo distinto', true);
 
         $this->internal_test_one_addfile($this->gpfiles, 'otrofile.txt', 'algo distinto', true);
@@ -213,7 +213,7 @@ class filegroup_test extends \advanced_testcase {
         $this->internal_test_one_addfile($this->gpfiles, 'Second file.txt', 'algo  distinto', true);
         $this->internal_test_one_addfile($this->gpfiles, 'Second file.txt', null, true);
         $this->gpfiles->deleteallfiles();
-        $this->assertEquals(array(), $this->gpfiles->getfilelist());
+        $this->assertEquals([], $this->gpfiles->getfilelist());
         $this->internal_test_one_addfile($this->gpfiles, 'otrofile.txt', 'algo distinto', true);
         $this->internal_test_one_addfile($this->gpfiles, 'Second file.txt', 'algo  lkf distinto', true);
     }
@@ -222,7 +222,7 @@ class filegroup_test extends \advanced_testcase {
      * Method to test file_group_process::getallfiles.
      */
     public function test_getallfiles() {
-        $this->assertEquals(array(), $this->gpempty->getallfiles());
+        $this->assertEquals([], $this->gpempty->getallfiles());
         $this->assertEquals($this->gponefilecontents, $this->gponefile->getallfiles());
         $this->assertEquals($this->gpfilescontents, $this->gpfiles->getallfiles());
         $this->assertEquals($this->gpdirectorycontents, $this->gpdirectory->getallfiles());
@@ -233,28 +233,28 @@ class filegroup_test extends \advanced_testcase {
      */
     public function test_deleteallfiles() {
         $this->gpempty->deleteallfiles();
-        $this->assertEquals(array(), $this->gpempty->getfilelist());
+        $this->assertEquals([], $this->gpempty->getfilelist());
         $this->gponefile->deleteallfiles();
-        $this->assertEquals(array(), $this->gponefile->getfilelist());
+        $this->assertEquals([], $this->gponefile->getfilelist());
         $this->gpfiles->deleteallfiles();
-        $this->assertEquals(array(), $this->gpfiles->getfilelist());
+        $this->assertEquals([], $this->gpfiles->getfilelist());
         $this->gpdirectory->deleteallfiles();
-        $this->assertEquals(array(), $this->gpdirectory->getfilelist());
+        $this->assertEquals([], $this->gpdirectory->getfilelist());
     }
 
     /**
      * Method to test file_group_process::getfilelist
      */
     public function test_getfilelist() {
-        $filelist = array();
+        $filelist = [];
         $this->assertEquals($filelist, $this->gpempty->getfilelist());
-        $filelist = array('one file.txt');
+        $filelist = ['one file.txt'];
         $this->assertEquals($filelist, $this->gponefile->getfilelist());
-        $filelist = array('first file.txt', 'Second file.txt', 'Third file.txt');
+        $filelist = ['first file.txt', 'Second file.txt', 'Third file.txt'];
         $this->assertEquals($filelist, $this->gpfiles->getfilelist());
-        $filelist = array('a sub dir/first file.txt', 'a sub dir/Second file.txt',
+        $filelist = ['a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
-                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt');
+                'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt', ];
         $this->assertEquals($filelist, $this->gpdirectory->getfilelist());
     }
 
@@ -331,7 +331,7 @@ class filegroup_test extends \advanced_testcase {
         $zip = new \ZipArchive();
         $result = $zip->open( $zipfilename );
         $this->assertTrue($result, "Error code: $result  status: {$zip->getStatusString()}");
-        $zipfiles = array();
+        $zipfiles = [];
         for ($i = 0; $i < $zip->numFiles; $i ++) {
             $zipfiles[$zip->getNameIndex( $i )] = $zip->getFromIndex( $i );
         }

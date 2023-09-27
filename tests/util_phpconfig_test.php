@@ -45,7 +45,7 @@ class util_phpconfig_test extends \advanced_testcase {
             [123, '123'],
             [13 * 1024, '13k'],
             [7 * 1024 * 1024, '7  Mb'],
-            [1024 * 1024 * 1024, '  1G']
+            [1024 * 1024 * 1024, '  1G'],
         ];
         foreach ($cases as $case) {
             $this->assertEquals( $case[0], \mod_vpl\util\phpconfig::get_bytes($case[1]), $case[1]);
@@ -62,7 +62,7 @@ class util_phpconfig_test extends \advanced_testcase {
             [123, '123'],
             [13 * 1024, '13k'],
             [7 * 1024 * 1024, '7  Mb'],
-            [1024 * 1024 * 1024, '  1G']
+            [1024 * 1024 * 1024, '  1G'],
         ];
         foreach ($cases as $case) {
             $this->assertEquals( $case[0], \mod_vpl\util\phpconfig::get_post_max_size_internal($case[1]), $case[1]);

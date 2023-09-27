@@ -48,7 +48,7 @@ return new class extends phpunit_coverage_info {
         'filegroup.class.php',
         'similarity/similarity_sources.class.php',
         'jail/running_processes.class.php',
-        'vpl.class.php'
+        'vpl.class.php',
     ];
 
     /** @var array The list of folders relative to the plugin root to excludelist in coverage generation. */
@@ -61,6 +61,6 @@ return new class extends phpunit_coverage_info {
         'locallib.php',
         'classes/token.php',
         'classes/token_type.php',
-        'classes/assertf.php'
+        'classes/assertf.php',
     ];
 };

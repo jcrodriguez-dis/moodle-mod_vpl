@@ -30,10 +30,10 @@ require_once(dirname(__FILE__) . '/vpl_graph.class.php');
 function vpl_get_working_periods($vpl, $userid) {
     $submissionslist = $vpl->user_submissions($userid, false);
     if (count($submissionslist) == 0) {
-        return array();
+        return [];
     }
     $submissionslist = array_reverse($submissionslist);
-    $workperiods = array();
+    $workperiods = [];
     if ($submissionslist) {
         $lastsavetime = 0;
         $resttime = 20 * 60; // Rest period before next work 20 minutes.
@@ -85,16 +85,16 @@ function vpl_user_working_periods_graph($vpl, $userid) {
     global $DB;
     $ydata = vpl_get_working_periods($vpl, $userid);
     session_write_close();
-    $xdata = array();
+    $xdata = [];
     $hours = 0.0;
     for ($i = 0; $i < count($ydata); $i++) {
         $xdata[] = $i + 1;
         $hours += $ydata[$i];
         $ydata[$i] = (float) sprintf('%4.2f', $ydata[$i]);
     }
-    $user = $DB->get_record('user', array(
-        'id' => $userid
-    ));
+    $user = $DB->get_record('user', [
+        'id' => $userid,
+    ]);
     $title = sprintf(
         "%s: %s - %s",
         get_string('workingperiods', VPL),
@@ -114,7 +114,7 @@ function vpl_working_periods_graph($vpl) {
     }
     $list = $vpl->get_students($currentgroup);
     // Get all information.
-    $alldata = array();
+    $alldata = [];
     foreach ($list as $userinfo) {
         $workingperiods = vpl_get_working_periods($vpl, $userinfo->id);
         if (count($workingperiods) > 0) {
@@ -127,7 +127,7 @@ function vpl_working_periods_graph($vpl) {
     $maxstudenttime = 0;
     $maxperiodtime = 0;
     $totalperiods = 0;
-    $times = array();
+    $times = [];
     foreach ($alldata as $workingperiods) {
         $totalperiods += count($workingperiods);
         $time = 0;
@@ -149,8 +149,8 @@ function vpl_working_periods_graph($vpl) {
         $timeslice = 1;
         $xformat = "%3.0f-%3.0f";
     }
-    $ydata = array();
-    $xdata = array();
+    $ydata = [];
+    $xdata = [];
     for ($slice = 0; $slice <= $maxstudenttime; $slice += $timeslice) {
         $ydata[] = 0;
         $xdata[] = sprintf($xformat, $slice, ($slice + $timeslice));

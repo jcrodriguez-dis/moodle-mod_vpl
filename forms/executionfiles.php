@@ -32,12 +32,12 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionfiles.php', array ( 'id' => $id ) );
+$vpl->prepare_page( 'forms/executionfiles.php', [ 'id' => $id ] );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $fgp = $vpl->get_required_fgm();
 
-$options = Array ();
+$options = [];
 $options['restrictededitor'] = false;
 $options['save'] = true;
 $options['run'] = true;

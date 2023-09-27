@@ -38,7 +38,7 @@ require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
  * @return string List of jail servers, one per line
  */
 
-function get_currentjailservers($vpl, &$already = array()) {
+function get_currentjailservers($vpl, &$already = []) {
     $serverlist = '';
     $vplinstance = $vpl->get_instance();
     if (isset( $already[$vplinstance->id] )) {
@@ -78,9 +78,9 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/checkjailservers.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'views/checkjailservers.php', [
+        'id' => $id,
+] );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.
@@ -91,28 +91,28 @@ $vpl->print_heading_with_help( 'check_jail_servers' );
 \mod_vpl\event\vpl_jail_servers_tested::log( $vpl );
 $servers = vpl_jailserver_manager::check_servers( get_currentjailservers($vpl) );
 $serverstable = new html_table();
-$serverstable->head = array (
+$serverstable->head = [
         '#',
         get_string( 'server', VPL ),
         get_string( 'currentstatus', VPL ),
         get_string( 'lasterror', VPL ),
         get_string( 'lasterrordate', VPL ),
-        get_string( 'totalnumberoferrors', VPL )
-);
-$serverstable->align = array (
+        get_string( 'totalnumberoferrors', VPL ),
+];
+$serverstable->align = [
         'right',
         'left',
         'left',
         'left',
         'left',
-        'right'
-);
+        'right',
+];
 
 $plugin = new stdClass();
 require_once(dirname( __FILE__ ) . '/../version.php');
 $pluginversion = $plugin->version;
 
-$serverstable->data = array ();
+$serverstable->data = [];
 $num = 0;
 foreach ($servers as $server) {
     $serverurl = remove_path($server->server);
@@ -122,34 +122,34 @@ foreach ($servers as $server) {
     } else {
         $status = $server->current_status;
     }
-    $serverstable->data[] = array (
+    $serverstable->data[] = [
             $num,
             $serverurl,
             $status,
             $server->laststrerror,
             $server->lastfail > 0 ? userdate( $server->lastfail ) : '',
-            $server->nfails
-    );
+            $server->nfails,
+    ];
 }
 $processestable = new html_table();
-$processestable->head = array (
+$processestable->head = [
         '#',
         get_string( 'user' ),
         get_string( 'activity' ),
         get_string( 'server', VPL ),
         get_string( 'startingfrom' ),
-        get_string( 'status' )
-);
-$processestable->align = array (
+        get_string( 'status' ),
+];
+$processestable->align = [
         'right',
         'left',
         'left',
         'left',
         'left',
-        'left'
-);
+        'left',
+];
 
-$processestable->data = array ();
+$processestable->data = [];
 $num = 0;
 $processes = vpl_running_processes::lanched_processes($COURSE->id);
 foreach ($processes as $process) {
@@ -170,17 +170,17 @@ foreach ($processes as $process) {
     $serverurl = remove_path( $process->server );
     $num ++;
     $vpl = new mod_vpl(false, $process->vpl);
-    $user = $DB->get_record( 'user', array (
-            'id' => $process->userid
-    ) );
-    $processestable->data[] = array (
+    $user = $DB->get_record( 'user', [
+            'id' => $process->userid,
+    ] );
+    $processestable->data[] = [
             $num,
             $vpl->fullname($user),
             $vpl->get_printable_name(),
             $serverurl,
             userdate($process->start_time),
-            $status
-    );
+            $status,
+    ];
 }
 
 echo html_writer::table( $serverstable );

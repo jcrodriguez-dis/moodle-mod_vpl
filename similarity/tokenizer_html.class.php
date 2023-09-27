@@ -50,7 +50,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, $pending, $this->line_number );
     }
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->line_number = 1;
         $state = self::REGULAR;
         $pending = '';

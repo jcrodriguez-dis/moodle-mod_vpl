@@ -84,7 +84,7 @@ function vpl_call_service($url, $fun, $request = '') {
     curl_setopt( $ch, CURLOPT_URL, $url . $fun );
     curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
     curl_setopt( $ch, CURLOPT_POST, 1 );
-    curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: application/x-www-form-urlencoded;charset=UTF-8'));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: application/x-www-form-urlencoded;charset=UTF-8']);
     curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
     curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
     if ( @$plugincfg->acceptcertificates ) {
@@ -121,9 +121,9 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$vpl->prepare_page( 'tests/webservice_client.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'tests/webservice_client.php', [
+        'id' => $id,
+] );
 $basebody = "id=$id";
 
 $vpl->print_header( 'Web service test client' );
@@ -149,9 +149,9 @@ if (count( $files ) == 0) {
     $file = new stdClass();
     $file->name = 'test.c';
     $file->data = 'int main(){printf("hello");}';
-    $files = array (
-            $file
-    );
+    $files = [
+            $file,
+    ];
 } else {
     foreach ($files as $file) {
         $file->data = "// time " . time() . "\n" . $file->data;

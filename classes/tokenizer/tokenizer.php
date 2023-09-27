@@ -67,29 +67,29 @@ class tokenizer extends tokenizer_base {
      * Keys of this array are the token's names, and
      * values the list of all data types associated.
      */
-    protected const TOKENTYPES = array(
+    protected const TOKENTYPES = [
         "token"                 => ["string", "array_string"],
         "regex"                 => ["string"],
         "next"                  => ["string"],
-        "default_token"         => ["string"]
-    );
+        "default_token"         => ["string"],
+    ];
 
     /**
      * Group of rule's options which must be defined together.
      * This was defined in order to avoid no-sense definitions.
      */
-    protected const REQUIREDGROUPRULEOPTIONS = array(
+    protected const REQUIREDGROUPRULEOPTIONS = [
         "token"         => ["regex"],
         "regex"         => ["token"],
-    );
+    ];
 
     /**
      * List of all VPL token types used at override_tokens
      */
-    protected const VPLTOKENTYPES = array(
+    protected const VPLTOKENTYPES = [
         "vpl_identifier", "vpl_literal", "vpl_operator",
-        "vpl_reserved", "vpl_other", "vpl_null"
-    );
+        "vpl_reserved", "vpl_other", "vpl_null",
+    ];
 
     /**
      * Available names for tokens based on TextMate and ACE editor.
@@ -103,7 +103,7 @@ class tokenizer extends tokenizer_base {
      * For more information about the meaning of some names, see
      * https://macromates.com/manual/en/language_grammars at Naming Conventions section
      */
-    protected array $availabletokens = array(
+    protected array $availabletokens = [
         "comment" => null,
         "comment.line" => null,
         "comment.line.double-slash" => null,
@@ -185,7 +185,7 @@ class tokenizer extends tokenizer_base {
         "vpl_reserved" => token_type::RESERVED,
         "vpl_other" => token_type::OTHER,
         "vpl_null" => null, // Same as "" at JSON files.
-    );
+    ];
 
     /**
      * @codeCoverageIgnore
@@ -291,7 +291,7 @@ class tokenizer extends tokenizer_base {
             // @codeCoverageIgnoreEnd
         }
 
-        $tokensprepared = array();
+        $tokensprepared = [];
 
         foreach ($tokens as $dataofline) {
             foreach ($dataofline['tokens'] as $token) {
@@ -332,7 +332,7 @@ class tokenizer extends tokenizer_base {
         $extensionsstr = implode(',', $this->extension);
         assertf::assert($hasvalidext, $this->name, $filename . ' must end with one of the extensions ' . $extensionsstr);
 
-        $infolines = array();
+        $infolines = [];
         $state = 'start';
         $numline = 0;
 
@@ -365,7 +365,7 @@ class tokenizer extends tokenizer_base {
     public function get_line_tokens(string $line, string $startstate, int $numline): array {
         $startstate = !isset($startstate) ? "" : $startstate;
         $currentstate = strcmp($startstate, "") === 0 ? "start" : $startstate;
-        $tokens = array();
+        $tokens = [];
 
         if (!isset($this->states[$currentstate])) {
             $currentstate = "start";
@@ -494,7 +494,7 @@ class tokenizer extends tokenizer_base {
     // (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
     private function prepare_tokenizer(string $rulefilename): void {
         foreach ($this->states as $statename => $rules) {
-            $ruleregexpr = array();
+            $ruleregexpr = [];
             $matchtotal = 0;
 
             $this->matchmappings[$statename] = [ "default_token" => "text" ];

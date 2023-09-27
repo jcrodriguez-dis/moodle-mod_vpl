@@ -32,7 +32,7 @@ class vpl_similarity_prolog extends vpl_similarity_base {
         return 6;
     }
     public function sintax_normalize(&$tokens) {
-        $ret = array ();
+        $ret = [];
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
                 $ret[] = $token;

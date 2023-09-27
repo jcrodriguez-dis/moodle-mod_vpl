@@ -52,12 +52,12 @@ class file_group_execution extends file_group_process {
      *
      * @var string[]
      */
-    protected static $basefiles = array (
+    protected static $basefiles = [
             'vpl_run.sh',
             'vpl_debug.sh',
             'vpl_evaluate.sh',
-            'vpl_evaluate.cases'
-    );
+            'vpl_evaluate.cases',
+    ];
 
     /**
      * Number of $basefiles elements
@@ -490,14 +490,14 @@ class mod_vpl {
      * @return string grade comments summary in html format
      */
     public function get_grading_help() {
-        $list = array ();
+        $list = [];
         $submissions = $this->all_last_user_submission();
         foreach ($submissions as $submission) {
             $sub = new mod_vpl_submission( $this, $submission );
             $sub->filter_feedback( $list );
         }
         // TODO show evaluation criteria with show hidde button.
-        $all = array ();
+        $all = [];
         foreach ($list as $text => $info) {
             $astext = s( addslashes_js( $text ) );
             $html = '';
@@ -853,19 +853,19 @@ class mod_vpl {
             $group = $this->get_usergroup($userid);
             if ($group) {
                 $select = '(groupid = ?) AND (vpl = ?)';
-                $parms = array (
+                $parms = [
                         $group->id,
-                        $this->instance->id
-                );
+                        $this->instance->id,
+                ];
             } else {
-                return array ();
+                return [];
             }
         } else {
             $select = '(userid = ?) AND (vpl = ?)';
-            $parms = array (
+            $parms = [
                     $userid,
-                    $this->instance->id
-            );
+                    $this->instance->id,
+            ];
         }
         return $DB->get_records_select( 'vpl_submissions', $select, $parms, 'id DESC' );
     }
@@ -892,7 +892,7 @@ class mod_vpl {
         $query .= '  WHERE {vpl_submissions}.vpl=? ';
         $query .= "  GROUP BY {vpl_submissions}.$idfield) as ls";
         $query .= ' on s.id = ls.maxid';
-        return $DB->get_records_sql( $query, array( $id ) );
+        return $DB->get_records_sql( $query, [ $id ] );
     }
 
     /**
@@ -906,7 +906,7 @@ class mod_vpl {
         global $DB;
         $id = $this->get_instance()->id;
         $query = "SELECT s.id, $fields FROM {vpl_submissions} s WHERE vpl=?";
-        return $DB->get_records_sql( $query, array ( $id ) );
+        return $DB->get_records_sql( $query, [ $id ] );
     }
     /**
      * Get number of user submissions
@@ -923,9 +923,9 @@ class mod_vpl {
         $query = "SELECT $field, COUNT(*) as submissions FROM {vpl_submissions}";
         $query .= ' WHERE {vpl_submissions}.vpl=?';
         $query .= " GROUP BY {vpl_submissions}.$field";
-        $parms = array (
-                $this->get_instance()->id
-        );
+        $parms = [
+                $this->get_instance()->id,
+        ];
         return $DB->get_records_sql( $query, $parms );
     }
 
@@ -976,10 +976,10 @@ class mod_vpl {
             $group = $this->get_usergroup($userid);
             if ($group !== false) {
                 $select = "(groupid = ?) AND (vpl = ?)";
-                $params = array (
+                $params = [
                         $group->id,
-                        $this->instance->id
-                );
+                        $this->instance->id,
+                ];
                 $res = $DB->get_records_select( 'vpl_submissions', $select, $params, 'id DESC', '*', 0, 1 );
                 foreach ($res as $sub) {
                     return $sub;
@@ -993,17 +993,17 @@ class mod_vpl {
             return false;
         }
         $select = "(userid = ?) AND (vpl = ?)";
-        $params = array (
+        $params = [
                 $userid,
-                $this->instance->id
-        );
+                $this->instance->id,
+        ];
         $res = $DB->get_records_select( 'vpl_submissions', $select, $params, 'id DESC', '*', 0, 1 );
         foreach ($res as $sub) {
             return $sub;
         }
         return false;
     }
-    protected static $context = array ();
+    protected static $context = [];
     /**
      * Return context object for this module instance
      *
@@ -1067,10 +1067,10 @@ class mod_vpl {
         }
         if ($plugincfg->discard_submission_period > 0) {
             $select = "(userid = ?) AND (vpl = ?)";
-            $params = array (
+            $params = [
                     $userid,
-                    $this->instance->id
-            );
+                    $this->instance->id,
+            ];
             $res = $DB->get_records_select( VPL_SUBMISSIONS, $select, $params, 'id DESC', '*', 0, 3 );
             if (count( $res ) == 3) {
                 $i = 0;
@@ -1188,7 +1188,7 @@ class mod_vpl {
         if ($this->is_group_activity()) {
             return print_group_picture( $this->get_usergroup( $user->id ), $this->get_course()->id, false, true );
         } else {
-            $options = array('courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb());
+            $options = ['courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb()];
             return $OUTPUT->user_picture( $user, $options);
         }
     }
@@ -1252,11 +1252,11 @@ class mod_vpl {
             return $this->students;
         }
         // Generate array of graders indexed.
-        $nostudents = array ();
+        $nostudents = [];
         foreach ($this->get_graders($group) as $user) {
             $nostudents[$user->id] = true;
         }
-        $students = array ();
+        $students = [];
         $extrafields = trim($extrafields);
         if ( $extrafields > '' && $extrafields[0] != ',' ) {
             $extrafields = ',' . $extrafields;
@@ -1323,7 +1323,7 @@ class mod_vpl {
         }
         return false;
     }
-    protected static $usergroupscache = array ();
+    protected static $usergroupscache = [];
     /**
      * If is a group activity return group members for the groupid
      *
@@ -1335,7 +1335,7 @@ class mod_vpl {
             if ($gm) {
                 self::$usergroupscache[$groupid] = $gm;
             } else {
-                self::$usergroupscache[$groupid] = array();
+                self::$usergroupscache[$groupid] = [];
             }
         }
         return self::$usergroupscache[$groupid];
@@ -1350,7 +1350,7 @@ class mod_vpl {
         if ($group !== false) {
             return $this->get_group_members($group->id);
         }
-        return array ();
+        return [];
     }
 
     /**
@@ -1472,7 +1472,7 @@ class mod_vpl {
     /**
      * prepare_page initialy
      */
-    public function prepare_page($url = false, $parms = array()) {
+    public function prepare_page($url = false, $parms = []) {
         global $PAGE, $CFG;
         // Next line resolve problem of classic theme not showing setting menu.
         require_login($this->get_course(), false, $this->get_course_module());
@@ -1579,8 +1579,8 @@ class mod_vpl {
         }
         $level2 = $grader || $manager || $similarity;
 
-        $maintabs = array ();
-        $tabs = array ();
+        $maintabs = [];
+        $tabs = [];
         $href = vpl_mod_href( 'view.php', 'id', $cmid, 'userid', $userid );
         $viewtab = vpl_create_tabobject('view.php', $href, 'description' );
         if ($level2) {
@@ -1628,10 +1628,10 @@ class mod_vpl {
                 if ($level2) {
                     // TODO replace by $OUTPUT->tabtree.
                     print_tabs(
-                            array (
+                             [
                                     $maintabs,
-                                    $tabs
-                            ), $active );
+                                    $tabs,
+                             ], $active );
                     return;
                 }
             case 'submission.php' :
@@ -1686,23 +1686,23 @@ class mod_vpl {
                 }
                 if ($level2) {
                     print_tabs(
-                            array (
+                             [
                                     $maintabs,
-                                    $tabs
-                            ), $active );
+                                    $tabs,
+                             ], $active );
                     return;
                 } else {
-                    print_tabs( array (
-                            $tabs
-                    ), $active );
+                    print_tabs( [
+                            $tabs,
+                    ], $active );
                     return;
                 }
 
                 break;
             case 'submissionslist.php' :
-                print_tabs( array (
-                        $maintabs
-                ), $active );
+                print_tabs( [
+                        $maintabs,
+                ], $active );
                 return;
             case 'listwatermark.php' :
             case 'similarity_form.php' :
@@ -1720,10 +1720,10 @@ class mod_vpl {
                         $tabs[] = vpl_create_tabobject( 'listwatermark.php', $href, 'listwatermarks' );
                     }
                 }
-                print_tabs( array (
+                print_tabs( [
                         $maintabs,
-                        $tabs
-                ), $active );
+                        $tabs,
+                ], $active );
                 break;
         }
     }
@@ -1843,10 +1843,10 @@ class mod_vpl {
             $html .= $this->str_restriction_with_icon( 'maxfilesize', vpl_conv_size_to_string( $mfs ) );
         }
         $worktype = $instance->worktype;
-        $values = array (
+        $values = [
                 0 => vpl_get_awesome_icon('user'). ' ' . get_string( 'individualwork', VPL ),
-                1 => vpl_get_awesome_icon('group'). ' ' .get_string( 'groupwork', VPL )
-        );
+                1 => vpl_get_awesome_icon('group'). ' ' .get_string( 'groupwork', VPL ),
+        ];
         if ($worktype) {
             $html .= $this->str_restriction_with_icon( 'worktype', $values[$worktype] . ' ' . $this->fullname( $USER ) );
         } else {
@@ -1908,10 +1908,10 @@ class mod_vpl {
                 $link .= '</a>';
                 $html .= $this->str_restriction_with_icon( 'basedon', $link );
             }
-            $noyes = array (
+            $noyes = [
                     $strno,
-                    $stryes
-            );
+                    $stryes,
+            ];
             $html .= $this->str_restriction_with_icon( 'run', $noyes[$instance->run], false, false );
             if ($instance->runscript) {
                 $html .= $this->str_restriction_with_icon( 'runscript', strtoupper($instance->runscript), false, false );
@@ -2094,9 +2094,9 @@ class mod_vpl {
             if ($variation == false || $variation->vpl != $varassigned->vpl) { // Checks consistency.
                 $DB->delete_records(
                     VPL_ASSIGNED_VARIATIONS,
-                    array (
-                        'id' => $varassigned->id
-                    ) );
+                     [
+                        'id' => $varassigned->id,
+                    ] );
                 throw new moodle_exception('invalidcoursemodule');
             }
         }
@@ -2109,7 +2109,7 @@ class mod_vpl {
      * @param array $already array of based on visited, default empty
      * @return string
      */
-    public function get_variation_html($userid = 0, $already = array()) {
+    public function get_variation_html($userid = 0, $already = []) {
         global $OUTPUT;
         $html = '';
         if (isset( $already[$this->instance->id] )) { // Avoid infinite recursion.
@@ -2149,16 +2149,16 @@ class mod_vpl {
     /**
      * return an array with variations for this user
      */
-    public function get_variation_identification($userid = 0, &$already = array()) {
+    public function get_variation_identification($userid = 0, &$already = []) {
         if (! ($this->instance->usevariations) || isset( $already[$this->instance->id] )) { // Avoid infinite recursion.
-            return array ();
+            return [];
         }
         $already[$this->instance->id] = true;
         if ($this->instance->basedon) {
             $basevpl = new mod_vpl( false, $this->instance->basedon );
             $ret = $basevpl->get_variation_identification( $userid, $already );
         } else {
-            $ret = array ();
+            $ret = [];
         }
         $variation = $this->get_variation( $userid );
         if ($variation !== false) {
@@ -2171,7 +2171,7 @@ class mod_vpl {
      * Cached settings of overrides, for get_effective_setting().
      * @var array $overridensettings Array[ cmid => Array[ userid => {settings} ] ]
      */
-    protected static $overridensettings = array();
+    protected static $overridensettings = [];
     /**
      * Return effective setting for this vpl instance (taking overrides into account).
      * @param string $setting Setting name (field of database record).
@@ -2180,7 +2180,7 @@ class mod_vpl {
      */
     public function get_effective_setting($setting, $userid = null) {
         global $USER, $DB;
-        $fields = array('startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations');
+        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'];
         if (!in_array($setting, $fields)) {
             return $this->instance->$setting;
         }
@@ -2188,7 +2188,7 @@ class mod_vpl {
             $userid = $USER->id;
         }
         if (!isset(self::$overridensettings[$this->cm->id])) {
-            self::$overridensettings[$this->cm->id] = array();
+            self::$overridensettings[$this->cm->id] = [];
         }
         if (!isset(self::$overridensettings[$this->cm->id][$userid])) {
             self::$overridensettings[$this->cm->id][$userid] = new stdClass();
@@ -2198,7 +2198,7 @@ class mod_vpl {
                         JOIN {vpl_overrides} o ON ao.override = o.id
                         WHERE o.vpl = :vplid AND (ao.userid = :userid OR ao.groupid IS NOT NULL)
                         ORDER BY ao.override DESC';
-            $overrides = $DB->get_records_sql($sql, array('vplid' => $this->instance->id, 'userid' => $userid));
+            $overrides = $DB->get_records_sql($sql, ['vplid' => $this->instance->id, 'userid' => $userid]);
 
             foreach ($overrides as $override) {
                 if (!empty($override->userid)) {
@@ -2235,20 +2235,20 @@ class mod_vpl {
         global $DB, $CFG;
         require_once($CFG->dirroot . '/calendar/lib.php');
 
-        $targets = array(
+        $targets = [
                 'userid' => CALENDAR_EVENT_USER_OVERRIDE_PRIORITY,
-                'groupid' => $override->id
-        );
+                'groupid' => $override->id,
+        ];
         foreach ($targets as $target => $priority) { // Process once for users and once for groups.
-            $params = array(
+            $params = [
                     'modulename' => VPL,
                     'instance' => $this->instance->id,
-                    'priority' => $priority
-            );
+                    'priority' => $priority,
+            ];
             if ($oldoverride !== null && !empty($oldoverride->{$target . 's'})) {
                 $oldtargets = array_fill_keys(explode(',', $oldoverride->{$target . 's'}), false);
             } else {
-                $oldtargets = array();
+                $oldtargets = [];
             }
             if (!empty($override->{$target . 's'})) {
                 foreach (explode(',', $override->{$target . 's'}) as $userorgroupid) { // Loop over users or groups.
@@ -2263,10 +2263,10 @@ class mod_vpl {
                             $strname = 'overrideforgroup';
                         }
                         $newevent = vpl_create_event($this->instance, $this->instance->id);
-                        $newevent->name = get_string($strname, VPL, array(
+                        $newevent->name = get_string($strname, VPL, [
                                 'base' => $newevent->name,
-                                'for' => $userorgroupname
-                        ));
+                                'for' => $userorgroupname,
+                        ]);
                         if ($target == 'userid') {
                             // User overrides events do not show correctly if courseid is non zero.
                             $newevent->courseid = 0;

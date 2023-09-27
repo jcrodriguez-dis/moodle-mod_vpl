@@ -39,7 +39,7 @@ abstract class similarity_base {
     protected $hashses;
 
     // Array to convert string operators to numbers.
-    static protected $valueconverter = array ();
+    static protected $valueconverter = [];
 
     protected static function get_value_id($value) {
         if (!isset(self::$valueconverter[$value])) {
@@ -99,8 +99,8 @@ abstract class similarity_base {
         $this->from = $from;
         $this->size = 0;
         $this->sizeh = 0;
-        $this->vecfrec = array();
-        $this->hashes = array();
+        $this->vecfrec = [];
+        $this->hashes = [];
 
         // Prepare tokens using tokenizer.
         $tok = $this->get_tokenizer();
@@ -109,7 +109,7 @@ abstract class similarity_base {
         $this->sintax_normalize($tokens);
 
         // Prepare hashes before its calculation.
-        $last = array();
+        $last = [];
 
         for ($i = 0; $i < self::HASH_SIZE; $i++) {
             $last[$i] = '';

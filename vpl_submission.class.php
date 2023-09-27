@@ -66,9 +66,9 @@ class mod_vpl_submission {
         if (is_object( $rid )) {
             $this->instance = $rid;
         } else {
-            $this->instance = $DB->get_record( 'vpl_submissions', array (
-                    'id' => $rid
-            ) );
+            $this->instance = $DB->get_record( 'vpl_submissions', [
+                    'id' => $rid,
+            ] );
             if (! $this->instance) {
                 throw new Exception( 'vpl_submission id error' );
             }
@@ -482,7 +482,7 @@ class mod_vpl_submission {
                 $gradinginfo = grade_get_grades( $this->vpl->get_course()->id, 'mod'
                                                 , 'vpl', $this->vpl->get_instance()->id, $userid );
                 if (! empty( $gradinginfo->outcomes )) {
-                    $outcomes = array ();
+                    $outcomes = [];
                     foreach (array_keys($gradinginfo->outcomes) as $oid) {
                         $field = 'outcome_grade_' . $oid;
                         if (isset( $info->$field )) {
@@ -588,7 +588,7 @@ class mod_vpl_submission {
      *
      * @var array cache of users(graders) objects
      */
-    protected static $graders = array ();
+    protected static $graders = [];
 
     /**
      * Return user from DB with cache (automatic grader info for $id===0)
@@ -615,9 +615,9 @@ class mod_vpl_submission {
                 $graderuser->firstname = '';
                 $graderuser->lastname = get_string( 'automaticgrading', VPL );
             } else {
-                $graderuser = $DB->get_record( 'user', array (
-                        'id' => $id
-                ) );
+                $graderuser = $DB->get_record( 'user', [
+                        'id' => $id,
+                ] );
             }
             self::$graders[$id] = $graderuser;
         }
@@ -636,7 +636,7 @@ class mod_vpl_submission {
         if ($inst->dategraded > 0 || $grade != null) {
             $vplinstance = $this->vpl->get_instance();
             $scaleid = $this->vpl->get_grade();
-            $options = array ();
+            $options = [];
             if ($scaleid == 0) {
                 return get_string( 'nograde' );
             } else if ($grade == null) {
@@ -670,7 +670,7 @@ class mod_vpl_submission {
                 $scaleid = - $scaleid;
                 $grade = ( int ) $grade;
                 if ($scale = $this->vpl->get_scale()) {
-                    $options = array ();
+                    $options = [];
                     $options[- 1] = get_string( 'nograde' );
                     $options = $options + make_menu_from_list( $scale->scale );
                     if (isset( $options[$grade] )) {
@@ -697,7 +697,7 @@ class mod_vpl_submission {
             $div = new vpl_hide_show_div( true );
             $ret = '<b>' . get_string( $title, VPL ) . $div->generate( true ) . '</b><br>';
             $ret .= $div->begin_div( true ) . s($comment) . $div->end_div( true );
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', array($div->get_div_id(), false, true));
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_div_id(), false, true]);
         }
         return $ret;
     }
@@ -797,9 +797,9 @@ class mod_vpl_submission {
         }
         echo '<br>';
         if ( $this->vpl->is_group_activity() ) {
-            $user = $DB->get_record( 'user', array (
-                        'id' => $userid
-                ) );
+            $user = $DB->get_record( 'user', [
+                        'id' => $userid,
+                ] );
             if ( $user ) {
                 $userinfo = $OUTPUT->user_picture( $user ) . ' '  . fullname( $user );
                 echo get_string( 'submittedby', VPL, $userinfo );
@@ -975,7 +975,7 @@ class mod_vpl_submission {
         $nl = vpl_detect_newline( $text );
         $lines = explode( $nl, $text );
         // Prepare reg expressions.
-        $regexps = array ();
+        $regexps = [];
         foreach ($list as $filename) {
             $escapefilename = preg_quote( $filename, "/" );
             $regexps[] = '/(.*?)(' . $escapefilename . ')\:( *)([0-9]+)(.*)/';
@@ -983,7 +983,7 @@ class mod_vpl_submission {
         // Process lines.
         foreach ($lines as $line) {
             foreach ($regexps as $regexp) {
-                $r = array();
+                $r = [];
                 if (preg_match( $regexp, $line, $r )) {
                     $line = $r[1] . '<a href="#' . $r[2] . '.' . $r[4] . '">' . $r[2] . ':' . $r[3] . $r[4] . '</a>' . $r[5];
                     break;
@@ -1112,7 +1112,7 @@ class mod_vpl_submission {
         if (! isset( $list[$text] )) {
             $list[$text] = new StdClass();
             $list[$text]->count = 0;
-            $list[$text]->grades = array ();
+            $list[$text]->grades = [];
         }
         $list[$text]->count ++;
         $list[$text]->grades[$grade] = true;
@@ -1198,7 +1198,7 @@ class mod_vpl_submission {
      * @return array with server response fields
      */
     public function getce() {
-        $ret = array ();
+        $ret = [];
         $compfn = $this->get_data_directory() . '/' . self::COMPILATIONFN;
         if (file_exists( $compfn )) {
             $ret['compilation'] = file_get_contents( $compfn );

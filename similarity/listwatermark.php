@@ -35,9 +35,9 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'similarity/listwatermark.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'similarity/listwatermark.php', [
+        'id' => $id,
+] );
 
 $course = $vpl->get_course();
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
@@ -57,21 +57,21 @@ if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).
 // Load strings.
 $origin = get_string( 'origin', VPL );
 $table = new html_table();
-$table->head = array (
+$table->head = [
         '#',
         $name,
-        $origin
-);
-$table->align = array (
+        $origin,
+];
+$table->align = [
         'right',
         'left',
-        'left'
-);
-$table->size = array (
+        'left',
+];
+$table->size = [
         '',
         '60',
-        '60'
-);
+        '60',
+];
 $submissions = $vpl->all_last_user_submission();
 $usernumber = 0;
 $nwm = 0;
@@ -87,9 +87,9 @@ foreach ($list as $userinfo) {
             $wm = vpl_watermark::getwm( $userdata );
             if ($wm) {
                 if ($wm != $userinfo->id) {
-                    $userorigin = $DB->get_record( 'user', array (
-                            'id' => $wm
-                    ) );
+                    $userorigin = $DB->get_record( 'user', [
+                            'id' => $wm,
+                    ] );
                     if ($userorigin) {
                         $origin .= '<a href="' . vpl_mod_href( '/forms/submissionview.php', 'id', $id, 'userid', $wm ) . '">';
                         $origin .= s( $filename ) . ' ';
@@ -106,11 +106,11 @@ foreach ($list as $userinfo) {
             continue;
         }
         $usernumber ++;
-        $table->data[] = array (
+        $table->data[] = [
                 $usernumber,
                 $vpl->user_fullname_picture( $userinfo ),
-                $origin
-        );
+                $origin,
+        ];
     }
 }
 if ($usernumber > 0) {

@@ -38,13 +38,13 @@ class mod_vpl_password_form extends moodleform {
         $mform->addElement( 'header', 'headerpassword', get_string( 'requiredpassword', VPL ) );
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );
         $mform->setType( 'id', PARAM_INT );
-        $parms = array (
+        $parms = [
                 'userid',
                 'submissionid',
                 'popup',
                 'fullscreen',
-                'privatecopy'
-        );
+                'privatecopy',
+        ];
         foreach ($parms as $parm) {
             $value = optional_param( $parm, - 1, PARAM_INT );
             if ($value >= 0) {

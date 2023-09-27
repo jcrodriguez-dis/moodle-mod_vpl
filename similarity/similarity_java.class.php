@@ -34,7 +34,7 @@ class vpl_similarity_java extends vpl_similarity_c {
     public function sintax_normalize(&$tokens) {
         $openbrace = false;
         $nsemicolon = 0;
-        $ret = array ();
+        $ret = [];
         $prev = new vpl_token( vpl_token_type::IDENTIFIER, '', 0 );
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {

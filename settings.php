@@ -98,11 +98,11 @@ $settings->add(
 $settings->add(
         new admin_setting_configcheckbox( $prefix . 'acceptcertificates', get_string( 'acceptcertificates', VPL ),
                         get_string( 'acceptcertificates_description', VPL ), 1 ) );
-$wsoptions = array (
+$wsoptions = [
         'always_use_wss' => get_string( 'always_use_wss', VPL ),
         'always_use_ws' => get_string( 'always_use_ws', VPL ),
-        'depends_on_https' => get_string( 'depends_on_https', VPL )
-);
+        'depends_on_https' => get_string( 'depends_on_https', VPL ),
+];
 $name = 'websocket_protocol';
 $settings->add(
         new admin_setting_configselect( $prefix . 'websocket_protocol', get_string( 'websocket_protocol', VPL ),
@@ -121,7 +121,7 @@ $default = vpl_get_array_key( $list, 60 );
 $settings->add(
         new admin_setting_configselect( $prefix . 'discard_submission_period', get_string( 'discard_submission_period', VPL ),
                 get_string( 'discard_submission_period_description', VPL ), $default, $list ) );
-$list = array(
+$list = [
         'ambiance',
         'chaos',
         'chrome',
@@ -156,9 +156,9 @@ $list = array(
         'tomorrow',
         'twilight',
         'vibrant_ink',
-        'xcode'
-);
-$themelist = array();
+        'xcode',
+];
+$themelist = [];
 foreach ($list as $theme) {
     $themelist[$theme] = $theme;
 }

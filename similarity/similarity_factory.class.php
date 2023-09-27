@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-use \mod_vpl\similarity\similarity_factory;
+use mod_vpl\similarity\similarity_factory;
 
 class vpl_similarity_factory extends similarity_factory {
 

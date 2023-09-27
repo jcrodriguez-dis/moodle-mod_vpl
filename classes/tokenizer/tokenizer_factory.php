@@ -28,7 +28,7 @@ use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\util\assertf;
 
 class tokenizer_factory {
-    private static array $tkloaded = array();
+    private static array $tkloaded = [];
 
     /**
      * Get tokenizer for passed programming language

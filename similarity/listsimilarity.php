@@ -42,9 +42,9 @@ global $CFG, $OUTPUT, $PAGE;
 $id = required_param( 'id', PARAM_INT );
 $timelimit = 600; // 10 minutes.
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'similarity/listsimilarity.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'similarity/listsimilarity.php', [
+        'id' => $id,
+] );
 
 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
 \mod_vpl\event\vpl_similarity_report_viewed::log( $vpl );
@@ -57,7 +57,7 @@ if (! ($fromform = $form->get_data())) {
     throw new moodle_exception('invalidformdata');
 }
 // Get filelist names to scan.
-$filesselected = array ();
+$filesselected = [];
 $filelist = $vpl->get_required_fgm()->getFileList();
 $num = 0;
 foreach ($filelist as $filename) {
@@ -78,7 +78,7 @@ if (isset( $fromform->joinedfiles )) {
 }
 
 $usernumber = 0;
-$simil = array ();
+$simil = [];
 // Preprocess current VPL instance.
 @set_time_limit( $timelimit );
 $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
@@ -133,35 +133,35 @@ if (count( $selected )) {
     }
     $with = get_string( 'similarto', VPL );
     $table = new html_table();
-    $table->head = array (
+    $table->head = [
             '#',
             $name,
             '',
             $with,
-            get_string( 'numcluster', VPL, '#' )
-    );
-    $table->align = array (
+            get_string( 'numcluster', VPL, '#' ),
+    ];
+    $table->align = [
             'right',
             'left',
             'center',
             'left',
-            'right'
-    );
-    $table->size = array (
+            'right',
+    ];
+    $table->size = [
             '',
             '60',
-            '60'
-    );
+            '60',
+    ];
     $clusters = new vpl_clusters( $selected );
     $usernumber = 0;
     foreach ($selected as $case) {
-        $table->data[] = array (
+        $table->data[] = [
                 ++ $usernumber,
                 $case->first->show_info( $extinfo ),
                 $case->get_link(),
                 $case->second->show_info( $extinfo ),
-                $case->get_cluster()
-        );
+                $case->get_cluster(),
+        ];
     }
     echo html_writer::table( $table );
     $clusters->print_clusters();

@@ -51,7 +51,7 @@ class similarity_factory {
         'py' => 'python',
         'm' => 'matlab',
         'html' => 'html',
-        'htm' => 'html'
+        'htm' => 'html',
     ];
 
     /**

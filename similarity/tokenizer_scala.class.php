@@ -32,7 +32,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
     protected static $sreserved = null;
     public function __construct() {
         if (self::$sreserved === null) {
-            self::$sreserved = array (
+            self::$sreserved = [
                     'abstract' => true,
                     'case' => true,
                     'catch' => true,
@@ -81,13 +81,13 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                     'Double' => true,
                     'Boolean' => true,
                     'Unit' => true,
-                    'String' => true
-            );
+                    'String' => true,
+            ];
         }
         $this->reserved = &self::$sreserved;
     }
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';

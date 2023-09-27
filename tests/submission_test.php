@@ -25,8 +25,8 @@
 
 namespace mod_vpl;
 
-use \mod_vpl_submission;
-use \mod_vpl_submission_CE;
+use mod_vpl_submission;
+use mod_vpl_submission_CE;
 
 defined('MOODLE_INTERNAL') || die();
 

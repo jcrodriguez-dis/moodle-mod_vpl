@@ -25,7 +25,7 @@
 
 namespace mod_vpl;
 
-use \stdClass;
+use stdClass;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -88,8 +88,8 @@ class lib_test extends base_test {
                 foreach ([8, 12.5] as $testgrademax) {
                     foreach ([4, 5, 12.5, 14] as $testgrade) {
                         $instance->grade = $testgrademax;
-                        $grades = array();
-                        $ids = array();
+                        $grades = [];
+                        $ids = [];
                         foreach ($submissions as $sub) {
                             $grade = new stdClass();
                             $grade->userid = $sub->userid;
@@ -136,8 +136,8 @@ class lib_test extends base_test {
                 foreach ([8, 12.5] as $testgrademax) {
                     foreach ([4, 5, 12.5, 14] as $testgrade) {
                         $instance->grade = $testgrademax;
-                        $grades = array();
-                        $ids = array();
+                        $grades = [];
+                        $ids = [];
                         // Update submissions with grade information.
                         foreach ($submissions as $sub) {
                             $sub->grade = $testgrade;
@@ -206,14 +206,14 @@ class lib_test extends base_test {
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $instance->instance = $instance->id;
-            $sparms = array ('modulename' => VPL, 'instance' => $instance->id, 'priority' => null );
+            $sparms = ['modulename' => VPL, 'instance' => $instance->id, 'priority' => null ];
             $event = $DB->get_record( 'event', $sparms );
             $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
                     $instance->name);
             $instance->duedate = time() + 1000;
             vpl_update_instance($instance);
-            $sparms = array ('modulename' => VPL, 'instance' => $instance->id, 'priority' => null );
+            $sparms = ['modulename' => VPL, 'instance' => $instance->id, 'priority' => null ];
             $event = $DB->get_record( 'event', $sparms );
             $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
@@ -277,7 +277,7 @@ class lib_test extends base_test {
 
             vpl_delete_instance($instance->id);
 
-            $res = $DB->count_records(VPL, array('id' => $instance->id));
+            $res = $DB->count_records(VPL, ['id' => $instance->id]);
             $this->assertEquals( 0, $res, $instance->name);
 
             $tables = [
@@ -286,15 +286,15 @@ class lib_test extends base_test {
                     VPL_ASSIGNED_VARIATIONS,
                     VPL_RUNNING_PROCESSES,
                     VPL_OVERRIDES,
-                    VPL_ASSIGNED_OVERRIDES
+                    VPL_ASSIGNED_OVERRIDES,
             ];
-            $parms = array('vpl' => $instance->id);
+            $parms = ['vpl' => $instance->id];
             foreach ($tables as $table) {
                 $res = $DB->count_records($table, $parms);
                 $this->assertEquals( 0, $res, $instance->name);
             }
 
-            $sparms = array ('modulename' => VPL, 'instance' => $instance->id );
+            $sparms = ['modulename' => VPL, 'instance' => $instance->id ];
             $res = $DB->count_records('event', $sparms );
             $this->assertEquals($res, 0, $instance->name);
 
@@ -322,7 +322,7 @@ class lib_test extends base_test {
         $nosupp = [
                 FEATURE_COMPLETION_TRACKS_VIEWS,
                 FEATURE_COMPLETION_HAS_RULES,
-                FEATURE_ADVANCED_GRADING
+                FEATURE_ADVANCED_GRADING,
         ];
         foreach ($nosupp as $feature) {
             $this->assertFalse(vpl_supports($feature));
@@ -366,7 +366,7 @@ class lib_test extends base_test {
                 $instance = $vpl->get_instance();
                 $submissions = $vpl->all_last_user_submission();
                 if (count($submissions) > 0) {
-                    $ids = array();
+                    $ids = [];
                     foreach ($submissions as $sub) {
                         $ids[] = $sub->userid;
                     }
@@ -393,13 +393,13 @@ class lib_test extends base_test {
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             vpl_reset_instance_userdata($instance->id);
-            $parms = array( 'vpl' => $instance->id);
+            $parms = [ 'vpl' => $instance->id];
             $count = $DB->count_records(VPL_SUBMISSIONS, $parms);
             $this->assertEquals(0, $count, $instance->name);
-            $parms = array( 'vpl' => $instance->id);
+            $parms = [ 'vpl' => $instance->id];
             $count = $DB->count_records(VPL_ASSIGNED_VARIATIONS, $parms);
             $this->assertEquals(0, $count, $instance->name);
-            $parms = array( 'vpl' => $instance->id);
+            $parms = [ 'vpl' => $instance->id];
             $count = $DB->count_records(VPL_ASSIGNED_OVERRIDES, $parms);
             $this->assertEquals(0, $count, $instance->name);
             $directory = $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata';
@@ -412,7 +412,7 @@ class lib_test extends base_test {
      * @covers \vpl_reset_userdata
      */
     public function test_vpl_reset_userdata() {
-        $nsubs = array();
+        $nsubs = [];
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $nsubs[$instance->id] = count($vpl->all_user_submission('s.id'));

@@ -30,9 +30,9 @@ require_once(dirname(__FILE__).'/vpl.class.php');
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'grade.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'grade.php', [
+        'id' => $id,
+] );
 $vpl->print_header();
 if ($vpl->has_capability( VPL_GRADE_CAPABILITY )) {
     $userid = optional_param( 'userid', false, PARAM_INT );

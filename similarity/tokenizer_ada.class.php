@@ -59,7 +59,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
     }
     public function __construct() {
         if (self::$adareserved === null) {
-            self::$adareserved = array (
+            self::$adareserved = [
                     'abort' => true,
                     'else' => true,
                     'new' => true,
@@ -131,9 +131,9 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                     'do' => true,
                     'mod' => true,
                     'requeue' => true,
-                    'xor' => true
-            );
-            self::$operators = array (
+                    'xor' => true,
+            ];
+            self::$operators = [
                     'abs' => true,
                     'not' => true,
                     'in' => true,
@@ -167,13 +167,13 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                     '<=' => true,
                     '<<' => true,
                     '>>' => true,
-                    '<>' => true
-            );
+                    '<>' => true,
+            ];
         }
         $this->reserved = &self::$adareserved;
     }
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';
@@ -272,7 +272,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         return $this->tokens;
     }
     public function compact_operators() {
-        $correct = array ();
+        $correct = [];
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {

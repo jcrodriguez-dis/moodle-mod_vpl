@@ -45,10 +45,10 @@ class vpl_jailserver_manager {
         curl_setopt( $ch, CURLOPT_URL, $server );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_POST, 1 );
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, array (
+        curl_setopt( $ch, CURLOPT_HTTPHEADER, [
                 "Content-type: {$contenttype};charset=UTF-8",
-                'User-Agent: VPL ' . vpl_get_version()
-        ) );
+                'User-Agent: VPL ' . vpl_get_version(),
+        ] );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
         if ($fresh) {
@@ -133,10 +133,10 @@ class vpl_jailserver_manager {
      */
     private static function is_checkable(string $server) {
         global $DB;
-        $info = $DB->get_record( self::TABLE, array (
+        $info = $DB->get_record( self::TABLE, [
                 'serverhash' => self::get_hash($server),
-                'server' => $server
-        ) );
+                'server' => $server,
+        ] );
         if ($info != null) {
             if ($info->lastfail + self::RECHECK > time()) {
                 return false;
@@ -157,10 +157,10 @@ class vpl_jailserver_manager {
         if ($strerror == null) {
             $strerror = '';
         }
-        $info = $DB->get_record( self::TABLE, array (
+        $info = $DB->get_record( self::TABLE, [
                 'serverhash' => self::get_hash($server),
-                'server' => $server
-        ) );
+                'server' => $server,
+        ] );
         if ($info != null) {
             $info->lastfail = time();
             $info->laststrerror = $strerror;
@@ -191,7 +191,7 @@ class vpl_jailserver_manager {
         $nllocal = vpl_detect_newline( $localserverlisttext );
         $nlglobal = vpl_detect_newline( $plugincfg->jail_servers );
         $tempserverlist = array_merge( explode( $nllocal, $localserverlisttext ), explode( $nlglobal, $plugincfg->jail_servers ) );
-        $serverlist = array ();
+        $serverlist = [];
         // Clean temp server list and search for 'end_of_jails'.
         foreach ($tempserverlist as $server) {
             $server = trim( $server );
@@ -223,7 +223,7 @@ class vpl_jailserver_manager {
             $outputoptions = [
                 'escaping' => 'markup',
                 'encoding' => 'UTF-8',
-                'verbosity' => 'newlines_only'
+                'verbosity' => 'newlines_only',
             ];
             return $xmlrpcencoderequest( $action, $data, $outputoptions);
         } else {
@@ -257,7 +257,7 @@ class vpl_jailserver_manager {
         $requestready = self::get_available_request($maxmemory);
         $feedback = '';
         $error = '';
-        $planb = array ();
+        $planb = [];
         foreach ($serverlist as $server) {
             if (self::is_checkable( $server )) {
                 $response = self::get_response( $server, $requestready, $error );
@@ -325,11 +325,11 @@ class vpl_jailserver_manager {
         global $DB;
         $requestready = self::get_available_request(1024 * 10);
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
-        $feedback = array ();
+        $feedback = [];
         foreach ($serverlist as $server) {
             $status = null;
             $response = self::get_response( $server, $requestready, $status );
-            $params = array ( 'serverhash' => self::get_hash($server), 'server' => $server );
+            $params = [ 'serverhash' => self::get_hash($server), 'server' => $server ];
             $info = $DB->get_record( self::TABLE, $params);
             if ($response === false) {
                 self::server_fail( $server, $status );
@@ -367,7 +367,7 @@ class vpl_jailserver_manager {
         $requestready = self::get_available_request(1024 * 10);
         $error = '';
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
-        $list = array ();
+        $list = [];
         foreach ($serverlist as $server) {
             if (self::is_checkable( $server )) {
                 $response = self::get_response( $server, $requestready, $error );

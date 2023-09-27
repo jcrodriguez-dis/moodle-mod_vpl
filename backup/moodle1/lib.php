@@ -65,29 +65,29 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      * @return array of {@ link convert_path} instances
      */
     public function get_paths() {
-        return array (
-                new convert_path ( 'vpl', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL', array (
-                        'newfields' => array (
+        return [
+                new convert_path ( 'vpl', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL', [
+                        'newfields' => [
                                 'emailteachers' => 0,
-                                'worktype' => 0
-                        ),
-                        'renamefields' => array (
-                                'availablefrom' => 'startdate'
-                        ),
-                        'dropfields' => array (
-                                'visiblefrom'
-                        )
-                ) ),
+                                'worktype' => 0,
+                        ],
+                        'renamefields' => [
+                                'availablefrom' => 'startdate',
+                        ],
+                        'dropfields' => [
+                                'visiblefrom',
+                        ],
+                ] ),
                 new convert_path ( 'vpl_variations', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/VARIATIONS' ),
                 new convert_path ( 'vpl_variation', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/VARIATIONS/VARIATION' ),
                 new convert_path ( 'vpl_submissions', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/SUBMISSIONS' ),
-                new convert_path ( 'vpl_submission', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/SUBMISSIONS/SUBMISSION', array (
-                        'newfields' => array (
+                new convert_path ( 'vpl_submission', '/MOODLE_BACKUP/COURSE/MODULES/MOD/VPL/SUBMISSIONS/SUBMISSION', [
+                        'newfields' => [
                                 'mailed' => 0,
-                                'highlight' => 0
-                        )
-                ) )
-        );
+                                'highlight' => 0,
+                        ],
+                ] ),
+        ];
     }
     /**
      * Get path to tmp vpl data dir
@@ -130,19 +130,19 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      * @return string[][] array fo array with files as ['name'] and ['content']
      */
     protected function get_files($base, $dirname) {
-        $files = array ();
+        $files = [];
         $filelst = $dirname . '.lst';
-        $extrafiles = array (
+        $extrafiles = [
                 $filelst,
                 $filelst . '.keep',
                 'submitedfilelist.txt',
                 'compilation.txt',
                 'execution.txt',
-                'grade_comments.txt'
-        );
+                'grade_comments.txt',
+        ];
         foreach ($extrafiles as $file) {
             if (file_exists ( $base . $file )) {
-                $data = array ();
+                $data = [];
                 $data['name'] = $file;
                 $data['content'] = file_get_contents ( $base . $file );
                 $files[] = $data;
@@ -155,7 +155,7 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
                 if ($filename == "." || $filename == "..") {
                     continue;
                 }
-                $data = array ();
+                $data = [];
                 $data['name'] = $dirname . '/' . $filename;
                 $data['content'] = file_get_contents ( $dirpath . '/' . $filename );
                 $files[] = $data;
@@ -209,15 +209,15 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
 
         // Start writing vpl.xml.
         $this->open_xml_writer ( "activities/vpl_{$this->moduleid}/vpl.xml" );
-        $this->xmlwriter->begin_tag ( 'activity', array (
+        $this->xmlwriter->begin_tag ( 'activity', [
                 'id' => $this->instanceid,
                 'moduleid' => $this->moduleid,
                 'modulename' => 'vpl',
-                'contextid' => $contextid
-        ) );
-        $this->xmlwriter->begin_tag ( 'vpl', array (
-                'id' => $this->instanceid
-        ) );
+                'contextid' => $contextid,
+        ] );
+        $this->xmlwriter->begin_tag ( 'vpl', [
+                'id' => $this->instanceid,
+        ] );
 
         foreach ($data as $field => $value) {
             if ($field != 'id') {
@@ -250,9 +250,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      * @param array $data variant instance
      */
     public function process_vpl_variation($data) {
-        $this->write_xml ( 'variation', $data, array (
-                '/variation/id'
-        ) );
+        $this->write_xml ( 'variation', $data, [
+                '/variation/id',
+        ] );
     }
 
     /**
@@ -290,9 +290,9 @@ class moodle1_mod_vpl_handler extends moodle1_mod_handler {
      * @param array $data available
      */
     public function process_vpl_submission($data) {
-        $this->xmlwriter->begin_tag ( 'submission', $data, array (
-                '/submission/id'
-        ) );
+        $this->xmlwriter->begin_tag ( 'submission', $data, [
+                '/submission/id',
+        ] );
         $this->process_submitted_files ( $data['userid'], $data['id'] );
         $this->xmlwriter->end_tag ( 'submission' );
     }

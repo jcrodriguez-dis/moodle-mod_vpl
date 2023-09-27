@@ -44,7 +44,7 @@ class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_ex
                 'duedate' => new \report_editdates_date_setting(
                         get_string('duedate', VPL),
                         $vplinstance->duedate,
-                        self::DATETIME, true)
+                        self::DATETIME, true),
         ];
     }
 

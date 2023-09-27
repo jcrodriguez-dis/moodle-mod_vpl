@@ -24,9 +24,9 @@
 
 namespace mod_vpl;
 
-use \stdClass;
-use \mod_vpl_submission;
-use \mod_vpl_submission_CE;
+use stdClass;
+use mod_vpl_submission;
+use mod_vpl_submission_CE;
 use core_privacy\local\request\contextlist;
 use core_privacy\local\request\transform;
 use core_privacy\local\request\writer;
@@ -71,7 +71,7 @@ class privacy_provider_test extends base_test {
         }
 
         $this->setUser($this->editingteachers[0]);
-        $files = array('a.c' => "int main(){\nprintf(\"editingteachers\");\n}");
+        $files = ['a.c' => "int main(){\nprintf(\"editingteachers\");\n}"];
         $error = '';
         $submissionid = $this->vplonefile->add_submission($this->editingteachers[0]->id, $files, '', $error);
         if ($submissionid == 0 || $error != '' ) {
@@ -140,7 +140,7 @@ class privacy_provider_test extends base_test {
 
     protected function export_set_up() {
         $this->setUser($this->students[4]);
-        $files = array('a.c' => "int main(){\nprintf(\"student4\");\n}");
+        $files = ['a.c' => "int main(){\nprintf(\"student4\");\n}"];
         $error = '';
         $submissionid1 = $this->vplonefile->add_submission($this->students[4]->id, $files, 'algo', $error);
         if ($submissionid1 == 0 || $error != '' ) {
@@ -148,7 +148,7 @@ class privacy_provider_test extends base_test {
         }
         $this->submission1 = new mod_vpl_submission_CE($this->vplonefile, $submissionid1);
 
-        $files = array('a.c' => "int main(){\nprintf(\"student4 second\");\n}");
+        $files = ['a.c' => "int main(){\nprintf(\"student4 second\");\n}"];
         $error = '';
         $submissionid2 = $this->vplonefile->add_submission($this->students[4]->id, $files, '', $error);
         if ($submissionid2 == 0 || $error != '' ) {
@@ -171,7 +171,7 @@ class privacy_provider_test extends base_test {
         $contexts = $this->provider->get_contexts_for_userid($this->students[4]->id);
         $context = $this->vplonefile->get_context();
         $this->assertEquals($context, $contexts->current());
-        $approved = new \core_privacy\local\request\approved_contextlist($this->students[4], 'mod_vpl', array($context->id));
+        $approved = new \core_privacy\local\request\approved_contextlist($this->students[4], 'mod_vpl', [$context->id]);
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
 
@@ -211,7 +211,7 @@ class privacy_provider_test extends base_test {
         $contexts = $this->provider->get_contexts_for_userid($this->students[2]->id);
         $context = $this->vplvariations->get_context();
         $this->assertEquals($context, $contexts->current());
-        $approved = new \core_privacy\local\request\approved_contextlist($this->students[2], 'mod_vpl', array($context->id));
+        $approved = new \core_privacy\local\request\approved_contextlist($this->students[2], 'mod_vpl', [$context->id]);
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
 
@@ -240,7 +240,7 @@ class privacy_provider_test extends base_test {
         $contexts = $this->provider->get_contexts_for_userid($this->teachers[1]->id);
         $context = $this->vplonefile->get_context();
         $this->assertEquals($context, $contexts->current());
-        $approved = new \core_privacy\local\request\approved_contextlist($this->teachers[1], 'mod_vpl', array($context->id));
+        $approved = new \core_privacy\local\request\approved_contextlist($this->teachers[1], 'mod_vpl', [$context->id]);
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
 
@@ -269,18 +269,18 @@ class privacy_provider_test extends base_test {
         $vplid = $instance->id;
         $userid = $this->students[0]->id;
         for ($i = 1; $i < 4; $i++) {
-            $parms = array(
+            $parms = [
                 'userid' => $userid,
                 'vpl' => $vplid,
                 'server' => 'https://www.server' . $i . '.com',
                 'type' => 0,
                 'start_time' => time(),
                 'adminticket' => 'secret',
-            );
+            ];
             $DB->insert_record( VPL_RUNNING_PROCESSES, $parms);
         }
         $context = $this->vplonefile->get_context();
-        $approved = new \core_privacy\local\request\approved_contextlist($this->students[0], 'mod_vpl', array($context->id));
+        $approved = new \core_privacy\local\request\approved_contextlist($this->students[0], 'mod_vpl', [$context->id]);
         $this->provider->export_user_data($approved);
         $writer = \core_privacy\local\request\writer::with_context($context);
         for ($i = 1; $i < 4; $i++) {
@@ -313,19 +313,19 @@ class privacy_provider_test extends base_test {
         set_user_preference('vpl_acetheme', 'VPL', $this->editingteachers[1]);
         set_user_preference('vpl_terminaltheme', 2, $this->editingteachers[1]);
 
-        $expected = array('vpl_editor_fontsize' => 14, 'vpl_acetheme' => 'Eclipse', 'vpl_terminaltheme' => 0);
+        $expected = ['vpl_editor_fontsize' => 14, 'vpl_acetheme' => 'Eclipse', 'vpl_terminaltheme' => 0];
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->students[0]->id));
-        $expected = array('vpl_editor_fontsize' => 10, 'vpl_acetheme' => 'VPL', 'vpl_terminaltheme' => 2);
+        $expected = ['vpl_editor_fontsize' => 10, 'vpl_acetheme' => 'VPL', 'vpl_terminaltheme' => 2];
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->students[1]->id));
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->editingteachers[1]->id));
 
-        $expected = array('vpl_acetheme' => 'Netbeans');
+        $expected = ['vpl_acetheme' => 'Netbeans'];
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->students[2]->id));
 
-        $expected = array('vpl_editor_fontsize' => 8);
+        $expected = ['vpl_editor_fontsize' => 8];
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->students[3]->id));
 
-        $expected = array();
+        $expected = [];
         $this->assertEquals($expected, $this->provider->get_user_preferences($this->students[4]->id));
     }
     /**
@@ -339,7 +339,7 @@ class privacy_provider_test extends base_test {
             [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
             [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
-            []
+            [],
         ];
         foreach ($removelist as $remove) {
             $this->provider->delete_data_for_all_users_in_context($remove->get_context());
@@ -369,7 +369,7 @@ class privacy_provider_test extends base_test {
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
             [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
             [$this->vplvariations, $this->vploverrides],
-            []
+            [],
         ];
         for ($i = 0; $i < count($users); $i++) {
             $userid = $users[$i]->id;
@@ -438,7 +438,7 @@ class privacy_provider_test extends base_test {
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
             [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
             [$this->vplvariations, $this->vploverrides],
-            []
+            [],
         ];
 
         // Remove first context of each user.
@@ -447,7 +447,7 @@ class privacy_provider_test extends base_test {
                 continue;
             }
             $context = $usersvpls[$n][0]->get_context();
-            $approved = new \core_privacy\local\request\approved_userlist($context, 'mod_vpl', array($users[$n]->id));
+            $approved = new \core_privacy\local\request\approved_userlist($context, 'mod_vpl', [$users[$n]->id]);
             array_splice($usersvpls[$n], 0, 1);
 
             $this->provider->delete_data_for_users($approved);
@@ -473,7 +473,7 @@ class privacy_provider_test extends base_test {
             [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
             [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
-            []
+            [],
         ];
         $userlist = [];
         foreach ($users as $user) {
@@ -509,7 +509,7 @@ class privacy_provider_test extends base_test {
             [$this->vplmultifile, $this->vplvariations, $this->vplteamwork, $this->vploverrides],
             [$this->vplvariations, $this->vploverrides],
             [$this->vplonefile, $this->vplteamwork],
-            []
+            [],
         ];
         foreach ($vpls as $vpl) {
             $context = $vpl->get_context();

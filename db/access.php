@@ -39,8 +39,8 @@ $capabilities = [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/vpl:submit' => [ // Allows to submit a vpl assingment.
@@ -53,8 +53,8 @@ $capabilities = [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/vpl:grade' => [ // Allows to grade a vpl submission.
@@ -67,8 +67,8 @@ $capabilities = [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/vpl:similarity' => [ // Allows to show submissions similarity.
@@ -81,8 +81,8 @@ $capabilities = [
                         'teacher' => CAP_ALLOW,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/vpl:addinstance' => [ // Allows to add new vpl instance.
@@ -95,9 +95,9 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
+                        'manager' => CAP_ALLOW,
                 ],
-                'clonepermissionsfrom' => 'moodle/course:manageactivities'
+                'clonepermissionsfrom' => 'moodle/course:manageactivities',
         ],
 
         'mod/vpl:manage' => [ // Allows to manage a vpl instance.
@@ -110,8 +110,8 @@ $capabilities = [
                         'teacher' => CAP_PREVENT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
+                        'manager' => CAP_ALLOW,
+                ],
         ],
 
         'mod/vpl:setjails' => [ // Allows to set the jails for a vpl instance.
@@ -124,7 +124,7 @@ $capabilities = [
                         'teacher' => CAP_PROHIBIT,
                         'editingteacher' => CAP_ALLOW,
                         'coursecreator' => CAP_ALLOW,
-                        'manager' => CAP_ALLOW
-                ]
-        ]
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
 ];

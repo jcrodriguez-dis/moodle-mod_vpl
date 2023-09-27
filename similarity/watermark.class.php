@@ -26,15 +26,15 @@
 class vpl_watermark {
     const PRE = "\t \t  ";
     const POST = "  \t \t";
-    private static $encoder = array (
+    private static $encoder = [
             "\t",
             "\t ",
             "\t  ",
             "\t   ",
             "\t    ",
             "\t     ",
-            "\t      "
-    );
+            "\t      ",
+    ];
     private static function encode($wm) {
         $wm = ( int ) $wm;
         $ret = '';

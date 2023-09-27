@@ -106,7 +106,7 @@ class vpl_files_pair {
             foreach ($this->second->link_parms( '2' ) as $parm => $value) {
                 $url = vpl_url_add_param( $url, $parm, $value );
             }
-            $options = array (
+            $options = [
                 'height' => 800,
                 'width' => 900,
                 'directories' => 0,
@@ -114,8 +114,8 @@ class vpl_files_pair {
                 'menubar' => 0,
                 'personalbar' => 0,
                 'status' => 0,
-                'toolbar' => 0
-            );
+                'toolbar' => 0,
+            ];
             $action = new popup_action( 'click', $url, 'viewdiff' . $this->id, $options );
             $html = $OUTPUT->action_link( $url, $text, $action );
         } else {
@@ -178,16 +178,16 @@ class vpl_files_pair {
  */
 class vpl_similarity {
     public static function get_selected(&$files, $maxselected, $slimit, $spb) {
-        $vs1 = array ();
-        $vs2 = array ();
-        $vs3 = array ();
+        $vs1 = [];
+        $vs2 = [];
+        $vs3 = [];
         $minlevel1 = 0;
         $minlevel2 = 0;
         $minlevel3 = 0;
         $maxlevel1 = 100;
         $maxlevel2 = 100;
         $maxlevel3 = 100;
-        $selected = array ();
+        $selected = [];
         $jlimit = count( $files );
         if ($jlimit < $slimit) {
             $slimit = $jlimit;
@@ -263,10 +263,10 @@ class vpl_similarity {
             if (self::$corder === null) {
                 self::$corder = new vpl_similarity();
             }
-            if (! usort( $vec, array (
+            if (! usort( $vec, [
                 self::$corder,
-                'cmp_selected' . $sid
-            ) )) {
+                'cmp_selected' . $sid,
+            ] )) {
                 debugging( 'usort error' );
             }
             $field = 's' . $sid;

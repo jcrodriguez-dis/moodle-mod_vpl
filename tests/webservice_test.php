@@ -25,8 +25,8 @@
 
 namespace mod_vpl;
 
-use \mod_vpl_webservice;
-use \Exception;
+use mod_vpl_webservice;
+use Exception;
 
 defined('MOODLE_INTERNAL') || die();
 
@@ -54,7 +54,7 @@ class webservice_test extends base_test {
         curl_setopt( $ch, CURLOPT_URL, $url . $fun );
         curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
         curl_setopt( $ch, CURLOPT_POST, 1 );
-        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-type: text/urlencode;charset=UTF-8'));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: text/urlencode;charset=UTF-8']);
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
         if ( @$plugincfg->acceptcertificates ) {
@@ -80,26 +80,26 @@ class webservice_test extends base_test {
         parent::setUp();
         $this->setupinstances();
         $CFG->enablewebservices = true;
-        $DB->insert_record( 'external_services', array (
+        $DB->insert_record( 'external_services', [
                 'name' => 'mod_vpl',
                 'restrictedusers' => 0,
                 'timecreated' => time(),
                 'timemodified' => time(),
                 'shortname' => 'mod_vpl_edit',
                 'enabled' => 1,
-                'downloadfiles' => 0
-        ) );
-        $esid = $DB->get_record('external_services', array('name' => 'mod_vpl'))->id;
-        $functionnames = array('mod_vpl_evaluate',
+                'downloadfiles' => 0,
+        ] );
+        $esid = $DB->get_record('external_services', ['name' => 'mod_vpl'])->id;
+        $functionnames = ['mod_vpl_evaluate',
                                'mod_vpl_get_result',
                                'mod_vpl_info',
                                'mod_vpl_open',
-                               'mod_vpl_save'
-        );
+                               'mod_vpl_save',
+        ];
         foreach ($functionnames as $fn) {
-            $DB->insert_record( 'external_services_functions', array (
+            $DB->insert_record( 'external_services_functions', [
                 'externalserviceid' => $esid,
-                'functionname' => $fn) );
+                'functionname' => $fn, ] );
         }
         $this->setUser($this->students[1]);
     }
@@ -230,7 +230,7 @@ class webservice_test extends base_test {
         mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
     }
 
-    private function internal_test_vpl_webservice_open($id, $files = array(),
+    private function internal_test_vpl_webservice_open($id, $files = [],
             $compilation ='', $evaluation = '',
             $grade ='', $password = '', $userid = -1) {
         $res = mod_vpl_webservice::open($id, $password, $userid);
@@ -259,9 +259,9 @@ class webservice_test extends base_test {
         foreach ($this->users as $user) {
             $this->setUser($user);
             if ($user == $this->students[0]) {
-                $files = array('a.c' => "int main(){\nprintf(\"Hola\");\n}");
+                $files = ['a.c' => "int main(){\nprintf(\"Hola\");\n}"];
             } else {
-                $files = array('a.c' => "int main(){\n}");
+                $files = ['a.c' => "int main(){\n}"];
             }
             $this->internal_test_vpl_webservice_open($id, $files);
         }
@@ -269,18 +269,18 @@ class webservice_test extends base_test {
         foreach ($this->users as $user) {
             $this->setUser($user);
             if ($user == $this->students[0]) {
-                $files = array(
+                $files = [
                     'a.c' => "int main(){\nprintf(\"Hola1\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 4\n",
-                );
+                ];
                 $this->internal_test_vpl_webservice_open($id, $files);
             } else if ($user == $this->students[1]) {
-                $files = array(
+                $files = [
                     'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 5\n",
-                );
+                ];
                 $this->internal_test_vpl_webservice_open($id, $files);
             } else {
                 $this->internal_test_vpl_webservice_open($id);
@@ -292,18 +292,18 @@ class webservice_test extends base_test {
         foreach ($this->students as $user) {
             $this->setUser($user);
             if ( $guser0 == $user->groupasigned ) {
-                $files = array(
+                $files = [
                     'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 8\n",
-                );
+                ];
                 $this->internal_test_vpl_webservice_open($id, $files);
             } else if ( $guser1 == $user->groupasigned) {
-                $files = array(
+                $files = [
                     'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 9\n",
-                );
+                ];
                 $this->internal_test_vpl_webservice_open($id, $files);
             } else {
                 $this->internal_test_vpl_webservice_open($id);
@@ -316,27 +316,27 @@ class webservice_test extends base_test {
             $id = $this->vplonefile->get_course_module()->id;
             foreach ($this->users as $user) {
                 if ($user == $this->students[0]) {
-                    $files = array('a.c' => "int main(){\nprintf(\"Hola\");\n}");
+                    $files = ['a.c' => "int main(){\nprintf(\"Hola\");\n}"];
                 } else {
-                    $files = array('a.c' => "int main(){\n}");
+                    $files = ['a.c' => "int main(){\n}"];
                 }
                 $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
             }
             $id = $this->vplmultifile->get_course_module()->id;
             foreach ($this->users as $user) {
                 if ($user == $this->students[0]) {
-                    $files = array(
+                    $files = [
                         'a.c' => "int main(){\nprintf(\"Hola1\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 4\n",
-                    );
+                    ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
                 } else if ($user == $this->students[1]) {
-                    $files = array(
+                    $files = [
                         'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 5\n",
-                    );
+                    ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
                 } else {
                     $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
@@ -347,18 +347,18 @@ class webservice_test extends base_test {
             $guser1 = $this->students[1]->groupasigned;
             foreach ($this->students as $user) {
                 if ( $guser0 == $user->groupasigned ) {
-                    $files = array(
+                    $files = [
                         'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 8\n",
-                    );
+                    ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
                 } else if ( $guser1 == $user->groupasigned) {
-                    $files = array(
+                    $files = [
                         'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 9\n",
-                    );
+                    ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
                 } else {
                     $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
@@ -420,8 +420,8 @@ class webservice_test extends base_test {
         mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
     }
 
-    private function internal_test_vpl_webservice_save($id, $files = array(), $password = '', $userid = -1) {
-        $filesarray = array();
+    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1) {
+        $filesarray = [];
         foreach ($files as $name => $data) {
             $file = [];
             $file['name'] = $name;
@@ -449,7 +449,7 @@ class webservice_test extends base_test {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
-        $files = array('a.c' => '#include <content.h>\n');
+        $files = ['a.c' => '#include <content.h>\n'];
         $password = $this->vpldefault->get_instance()->password;
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
@@ -617,7 +617,7 @@ class webservice_test extends base_test {
         $executionfiles = $this->vpldefault->get_execution_fgm();
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
         $this->assertTrue($added);
-        $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
+        $files = ['a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n"];
         foreach ([false, true] as $xmlrpc) {
             set_config('use_xmlrpc', $xmlrpc, 'mod_vpl');
             foreach ($this->students as $user) {
@@ -759,7 +759,7 @@ class webservice_test extends base_test {
         }
         $id = $this->vpldefault->get_course_module()->id;
         $password = $this->vpldefault->get_instance()->password;
-        $files = array('a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n");
+        $files = ['a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n"];
         $executionfiles = $this->vpldefault->get_execution_fgm();
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
         $this->assertTrue($added);

@@ -37,9 +37,9 @@ class vpl_similarity_form extends moodleform {
     protected function list_activities($vplid) {
         global $DB;
         global $USER;
-        $list = array (
-                '' => ''
-        );
+        $list = [
+                '' => '',
+        ];
         $cn = $this->vpl->get_course()->shortname;
         // Get all courses the user is enroled.
         $courses = enrol_get_all_users_courses( $USER->id );
@@ -65,9 +65,9 @@ class vpl_similarity_form extends moodleform {
         } );
         foreach ($courses as $course) {
             // TODO add index in VPL table to accelerate this query.
-            $vpls = $DB->get_records( VPL, array (
-                    'course' => $course->id
-            ) );
+            $vpls = $DB->get_records( VPL, [
+                    'course' => $course->id,
+            ] );
             foreach ($vpls as $vplinstace) {
                 if ($vplinstace->id == $vplid) {
                     continue;
@@ -94,7 +94,7 @@ class vpl_similarity_form extends moodleform {
         $mform->setType( 'id', PARAM_INT );
         $mform->addElement( 'header', 'scanoptions', get_string( 'scanoptions', VPL ) );
         $defaultlimit = (intval( count( $this->vpl->get_submissions_number() ) / 25 ) + 1) * 5;
-        $options = array ();
+        $options = [];
         $options[$defaultlimit] = $defaultlimit;
         for ($i = 5; $i <= 40; $i += 5) {
             $options[$i] = $i;

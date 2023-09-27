@@ -48,10 +48,10 @@ class mod_vpl_submission_form extends moodleform {
         $mform->addElement( 'hidden', 'userid', 0 );
         $mform->setType( 'userid', PARAM_INT );
         // Comments.
-        $mform->addElement( 'textarea', 'comments', get_string( 'comments', VPL ), array (
+        $mform->addElement( 'textarea', 'comments', get_string( 'comments', VPL ), [
                 'cols' => '40',
-                'rows' => 2
-        ) );
+                'rows' => 2,
+        ] );
         $mform->setType( 'comments', PARAM_TEXT );
 
         // Files upload.

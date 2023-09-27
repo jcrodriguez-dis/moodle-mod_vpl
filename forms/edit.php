@@ -35,7 +35,7 @@ $userid = optional_param('userid', false, PARAM_INT);
 $copy = optional_param('privatecopy', false, PARAM_INT);
 $subid = optional_param( 'submissionid', false, PARAM_INT );
 $vpl = new mod_vpl($id);
-$pageparms = array('id' => $id);
+$pageparms = ['id' => $id];
 if ($userid && ! $copy) {
     $pageparms['userid'] = $userid;
 }
@@ -66,11 +66,11 @@ $grader = $vpl->has_capability(VPL_GRADE_CAPABILITY);
 
 // This code allow to edit previous versions.
 if ($subid && $grader) {
-    $parms = array (
+    $parms = [
             'id' => $subid,
             'vpl' => $instance->id,
-            'userid' => $userid
-    );
+            'userid' => $userid,
+    ];
     $res = $DB->get_records( 'vpl_submissions', $parms );
     if (count( $res ) == 1) {
         $lastsub = $res[$subid];
@@ -80,7 +80,7 @@ if ($subid && $grader) {
 } else {
     $lastsub = $vpl->last_user_submission( $userid );
 }
-$options = Array();
+$options = [];
 $options['id'] = $id;
 $options['restrictededitor'] = $instance->restrictededitor && ! $grader;
 $options['save'] = ! $instance->example;
@@ -89,7 +89,7 @@ $options['debug'] = ($instance->debug || $grader);
 $options['evaluate'] = ($instance->evaluate || $grader);
 $options['example'] = true && $instance->example;
 $options['comments'] = ! $options['example'];
-$options['username'] = $vpl->fullname($DB->get_record( 'user', array ( 'id' => $userid ) ), false);
+$options['username'] = $vpl->fullname($DB->get_record( 'user', [ 'id' => $userid ] ), false);
 $linkuserid = $copy ? $USER->id : $userid;
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
 $options['ajaxurl'] = $ajaxurl . '&action=';

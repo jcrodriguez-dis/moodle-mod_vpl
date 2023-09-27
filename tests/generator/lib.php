@@ -31,7 +31,7 @@ class mod_vpl_generator extends testing_module_generator {
         // Normalize parameter $record to object.
         $record = (object)(array)$record;
 
-        $defaultsettings = array(
+        $defaultsettings = [
             'shortdescription' => '',
             'intro' => '',
             'introformat' => 0,
@@ -67,7 +67,7 @@ class mod_vpl_generator extends testing_module_generator {
             'sebkeys' => '',
             'runscript' => '',
             'debugscript' => '',
-        );
+        ];
 
         // Set default value.
         foreach ($defaultsettings as $name => $value) {

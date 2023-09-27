@@ -32,13 +32,13 @@ $id = required_param( 'id', PARAM_INT );
 
 $vpl = new mod_vpl( $id );
 
-$vpl->prepare_page( 'forms/testcasesfile.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'forms/testcasesfile.php', [
+        'id' => $id,
+] );
 
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 
-$options = array ();
+$options = [];
 $options['restrictededitor'] = false;
 $options['save'] = true;
 $options['run'] = false;

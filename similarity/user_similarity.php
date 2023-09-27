@@ -43,24 +43,24 @@ $id = required_param( 'id', PARAM_INT ); // Course id.
 $userid = required_param( 'userid', PARAM_INT );
 $timelimit = 600; // Limit 10 minutes.
 // Check course existence.
-if (! $course = $DB->get_record( "course", array (
-        'id' => $id
-) )) {
+if (! $course = $DB->get_record( "course", [
+        'id' => $id,
+] )) {
     throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
-$user = $DB->get_record( 'user', array (
-        'id' => $userid
-) );
+$user = $DB->get_record( 'user', [
+        'id' => $userid,
+] );
 if (! $user) {
     throw new moodle_exception('invalidcourseid');
 }
 
 $strtitle = get_string( 'listsimilarity', VPL );
-$PAGE->set_url( '/mod/vpl/similarity/user_similarity.php', array (
+$PAGE->set_url( '/mod/vpl/similarity/user_similarity.php', [
         'id' => $id,
-        'userid' => $userid
-) );
+        'userid' => $userid,
+] );
 $PAGE->navbar->add( $strtitle );
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/similarity.css' ) );
 $PAGE->set_title( fullname( $user ) . ':' . $strtitle );
@@ -75,7 +75,7 @@ echo '<h2>' . $strtitle . '</h2>';
 
 $ovpls = get_all_instances_in_course( VPL, $course );
 $timenow = time();
-$vpls = array ();
+$vpls = [];
 // Get and select vpls to show.
 foreach ($ovpls as $ovpl) {
     $vpl = new mod_vpl( false, $ovpl->id );
@@ -110,24 +110,24 @@ if ($CFG->fullnamedisplay == 'lastname firstname') {
 }
 $with = get_string( 'similarto', VPL );
 $table = new html_table();
-$table->head = array (
+$table->head = [
         $name,
         '',
-        $with
-);
-$table->align = array (
+        $with,
+];
+$table->align = [
         'Left',
         'center',
-        'left'
-);
-$table->size = array (
+        'left',
+];
+$table->size = [
         '60',
         '',
-        '60'
-);
-$table->data = array ();
+        '60',
+];
+$table->data = [];
 
-$outputsize = array (
+$outputsize = [
         1,
         1,
         1,
@@ -139,23 +139,23 @@ $outputsize = array (
         3,
         3,
         3,
-        3
-);
+        3,
+];
 // Process every activity selected.
 
 
-$bars = array ();
-$relatedusers = array ();
+$bars = [];
+$relatedusers = [];
 foreach ($vpls as $vpl) {
     vpl_files_pair::set_mins( 100, 100, 100 );
     vpl_files_pair::set_maxs( 100, 100, 100 );
-    $simil = array ();
+    $simil = [];
     vpl_similarity_preprocess::user_activity( $simil, $vpl, $userid );
     $nuserfiles = count( $simil );
     if ($nuserfiles > 0) {
         $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
         $bars[] = $activityloadbox;
-        vpl_similarity_preprocess::activity( $simil, $vpl, array (), true, false, $activityloadbox );
+        vpl_similarity_preprocess::activity( $simil, $vpl, [], true, false, $activityloadbox );
         $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
         $bars[] = $searchprogression;
         if ($nuserfiles >= count( $outputsize )) {
@@ -165,17 +165,17 @@ foreach ($vpls as $vpl) {
         }
         $selected = vpl_similarity::get_selected( $simil, $noutput, $nuserfiles, $searchprogression );
         if (count( $selected ) > 0) {
-            $table->data[] = array (
+            $table->data[] = [
                     $vpl->get_printable_name(),
                     '',
-                    ''
-            );
+                    '',
+            ];
             foreach ($selected as $case) {
-                $table->data[] = array (
+                $table->data[] = [
                         $case->first->show_info(),
                         $case->get_link(),
-                        $case->second->show_info()
-                );
+                        $case->second->show_info(),
+                ];
                 $other = $case->second->get_userid();
                 if (! isset( $relatedusers[$other] )) {
                     $relatedusers[$other] = 1;
@@ -198,26 +198,26 @@ if (count( $table->data )) {
 if (count( $relatedusers ) > 0) {
     arsort( $relatedusers );
     $table = new html_table();
-    $table->head = array (
+    $table->head = [
             '#',
-            $name
-    );
-    $table->align = array (
+            $name,
+    ];
+    $table->align = [
             'Left',
-            'left'
-    );
-    $table->data = array ();
+            'left',
+    ];
+    $table->data = [];
     foreach ($relatedusers as $otheruserid => $rel) {
         if ($rel < 2) {
             break;
         }
-        $otheruser = $DB->get_record( 'user', array (
-                'id' => $otheruserid
-        ) );
-        $table->data[] = array (
+        $otheruser = $DB->get_record( 'user', [
+                'id' => $otheruserid,
+        ] );
+        $table->data[] = [
                 $rel,
-                $vpl->user_fullname_picture( $otheruser )
-        );
+                $vpl->user_fullname_picture( $otheruser ),
+        ];
     }
     echo html_writer::table( $table );
 }

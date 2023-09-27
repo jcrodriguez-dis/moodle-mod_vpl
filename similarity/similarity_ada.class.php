@@ -36,7 +36,7 @@ class vpl_similarity_ada extends vpl_similarity_base {
         $nidentifiers = 0;
         $identifierdefpos = 0;
         $bracketlevel = 0;
-        $ret = array ();
+        $ret = [];
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
                 switch ($token->value) {

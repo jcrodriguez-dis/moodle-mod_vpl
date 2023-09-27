@@ -65,7 +65,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
 
     public function __construct() {
         if (self::$pythonreserved === null) {
-            self::$pythonreserved = array (
+            self::$pythonreserved = [
                     'False' => true,
                     'class' => true,
                     'finally' => true,
@@ -98,14 +98,14 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                     'break' => true,
                     'except' => true,
                     'in' => true,
-                    'raise' => true
-            );
+                    'raise' => true,
+            ];
         }
         $this->reserved = &self::$pythonreserved;
     }
 
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';

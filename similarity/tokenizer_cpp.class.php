@@ -30,7 +30,7 @@ require_once(dirname(__FILE__).'/tokenizer_c.class.php');
 class vpl_tokenizer_cpp extends vpl_tokenizer_c {
     public function __construct() {
         parent::__construct();
-        $added = array (
+        $added = [
                 'and' => true,
                 'and_eq' => true,
                 'bitand' => true,
@@ -69,8 +69,8 @@ class vpl_tokenizer_cpp extends vpl_tokenizer_c {
                 'using' => true,
                 'virtual' => true,
                 'xor' => true,
-                'xor_eq' => true
-        );
+                'xor_eq' => true,
+        ];
         $this->reserved = array_merge( $this->reserved, $added );
     }
 }

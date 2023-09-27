@@ -37,11 +37,11 @@ class mod_vpl_variation_option_form extends moodleform {
         $mform = & $this->_form;
         $mform->addElement( 'header', 'variation_options', get_string( 'variation_options', VPL ) );
         $mform->addElement( 'selectyesno', 'usevariations', get_string( 'usevariations', VPL ) );
-        $mform->addElement( 'text', 'variationtitle', get_string( 'variationtitle', VPL ), array (
-                'size' => 60
-        ) );
+        $mform->addElement( 'text', 'variationtitle', get_string( 'variationtitle', VPL ), [
+                'size' => 60,
+        ] );
         $mform->setType( 'variationtitle', PARAM_TEXT );
-        $buttongroup = array ();
+        $buttongroup = [];
         $buttongroup[] = $mform->createElement( 'submit', 'save', get_string( 'save', VPL ) );
         $buttongroup[] = $mform->createElement( 'submit', 'cancel', get_string( 'cancel' ) );
         $mform->addGroup( $buttongroup );
@@ -72,9 +72,9 @@ class mod_vpl_variation_form extends moodleform {
         $mform->addElement( 'hidden', 'varid', $this->varid );
         $mform->setType( 'varid', PARAM_INT );
 
-        $mform->addElement( 'text', 'identification', get_string( 'varidentification', VPL ), array (
-                'size' => '20'
-        ) );
+        $mform->addElement( 'text', 'identification', get_string( 'varidentification', VPL ), [
+                'size' => '20',
+        ] );
         $mform->setDefault( 'identification', '' );
         $mform->setType( 'identification', PARAM_RAW );
         $fieldname = 'description'; // Allows multile editors in page.
@@ -109,7 +109,7 @@ function get_variation_with_edit_html($variation, $cmid, $number) {
     $parms = ['id' => $cmid, 'varid' => $variation->id, 'number' => $number];
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('edit');
-    $html .= ' ' . html_writer::link($url, $btext, array('class' => 'btn btn-primary')) . '<br>';
+    $html .= ' ' . html_writer::link($url, $btext, ['class' => 'btn btn-primary']) . '<br>';
     $html .= $OUTPUT->box( $variation->description );
     return $html;
 }
@@ -129,7 +129,7 @@ function get_link_variation_html($variation, $cmid, $number) {
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms, $anchor);
     $parms = ['number' => $number, 'identification' => s($variation->identification)];
     $btext = get_string( 'variation_n_i', VPL, $parms );
-    return html_writer::link($url, $btext, array('class' => 'btn btn-secondary'));
+    return html_writer::link($url, $btext, ['class' => 'btn btn-secondary']);
 }
 /**
  * Returns HTML link to add a new variation for this activity
@@ -141,7 +141,7 @@ function get_add_variation_html($cmid) {
     $parms = ['id' => $cmid, 'varid' => -1, 'number' => 0];
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('add');
-    $html = html_writer::link($url, $btext, array('class' => 'btn btn-primary'));
+    $html = html_writer::link($url, $btext, ['class' => 'btn btn-primary']);
     return $html;
 }
 
@@ -260,7 +260,7 @@ if ($varid == -13) { // No variation, basic form.
         if ($variation) {
             $variation->varid = $variation->id;
             $variation->id = $id;
-            $variation->description = array('text' => $variation->description);
+            $variation->description = ['text' => $variation->description];
             $mform->set_data( $variation );
             $mform->display();
         } else {

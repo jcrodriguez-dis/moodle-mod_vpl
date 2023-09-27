@@ -159,7 +159,7 @@ function vpl_delete_dir($dirname) {
             if (! $dd) {
                 return false;
             }
-            $list = array ();
+            $list = [];
             while ( $name = readdir( $dd ) ) {
                 if ($name != '.' && $name != '..') {
                     $list[] = $name;
@@ -226,7 +226,7 @@ function vpl_output_zip($zipfilename, $name) {
  */
 function vpl_get_lang($bashadapt = false) {
     global $SESSION, $USER, $CFG;
-    $commonlangs = array (
+    $commonlangs = [
             'aa' => 'DJ',
             'af' => 'ZA',
             'am' => 'ET',
@@ -268,8 +268,8 @@ function vpl_get_lang($bashadapt = false) {
             'tk' => 'TM',
             'tr' => 'TR',
             'uk' => 'UA',
-            'yo' => 'NG'
-    );
+            'yo' => 'NG',
+    ];
     if (isset( $SESSION->lang )) {
         $lang = $SESSION->lang;
     } else if (isset( $USER->lang )) {
@@ -508,9 +508,9 @@ function vpl_get_select_time($maximum = null) {
     if ($maximum === null) { // Default value.
         $maximum = 35 * $minute;
     }
-    $ret = array (
-            0 => get_string( 'select' )
-    );
+    $ret = [
+            0 => get_string( 'select' ),
+    ];
     if ($maximum <= 0) {
         return $ret;
     }
@@ -542,19 +542,19 @@ function vpl_get_select_time($maximum = null) {
  * @return string
  */
 function vpl_conv_size_to_string($size) {
-    static $measure = array (
+    static $measure = [
             1024,
             1048576,
             1073741824,
             1099511627776,
-            PHP_INT_MAX
-    );
-    static $measurename = array (
+            PHP_INT_MAX,
+    ];
+    static $measurename = [
             'KiB',
             'MiB',
             'GiB',
-            'TiB'
-    );
+            'TiB',
+    ];
     for ($i = 0; $i < count( $measure ) - 1; $i ++) {
         if ($measure[$i] <= 0) { // Check for int overflow.
             $num = $size / $measure[$i - 1];
@@ -614,9 +614,9 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
     if ($maximum > 17.0e9) {
         $maximum = 16 * 1073741824;
     }
-    $ret = array (
-            0 => get_string( 'select' )
-    );
+    $ret = [
+            0 => get_string( 'select' ),
+    ];
     if ($minimum > 0) {
         $value = $minimum;
     } else {
@@ -698,7 +698,7 @@ function vpl_rtzeros($value) {
  * @return array with index as key and url as value
  */
 function vpl_select_index($url, $array) {
-    $ret = array ();
+    $ret = [];
     foreach ($array as $value) {
         $ret[$value] = $url . $value;
     }
@@ -715,7 +715,7 @@ function vpl_select_index($url, $array) {
  * @return array with url as key and text as value
  */
 function vpl_select_array($url, $array) {
-    $ret = array ();
+    $ret = [];
     foreach ($array as $value) {
         $ret[$url . $value] = get_string( $value, VPL );
     }
@@ -1025,10 +1025,10 @@ function vpl_get_webservice_available() {
     if (! $CFG->enablewebservices) {
         return false;
     }
-    $service = $DB->get_record( 'external_services', array (
+    $service = $DB->get_record( 'external_services', [
             'shortname' => 'mod_vpl_edit',
-            'enabled' => 1
-    ) );
+            'enabled' => 1,
+    ] );
     return ! empty( $service );
 }
 
@@ -1044,33 +1044,33 @@ function vpl_get_webservice_token($vpl) {
     if (! $CFG->enablewebservices) {
         return '';
     }
-    $service = $DB->get_record( 'external_services', array (
+    $service = $DB->get_record( 'external_services', [
             'shortname' => 'mod_vpl_edit',
-            'enabled' => 1
-    ) );
+            'enabled' => 1,
+    ] );
     if (empty( $service )) {
         return '';
     }
-    $tokenrecord = $DB->get_record( 'external_tokens', array (
+    $tokenrecord = $DB->get_record( 'external_tokens', [
             'sid' => session_id(),
             'userid' => $USER->id,
-            'externalserviceid' => $service->id
-    ) );
+            'externalserviceid' => $service->id,
+    ] );
     if (! empty( $tokenrecord ) && $tokenrecord->validuntil < $now) {
         unset( $tokenrecord ); // Will be delete before creating a new one.
     }
     if (empty( $tokenrecord )) {
         // Remove old tokens from DB.
         $select = 'validuntil > 0 AND  validuntil < ?';
-        $DB->delete_records_select( 'external_tokens', $select, array (
-                $now
-        ) );
+        $DB->delete_records_select( 'external_tokens', $select, [
+                $now,
+        ] );
         // Generate unique token.
         for ($i = 0; $i < 100; $i ++) {
             $token = md5( uniqid( mt_rand(), true ) );
-            $tokenrecord = $DB->get_record( 'external_tokens', array (
-                    'token' => $token
-            ) );
+            $tokenrecord = $DB->get_record( 'external_tokens', [
+                    'token' => $token,
+            ] );
             if (empty( $tokenrecord )) {
                 break;
             }

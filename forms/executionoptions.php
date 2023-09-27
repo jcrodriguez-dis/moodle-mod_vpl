@@ -48,10 +48,10 @@ class mod_vpl_executionoptions_form extends moodleform {
         return '';
     }
     protected function get_dirlist($dir, $endwith) {
-        $avoid = array('default' => 1);
+        $avoid = ['default' => 1];
         $el = strlen($endwith);
         $dirlist = scandir($dir);
-        $list = array();
+        $list = [];
         foreach ($dirlist as $file) {
             if ( substr($file, - $el) == $endwith) {
                 $name = substr($file, 0, - $el);
@@ -78,7 +78,7 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->setType( 'id', PARAM_INT );
         $mform->addElement( 'header', 'header_execution_options', get_string( 'executionoptions', VPL ) );
         $strbasedon = get_string( 'basedon', VPL );
-        $basedonlist = array ();
+        $basedonlist = [];
         $basedonlist[0] = '';
         $courseid = $this->vpl->get_course()->id;
         $listcm = get_coursemodules_in_course( VPL, $courseid );
@@ -97,13 +97,13 @@ class mod_vpl_executionoptions_form extends moodleform {
 
         $strautodetect = get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
-        $runlist = array_merge(array('' => $strautodetect), $this->get_runlist());
+        $runlist = array_merge(['' => $strautodetect], $this->get_runlist());
         $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
         $mform->setDefault( 'runscript', $instance->runscript );
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
         $strdebugscript = get_string('debugscript', VPL);
-        $debuglist = array_merge(array('' => $strautodetect), $this->get_debuglist());
+        $debuglist = array_merge(['' => $strautodetect], $this->get_debuglist());
         $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
         $mform->setDefault( 'debugscript', $instance->debugscript );
         $mform->addHelpButton('debugscript', 'debugscript', VPL);
@@ -129,7 +129,7 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionoptions.php', array ( 'id' => $id ) );
+$vpl->prepare_page( 'forms/executionoptions.php', [ 'id' => $id ] );
 vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.

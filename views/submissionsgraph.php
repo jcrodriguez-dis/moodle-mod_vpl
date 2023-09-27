@@ -33,14 +33,14 @@ require_once(dirname(__FILE__).'/vpl_graph.class.php');
 function vpl_submissions_graph($vpl, $userid) {
     global $DB;
     // No log.
-    $subsn = array ();
-    $series = array ();
-    $names = array ();
+    $subsn = [];
+    $series = [];
+    $names = [];
     $submissionslist = $vpl->user_submissions( $userid );
     if (count( $submissionslist ) > 0) {
         $submissionslist = array_reverse( $submissionslist );
         // Create submissions object.
-        $subs = array ();
+        $subs = [];
         foreach ($submissionslist as $submission) {
             $subs[] = new mod_vpl_submission( $vpl, $submission );
         }
@@ -49,7 +49,7 @@ function vpl_submissions_graph($vpl, $userid) {
             foreach ($filesarray as $name) {
                 if (! in_array( $name, $names, true )) {
                     $names[] = $name;
-                    $series[$name] = array ();
+                    $series[$name] = [];
                 }
             }
         }
@@ -81,7 +81,7 @@ function vpl_submissions_graph($vpl, $userid) {
         foreach ($subs as $sub) {
             $subsn[] = $nsub % $subshow == 0 ? $nsub : '';
             $filesarray = $sub->get_submitted_files();
-            $files = array ();
+            $files = [];
             foreach ($filesarray as $name => $data) {
                 $size = strlen( $data );
                 $files[$name] = $size;
@@ -96,9 +96,9 @@ function vpl_submissions_graph($vpl, $userid) {
             $nsub ++;
         }
     }
-    $user = $DB->get_record( 'user', array (
-            'id' => $userid
-    ) );
+    $user = $DB->get_record( 'user', [
+            'id' => $userid,
+    ] );
     vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false )
                    , get_string( 'submissions', VPL ) , get_string( "sizeb" ), $subsn, $series, $names );
 }

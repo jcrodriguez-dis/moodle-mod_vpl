@@ -75,7 +75,7 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
     }
     public function __construct() {
         if (self::$creserved === null) {
-            self::$creserved = array (
+            self::$creserved = [
                     'auto' => true,
                     'break' => true,
                     'case' => true,
@@ -112,13 +112,13 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
                     'while' => true,
                     '_Bool' => true,
                     '_Complex' => true,
-                    '_Imaginary' => true
-            );
+                    '_Imaginary' => true,
+            ];
         }
         $this->reserved = &self::$creserved;
     }
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';
@@ -267,7 +267,7 @@ class vpl_tokenizer_c extends vpl_tokenizer_base {
         return $this->tokens;
     }
     public function compact_operators() {
-        $correct = array ();
+        $correct = [];
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {

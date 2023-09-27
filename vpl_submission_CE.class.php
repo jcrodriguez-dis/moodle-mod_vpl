@@ -86,13 +86,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'rb' => 'ruby',
         'rs' => 'rust',
         'ruby' => 'ruby',
-        'ts' => 'typescript'
+        'ts' => 'typescript',
     ];
     private static $scriptname = [
         'vpl_run.sh' => 'run',
         'vpl_debug.sh' => 'debug',
         'vpl_evaluate.sh' => 'evaluate',
-        'vpl_test_evaluate.sh' => 'test_evaluate'
+        'vpl_test_evaluate.sh' => 'test_evaluate',
     ];
 
     const TRUN = 0;
@@ -106,13 +106,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'vpl_debug.sh' => self::TDEBUG,
         'vpl_evaluate.sh' => self::TEVALUATE,
         'vpl_evaluate.cases' => self::TEVALUATE,
-        'vpl_test_evaluate.sh' => self::TTESTEVALUATE
+        'vpl_test_evaluate.sh' => self::TTESTEVALUATE,
     ];
     private static $scriptlist = [
         self::TRUN => 'vpl_run.sh',
         self::TDEBUG => 'vpl_debug.sh',
         self::TEVALUATE => 'vpl_evaluate.sh',
-        self::TTESTEVALUATE => 'vpl_test_evaluate.sh'
+        self::TTESTEVALUATE => 'vpl_test_evaluate.sh',
     ];
 
     /**
@@ -595,7 +595,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      *
      * @param int $type (0=run, 1=debug, evaluate=2, test_evaluate=3)
      */
-    public function run($type, $options = array()) {
+    public function run($type, $options = []) {
         // Stop current task if one.
         $this->cancelprocess();
         $options = ( array ) $options;
@@ -604,7 +604,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 self::TRUN => 'vpl_run.sh',
                 self::TDEBUG => 'vpl_debug.sh',
                 self::TEVALUATE => 'vpl_evaluate.sh',
-                self::TTESTEVALUATE => 'vpl_test_evaluate.sh'
+                self::TTESTEVALUATE => 'vpl_test_evaluate.sh',
         ];
         $data = $this->prepare_execution($type);
         $data->execute = $executescripts[$type];

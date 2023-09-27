@@ -25,7 +25,7 @@
 
 namespace mod_vpl;
 
-use \vpl_similarity_preprocess;
+use vpl_similarity_preprocess;
 
 defined('MOODLE_INTERNAL') || die();
 

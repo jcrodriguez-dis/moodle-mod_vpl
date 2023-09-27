@@ -46,7 +46,7 @@ class mod_vpl_edit {
      * @return array contents indexed by filenames
      */
     public static function filesfromide(& $postfiles) {
-        $files = Array ();
+        $files = [];
         foreach ($postfiles as $file) {
             if ( $file->encoding == 1 ) {
                 $files[$file->name] = base64_decode( $file->contents );
@@ -64,7 +64,7 @@ class mod_vpl_edit {
      * @return array of stdClass
      */
     public static function filestoide(& $from) {
-        $files = Array ();
+        $files = [];
         foreach ($from as $name => $data) {
             $file = new stdClass();
             $file->name = $name;
@@ -86,12 +86,12 @@ class mod_vpl_edit {
      * @return string[][]
      */
     public static function files2object(& $arrayfiles) {
-        $files = array ();
+        $files = [];
         foreach ($arrayfiles as $name => $data) {
-            $file = array (
+            $file = [
                     'name' => $name,
-                    'data' => $data
-            );
+                    'data' => $data,
+            ];
             $files[] = $file;
         }
         return $files;
@@ -129,11 +129,11 @@ class mod_vpl_edit {
         }
         $errormessage = '';
         if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
-            \mod_vpl\event\submission_uploaded::log( array (
+            \mod_vpl\event\submission_uploaded::log( [
                     'objectid' => $subid,
                     'context' => $vpl->get_context(),
-                    'relateduserid' => ($USER->id != $userid ? $userid : null)
-            ) );
+                    'relateduserid' => ($USER->id != $userid ? $userid : null),
+            ] );
             $response->version = $subid;
             $response->saved = true;
             return $response;
@@ -208,7 +208,7 @@ class mod_vpl_edit {
         $vplinstance = $vpl->get_instance();
         if ( $submissionid !== false ) {
             // Security checks.
-            $parms = array('id' => $submissionid, 'vpl' => $vplinstance->id);
+            $parms = ['id' => $submissionid, 'vpl' => $vplinstance->id];
             $vpl->require_capability( VPL_GRADE_CAPABILITY );
             $res = $DB->get_records('vpl_submissions', $parms);
             if ( count($res) == 1 ) {
@@ -261,7 +261,7 @@ class mod_vpl_edit {
         }
         $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
         $traslate = ['run' => 'run', 'debug' => 'debugged',
-                     'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated'];
+                     'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated', ];
         $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
         return $submission->run( $code[$action], $options );

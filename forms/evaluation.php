@@ -34,7 +34,7 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $userid = optional_param( 'userid', false, PARAM_INT );
-$parms = array ( 'id' => $id );
+$parms = [ 'id' => $id ];
 if ($userid) {
     $parms['userid'] = $userid;
 }
@@ -55,7 +55,7 @@ $vpl->print_header( get_string( 'evaluation', VPL ) );
 flush();
 
 echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
-$user = $DB->get_record( 'user', array ( 'id' => $userid ) );
+$user = $DB->get_record( 'user', [ 'id' => $userid ] );
 $text = ' ' . $vpl->user_picture( $user );
 $text .= ' ' . fullname( $user );
 echo $OUTPUT->box( $text );

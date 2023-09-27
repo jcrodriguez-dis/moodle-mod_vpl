@@ -26,7 +26,7 @@
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
 $PAGE->requires->js_call_amd('mod_vpl/jstests-lazy', 'start');
-$course = $DB->get_record( "course", array ( 'id' => $COURSE->id ) );
+$course = $DB->get_record( "course", [ 'id' => $COURSE->id ] );
 
 require_course_login( $course );
 

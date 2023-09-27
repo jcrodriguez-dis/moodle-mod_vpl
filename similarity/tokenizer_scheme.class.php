@@ -32,7 +32,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     protected $tokens;
     public function __construct() {
         // TODO need more reserved and functions.
-        $list = array (
+        $list = [
                 'define',
                 'if',
                 'cond',
@@ -68,9 +68,9 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
                 '<',
                 '>',
                 'lambda',
-                'not'
-        );
-        $this->reserved = array ();
+                'not',
+        ];
+        $this->reserved = [];
         foreach ($list as $word) {
             $this->reserved[$word] = 1;
         }
@@ -130,7 +130,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     const IN_CHAR = 2;
     const IN_COMMENT = 4;
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::IN_REGULAR;
         $pending = '';

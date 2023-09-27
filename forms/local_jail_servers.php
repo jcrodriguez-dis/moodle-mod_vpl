@@ -35,11 +35,11 @@ class mod_vpl_setjails_form extends moodleform {
         $mform->addElement( 'header', 'headersetjails', get_string( 'local_jail_servers', VPL ) );
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );
         $mform->setType( 'id', PARAM_INT );
-        $mform->addElement( 'textarea', 'jailservers', get_string( 'jail_servers_description', VPL ), array (
+        $mform->addElement( 'textarea', 'jailservers', get_string( 'jail_servers_description', VPL ), [
                 'cols' => 45,
                 'rows' => 10,
-                'wrap' => 'off'
-        ) );
+                'wrap' => 'off',
+        ] );
         $mform->setType( 'jailservers', PARAM_RAW );
         $this->add_action_buttons();
     }
@@ -49,7 +49,7 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/local_jail_servers.php', array ( 'id' => $id ) );
+$vpl->prepare_page( 'forms/local_jail_servers.php', [ 'id' => $id ] );
 vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_SETJAILS_CAPABILITY );
 $vpl->print_header( get_string( 'local_jail_servers', VPL ) );

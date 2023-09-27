@@ -36,7 +36,7 @@ require_login();
 
 function vpl_actions_menu($id, $userid, $subid) {
     $menu = new action_menu();
-    $linkparms = array('id' => $id, 'userid' => $userid, 'submissionid' => $subid, 'privatecopy' => 1);
+    $linkparms = ['id' => $id, 'userid' => $userid, 'submissionid' => $subid, 'privatecopy' => 1];
     $link = new moodle_url('/mod/vpl/forms/submissionview.php', $linkparms);
     $stri18n = get_string('submissionview', 'mod_vpl');
     $action = new action_menu_link_secondary($link, new pix_icon('submissionview', '', 'mod_vpl'),  $stri18n);
@@ -62,17 +62,17 @@ if ( $userid == null ) {
     }
 }
 // TODO add VPL course setting check and user information available.
-$vpl->prepare_page( 'views/previoussubmissionslist.php', array (
+$vpl->prepare_page( 'views/previoussubmissionslist.php', [
         'id' => $id,
-        'userid' => $userid
-) );
+        'userid' => $userid,
+] );
 
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
-\mod_vpl\event\submission_previous_upload_viewed::log( array (
+\mod_vpl\event\submission_previous_upload_viewed::log( [
         'objectid' => $vpl->get_instance()->id,
         'context' => context_module::instance( $id ),
-        'relateduserid' => $userid
-) );
+        'relateduserid' => $userid,
+] );
 $strdatesubmitted = get_string( 'datesubmitted', VPL );
 $strdescription = get_string( 'description', VPL );
 $straction = get_string( 'action' );
@@ -85,25 +85,25 @@ $vpl->print_header( get_string( 'previoussubmissionslist', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
 
 $table = new html_table();
-$table->head = array (
+$table->head = [
         '#',
         $strdatesubmitted,
         $strdescription,
-        $straction
-);
-$table->align = array (
+        $straction,
+];
+$table->align = [
         'right',
         'left',
         'right',
-        'left'
-);
-$table->nowrap = array (
+        'left',
+];
+$table->nowrap = [
         true,
         true,
-        true
-);
+        true,
+];
 $submissionslist = $vpl->user_submissions( $userid );
-$submissions = array ();
+$submissions = [];
 $nsub = count( $submissionslist );
 foreach ($submissionslist as $submission) {
     if ($detailed) {
@@ -115,12 +115,12 @@ foreach ($submissionslist as $submission) {
     $sub = new mod_vpl_submission( $vpl, $submission );
     $submissions[] = $sub;
     $actions = vpl_actions_menu($id, $userid, $submission->id);
-    $table->data[] = array (
+    $table->data[] = [
             $nsub --,
             $date,
             s( $sub->get_detail() ),
-            $OUTPUT->render($actions)
-    );
+            $OUTPUT->render($actions),
+    ];
 }
 
 echo '<div class="clearer"> </div>';
@@ -130,14 +130,14 @@ vpl_user_working_periods_graph($vpl, $userid);
 echo html_writer::table( $table );
 echo '<div style="text-align:center">';
 $urlbase = $CFG->wwwroot . '/mod/vpl/views/previoussubmissionslist.php?id=' . $id . '&userid=' . $userid . '&detailed=';
-$urls = array (
+$urls = [
         $urlbase . '0',
-        $urlbase . '1'
-);
-echo $OUTPUT->url_select( array (
+        $urlbase . '1',
+];
+echo $OUTPUT->url_select( [
         $urls[0] => get_string( 'detailedless' ),
-        $urls[1] => get_string( 'detailedmore' )
-), $urls[$detailed] );
+        $urls[1] => get_string( 'detailedmore' ),
+], $urls[$detailed] );
 echo '</div>';
 if ($detailed) {
     $nsub = count( $submissionslist );

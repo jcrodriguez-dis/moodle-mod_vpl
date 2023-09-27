@@ -89,7 +89,7 @@ class tokenizer_base_test extends \advanced_testcase {
         "constant.character",
         "constant.character.escape",
         "storage",
-        "storage.type"
+        "storage.type",
     ];
 
     /**
@@ -103,7 +103,7 @@ class tokenizer_base_test extends \advanced_testcase {
             "(a)(b)"       => "(?:a)(?:b)",
             "(ab)(d)"      => "(?:ab)(?:d)",
             "(ab)(d)()"    => "(?:ab)(?:d)()",
-            "(ax(by))[()]" => "(?:ax(?:by))[()]"
+            "(ax(by))[()]" => "(?:ax(?:by))[()]",
         ];
 
         self::$testcasesckt = [
@@ -117,19 +117,19 @@ class tokenizer_base_test extends \advanced_testcase {
             "array_string" => [ true => [ [ "example", "", "10"], [ "test" ] ], false => [ [ "10", "", 30 ], "10" ] ],
             "array_array"  => [ true => [ [ [ 10, 20, 30 ] ], [[10]] ], false => [ [ 10, "", 30 ], [10] ] ],
             "array_object" => [ true => [ [ (object)["h" => 10] ], [(object)[]] ], false => [ [ 10, "", 30 ], 10 ] ],
-            "array_not_valid_type" => [ false => [ [ 10, 20, 30 ] ] ]
+            "array_not_valid_type" => [ false => [ [ 10, 20, 30 ] ] ],
         ];
 
         self::$testcasesctk = [
             true  => [
                 "text", "comment", "comment.line", "constant", "constant.character",
                 "constant.character.escape", "storage", "storage.type",
-                [ "text" ], [ "text", "comment" ], [ "text", "comment.line", "constant.character" ]
+                [ "text" ], [ "text", "comment" ], [ "text", "comment.line", "constant.character" ],
             ],
             false => [
                 "", "hello", "comment.multiple", "constant.regex", "variable",
-                [], [ "text.line"], [ "text", "comment.multiple", "character" ]
-            ]
+                [], [ "text.line"], [ "text", "comment.multiple", "character" ],
+            ],
         ];
 
         self::$testcasesgat = [
@@ -138,34 +138,34 @@ class tokenizer_base_test extends \advanced_testcase {
             2 => [ 'input'  => [ 'type' => [ 'type' ], 'value' => '', 'regex' => '/((?:int)(?:a))|($)/' ], 'output' => [] ],
             3 => [
                 'input'  => [ 'type' => [ 'type' ], 'value' => 'int', 'regex' => '((?:int))|($)' ],
-                'output' => [ new token('type', 'int', 0) ]
+                'output' => [ new token('type', 'int', 0) ],
             ],
             4 => [
                 'input'  => [
                     'type' => [ 'storage.type', 'text', 'identifier' ],
                     'value' => 'int a',
-                    'regex' => '/((?:int)(?:\s+)(?:[a-z]))|($)/'
+                    'regex' => '/((?:int)(?:\s+)(?:[a-z]))|($)/',
                 ],
-                'output' => [ new token('storage.type', 'int', 0), new token('text', ' ', 0), new token('identifier', 'a', 0) ]
+                'output' => [ new token('storage.type', 'int', 0), new token('text', ' ', 0), new token('identifier', 'a', 0) ],
             ],
             5 => [
                 'input' => [
                     'type' => [ 'id', 'text', 'paren.lparen', 'paren.rparen', 'text', 'paren.lparen' ],
                     'value' => 'hello () {',
-                    'regex' => '/((?:[a-z]+)(?:\s*)(?:\()(?:\))(?:\s+)(?:\{))|($)/'
+                    'regex' => '/((?:[a-z]+)(?:\s*)(?:\()(?:\))(?:\s+)(?:\{))|($)/',
                 ],
                 'output' => [
                     new token('id', 'hello', 0), new token('text', ' ', 0),
                     new token('paren.lparen', '(', 0), new token('paren.rparen', ')', 0),
-                    new token('text', ' ', 0), new token('paren.lparen', '{', 0)
-                ]
-            ]
+                    new token('text', ' ', 0), new token('paren.lparen', '{', 0),
+                ],
+            ],
         ];
 
         self::$statetosearchrules = [
             (object)["token" => "string.double", "regex" => "\".*\""],
             (object)["token" => "comment", "regex" => "\\/\\/", "next" => "start"],
-            (object)["default_token" => "comment"]
+            (object)["default_token" => "comment"],
         ];
     }
 

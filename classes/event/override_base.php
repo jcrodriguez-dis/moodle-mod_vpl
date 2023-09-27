@@ -36,7 +36,7 @@ class override_base extends base {
      * @return array The object ID mapping.
      */
     public static function get_objectid_mapping() {
-        return array('db' => VPL_OVERRIDES, 'restore' => VPL_OVERRIDES);
+        return ['db' => VPL_OVERRIDES, 'restore' => VPL_OVERRIDES];
     }
     /**
      * Get the other mapping.
@@ -66,12 +66,12 @@ class override_base extends base {
             $info = $vpl;
         } else {
             $vplinstance = $vpl->get_instance();
-            $info = array (
+            $info = [
                     'objectid' => $overrideid,
                     'context' => $vpl->get_context(),
                     'courseid' => $vplinstance->course,
-                    'other' => array('vplid' => $vplinstance->id),
-            );
+                    'other' => ['vplid' => $vplinstance->id],
+            ];
         }
         parent::log( $info );
     }

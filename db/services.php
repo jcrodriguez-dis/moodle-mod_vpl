@@ -31,60 +31,60 @@
 
 defined( 'MOODLE_INTERNAL' ) || die();
 
-$functions = array (
-        'mod_vpl_info' => array (
+$functions = [
+        'mod_vpl_info' => [
                 'classname' => 'mod_vpl_webservice',
                 'methodname' => 'info',
                 'classpath' => 'mod/vpl/externallib.php',
                 'description' => 'Get the information/description about a VPL activity',
                 'requiredcapability' => 'mod/vpl:view',
-                'type' => 'read'
-        ),
-        'mod_vpl_save' => array (
+                'type' => 'read',
+        ],
+        'mod_vpl_save' => [
                 'classname' => 'mod_vpl_webservice',
                 'methodname' => 'save',
                 'classpath' => 'mod/vpl/externallib.php',
                 'description' => 'Save/submit the student\'s files of a VPL activity',
                 'requiredcapability' => 'mod/vpl:submit',
-                'type' => 'write'
-        ),
-        'mod_vpl_open' => array (
+                'type' => 'write',
+        ],
+        'mod_vpl_open' => [
                 'classname' => 'mod_vpl_webservice',
                 'methodname' => 'open',
                 'classpath' => 'mod/vpl/externallib.php',
                 'description' => 'Open/Download the student\'s files of the last submission of a VPL activity',
                 'requiredcapability' => 'mod/vpl:view',
-                'type' => 'read'
-        ),
-        'mod_vpl_evaluate' => array (
+                'type' => 'read',
+        ],
+        'mod_vpl_evaluate' => [
                 'classname' => 'mod_vpl_webservice',
                 'methodname' => 'evaluate',
                 'classpath' => 'mod/vpl/externallib.php',
                 'description' => 'Evaluate the student\'s submission',
                 'requiredcapability' => 'mod/vpl:submit',
-                'type' => 'write'
-        ),
-        'mod_vpl_get_result' => array (
+                'type' => 'write',
+        ],
+        'mod_vpl_get_result' => [
                 'classname' => 'mod_vpl_webservice',
                 'methodname' => 'get_result',
                 'classpath' => 'mod/vpl/externallib.php',
                 'description' => 'Get result of the evalaution',
                 'requiredcapability' => 'mod/vpl:view',
-                'type' => 'write'
-        )
-);
+                'type' => 'write',
+        ],
+];
 
-$services = array (
-        'VPL web service' => array (
-                'functions' => array (
+$services = [
+        'VPL web service' => [
+                'functions' => [
                         'mod_vpl_info',
                         'mod_vpl_save',
                         'mod_vpl_open',
                         'mod_vpl_evaluate',
-                        'mod_vpl_get_result'
-                ),
+                        'mod_vpl_get_result',
+                ],
                 'shortname' => 'mod_vpl_edit',
                 'restrictedusers' => 0,
-                'enabled' => 0
-        )
-);
+                'enabled' => 0,
+        ],
+];

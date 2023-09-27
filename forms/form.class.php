@@ -71,7 +71,7 @@ class vpl_form {
     public function __construct($page, $id = 'form1', $attributes = false) {
         $this->htmlcode = '';
         $this->formcode = '';
-        $this->datatype = array ();
+        $this->datatype = [];
         $this->data = new StdClass();
         $this->action( $page, $id, $attributes );
     }

@@ -30,7 +30,7 @@ global $USER, $PAGE, $OUTPUT;
 require_login();
 $id = required_param('id', PARAM_INT); // Course Module ID.
 $vpl = new mod_vpl( $id );
-$urlparms = array ( 'id' => $id );
+$urlparms = [ 'id' => $id ];
 if ( optional_param( 'userid', -1, PARAM_INT ) != -1 ) {
     $urlparms['userid'] = required_param( 'userid', PARAM_INT );
 }

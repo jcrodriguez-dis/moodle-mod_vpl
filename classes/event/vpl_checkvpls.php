@@ -26,7 +26,7 @@ namespace mod_vpl\event;
 
 class vpl_checkvpls extends base {
     public static function get_objectid_mapping() {
-        return array('db' => 'course', 'restore' => 'course');
+        return ['db' => 'course', 'restore' => 'course'];
     }
     public static function get_other_mapping() {
         // Nothing to map.
@@ -39,7 +39,7 @@ class vpl_checkvpls extends base {
     }
 
     public function get_url() {
-        $param = array ( 'id' => $this->data['objectid'] );
+        $param = [ 'id' => $this->data['objectid'] ];
         return new \moodle_url( 'mod/vpl/views/checkvpls.php',  $param);
     }
     public function get_description() {

@@ -31,9 +31,9 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/show_webservice.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'views/show_webservice.php', [
+        'id' => $id,
+] );
 $vpl->require_capability( VPL_VIEW_CAPABILITY );
 if (! $vpl->is_visible()) {
     \mod_vpl\event\vpl_security_webservice::log( $vpl );

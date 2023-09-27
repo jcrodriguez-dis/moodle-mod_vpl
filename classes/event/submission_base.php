@@ -28,7 +28,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class submission_base extends base {
     public static function get_objectid_mapping() {
-        return array('db' => 'vpl_submissions', 'restore' => 'vpl_submissions');
+        return ['db' => 'vpl_submissions', 'restore' => 'vpl_submissions'];
     }
     public static function get_other_mapping() {
         // Nothing to map.
@@ -57,11 +57,11 @@ class submission_base extends base {
             global $USER;
             $subinstance = $submission->get_instance();
             $vpl = $submission->get_vpl();
-            $einfo = array (
+            $einfo = [
                     'objectid' => $subinstance->id,
                     'context' => $vpl->get_context(),
-                    'relateduserid' => ($USER->id != $subinstance->userid ? $subinstance->userid : null)
-            );
+                    'relateduserid' => ($USER->id != $subinstance->userid ? $subinstance->userid : null),
+            ];
             parent::log( $einfo );
         }
     }

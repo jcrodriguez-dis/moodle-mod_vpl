@@ -48,26 +48,26 @@ class vpl_list_util {
      * Check and set data to sort return comparation function $field field to compare $descending order
      */
     public static function set_order($field, $ascending = true) {
-        $sortfields = array (
-                'name' => array (
-                        'name'
-                ),
-                'startdate' => array (
+        $sortfields = [
+                'name' => [
+                        'name',
+                ],
+                'startdate' => [
                         'startdate',
                         'duedate',
-                        'name'
-                ),
-                'duedate' => array (
+                        'name',
+                ],
+                'duedate' => [
                         'duedate',
                         'startdate',
-                        'name'
-                ),
-                'automaticgrading' => array (
+                        'name',
+                ],
+                'automaticgrading' => [
                         'automaticgrading',
                         'duedate',
-                        'name'
-                )
-        );
+                        'name',
+                ],
+        ];
         if (isset( $sortfields[$field] )) {
             self::$fields = $sortfields[$field];
         } else { // Unknow field.
@@ -123,9 +123,9 @@ class vpl_list_util {
                 }
             }
         }
-        return array (
+        return [
                 'submissions' => $numsubs,
-                'graded' => $numgraded
-        );
+                'graded' => $numgraded,
+        ];
     }
 }

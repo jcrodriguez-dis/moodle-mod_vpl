@@ -79,7 +79,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
     }
     public function __construct() {
         if (self::$creserved === null) {
-            self::$creserved = array ( // Source MATLAB Quick Reference Author: Jialong He.
+            self::$creserved = [ // Source MATLAB Quick Reference Author: Jialong He.
                     /* Managing Commands and Functions. */
                     "addpath" => true,
                     "doc" => true,
@@ -184,13 +184,13 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     /* Operators. */
                     "kron" => true,
                     "xor" => true,
-                    "and" => true
-            );
+                    "and" => true,
+            ];
         }
         $this->reserved = &self::$creserved;
     }
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $state = self::REGULAR;
         $pending = '';
         $lastnospace = self::LF;
@@ -318,7 +318,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         return $this->tokens;
     }
     protected function compact_operators() {
-        $correct = array ();
+        $correct = [];
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {

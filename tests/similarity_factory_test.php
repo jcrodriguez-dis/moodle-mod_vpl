@@ -31,7 +31,7 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_factory.class.php');
 
 use mod_vpl\similarity\similarity_factory;
-use \vpl_similarity_factory;
+use vpl_similarity_factory;
 
 /**
  * Unit tests for \mod_vpl\similarity\similarity_factory class.
@@ -140,7 +140,7 @@ class similarity_factory_test extends \advanced_testcase {
         $similarityclasses = [
             'mod_vpl\similarity\similarity_' . $namelang,
             'mod_vpl\similarity\similarity_generic',
-            'vpl_similarity_' . $namelang
+            'vpl_similarity_' . $namelang,
         ];
 
         if (!is_numeric($similaritytype)) {

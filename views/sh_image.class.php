@@ -29,13 +29,13 @@ require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 class vpl_sh_image extends vpl_sh_base {
     private $mime;
     public function __construct() {
-        $this->mime = array (
+        $this->mime = [
                 'jpg' => 'jpeg',
                 'jpeg' => 'jpeg',
                 'gif' => 'gif',
                 'png' => 'png',
-                'ico' => 'vnd.microsoft.icon'
-        );
+                'ico' => 'vnd.microsoft.icon',
+        ];
     }
     public function get_mime($name) {
         $ext = strtolower( vpl_fileextension( $name ) );

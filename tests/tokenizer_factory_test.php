@@ -34,7 +34,7 @@ use Exception;
 
 use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer_factory;
-use \vpl_tokenizer_factory;
+use vpl_tokenizer_factory;
 
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer_factory class.

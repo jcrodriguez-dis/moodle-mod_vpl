@@ -103,23 +103,23 @@ class mod_vpl_webservice extends external_api {
      * info function. return information of the activity
      */
     public static function info_parameters() {
-        return new external_function_parameters( array (
+        return new external_function_parameters( [
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
-                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' )
-        ), 'Parameters', VALUE_REQUIRED);
+                'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
+        ], 'Parameters', VALUE_REQUIRED);
     }
     public static function info($id, $password) {
-        self::validate_parameters( self::info_parameters(), array (
+        self::validate_parameters( self::info_parameters(), [
                 'id' => $id,
-                'password' => $password
-        ) );
+                'password' => $password,
+        ] );
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if (! $vpl->is_visible()) {
             throw new Exception( get_string( 'notavailable' ) );
         }
         $instance = $vpl->get_instance();
-        $ret = array (
+        $ret = [
                 'name' => $instance->name,
                 'shortdescription' => $instance->shortdescription,
                 'intro' => $instance->intro,
@@ -128,8 +128,8 @@ class mod_vpl_webservice extends external_api {
                 'example' => ( int ) $instance->example,
                 'restrictededitor' => ( int ) $instance->restrictededitor,
                 'maxfiles' => ( int ) $instance->maxfiles,
-                'reqfiles' => array ()
-        );
+                'reqfiles' => [],
+        ];
         $files = mod_vpl_edit::get_requested_files( $vpl );
         // Adapt array of name => value content to format array of objects {name, data}.
         $files = self::encode_files( $files );
@@ -137,7 +137,7 @@ class mod_vpl_webservice extends external_api {
         return $ret;
     }
     public static function info_returns() {
-        return new external_single_structure( array (
+        return new external_single_structure( [
                 'name' => new external_value( PARAM_TEXT, 'Name', VALUE_REQUIRED),
                 'shortdescription' => new external_value( PARAM_TEXT, 'Short description', VALUE_REQUIRED),
                 'intro' => new external_value( PARAM_RAW, 'Full description', VALUE_REQUIRED),
@@ -146,12 +146,12 @@ class mod_vpl_webservice extends external_api {
                 'example' => new external_value( PARAM_INT, 'Activity is an example', VALUE_REQUIRED),
                 'restrictededitor' => new external_value( PARAM_INT, 'Activity edition is restricted', VALUE_REQUIRED),
                 'maxfiles' => new external_value( PARAM_INT, 'Maximum number of file acepted', VALUE_REQUIRED),
-                'reqfiles' => new external_multiple_structure( new external_single_structure( array (
+                'reqfiles' => new external_multiple_structure( new external_single_structure( [
                         'name' => new external_value( PARAM_TEXT, 'File name', VALUE_REQUIRED),
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
-                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
-                ) ), 'Required files', VALUE_REQUIRED)
-                ), 'Parameters', VALUE_REQUIRED);
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
+                ] ), 'Required files', VALUE_REQUIRED),
+                ], 'Parameters', VALUE_REQUIRED);
     }
 
     /*
@@ -159,24 +159,24 @@ class mod_vpl_webservice extends external_api {
      */
     public static function save_parameters() {
         $descuserid = 'User ID to use (required mod/vpl:manage capability)';
-        return new external_function_parameters( array (
+        return new external_function_parameters( [
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED),
-                'files' => new external_multiple_structure( new external_single_structure( array (
+                'files' => new external_multiple_structure( new external_single_structure( [
                         'name' => new external_value( PARAM_RAW, 'File name', VALUE_REQUIRED),
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
-                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
-                ) ), 'Files', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
+                ] ), 'Files', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
-        ), 'Parameters', VALUE_REQUIRED );
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 ),
+        ], 'Parameters', VALUE_REQUIRED );
     }
-    public static function save($id, $files = array(), $password = '', $userid = -1) {
+    public static function save($id, $files = [], $password = '', $userid = -1) {
         global $USER;
-        self::validate_parameters( self::save_parameters(), array (
+        self::validate_parameters( self::save_parameters(), [
                 'id' => $id,
                 'files' => $files,
-                'password' => $password
-        ) );
+                'password' => $password,
+        ] );
         $vpl = self::initial_checks( $id, $password );
         if ($userid == -1) {
             $userid = $USER->id;
@@ -205,18 +205,18 @@ class mod_vpl_webservice extends external_api {
      */
     public static function open_parameters() {
         $descuserid = 'User ID to use (required mod/vpl:grade capability)';
-        return new external_function_parameters( array (
+        return new external_function_parameters( [
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, $descuserid, VALUE_DEFAULT, -1 )
-        ), 'Parameters', VALUE_REQUIRED );
+                'userid' => new external_value( PARAM_INT, $descuserid, VALUE_DEFAULT, -1 ),
+        ], 'Parameters', VALUE_REQUIRED );
     }
     public static function open($id, $password = '', $userid = -1) {
         global $USER;
         self::validate_parameters( self::open_parameters(), [
                 'id' => $id,
                 'password' => $password,
-                'userid' => $userid
+                'userid' => $userid,
         ] );
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
@@ -236,7 +236,7 @@ class mod_vpl_webservice extends external_api {
                 'files' => $files,
                 'compilation' => '',
                 'evaluation' => '',
-                'grade' => ''
+                'grade' => '',
         ];
         $attributes = ['compilation', 'evaluation', 'grade'];
         foreach ($attributes as $attribute) {
@@ -247,16 +247,16 @@ class mod_vpl_webservice extends external_api {
         return $ret;
     }
     public static function open_returns() {
-        return new external_single_structure( array (
-                'files' => new external_multiple_structure( new external_single_structure( array (
+        return new external_single_structure( [
+                'files' => new external_multiple_structure( new external_single_structure( [
                         'name' => new external_value( PARAM_TEXT, 'File name', VALUE_REQUIRED),
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
-                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0)
-                ) ), 'Files', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
+                ] ), 'Files', VALUE_REQUIRED),
                 'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
                 'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
-        ), 'Parameters', VALUE_REQUIRED );
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED),
+        ], 'Parameters', VALUE_REQUIRED );
     }
 
     /*
@@ -264,19 +264,19 @@ class mod_vpl_webservice extends external_api {
      */
     public static function evaluate_parameters() {
         $descuserid = 'User ID to use (required mod/vpl:grade capability)';
-        return new external_function_parameters( array (
+        return new external_function_parameters( [
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
-        ), 'Parameters', VALUE_REQUIRED );
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 ),
+        ], 'Parameters', VALUE_REQUIRED );
     }
     public static function evaluate($id, $password = ' ', $userid = -1) {
         global $USER;
-        self::validate_parameters( self::evaluate_parameters(), array (
+        self::validate_parameters( self::evaluate_parameters(), [
                 'id' => $id,
                 'password' => $password,
-                'userid' => $userid
-        ) );
+                'userid' => $userid,
+        ] );
         $vpl = self::initial_checks( $id, $password );
         $instance = $vpl->get_instance();
         if ($userid == -1) {
@@ -300,7 +300,7 @@ class mod_vpl_webservice extends external_api {
         $res = mod_vpl_edit::execute( $vpl, $userid, 'evaluate' );
         $monitorurl = 'ws://' . $res->server . ':' . $res->port . '/' . $res->monitorPath;
         $smonitorurl = 'wss://' . $res->server . ':' . $res->securePort . '/' . $res->monitorPath;
-        return array ( 'monitorURL' => $monitorurl, 'smonitorURL' => $smonitorurl  );
+        return [ 'monitorURL' => $monitorurl, 'smonitorURL' => $smonitorurl  ];
     }
     public static function evaluate_returns() {
         $desc = "URL to the service that monitor the evaluation in the jail server.
@@ -313,10 +313,10 @@ The jail send information as text in this format:
             (call mod_vpl_get_result, the server is waiting).
 'close': the conection is to be closed.
 if the websocket client send something to the server then the evaluation is stopped.";
-        return new external_single_structure( array (
+        return new external_single_structure( [
                 'monitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
                 'smonitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
-        ), 'Parameters', VALUE_REQUIRED );
+        ], 'Parameters', VALUE_REQUIRED );
     }
 
     /*
@@ -324,19 +324,19 @@ if the websocket client send something to the server then the evaluation is stop
      */
     public static function get_result_parameters() {
         $descuserid = 'User ID to use (required mod/vpl:grade capability)';
-        return new external_function_parameters( array (
+        return new external_function_parameters( [
                 'id' => new external_value( PARAM_INT, 'Activity id (course_module)', VALUE_REQUIRED ),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
-                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 )
-        ) );
+                'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 ),
+        ] );
     }
     public static function get_result($id, $password = ' ', $userid = -1) {
         global $USER;
-        self::validate_parameters( self::get_result_parameters(), array (
+        self::validate_parameters( self::get_result_parameters(), [
                 'id' => $id,
                 'password' => $password,
-                'userid' => $userid
-        ) );
+                'userid' => $userid,
+        ] );
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();
@@ -361,7 +361,7 @@ if the websocket client send something to the server then the evaluation is stop
         $ret = [
             'compilation' => '',
             'evaluation' => '',
-            'grade' => ''
+            'grade' => '',
         ];
         $attributes = ['compilation', 'evaluation', 'grade'];
         foreach ($attributes as $attribute) {
@@ -372,10 +372,10 @@ if the websocket client send something to the server then the evaluation is stop
         return $ret;
     }
     public static function get_result_returns() {
-        return new external_single_structure( array (
+        return new external_single_structure( [
                 'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
                 'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
-                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED)
-        ), 'Parameters', VALUE_REQUIRED);
+                'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED),
+        ], 'Parameters', VALUE_REQUIRED);
     }
 }

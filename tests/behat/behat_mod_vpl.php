@@ -70,11 +70,11 @@ class behat_mod_vpl extends behat_base {
      */
     protected function generate_drop_file($filename, $contents, $target) {
         $ext = pathinfo( $filename, PATHINFO_EXTENSION );
-        $binarytypes = array('application/zip' => 'zip',
+        $binarytypes = ['application/zip' => 'zip',
                             'application/pdf' => 'pdf',
                             'image/png' => 'png',
-                            'image/jpg' => 'jpg'
-                         );
+                            'image/jpg' => 'jpg',
+                         ];
         $type = array_search($ext, $binarytypes);
         $script = "(function() {";
         if ( $type === false ) {

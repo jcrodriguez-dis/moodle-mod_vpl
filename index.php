@@ -42,7 +42,7 @@ function get_select_instance_filter($urlbase, $instancefilter) {
             'timeunlimited',
             'automaticgrading',
             'manualgrading',
-            'examples'
+            'examples',
     ];
     foreach ($filters as $sel) {
         $urlbase->param('selection', $sel);
@@ -80,7 +80,7 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
 }
 
 function get_select_detailedmore($urlbase, $value = '0') {
-    $urls = array ();
+    $urls = [];
     $urlbase->param( 'detailedmore', '0' );
     $urlno = $urlbase->out( false );
     $urls[$urlno] = s(get_string('no'));
@@ -103,7 +103,7 @@ $sectionfilter = vpl_get_set_session_var('section', 'all');
 $detailedmore = vpl_get_set_session_var('detailedmore', '0');
 
 // Check course existence.
-if (! $course = $DB->get_record( "course", array ( 'id' => $id ) )) {
+if (! $course = $DB->get_record( "course", [ 'id' => $id ] )) {
     throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
@@ -118,7 +118,7 @@ $strstartdate .= vpl_list_util::vpl_list_arrow( $burl, 'startdate', $instancefil
 $strduedate = get_string( 'duedate', VPL ) . ' ';
 $strduedate .= vpl_list_util::vpl_list_arrow( $burl, 'duedate', $instancefilter, $sort, $sortdir );
 
-$PAGE->set_url( '/mod/vpl/index.php', array ( 'id' => $id ) );
+$PAGE->set_url( '/mod/vpl/index.php', [ 'id' => $id ] );
 $PAGE->navbar->add( $strvpls );
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/index.css' ) );
 $PAGE->set_title( $strvpls );
@@ -137,14 +137,14 @@ $urlparms = [
     'sortdir' => $sortdir,
     'section' => $sectionfilter,
     'detailedmore' => $detailedmore,
-    'selection' => $instancefilter
+    'selection' => $instancefilter,
 ];
 
 $urlbase = new moodle_url( '/mod/vpl/index.php', $urlparms);
 
 $activities = get_array_of_activities($course->id);
 
-$sectionnames = array();
+$sectionnames = [];
 foreach ($activities as $activity) {
     if ( $activity->mod == 'vpl' ) {
         $section = $activity->section;
@@ -160,7 +160,7 @@ echo $OUTPUT->render( get_select_detailedmore($urlbase, $detailedmore) );
 
 $ovpls = get_all_instances_in_course( VPL, $course );
 $timenow = time();
-$vpls = array ();
+$vpls = [];
 // Get and select vpls to show.
 foreach ($ovpls as $ovpl) {
     $vpl = new mod_vpl( false, $ovpl->id );
@@ -259,25 +259,25 @@ $student = $student && ! $nograde;
 if ($sort > '') {
     $corder = new vpl_list_util();
     $corder->set_order( $sort, $sortdir == 'down' );
-    usort( $vpls, array (
+    usort( $vpls, [
             $corder,
-            'cpm'
-    ) );
+            'cpm',
+    ] );
 }
 
 // Generate table.
 $table = new html_table();
 $table->attributes['class'] = 'generaltable mod_index';
-$table->head = array (
+$table->head = [
         '#',
         $strsection,
-        $strname
-);
-$table->align = array (
+        $strname,
+];
+$table->align = [
         'left',
         'left',
-        'left'
-);
+        'left',
+];
 if ($startdate) {
     $table->head[] = $strstartdate;
     $table->align[] = 'center';
@@ -302,7 +302,7 @@ if ($detailedmore) {
 }
 
 $baseurlsection = vpl_abs_href( '/course/view.php', 'id', $COURSE->id );
-$table->data = array ();
+$table->data = [];
 $totalsubs = 0;
 $totalgraded = 0;
 foreach ($vpls as $vpl) {
@@ -315,11 +315,11 @@ foreach ($vpls as $vpl) {
         $section = $activities[$cmid]->section;
         $sectionname = s( $sectionnames[$section] );
     }
-    $row = array (
+    $row = [
             count( $table->data ) + 1,
             "<a href='$baseurlsection#section-$section'>{$sectionname}</a>",
-            "<a href='$url'>{$vpl->get_printable_name()}</a>"
-    );
+            "<a href='$url'>{$vpl->get_printable_name()}</a>",
+    ];
     if ($startdate) {
         $row[] = $instance->startdate > 0 ? userdate( $instance->startdate ) : '';
     }
@@ -391,7 +391,7 @@ foreach ($vpls as $vpl) {
     $table->data[] = $row;
 }
 if ($totalsubs > 0) {
-    $row = array ('', '', '');
+    $row = ['', '', ''];
     if ($startdate) {
         $row[] = '';
     }
@@ -411,9 +411,9 @@ echo "<br>";
 echo html_writer::table( $table );
 
 if (is_siteadmin() || has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
-    $url = new moodle_url( '/mod/vpl/views/checkvpls.php', array ('id' => $id) );
+    $url = new moodle_url( '/mod/vpl/views/checkvpls.php', ['id' => $id] );
     $string = get_string( 'checkall' );
-    echo html_writer::link($url, $string, array('class' => 'btn btn-secondary'));
+    echo html_writer::link($url, $string, ['class' => 'btn btn-secondary']);
 }
 
 echo $OUTPUT->footer();

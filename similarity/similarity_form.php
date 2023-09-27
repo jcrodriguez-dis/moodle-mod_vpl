@@ -35,9 +35,9 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'similarity/similarity_form.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'similarity/similarity_form.php', [
+        'id' => $id,
+] );
 
 // Find out current groups mode.
 $cm = $vpl->get_course_module();

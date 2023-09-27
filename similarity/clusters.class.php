@@ -38,8 +38,8 @@ class vpl_clusters {
      *            of cases (similar files pairs)
      */
     public function __construct($selected) {
-        $this->clusters = array ();
-        $this->cmembers = array ();
+        $this->clusters = [];
+        $this->cmembers = [];
         // Identify every file.
         // Set all files to not clustered.
         $fid = 0;
@@ -53,9 +53,9 @@ class vpl_clusters {
                 $case->second->fid = $fid ++;
             }
         }
-        $this->adjlist = array ();
+        $this->adjlist = [];
         for ($i = 0; $i < $fid; $i ++) {
-            $row = array ();
+            $row = [];
             $this->adjlist[$i] = $row;
         }
         foreach ($selected as $case) {
@@ -83,9 +83,9 @@ class vpl_clusters {
                 $newid = count( $this->clusters );
                 $pair->first->cluster = $newid;
                 $pair->second->cluster = $newid;
-                $this->clusters[$newid] = array (
-                        $pair
-                );
+                $this->clusters[$newid] = [
+                        $pair,
+                ];
                 $this->cmembers[$newid] = 2;
             } else {
                 $this->clusters[$c1][] = $pair;
@@ -147,7 +147,7 @@ class vpl_clusters {
             }
             $this->cmembers[$maxcluster] += $this->cmembers[$mincluster];
             $this->cmembers[$mincluster] = 0;
-            $this->clusters[$mincluster] = array (); // Remove cluster.
+            $this->clusters[$mincluster] = []; // Remove cluster.
         }
     }
     public function assign_file_id(&$file, &$id) {
@@ -179,10 +179,10 @@ class vpl_clusters {
         }
         // Build matrix.
         $numfiles = $id;
-        $files = array ();
-        $matrix = array ();
+        $files = [];
+        $matrix = [];
         for ($i = 0; $i < $numfiles; $i ++) {
-            $matrix[] = array ();
+            $matrix[] = [];
         }
         foreach ($cluster as $pair) {
             $files[$pair->first->id] = $pair->first;
@@ -191,7 +191,7 @@ class vpl_clusters {
             $matrix[$pair->second->id][$pair->first->id] = $pair;
         }
         // Reorder files.
-        $auxorder = array ();
+        $auxorder = [];
         for ($i = 0; $i < $numfiles; $i ++) {
             $value = PHP_INT_MAX;
             foreach ($matrix[$i] as $pair) {
@@ -200,11 +200,11 @@ class vpl_clusters {
             $auxorder[] = $value;
         }
         asort( $auxorder );
-        $firstorder = array ();
+        $firstorder = [];
         foreach (array_keys($auxorder) as $file) {
             $firstorder[] = $file;
         }
-        $order = array ();
+        $order = [];
         $center = ( int ) ($numfiles / 2);
         $order[$center] = $firstorder[0];
         $pos = 1;
@@ -230,18 +230,18 @@ class vpl_clusters {
         }
         // Generate table.
         $table = new html_table();
-        $table->head = array (
+        $table->head = [
                 'info',
-                '#'
-        );
-        $table->align = array (
+                '#',
+        ];
+        $table->align = [
                 'left',
-                'right'
-        );
-        $table->size = array (
+                'right',
+        ];
+        $table->size = [
                 '60',
-                '5'
-        );
+                '5',
+        ];
         for ($i = 0; $i < $numfiles; $i ++) {
             $table->head[] = $i + 1;
             $table->align[] = 'right';
@@ -249,10 +249,10 @@ class vpl_clusters {
         }
         for ($pi = 0; $pi < $numfiles; $pi ++) {
             $i = $order[$pi];
-            $row = array (
+            $row = [
                     $files[$i]->show_info(),
-                    $pi + 1
-            );
+                    $pi + 1,
+            ];
             for ($pj = 0; $pj < $numfiles; $pj ++) {
                 $j = $order[$pj];
                 if ($i == $j) {

@@ -51,10 +51,10 @@ vpl_sh_factory::include_js();
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/gradesubmission.php', array (
+$vpl->prepare_page( 'forms/gradesubmission.php', [
         'id' => $id,
-        'userid' => $userid
-) );
+        'userid' => $userid,
+] );
 
 $jscript = '';
 $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
@@ -62,9 +62,9 @@ $vpl->require_capability( VPL_GRADE_CAPABILITY );
 // Read records.
 $submissionid = optional_param( 'submissionid', false, PARAM_INT );
 if ($submissionid) {
-    $subinstance = $DB->get_record( 'vpl_submissions', array (
-            'id' => $submissionid
-    ) );
+    $subinstance = $DB->get_record( 'vpl_submissions', [
+            'id' => $submissionid,
+    ] );
 } else {
     $subinstance = $vpl->last_user_submission( $userid );
 }

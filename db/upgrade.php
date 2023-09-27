@@ -42,9 +42,9 @@ function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
         $vplbarpos ++;
         $id = $vpl->id;
         // Load full vpl instance.
-        $vpl = $DB->get_record( 'vpl', array (
-                'id' => $id
-        ) );
+        $vpl = $DB->get_record( 'vpl', [
+                'id' => $id,
+        ] );
         $oldpath = $CFG->dataroot . '/vpl_data_old/' . $vpl->course . '/' . $id . '/config';
         $newpath = $CFG->dataroot . '/vpl_data/' . $id;
         if (file_exists( $oldpath )) {
@@ -60,9 +60,9 @@ function xmldb_vpl_upgrade_2012060112_migrate_datadir() {
         $vpl->shortdescription = strip_tags( $vpl->shortdescription );
         $vpl->introformat = 1;
         $DB->update_record( 'vpl', $vpl );
-        $subs = $DB->get_records( 'vpl_submissions', array (
-                'vpl' => $id
-        ), '', 'id,userid' );
+        $subs = $DB->get_records( 'vpl_submissions', [
+                'vpl' => $id,
+        ], '', 'id,userid' );
         upgrade_set_timeout( 300 + count( $subs ) / 10 );
         $oldbasepath = $CFG->dataroot . '/vpl_data_old/' . $vpl->course . '/' . $id . '/usersdata';
         $newbasepath = $CFG->dataroot . '/vpl_data/' . $id . '/usersdata';
@@ -215,15 +215,15 @@ function xmldb_vpl_upgrade_2013111512() {
     $table->add_field( 'adminticket', XMLDB_TYPE_CHAR, '64', null, XMLDB_NOTNULL, null, null );
 
     // Adding keys to table vpl_running_processes.
-    $table->add_key( 'primary', XMLDB_KEY_PRIMARY, array (
-            'id'
-    ) );
+    $table->add_key( 'primary', XMLDB_KEY_PRIMARY, [
+            'id',
+    ] );
 
     // Adding indexes to table vpl_running_processes.
-    $table->add_index( 'userid_id', XMLDB_INDEX_UNIQUE, array (
+    $table->add_index( 'userid_id', XMLDB_INDEX_UNIQUE, [
             'userid',
-            'id'
-    ) );
+            'id',
+    ] );
 
     // Conditionally launch create table for vpl_running_processes.
     if (! $dbman->table_exists( $table )) {
@@ -277,7 +277,7 @@ function xmldb_vpl_upgrade_2017112412() {
     }
     $DB->delete_records('vpl_jailservers');
     $table = new xmldb_table('vpl_jailservers');
-    $key = new xmldb_key('servers_key', XMLDB_KEY_UNIQUE, array('server'));
+    $key = new xmldb_key('servers_key', XMLDB_KEY_UNIQUE, ['server']);
     // Launch drop key servers_key.
     $dbman->drop_key($table, $key);
 
@@ -287,7 +287,7 @@ function xmldb_vpl_upgrade_2017112412() {
         $dbman->add_field($table, $field);
     }
 
-    $index = new xmldb_index('serverhash_idx', XMLDB_INDEX_NOTUNIQUE, array('serverhash'));
+    $index = new xmldb_index('serverhash_idx', XMLDB_INDEX_NOTUNIQUE, ['serverhash']);
     // Conditionally launch add index serverhash_idx.
     if (!$dbman->index_exists($table, $index)) {
         $dbman->add_index($table, $index);

@@ -28,7 +28,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_base extends base {
     public static function get_objectid_mapping() {
-        return array('db' => VPL, 'restore' => VPL);
+        return ['db' => VPL, 'restore' => VPL];
     }
     public static function get_other_mapping() {
         // Nothing to map.
@@ -43,10 +43,10 @@ class vpl_base extends base {
         if (is_array( $vpl )) {
             parent::log( $vpl );
         } else {
-            $einfo = array (
+            $einfo = [
                     'objectid' => $vpl->get_instance()->id,
                     'context' => $vpl->get_context(),
-            );
+            ];
             parent::log( $einfo );
         }
     }

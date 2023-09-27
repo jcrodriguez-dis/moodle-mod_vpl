@@ -55,7 +55,7 @@ require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionkeepfiles.php', array ( 'id' => $id ) );
+$vpl->prepare_page( 'forms/executionkeepfiles.php', [ 'id' => $id ] );
 vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.
@@ -68,7 +68,7 @@ if ($fromform = $mform->get_data()) {
     if (isset( $fromform->savekeepfiles )) {
         $list = $fgp->getFileList();
         $nlist = count( $list );
-        $keeplist = array ();
+        $keeplist = [];
         for ($i = 0; $i < $nlist; $i ++) {
             $name = 'keepfile' . $i;
             if (isset( $fromform->$name )) {

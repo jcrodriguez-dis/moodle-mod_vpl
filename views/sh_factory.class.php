@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_sh_factory {
-    protected static $cache = array ();
+    protected static $cache = [];
     protected static $loaded = false;
     public static function include_js() {
         global $PAGE;

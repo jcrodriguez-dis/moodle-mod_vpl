@@ -272,7 +272,7 @@ class vpl_editor_util {
      * Get the list of i18n translations for the editor
      */
     public static function i18n() {
-        $vplwords = array (
+        $vplwords = [
                 'about',
                 'acceptcertificates',
                 'acceptcertificatesnote',
@@ -365,8 +365,8 @@ class vpl_editor_util {
                 'selectbreakpoint',
                 'removebreakpoint',
                 'maxpostsizeexceeded',
-        );
-        $words = array (
+        ];
+        $words = [
                 'cancel',
                 'closebuttontitle',
                 'error',
@@ -382,9 +382,9 @@ class vpl_editor_util {
                 'deleteselected',
                 'selectall',
                 'deselectall',
-                'reset'
-        );
-        $list = Array ();
+                'reset',
+        ];
+        $list = [];
         foreach ($vplwords as $word) {
             $list[$word] = get_string( $word, VPL );
         }
@@ -400,13 +400,13 @@ class vpl_editor_util {
     }
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
         global $PAGE;
-        $options = Array ();
+        $options = [];
         $options['ajaxurl'] = $ajaxurl;
         $options['nexturl'] = $nexturl;
-        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', array($options) );
+        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options] );
     }
     public static function generate_batch_evaluate_sript($ajaxurls) {
-        $options = Array ();
+        $options = [];
         $options['ajaxurls'] = $ajaxurls;
         $joptions = json_encode( $options );
         self::print_js_i18n();

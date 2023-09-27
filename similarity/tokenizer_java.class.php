@@ -31,7 +31,7 @@ class vpl_tokenizer_java extends vpl_tokenizer_c {
     static private $reservedjava = null;
     public function __construct() {
         if (self::$reservedjava === null) {
-            self::$reservedjava = array (
+            self::$reservedjava = [
                     'abstract' => true,
                     'continue' => true,
                     'for' => true,
@@ -81,8 +81,8 @@ class vpl_tokenizer_java extends vpl_tokenizer_c {
                     'float' => true,
                     'native' => true,
                     'super' => true,
-                    'while' => true
-            );
+                    'while' => true,
+            ];
             $this->reserved = self::$reservedjava;
         }
     }

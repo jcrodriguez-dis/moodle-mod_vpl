@@ -46,9 +46,9 @@ try {
         // Grader.
         $vpl->require_capability( VPL_GRADE_CAPABILITY );
         if ($submissionid) {
-            $subinstance = $DB->get_record( 'vpl_submissions', array (
-                    'id' => $submissionid
-            ) );
+            $subinstance = $DB->get_record( 'vpl_submissions', [
+                    'id' => $submissionid,
+            ] );
         } else {
             $subinstance = $vpl->last_user_submission( $userid );
         }
@@ -57,9 +57,9 @@ try {
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         $userid = $USER->id;
         if ($submissionid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
-            $subinstance = $DB->get_record( 'vpl_submissions', array (
-                    'id' => $submissionid
-            ) );
+            $subinstance = $DB->get_record( 'vpl_submissions', [
+                    'id' => $submissionid,
+            ] );
         } else {
             $subinstance = $vpl->last_user_submission( $userid );
         }
@@ -87,9 +87,9 @@ try {
     $fgm = $submission->get_submitted_fgm();
     $fgm->download_files( $vpl->get_name() , $watermark);
 } catch ( Exception $e ) {
-    $vpl->prepare_page( 'views/downloadsubmission.php', array (
-            'id' => $id
-    ) );
+    $vpl->prepare_page( 'views/downloadsubmission.php', [
+            'id' => $id,
+    ] );
     $vpl->print_header( get_string( 'download', VPL ) );
     echo $e->getMessage();
     $vpl->print_footer();

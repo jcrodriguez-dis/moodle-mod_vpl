@@ -44,9 +44,9 @@ abstract class base extends \core\event\base {
      * @return \moodle_url The URL object.
      */
     protected function get_url_base($script) {
-        $parms = array (
-                'id' => $this->contextinstanceid
-        );
+        $parms = [
+                'id' => $this->contextinstanceid,
+        ];
         if (($this->relateduserid) && $this->relateduserid != $this->userid) {
             $parms['userid'] = $this->relateduserid;
         }

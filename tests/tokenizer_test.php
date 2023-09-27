@@ -159,7 +159,7 @@ class tokenizer_test extends \advanced_testcase {
         $dir = self::gettestpath() . 'valid/comments';
 
         $scanarr = scandir($dir);
-        $filesarr = array_diff($scanarr, array('.', '..'));
+        $filesarr = array_diff($scanarr, ['.', '..']);
 
         foreach ($filesarr as $filename) {
             $filename = $dir . '/' . $filename;
@@ -184,7 +184,7 @@ class tokenizer_test extends \advanced_testcase {
             $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
 
             $scanarr = scandir($dir);
-            $filesarr = array_diff($scanarr, array('.', '..'));
+            $filesarr = array_diff($scanarr, ['.', '..']);
 
             foreach ($filesarr as $filename) {
                 if (!is_dir($dir . '/' . $filename)) {
@@ -435,7 +435,7 @@ class tokenizer_test extends \advanced_testcase {
     }
 
     private static function setup_invalid_cases(): void {
-        self::$invalidtestcases = array(
+        self::$invalidtestcases = [
             self::gettestpath() . 'invalid/dump_test.json' => (
                 'file ' . self::gettestpath()  . 'invalid/dump_test.json must exist'
             ),
@@ -522,10 +522,10 @@ class tokenizer_test extends \advanced_testcase {
             ),
             self::gettestpath() . 'invalid/general/vpl_type_not_overrided_tokenizer_rules.json' => (
                 'vpl_literal could not be overrided'
-            )
-        );
+            ),
+        ];
 
-        self::$invalidpreparsecases = array(
+        self::$invalidpreparsecases = [
             self::gettestpath() . 'invalid/general/invalid_file_at_preparse_tokenizer_rules.json' => (
                 [
                     'input' => 'dump_test.js',
@@ -537,93 +537,93 @@ class tokenizer_test extends \advanced_testcase {
                     'input' => self::gettestpath() . 'invalid/general/test_ext.java',
                     'output' => self::gettestpath() . 'invalid/general/test_ext.java must end with one of the extensions .c,.h',
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function setup_max_token_count_cases(): void {
-        self::$maxtokencountcases = array(
+        self::$maxtokencountcases = [
             self::gettestpath() . 'valid/max_token_count/max_token_count_zero_tokenizer_rules.json' => 0,
-            self::gettestpath() . 'valid/max_token_count/max_token_count_ten_tokenizer_rules.json' => 10
-        );
+            self::gettestpath() . 'valid/max_token_count/max_token_count_ten_tokenizer_rules.json' => 10,
+        ];
     }
 
     private static function setup_override_tokens_cases(): void {
-        self::$overridetokenscases = array(
+        self::$overridetokenscases = [
             self::gettestpath() . 'valid/override_tokens/empty_override_tokens_tokenizer_rules.json' => [ ],
             self::gettestpath() . 'valid/override_tokens/one_override_token_tokenizer_rules.json' => (
                 [
-                    'comment' => token_type::LITERAL
+                    'comment' => token_type::LITERAL,
                 ]
             ),
             self::gettestpath() . 'valid/override_tokens/two_override_token_tokenizer_rules.json' => (
                 [
                     'comment' => token_type::LITERAL,
-                    'comment.line' => token_type::LITERAL
+                    'comment.line' => token_type::LITERAL,
                 ]
             ),
             self::gettestpath() . 'valid/override_tokens/two_complex_override_token_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
-                    'string.end' => token_type::LITERAL
+                    'string.end' => token_type::LITERAL,
                 ]
             ),
             self::gettestpath() . 'valid/override_tokens/complex_override_token_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
-                    'string.end' => token_type::LITERAL
+                    'string.end' => token_type::LITERAL,
                 ]
             ),
             self::gettestpath() . 'valid/override_tokens/inheritance_override_tokens_tokenizer_rules.json' => (
                 [
                     'string.start' => token_type::LITERAL,
                     'string.end' => token_type::LITERAL,
-                    'comment' => token_type::LITERAL
+                    'comment' => token_type::LITERAL,
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function setup_merge_cases(): void {
-        self::$mergetestcases = array(
+        self::$mergetestcases = [
             self::gettestpath() . 'valid/merge/merge_one_to_one_state_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ],
                 ]
             ),
             self::gettestpath() . 'valid/merge/merge_one_to_two_states_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
                     "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ],
                 ]
             ),
             self::gettestpath() . 'valid/merge/merge_two_to_one_states_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "token" => "comment", "regex" => "\\/\\/", "next" => "text-state" ] ],
                     "eol" => [ 0 => (object)[ "token" => "eol", "regex" => "\n" ] ],
-                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ]
+                    "text-state" => [ 0 => (object)[ "token" => "text", "regex" => ".*" ] ],
                 ]
             ),
             self::gettestpath() . 'valid/merge/merge_with_same_states_tokenizer_rules.json' => (
                 [
                     "start" => [ 0 => (object)[ "next" => "text-state" ] ],
                     "text-state" => [
-                        0 => (object)[ "token" => "comment", "regex" => "\\/\\/", ],
-                        1 => (object)[ "token" => "text", "regex" => ".*" ]
-                    ]
+                        0 => (object)[ "token" => "comment", "regex" => "\\/\\/" ],
+                        1 => (object)[ "token" => "text", "regex" => ".*" ],
+                    ],
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function setup_prepare_cases(): void {
-        self::$preparetestcases = array(
+        self::$preparetestcases = [
             self::gettestpath() . 'valid/prepare/prepare_with_one_state_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ] ]
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ] ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_two_states_tokenizer_rules.json' => (
@@ -631,14 +631,14 @@ class tokenizer_test extends \advanced_testcase {
                     "regexprs" => [ "start" => "/(\/\/)|(\/\*)|($)/", "another_start" => "/(\/\/)|(\/\*)|($)/" ],
                     "matchmappings" => [
                         "start" => [ "default_token" => "text", 0 => 0, 1 => 1 ],
-                        "another_start" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
-                    ]
+                        "another_start" => [ "default_token" => "text", 0 => 0, 1 => 1 ],
+                    ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_groups_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/(\/\/)|((?:.*)(?:b))|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "comment", 0 => 0, 1 => 1 ], ]
+                    "matchmappings" => [ "start" => [ "default_token" => "comment", 0 => 0, 1 => 1 ] ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_more_rules_tokenizer_rules.json' => (
@@ -646,13 +646,13 @@ class tokenizer_test extends \advanced_testcase {
                     "regexprs" => [
                         "start" => "/(\/\/)|((?:void)(?:[a-z]+(?:[a-zA-Z0-9]|_)*)(?:\()(?:\)))|($)/",
                         "statement" => "/(([a-z]+([a-zA-Z0-9]|_)*))|($)/",
-                        "comment" => "/(\/\/)|($)/"
+                        "comment" => "/(\/\/)|($)/",
                     ],
                     "matchmappings" => [
                         "start" => [ "default_token" => "comment.line.double-slash", 0 => 0, 1 => 1 ],
                         "statement" => [ "default_token" => "text", 0 => 0 ],
-                        "comment" => [ "default_token" => "comment", 0 => 0 ]
-                    ]
+                        "comment" => [ "default_token" => "comment", 0 => 0 ],
+                    ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_complex_matching_tokenizer_rules.json' => (
@@ -662,42 +662,42 @@ class tokenizer_test extends \advanced_testcase {
                             "/([+-]?\d[\d_]*(?:(?:\.[\d_]*)?(?:[eE][+-]?[[0-9]_]+)?)?[LlSsDdFfYy]?\b)|((?:true|false)\b)|" .
                             "((?:open(?:\s+))?module(?=\s*\w))|($)/",
                         "body-module" => "/({)|(\s+)|(\w+)|(\.)|(\s+)|($)/",
-                        "end-module" => "/(})|(\b(?:requires|transitive|exports|opens|to|uses|provides|with)\b)|($)/"
+                        "end-module" => "/(})|(\b(?:requires|transitive|exports|opens|to|uses|provides|with)\b)|($)/",
                     ],
                     "matchmappings" => [
                         "start" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2 ],
                         "body-module" => [ "default_token" => "text", 0 => 0, 1 => 1, 2 => 2, 3 => 3, 4 => 4 ],
-                        "end-module" => [ "default_token" => "text", 0 => 0, 1 => 1 ]
-                    ]
+                        "end-module" => [ "default_token" => "text", 0 => 0, 1 => 1 ],
+                    ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_one_group_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((?:\/\/))|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_not_enough_groups_at_regex_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((?:int))|($)/"],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ],
                 ]
             ),
             self::gettestpath() . 'valid/prepare/prepare_with_number_ref_tokenizer_rules.json' => (
                 [
                     "regexprs" => [ "start" => "/((a)(b)\\2\\3)|($)/" ],
-                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ]
+                    "matchmappings" => [ "start" => [ "default_token" => "text", 0 => 0 ] ],
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function setup_preparse_cases(): void {
-        self::$preparsetestcases = array(
+        self::$preparsetestcases = [
             self::gettestpath() . 'valid/get_all_tokens/no_line_tokenizer_rules.json' => (
                 [
                     'input' => self::gettestpath() . 'valid/get_all_tokens/no_line.c',
-                    'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ]
+                    'output' => [ 0 => [ 'state' => 'start', 'tokens' => [] ] ],
                 ]
             ),
             self::gettestpath() . 'valid/get_all_tokens/one_line_tokenizer_rules.json' => (
@@ -706,9 +706,9 @@ class tokenizer_test extends \advanced_testcase {
                     'output' => [
                         0 => [
                             'state' => 'start',
-                            'tokens' => [ new token('comment.line', '// This is an example', 0) ]
-                        ]
-                    ]
+                            'tokens' => [ new token('comment.line', '// This is an example', 0) ],
+                        ],
+                    ],
                 ]
             ),
             self::gettestpath() . 'valid/get_all_tokens/two_lines_tokenizer_rules.json' => (
@@ -717,16 +717,16 @@ class tokenizer_test extends \advanced_testcase {
                     'output' => [
                         0 => [
                             'state' => 'comment',
-                            'tokens' => [ new token('comment', '/*', 0) ]
+                            'tokens' => [ new token('comment', '/*', 0) ],
                         ],
                         1 => [
                             'state' => 'start',
                             'tokens' => [
                                 new token('comment', '    This is a comment ', 1),
-                                new token('comment', '*/', 1)
-                            ]
-                        ]
-                    ]
+                                new token('comment', '*/', 1),
+                            ],
+                        ],
+                    ],
                 ]
             ),
             self::gettestpath() . 'valid/get_all_tokens/more_lines_tokenizer_rules.json' => (
@@ -737,8 +737,8 @@ class tokenizer_test extends \advanced_testcase {
                             'state' => 'start',
                             'tokens' => [
                                 new token('keyword', '#include', 0),
-                                new token('constant.other', ' <stdio.h>', 0)
-                            ]
+                                new token('constant.other', ' <stdio.h>', 0),
+                            ],
                         ],
                         1 => [ 'state' => 'start', 'tokens' => [ ] ],
                         2 => [
@@ -751,8 +751,8 @@ class tokenizer_test extends \advanced_testcase {
                                 new token('text', ' ', 2), new token('storage.type', 'char', 2),
                                 new token('text', ' ', 2), new token('keyword.operator', '*', 2),
                                 new token('identifier', 'argv', 2), new token('paren.lparen', '[', 2),
-                                new token('paren.rparen', ']', 2), new token('paren.rparen', ')', 2)
-                            ]
+                                new token('paren.rparen', ']', 2), new token('paren.rparen', ')', 2),
+                            ],
                         ],
                         3 => [ 'state' => 'start', 'tokens' => [ new token('paren.lparen', '{', 3) ] ],
                         4 => [
@@ -762,12 +762,12 @@ class tokenizer_test extends \advanced_testcase {
                                 new token('text', ' ', 4), new token('paren.lparen', '(', 4),
                                 new token('identifier', 'nargc', 4), new token('text', ' ', 4),
                                 new token('keyword.operator', '>', 4), new token('text', ' ', 4),
-                                new token('constant.numeric', '1', 4), new token('paren.rparen', ')', 4)
-                            ]
+                                new token('constant.numeric', '1', 4), new token('paren.rparen', ')', 4),
+                            ],
                             ],
                         5 => [
                             'state' => 'start',
-                            'tokens' => [ new token('text', '    ', 5), new token('paren.lparen', '{', 5) ]
+                            'tokens' => [ new token('text', '    ', 5), new token('paren.lparen', '{', 5) ],
                         ],
                         6 => [
                             'state' => 'start',
@@ -782,12 +782,12 @@ class tokenizer_test extends \advanced_testcase {
                                 new token('keyword.operator', '<', 6), new token('text', ' ', 6),
                                 new token('identifier', 'nargc', 6), new token('punctuation.operator', ';', 6),
                                 new token('text', ' ', 6), new token('identifier', 'i', 6),
-                                new token('keyword.operator', '++', 6), new token('paren.rparen', ')', 6)
-                            ]
+                                new token('keyword.operator', '++', 6), new token('paren.rparen', ')', 6),
+                            ],
                         ],
                         7 => [
                             'state' => 'start',
-                            'tokens' => [ new token('text', '        ', 7), new token('paren.lparen', '{', 7) ]
+                            'tokens' => [ new token('text', '        ', 7), new token('paren.lparen', '{', 7) ],
                         ],
                         8 => [
                             'state' => 'start',
@@ -797,16 +797,16 @@ class tokenizer_test extends \advanced_testcase {
                                 new token('constant.language.escape', '%d', 8), new token('constant.language.escape', '\n', 8),
                                 new token('string.end', '"', 8), new token('punctuation.operator', ',', 8),
                                 new token('text', ' ', 8), new token('identifier', 'i', 8),
-                                new token('paren.rparen', ')', 8), new token('punctuation.operator', ';', 8)
-                            ]
+                                new token('paren.rparen', ')', 8), new token('punctuation.operator', ';', 8),
+                            ],
                         ],
                         9 => [ 'state' => 'start', 'tokens' => [ ] ],
                         10 => [
                             'state' => 'start',
                             'tokens' => [
                                 new token('text', '            ', 10),
-                                new token('comment', '// This is just a comment', 10)
-                            ]
+                                new token('comment', '// This is just a comment', 10),
+                            ],
                         ],
                         11 => [
                             'state' => 'start',
@@ -816,16 +816,16 @@ class tokenizer_test extends \advanced_testcase {
                                 new token('identifier', 'str', 11), new token('text', ' ', 11),
                                 new token('keyword.operator', '=', 11), new token('text', ' ', 11),
                                 new token('string.start', '"', 11), new token('string', 'Hello world', 11),
-                                new token('string.end', '"', 11), new token('punctuation.operator', ';', 11)
-                            ]
+                                new token('string.end', '"', 11), new token('punctuation.operator', ';', 11),
+                            ],
                         ],
                         12 => [
                             'state' => 'start',
-                            'tokens' => [ new token('text', '        ', 12), new token('paren.rparen', '}', 12) ]
+                            'tokens' => [ new token('text', '        ', 12), new token('paren.rparen', '}', 12) ],
                         ],
                         13 => [
                             'state' => 'start',
-                            'tokens' => [ new token('text', '    ', 13), new token('paren.rparen', '}', 13) ]
+                            'tokens' => [ new token('text', '    ', 13), new token('paren.rparen', '}', 13) ],
                         ],
                         14 => [ 'state' => 'start', 'tokens' => [ ] ],
                         15 => [
@@ -833,57 +833,57 @@ class tokenizer_test extends \advanced_testcase {
                             'tokens' => [
                                 new token('text', '    ', 15), new token('keyword.control', 'return', 15),
                                 new token('text', ' ', 15), new token('constant.numeric', '0', 15),
-                                new token('punctuation.operator', ';', 15)
-                            ]
+                                new token('punctuation.operator', ';', 15),
+                            ],
                         ],
-                        16 => [ 'state' => 'start', 'tokens' => [ new token('paren.rparen', '}', 16) ] ]
-                    ]
+                        16 => [ 'state' => 'start', 'tokens' => [ new token('paren.rparen', '}', 16) ] ],
+                    ],
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function setup_get_line_tokens_cases(): void {
-        self::$getlinetokenstestcases = array(
+        self::$getlinetokenstestcases = [
             self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
                 [
                     'input' => '/* test comments',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('text', '/* test comments', 0)
-                    ) ]
+                    'output' => [ 'state' => 'start', 'tokens' => [
+                        new token('text', '/* test comments', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
                 [
                     'input' => 'int',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0)
-                    ) ]
+                    'output' => [ 'state' => 'start', 'tokens' => [
+                        new token('storage.type', 'int', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/two_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'int ',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('storage.type', 'int', 0)
-                    ) ]
+                    'output' => [ 'state' => 'start', 'tokens' => [
+                        new token('storage.type', 'int', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/more_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'int a = 10;',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('storage.type', 'int', 0), new token('text', ' ', 0),
                         new token('identifier', 'a', 0), new token('text', ' ', 0),
                         new token('keyword.operator', '=', 0), new token('text', ' ', 0),
-                        new token('constant.numeric', '10', 0), new token('text', ';', 0)
-                    ) ]
+                        new token('constant.numeric', '10', 0), new token('text', ';', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/for_tokenizer_rules.json' => (
                 [
                     'input' => 'for (int i = 0; i < 10; i++) {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('identifier', 'for', 0), new token('text', ' ', 0),
                         new token('paren.lparen', '(', 0), new token('storage.type', 'int', 0),
                         new token('text', ' ', 0), new token('identifier', 'i', 0),
@@ -895,67 +895,67 @@ class tokenizer_test extends \advanced_testcase {
                         new token('constant.numeric', '10', 0), new token('text', ';', 0),
                         new token('text', ' ', 0), new token('identifier', 'i', 0),
                         new token('keyword.operator', '++', 0), new token('paren.rparen', ')', 0),
-                        new token('text', ' ', 0), new token('paren.lparen', '{', 0)
-                    ) ]
+                        new token('text', ' ', 0), new token('paren.lparen', '{', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/two_states_tokenizer_rules.json' => (
                 [
                     'input' => '/* test comments */',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('comment.multiple', '/*', 0),
                         new token('text', ' test comments ', 0),
                         new token('comment', '*/', 0),
-                    ) ]
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/unexisted_state_tokenizer_rules.json' => (
                 [
                     'input' => '// test comment',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('comment', '//', 0),
-                        new token('text', ' test comment', 0)
-                    ) ]
+                        new token('text', ' test comment', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/token_array_tokenizer_rules.json' => (
                 [
                     'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('identifier', 'hello', 0),
                         new token('text', ' ', 0),
                         new token('paren.lparen', '(', 0),
                         new token('paren.rparen', ')', 0),
                         new token('text', ' ', 0),
-                        new token('paren.lparen', '{', 0)
-                    ) ]
+                        new token('paren.lparen', '{', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/token_array_two_rules_tokenizer_rules.json' => (
                 [
                     'input' => 'hello () {',
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('identifier', 'hello', 0),
                         new token('text', ' ', 0),
                         new token('paren.lparen', '(', 0),
                         new token('paren.rparen', ')', 0),
                         new token('text', ' ', 0),
-                        new token('paren.lparen', '{', 0)
-                    ) ]
+                        new token('paren.lparen', '{', 0),
+                    ], ],
                 ]
-            )
-        );
+            ),
+        ];
 
-        self::$getlinetokenoverflowstestcases = array(
+        self::$getlinetokenoverflowstestcases = [
             self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
                 [
                     'input' => [
                         'max_token_count' => 0,
                         'value' => '/* test comments',
                     ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
-                        new token('overflow', '/* test comments', 0)
-                    ) ]
+                    'output' => [ 'state' => 'start', 'tokens' => [
+                        new token('overflow', '/* test comments', 0),
+                    ], ],
                 ]
             ),
             self::gettestpath() . 'valid/get_line_tokens/one_rule_tokenizer_rules.json' => (
@@ -964,33 +964,33 @@ class tokenizer_test extends \advanced_testcase {
                         'max_token_count' => 1,
                         'value' => 'int a',
                     ],
-                    'output' => [ 'state' => 'start', 'tokens' => array(
+                    'output' => [ 'state' => 'start', 'tokens' => [
                         new token('storage.type', 'int', 0),
-                        new token('overflow', ' a', 0)
-                    ) ]
+                        new token('overflow', ' a', 0),
+                    ], ],
                 ]
             ),
-        );
+        ];
     }
 
     private static function setup_parse_cases(): void {
-        self::$parsetestcases = array(
+        self::$parsetestcases = [
             self::gettestpath() . 'valid/parse/no_line_tokenizer_rules.json' => (
                 [
                     'input' => self::gettestpath() . 'valid/parse/no_line.c',
-                    'output' => [ ]
+                    'output' => [ ],
                 ]
             ),
             self::gettestpath() . 'valid/parse/one_line_tokenizer_rules.json' => (
                 [
                     'input' => self::gettestpath() . 'valid/parse/one_line.c',
-                    'output' => [ ]
+                    'output' => [ ],
                 ]
             ),
             self::gettestpath() . 'valid/parse/two_lines_tokenizer_rules.json' => (
                 [
                     'input' => self::gettestpath() . 'valid/parse/two_lines.java',
-                    'output' => [ ]
+                    'output' => [ ],
                 ]
             ),
             self::gettestpath() . 'valid/parse/more_lines_tokenizer_rules.json' => (
@@ -1057,17 +1057,17 @@ class tokenizer_test extends \advanced_testcase {
                         new token(token_type::LITERAL, '0', 15),
                         new token(token_type::OPERATOR, ';', 15),
                         new token(token_type::OPERATOR, '}', 16),
-                    ]
+                    ],
                 ]
-            )
-        );
+            ),
+        ];
     }
 
     private static function get_behat($tokenizer, array $extensions, bool $isnew): void {
         global $CFG;
         $outputdir = $CFG->dataroot . '/temp/vpl/';
         $dirbehat = dirname(__FILE__) . '/behat/datafiles/similarity/';
-        $extincluded = array();
+        $extincluded = [];
 
         foreach ($extensions as $ext) {
             if (!isset($extincluded[$ext])) {

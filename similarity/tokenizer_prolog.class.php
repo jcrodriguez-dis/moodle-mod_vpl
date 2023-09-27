@@ -75,7 +75,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
     const IN_LINECOMMENT = 5;
     const IN_IDENTIFIER = 6;
     public function parse($filedata) {
-        $this->tokens = array ();
+        $this->tokens = [];
         $this->linenumber = 1;
         $state = self::IN_REGULAR;
         $pending = '';
@@ -185,7 +185,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $this->compactoperators();
     }
     protected function compactoperators() {
-        $correct = array ();
+        $correct = [];
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {

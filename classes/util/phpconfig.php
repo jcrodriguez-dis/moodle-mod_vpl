@@ -33,10 +33,10 @@ class phpconfig {
      *
      * @var array Key 'k', 'm', 'g' => value
      */
-    const BYTECONVERTER = array( '' => 1,
+    const BYTECONVERTER = [ '' => 1,
                                  'k' => 1024,
                                  'm' => 1024 * 1024,
-                                 'g' => 1024 * 1024 * 1024 );
+                                 'g' => 1024 * 1024 * 1024, ];
     /**
      * Returns number of bytes from string values in Kb, Mb or Gb
      *

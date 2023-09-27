@@ -98,7 +98,7 @@ class tokenizer_base {
      * @return bool|int
      */
     protected static function check_type($value, string $typename) {
-        $condtypes = array(
+        $condtypes = [
             "number" => function ($val) {
                 return is_numeric($val);
             },
@@ -113,8 +113,8 @@ class tokenizer_base {
             },
             "array"  => function ($val) {
                 return is_array($val);
-            }
-        );
+            },
+        ];
 
         if (str_starts_with($typename, "array_") && is_array($value)) {
             $typearray = substr($typename, 6);
@@ -222,7 +222,7 @@ class tokenizer_base {
      * @return array
      */
     protected static function get_token_array(int $numline, array $type, string $value, string $regex): array {
-        $tokenarray = array();
+        $tokenarray = [];
 
         if (preg_match_all("/\(\?:/", $regex, $matches, PREG_OFFSET_CAPTURE) >= 1) {
             if (count($type) === count($matches[0])) {

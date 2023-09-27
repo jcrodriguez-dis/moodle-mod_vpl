@@ -91,7 +91,7 @@ class file_group_process {
      * @return array of lines of the file
      */
     public static function read_list($filename) {
-        $ret = array ();
+        $ret = [];
         if (is_file( $filename )) {
             $data = file_get_contents( $filename );
             if ($data > '') {
@@ -186,7 +186,7 @@ class file_group_process {
     public function addallfiles($files, $otherdir = false, $otherfln = false) {
         ignore_user_abort( true );
         $filelist = $this->getFileList();
-        $filehash = array();
+        $filehash = [];
         foreach ($filelist as $f) {
             $filehash[$f] = 1;
         }
@@ -227,7 +227,7 @@ class file_group_process {
                 unlink( $fullname );
             }
         }
-        $this->setFileList( array() );
+        $this->setFileList( [] );
     }
 
     /**
@@ -253,7 +253,7 @@ class file_group_process {
      * @return array $files
      */
     public function getallfiles() {
-        $files = array();
+        $files = [];
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
             $fullname = $this->dir . self::encodeFileName( $filename );

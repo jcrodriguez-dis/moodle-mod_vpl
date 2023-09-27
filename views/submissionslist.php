@@ -119,7 +119,7 @@ class vpl_submissionlist_order {
                 'gradesortable' => 0,
                 'grader' => 0,
                 'dategraded' => 0,
-                'nsubmissions' => 0
+                'nsubmissions' => 0,
         ];
         self::$field = $field;
         if ($ascending) {
@@ -355,7 +355,7 @@ if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).
 if ($vpl->is_group_activity()) {
     $namesortselect = get_string( 'group' ) . vpl_submissionlist_arrow( $baseurl, 'lastname', $sort, $sortdir );
 }
-$options = array (
+$options = [
         'height' => 550,
         'width' => 780,
         'directories' => 0,
@@ -363,8 +363,8 @@ $options = array (
         'menubar' => 0,
         'personalbar' => 0,
         'status' => 0,
-        'toolbar' => 0
-);
+        'toolbar' => 0,
+];
 // Load strings.
 $strsubtime = get_string( 'submittedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'datesubmitted', $sort, $sortdir );
 $strgrade = get_string( 'grade', 'core_grades' ) . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
@@ -425,7 +425,7 @@ foreach ($alldata as $data) {
         $user = $data->userinfo;
     }
     $gradecomments = '';
-    $linkparms = array('id' => $id, 'userid' => $user->id);
+    $linkparms = ['id' => $id, 'userid' => $user->id];
     if ($data->submission == null) {
         $text = get_string( 'nosubmission', VPL );
         $hrefview = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1 );
@@ -536,7 +536,7 @@ foreach ($alldata as $data) {
         $gradedon = '<div id="o' . $subid . '">' . $gradedon . '</div>';
     }
     $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $user->id, 'privatecopy', 1 );
-    $options = array (
+    $options = [
             'height' => 550,
             'width' => 780,
             'directories' => 0,
@@ -544,8 +544,8 @@ foreach ($alldata as $data) {
             'menubar' => 0,
             'personalbar' => 0,
             'status' => 0,
-            'toolbar' => 0
-    );
+            'toolbar' => 0,
+    ];
     $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
     $usernumber ++;
     $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
@@ -592,7 +592,7 @@ if (count( $ngrades )) {
         $tablegraders->data[] = [
                 $gradernumber,
                 $picture . ' ' . fullname( $grader ),
-                sprintf( '%d/%d  (%5.2f%%)', $marks, $usernumber, ( float ) 100.0 * $marks / $usernumber )
+                sprintf( '%d/%d  (%5.2f%%)', $marks, $usernumber, ( float ) 100.0 * $marks / $usernumber ),
         ];
     }
 }
@@ -602,38 +602,38 @@ if ($groupmode) {
 }
 // Print user selection by submission state.
 $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort&group=$group&selection=";
-$urlindex = vpl_select_index( $urlbase, array (
+$urlindex = vpl_select_index( $urlbase, [
         'all',
         'allsubmissions',
         'notgraded',
         'graded',
-        'gradedbyuser'
-) );
-$urls = array_merge( array (
-        $urlbase . 'all' => get_string( 'all' )
-), vpl_select_array( $urlbase, array (
+        'gradedbyuser',
+] );
+$urls = array_merge( [
+        $urlbase . 'all' => get_string( 'all' ),
+], vpl_select_array( $urlbase, [
         'allsubmissions',
         'notgraded',
         'graded',
-        'gradedbyuser'
-) ) );
+        'gradedbyuser',
+] ) );
 $urlsel = new url_select( $urls, $urlindex[$subselection] );
 $urlsel->set_label( get_string( 'submissionselection', VPL ) );
 echo $OUTPUT->render( $urlsel );
 if ($subselection != 'notgraded') {
     $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort"
                ."&sortdir=$sortdir&selection=$subselection&evaluate=";
-    $urls = array (
+    $urls = [
             0 => null,
             2 => $urlbase . '2',
             '3' => $urlbase . '3',
-            4 => $urlbase . '4'
-    );
-    $urlsel = new url_select( array (
+            4 => $urlbase . '4',
+    ];
+    $urlsel = new url_select( [
             $urls[2] => get_string( 'notexecuted', VPL ),
             $urls[3] => get_string( 'notgraded', VPL ),
-            $urls[4] => get_string( 'all' )
-    ), $urls[$evaluate] );
+            $urls[4] => get_string( 'all' ),
+    ], $urls[$evaluate] );
     $urlsel->set_label( get_string( 'evaluate', VPL ) );
     echo $OUTPUT->render( $urlsel );
 }

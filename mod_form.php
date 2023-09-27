@@ -33,16 +33,16 @@ class mod_vpl_mod_form extends moodleform_mod {
         $plugincfg = get_config('mod_vpl');
         $mform = & $this->_form;
         $mform->addElement( 'header', 'general', get_string( 'general', 'form' ) );
-        $mform->addElement( 'text', 'name', get_string( 'name' ), array (
-                'size' => '50'
-        ) );
+        $mform->addElement( 'text', 'name', get_string( 'name' ), [
+                'size' => '50',
+        ] );
         $mform->setType( 'name', PARAM_TEXT );
         $mform->addRule( 'name', null, 'required', null, 'client' );
         $mform->applyFilter( 'name', 'trim' );
-        $mform->addElement( 'textarea', 'shortdescription', get_string( 'shortdescription', VPL ), array (
+        $mform->addElement( 'textarea', 'shortdescription', get_string( 'shortdescription', VPL ), [
                 'cols' => 70,
-                'rows' => 1
-        ) );
+                'rows' => 1,
+        ] );
         $mform->setType( 'shortdescription', PARAM_RAW );
         if ($CFG->version < 2015041700.00) { // Moodle version < 2.9Beta.
             $this->add_intro_editor( false, get_string( 'fulldescription', VPL ) ); // Deprecated from 2.9beta.
@@ -54,23 +54,23 @@ class mod_vpl_mod_form extends moodleform_mod {
         $now = time();
         $inittime = round( $now / $secondsday ) * $secondsday + 5 * 60;
         $endtime = $inittime + (8 * $secondsday) - 5 * 60;
-        $mform->addElement( 'date_time_selector', 'startdate', get_string( 'startdate', VPL ), array (
-                'optional' => true
-        ) );
+        $mform->addElement( 'date_time_selector', 'startdate', get_string( 'startdate', VPL ), [
+                'optional' => true,
+        ] );
         $mform->setDefault( 'startdate', 0 );
-        $mform->addElement( 'date_time_selector', 'duedate', get_string( 'duedate', VPL ), array (
-                'optional' => true
-        ) );
+        $mform->addElement( 'date_time_selector', 'duedate', get_string( 'duedate', VPL ), [
+                'optional' => true,
+        ] );
         $mform->setDefault( 'duedate', $endtime );
 
         $mform->addElement( 'header', 'submissionrestrictions', get_string( 'submissionrestrictions', VPL ) );
         $mform->addElement( 'text', 'maxfiles', get_string( 'maxfiles', VPL ) );
         $mform->setType( 'maxfiles', PARAM_INT);
         $mform->setDefault( 'maxfiles', 1 );
-        $mform->addElement( 'select', 'worktype', get_string( 'worktype', VPL ), array (
+        $mform->addElement( 'select', 'worktype', get_string( 'worktype', VPL ), [
                 0 => get_string( 'individualwork', VPL ),
-                1 => get_string( 'groupwork', VPL )
-        ) );
+                1 => get_string( 'groupwork', VPL ),
+        ] );
         $mform->addElement( 'selectyesno', 'restrictededitor', get_string( 'restrictededitor', VPL ) );
         $mform->setDefault( 'restrictededitor', false );
         $mform->setAdvanced( 'restrictededitor' );
@@ -88,9 +88,9 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->addElement( 'passwordunmask', 'password', get_string( 'password' ) );
         $mform->setType( 'password', PARAM_TEXT );
         $mform->setAdvanced( 'password' );
-        $mform->addElement( 'text', 'requirednet', get_string( 'requirednet', VPL ), array (
-                'size' => '60'
-        ) );
+        $mform->addElement( 'text', 'requirednet', get_string( 'requirednet', VPL ), [
+                'size' => '60',
+        ] );
         $mform->setType( 'requirednet', PARAM_TEXT );
         $mform->setDefault( 'requirednet', '' );
         $mform->setAdvanced( 'requirednet' );
@@ -98,10 +98,10 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault( 'sebrequired', 0 );
         $mform->addHelpButton('sebrequired', 'sebrequired', VPL);
         $mform->setAdvanced( 'sebrequired' );
-        $mform->addElement( 'textarea', 'sebkeys', get_string( 'sebkeys', VPL ), array (
+        $mform->addElement( 'textarea', 'sebkeys', get_string( 'sebkeys', VPL ), [
                 'cols' => 66,
-                'rows' => 2
-        ) );
+                'rows' => 2,
+        ] );
         $mform->setType( 'sebkeys', PARAM_TEXT);
         $mform->setDefault( 'sebkeys', '' );
         $mform->addHelpButton('sebkeys', 'sebkeys', VPL);

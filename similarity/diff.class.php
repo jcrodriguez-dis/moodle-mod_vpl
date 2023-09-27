@@ -119,8 +119,8 @@ class vpl_diff {
      */
     public static function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
         // Set the matrix[0..nl1+1][0..nl2+1] to 0.
-        $row = array_pad( array (), $nl2 + 1, 0 );
-        $matrix = array_pad( array (), $nl1 + 1, $row );
+        $row = array_pad( [], $nl2 + 1, 0 );
+        $matrix = array_pad( [], $nl1 + 1, $row );
         // Set the prev matrix [0..nl1+1][0..nl2+1] to 0.
         $prev = $matrix;
 
@@ -150,7 +150,7 @@ class vpl_diff {
      * @return array of objects with info to show the two array of lines
      */
     public static function calculatediff($lines1, $lines2) {
-        $ret = array ();
+        $ret = [];
         $nl1 = count( $lines1 );
         $nl2 = count( $lines2 );
         if ($nl1 == 0 && $nl2 == 0) {
@@ -195,7 +195,7 @@ class vpl_diff {
 
         // Calculate show info.
         $limit = $nl1 + $nl2;
-        $pairs = array ();
+        $pairs = [];
         $pi = $nl1;
         $pj = $nl2;
         while ( (! ($pi == 0 && $pj == 0)) && $limit > 0 ) {
@@ -256,14 +256,14 @@ class vpl_diff {
         if ($diff === false) {
             return;
         }
-        $separator = array (
+        $separator = [
                 '<' => ' <<< ',
                 '>' => ' >>> ',
                 '=' => ' === ',
                 '1' => ' ==# ',
                 '2' => ' =## ',
-                '#' => ' ### '
-        );
+                '#' => ' ### ',
+        ];
         $emptyline = "\n";
         $data1 = '';
         $data2 = '';
@@ -345,16 +345,16 @@ class vpl_diff {
         if ($type == 1) {
             $subid = required_param( 'subid' . $f, PARAM_INT );
             $filename = required_param( 'filename' . $f, PARAM_TEXT );
-            $subinstance = $DB->get_record( 'vpl_submissions', array (
-                    'id' => $subid
-            ) );
+            $subinstance = $DB->get_record( 'vpl_submissions', [
+                    'id' => $subid,
+            ] );
             if ($subinstance !== false) {
                 $vpl = new mod_vpl( false, $subinstance->vpl );
                 $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
                 $submission = new mod_vpl_submission( $vpl, $subinstance );
-                $user = $DB->get_record( 'user', array (
-                        'id' => $subinstance->userid
-                ) );
+                $user = $DB->get_record( 'user', [
+                        'id' => $subinstance->userid,
+                ] );
                 if ($user) {
                     $link = vpl_mod_href( '/forms/submissionview.php', 'id', $vpl->get_course_module()->id
                                           , 'userid', $subinstance->userid );

@@ -30,9 +30,9 @@ require_once(dirname(__FILE__) . '/workinggraph.php');
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/activityworkinggraph.php', array (
-        'id' => $id
-) );
+$vpl->prepare_page( 'views/activityworkinggraph.php', [
+        'id' => $id,
+] );
 
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
 

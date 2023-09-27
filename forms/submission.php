@@ -37,14 +37,14 @@ $id = required_param( 'id', PARAM_INT );
 $userid = optional_param( 'userid', false, PARAM_INT );
 $vpl = new mod_vpl( $id );
 if ($userid) {
-    $vpl->prepare_page( 'forms/submission.php', array (
+    $vpl->prepare_page( 'forms/submission.php', [
             'id' => $id,
-            'userid' => $userid
-    ) );
+            'userid' => $userid,
+    ] );
 } else {
-    $vpl->prepare_page( 'forms/submission.php', array (
-            'id' => $id
-    ) );
+    $vpl->prepare_page( 'forms/submission.php', [
+            'id' => $id,
+    ] );
 }
 if (! $vpl->is_submit_able()) {
     vpl_redirect( '?id=' . $id, get_string( 'notavailable' ));
@@ -76,7 +76,7 @@ if ($fromform = $mform->get_data()) {
         die();
     }
     \mod_vpl\util\phpconfig::increase_memory_limit();
-    $files = array ();
+    $files = [];
     for ($i = 0; $i < $instance->maxfiles; $i ++) {
         $attribute = 'file' . $i;
         $name = $mform->get_new_filename( $attribute );
@@ -94,11 +94,11 @@ if ($fromform = $mform->get_data()) {
     }
     $errormessage = '';
     if ($subid = $vpl->add_submission( $userid, $files, $fromform->comments, $errormessage )) {
-        \mod_vpl\event\submission_uploaded::log( array (
+        \mod_vpl\event\submission_uploaded::log( [
                 'objectid' => $subid,
                 'context' => $vpl->get_context(),
-                'relateduserid' => ($USER->id != $userid ? $userid : null)
-        ) );
+                'relateduserid' => ($USER->id != $userid ? $userid : null),
+        ] );
 
         // If evaluate on submission.
         if ($instance->evaluate && $instance->evaluateonsubmission) {

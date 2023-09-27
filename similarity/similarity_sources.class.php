@@ -43,7 +43,7 @@ class vpl_file_from_base {
  * Information of a file from a directory
  */
 class vpl_file_from_dir extends vpl_file_from_base {
-    static protected $usersname = array ();
+    static protected $usersname = [];
     protected $dirname;
     protected $filename;
     protected $userid;
@@ -111,11 +111,11 @@ class vpl_file_from_dir extends vpl_file_from_base {
         return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
     public function link_parms($t) {
-        $res = array (
+        $res = [
                 'type' . $t => 2,
                 'dirname' . $t => $this->dirname,
-                'filename' . $t => $this->filename
-        );
+                'filename' . $t => $this->filename,
+        ];
         if ($this->userid != '') {
             $res['username' . $t] = self::$usersname[$this->userid];
         }
@@ -139,12 +139,12 @@ class vpl_file_from_zipfile extends vpl_file_from_dir {
         return true;
     }
     public function link_parms($t) {
-        $res = array (
+        $res = [
                 'type' . $t => 3,
                 'vplid' . $t => $this->vplid,
                 'zipfile' . $t => $this->dirname,
-                'filename' . $t => $this->filename
-        );
+                'filename' . $t => $this->filename,
+        ];
         if ($this->userid != '') {
             $res['username' . $t] = self::$usersname[$this->userid];
         }
@@ -156,7 +156,7 @@ class vpl_file_from_zipfile extends vpl_file_from_dir {
  * Information of a file from other vpl activity
  */
 class vpl_file_from_activity extends vpl_file_from_base {
-    static protected $vpls = array ();
+    static protected $vpls = [];
     protected $vplid;
     protected $filename;
     protected $subid;
@@ -177,9 +177,9 @@ class vpl_file_from_activity extends vpl_file_from_base {
         $cmid = $vpl->get_course_module()->id;
         $ret = '';
         if ($this->userid >= 0) {
-            $user = $DB->get_record( 'user', array (
-                    'id' => $this->userid
-            ) );
+            $user = $DB->get_record( 'user', [
+                    'id' => $this->userid,
+            ] );
         } else {
             $user = false;
         }
@@ -205,11 +205,11 @@ class vpl_file_from_activity extends vpl_file_from_base {
         return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
     public function link_parms($t) {
-        return array (
+        return [
                 'type' . $t => 1,
                 'subid' . $t => $this->subid,
-                'filename' . $t => $this->filename
-        );
+                'filename' . $t => $this->filename,
+        ];
     }
 }
 
@@ -241,8 +241,8 @@ class vpl_similarity_preprocess {
      * @return array Asociative array with file name as key and simil object as value
      */
     public static function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles
-                                          , $vpl = false, $subinstance = false, $toremove = array()) {
-        $files = array ();
+                                          , $vpl = false, $subinstance = false, $toremove = []) {
+        $files = [];
         $filelist = $fgm->getFileList();
         $simjf = false;
         $from = null;
@@ -359,7 +359,7 @@ class vpl_similarity_preprocess {
         // Get initial content files.
         $reqf = $vpl->get_required_fgm();
         $filelist = $reqf->getFileList();
-        $toremove = array ();
+        $toremove = [];
         foreach ($filelist as $filename) {
             $sim = vpl_similarity_factory::get( $filename );
             if ($sim) {

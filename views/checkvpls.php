@@ -33,12 +33,12 @@ global $DB, $PAGE, $OUTPUT, $USER;
 $id = required_param( 'id', PARAM_INT ); // Course id.
 
 // Check course existence.
-if (! $course = $DB->get_record( "course", array ( 'id' => $id ) )) {
+if (! $course = $DB->get_record( "course", [ 'id' => $id ] )) {
     throw new moodle_exception('invalidcourseid');
 }
 require_course_login( $course );
 
-$PAGE->set_url( '/mod/views/checkvpls.php', array ( 'id' => $id ) );
+$PAGE->set_url( '/mod/views/checkvpls.php', [ 'id' => $id ] );
 $strvpls = get_string( 'modulenameplural', VPL );
 $PAGE->navbar->add( $strvpls );
 $PAGE->set_title( get_string('checkall') );
@@ -48,13 +48,13 @@ echo $OUTPUT->heading( get_string('checkall'));
 
 $einfo = ['context' => \context_course::instance( $course->id ),
         'objectid' => $course->id,
-        'userid' => $USER->id
+        'userid' => $USER->id,
 ];
 \mod_vpl\event\vpl_checkvpls::log( $einfo );
 $admin = is_siteadmin();
 $ovpls = [];
 if ($admin) {
-    $ovpls = $DB->get_records( VPL, array(), 'id' );
+    $ovpls = $DB->get_records( VPL, [], 'id' );
 } else if (has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
     $ovpls = get_all_instances_in_course( VPL, $course );
 }
@@ -75,7 +75,7 @@ foreach ($ovpls as $ovpl) {
         $groups = groups_get_all_groups($vpl->get_course()->id, 0, $groupingid);
         $students = $vpl->get_students();
         foreach ($students as $student) {
-            $student->groups = array();
+            $student->groups = [];
         }
         foreach ($groups as $group) {
             $users = $vpl->get_group_members($group->id);

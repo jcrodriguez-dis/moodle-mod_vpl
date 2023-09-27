@@ -24,7 +24,7 @@
  */
 namespace mod_vpl\similarity;
 
-use \mod_vpl\tokenizer\tokenizer_factory;
+use mod_vpl\tokenizer\tokenizer_factory;
 
 /**
  * @codeCoverageIgnore

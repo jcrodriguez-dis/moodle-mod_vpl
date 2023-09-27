@@ -37,7 +37,7 @@ class mod_vpl_grade_form extends vpl_form {
         global $DB;
         $vpl = $this->submission->get_vpl();
         $scaleid = $vpl->get_grade();
-        $options = array ();
+        $options = [];
         $options[- 1] = get_string( 'nograde' );
         if ($scaleid > 0) {
             for ($i = 0; $i <= $scaleid; $i ++) {
@@ -45,9 +45,9 @@ class mod_vpl_grade_form extends vpl_form {
             }
         } else if ($scaleid < 0) {
             $scaleid = - $scaleid;
-            if ($scale = $DB->get_record( 'scale', array (
-                    'id' => $scaleid
-            ) )) {
+            if ($scale = $DB->get_record( 'scale', [
+                    'id' => $scaleid,
+            ] )) {
                 $options = $options + make_menu_from_list( $scale->scale );
             }
         }
@@ -105,7 +105,7 @@ class mod_vpl_grade_form extends vpl_form {
         $this->addHTML( '<br>' );
         // Tranfer files to teacher's work area.
         $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userid, 'privatecopy', 1 );
-        $options = array (
+        $options = [
                 'height' => 550,
                 'width' => 780,
                 'directories' => 0,
@@ -113,12 +113,12 @@ class mod_vpl_grade_form extends vpl_form {
                 'menubar' => 0,
                 'personalbar' => 0,
                 'status' => 0,
-                'toolbar' => 0
-        );
+                'toolbar' => 0,
+        ];
         $copyicon = vpl_get_awesome_icon('copy');
 
         $action = new popup_action( 'click', $url, 'privatecopy' . ($vplinstance->id), $options );
-        $atributes = array('class' => 'btn btn-secondary');
+        $atributes = ['class' => 'btn btn-secondary'];
         $this->addHTML( ' ' . $OUTPUT->action_link( $url, $copyicon . get_string( 'copy', VPL ), $action,  $atributes) );
 
         // Link to evaluate.

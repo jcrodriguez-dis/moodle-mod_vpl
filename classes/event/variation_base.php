@@ -28,7 +28,7 @@ defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class variation_base extends base {
     public static function get_objectid_mapping() {
-        return array('db' => VPL_VARIATIONS, 'restore' => VPL_VARIATIONS);
+        return ['db' => VPL_VARIATIONS, 'restore' => VPL_VARIATIONS];
     }
     public static function get_other_mapping() {
         // Nothing to map.
@@ -48,7 +48,7 @@ class variation_base extends base {
             'courseid' => $vplinstance->course,
             'userid' => $USER->id,
             'relateduserid' => $userid,
-            'other' => array('vplid' => $vplinstance->id),
+            'other' => ['vplid' => $vplinstance->id],
         ];
         parent::log( $info );
     }

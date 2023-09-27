@@ -30,8 +30,8 @@ require_once(dirname(__FILE__).'/sh_factory.class.php');
 
 class vpl_sh_ace extends vpl_sh_base {
     protected static $fid = 0;
-    protected static $executionfiles = array('vpl_run.sh', 'vpl_debug.sh',
-                                              'vpl_evaluate.sh', 'vpl_evaluate.cases');
+    protected static $executionfiles = ['vpl_run.sh', 'vpl_debug.sh',
+                                              'vpl_evaluate.sh', 'vpl_evaluate.cases', ];
     protected static function getid() {
         self::$fid ++;
         return 'fileid' . self::$fid;
