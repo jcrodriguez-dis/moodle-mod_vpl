@@ -30,6 +30,7 @@ global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
 
 use mod_vpl\tokenizer\token;
+use mod_vpl\util\assertf;
 
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer_base class.
@@ -96,6 +97,7 @@ class tokenizer_base_test extends \advanced_testcase {
      * Prepare test cases before the execution
      */
     public static function setUpBeforeClass(): void {
+        assertf::set_enable();
         self::$testcasesrcg = [
             "()"           => "()",
             "(a)"          => "(?:a)",
@@ -168,7 +170,12 @@ class tokenizer_base_test extends \advanced_testcase {
             (object)["default_token" => "comment"],
         ];
     }
-
+    /**
+     * Remove setting after the execution.
+     */
+    public static function tearDownAfterClass(): void {
+        assertf::set_disable();
+    }
     /**
      * Method to test tokenizer_base::remove_capturing_groups
      *

@@ -142,6 +142,8 @@ class tokenizer_test extends \advanced_testcase {
      * Prepare test cases before the execution
      */
     public static function setUpBeforeClass(): void {
+        parent::setUpBeforeClass();
+        assertf::set_enable();
         self::setup_invalid_cases();
         self::setup_max_token_count_cases();
         self::setup_override_tokens_cases();
@@ -151,7 +153,12 @@ class tokenizer_test extends \advanced_testcase {
         self::setup_preparse_cases();
         self::setup_parse_cases();
     }
-
+    /**
+     * Remove setting after the execution.
+     */
+    public static function tearDownAfterClass(): void {
+        assertf::set_disable();
+    }
     /**
      * Method to test tokenizer::discard_comments
      */
