@@ -147,31 +147,31 @@ class tokenizer_base {
      * @return bool
      */
     protected static function contains_rule(array $state, object $rule): bool {
-        $result = false;
+        $found = false;
 
+        $tokensrule = get_object_vars($rule);
         foreach ($state as $ruleorig) {
-            $tokensorig = array_keys(get_object_vars($ruleorig));
-            $tokensrule = array_keys(get_object_vars($rule));
-            $result = false;
-
+            $tokensorig = get_object_vars($ruleorig);
             if (count($tokensorig) == count($tokensrule)) {
-                foreach ($tokensorig as $name) {
-                    $result = false;
-
-                    if (isset($rule->$name) && isset($ruleorig->$name)) {
-                        if ($rule->$name === $ruleorig->$name) {
-                            $result = true;
+                $found = true;
+                foreach ($tokensorig as $name => $value) {
+                    if (array_key_exists($name, $tokensrule)) {
+                        if ($tokensrule[$name] != $value) {
+                            $found = false;
+                            break;
                         }
+                    } else {
+                        $found = false;
+                        break;
                     }
                 }
-
-                if ($result == true) {
+                if ($found == true) {
                     break;
                 }
             }
         }
 
-        return $result;
+        return $found;
     }
 
     /**
@@ -182,14 +182,14 @@ class tokenizer_base {
      * @return bool
      */
     protected static function check_token($token, array $availabletokens): bool {
-        $token = is_string($token) ? [$token] : $token;
+        $tokens = is_string($token) ? [$token] : $token;
 
-        if (is_array($token) && count($token) == 0) {
+        if (is_array($tokens) && count($tokens) == 0) {
             return false;
         }
 
-        foreach ($token as $value) {
-            if (!in_array($value, $availabletokens)) {
+        foreach ($tokens as $value) {
+            if (!array_key_exists($value, $availabletokens)) {
                 return false;
             }
         }

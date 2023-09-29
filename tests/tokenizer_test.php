@@ -492,31 +492,31 @@ class tokenizer_test extends \advanced_testcase {
                 'state 1 must have a name'
             ),
             self::gettestpath() . 'invalid/rules/invalid_rule_tokenizer_rules.json' => (
-                'rule 0 of state "state1" nº0 must be an object'
+                'rule 0 of state "state1" no. 0 must be an object'
             ),
             self::gettestpath() . 'invalid/rules/invalid_rule_option_value_tokenizer_rules.json' => (
-                'invalid data type for token at rule 0 of state "state1" nº0'
+                'invalid data type for token at rule 0 of state "state1" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/undefined_rule_option_tokenizer_rules.json' => (
-                'invalid option example at rule 0 of state "state1" nº0'
+                'invalid option example at rule 0 of state "state1" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/invalid_next_tokenizer_rules.json' => (
-                'invalid data type for next at rule 0 of state "state1" nº0'
+                'invalid data type for next at rule 0 of state "state1" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/regex_not_found_tokenizer_rules.json' => (
-                'option token must be defined next to regex at rule 0 of state "state1" nº0'
+                'option token must be defined next to regex at rule 0 of state "state1" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/token_not_found_tokenizer_rules.json' => (
-                'option regex must be defined next to token at rule 0 of state "state1" nº0'
+                'option regex must be defined next to token at rule 0 of state "state1" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/invalid_token_value_tokenizer_rules.json' => (
-                'invalid token at rule 0 of state "start" nº0'
+                'invalid token at rule 0 of state "start" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/invalid_default_token_tokenizer_rules.json' => (
-                'invalid data type for default_token at rule 0 of state "start" nº0'
+                'invalid data type for default_token at rule 0 of state "start" no. 0'
             ),
             self::gettestpath() . 'invalid/rules/default_token_not_alone_tokenizer_rules.json' => (
-                'option default_token must be alone at rule 0 of state "start" nº0'
+                'option default_token must be alone at rule 0 of state "start" no. 0'
             ),
             self::gettestpath() . 'invalid/general/invalid_json_inheritance_tokenizer_rules.json' => (
                 'inherit JSON file ' . self::gettestpath() . 'invalid/general/dump_tokenizer_rules.json does not exist'
@@ -952,7 +952,7 @@ class tokenizer_test extends \advanced_testcase {
                 ]
             ),
         ];
-
+        // Fixes by JC 'overflow' => 'vpl_literal' 20230929.
         self::$getlinetokenoverflowstestcases = [
             self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
                 [
@@ -961,7 +961,7 @@ class tokenizer_test extends \advanced_testcase {
                         'value' => '/* test comments',
                     ],
                     'output' => [ 'state' => 'start', 'tokens' => [
-                        new token('overflow', '/* test comments', 0),
+                        new token('vpl_literal', '/* test comments', 0),
                     ], ],
                 ]
             ),
@@ -973,7 +973,7 @@ class tokenizer_test extends \advanced_testcase {
                     ],
                     'output' => [ 'state' => 'start', 'tokens' => [
                         new token('storage.type', 'int', 0),
-                        new token('overflow', ' a', 0),
+                        new token('vpl_literal', ' a', 0),
                     ], ],
                 ]
             ),

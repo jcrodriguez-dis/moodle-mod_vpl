@@ -83,14 +83,14 @@ class tokenizer_base_test extends \advanced_testcase {
      * Available tokens to use to test tokenizer::check_token
      */
     protected const AVAILABLETOKENS = [
-        "text",
-        "comment",
-        "comment.line",
-        "constant",
-        "constant.character",
-        "constant.character.escape",
-        "storage",
-        "storage.type",
+        "text" => 0,
+        "comment" => 0,
+        "comment.line" => 0,
+        "constant" => 0,
+        "constant.character" => 0,
+        "constant.character.escape" => 0,
+        "storage" => 0,
+        "storage.type" => 0,
     ];
 
     /**
