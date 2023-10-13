@@ -287,18 +287,18 @@ class webservice_test extends base_test {
             }
         }
         $id = $this->vplteamwork->get_course_module()->id;
-        $guser0 = $this->students[0]->groupasigned;
-        $guser1 = $this->students[1]->groupasigned;
+        $guser0 = $this->students[0]->groupassigned;
+        $guser1 = $this->students[1]->groupassigned;
         foreach ($this->students as $user) {
             $this->setUser($user);
-            if ( $guser0 == $user->groupasigned ) {
+            if ( $guser0 == $user->groupassigned ) {
                 $files = [
                     'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 8\n",
                 ];
                 $this->internal_test_vpl_webservice_open($id, $files);
-            } else if ( $guser1 == $user->groupasigned) {
+            } else if ( $guser1 == $user->groupassigned) {
                 $files = [
                     'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
@@ -343,17 +343,17 @@ class webservice_test extends base_test {
                 }
             }
             $id = $this->vplteamwork->get_course_module()->id;
-            $guser0 = $this->students[0]->groupasigned;
-            $guser1 = $this->students[1]->groupasigned;
+            $guser0 = $this->students[0]->groupassigned;
+            $guser1 = $this->students[1]->groupassigned;
             foreach ($this->students as $user) {
-                if ( $guser0 == $user->groupasigned ) {
+                if ( $guser0 == $user->groupassigned ) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 8\n",
                     ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
-                } else if ( $guser1 == $user->groupasigned) {
+                } else if ( $guser1 == $user->groupassigned) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",

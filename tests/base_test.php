@@ -140,7 +140,7 @@ class base_test extends \advanced_testcase {
         foreach ($this->students as $student) {
             $groupselected = $usernum % 2;
             groups_add_member($this->groups[$groupselected]->id, $student->id);
-            $student->groupasigned = $groupselected;
+            $student->groupassigned = $groupselected;
             $usernum++;
         }
         $groupnum = 0;
