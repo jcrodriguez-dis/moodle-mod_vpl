@@ -163,6 +163,20 @@ class mod_vpl {
     protected $errors = [];
 
     /**
+     * The graders of this activity and group cached
+     *
+     * @var object[][]
+     */
+    protected $graders = [];
+
+    /**
+     * The students of this activity and group cached
+     *
+     * @var object[][]
+     */
+    protected $students = [];
+
+    /**
      * An internal array of DB instances cached
      *
      * @var object[]
@@ -934,11 +948,10 @@ class mod_vpl {
      * Update the submission groupid for VPL version <= 3.2
      *
      * Set the correct groupid when groupid = 0
-     * @param int $groupid.
-     *     If no $groupid => update $groupid of all groups of the activity
+     * @param int $groupid. If no $groupid => update $groupid of all groups of the activity
      * @return void
      */
-    public function update_group_v32($groupid='') {
+    public function update_group_v32($groupid = '') {
         global $DB;
         if ( ! $this->is_group_activity() ) {
             return;
@@ -1003,55 +1016,46 @@ class mod_vpl {
         }
         return false;
     }
-    protected static $context = [];
+
     /**
      * Return context object for this module instance
      *
      * @return object
      */
     public function get_context() {
-        if (! isset( self::$context[$this->cm->id] )) {
-            self::$context[$this->cm->id] = context_module::instance( $this->cm->id );
-        }
-        return self::$context[$this->cm->id];
+        return context_module::instance( $this->cm->id );
     }
 
     /**
      * Requiere the current user has the capability of performing $capability in this module instance
      *
-     * @param string $capability
-     *            capability name
-     * @param bool $alert
-     *            if true show a JavaScript alert message
+     * @param string $capability capability name
      * @return void
      */
-    public function require_capability($capability, $alert = false) {
-        if ($alert && ! ($this->has_capability( $capability ))) {
-            global $OUTPUT;
-            echo $OUTPUT->header();
-            vpl_js_alert( get_string( 'notavailable' ) );
+    public function require_capability($capability) {
+        if (! $this->has_capability($capability)) {
+            $context = $this->get_context();
+            $errormessage = 'nopermissions';
+            throw new required_capability_exception($context, $capability, $errormessage, '');
         }
-        require_capability( $capability, $this->get_context() );
     }
 
     /**
      * Check if the user has the capability of performing $capability in this module instance
      *
-     * @param string $capability
-     *            capability name
-     * @param int $userid
-     *            default null => current user
+     * @param string $capability The capability name
+     * @param int $userid Default null => current user
      * @return bool
      */
     public function has_capability($capability, $userid = null) {
-        return has_capability( $capability, $this->get_context(), $userid );
+        return is_enrolled($this->get_context(), $userid, $capability, true) ||
+               is_siteadmin();
     }
 
     /**
      * Delete overflow submissions. If three submissions within the period central is delete
      *
-     * @param
-     *            $userid
+     * @param $userid
      * @return void
      *
      */
@@ -1227,52 +1231,55 @@ class mod_vpl {
     /**
      * Get array of graders for this activity and group (optional)
      *
-     * @param string $group optional parm with group to search for
+     * @param string $groupid optional parm with groupid to search for
      * @return array
      */
-    public function get_graders($group = '') {
-        if (! isset( $this->graders )) {
-            $fields = vpl_get_picture_fields();
-            $this->graders = get_users_by_capability( $this->get_context(), VPL_GRADE_CAPABILITY, $fields,
-                    'u.lastname ASC', '', '', $group );
+    public function get_graders($groupid = 0) {
+        if (! is_int($groupid) ) {
+            $groupid = intval($groupid);
         }
-        return $this->graders;
+        if (! array_key_exists($groupid, $this->graders)) {
+            $fields = vpl_get_picture_fields();
+            $this->graders[$groupid] = get_enrolled_users( $this->get_context(), VPL_GRADE_CAPABILITY,
+                                                $groupid, $fields, 'u.lastname ASC');
+        }
+        return $this->graders[$groupid];
     }
 
     /**
      * Get array of students for this activity. If group is set return only group members
      *
-     * @param string $group       optional parm with group to search for
+     * @param string|int $groupid optional parm with groupid to search for
      * @param string $extrafields optional parm with extrafields e.g. 'u.nameq, u.name2'
      *
      * @return array of objects
      */
-    public function get_students($group = '', $extrafields = '') {
-        if ( isset( $this->students ) && $group == '') {
-            return $this->students;
+    public function get_students($groupid = 0, $extrafields = '') {
+        if (! is_int($groupid) ) {
+            $groupid = intval($groupid);
         }
-        // Generate array of graders indexed.
-        $nostudents = [];
-        foreach ($this->get_graders($group) as $user) {
-            $nostudents[$user->id] = true;
-        }
-        $students = [];
-        $extrafields = trim($extrafields);
-        if ( $extrafields > '' && $extrafields[0] != ',' ) {
-            $extrafields = ',' . $extrafields;
-        }
-        $fields = vpl_get_picture_fields() . $extrafields;
-        $all = get_users_by_capability( $this->get_context(), VPL_SUBMIT_CAPABILITY, $fields,
-                'u.lastname ASC', '', '', $group );
-        foreach ($all as $user) {
-            if (! isset( $nostudents[$user->id] )) {
-                $students[$user->id] = $user;
+        if (! array_key_exists($groupid, $this->students)) {
+            // Generate array of graders indexed.
+            $nostudents = [];
+            foreach ($this->get_graders($groupid) as $user) {
+                $nostudents[$user->id] = true;
             }
+            $students = [];
+            $extrafields = trim($extrafields);
+            if ( $extrafields > '' && $extrafields[0] != ',' ) {
+                $extrafields = ',' . $extrafields;
+            }
+            $fields = vpl_get_picture_fields() . $extrafields;
+            $all = get_enrolled_users( $this->get_context(), VPL_SUBMIT_CAPABILITY,
+                            $groupid, $fields, 'u.lastname ASC');
+            foreach ($all as $user) {
+                if (! array_key_exists($user->id, $nostudents)) {
+                    $students[$user->id] = $user;
+                }
+            }
+            $this->students[$groupid] = $students;
         }
-        if ($group != '') { // Don't cache if group request.
-            $this->students = $students;
-        }
-        return $students;
+        return $this->students[$groupid];
     }
 
     /**

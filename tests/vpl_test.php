@@ -37,6 +37,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 /**
  * Unit tests for mod_vpl class.
  * @group mod_vpl
+ * @group mod_vpl_vpl
  */
 class vpl_test extends base_test {
 
@@ -112,15 +113,15 @@ class vpl_test extends base_test {
     /**
      * Internal method to test mod_vpl::get_students returns
      */
-    public function internal_test_get_students($users, $students) {
-        $studentsid = [];
-        foreach ($students as $student) {
-            $studentsid[$student->id] = $student;
+    public function internal_test_users($users, $expected) {
+        $usersid = [];
+        foreach ($expected as $user) {
+            $usersid[$user->id] = $user;
         }
-        $this->assertEquals(count($students), count($users));
-        foreach ($users as $student) {
-            $this->assertTrue(isset($studentsid[$student->id]));
-            unset($studentsid[$student->id]);
+        $this->assertEquals(count($expected), count($users));
+        foreach ($users as $user) {
+            $this->assertTrue(isset($usersid[$user->id]));
+            unset($usersid[$user->id]);
         }
     }
 
@@ -130,9 +131,34 @@ class vpl_test extends base_test {
      */
     public function test_get_students() {
         $vpl = $this->vpldefault;
-        $this->internal_test_get_students($vpl->get_students(), $this->students);
-        $this->internal_test_get_students($vpl->get_students('', 'u.username'), $this->students);
-        $this->internal_test_get_students($vpl->get_students('', ',u.username'), $this->students);
+        $this->internal_test_users($vpl->get_students(), $this->students);
+        $this->internal_test_users($vpl->get_students('', 'u.username'), $this->students);
+        $this->internal_test_users($vpl->get_students('', ',u.username'), $this->students);
+        $this->internal_test_users($vpl->get_students(), $this->students);
+        for ($i = 0; $i < count($this->groups); $i++) {
+            $students = [];
+            foreach ($this->students as $student) {
+                if ($student->groupassigned == $i) {
+                    $students[] = $student;
+                }
+            }
+            $this->internal_test_users($vpl->get_students($this->groups[$i]->id), $students);
+        }
+    }
+
+    /**
+     * Method to test mod_vpl::get_graders
+     * @covers \mod_vpl::get_graders
+     */
+    public function test_get_graders() {
+        $vpl = $this->vpldefault;
+        $teachers = array_merge($this->teachers, $this->editingteachers);
+        $this->internal_test_users($vpl->get_graders(), $teachers);
+        $this->internal_test_users($vpl->get_graders(''), $teachers);
+        $this->internal_test_users($vpl->get_graders(false), $teachers);
+        $this->internal_test_users($vpl->get_graders('0'), $teachers);
+        $this->internal_test_users($vpl->get_graders($this->groups[2]->id), $this->teachers);
+        $this->internal_test_users($vpl->get_graders($this->groups[3]->id), $this->editingteachers);
     }
 
     /**
