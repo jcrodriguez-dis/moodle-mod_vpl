@@ -57,7 +57,7 @@ class lib_test extends base_test {
     public function test_vpl_grade_item_update() {
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
-            $instance = $vpl->get_instance();
+            $instance = clone $vpl->get_instance();
             foreach ([false, 0, -1, 8, 12.5] as $testgrade) {
                 if ($testgrade !== false) {
                     $instance->grade = $testgrade;

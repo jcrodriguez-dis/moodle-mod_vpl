@@ -44,33 +44,39 @@ function vpl_grade_item_update($instance, $grades=null) {
     global $CFG;
     require_once($CFG->libdir.'/gradelib.php');
 
-    $itemdetails = ['itemname' => $instance->name];
-    $itemdetails['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
-    if ( isset($instance->cmidnumber) ) {
-        $itemdetails['idnumber'] = $instance->cmidnumber;
+    $params = [];
+    $params['itemname'] = $instance->name;
+    $params['hidden'] = ($instance->visiblegrade > 0) ? 0 : 1;
+    if ( isset($instance->cmidnumber)) {
+        $params['idnumber'] = $instance->cmidnumber;
     }
     if ($instance->grade == 0 || $instance->example != 0) {
-        $itemdetails['gradetype'] = GRADE_TYPE_NONE;
-        $itemdetails['deleted'] = 1;
+        $params['gradetype'] = GRADE_TYPE_NONE;
+        $params['deleted'] = true;
     } else if ($instance->grade > 0) {
-        $itemdetails['gradetype'] = GRADE_TYPE_VALUE;
-        $itemdetails['grademax']  = $instance->grade;
-        $itemdetails['grademin']  = 0; // I don't know if this is correct updating.
+        $params['gradetype'] = GRADE_TYPE_VALUE;
+        $params['grademax']  = $instance->grade;
+        $params['grademin']  = 0;
 
     } else {
-        $itemdetails['gradetype'] = GRADE_TYPE_SCALE;
-        $itemdetails['scaleid']   = -$instance->grade;
-
+        $params['gradetype'] = GRADE_TYPE_SCALE;
+        $params['scaleid']   = -$instance->grade;
     }
 
     if ($grades === 'reset') {
-        $itemdetails['reset'] = true;
+        $params['reset'] = true;
         $grades = null;
     }
 
     return grade_update(
-        'mod/vpl', $instance->course, 'mod', 'vpl',
-        $instance->id, 0, $grades, $itemdetails
+        'mod/vpl',
+        $instance->course,
+        'mod',
+        VPL,
+        $instance->id,
+        0,
+        $grades,
+        $params
     );
 }
 
@@ -88,6 +94,13 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
     global $CFG, $USER;
     require_once($CFG->libdir.'/gradelib.php');
     require_once(dirname( __FILE__ ) . '/vpl_submission_CE.class.php');
+
+    if (! isset($instance->cmidnumber)) {
+        if ($cm = get_coursemodule_from_id(VPL, $instance->coursemodule)) {
+            $instance = clone $instance;
+            $instance->cmidnumber = $cm->idnumber;
+        }
+    }
 
     if ($instance->grade == 0) {
         return vpl_grade_item_update($instance);
@@ -126,7 +139,6 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
     }
     return vpl_grade_item_update($instance, $grades);
 }
-
 /**
  * Deletes grade_item from a vpl instance+id
  *
@@ -136,9 +148,8 @@ function vpl_delete_grade_item($instance) {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
     $itemdetails = [ 'deleted' => 1 ];
-    grade_update( 'mod/vpl', $instance->course, 'mod', VPL, $instance->id, 0, null, $itemdetails );
+    grade_update('mod/vpl', $instance->course, 'mod', VPL, $instance->id, 0, null, $itemdetails );
 }
-
 /**
  * Creates an event object from a vpl instance+id
  *
@@ -315,12 +326,13 @@ function vpl_update_instance($instance) {
     vpl_truncate_vpl( $instance );
     $instance->id = $instance->instance;
     vpl_update_instance_event($instance);
-    $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
-    $instance->cmidnumber = $cm->id;
-    vpl_grade_item_update( $instance );
-    $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
-    \core_completion\api::update_completion_date_event($instance->cmidnumber, 'vpl', $instance, $completionexpected);
 
+    $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
+    $instance->cmidnumber = $cm->idnumber;
+    vpl_grade_item_update( $instance );
+
+    $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
+    \core_completion\api::update_completion_date_event($cm->id, 'vpl', $instance, $completionexpected);
     return $DB->update_record( VPL, $instance );
 }
 
@@ -814,9 +826,7 @@ function vpl_scale_used($vplid, $scaleid) {
  */
 function vpl_scale_used_anywhere($scaleid) {
     global $DB;
-    return $scaleid && $DB->record_exists( VPL, [
-            'grade' => "-$scaleid",
-    ] );
+    return $scaleid && $DB->record_exists( VPL, ['grade' => "-$scaleid"] );
 }
 
 /**
@@ -866,21 +876,16 @@ function vpl_get_post_actions() {
  * Removes all grades from gradebook
  *
  * @param int $courseid
- * @param
- *            string optional type
+ * @param string $type optional
  */
 function vpl_reset_gradebook($courseid, $type = '') {
     global $CFG;
     require_once($CFG->libdir . '/gradelib.php');
-    if ($cms = get_coursemodules_in_course( VPL, $courseid )) {
+    if ($cms = get_coursemodules_in_course(VPL, $courseid)) {
         foreach ($cms as $cm) {
-            $vpl = new mod_vpl( $cm->id );
+            $vpl = new mod_vpl($cm->id);
             $instance = $vpl->get_instance();
-            $itemdetails = [
-                    'reset' => 1,
-            ];
-            grade_update( 'mod/vpl', $instance->course, 'mod', VPL, $instance->id
-                          , 0, null, $itemdetails );
+            vpl_grade_item_update($instance, 'reset');
         }
     }
 }

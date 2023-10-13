@@ -236,7 +236,7 @@ class mod_vpl {
             if (! $this->instance) {
                 throw new moodle_exception('invalidcoursemodule');
             }
-            $this->instance->cmidnumber = $this->cm->id;
+            $this->instance->cmidnumber = $this->cm->idnumber;
         } else {
             $this->instance = self::get_db_record(VPL, $a);
             if (! $this->instance) {
@@ -251,7 +251,7 @@ class mod_vpl {
                 // Don't stop on error. This let delete a corrupted course.
                 $this->errors[] = get_string( 'invalidcoursemodule', 'error' );
             } else {
-                $this->instance->cmidnumber = $this->cm->id;
+                $this->instance->cmidnumber = $this->cm->idnumber;
             }
         }
         if (! $this->basedon_is_ok()) {
