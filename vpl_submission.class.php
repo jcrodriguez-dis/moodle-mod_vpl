@@ -585,6 +585,31 @@ class mod_vpl_submission {
     }
 
     /**
+     * Return a fake object for the automatic grader with standard user name fields.
+     *
+     * @return object with standard user name fields.
+     */
+    public static function get_automatic_grader() {
+        $graderuser = new StdClass();
+        // Polyfill version.
+        if (method_exists('\core_user\fields', 'get_name_fields')) {
+            foreach (\core_user\fields::get_name_fields() as $name) {
+                $graderuser->$name = '';
+            }
+        } else { // Deprecated. To be removed in a future version.
+            $funcname = 'get_all_user_name_fields';
+            if (function_exists($funcname)) {
+                foreach ($funcname() as $name) {
+                    $graderuser->$name = '';
+                }
+            }
+        }
+        $graderuser->firstname = '';
+        $graderuser->lastname = get_string( 'automaticgrading', VPL );
+        return $graderuser;
+    }
+
+    /**
      *
      * @var array cache of users(graders) objects
      */
@@ -605,19 +630,9 @@ class mod_vpl_submission {
             $graderuser = self::$graders[$id];
         } else {
             if ($id <= 0) { // Automatic grading.
-                $graderuser = new StdClass();
-                if (function_exists( 'get_all_user_name_fields' )) {
-                    $fields = get_all_user_name_fields();
-                    foreach (array_keys($fields) as $name) {
-                        $graderuser->$name = '';
-                    }
-                }
-                $graderuser->firstname = '';
-                $graderuser->lastname = get_string( 'automaticgrading', VPL );
+                $graderuser = self::get_automatic_grader();
             } else {
-                $graderuser = $DB->get_record( 'user', [
-                        'id' => $id,
-                ] );
+                $graderuser = $DB->get_record('user', ['id' => $id]);
             }
             self::$graders[$id] = $graderuser;
         }
