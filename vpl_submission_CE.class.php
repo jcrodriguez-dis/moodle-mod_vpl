@@ -402,7 +402,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $vpl = new mod_vpl(false, $data->activityid);
         // Info send with script.
         $info = "#!/bin/bash\n";
-        $info .= vpl_bash_export('VPL_LANG', vpl_get_lang(true));
+        $info .= vpl_bash_export('VPL_LANG', vpl_get_lang());
         if (isset($data->userid)) {
             $userid = $data->userid;
             $info .= vpl_bash_export('MOODLE_USER_ID',  $userid);
@@ -554,7 +554,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $processinfo = vpl_running_processes::get_run( $this->get_instance()->userid, $vplid);
         }
         if ($processinfo === false) {
-            throw new Exception( 'Process not found' );
+            return;
         }
         $server = $processinfo->server;
         $data = new stdClass();
@@ -609,12 +609,17 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data = $this->prepare_execution($type);
         $data->execute = $executescripts[$type];
         $data->interactive = $type < self::TEVALUATE ? 1 : 0;
-        $data->lang = vpl_get_lang( true );
-        if (isset( $options['XGEOMETRY'] )) { // TODO refactor to a better solution.
-            $data->files['vpl_environment.sh'] .= "\n".vpl_bash_export( 'VPL_XGEOMETRY', $options['XGEOMETRY'] );
-        }
-        if (isset( $options['COMMANDARGS'] )) {
-            $data->commandargs = $options['COMMANDARGS'];
+        $data->lang = vpl_get_lang();
+        $optionsvars = [
+            'XGEOMETRY' => 'VPL_XGEOMETRY',
+            'currentFileName' => 'VPL_CURRENTSUBFILE',
+            'COMMANDARGS' => 'VPL_COMMANDARGS',
+        ];
+        foreach ($optionsvars as $option => $varname) {
+            if (isset( $options[$option] )) {
+                $envvar = vpl_bash_export($varname, $options[$option]);
+                $data->files['vpl_environment.sh'] .= $envvar;
+            }
         }
         $localservers = $data->jailservers;
         $maxmemory = $data->maxmemory;
@@ -625,18 +630,26 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $jailresponse = $this->jailrequestaction( $data, $maxmemory, $localservers, $jailserver );
         $parsed = parse_url( $jailserver );
         // Fix jail server port.
-        if (! isset( $parsed['port'] ) && $parsed['scheme'] == 'http') {
+        $usinghttp = $parsed['scheme'] == 'http';
+        $usinghttps = $parsed['scheme'] == 'https';
+        if (! isset($parsed['port']) && $usinghttp) {
             $parsed['port'] = 80;
         }
-        if (! isset( $jailresponse['port'] )) { // Try to fix old jail servers that don't return port.
+        if (! isset($parsed['port']) && $usinghttps) {
+            $parsed['port'] = 443;
+        }
+        if (! isset($jailresponse['port'] )) { // Try to fix old jail servers that don't return port.
             $jailresponse['port'] = $parsed['port'];
+        }
+        if (! isset($jailresponse['secureport'] )) { // Try to fix old jail servers that don't return port.
+            $jailresponse['secureport'] = $parsed['port'];
         }
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->monitorPath = $jailresponse['monitorticket'] . '/monitor';
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
-        $response->port = $jailresponse['port'];
-        $response->securePort = $jailresponse['secureport'];
+        $response->port = $usinghttp ? $parsed['port'] : $jailresponse['port'];
+        $response->securePort = $usinghttps ? $parsed['port'] : $jailresponse['secureport'];
         $response->wsProtocol = $plugincfg->websocket_protocol;
         $response->VNCpassword = substr( $jailresponse['executionticket'], 0, 8 );
         $instance = $this->get_instance();
@@ -735,7 +748,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $this->jailreaction( 'stop', $processinfo );
         } catch ( Exception $e ) {
             // No matter, consider that the process stopped.
-            debugging( "Process in execution server not sttoped or not found", DEBUG_DEVELOPER );
+            debugging("Process in execution server not stopped or not found", DEBUG_DEVELOPER );
         }
         vpl_running_processes::delete( $userid, $vplid, $processinfo->adminticket);
     }
