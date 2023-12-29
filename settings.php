@@ -28,7 +28,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(dirname(__FILE__) . '/lib.php');
+require_once(dirname(__FILE__) . '/locallib.php');
 
 $kbyte = 1024;
 $megabyte = 1024 * $kbyte;
