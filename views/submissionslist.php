@@ -367,7 +367,7 @@ $options = [
 ];
 // Load strings.
 $strsubtime = get_string( 'submittedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'datesubmitted', $sort, $sortdir );
-$strgrade = get_string( 'grade') . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
+$strgrade = get_string('gradenoun') . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
 $strgrader = get_string( 'grader', VPL ) . vpl_submissionlist_arrow( $baseurl, 'grader', $sort, $sortdir );
 $strgradedon = get_string( 'gradedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'dategraded', $sort, $sortdir );
 $strcomments = get_string( 'gradercomments', VPL );
@@ -577,7 +577,7 @@ if (count( $ngrades )) {
         $namehead = get_string( 'firstname' ) . ' / ' . get_string( 'lastname' );
     }
     $tablegraders = new html_table();
-    $tablegraders->head = ['#', $namehead, get_string('grade')];
+    $tablegraders->head = ['#', $namehead, get_string('gradenoun')];
     $tablegraders->align = ['right', 'left', 'center'];
     $tablegraders->wrap = ['nowrap', 'nowrap', 'nowrap'];
     $tablegraders->data = [];

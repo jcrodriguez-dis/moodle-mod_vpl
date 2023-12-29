@@ -75,7 +75,7 @@ class mod_vpl_grade_form extends vpl_form {
         // Type value => introduce value.
         $grade = $vpl->get_grade();
         if ($grade != 0) {
-            $this->addHTML( s( get_string( 'grade' ) . ' ' ) );
+            $this->addHTML( s( get_string('gradenoun') . ' ' ) );
             if ($grade > 0) {
                 $this->addText( 'grade', '', 6 );
                 $reduction = 0;
@@ -97,7 +97,7 @@ class mod_vpl_grade_form extends vpl_form {
             $this->addHTML( ' &nbsp;' );
         }
         $class = " class='btn btn-secondary'";
-        $this->addSubmitButton( 'save', get_string( 'grade' ) );
+        $this->addSubmitButton( 'save', get_string('gradenoun') );
         if ($inpopup) {
             $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
         }
