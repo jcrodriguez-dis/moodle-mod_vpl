@@ -249,7 +249,6 @@ function mod_vpl_core_calendar_event_action_shows_item_count(calendar_event $eve
  * @return lang_string The event type lang string.
  */
 function mod_vpl_core_calendar_get_event_action_string(string $eventtype): string {
-
     if ($eventtype == VPL_EVENT_TYPE_DUE) {
         return get_string('calendardue', VPL);
     } else { // Must be an event of type submission expected on.
@@ -326,11 +325,11 @@ function vpl_update_instance($instance) {
     vpl_truncate_vpl( $instance );
     $instance->id = $instance->instance;
     vpl_update_instance_event($instance);
-
     $cm = get_coursemodule_from_instance( VPL, $instance->id, $instance->course );
-    $instance->cmidnumber = $cm->idnumber;
+    if (!isset($instance->cmidnumber)) {
+        $instance->cmidnumber = $cm->idnumber;
+    }
     vpl_grade_item_update( $instance );
-
     $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
     \core_completion\api::update_completion_date_event($cm->id, 'vpl', $instance, $completionexpected);
     return $DB->update_record( VPL, $instance );
@@ -459,6 +458,7 @@ function vpl_user_complete($course, $user, $mod, $vpl) {
     $vpl = new mod_vpl( null, $vpl->id );
     $sub = $vpl->last_user_submission( $user->id );
     if ($sub !== false) {
+        require_once(dirname( __FILE__ ) . '/vpl_submission_CE.class.php');
         $submission = new mod_vpl_submission( $vpl, $sub );
         $submission->print_info( true );
         $submission->print_grade( true );
@@ -556,7 +556,6 @@ function vpl_print_recent_mod_activity($activity, $courseid, $detail, $modnames,
     echo '<a href="' . $link . '">' . userdate( $activity->timestamp ) . '</a>';
     echo '</div>';
     echo "</td></tr></table>";
-    return;
 }
 
 /**
@@ -724,11 +723,12 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
     if ($manager) {
         $userid = optional_param( 'userid', $USER->id, PARAM_INT );
         $klist = $vplnode->get_children_key_list();
-        if (count( $klist ) > 1) {
-            $fkn = $klist[1];
-            $vplnode->get($klist[0])->icon = new pix_icon('a/setting', '');
-        } else {
-            $fkn = null;
+        $fkn = null;
+        $kpos = array_search('modedit', $klist);
+        if ($kpos === false && array_key_exists(0, $klist)) {
+            $fkn = $klist[0];
+        } else if (array_key_exists($kpos + 1, $klist)) {
+            $fkn = $klist[$kpos + 1];
         }
         if ( $userid != $USER->id ) {
             $parms = [ 'id' => $cmid, 'userid' => $userid ];
@@ -801,6 +801,21 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $url = new moodle_url( '/mod/vpl/index.php', ['id' => $PAGE->cm->course]);
         $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
+    }
+}
+
+function vpl_extend_navigation_course(navigation_node $navigation, $course, $context) {
+    global $DB;
+    $capability = has_capability(VPL_MANAGE_CAPABILITY, $context) ||
+                  has_capability(VPL_GRADE_CAPABILITY, $context);
+    if ($capability && $DB->record_exists(VPL,  ['course' => $course->id])) {
+        $navlocation = $navigation->find('coursereports', navigation_node::TYPE_CONTAINER);
+        if (! $navlocation) {
+            $navlocation = $navigation;
+        }
+        $url = new moodle_url( '/mod/vpl/index.php', ['id' => $course->id]);
+        $node = vpl_navi_node_create($navlocation, 'modulenameplural', $url, navigation_node::TYPE_SETTING);
+        $navlocation->add_node($node);
     }
 }
 
@@ -908,7 +923,6 @@ function vpl_reset_instance_userdata($vplid) {
             'vpl' => $vplid,
     ] );
     // Delete overrides and associated events.
-    require_once(dirname(__FILE__) . '/vpl.class.php');
     $vpl = new mod_vpl(null, $vplid);
     $sql = 'SELECT ao.id as aid, o.*, ao.userid as userids, ao.groupid as groupids
                 FROM {vpl_overrides} o
@@ -980,7 +994,5 @@ function vpl_reset_course_form_definition(&$mform) {
  * Course reset form defaults.
  */
 function vpl_reset_course_form_defaults($course) {
-    return [
-            'reset_vpl_submissions' => 1,
-    ];
+    return ['reset_vpl_submissions' => 1];
 }
