@@ -89,6 +89,13 @@ class token {
      * Show token at current output channel
      */
     public function show(): void {
-        echo $this->line . ' ' . $this->type . ' ' . $this->value . '<br>';
+        echo $this . '<br>';
+    }
+
+    /**
+     * Convert a token to string using magic __toString() method
+     */
+    public function __toString() {
+        return $this->line . ' ' . $this->type . ' ' . $this->value;
     }
 }
