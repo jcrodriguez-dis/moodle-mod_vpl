@@ -35,7 +35,7 @@ function vpl_grade_header($vpl, $inpopup) {
     if ($inpopup) {
         $vpl->print_header_simple();
     } else {
-        $vpl->print_header( get_string( 'grade', 'core_grades' ) );
+        $vpl->print_header( get_string('grade') );
         $vpl->print_view_tabs( basename( __FILE__ ) );
     }
 }
