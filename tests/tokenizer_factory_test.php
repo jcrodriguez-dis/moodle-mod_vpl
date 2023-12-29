@@ -80,12 +80,6 @@ class tokenizer_factory_test extends \advanced_testcase {
         $tokenizer = tokenizer_factory::get('prolog');
         $this->check_tokenizer($tokenizer, 'prolog', false);
 
-        $tokenizer = tokenizer_factory::get('prolog');
-        $this->check_tokenizer($tokenizer, 'prolog', false);
-
-        $tokenizer = vpl_tokenizer_factory::get('prolog');
-        $this->check_tokenizer($tokenizer, 'prolog', false);
-
         $tokenizer = vpl_tokenizer_factory::get('prolog');
         $this->check_tokenizer($tokenizer, 'prolog', false);
     }
@@ -100,24 +94,14 @@ class tokenizer_factory_test extends \advanced_testcase {
             $tokenizer = tokenizer_factory::get($namelang);
             $this->check_tokenizer($tokenizer, $namelang, true);
 
-            $tokenizer = tokenizer_factory::get($namelang);
-            $this->check_tokenizer($tokenizer, $namelang, true);
-
-            $tokenizer = vpl_tokenizer_factory::get($namelang);
-            $this->check_tokenizer($tokenizer, $namelang, true);
-
             $tokenizer = vpl_tokenizer_factory::get($namelang);
             $this->check_tokenizer($tokenizer, $namelang, true);
         }
     }
 
     private function check_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
-        if ($newtokenizer === false) {
-            $this->assertTrue(isset($tokenizer) === true);
-            $this->assertSame('vpl_tokenizer_' . $namelang, get_class($tokenizer));
-        } else {
-            $this->assertTrue(isset($tokenizer) === true);
-            $this->assertSame('mod_vpl\tokenizer\tokenizer', get_class($tokenizer));
-        }
+        $this->assertTrue(isset($tokenizer) === true);
+        $classname = $newtokenizer === false ? 'vpl_tokenizer_' . $namelang : 'mod_vpl\tokenizer\tokenizer';
+        $this->assertSame($classname, get_class($tokenizer));
     }
 }

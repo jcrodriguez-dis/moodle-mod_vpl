@@ -320,13 +320,16 @@ class tokenizer_test extends \advanced_testcase {
 
             $tokenizer = new tokenizer($filename);
             $result = $tokenizer->get_line_tokens($input, "", 0);
-
-            $this->assertTrue(count($result) === 2);
-            $this->assertSame($expectedresult['state'], $result['state']);
-            $this->assertTrue(count($result['tokens']) === count($expectedresult['tokens']));
+            $info = $filename . "\n" . file_get_contents($filename) . "\n";
+            $info .= "--Input---\n" . json_encode($input) . "\n";
+            $info .= "--Result---\n" . json_encode($result) . "\n";
+            $info .= "--Expected result---\n" . json_encode($expectedresult);
+            $this->assertEquals(count($result), 2, $info);
+            $this->assertSame($expectedresult['state'], $result['state'], $info);
+            $this->assertEquals(count($expectedresult['tokens']), count($result['tokens']), $info);
 
             for ($i = 0; $i < count($result['tokens']); $i++) {
-                $this->assertTrue($result['tokens'][$i]->equals_to($expectedresult['tokens'][$i]));
+                $this->assertEquals($expectedresult['tokens'][$i], $result['tokens'][$i], $info);
             }
         }
     }
@@ -359,52 +362,60 @@ class tokenizer_test extends \advanced_testcase {
         foreach (self::$getlinetokenoverflowstestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
-
             $tokenizer = new tokenizer($filename);
             $tokenizer->set_max_token_count($input['max_token_count']);
-            $result = $tokenizer->get_line_tokens($input['value'], "", 0);
 
-            $this->assertTrue(count($result) === 2);
-            $this->assertSame($expectedresult['state'], $result['state']);
-            $this->assertTrue(count($result['tokens']) === count($expectedresult['tokens']));
+            $result = $tokenizer->get_line_tokens($input['value'], "", 0);
+            $info = $filename . "\n" . file_get_contents($filename) ."\n";
+            $info .= "--Input---\n" . json_encode($input) . "\n";
+            $info .= "--Result---\n" . json_encode($result) . "\n";
+            $info .= "--Expected result---\n" . json_encode($expectedresult);
+
+            $this->assertEquals(2, count($result), $info);
+            $this->assertSame($expectedresult['state'], $result['state'], $info);
+            $this->assertEquals(count($expectedresult['tokens']), count($result['tokens']), $info);
 
             for ($i = 0; $i < count($result['tokens']); $i++) {
-                $this->assertTrue($result['tokens'][$i]->equals_to($expectedresult['tokens'][$i]));
+                $this->assertEquals($expectedresult['tokens'][$i], $result['tokens'][$i], $info);
             }
         }
     }
 
     /**
-     * Method to test tokenizer::get_all_tokens when parameters are invalid
+     * Method to test tokenizer::get_all_tokens_in_file when parameters are invalid
      */
-    public function test_invalid_get_all_tokens() {
+    public function test_invalid_get_all_tokens_in_file() {
         foreach (self::$invalidpreparsecases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
             $tokenizer = new tokenizer($filename);
-
             try {
-                $tokenizer->get_all_tokens($input);
+                $result = $tokenizer->get_all_tokens_in_file($input);
             } catch (Exception $exe) {
                 $expectedmssg = assertf::get_error('default', $expectedresult);
                 $this->assertSame($expectedmssg, $exe->getMessage());
                 continue;
             }
 
-            $this->fail('An expection was expected');
+            $info = $filename . "\n" . file_get_contents($filename) . "\n";
+            $info .= "--Input---\n" . json_encode($input) . "\n";
+            $info .= "--Result---\n" . json_encode($result) . "\n";
+            $info .= "--Expected result---\n" . json_encode($expectedresult);
+
+            $this->fail("An expection was expected\n" . $info);
         }
     }
 
     /**
-     * Method to test tokenizer::get_all_tokens
+     * Method to test tokenizer::get_all_tokens_in_file
      */
-    public function test_get_all_tokens() {
+    public function test_get_all_tokens_in_file() {
         foreach (self::$preparsetestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
 
             $tokenizer = new tokenizer($filename);
-            $result = $tokenizer->get_all_tokens($input);
+            $result = $tokenizer->get_all_tokens_in_file($input);
 
             foreach ($result as $k => $valueforline) {
                 $this->assertEquals(2, count($valueforline));
@@ -873,6 +884,7 @@ class tokenizer_test extends \advanced_testcase {
                     'input' => 'int ',
                     'output' => [ 'state' => 'start', 'tokens' => [
                         new token('storage.type', 'int', 0),
+                        new token('text', ' ', 0),
                     ], ],
                 ]
             ),
