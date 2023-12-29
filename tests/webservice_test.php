@@ -232,12 +232,13 @@ class webservice_test extends base_test {
 
     private function internal_test_vpl_webservice_open($id, $files = [],
             $compilation ='', $evaluation = '',
-            $grade ='', $password = '', $userid = -1) {
+            $grade ='', $comments = '', $password = '', $userid = -1) {
         $res = mod_vpl_webservice::open($id, $password, $userid);
         $this->internal_test_files($files, $res['files']);
         $this->assertEquals($compilation, $res['compilation']);
         $this->assertEquals($evaluation, $res['evaluation']);
         $this->assertEquals($grade, $res['grade']);
+        $this->assertEquals($comments, $res['comments']);
     }
 
     /**
@@ -320,7 +321,7 @@ class webservice_test extends base_test {
                 } else {
                     $files = ['a.c' => "int main(){\n}"];
                 }
-                $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
             }
             $id = $this->vplmultifile->get_course_module()->id;
             foreach ($this->users as $user) {
@@ -330,16 +331,16 @@ class webservice_test extends base_test {
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 4\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else if ($user == $this->students[1]) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola2\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 5\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else {
-                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', '', $user->id);
                 }
             }
             $id = $this->vplteamwork->get_course_module()->id;
@@ -352,16 +353,16 @@ class webservice_test extends base_test {
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 8\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else if ( $guser1 == $user->groupassigned) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 9\n",
                     ];
-                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
                 } else {
-                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', $user->id);
+                    $this->internal_test_vpl_webservice_open($id, [], '', '', '', '', '', $user->id);
                 }
             }
         }
@@ -420,7 +421,8 @@ class webservice_test extends base_test {
         mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
     }
 
-    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1) {
+    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1, $submitedby=false) {
+        global $USER;
         $filesarray = [];
         foreach ($files as $name => $data) {
             $file = [];
@@ -434,8 +436,17 @@ class webservice_test extends base_test {
             }
             $filesarray[] = $file;
         }
-        mod_vpl_webservice::save($id, $filesarray, $password, $userid);
-        $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', $userid);
+        $comments = md5("$id-$password-$userid-{time()}");
+
+        mod_vpl_webservice::save($id, $filesarray, $password, $userid, $comments);
+        if ($submitedby) {
+            if ($userid == -1) {
+                $userid = $USER->id;
+            }
+            $user = \mod_vpl::get_db_record('user', $USER->id);
+            $comments = get_string('submittedby', VPL, fullname($user)) . "\n" . $comments;
+        }
+        $this->internal_test_vpl_webservice_open($id, $files, '', '', '', $comments, '', $userid);
     }
 
     /**
@@ -468,7 +479,7 @@ class webservice_test extends base_test {
         foreach (array_merge($this->students, $this->teachers) as $user) {
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
-                $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id);
+                $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id, $user->id != $teacher->id);
             } catch (Exception $e) {
                 throw new \Exception("Saving submission " . $e);
             }
@@ -478,7 +489,7 @@ class webservice_test extends base_test {
             $this->setUser($user);
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
-                $this->internal_test_vpl_webservice_open($id, $files, $password);
+                $this->internal_test_vpl_webservice_save($id, $files, $password, -1);
             } catch (Exception $e) {
                 throw new \Exception("Saving submission " . $e);
             }

@@ -168,14 +168,16 @@ class mod_vpl_webservice extends external_api {
                 ] ), 'Files', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
                 'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 ),
+                'comments' => new external_value( PARAM_RAW, 'Student\'s comments', VALUE_DEFAULT, '' ),
         ], 'Parameters', VALUE_REQUIRED );
     }
-    public static function save($id, $files = [], $password = '', $userid = -1) {
+    public static function save($id, $files=[], $password='', $userid=-1, $comments='') {
         global $USER;
         self::validate_parameters( self::save_parameters(), [
                 'id' => $id,
                 'files' => $files,
                 'password' => $password,
+                'comments' => $comments,
         ] );
         $vpl = self::initial_checks( $id, $password );
         if ($userid == -1) {
@@ -193,7 +195,7 @@ class mod_vpl_webservice extends external_api {
         }
         // Adapts to the file format VPL3.2.
         $files = self::decode_files($files);
-        mod_vpl_edit::save( $vpl, $userid, $files );
+        mod_vpl_edit::save($vpl, $userid, $files, $comments);
     }
 
     public static function save_returns() {
@@ -234,11 +236,12 @@ class mod_vpl_webservice extends external_api {
         $files = self::encode_files( $files );
         $ret = [
                 'files' => $files,
+                'comments' => '',
                 'compilation' => '',
                 'evaluation' => '',
                 'grade' => '',
         ];
-        $attributes = ['compilation', 'evaluation', 'grade'];
+        $attributes = ['compilation', 'evaluation', 'grade', 'comments'];
         foreach ($attributes as $attribute) {
             if (isset($compilationexecution->$attribute)) {
                 $ret[$attribute] = $compilationexecution->$attribute;
@@ -253,6 +256,7 @@ class mod_vpl_webservice extends external_api {
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
                 ] ), 'Files', VALUE_REQUIRED),
+                'comments' => new external_value( PARAM_RAW, 'Student\'s comments', VALUE_REQUIRED ),
                 'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
                 'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
                 'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED),
