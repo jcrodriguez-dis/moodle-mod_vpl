@@ -4,7 +4,7 @@
         "start": [
             {
                 "token": "storage.type",
-                "regex": "int|float|bool|char\\b"
+                "regex": "\\b(?:int|float|bool|char)\\b"
             },
             {
                 "token": "text",

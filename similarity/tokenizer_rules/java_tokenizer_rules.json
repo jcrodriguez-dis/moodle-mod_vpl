@@ -93,11 +93,6 @@
         "singleLineComment": [
             {
                 "token": "comment.line",
-                "regex": "\\$",
-                "next": "singleLineComment"
-            },
-            {
-                "token": "comment.line",
                 "regex": "$",
                 "next": "start"
             },
