@@ -777,19 +777,19 @@ class mod_vpl {
             if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) ||
                 $vpl->has_capability(VPL_GRADE_CAPABILITY) ) {
                 $user = self::get_db_record('user', $USER->id);
-                $submittedby = get_string( 'submittedby', VPL, fullname( $user ) ) . "\n";
-                if (strpos($comments, $submittedby) === 0 ) {
+                $submittedby = get_string('submittedby', VPL, fullname($user)) . "\n";
+                if (strpos($comments, $submittedby) !== false ) {
                     $submittedby = '';
                 }
             } else {
-                $error = get_string( 'notsaved', VPL );
+                $error = get_string('notsaved', VPL);
                 return false;
             }
         }
         $lastsub = false;
         if (($lastsubins = $vpl->last_user_submission( $userid )) !== false) {
-            $lastsub = new mod_vpl_submission( $vpl, $lastsubins );
-            if ($lastsub->is_equal_to( $files, $submittedby . $comments )) {
+            $lastsub = new mod_vpl_submission($vpl, $lastsubins);
+            if ($lastsub->is_equal_to($files, $submittedby . $comments)) {
                 return $lastsubins->id;
             }
         }
