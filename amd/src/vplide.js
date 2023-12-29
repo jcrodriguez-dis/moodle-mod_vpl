@@ -590,6 +590,14 @@ define(
                     }
                     return false;
                 };
+                this.getCurrentFileName = function() {
+                    var currentFileName = '';
+                    var currentFile = fileManager.currentFile();
+                    if (currentFile) {
+                        currentFileName = currentFile.name;
+                    }
+                    return currentFileName;
+                };
                 this.currentPos = function() {
                     return tabs.tabs('option', 'active');
                 };
@@ -692,7 +700,8 @@ define(
                 this.getDirectoryStructure = function() {
                     var structure = {
                         isDir: true,
-                        content: {}
+                        content: {},
+                        path: '',
                     };
                     /**
                      * Adds a new file the structure of directories
@@ -703,25 +712,27 @@ define(
                         var fileName = file.getFileName();
                         var path = fileName.split("/");
                         var curdir = structure;
-                        for (var p in path) {
-                            if (path.hasOwnProperty(p)) {
-                                var part = path[p];
-                                if (p == path.length - 1) { // File.
+                        var pathdir = '';
+                        for (var p = 0; p < path.length; p++) {
+                            var part = path[p];
+                            if (p == path.length - 1) { // File.
+                                curdir.content[part] = {
+                                    isDir: false,
+                                    content: file,
+                                    pos: i,
+                                };
+                            } else {
+                                pathdir += part;
+                                if (!curdir.content[part]) { // New dir.
                                     curdir.content[part] = {
-                                        isDir: false,
-                                        content: file,
-                                        pos: i
+                                        isDir: true,
+                                        content: {},
+                                        path: pathdir,
                                     };
-                                } else {
-                                    if (!curdir.content[part]) { // New dir.
-                                        curdir.content[part] = {
-                                            isDir: true,
-                                            content: {}
-                                        };
-                                    }
-                                    // Descend Dir.
-                                    curdir = curdir.content[part];
                                 }
+                                // Descend Dir.
+                                pathdir += '/';
+                                curdir = curdir.content[part];
                             }
                         }
                     }
@@ -749,10 +760,11 @@ define(
                             if (dir.content.hasOwnProperty(name)) {
                                 fd = dir.content[name];
                                 if (fd.isDir) {
+                                    var dirpath = VPLUtil.sanitizeText(fd.path);
+                                    attrs = 'href="#" data-dirname="' + dirpath + '" ';
                                     sname = VPLUtil.sanitizeText(name);
-                                    attrs = 'href="#" data-dirname="' + sname + '" ';
                                     dirline = indent;
-                                    dirline += '<a ' + attrs + '>' + VPLUI.iconFolder() + sname + '</a>';
+                                    dirline += VPLUI.iconFolder() + '<a ' + attrs + '>' + sname + '</a>';
                                     lines.push(dirline);
                                     lister(fd, indent + dirIndent, lines);
                                 } else {
@@ -1214,10 +1226,12 @@ define(
             }));
             VPLUI.setDialogTitleIcon(dialogRenameDirectory, 'filelist');
             renameDiretoryAction = function(event) {
-                var dirname = event.target.getAttribute('data-dirname');
-                $('#vpl_ide_input_olddirectoryname').val(dirname);
-                $('#vpl_ide_input_renamedirectory').val(dirname);
-                dialogRenameDirectory.dialog('open');
+                if (event.target.hasAttribute('data-dirname')) {
+                    var dirname = event.target.getAttribute('data-dirname');
+                    $('#vpl_ide_input_olddirectoryname').val(dirname);
+                    $('#vpl_ide_input_renamedirectory').val(dirname);
+                    dialogRenameDirectory.dialog('open');
+                }
             };
             var dialogComments = $('#vpl_ide_dialog_comments');
             var oldStudentComments = '';
@@ -1761,7 +1775,8 @@ define(
              */
             function runAction() {
                 executionRequest('run', 'running', {
-                    XGEOMETRY: VNCClient.getCanvasSize()
+                    XGEOMETRY: VNCClient.getCanvasSize(),
+                    currentFileName: fileManager.getCurrentFileName(),
                 });
             }
             menuButtons.add({
@@ -1780,7 +1795,8 @@ define(
              */
             function debugAction() {
                 executionRequest('debug', 'debugging', {
-                    XGEOMETRY: VNCClient.getCanvasSize()
+                    XGEOMETRY: VNCClient.getCanvasSize(),
+                    currentFileName: fileManager.getCurrentFileName(),
                 });
             }
             menuButtons.add({
