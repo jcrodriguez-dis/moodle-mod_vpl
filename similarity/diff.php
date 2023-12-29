@@ -42,15 +42,35 @@ echo $OUTPUT->header();
 $htmlheader1 = '';
 $filename1 = '';
 $data1 = '';
-// Get left file.
+// Get left file. Control access done inside.
 vpl_diff::vpl_get_similfile( '1', $htmlheader1, $filename1, $data1 );
 
 $htmlheader2 = '';
 $filename2 = '';
 $data2 = '';
-// Get right file.
+// Get right file.Control access done inside.
 vpl_diff::vpl_get_similfile( '2', $htmlheader2, $filename2, $data2 );
 
 // Show files.
 vpl_diff::show( $filename1, $data1, $htmlheader1, $filename2, $data2, $htmlheader2 );
+// Show tokens if requested.
+if (optional_param('debug', '', PARAM_RAW) == 'yes') {
+    $ext = pathinfo($filename1, PATHINFO_EXTENSION);
+    $type = mod_vpl\similarity\similarity_factory::ext2type($ext);
+    $tokenizer1 = mod_vpl\tokenizer\tokenizer_factory::get($type);
+    $tokens1 = $tokenizer1->parse($data1, false);
+    $tokensstr1 = '';
+    foreach ($tokens1 as $token) {
+        $tokensstr1 .= $token . "\n";
+    }
+    $ext = pathinfo($filename2, PATHINFO_EXTENSION);
+    $type = mod_vpl\similarity\similarity_factory::ext2type($ext);
+    $tokenizer1 = mod_vpl\tokenizer\tokenizer_factory::get($type);
+    $tokens2 = $tokenizer1->parse($data2, false);
+    $tokensstr2 = '';
+    foreach ($tokens2 as $token) {
+        $tokensstr2 .= $token . "\n";
+    }
+    vpl_diff::show( $filename1, $tokensstr1, $htmlheader1, $filename2, $tokensstr2, $htmlheader2 );
+}
 echo $OUTPUT->footer();
