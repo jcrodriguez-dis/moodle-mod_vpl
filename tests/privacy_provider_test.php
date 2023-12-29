@@ -120,7 +120,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test get_contexts_for_userid.
      */
-    public function test_get_contexts_for_userid() {
+    public function test_get_contexts_for_userid(): void {
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
@@ -166,7 +166,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test export user data for student.
      */
-    public function test_export_user_data_for_student() {
+    public function test_export_user_data_for_student(): void {
         $this->export_set_up();
         $contexts = $this->provider->get_contexts_for_userid($this->students[4]->id);
         $context = $this->vplonefile->get_context();
@@ -207,7 +207,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test export user data with variation.
      */
-    public function test_export_user_data_with_variation() {
+    public function test_export_user_data_with_variation(): void {
         $contexts = $this->provider->get_contexts_for_userid($this->students[2]->id);
         $context = $this->vplvariations->get_context();
         $this->assertEquals($context, $contexts->current());
@@ -235,7 +235,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test export user data for grader.
      */
-    public function test_export_user_data_for_grader() {
+    public function test_export_user_data_for_grader(): void {
         $this->export_set_up();
         $contexts = $this->provider->get_contexts_for_userid($this->teachers[1]->id);
         $context = $this->vplonefile->get_context();
@@ -263,7 +263,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test export user data with running processes.
      */
-    public function test_export_user_data_with_running_processes() {
+    public function test_export_user_data_with_running_processes(): void {
         global $DB;
         $instance = $this->vplonefile->get_instance();
         $vplid = $instance->id;
@@ -295,7 +295,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test export_user_preferences.
      */
-    public function test_export_user_preferences() {
+    public function test_export_user_preferences(): void {
         // Student 0.
         set_user_preference('vpl_editor_fontsize', 14, $this->students[0]);
         set_user_preference('vpl_acetheme', 'Eclipse', $this->students[0]);
@@ -331,7 +331,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test provider::delete_data_for_all_users_in_context.
      */
-    public function test_delete_data_for_all_users_in_context() {
+    public function test_delete_data_for_all_users_in_context(): void {
         $removelist = [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork];
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
@@ -361,7 +361,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test provider::delete_data_for_user.
      */
-    public function test_delete_data_for_user() {
+    public function test_delete_data_for_user(): void {
         // The editingteacher0 graded the submission of student 1. editingteacher0 must goes first to simplify tests.
         $users = [$this->editingteachers[0], $this->students[0], $this->students[1], $this->students[2],  $this->students[5]];
         $usersvpls = [
@@ -430,7 +430,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test provider::delete_data_for_users one user.
      */
-    public function test_delete_data_for_users_one_user() {
+    public function test_delete_data_for_users_one_user(): void {
         // The editing teacher 0 graded the submission of student 1. Teacher 0 must goes first to simplify tests.
         $users = [$this->editingteachers[0], $this->students[0], $this->students[1], $this->students[2], $this->students[5]];
         $usersvpls = [
@@ -465,7 +465,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test provider::delete_data_for_users many users.
      */
-    public function test_delete_data_for_users() {
+    public function test_delete_data_for_users(): void {
         $allvpls = [$this->vplnotavailable, $this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork];
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [
@@ -501,7 +501,7 @@ class privacy_provider_test extends base_test {
     /**
      * Method to test provider::get_users_in_context.
      */
-    public function test_get_users_in_context() {
+    public function test_get_users_in_context(): void {
         $vpls = [$this->vplnotavailable, $this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork];
         $users = [$this->students[0], $this->students[1], $this->students[2], $this->editingteachers[0], $this->students[5]];
         $usersvpls = [

@@ -46,7 +46,7 @@ class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::ext2type
      */
-    public function test_ext2type() {
+    public function test_ext2type(): void {
         $validext = similarity_factory::ext2type('java');
         $this->assertSame('java', $validext);
 
@@ -63,7 +63,7 @@ class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::get
      */
-    public function test_invalid_ext_get() {
+    public function test_invalid_ext_get(): void {
         $invalidext = similarity_factory::get('unexisted_extension');
         $this->assertTrue(is_null($invalidext));
 
@@ -74,7 +74,7 @@ class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::get
      */
-    public function test_get() {
+    public function test_get(): void {
         $tokenizerlangs = testable_similarity_factory::get_available_languages();
 
         foreach ($tokenizerlangs as $namelang) {
@@ -99,7 +99,7 @@ class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::get when generic_similarity is used
      */
-    public function test_get_with_generic_similarity() {
+    public function test_get_with_generic_similarity(): void {
         $filelang = 'test_file.java';
 
         $similarityclass = similarity_factory::get($filelang, 1);
@@ -118,7 +118,7 @@ class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::get when old similarity is used
      */
-    public function test_get_with_old_similarity() {
+    public function test_get_with_old_similarity(): void {
         $filelang = 'test_file.pl';
 
         $similarityclass = similarity_factory::get($filelang);

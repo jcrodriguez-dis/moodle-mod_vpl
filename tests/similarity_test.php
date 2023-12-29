@@ -58,7 +58,7 @@ class similarity_test extends base_test {
      * Method to test vpl_similarity_preprocess::get_zip_filepath
      * @covers \vpl_similarity_preprocess::get_zip_filepath
      */
-    public function test_get_zip_filepath() {
+    public function test_get_zip_filepath(): void {
         global $CFG;
         $base = $CFG->dataroot . '/temp/vpl_zip/';
         $expet = $base . '2_z1';
@@ -76,7 +76,7 @@ class similarity_test extends base_test {
      * Method to test vpl_similarity_preprocess::create_zip_file
      * @covers \vpl_similarity_preprocess::create_zip_file
      */
-    public function test_create_zip_file() {
+    public function test_create_zip_file(): void {
         $path = vpl_similarity_preprocess::get_zip_filepath(434, '/asg/z1');
         vpl_similarity_preprocess::create_zip_file(434, '/asg/z1', 'contents');
         $this->assertTrue(is_readable($path), $path);

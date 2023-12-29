@@ -60,7 +60,7 @@ class cron_task_test extends base_test {
     /**
      * Method to test start date before range.
      */
-    public function test_startdate_before_range() {
+    public function test_startdate_before_range(): void {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
@@ -82,7 +82,7 @@ class cron_task_test extends base_test {
     /**
      * Method to test startdate on range.
      */
-    public function test_startdate_on_range() {
+    public function test_startdate_on_range(): void {
         global $DB;
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
@@ -103,7 +103,7 @@ class cron_task_test extends base_test {
     /**
      * Method to test start date.
      */
-    public function test_startdate() {
+    public function test_startdate(): void {
         global $DB;
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
@@ -124,7 +124,7 @@ class cron_task_test extends base_test {
     /**
      * Method to test startdate out of range.
      */
-    public function test_startdate_out_of_range() {
+    public function test_startdate_out_of_range(): void {
         global $DB;
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
@@ -145,7 +145,7 @@ class cron_task_test extends base_test {
     /**
      * Method to test duedate out of range.
      */
-    public function test_duedate_out_of_range() {
+    public function test_duedate_out_of_range(): void {
         global $DB;
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();

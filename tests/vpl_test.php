@@ -53,7 +53,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::delete_all
      * @covers \mod_vpl::delete_all
      */
-    public function test_delete_all() {
+    public function test_delete_all(): void {
         global $CFG, $DB;
         // Get vpls information.
         $submissions = [];
@@ -129,7 +129,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::get_students
      * @covers \mod_vpl::get_students
      */
-    public function test_get_students() {
+    public function test_get_students(): void {
         $vpl = $this->vpldefault;
         $this->internal_test_users($vpl->get_students(), $this->students);
         $this->internal_test_users($vpl->get_students('', 'u.username'), $this->students);
@@ -150,7 +150,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::get_graders
      * @covers \mod_vpl::get_graders
      */
-    public function test_get_graders() {
+    public function test_get_graders(): void {
         $vpl = $this->vpldefault;
         $teachers = array_merge($this->teachers, $this->editingteachers);
         $this->internal_test_users($vpl->get_graders(), $teachers);
@@ -165,7 +165,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::add_submission
      * @covers \mod_vpl::add_submission
      */
-    public function test_add_submission() {
+    public function test_add_submission(): void {
         // Test regular submission.
         // Test equal submission.
         // Test team submission and last user submission.
@@ -177,7 +177,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::print_submission_restriction
      * @covers \mod_vpl::print_submission_restriction
      */
-    public function test_print_submission_restriction() {
+    public function test_print_submission_restriction(): void {
         // TODO Refactor code to test print submission.
     }
 
@@ -185,7 +185,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::get_effective_setting
      * @covers \mod_vpl::get_effective_setting
      */
-    public function test_get_effective_setting() {
+    public function test_get_effective_setting(): void {
         $vpl = $this->vploverrides;
         $instance = $vpl->get_instance();
         $baseduedate = $instance->duedate;
@@ -269,7 +269,7 @@ class vpl_test extends base_test {
      * Method to test mod_vpl::update_override_calendar_events
      * @covers \mod_vpl::update_override_calendar_events
      */
-    public function test_update_override_calendar_events() {
+    public function test_update_override_calendar_events(): void {
         global $CFG;
         require_once($CFG->dirroot . '/calendar/lib.php');
         $vpl = $this->vploverrides;

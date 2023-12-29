@@ -54,7 +54,7 @@ class lib_test extends base_test {
      * Method to test vpl_grade_item_update() function
      * @covers \vpl_grade_item_update
      */
-    public function test_vpl_grade_item_update() {
+    public function test_vpl_grade_item_update(): void {
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
             $instance = clone $vpl->get_instance();
@@ -126,7 +126,7 @@ class lib_test extends base_test {
      * Method to test vpl_update_grades() function
      * @covers \vpl_update_grades
      */
-    public function test_vpl_update_grades() {
+    public function test_vpl_update_grades(): void {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
@@ -179,7 +179,7 @@ class lib_test extends base_test {
      * Method to test vpl_delete_grade_item() function
      * @covers \vpl_delete_grade_item
      */
-    public function test_vpl_delete_grade_item() {
+    public function test_vpl_delete_grade_item(): void {
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
@@ -200,7 +200,7 @@ class lib_test extends base_test {
      * Method to test vpl calendar events
      * @covers \vpl_update_instance
      */
-    public function test_vpl_events() {
+    public function test_vpl_events(): void {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
@@ -229,7 +229,7 @@ class lib_test extends base_test {
      * Method to test vpl_update_instance() function
      * @covers \vpl_update_instance
      */
-    public function test_vpl_update_instance() {
+    public function test_vpl_update_instance(): void {
         // Events change tested at test_vpl_events.
         $grades = [-1, 0, 7];
         $this->setUser($this->editingteachers[0]);
@@ -263,7 +263,7 @@ class lib_test extends base_test {
      * Method to test vpl_delete_instance() function
      * @covers \vpl_delete_instance
      */
-    public function test_vpl_delete_instance() {
+    public function test_vpl_delete_instance(): void {
         global $DB, $CFG;
         $this->setUser($this->editingteachers[0]);
         foreach ($this->vpls as $vpl) {
@@ -306,7 +306,7 @@ class lib_test extends base_test {
      * Method to test vpl_supports() function
      * @covers \vpl_supports
      */
-    public function test_vpl_supports() {
+    public function test_vpl_supports(): void {
         $supp = [
                 FEATURE_GROUPS,
                 FEATURE_GROUPINGS,
@@ -334,7 +334,7 @@ class lib_test extends base_test {
      * Method to test vpl_reset_gradebook() function
      * @covers \vpl_reset_gradebook
      */
-    public function test_vpl_reset_gradebook() {
+    public function test_vpl_reset_gradebook(): void {
         global $DB;
         $this->setUser($this->editingteachers[0]);
         foreach ([4, 5, 12.5, 14] as $testgrade) {
@@ -386,7 +386,7 @@ class lib_test extends base_test {
      * Method to test vpl_reset_instance_userdata() function
      * @covers \vpl_reset_instance_userdata
      */
-    public function test_vpl_reset_instance_userdata() {
+    public function test_vpl_reset_instance_userdata(): void {
         global $DB, $CFG;
         $this->setUser($this->editingteachers[0]);
         // Reset user data from instances.
@@ -411,7 +411,7 @@ class lib_test extends base_test {
      * Method to test vpl_reset_userdata() function
      * @covers \vpl_reset_userdata
      */
-    public function test_vpl_reset_userdata() {
+    public function test_vpl_reset_userdata(): void {
         $nsubs = [];
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();

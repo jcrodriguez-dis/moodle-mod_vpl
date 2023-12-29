@@ -116,7 +116,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_token
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_token() {
+    public function test_vpl_webservice_token(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -146,7 +146,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_info
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_info() {
+    public function test_vpl_webservice_info(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -183,7 +183,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_info_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_info_exceptions() {
+    public function test_vpl_webservice_info_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -245,7 +245,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_open
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_open() {
+    public function test_vpl_webservice_open(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -374,7 +374,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_open_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_open_exceptions() {
+    public function test_vpl_webservice_open_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -453,7 +453,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_save
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save() {
+    public function test_vpl_webservice_save(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -502,7 +502,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_save_binary
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save_binary() {
+    public function test_vpl_webservice_save_binary(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -534,7 +534,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_save_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_save_exceptions() {
+    public function test_vpl_webservice_save_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -617,7 +617,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_evaluate
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_evaluate() {
+    public function test_vpl_webservice_evaluate(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -660,7 +660,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_evaluate_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_evaluate_exceptions() {
+    public function test_vpl_webservice_evaluate_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -762,7 +762,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_get_result
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_get_result() {
+    public function test_vpl_webservice_get_result(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -795,7 +795,7 @@ class webservice_test extends base_test {
      * Description of test_vpl_webservice_get_result_exeptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_get_result_exeptions() {
+    public function test_vpl_webservice_get_result_exeptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {

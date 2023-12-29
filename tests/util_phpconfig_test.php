@@ -39,7 +39,7 @@ class util_phpconfig_test extends \advanced_testcase {
     /**
      * Method to test function get_bytes(string $value): int
      */
-    public function test_get_bytes() {
+    public function test_get_bytes(): void {
         $cases = [
             [0, '0'],
             [123, '123'],
@@ -55,7 +55,7 @@ class util_phpconfig_test extends \advanced_testcase {
     /**
      * Method to test function get_post_max_size(): int
      */
-    public function test_get_post_max_size_internal() {
+    public function test_get_post_max_size_internal(): void {
         // Untestable, checks only callable.
         $cases = [
             [PHP_INT_MAX, '0'],
@@ -74,14 +74,14 @@ class util_phpconfig_test extends \advanced_testcase {
     /**
      * Method to test function get_post_max_size(): int
      */
-    public function test_get_post_max_size() {
+    public function test_get_post_max_size(): void {
         // Untestable, checks only callable.
         $this->assertTrue(\mod_vpl\util\phpconfig::get_post_max_size() > 0);
     }
     /**
      * Method to test function increase_memory_limit(): void
      */
-    public function test_increase_memory_limit() {
+    public function test_increase_memory_limit(): void {
         $maxpost = \mod_vpl\util\phpconfig::get_post_max_size();
         \mod_vpl\util\phpconfig::increase_memory_limit();
         $memorylimit = \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit'));

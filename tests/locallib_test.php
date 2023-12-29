@@ -41,7 +41,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_delete_dir
      */
-    public function test_vpl_delete_dir() {
+    public function test_vpl_delete_dir(): void {
         global $CFG;
         $text = 'Example text';
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
@@ -80,7 +80,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_fopen
      */
-    public function test_vpl_fopen() {
+    public function test_vpl_fopen(): void {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         $text = 'Any thing is ok! 뭐든 괜찮아!';
@@ -153,7 +153,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_fwrite
      */
-    public function test_vpl_fwrite() {
+    public function test_vpl_fwrite(): void {
         global $CFG;
         $text = 'Example text';
         $otext = 'Other text';
@@ -220,7 +220,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_get_set_session_var
      */
-    public function test_vpl_get_set_session_var() {
+    public function test_vpl_get_set_session_var(): void {
         global $SESSION;
         $nosession = false;
         $nopost = false;
@@ -259,7 +259,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_is_image
      */
-    public function test_vpl_is_image() {
+    public function test_vpl_is_image(): void {
         $this->assertTrue(vpl_is_image('filename.gif'));
         $this->assertTrue(vpl_is_image('filename.jpg'));
         $this->assertTrue(vpl_is_image('filename.jpeg'));
@@ -279,7 +279,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_truncate_string
      */
-    public function test_vpl_truncate_string() {
+    public function test_vpl_truncate_string(): void {
         $var = 'testvpl3';
         vpl_truncate_string($var, 3);
         $this->assertEquals('...', $var);
@@ -303,7 +303,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_bash_export
      */
-    public function test_vpl_bash_export() {
+    public function test_vpl_bash_export(): void {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
         $this->assertEquals("export ALGO=\"text\"\n", vpl_bash_export('ALGO', 'text'));
         $this->assertEquals("export ALGO=\"te\\\" \$'xt\"\n", vpl_bash_export('ALGO', 'te" $\'xt'));
@@ -315,7 +315,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_is_valid_file_name
      */
-    public function test_vpl_is_valid_file_name() {
+    public function test_vpl_is_valid_file_name(): void {
         $this->assertTrue(vpl_is_valid_file_name('filename.PNG.png'));
         $this->assertTrue(vpl_is_valid_file_name('filename kjhfs adkjhkafs fdj kfsdhahfskdh'));
         $this->assertTrue(vpl_is_valid_file_name('f'));

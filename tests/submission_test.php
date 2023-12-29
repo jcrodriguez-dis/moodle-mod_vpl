@@ -56,7 +56,7 @@ class submission_test extends base_test {
      * Method to test mod_vpl_submission::remove_grade_reduction in title
      * @covers \mod_vpl_submission::remove_grade_reduction
      */
-    public function test_remove_grade_reduction() {
+    public function test_remove_grade_reduction(): void {
         $this->assertEquals('Example no match', mod_vpl_submission::remove_grade_reduction('Example no match'));
         $this->assertEquals('Other no match', mod_vpl_submission::remove_grade_reduction('Other no match'));
         $this->assertEquals('-', mod_vpl_submission::remove_grade_reduction('-'));
@@ -71,7 +71,7 @@ class submission_test extends base_test {
      * Method to test mod_vpl_submission_CE::adaptbinaryfiles
      * @covers \mod_vpl_submission_CE::adaptbinaryfiles
      */
-    public function test_adaptbinaryfiles() {
+    public function test_adaptbinaryfiles(): void {
         $data = new \stdClass();
         $data->filestodelete = [];
         $files = [];
@@ -121,7 +121,7 @@ class submission_test extends base_test {
      * Method to test mod_vpl_submission::find_proposedgrade in evaluation
      * @covers \mod_vpl_submission::find_proposedgrade
      */
-    public function test_find_proposedgrade() {
+    public function test_find_proposedgrade(): void {
         $text = '';
         $expected = '';
         $this->assertEquals($expected, mod_vpl_submission::find_proposedgrade($text));
@@ -151,7 +151,7 @@ class submission_test extends base_test {
      * Method to test mod_vpl_submission::find_proposedcomment in evaluation
      * @covers \mod_vpl_submission::find_proposedcomment
      */
-    public function test_find_proposedcomment() {
+    public function test_find_proposedcomment(): void {
         $text = '';
         $expected = '';
         $this->assertEquals($expected, mod_vpl_submission::find_proposedcomment($text));

@@ -162,7 +162,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::discard_comments
      */
-    public function test_discard_comments() {
+    public function test_discard_comments(): void {
         $dir = self::gettestpath() . 'valid/comments';
 
         $scanarr = scandir($dir);
@@ -186,7 +186,7 @@ class tokenizer_test extends \advanced_testcase {
      * This test also provides output files at /tests/vpl_tokenizer/behat
      * with expected tokens for behat tests just for manual check.
      */
-    public function test_static_check() {
+    public function test_static_check(): void {
         try {
             $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
 
@@ -213,7 +213,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::init with invalid files
      */
-    public function test_invalid_files() {
+    public function test_invalid_files(): void {
         foreach (self::$invalidtestcases as $filename => $mssg) {
             try {
                 new tokenizer($filename);
@@ -230,7 +230,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::set_max_token_count
      */
-    public function test_set_max_token_count() {
+    public function test_set_max_token_count(): void {
         foreach (self::$maxtokencountcases as $filename => $expectedmaxtokencount) {
             $tokenizer = new tokenizer($filename);
             $maxtokencount = testable_tokenizer::get_max_token_count_from($tokenizer);
@@ -241,7 +241,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::override_tokens
      */
-    public function test_override_tokens() {
+    public function test_override_tokens(): void {
         foreach (self::$overridetokenscases as $filename => $expectedtokens) {
             $tokenizer = new tokenizer($filename);
             $availabletokens = testable_tokenizer::get_available_tokens($tokenizer);
@@ -256,7 +256,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::apply_inheritance
      */
-    public function test_apply_inheritance() {
+    public function test_apply_inheritance(): void {
         foreach (self::$mergetestcases as $filename => $expectedstates) {
             $tokenizer = new tokenizer($filename);
             $states = testable_tokenizer_base::get_states_from($tokenizer);
@@ -278,7 +278,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::prepare_tokenizer
      */
-    public function test_prepare_tokenizer() {
+    public function test_prepare_tokenizer(): void {
         foreach (self::$preparetestcases as $filename => $expectedresult) {
             $expectecmatchmappings = $expectedresult['matchmappings'];
             $expectedregexprs = $expectedresult['regexprs'];
@@ -313,7 +313,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::get_line_tokens
      */
-    public function test_get_line_tokens() {
+    public function test_get_line_tokens(): void {
         foreach (self::$getlinetokenstestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
@@ -337,7 +337,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::get_line_tokens when startstate is invalid
      */
-    public function test_get_line_tokens_with_invalid_startstate() {
+    public function test_get_line_tokens_with_invalid_startstate(): void {
         foreach (self::$getlinetokenstestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
@@ -358,7 +358,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::get_line_tokens when overflow has been detected
      */
-    public function test_get_line_tokens_with_overflow() {
+    public function test_get_line_tokens_with_overflow(): void {
         foreach (self::$getlinetokenoverflowstestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
@@ -384,7 +384,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::get_all_tokens_in_file when parameters are invalid
      */
-    public function test_invalid_get_all_tokens_in_file() {
+    public function test_invalid_get_all_tokens_in_file(): void {
         foreach (self::$invalidpreparsecases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
@@ -409,7 +409,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::get_all_tokens_in_file
      */
-    public function test_get_all_tokens_in_file() {
+    public function test_get_all_tokens_in_file(): void {
         foreach (self::$preparsetestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];
@@ -434,7 +434,7 @@ class tokenizer_test extends \advanced_testcase {
     /**
      * Method to test tokenizer::parse
      */
-    public function test_parse() {
+    public function test_parse(): void {
         foreach (self::$parsetestcases as $filename => $expectedresult) {
             $input = $expectedresult['input'];
             $expectedresult = $expectedresult['output'];

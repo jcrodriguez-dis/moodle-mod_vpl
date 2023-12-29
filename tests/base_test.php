@@ -489,7 +489,7 @@ class base_test extends \advanced_testcase {
     /**
      * @covers \mod_vpl\base_test
      */
-    public function test_create_instance() {
+    public function test_create_instance(): void {
         if (isset($this->course)) { // No fixture => don't check.
             $this->assertNotEmpty($this->create_instance());
         }

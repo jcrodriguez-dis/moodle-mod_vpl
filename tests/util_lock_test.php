@@ -57,7 +57,7 @@ class util_lock_test extends \advanced_testcase {
     /**
      * Method to test creating locks
      */
-    public function test_creating_lock() {
+    public function test_creating_lock(): void {
         $dir1 = $this->basedir . '/a/b';
         $lock1 = new \mod_vpl\util\lock($dir1);
         $this->assertTrue(file_exists($dir1 . \mod_vpl\util\lock::filename()));
@@ -74,7 +74,7 @@ class util_lock_test extends \advanced_testcase {
     /**
      * Method to test overwriting locks
      */
-    public function test_overwriting_lock() {
+    public function test_overwriting_lock(): void {
         $dir1 = $this->basedir . '/a/b';
         $lock1 = new \mod_vpl\util\lock($dir1);
         $this->assertTrue(file_exists($dir1 . \mod_vpl\util\lock::filename()));

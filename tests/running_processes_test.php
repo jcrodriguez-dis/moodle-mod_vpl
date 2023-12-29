@@ -98,7 +98,7 @@ class running_processes_test extends base_test {
         $this->assertTrue(time() - $actual->start_time <= 10 && time() >= $actual->start_time);
     }
 
-    public function test_get_run() {
+    public function test_get_run(): void {
         $userid = $this->students[0]->id;
         $otheruserid = $this->students[1]->id;
         $vplid = $this->vpldefault->get_instance()->id;
@@ -123,7 +123,7 @@ class running_processes_test extends base_test {
         $this->assertFalse($actual);
     }
 
-    public function test_get_directrun() {
+    public function test_get_directrun(): void {
         $userid = $this->students[0]->id;
         $otheruserid = $this->students[1]->id;
         $vplid = $this->vpldefault->get_instance()->id;
@@ -149,7 +149,7 @@ class running_processes_test extends base_test {
         }
     }
 
-    public function test_get_by_id() {
+    public function test_get_by_id(): void {
         $records = [
             $this->run,
             $this->debug,
@@ -160,7 +160,7 @@ class running_processes_test extends base_test {
         ];
         $this->internal_test_get_by_id($records);
     }
-    public function test_delete() {
+    public function test_delete(): void {
         $record = $this->debug;
         \vpl_running_processes::delete($record->userid, $record->vpl, $record->adminticket);
         $actual = \vpl_running_processes::get_by_id($record->vpl, $record->userid, $record->id);
@@ -199,7 +199,7 @@ class running_processes_test extends base_test {
         $this->internal_test_get_by_id($records);
     }
 
-    public function test_lanched_processes() {
+    public function test_lanched_processes(): void {
         $actual = \vpl_running_processes::lanched_processes($this->course->id);
         $this->assertCount(6, $actual);
         $actual = \vpl_running_processes::lanched_processes($this->course->id + 10000);

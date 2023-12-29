@@ -50,7 +50,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when tokenizer is not valid
      */
-    public function test_unexisted_tokenizer() {
+    public function test_unexisted_tokenizer(): void {
         try {
             tokenizer_factory::get('not_a_valid_language');
         } catch (Exception $exe) {
@@ -63,7 +63,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test vpl_tokenizer_factory::get when tokenizer is not valid
      */
-    public function test_unexisted_tokenizer_with_vpl() {
+    public function test_unexisted_tokenizer_with_vpl(): void {
         try {
             vpl_tokenizer_factory::get('not_a_valid_language');
         } catch (Exception $exe) {
@@ -76,7 +76,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when old tokenizer is used
      */
-    public function test_old_tokenizer() {
+    public function test_old_tokenizer(): void {
         $tokenizer = tokenizer_factory::get('prolog');
         $this->check_tokenizer($tokenizer, 'prolog', false);
 
@@ -87,7 +87,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when new tokenizer is used
      */
-    public function test_new_tokenizer() {
+    public function test_new_tokenizer(): void {
         $tokenizerlangs = tokenizer_similarity_utils::get_tokenizer_langs();
 
         foreach ($tokenizerlangs as $namelang) {

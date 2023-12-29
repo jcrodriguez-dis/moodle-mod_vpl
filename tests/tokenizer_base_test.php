@@ -182,7 +182,7 @@ class tokenizer_base_test extends \advanced_testcase {
      * Test cases based on Ace Editor unit tests:
      * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer_test.js)
      */
-    public function test_remove_capturing_groups() {
+    public function test_remove_capturing_groups(): void {
         foreach (self::$testcasesrcg as $src => $expectedregex) {
             $regex = testable_tokenizer_base::remove_capturing_groups($src);
             $this->assertSame($expectedregex, $regex);
@@ -192,7 +192,7 @@ class tokenizer_base_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_base::check_type
      */
-    public function test_check_type() {
+    public function test_check_type(): void {
         foreach (self::$testcasesckt as $type => $values) {
             if (isset($values[true])) {
                 foreach ($values[true] as $validvalue) {
@@ -223,7 +223,7 @@ class tokenizer_base_test extends \advanced_testcase {
      * Naming conventions are inspired in TextMate manual,
      * see https://macromates.com/manual/en/language_grammars#naming-conventions
      */
-    public function test_check_token() {
+    public function test_check_token(): void {
         foreach (self::$testcasesctk as $expectedvalue => $tokens) {
             foreach ($tokens as $token) {
                 $result = testable_tokenizer_base::check_token($token, self::AVAILABLETOKENS);
@@ -235,7 +235,7 @@ class tokenizer_base_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_base::contains_rule
      */
-    public function test_contains_rule() {
+    public function test_contains_rule(): void {
         foreach (self::$statetosearchrules as $rule) {
             $cond = testable_tokenizer_base::contains_rule(self::$statetosearchrules, $rule);
             $this->assertTrue($cond);
@@ -250,7 +250,7 @@ class tokenizer_base_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_base::get_array_tokens
      */
-    public function test_get_array_tokens() {
+    public function test_get_array_tokens(): void {
         foreach (self::$testcasesgat as $expected) {
             $type = $expected['input']['type'];
             $value = $expected['input']['value'];
