@@ -94,22 +94,13 @@ Feature: In a VPL activity get the list of VPL activities in the course
     And I should see "VPL activity five"
     And I should see "VPL activity six"
     And I should not see " is deprecated"
-    And I navigate to "Reports" in current page administration
-    And I follow "Virtual programming labs"
-    Then I should see "VPL activity one"
-    And I should see "VPL activity two"
-    And I should see "VPL activity three"
-    And I should see "VPL activity four"
-    And I should see "VPL activity five"
-    And I should see "VPL activity six"
-    And I should not see " is deprecated"
 
   @javascript
   Scenario: A teacher filter by sections
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Reports" in current page administration
-    And I follow "Virtual programming labs"
+    And I click on "VPL activity one" "link" in the "region-main" "region"
+    And I navigate to "Virtual programming labs" in current page administration
     Then I should see "VPL activity one"
     And I should see "VPL activity two"
     And I should see "VPL activity three"
@@ -154,8 +145,8 @@ Feature: In a VPL activity get the list of VPL activities in the course
   Scenario: A teacher filter instances
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
-    And I navigate to "Reports" in current page administration
-    And I follow "Virtual programming labs"
+    And I click on "VPL activity one" "link" in the "region-main" "region"
+    And I navigate to "Virtual programming labs" in current page administration
     Then I should see "VPL activity one"
     And I should see "VPL activity two"
     And I should see "VPL activity three"
