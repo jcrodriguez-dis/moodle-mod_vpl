@@ -181,13 +181,14 @@ class mod_vpl_edit {
             $fgp = $submission->get_submitted_fgm();
             $files = $fgp->getallfiles();
             $compilationexecution = $submission->get_CE_for_editor();
+            $compilationexecution->comments = $submission->get_instance()->comments;
         } else {
             $files = self::get_requested_files( $vpl );
             $compilationexecution = new stdClass();
+            $compilationexecution->comments = '';
             $compilationexecution->nevaluations = 0;
             $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
             $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
-
         }
         return $files;
     }
@@ -377,7 +378,7 @@ DIRECTRUNCODE;
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
         $data->interactive = 1;
-        $data->lang = vpl_get_lang( true );
+        $data->lang = vpl_get_lang();
         $data->maxtime = 1000000;
         $data->maxfilesize = $maxmemory;
         $data->maxmemory = $maxmemory;
@@ -396,8 +397,10 @@ DIRECTRUNCODE;
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
-        $response->port = $jailresponse['port'];
-        $response->securePort = $jailresponse['secureport'];
+        $usinghttp = $parsed['scheme'] == 'http';
+        $usinghttps = $parsed['scheme'] == 'https';
+        $response->port = $usinghttp ? $parsed['port'] : $jailresponse['port'];
+        $response->securePort = $usinghttps ? $parsed['port'] : $jailresponse['secureport'];
         $response->wsProtocol = get_config('mod_vpl')->websocket_protocol;
         $response->homepath = $jailresponse['homepath'];
         $process = new stdClass();
