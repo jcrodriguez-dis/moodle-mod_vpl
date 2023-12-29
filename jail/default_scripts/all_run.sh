@@ -46,6 +46,7 @@ do
 			echo "echo \"$INPUT_TEXT\" | ./$VPLEXE 2>.hello_fail" >> all_execute
 			unset INPUT_TEXT
 		fi
+		echo "[ -s .hello_fail ] && cat .hello_fail" >> all_execute
 		echo "[ -s .hello_fail ] && echo \"Failed\"" >> all_execute
 		echo "[ -f \"$VPL_SUBFILE0\" ] && rm \"$VPL_SUBFILE0\"" >> all_execute
 	else
