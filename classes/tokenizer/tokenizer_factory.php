@@ -34,19 +34,32 @@ class tokenizer_factory {
      * Get tokenizer for passed programming language
      *
      * @param string $namelang name of a programming language
+     * @param bool $newtokenizer Use new tokenizer by default
      * @return ?tokenizer|?vpl_tokenizer
      */
-    public static function get(string $namelang) {
-        $tokenizer = self::get_object($namelang);
-
-        if (!isset($tokenizer) || is_null($tokenizer)) {
+    public static function get(string $namelang, bool $newtokenizer=true) {
+        if ($newtokenizer) { // Get required type (new/old).
+            $tokenizer = self::get_object($namelang);
+        } else {
             $tokenizer = self::get_require($namelang);
-            assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
         }
-
+        if ($tokenizer === null) { // If not available try other type.
+            if ($newtokenizer) {
+                $tokenizer = self::get_require($namelang);
+            } else {
+                $tokenizer = self::get_object($namelang);
+            }
+        }
+        assertf::assert(isset($tokenizer), $namelang, $namelang . ' is not available');
         return $tokenizer;
     }
 
+    /**
+     * Load include file and returns object of calss loaded
+     *
+     * @param string $namelang name of a programming language
+     * @return ?tokenizer|?vpl_tokenizer
+     */
     private static function get_require(string $namelang) {
         $include = 'tokenizer_' . $namelang . '.class.php';
         $include = dirname(__FILE__) . '/../../similarity/' . $include;
@@ -57,7 +70,6 @@ class tokenizer_factory {
                 $class = 'vpl_tokenizer_' . $namelang;
                 self::$tkloaded[$namelang] = new $class();
             }
-
             return self::$tkloaded[$namelang];
         }
 
