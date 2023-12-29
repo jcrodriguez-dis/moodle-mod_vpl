@@ -150,6 +150,7 @@ class vpl_diff {
      * @return array of objects with info to show the two array of lines
      */
     public static function calculatediff($lines1, $lines2) {
+        $nmatrixlimit = 1000 * 1000; // Matrix size limit.
         $ret = [];
         $nl1 = count( $lines1 );
         $nl2 = count( $lines2 );
@@ -165,6 +166,15 @@ class vpl_diff {
         if ($nl2 == 0) { // There is no second file.
             foreach ($lines1 as $pos => $line) {
                 $ret[] = self::newlineinfo( '<', $pos + 1 );
+            }
+            return $ret;
+        }
+        if ($nl1 * $nl2 > $nmatrixlimit) {
+            $mnl = max($nl1, $nl2);
+            for ($i = 1; $i <= $mnl; $i++) {
+                $l1 = $i > $nl1 ? 0 : $i;
+                $l2 = $i > $nl2 ? 0 : $i;
+                $ret[] = self::newlineinfo( '#', $l1, $l2);
             }
             return $ret;
         }
