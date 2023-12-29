@@ -24,24 +24,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-const VPL = 'vpl';
-const VPL_SUBMISSIONS = 'vpl_submissions';
-const VPL_JAILSERVERS = 'vpl_jailservers';
-const VPL_RUNNING_PROCESSES = 'vpl_running_processes';
-const VPL_VARIATIONS = 'vpl_variations';
-const VPL_ASSIGNED_VARIATIONS = 'vpl_assigned_variations';
-const VPL_OVERRIDES = 'vpl_overrides';
-const VPL_ASSIGNED_OVERRIDES = 'vpl_assigned_overrides';
-const VPL_GRADE_CAPABILITY = 'mod/vpl:grade';
-const VPL_VIEW_CAPABILITY = 'mod/vpl:view';
-const VPL_SUBMIT_CAPABILITY = 'mod/vpl:submit';
-const VPL_SIMILARITY_CAPABILITY = 'mod/vpl:similarity';
-const VPL_ADDINSTANCE_CAPABILITY = 'mod/vpl:addinstance';
-const VPL_SETJAILS_CAPABILITY = 'mod/vpl:setjails';
-const VPL_MANAGE_CAPABILITY = 'mod/vpl:manage';
-const VPL_EVENT_TYPE_DUE = 'duedate';
-const VPL_LOCK_TIMEOUT = 10;
-
+require_once(dirname(__FILE__).'/locallib_consts.php');
 require_once(dirname(__FILE__).'/vpl.class.php');
 
 /**
@@ -220,11 +203,11 @@ function vpl_output_zip($zipfilename, $name) {
 /**
  * @codeCoverageIgnore
  *
- * Get lang code @parm $bashadapt true adapt lang to bash LANG (default false)
+ * Get lang code @parm $bashadapt true adapt lang to bash LANG (default true)
  *
  * @return string
  */
-function vpl_get_lang($bashadapt = false) {
+function vpl_get_lang($bashadapt = true) {
     global $SESSION, $USER, $CFG;
     $commonlangs = [
             'aa' => 'DJ',
@@ -277,14 +260,14 @@ function vpl_get_lang($bashadapt = false) {
     } else if (isset( $CFG->lang )) {
         $lang = $CFG->lang;
     } else {
-        $lang = 'en';
+        return "en";
     }
     if ($bashadapt) {
         $parts = explode( '_', $lang );
-        if (count( $parts ) == 2) {
+        if (count($parts) == 2) {
             $lang = $parts[0];
         }
-        if (isset( $commonlangs[$lang] )) {
+        if (isset($commonlangs[$lang])) {
             $lang = $lang . '_' . $commonlangs[$lang];
         }
         $lang .= '.UTF-8';
