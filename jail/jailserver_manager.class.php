@@ -66,6 +66,28 @@ class vpl_jailserver_manager {
     static private $lastjsonrpcid = '';
 
     /**
+     * Generate a new JSONRPC id.
+     *
+     * @param string $method
+     * @param object $data
+     * @return string
+     */
+    public static function generate_jsonrpcid() {
+        global $USER;
+        $idtime = hrtime();
+        self::$lastjsonrpcid = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
+    }
+
+    /**
+     * Get the JSONRPC id.
+     *
+     * @return string the JSONRPC id
+     */
+    public static function get_jsonrpcid() {
+        return self::$lastjsonrpcid;
+    }
+
+    /**
      * Encode action and data as JSONRPC adding an automatic id.
      *
      * @param string $method
@@ -73,13 +95,14 @@ class vpl_jailserver_manager {
      * @return string
      */
     public static function jsonrpc_encode($method, $data) {
-        global $USER;
         $rpcobject = new stdclass;
+        if (false) { // TODO remove when jail servers fixes correponding bug.
+            $rpcobject->jsonrpc = "2.0";
+        }
         $rpcobject->method = $method;
         $rpcobject->params = $data;
-        $idtime = hrtime();
-        self::$lastjsonrpcid = $USER->id . '-' . $idtime[0] . '-' . $idtime[1];
-        $rpcobject->id = self::$lastjsonrpcid;
+        self::generate_jsonrpcid();
+        $rpcobject->id = self::get_jsonrpcid();
         return json_encode($rpcobject, JSON_UNESCAPED_UNICODE);
     }
 
@@ -98,7 +121,7 @@ class vpl_jailserver_manager {
                 if (json_last_error() != JSON_ERROR_NONE) {
                     $error = 'JSONRPC response is fault: ' . json_last_error_msg();
                 } else {
-                    if ($response->id != self::$lastjsonrpcid) {
+                    if ($response->id != self::get_jsonrpcid()) {
                         $error = 'JSONRPC response mismatch ID';
                     } else {
                         return (array) ($response->result);
