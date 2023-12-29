@@ -284,15 +284,11 @@ class tokenizer extends tokenizer_base {
      */
     public function parse(string $data, bool $isfile=true): array {
         if ($isfile === true) {
-            $tokens = $this->get_all_tokens($data);
+            $tokens = $this->get_all_tokens_in_file($data);
         } else {
-            // @codeCoverageIgnoreStart
-            $tokens = [$this->get_line_tokens($data, "start", 0)];
-            // @codeCoverageIgnoreEnd
+            $tokens = $this->get_all_tokens($data);
         }
-
         $tokensprepared = [];
-
         foreach ($tokens as $dataofline) {
             foreach ($dataofline['tokens'] as $token) {
                 $cond = array_key_exists($token->type, $this->availabletokens);
@@ -312,12 +308,12 @@ class tokenizer extends tokenizer_base {
     }
 
     /**
-     * Get tokens for each line of $filename
+     * Get tokens from a file
      *
-     * @param string $filename file to tokenize
+     * @param string $filename name of the file to get tokens from
      * @return array
      */
-    public function get_all_tokens(string $filename): array {
+    public function get_all_tokens_in_file(string $filename): array {
         assertf::assert(file_exists($filename), $this->name, 'file ' . $filename . ' does not exist');
         $hasvalidext = false;
 
@@ -329,25 +325,26 @@ class tokenizer extends tokenizer_base {
 
         $extensionsstr = implode(',', $this->extension);
         assertf::assert($hasvalidext, $this->name, $filename . ' must end with one of the extensions ' . $extensionsstr);
+        return $this->get_all_tokens(file_get_contents($filename));
+    }
 
+    /**
+     * Get tokens in a string (file contens)
+     *
+     * @param string $code to tokenize
+     * @return array
+     */
+    public function get_all_tokens(string $code): array {
         $infolines = [];
         $state = 'start';
         $numline = 0;
-
-        if ($file = fopen($filename, 'r')) {
-            if (filesize($filename) != 0) {
-                while (!feof($file)) {
-                    $textperline = fgets($file);
-                    $infoline = $this->get_line_tokens($textperline, $state, $numline++);
-
-                    $state = $infoline["state"];
-                    $infolines[] = $infoline;
-                }
-            }
-
-            fclose($file);
+        $code = str_replace("\r\n", "\n", $code); // Sanitize new line code.
+        $lines = explode("\n", $code);
+        foreach ($lines as $textperline) {
+            $infoline = $this->get_line_tokens($textperline, $state, $numline++);
+            $state = $infoline["state"];
+            $infolines[] = $infoline;
         }
-
         return $infolines;
     }
 
@@ -374,11 +371,11 @@ class tokenizer extends tokenizer_base {
 
         $mapping = $this->matchmappings[$currentstate];
         $regex = $this->regexprs[$currentstate];
-        $offset = $lastindex = $matchattempts = $numchars = 0;
+        $offset = $matchattempts = 0;
         $token = new token(null, "", -1);
 
-        while (preg_match($regex, substr($line, $offset), $matches, PREG_OFFSET_CAPTURE) === 1) {
-            if ($matchattempts++ >= $this->maxtokencount) {
+        while (preg_match($regex, $line, $matches, PREG_OFFSET_CAPTURE, $offset) === 1) {
+            if (++$matchattempts > $this->maxtokencount) {
                 // @codeCoverageIgnoreStart
                 if ($matchattempts > 2 * strlen($line)) {
                     if (!defined('TOKENIZER_ON_TEST') || constant('TOKENIZER_ON_TEST') === false) {
@@ -386,39 +383,29 @@ class tokenizer extends tokenizer_base {
                     }
                 }
                 // @codeCoverageIgnoreEnd
-
-                while ($numchars < strlen($line)) {
-                    self::add_token($tokens, $token, $numchars, $line);
-                    $overflowval = substr($line, $lastindex, 500);
-                    // Fixes by JC 'overflow' => 'vpl_literal' 20230929.
+                self::add_token($tokens, $token);
+                while ($offset < strlen($line)) {
+                    $overflowval = substr($line, $offset, 500);
                     $token = new token("vpl_literal", $overflowval, $numline);
-                    $lastindex += 500;
+                    self::add_token($tokens, $token);
+                    $offset += 500;
                 }
-
+                $token = new token(null, "", -1);
                 $currentstate = "start";
                 break;
             }
 
-            $type = $mapping["default_token"];
             $value = $matches[0][0];
-
-            $offset += strlen($value);
-
-            if (strlen($value) === 0 && $matches[0][1] === 0) {
-                $offset = $offset + 1;
-                $numchars = $numchars + 1;
-            }
-
-            $index = $offset;
-
-            if ($matches[0][1] > 0) {
-                $skipped = substr($line, $lastindex, $matches[0][1]);
-                $offset += strlen($skipped);
-
+            $lastindex = $offset;
+            $offset = $matches[0][1] + (strlen($value) > 0 ? strlen($value) : 1);
+            $type = $mapping["default_token"];
+            $skippedlen = $matches[0][1] - $lastindex;
+            if ($skippedlen > 0) {
+                $skipped = substr($line, $lastindex, $skippedlen);
                 if ($token->type === $type) {
                     $token->value .= $skipped;
                 } else {
-                    self::add_token($tokens, $token, $numchars, $line);
+                    self::add_token($tokens, $token);
                     $token = new token($type, $skipped, $numline);
                 }
             }
@@ -447,7 +434,6 @@ class tokenizer extends tokenizer_base {
 
                             $mapping = $this->matchmappings[$currentstate];
                             $regex = $this->regexprs[$currentstate];
-                            $lastindex = $index;
                         }
                     }
 
@@ -460,32 +446,31 @@ class tokenizer extends tokenizer_base {
                     if (!isset($rule) && $token->type === $type) {
                         $token->value .= $value;
                     } else {
-                        self::add_token($tokens, $token, $numchars, $line);
+                        self::add_token($tokens, $token);
                         $token = new token($type, $value, $numline);
                     }
                 } else {
-                    self::add_token($tokens, $token, $numchars, $line);
+                    self::add_token($tokens, $token);
                     $token = new token(null, "", -1);
                     $tokenarray = tokenizer_base::get_token_array($numline, $type, $value, $regex);
 
                     foreach ($tokenarray as $tokensplit) {
                         $tokens[] = $tokensplit;
-                        $numchars += strlen($tokensplit->value);
                     }
                 }
             }
 
             $condexit = $lastindex >= strlen($line) || $offset >= strlen($line);
-            $condexit = $condexit || $numchars >= strlen($line);
 
-            if ($condexit === true) {
+            if ($condexit) {
                 break;
             }
-
-            $lastindex = $index;
         }
-
-        self::add_token($tokens, $token, $numchars, $line, true);
+        self::add_token($tokens, $token);
+        if ($offset < strlen($line)) {
+            $token = new token($mapping["default_token"], substr($line, $offset), $numline);
+            self::add_token($tokens, $token);
+        }
         return [ "state"  => $currentstate, "tokens" => $tokens ];
     }
 
@@ -559,13 +544,12 @@ class tokenizer extends tokenizer_base {
         }
     }
 
-    private static function add_token(array &$tokens, token $token, int &$numchars, string $line, bool $settrim=false): void {
-        if (isset($token->type) && $numchars < strlen($line)) {
+    private static function add_token(array &$tokens, token $token, bool $settrim=false): void {
+        if (isset($token->type)) {
             $cond = !$settrim ? strlen($token->value) >= 1 : strlen(trim($token->value)) >= 1;
 
-            if ($cond === true) {
+            if ($cond) {
                 $tokens[] = $token;
-                $numchars += strlen($token->value);
             }
         }
     }
