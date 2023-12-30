@@ -473,7 +473,7 @@ foreach ($alldata as $data) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
                 $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
                 $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
-                $actions->add( vpl_get_action_link('grade', $link, 'core_grades') );
+                $actions->add( vpl_get_action_link('gradenoun', $link, 'core') );
                 // Add new next user.
                 if ($lastid) {
                     $nextids[$lastid] = $user->id;
@@ -521,7 +521,7 @@ foreach ($alldata as $data) {
             $grader = '&nbsp;';
             $gradedon = '&nbsp;';
             $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
-            $actions->add(vpl_get_action_link('grade', $link, 'core_grades'));
+            $actions->add(vpl_get_action_link('gradenoun', $link, 'core'));
             // Add new next user.
             if ($lastid) {
                 $nextids[$lastid] = $user->id;
