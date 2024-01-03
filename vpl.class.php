@@ -545,14 +545,14 @@ class mod_vpl {
      * Get password
      */
     protected function get_password() {
-        return trim( $this->instance->password );
+        return trim($this->get_effective_setting('password'));
     }
 
     /**
      * Get password md5
      */
     protected function get_password_md5() {
-        return md5( $this->instance->id . (sesskey()) );
+        return md5($this->instance->id . sesskey());
     }
 
     /**
@@ -596,15 +596,15 @@ class mod_vpl {
     protected function password_check() {
         global $SESSION;
         if (! $this->pass_password_check()) {
-            if ( constant( 'AJAX_SCRIPT' ) ) {
-                throw new Exception( get_string( 'requiredpassword', VPL ) );
+            if (constant('AJAX_SCRIPT') ) {
+                throw new Exception(get_string('requiredpassword', VPL));
             }
             require_once('forms/password_form.php');
             $this->print_header();
-            $mform = new mod_vpl_password_form( $_SERVER['SCRIPT_NAME'], $this);
+            $mform = new mod_vpl_password_form($_SERVER['SCRIPT_NAME'], $this);
             $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
             if (isset( $SESSION->$passattempt)) {
-                vpl_notice( get_string( 'attemptnumber', VPL, $SESSION->$passattempt),
+                vpl_notice(get_string('attemptnumber', VPL, $SESSION->$passattempt),
                             'warning');
             }
             $mform->display();
@@ -618,21 +618,24 @@ class mod_vpl {
      * @return boolean
      */
     public function pass_network_check() {
-        return vpl_check_network( $this->instance->requirednet );
+        if ($this->instance->requirednet > '' && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            return vpl_check_network( $this->instance->requirednet );
+        }
+        return true;
     }
 
     /**
-     * Check netword restriction and show error if not passed
+     * Check network restriction and show error if not passed
      * @return void
      */
     protected function network_check() {
         if (! $this->pass_network_check()) {
-            $str = get_string( 'opnotallowfromclient', VPL ) . ' ' . getremoteaddr();
-            if ( constant( 'AJAX_SCRIPT') ) {
-                throw new Exception( $str );
+            $str = get_string('opnotallowfromclient', VPL) . ' ' . getremoteaddr();
+            if (constant('AJAX_SCRIPT')) {
+                throw new Exception($str);
             }
             $this->print_header();
-            vpl_notice( $str , 'warning');
+            vpl_notice($str , 'warning');
             $this->print_footer();
             die();
         }
@@ -679,13 +682,13 @@ class mod_vpl {
      * @return void
      */
     protected function seb_check() {
-        if ( ! $this->pass_seb_check() ) {
-            $str = get_string( 'sebrequired_help', VPL );
-            if ( constant( 'AJAX_SCRIPT') ) {
-                throw new Exception( $str );
+        if (! $this->pass_seb_check() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
+            $str = get_string('sebrequired_help', VPL);
+            if (constant('AJAX_SCRIPT')) {
+                throw new Exception($str);
             }
             $this->print_header();
-            vpl_notice( $str , 'warning');
+            vpl_notice($str, 'warning');
             $this->print_footer();
             die();
         }
@@ -2187,7 +2190,7 @@ class mod_vpl {
      */
     public function get_effective_setting($setting, $userid = null) {
         global $USER, $DB;
-        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'];
+        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
         if (!in_array($setting, $fields)) {
             return $this->instance->$setting;
         }
