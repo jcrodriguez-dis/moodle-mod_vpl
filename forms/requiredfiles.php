@@ -57,5 +57,6 @@ $vpl->print_heading_with_help( 'requestedfiles' );
 
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
+vpl_editor_util::print_js_description($vpl, $USER->id);
 
 $vpl->print_footer_simple();

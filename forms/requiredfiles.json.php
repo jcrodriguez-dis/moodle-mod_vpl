@@ -71,9 +71,10 @@ try {
             $vpl->update();
             break;
         case 'load' :
+            $result->response = mod_vpl_edit::load($vpl, $USER->id);
             $fgm = $vpl->get_required_fgm();
             $files = $fgm->getallfiles();
-            $result->response->files = mod_vpl_edit::filestoide( $files );
+            $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;
         default :

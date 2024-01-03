@@ -51,6 +51,7 @@ $options['maxfiles'] = 1000;
 $options['saved'] = true;
 $options['minfiles'] = $fgp->get_numstaticfiles();
 $options['readOnlyFiles'] = [];
+
 vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_header( get_string( 'executionfiles', VPL ) );
@@ -58,5 +59,6 @@ $vpl->print_heading_with_help( 'executionfiles' );
 
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
+vpl_editor_util::print_js_description($vpl, $USER->id);
 
 $vpl->print_footer_simple();
