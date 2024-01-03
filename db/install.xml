@@ -148,6 +148,7 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, after this date this vpl instance will not be available"/>
         <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, number of automatic evaluations that do not reduce final score"/>
         <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, reduce final score by a value or percentage for each automatic evaluation"/>
+        <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="If set, replace or set the password required to submit the task"/>
       </FIELDS>
       <KEYS>
         <KEY NAME="primary" TYPE="primary" FIELDS="id"/>

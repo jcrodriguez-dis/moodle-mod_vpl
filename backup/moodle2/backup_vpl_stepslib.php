@@ -220,6 +220,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
             'duedate',
             'freeevaluations',
             'reductionbyevaluation',
+            'password',
     ];
 
     /**

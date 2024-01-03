@@ -115,6 +115,16 @@ class vpl_override_options_form extends moodleform {
             $mform->addElement('html', '</div>');
         }
 
+        $passwordfield = 'password';
+        $mform->addElement('html', '<div class="override-option">');
+        $mform->addElement('checkbox', 'override_' . $passwordfield, get_string($passwordfield), get_string( 'override', VPL ));
+        $mform->addHelpButton('override_' . $passwordfield, 'override', VPL);
+        $mform->addElement( 'passwordunmask', $passwordfield, null, ['optional' => true]);
+        $mform->setType($passwordfield, PARAM_TEXT);
+        $mform->setDefault($passwordfield, '');
+        $mform->disabledIf($passwordfield, 'override_' . $passwordfield);
+        $mform->addElement('html', '</div>');
+
         foreach (['reductionbyevaluation', 'freeevaluations'] as $textfield) {
             $mform->addElement('html', '<div class="override-option">');
             $mform->addElement('checkbox', 'override_' . $textfield, get_string( $textfield, VPL ), get_string( 'override', VPL ));
@@ -167,7 +177,7 @@ $sql = 'SELECT ao.id as aid, o.*, ao.userid as userids, ao.groupid as groupids
 $overridesseparated = $DB->get_records_sql($sql, ['vplid' => $vplid]);
 $overrides = vpl_agregate_overrides($overridesseparated);
 
-$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'];
+$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
 
 // Prepare forms if we are editing or submitting an override.
 if ($edit !== null || $update !== null) {
@@ -233,6 +243,7 @@ if ($delete !== null) {
 if ($update !== null) {
     // Update or create an override.
     $override = $optionsform->get_data();
+    vpl_truncate_vpl($override); // Trim and cut password if too large.
     unset($override->id); // The id field of the form is not the override id - do not use it.
     if ($override !== null) {
         foreach ($fields as $field) {

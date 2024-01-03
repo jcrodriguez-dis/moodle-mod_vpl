@@ -476,6 +476,25 @@ function xmldb_vpl_upgrade_2022110512() {
 }
 
 /**
+ * Upgrades VPL to 4.3 (2024010212) version
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2024010212() {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+    // Define field password to be added to vpl_overrides.
+    $table = new xmldb_table('vpl_overrides');
+    $field = new xmldb_field('password', XMLDB_TYPE_CHAR, '255', null, null, null, null, 'reductionbyevaluation');
+
+    // Conditionally launch add field password.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -527,5 +546,11 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2022110512();
         upgrade_mod_savepoint(true, 2022110512, 'vpl');
     }
+    $vpl43 = 2024010212;
+    if ($oldversion < $vpl43) {
+        xmldb_vpl_upgrade_2024010212();
+        upgrade_mod_savepoint(true, $vpl43, 'vpl');
+    }
+
     return true;
 }
