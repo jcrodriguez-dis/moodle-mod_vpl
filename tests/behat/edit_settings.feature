@@ -1,4 +1,4 @@
-@mod @mod_vpl @mod_vpl_similarity
+@mod @mod_vpl @mod_vpl_edit_setting
 Feature: Create and change VPL activity settings
   In order to modify activity behaviour
   As an editing teacher
@@ -166,7 +166,6 @@ Feature: Create and change VPL activity settings
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I click on "VPL activity full setting" "link" in the "region-main" "region"
-    # "Edit setting" for Moodle < 4 and "Setting" for Moodle >= 4
     And I navigate to "ettings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
@@ -176,6 +175,7 @@ Feature: Create and change VPL activity settings
       | id_requirednet | |
       | id_sebrequired | No |
       | id_sebkeys | |
+      | id_cmidnumber | Full CMID |
     # The password field cannot be changed
     And I press "Save and display"
     And I should see "VPL activity changed setting"
@@ -194,6 +194,9 @@ Feature: Create and change VPL activity settings
     And I should see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
+    And I navigate to "ettings" in current page administration
+    And I expand all fieldsets
+    And I click on "#id_cmidnumber[value='Full CMID']" in VPL
     And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
