@@ -140,17 +140,16 @@ class mod_vpl_mod_form extends moodleform_mod {
         return $errors;
     }
 
-    public function display() {
-        $id = optional_param( 'update', false, PARAM_INT );
-        if ($id) {
-            $vpl = new mod_vpl( $id );
+    public function data_preprocessing(&$data) {
+        parent::data_preprocessing($data);
+        // Set the visiblegrade field as stored in the gradebook.
+        if (isset($data->update)) { // or data->coursemodule?
+            $vpl = new mod_vpl($data->update);
             if ($vpl->get_grade_info() !== false) {
-                $vpl->get_instance()->visiblegrade = ($vpl->get_grade_info()->hidden) ? 0 : 1;
+                $data['visiblegrade'] = ($vpl->get_grade_info()->hidden) ? 0 : 1;
             } else {
-                $vpl->get_instance()->visiblegrade = false;
+                $data['visiblegrade'] = false;
             }
-            $this->set_data( $vpl->get_instance() );
         }
-        parent::display();
     }
 }
