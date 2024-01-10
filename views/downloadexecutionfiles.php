@@ -35,6 +35,6 @@ try {
     $filegroup = $vpl->get_execution_fgm();
     $filegroup->download_files( $vpl->get_name() );
     die();
-} catch ( Exception $e ) {
+} catch (\Throwable $e) {
     vpl_redirect('', $e->getMessage(), 'error' );
 }

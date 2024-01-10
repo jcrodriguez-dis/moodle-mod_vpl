@@ -345,7 +345,7 @@ class file_group_process {
     public function getversion() {
         try {
             $info = stat($this->dir);
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             return 0;
         }
         if ($info !== false) {

@@ -964,7 +964,7 @@ function vpl_reset_userdata($data) {
                 ];
                 try {
                     vpl_reset_instance_userdata($instance->id);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     $instancestatus['error'] = true;
                 }
                 $status[] = $instancestatus;

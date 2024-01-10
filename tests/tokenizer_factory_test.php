@@ -53,7 +53,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     public function test_unexisted_tokenizer(): void {
         try {
             tokenizer_factory::get('not_a_valid_language');
-        } catch (Exception $exe) {
+        } catch (\Throwable $exe) {
             $mssg = 'not_a_valid_language is not available';
             $expectedmssg = assertf::get_error('not_a_valid_language', $mssg);
             $this->assertSame($expectedmssg, $exe->getMessage());
@@ -66,7 +66,7 @@ class tokenizer_factory_test extends \advanced_testcase {
     public function test_unexisted_tokenizer_with_vpl(): void {
         try {
             vpl_tokenizer_factory::get('not_a_valid_language');
-        } catch (Exception $exe) {
+        } catch (\Throwable $exe) {
             $mssg = 'not_a_valid_language is not available';
             $expectedmssg = assertf::get_error('not_a_valid_language', $mssg);
             $this->assertSame($expectedmssg, $exe->getMessage());

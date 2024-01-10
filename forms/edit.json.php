@@ -149,7 +149,7 @@ try {
             $result->response->timeLeft = $timeleft;
         }
     }
-} catch ( Exception $e ) {
+} catch (\Throwable $e) {
     $result->success = false;
     $result->error = $e->getMessage();
 }

@@ -158,7 +158,7 @@ function vpl_evaluate($vpl, $alldata, $userinfo, $nevaluation, $groupsurl) {
         $nexturl = str_replace( '&amp;', '&', urldecode( $url ) );
         vpl_editor_util::print_js_i18n();
         vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
-    } catch ( Exception $e ) {
+    } catch (\Throwable $e) {
         vpl_notice( $e->getMessage(), 'error' );
     }
     $vpl->print_footer();

@@ -96,7 +96,7 @@ class locallib_test extends \advanced_testcase {
             } else {
                 $chmodusefull = true;
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $chmodusefull = false;
         }
         chmod($fpath, 0777);
@@ -105,7 +105,7 @@ class locallib_test extends \advanced_testcase {
             try {
                 $throwexception = false;
                 $this->internal_test_vpl_fopen($bad);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $throwexception = true;
             }
             $this->assertTrue($throwexception, 'Exception expected');
@@ -124,7 +124,7 @@ class locallib_test extends \advanced_testcase {
             try {
                 $throwexception = false;
                 vpl_fwrite($fpath, $text);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $throwexception = true;
             }
             chmod($testdir, 0777);
@@ -174,7 +174,7 @@ class locallib_test extends \advanced_testcase {
             } else {
                 $chmodusefull = true;
             }
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $chmodusefull = false;
         }
         chmod($fpath, 0777);
@@ -193,7 +193,7 @@ class locallib_test extends \advanced_testcase {
             try {
                 $throwexception = false;
                 vpl_fwrite($fpath, $text);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $throwexception = true;
             }
             $this->assertTrue($throwexception, 'Exception expected');
@@ -208,7 +208,7 @@ class locallib_test extends \advanced_testcase {
             try {
                 $throwexception = false;
                 vpl_fwrite($fpath, $text);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $throwexception = true;
             }
             chmod($testdir, 0777);
