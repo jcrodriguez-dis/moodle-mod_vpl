@@ -651,13 +651,20 @@ class mod_vpl {
         if ( $keys == '') {
             return true;
         }
-        if ( ! isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH']) ) {
-            return false;
+        if (isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH']) ) {
+            $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'];
+            foreach (preg_split('/\s+/', $keys) as $testkey) {
+                if (hash('sha256', $FULLME . $testkey) === $key) {
+                    return true;
+                }
+            }
         }
-        $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_REQUESTHASH'];
-        foreach (preg_split('/\s+/', $keys) as $testkey) {
-            if (hash('sha256', $FULLME . $testkey) === $key) {
-                return true;
+        if (isset($_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH']) ) {
+            $key = $_SERVER['HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH'];
+            foreach (preg_split('/\s+/', $keys) as $testkey) {
+                if (hash('sha256', $FULLME . $testkey) === $key) {
+                    return true;
+                }
             }
         }
         return false;
@@ -1768,6 +1775,11 @@ class mod_vpl {
         if ($value === null) {
             $value = $this->instance->$str;
         }
+        if ($str == 'password') {
+            $infohs = new mod_vpl\util\hide_show();
+            $value .= $infohs->generate();
+            $value .= $infohs->content_in_span(s($this->get_instance()->password));
+        }
         $html .= $value;
         return $html;
     }
@@ -2045,14 +2057,13 @@ class mod_vpl {
         global $OUTPUT;
         global $DB;
         $html = '';
-        require_once(dirname( __FILE__ ) . '/views/show_hide_div.class.php');
         $variations = $DB->get_records(VPL_VARIATIONS, ['vpl' => $this->instance->id]);
         if (count($variations) > 0) {
-            $div = new vpl_hide_show_div();
+            $div = new mod_vpl\util\hide_show();
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
-            $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate( true ) . '</b><br>';
-            $html .= $div->begin_div(true);
+            $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate() . '</b><br>';
+            $html .= $div->begin_div();
             if (! $this->instance->usevariations) {
                 $html .= '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
@@ -2066,7 +2077,7 @@ class mod_vpl {
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
             }
-            $html .= $div->end_div(true);
+            $html .= $div->end_div();
         }
         return $html;
     }
