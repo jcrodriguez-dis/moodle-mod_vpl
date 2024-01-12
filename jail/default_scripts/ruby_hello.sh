@@ -6,7 +6,7 @@
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
 cat > "vpl hello.rb" <<'END_OF_FILE'
-require "~/test ruby/vpl message"
+require "./test ruby/vpl message"
 hello
 END_OF_FILE
 
