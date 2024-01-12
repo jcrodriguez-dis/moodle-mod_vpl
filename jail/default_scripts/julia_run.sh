@@ -11,7 +11,6 @@
 check_program julia
 if [ "$1" == "version" ] ; then
     get_program_version -v
-	exit
 fi 
 get_first_source_file jl
 cat common_script.sh > vpl_execution
