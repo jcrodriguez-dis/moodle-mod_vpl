@@ -65,6 +65,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'f90' => 'fortran',
         'f' => 'fortran',
         'for' => 'fortran',
+        'fs' => 'fsharp',
         'pl' => 'prolog',
         'pro' => 'prolog',
         'htm' => 'html',
@@ -78,6 +79,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'py' => 'python',
         'psc' => 'pseint',
         'v' => 'verilog',
+        'vb' => 'visualbasic',
         'vh' => 'verilog',
         'vhd' => 'vhdl',
         'vhdl' => 'vhdl',
@@ -691,7 +693,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->adminticket = $processinfo->adminticket;
         try {
             $response = self::jailaction($vpl, $server, 'update', $data );
-        } catch ( Exception $e ) {
+        } catch (\Throwable $e ) {
             return false;
         }
         return $response['update'] > 0;
@@ -724,7 +726,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     public function isrunning() {
         try {
             $response = $this->jailreaction( 'running' );
-        } catch ( Exception $e ) {
+        } catch (\Throwable $e) {
             return false;
         }
         return $response['running'] > 0;
@@ -746,7 +748,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         try {
             $this->jailreaction( 'stop', $processinfo );
-        } catch ( Exception $e ) {
+        } catch (\Throwable $e ) {
             // No matter, consider that the process stopped.
             debugging("Process in execution server not stopped or not found", DEBUG_DEVELOPER );
         }
