@@ -7,16 +7,15 @@
 
 # @vpl_script_description Run a "hello world" program for each programming language available
 
-COMMON_SCRIPT_SAVED=.common_script.sav
-cp common_script.sh $COMMON_SCRIPT_SAVED
-cat common_script.sh > all_execute
+ROOT="$(pwd)"
+ALL_EXECUTE="$ROOT/all_execute"
 . common_script.sh
 #Remove student files
-for FILENAME in $VPL_SUBFILES
-do
+for FILENAME in $VPL_SUBFILES ; do
 	rm "$FILENAME" &>/dev/null
 done
 
+cat common_script.sh > "$ALL_EXECUTE"
 NG=0
 FILES=*_hello.sh
 touch .tuierrors
@@ -24,11 +23,14 @@ for HELLOSCRIPT in $FILES
 do
 	typeset -u LANGUAGE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$//")
 	RUNSCRIPT=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_run.sh/")
-	VPLEXE=$(echo "$HELLOSCRIPT" | sed -r "s/_hello.sh$/_execute.sh/")
 	echo -n "$LANGUAGE:"
-	rm .curerror &>/dev/null
+	mkdir $LANGUAGE
+	cp common_script.sh $LANGUAGE
+	cp vpl_environment.sh $LANGUAGE
+	mv $HELLOSCRIPT $LANGUAGE
+	mv $RUNSCRIPT $LANGUAGE
+	cd $LANGUAGE
 	. $HELLOSCRIPT &>.curerror
-	cp $COMMON_SCRIPT_SAVED common_script.sh
 	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
@@ -36,19 +38,22 @@ do
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"
-		mv vpl_execution $VPLEXE
 		echo " Compiled"
-		echo "printf \"%2d %s: \" $NG $LANGUAGE" >> all_execute
-		echo "[ -f .hello_fail ] && rm .hello_fail"  >> all_execute
-		if [ "$INPUT_TEXT" == "" ] ; then
-			echo "./$VPLEXE 2>.hello_fail" >> all_execute
-		else
-			echo "echo \"$INPUT_TEXT\" | ./$VPLEXE 2>.hello_fail" >> all_execute
-			unset INPUT_TEXT
-		fi
-		echo "[ -s .hello_fail ] && cat .hello_fail" >> all_execute
-		echo "[ -s .hello_fail ] && echo \"Failed\"" >> all_execute
-		echo "[ -f \"$VPL_SUBFILE0\" ] && rm \"$VPL_SUBFILE0\"" >> all_execute
+		{
+			echo "printf \"%2d %s: \" $NG $LANGUAGE"
+			echo "[ -f .hello_fail ] && rm .hello_fail"
+			echo "cd $LANGUAGE"
+			if [ "$INPUT_TEXT" == "" ] ; then
+				echo "./vpl_execution 2>.hello_fail"
+			else
+				echo "echo \"$INPUT_TEXT\" | ./vpl_execution 2>.hello_fail"
+				unset INPUT_TEXT
+			fi
+			echo "[ -s .hello_fail ] && cat .hello_fail"
+			echo "[ -s .hello_fail ] && echo \"Failed\""
+			echo "[ -f \"$VPL_SUBFILE0\" ] && rm \"$VPL_SUBFILE0\""
+			echo "cd $ROOT"
+		} >> "$ALL_EXECUTE"
 	else
 		if [ -f vpl_wexecution ] ; then
 			echo " Use debug button to run graphic Hello World!"
@@ -60,11 +65,12 @@ do
 	if [ -s .curerror ] ; then
 		echo >> .tuierrors
 		echo "$LANGUAGE: The compilation/preparation of $LANGUAGE has generated the folloging menssages:" >> .tuierrors
-		cat .curerror >> .tuierrors
+		cat .curerror >> "$ROOT/.tuierrors"
 	fi
+	cd "$ROOT"
 done
 
-mv all_execute vpl_execution
+mv "$ALL_EXECUTE" vpl_execution
 chmod +x vpl_execution
 echo
 cat .tuierrors
