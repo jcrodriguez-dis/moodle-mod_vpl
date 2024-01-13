@@ -24,7 +24,7 @@
     overflow: hidden;
 }
 
-/* Using vpl_body_fullscreen class to get fullscreen */ 
+/* Using vpl_body_fullscreen class to get fullscreen */
 .vpl_body_fullscreen .block {
     display: none;
     visibility: hidden;
@@ -415,5 +415,5 @@ pre.vpl_terminal {
 
 .vpl_ide_status {
     opacity: 0.8;
-    z-index:100;
+    z-index: 100;
 }
