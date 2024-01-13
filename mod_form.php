@@ -139,17 +139,4 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->validate('reductionbyevaluation', '/^[0-9]*(\.[0-9]+)?%?$/', '#[.#][%]', $data, $errors);
         return $errors;
     }
-
-    public function data_preprocessing(&$data) {
-        parent::data_preprocessing($data);
-        // Set the visiblegrade field as stored in the gradebook.
-        if (isset($data->update)) { // or data->coursemodule?
-            $vpl = new mod_vpl($data->update);
-            if ($vpl->get_grade_info() !== false) {
-                $data['visiblegrade'] = ($vpl->get_grade_info()->hidden) ? 0 : 1;
-            } else {
-                $data['visiblegrade'] = false;
-            }
-        }
-    }
 }
