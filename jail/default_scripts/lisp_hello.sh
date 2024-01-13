@@ -8,7 +8,7 @@
 # Note: clisp command line does NOT support spaces in the file name
 
 cat >"vpl_hello.lisp" <<'END_OF_FILE'
-(load "~/lisp test/message.lisp")
+(load "./lisp test/message.lisp")
 (hello)
 END_OF_FILE
 

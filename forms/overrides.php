@@ -417,6 +417,12 @@ foreach ($overrides as $override) {
                 $overridedata .= '<br>';
             }
         }
+        if ($override->password !== null) {
+            $overridedata .= get_string('password') . ' ';
+            $infohs = new mod_vpl\util\hide_show();
+            $overridedata .= $infohs->generate();
+            $overridedata .= $infohs->content_in_span(s($override->password)) . '<br>';
+        }
         foreach (['reductionbyevaluation', 'freeevaluations'] as $field) {
             if ($override->$field !== null) {
                 $overridedata .= get_string($field, VPL) . ': ' . $override->$field . '<br>';

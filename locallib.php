@@ -1137,7 +1137,7 @@ function vpl_call_with_lock(string $locktype, string $resource, string $function
             $result = $function(...$parms);
             $lock->release();
             return $result;
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $lock->release();
             throw $e;
         }
@@ -1160,7 +1160,7 @@ function vpl_call_with_transaction(string $function, array $parms) {
         $result = $function(...$parms);
         $transaction->allow_commit();
         return $result;
-    } catch (Exception $e) {
+    } catch (\Throwable $e) {
         $transaction->rollback($e);
     }
 }

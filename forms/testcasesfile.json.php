@@ -83,7 +83,7 @@ try {
         default :
             throw new Exception( 'ajax action error: ' + $action );
     }
-} catch ( Exception $e ) {
+} catch (\Throwable $e ) {
     $result->success = false;
     $result->error = $e->getMessage();
 }

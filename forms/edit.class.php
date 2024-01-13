@@ -311,7 +311,7 @@ class mod_vpl_edit {
                 $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
             }
             $submission->cancelProcess($processid);
-        } catch ( Exception $e ) {
+        } catch (\Throwable $e) {
             return $e->getMessage();
         }
         return '';
@@ -330,7 +330,7 @@ class mod_vpl_edit {
                 $data->adminticket = $process->adminticket;
                 $request = vpl_jailserver_manager::get_action_request('stop', $data);
                 vpl_jailserver_manager::get_response( $data->server, $request, $error );
-            } catch ( Exception $e ) {
+            } catch (\Throwable $e) {
                 debugging( "Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER );
             }
             vpl_running_processes::delete( $userid, $vplid, $process->adminticket);

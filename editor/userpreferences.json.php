@@ -56,7 +56,7 @@ try {
         $result->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
         $result->success = true;
     }
-} catch ( Exception $e ) {
+} catch (\Throwable $e ) {
     $result->error = $e->getMessage();
 }
 echo json_encode( $result );

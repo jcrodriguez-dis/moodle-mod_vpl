@@ -167,7 +167,7 @@ class webservice_test extends base_test {
             try {
                 $res = mod_vpl_webservice::info($this->vplnotavailable->get_course_module()->id, 'bobería');
                 $this->fail('Exception expected calling mod_vpl_webservice::info');
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 $this->assertFalse(strpos($e->getMessage(), 'password') === false);
             }
         }
@@ -206,14 +206,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::info($forbbidennet->get_course_module()->id, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::info($withpassword->get_course_module()->id, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -222,7 +222,7 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -397,14 +397,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::open($forbbidennet->get_course_module()->id, '', -1);
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::open($withpassword->get_course_module()->id, 'bad password', -1);
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -413,7 +413,7 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -467,7 +467,7 @@ class webservice_test extends base_test {
             if ( $this->vpldefault->is_submit_able() ) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Saving submission " . $e);
                 }
             }
@@ -480,7 +480,7 @@ class webservice_test extends base_test {
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
                 $this->internal_test_vpl_webservice_save($id, $files, $password, $user->id, $user->id != $teacher->id);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 throw new \Exception("Saving submission " . $e);
             }
         }
@@ -490,7 +490,7 @@ class webservice_test extends base_test {
             try {
                 $files['b.c'] = $files['b.c'] . $user->id;
                 $this->internal_test_vpl_webservice_save($id, $files, $password, -1);
-            } catch (Exception $e) {
+            } catch (\Throwable $e) {
                 throw new \Exception("Saving submission " . $e);
             }
         }
@@ -521,7 +521,7 @@ class webservice_test extends base_test {
             if ( $this->vpldefault->is_submit_able() ) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Saving submission " . $e);
                 }
             }
@@ -566,14 +566,14 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::save($forbbidennet->get_course_module()->id, $files, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The initial_checks if request come from IP in required IP/Network.
         try {
             mod_vpl_webservice::save($withpassword->get_course_module()->id, $files, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -582,28 +582,28 @@ class webservice_test extends base_test {
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);;
             mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
         try {
             mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
         try {
             mod_vpl_webservice::save($example->get_course_module()->id, $files, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not external copy.
         try {
             mod_vpl_webservice::save($nocopy->get_course_module()->id, $files, '');
             $this->fail('Exception expected if not external copy');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -637,7 +637,7 @@ class webservice_test extends base_test {
                     try {
                         $this->internal_test_vpl_webservice_save($id, $files, $password);
                         mod_vpl_webservice::evaluate($id, $password);
-                    } catch (Exception $e) {
+                    } catch (\Throwable $e) {
                         throw new \Exception("Evaluation " . $e);
                     }
                 }
@@ -680,7 +680,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($activity->get_course_module()->id, '');
             $this->fail('Exception expected no submission');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -693,7 +693,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -703,7 +703,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -714,7 +714,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not evaluable.
@@ -723,7 +723,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if not evaluable');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
@@ -732,7 +732,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
@@ -741,7 +741,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::evaluate($cid, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);
@@ -782,7 +782,7 @@ class webservice_test extends base_test {
                     mod_vpl_webservice::evaluate($id, $password);
                     sleep(2);
                     mod_vpl_webservice::get_result($id, $password);
-                } catch (Exception $e) {
+                } catch (\Throwable $e) {
                     throw new \Exception("Evaluation " . $e);
                 }
             }
@@ -792,10 +792,10 @@ class webservice_test extends base_test {
     }
 
     /**
-     * Description of test_vpl_webservice_get_result_exeptions
+     * Description of test_vpl_webservice_get_result_exceptions
      * @runInSeparateProcess
      */
-    public function test_vpl_webservice_get_result_exeptions(): void {
+    public function test_vpl_webservice_get_result_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
         if ( ! vpl_get_webservice_available()) {
@@ -815,7 +815,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($activity->get_course_module()->id, '');
             $this->fail('Exception expected no submission');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -828,7 +828,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected netrequired');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
 
@@ -838,7 +838,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, 'bad password');
             $this->fail('Exception expected if bad password');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not is_visible().
@@ -849,7 +849,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if not evaluable.
@@ -858,7 +858,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if not evaluable');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if example.
@@ -867,7 +867,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if example');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         // The info if closed.
@@ -876,7 +876,7 @@ class webservice_test extends base_test {
         try {
             mod_vpl_webservice::get_result($cid, '');
             $this->fail('Exception expected if closed');
-        } catch (Exception $e) {
+        } catch (\Throwable $e) {
             $ok = $e;
         }
         $this->assertIsObject($ok);

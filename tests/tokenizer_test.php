@@ -173,7 +173,7 @@ class tokenizer_test extends \advanced_testcase {
 
             try {
                 new tokenizer($filename);
-            } catch (Exception $exe) {
+            } catch (\Throwable $exe) {
                 $this->fail($exe->getMessage() . "\n");
                 break;
             }
@@ -205,7 +205,7 @@ class tokenizer_test extends \advanced_testcase {
                     self::get_behat($tokenizer, $extensions, false);
                 }
             }
-        } catch (Exception $exe) {
+        } catch (\Throwable $exe) {
             $this->fail($exe->getMessage() . "\n");
         }
     }
@@ -217,7 +217,7 @@ class tokenizer_test extends \advanced_testcase {
         foreach (self::$invalidtestcases as $filename => $mssg) {
             try {
                 new tokenizer($filename);
-            } catch (Exception $exe) {
+            } catch (\Throwable $exe) {
                 $expectedmssg = assertf::get_error($filename, $mssg);
                 $this->assertSame($expectedmssg, $exe->getMessage());
                 continue;
@@ -391,7 +391,7 @@ class tokenizer_test extends \advanced_testcase {
             $tokenizer = new tokenizer($filename);
             try {
                 $result = $tokenizer->get_all_tokens_in_file($input);
-            } catch (Exception $exe) {
+            } catch (\Throwable $exe) {
                 $expectedmssg = assertf::get_error('default', $expectedresult);
                 $this->assertSame($expectedmssg, $exe->getMessage());
                 continue;

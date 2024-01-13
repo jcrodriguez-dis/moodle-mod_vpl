@@ -135,7 +135,7 @@ class similarity_factory {
                 require_once($include);
                 self::$classloaded[$type] = true;
                 // @codeCoverageIgnoreStart
-            } catch (Exception $exe) {
+            } catch (\Throwable $exe) {
                 return null;
             }
             // @codeCoverageIgnoreEnd

@@ -29,15 +29,18 @@
     }
 
     VPL.showHideDiv = function(id) {
-        var text = window.document.getElementById('sht' + id);
-        var div = window.document.getElementById('shd' + id);
-        if (text) {
-            if (text.innerHTML == '<i class="fa fa-eye" aria-hidden="true"></i> [+]') {
-                div.style.display = '';
-                text.innerHTML = '<i class="fa fa-eye-slash" aria-hidden="true"></i> [-]';
+        var button_show = window.document.getElementById('vpl_shb' + id + 's');
+        var button_hide = window.document.getElementById('vpl_shb' + id + 'h');
+        var content = window.document.getElementById('vpl_shc' + id);
+        if (content) {
+            if (content.style.display == 'none') {
+                content.style.display = '';
+                button_show.style.display = 'none';
+                button_hide.style.display = '';
             } else {
-                div.style.display = 'none';
-                text.innerHTML = '<i class="fa fa-eye" aria-hidden="true"></i> [+]';
+                content.style.display = 'none';
+                button_show.style.display = '';
+                button_hide.style.display = 'none';
             }
         }
     };

@@ -41,7 +41,7 @@ class lock {
         while ($ntries < 10) {
             try {
                 $fp = fopen($this->lockfile, 'x');
-            } catch (\Exception $e) {
+            } catch (\Throwable $e) {
                 $fp = false;
             }
             if ( $fp === false ) { // Locked.

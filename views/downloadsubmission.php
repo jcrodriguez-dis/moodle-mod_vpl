@@ -86,7 +86,7 @@ try {
     $watermark = isset( $plugincfg->use_watermarks ) && $plugincfg->use_watermarks;
     $fgm = $submission->get_submitted_fgm();
     $fgm->download_files( $vpl->get_name() , $watermark);
-} catch ( Exception $e ) {
+} catch (\Throwable $e) {
     $vpl->prepare_page( 'views/downloadsubmission.php', [
             'id' => $id,
     ] );
