@@ -63,9 +63,11 @@ do
 		fi
 	fi
 	if [ -s .curerror ] ; then
-		echo >> .tuierrors
-		echo "$LANGUAGE: The compilation/preparation of $LANGUAGE has generated the folloging menssages:" >> .tuierrors
-		cat .curerror >> "$ROOT/.tuierrors"
+		{
+			echo
+			echo "$LANGUAGE: The compilation/preparation of $LANGUAGE has generated the folloging menssages:"
+			cat .curerror
+		} >> "$ROOT/.tuierrors"
 	fi
 	cd "$ROOT"
 done
