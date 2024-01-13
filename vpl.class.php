@@ -1908,7 +1908,7 @@ class mod_vpl {
             if (trim( $instance->requirednet ) > '') {
                 $html .= $this->str_restriction_with_icon( 'requirednet', s( $instance->requirednet ));
             }
-            if ($this->use_seb()) {
+            if ( $instance->sebrequired > 0) {
                 $html .= $this->str_restriction_with_icon('sebrequired', $stryes );
             }
             if (trim( $instance->sebkeys ) > '') {
