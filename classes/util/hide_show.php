@@ -59,14 +59,16 @@ class hide_show {
         $title = get_string('hide');
         $icon = "class='icon fa fa-eye-slash'";
         $sign = '[-]';
-        $display = $this->show ? '' : "style='display:none'";
-        $html .= "<span $id $display><i $icon aria-hidden='true' title='$title'></i>$sign</span>";
+        $style = "style='cursor:pointer";
+        $style .= $this->show ? "'" : ";display:none'";
+        $html .= "<span $id $style><i $icon aria-hidden='true' title='$title'></i>$sign</span>";
         $id = "id='vpl_shb{$this->id}s'";
         $title = get_string('show');
         $icon = "class='icon fa fa-eye'";
         $sign = '[+]';
-        $display = $this->show ? "style='display:none'" : '';
-        $html .= "<span $id $display><i $id $icon aria-hidden='true' title='$title'></i>$sign</span>";
+        $style = "style='cursor:pointer";
+        $style .= $this->show ? ";display:none'" : "'";
+        $html .= "<span $id $style><i $id $icon aria-hidden='true' title='$title'></i>$sign</span>";
         $html .= '</a> ';
         return $html;
     }
