@@ -1775,11 +1775,6 @@ class mod_vpl {
         if ($value === null) {
             $value = $this->instance->$str;
         }
-        if ($str == 'password') {
-            $infohs = new mod_vpl\util\hide_show();
-            $value .= $infohs->generate();
-            $value .= $infohs->content_in_span(s($this->get_instance()->password));
-        }
         $html .= $value;
         return $html;
     }
@@ -1902,8 +1897,13 @@ class mod_vpl {
         }
         $html .= $this->str_gradereduction($userid);
         if ($grader) {
-            if (trim( $instance->password ) > '') {
-                $html .= $this->str_restriction_with_icon( 'password', $stryes, false, true, 'moodle' );
+            $password = trim($this->get_effective_setting('password'));
+            if ($password) {
+                $html .= $this->str_restriction_with_icon( 'password', $stryes, false, false, 'moodle');
+                $infohs = new mod_vpl\util\hide_show();
+                $html .= $infohs->generate();
+                $html .= $infohs->content_in_span(s($password));
+                $html .= "<br>\n";
             }
             if (trim( $instance->requirednet ) > '') {
                 $html .= $this->str_restriction_with_icon( 'requirednet', s( $instance->requirednet ));
@@ -1912,7 +1912,11 @@ class mod_vpl {
                 $html .= $this->str_restriction_with_icon('sebrequired', $stryes );
             }
             if (trim( $instance->sebkeys ) > '') {
-                $html .= $this->str_restriction_with_icon('sebkeys', $stryes );
+                $html .= $this->str_restriction_with_icon('sebkeys', $stryes, false, false);
+                $infohs = new mod_vpl\util\hide_show();
+                $html .= $infohs->generate();
+                $html .= $infohs->content_in_div(nl2br(s($instance->sebkeys)));
+                $html .= "<br>\n";
             }
             if ($instance->restrictededitor) {
                 $html .= $this->str_restriction_with_icon( 'restrictededitor', $stryes );
