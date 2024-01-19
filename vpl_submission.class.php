@@ -751,7 +751,7 @@ class mod_vpl_submission {
             $a->gradername = fullname( $grader );
             $ret .= get_string( 'gradedonby', VPL, $a ) . '<br>';
             if ($this->vpl->get_grade() != 0) {
-                $ret .= $this->vpl->str_restriction('gradenoun', $this->get_grade_core(), false, 'core') . '<br>';
+                $ret .= $this->vpl->str_restriction('grade', $this->get_grade_core(), false, 'core') . '<br>';
                 if ($detailed) {
                     $ret .= $this->get_detailed_grade();
                 }

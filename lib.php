@@ -438,7 +438,7 @@ function vpl_user_outline($course, $user, $mod, $instance) {
             $info = get_string( 'submission', VPL, count( $subs ) );
         }
         if ($subinstance->dategraded) {
-            $info .= '<br>' . get_string('gradenoun') . ': ' . $submission->get_grade_core();
+            $info .= '<br>' . get_string('grade') . ': ' . $submission->get_grade_core();
         }
         $url = vpl_mod_href( 'forms/submissionview.php', 'id', $vpl->get_course_module()->id, 'userid', $user->id );
         $return->info = '<a href="' . $url . '">' . $info . '</a>';
@@ -683,7 +683,7 @@ function vpl_extend_navigation(navigation_node $vplnode, $course, $module, $cm) 
     if (! $example) {
         if ($grader && $USER->id != $userid) {
             $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parm);
-            $node = vpl_navi_node_create($vplnode, 'gradenoun', $url, navigation_node::TYPE_SETTING, 'core');
+            $node = vpl_navi_node_create($vplnode, 'grade', $url, navigation_node::TYPE_SETTING, 'core');
             $vplnode->add_node( $node );
         }
         $url = new moodle_url( '/mod/vpl/forms/submissionview.php', $parm );
@@ -791,7 +791,7 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $testact->add_node( $node, $keybefore );
         if ( $userid != $USER->id ) { // Auto grading has sense?
             $url = new moodle_url( '/mod/vpl/forms/gradesubmission.php', $parms );
-            $node = vpl_navi_node_create($testact, 'gradenoun', $url, navigation_node::TYPE_SETTING, 'core');
+            $node = vpl_navi_node_create($testact, 'grade', $url, navigation_node::TYPE_SETTING, 'core');
             $testact->add_node( $node, $keybefore );
         }
         $url = new moodle_url( '/mod/vpl/views/previoussubmissionslist.php', $parms );

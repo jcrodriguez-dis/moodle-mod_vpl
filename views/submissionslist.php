@@ -367,7 +367,7 @@ $options = [
 ];
 // Load strings.
 $strsubtime = get_string( 'submittedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'datesubmitted', $sort, $sortdir );
-$strgrade = get_string('gradenoun') . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
+$strgrade = get_string('grade') . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
 $strgrader = get_string( 'grader', VPL ) . vpl_submissionlist_arrow( $baseurl, 'grader', $sort, $sortdir );
 $strgradedon = get_string( 'gradedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'dategraded', $sort, $sortdir );
 $strcomments = get_string( 'gradercomments', VPL );
@@ -473,7 +473,7 @@ foreach ($alldata as $data) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
                 $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
                 $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
-                $actions->add( vpl_get_action_link('gradenoun', $link, 'core') );
+                $actions->add( vpl_get_action_link('grade', $link, 'core') );
                 // Add new next user.
                 if ($lastid) {
                     $nextids[$lastid] = $user->id;
@@ -521,7 +521,7 @@ foreach ($alldata as $data) {
             $grader = '&nbsp;';
             $gradedon = '&nbsp;';
             $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
-            $actions->add(vpl_get_action_link('gradenoun', $link, 'core'));
+            $actions->add(vpl_get_action_link('grade', $link, 'core'));
             // Add new next user.
             if ($lastid) {
                 $nextids[$lastid] = $user->id;
@@ -577,7 +577,7 @@ if (count( $ngrades )) {
         $namehead = get_string( 'firstname' ) . ' / ' . get_string( 'lastname' );
     }
     $tablegraders = new html_table();
-    $tablegraders->head = ['#', $namehead, get_string('gradenoun')];
+    $tablegraders->head = ['#', $namehead, get_string('grade')];
     $tablegraders->align = ['right', 'left', 'center'];
     $tablegraders->wrap = ['nowrap', 'nowrap', 'nowrap'];
     $tablegraders->data = [];
