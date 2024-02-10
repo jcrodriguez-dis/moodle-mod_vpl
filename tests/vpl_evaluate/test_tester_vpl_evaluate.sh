@@ -59,8 +59,8 @@ function evalTest {
 	cd "$TESTDIR"
 	if [ ! -x vpl_execution ] ; then
 	    write "$X_MARK"
-		write "Test $1 failed: evaluation program compilation failed" >2
-		cat "$VPLTESTERRORS" >2
+		write "Test $1 failed: evaluation program compilation failed" >&2
+		cat "$VPLTESTERRORS" >&2
 		result=1
 	else
 		mark=$(grep -E 'Grade :=>>' "$VPLTESTOUTPUT" | tail -n1 | sed 's/Grade :=>> *//i')
@@ -68,10 +68,10 @@ function evalTest {
 		    write "$X_MARK"
 			result=1
 			if [ -s "$VPLTESTERRORS" ] ; then
-			    echo "The program has generated the following errors" >2
-			    cat "$VPLTESTERRORS" >2
+			    echo "The program has generated the following errors" >&2
+			    cat "$VPLTESTERRORS" >&2
 			else
-		    	cat "$VPLTESTOUTPUT" >2
+		    	cat "$VPLTESTOUTPUT" >&2
 			fi
 		fi
 	fi
@@ -88,7 +88,6 @@ function runAllTests {
 	local npass=0
     local finalResult=0
 	local expectedResult="0"
-	cd "$CASESDIR"
 	local cases=$(ls -d *.cases | sed 's/\.cases$//')
 	for case in $cases
 	do
@@ -100,6 +99,7 @@ function runAllTests {
 		let ntests=ntests+1
 		initTest "$case"
 		runTest "$case"
+		echo "===> $case output:" >> "$test_errors"
 		evalTest "$case" 2>> "$test_errors"
 		if [ "$?" != "$expectedResult" ] ; then
 			echo "   ➡ $X_MARK"
@@ -110,13 +110,13 @@ function runAllTests {
 		fi
 	done
 	if [ "$npass" == "$ntests" ] ; then
-		echo -n "OK all "
+		echo "Tests passed, all $ntests tests were passed"
 	else
 		echo
 		cat "$test_errors"
-		echo -n "Fail only "
+		rm "$test_errors"
+		echo "Tests failed, only $npass of the $ntests tests were passed"
 	fi
-	echo "$npass of $ntests tests passed"
 	return $finalResult
 }
 INIDIR="$(pwd)"

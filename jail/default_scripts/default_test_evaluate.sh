@@ -71,9 +71,11 @@ function add_error {
 }
 
 function copy_configuration {
+	local envfile="$1/vpl_environment.sh"
 	cp -a $home_dir/* "$1"
 	rm "$1/vpl_test_evaluate.sh"
-	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$1/vpl_environment.sh"
+	[ ! -f "$envfile" ] && (echo "#!/bin/bash" > "$envfile"; chmod +x "$envfile")
+	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$envfile"
 }
 
 function compile_a_solution_test {
@@ -152,6 +154,7 @@ if [[ -d "$home_dir/$oldtest_dir" ]] ; then
 		for variation in ${VPL_VARIATIONS[@]} ; do
 			echo "⤨ Preparing variation: $variation" >> "$home_dir/$compilation_results"
 			compile_solutions_tests "$home_dir/$test_dir/$variation"
+			echo "export VPL_VARIATION=$variation" >> "$home_dir/$test_dir/$variation/vpl_environment.sh"
 		done
 	else
 		compile_solutions_tests "$home_dir/$test_dir"
@@ -206,6 +209,8 @@ function run_a_solution_test {
 	cd "$1"
 	let ntest=$ntest+1
 	if [ -x vpl_execution ] ; then
+		[[ $variation != "" ]] && export VPL_VARIATION=$variation
+		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION=$variation" >> ./vpl_environment.sh
 		./vpl_execution  &> "$solution/$evaluation_results"
 	else
 		test_info="$bug_symbol Progran test for '$test_name' not generated. See compilation."
@@ -258,7 +263,7 @@ function run_solutions_tests {
 	local solutions="$1/*"
 	local solution=
 	for solution in $solutions ; do
-		run_a_solution_test "$solution"
+		[ -d "$solution" ] && run_a_solution_test "$solution"
 	done
 }
 

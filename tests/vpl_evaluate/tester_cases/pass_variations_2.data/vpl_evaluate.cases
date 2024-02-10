@@ -5,13 +5,13 @@ output=2
 case=Case V1 2
 variation=V1
 input=23
-output=25
+output=24
 
 case=Case V2 1
 variation=V2
 input=3
-output=13
+output=8
 case=Case V2 2
 variation=V2
-input=23
-output=32
+input=25
+output=30

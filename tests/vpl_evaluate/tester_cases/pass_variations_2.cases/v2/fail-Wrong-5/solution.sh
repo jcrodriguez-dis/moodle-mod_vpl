@@ -1,3 +1,3 @@
 #!/bin/bash
 read -s A
-echo 2
+echo 8
