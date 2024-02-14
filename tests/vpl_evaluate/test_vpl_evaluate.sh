@@ -5,8 +5,8 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-CHECK_MARK="\u2713";
-X_MARK="\u274C";
+CHECK_MARK="✅";
+X_MARK="❌";
 function writeHeading {
 	echo -e "\e[37;42m RUN \e[39;49m \e[34m$1\e[39m"
 }
@@ -79,7 +79,7 @@ function evalTest {
     	echo "travis_fold:end:vpl_test.$1"
 		result=1
 	else
-		./vpl_test_evaluate.sh $1
+		./vpl_test_evaluate.sh "$1"
 		result=$?
 		if [ "$result" != "0" ] ; then
 		    writeError "$X_MARK"
@@ -109,9 +109,9 @@ function runAllTests {
 	for case in $cases
 	do
 		let ntests=ntests+1
-		initTest $case
-		runTest $case
-		evalTest $case
+		initTest "$case"
+		runTest "$case"
+		evalTest "$case"
 		if [ "$?" != "0" ] ; then
 			finalResult=1
 		else
@@ -136,4 +136,4 @@ export VPLTESTOUTPUT=".vpl_test_output"
 export VPLTESTERRORS=".vpl_test_errors"
 
 runAllTests
-cd $OLDDIR
+cd "$OLDDIR"
