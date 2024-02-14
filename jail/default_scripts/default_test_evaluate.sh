@@ -152,6 +152,7 @@ if [[ -d "$home_dir/$oldtest_dir" ]] ; then
 	mv "$home_dir/$oldtest_dir" "$home_dir/$test_dir"
 	if [[ "$VPL_VARIATIONS" != "" ]] ; then
 		for variation in ${VPL_VARIATIONS[@]} ; do
+			echo "export VPL_VARIATION=\"$variation\"" >> vpl_environment.sh
 			echo "⤨ Preparing variation: $variation" >> "$home_dir/$compilation_results"
 			compile_solutions_tests "$home_dir/$test_dir/$variation"
 			echo "export VPL_VARIATION=$variation" >> "$home_dir/$test_dir/$variation/vpl_environment.sh"
