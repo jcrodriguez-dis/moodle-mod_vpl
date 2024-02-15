@@ -31,7 +31,7 @@ jobs:
       fail-fast: false
       matrix:
         php: ['7.4']
-        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_310_STABLE']
+        moodle-branch: ['MOODLE_37_STABLE', 'MOODLE_36_STABLE', 'MOODLE_37_STABLE', 'MOODLE_38_STABLE', 'MOODLE_39_STABLE', 'MOODLE_310_STABLE']
         database: [pgsql, mariadb]
     steps:
       - name: Check out repository code
