@@ -936,11 +936,11 @@ class mod_vpl_submission {
     public static function find_proposedcomment(&$text) {
         $usecrnl = vpl_detect_newline($text) == "\r\n";
         if ($usecrnl) {
-            $startcommentreg = '/^(Comment :=>>([^\\r\\n]*)|<\\|--)\\r?$/m';
-            $endcommentreg = '/^--\\|>\\r?$/m';
+            $startcommentreg = '/^(Comment :=>>([^\\r\\n]*)|\\s*<\\|--\\s*)\\r?$/m';
+            $endcommentreg = '/^\\s*--\\|>\\s*\\r?$/m';
         } else {
-            $startcommentreg = '/^(Comment :=>>(.*)|<\\|--)$/m';
-            $endcommentreg = '/^--\\|>$/m';
+            $startcommentreg = '/^(Comment :=>>(.*)|\\s*<\\|--\\s*)$/m';
+            $endcommentreg = '/^\\s*--\\|>\\s*$/m';
         }
         $comments = '';
         $offset = 0;
