@@ -74,12 +74,14 @@ function copy_configuration {
 	local envfile="$1/vpl_environment.sh"
 	cp -a $home_dir/* "$1"
 	rm "$1/vpl_test_evaluate.sh"
-	[ ! -f "$envfile" ] && (echo "#!/bin/bash" > "$envfile"; chmod +x "$envfile")
 	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$envfile"
+	[ ! -f "$envfile" ] && echo "#!/bin/bash" > "$envfile"
+	[ -n "$variation" ] && echo "export VPL_VARIATION=\"$variation\"" >> "$envfile"
+	chmod +x "$envfile"
 }
 
 function compile_a_solution_test {
-	local solution=$1
+	local solution="$1"
 	copy_configuration "$solution"
 	[[ $solution =~ $directory_format ]]
 	local test_type="${BASH_REMATCH[1]}"
@@ -152,10 +154,8 @@ if [[ -d "$home_dir/$oldtest_dir" ]] ; then
 	mv "$home_dir/$oldtest_dir" "$home_dir/$test_dir"
 	if [[ "$VPL_VARIATIONS" != "" ]] ; then
 		for variation in ${VPL_VARIATIONS[@]} ; do
-			echo "export VPL_VARIATION=\"$variation\"" >> vpl_environment.sh
 			echo "⤨ Preparing variation: $variation" >> "$home_dir/$compilation_results"
 			compile_solutions_tests "$home_dir/$test_dir/$variation"
-			echo "export VPL_VARIATION=$variation" >> "$home_dir/$test_dir/$variation/vpl_environment.sh"
 		done
 	else
 		compile_solutions_tests "$home_dir/$test_dir"
@@ -200,7 +200,7 @@ function echo_VPL_file {
 	echo_VPL "$(cat "$1")"
 }
 function run_a_solution_test {
-	local solution=$1
+	local solution="$1"
 	[[ $solution =~ $directory_format ]]
 	local test_type="${BASH_REMATCH[1]}"
 	local test_name="${BASH_REMATCH[2]}"
@@ -210,8 +210,8 @@ function run_a_solution_test {
 	cd "$1"
 	let ntest=$ntest+1
 	if [ -x vpl_execution ] ; then
-		[[ $variation != "" ]] && export VPL_VARIATION=$variation
-		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION=$variation" >> ./vpl_environment.sh
+		[[ $variation != "" ]] && export VPL_VARIATION="$variation"
+		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION\"$variation\"" >> ./vpl_environment.sh
 		./vpl_execution  &> "$solution/$evaluation_results"
 	else
 		test_info="$bug_symbol Progran test for '$test_name' not generated. See compilation."
