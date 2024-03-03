@@ -68,7 +68,7 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     foreach ($sectionnames as $section => $sectionname) {
         $urlbase->param('section', $section);
         $url = $urlbase->out(false);
-        $urls[$url] = s($sectionname);
+        $urls[$url] = $sectionname;
         $urlindex[$section] = $url;
     }
     if (! isset($urlindex[$sectionfilter]) ) {
@@ -314,7 +314,7 @@ foreach ($vpls as $vpl) {
     $section = '';
     if ( ! empty($activities[$cmid])) {
         $section = $activities[$cmid]->section;
-        $sectionname = s( $sectionnames[$section] );
+        $sectionname = $sectionnames[$section];
     }
     $row = [
             count( $table->data ) + 1,
