@@ -72,7 +72,7 @@ function vpl_get_working_periods($vpl, $userid) {
  * @param  int     $userid Id of the user.
  * @return float   Total user working hours
  */
-function vpl_user_total_working_time(mod_vpl $vpl, int $userid):float {
+function vpl_user_total_working_time(mod_vpl $vpl, int $userid): float {
     $ydata = vpl_get_working_periods($vpl, $userid);
     $hours = 0.0;
     for ($i = 0; $i < count($ydata); $i++) {
