@@ -50,7 +50,15 @@ vpl_sh_factory::include_js();
 
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
+
 $vpl = new mod_vpl( $id );
+
+// Go to submission view if activity is not gradable.
+if ($vpl->get_grade() == 0) {
+    $link = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);
+    vpl_inmediate_redirect($link);
+}
+
 $vpl->prepare_page( 'forms/gradesubmission.php', [
         'id' => $id,
         'userid' => $userid,
@@ -59,7 +67,7 @@ $vpl->prepare_page( 'forms/gradesubmission.php', [
 $jscript = '';
 $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
-// Read records.
+// Read submission to grade.
 $submissionid = optional_param( 'submissionid', false, PARAM_INT );
 if ($submissionid) {
     $subinstance = $DB->get_record( 'vpl_submissions', [
