@@ -717,7 +717,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                     $data = new StdClass();
                     $data->grade = $this->proposedGrade( $response['execution'] );
                     $data->comments = $this->proposedComment( $response['execution'] );
-                    $this->set_grade( $data, true );
+                    $this->set_grade($data, true );
+                } elseif ($this->get_instance()->dategraded > 0 && $this->get_instance()->grader == 0) {
+                    $this->remove_grade();
                 }
             }
         }
