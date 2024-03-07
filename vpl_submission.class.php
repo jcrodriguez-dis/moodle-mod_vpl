@@ -949,7 +949,7 @@ class mod_vpl_submission {
             $result = preg_match($startcommentreg, $text, $matches, PREG_OFFSET_CAPTURE, $offset);
             if ( $result == 1) {
                 $found = $matches[1][0];
-                if ( $found == self::BEGINCOMMENTTAG ) { // Block comment start.
+                if ( trim($found) == self::BEGINCOMMENTTAG ) { // Block comment start.
                     $posstart = $matches[0][1] + strlen($matches[0][0]) + 1;
                     $result = preg_match($endcommentreg, $text, $matches, PREG_OFFSET_CAPTURE, $posstart);
                     if ($result == 1) { // Block comment end.
