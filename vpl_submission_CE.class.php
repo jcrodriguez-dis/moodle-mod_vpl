@@ -460,17 +460,15 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             }
         }
         $premadescripts = self::get_scripts($vpl, $data);
-        for ($i = 0; $i <= $data->type; $i ++) {
-            $filename = self::$scriptlist[$i];
-            if (isset($data->files[$filename]) && trim($data->files[$filename]) > '') { // Use custom script.
-                if (substr($data->files[$filename], 0, 2) != '#!') { // Fixes script adding bash if no shebang.
-                    $data->files[$filename] = "#!/bin/bash\n" . $data->files[$filename];
-                }
-                unset($premadescripts[$filename]);
-            }
-        }
         foreach ($premadescripts as $filename => $filedata) {
-            if (trim($filedata) > '') {
+            if (isset($data->files[$filename]) && trim($data->files[$filename]) > '') { // Use custom script.
+                if (vpl_fileextension($filename) == 'sh') {
+                    $filecontent = $data->files[$filename];
+                    if (substr($filecontent, 0, 2) != '#!') { // Fixes script adding bash if no shebang.
+                        $data->files[$filename] = "#!/bin/bash\n" . $filecontent;
+                    }
+                }
+            } else {
                 $data->files[$filename] = $filedata;
                 $data->filestodelete[$filename] = 1;
             }
@@ -718,7 +716,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                     $data->grade = $this->proposedGrade( $response['execution'] );
                     $data->comments = $this->proposedComment( $response['execution'] );
                     $this->set_grade($data, true );
-                } elseif ($this->get_instance()->dategraded > 0 && $this->get_instance()->grader == 0) {
+                } else if ($this->get_instance()->dategraded > 0 && $this->get_instance()->grader == 0) {
                     $this->remove_grade();
                 }
             }
