@@ -1030,8 +1030,8 @@ define(
             function resizeHeight() {
                 var newHeight = $(window).outerHeight();
                 newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 20);
-                if (newHeight < 150) {
-                    newHeight = 150;
+                if (newHeight < 250) {
+                    newHeight = 250;
                 }
                 tr.height(newHeight);
                 var panelHeight = newHeight - 3 * getTabsAir();

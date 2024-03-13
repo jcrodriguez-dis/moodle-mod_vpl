@@ -962,8 +962,8 @@ define(
                  });
             };
             VPLUtil.syntaxHighlight = function() {
-                var groupFiles = files.slice();
-                var groupResults = results.slice();
+                var groupFiles = files;
+                var groupResults = results;
                 files = [];
                 results = [];
                 new FileGroupHighlighter(groupFiles, groupResults);
