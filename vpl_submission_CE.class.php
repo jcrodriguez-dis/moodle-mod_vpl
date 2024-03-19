@@ -405,6 +405,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Info send with script.
         $info = "#!/bin/bash\n";
         $info .= vpl_bash_export('VPL_LANG', vpl_get_lang());
+        $info .= vpl_bash_export('MOODLE_ACTIVITY_ID', $vpl->get_course_module()->id);
         if (isset($data->userid)) {
             $userid = $data->userid;
             $info .= vpl_bash_export('MOODLE_USER_ID',  $userid);
