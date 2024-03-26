@@ -607,7 +607,7 @@ define(
                     }
                 },
                 'retrieve': function() {
-                    var data = {"processid": VPLUtil.getProcessId()};
+                    var data = {"processid": coninfo.processid};
                     pb.close();
                     delegated = true;
                     VPLUI.requestAction('retrieve', '', data, externalActions.ajaxurl)
@@ -627,7 +627,7 @@ define(
                 'close': function() {
                     VPLUtil.log('ws close message from jail');
                     ws.close();
-                    var data = {"processid": VPLUtil.getProcessId()};
+                    var data = {"processid": coninfo.processid};
                     VPLUI.requestAction('cancel', '', data, externalActions.ajaxurl, true);
                 }
             };
