@@ -25,6 +25,25 @@ export -f writeInfo
 export -f writeError
 export -f write
 
+function assertOutput {
+	grep -e "$1" "$VPLTESTOUTPUT" >/dev/null
+	[ $? -eq 0 ] && return 0
+	write
+	writeError "Not found: " "\"$1\" not found in output result"
+	exit 1
+}
+
+function assertOutputFalse {
+	grep -e "$1" "$VPLTESTOUTPUT" >/dev/null
+	[ $? -ne 0 ] && return 0
+	write
+	writeError "Found: " "\"$1\" found in output result"
+	exit 1
+}
+
+export -f assertOutput
+export -f assertOutputFalse
+
 function initTest {
 	writeInfo "Test" ": $1 " -n
 	if [ -s "$TESTDIR" ] ; then
@@ -74,23 +93,23 @@ function evalTest {
 	cd $TESTDIR
 	if [ ! -s vpl_execution ] ; then
 	    writeError "$X_MARK"
-    	echo "travis_fold:start:vpl_test.$1"
 		writeError "Test $1 failed: evaluation program compilation failed"
-    	echo "travis_fold:end:vpl_test.$1"
 		result=1
 	else
 		./vpl_test_evaluate.sh "$1"
 		result=$?
 		if [ "$result" != "0" ] ; then
 		    writeError "$X_MARK"
-	    	echo "travis_fold:start:vpl_test.$1"
 			if [ -s "$VPLTESTERRORS" ] ; then
 			    echo "The program has generated the following errors"
 			    cat $VPLTESTERRORS
 			else
 		    	cat "$VPLTESTOUTPUT"
 			fi
-	    	echo "travis_fold:end:vpl_test.$1"
+		elif [ -n "$DEBUG" ] ; then
+			echo "OUTPUT Testing $1"
+			[ -s "$VPLTESTERRORS" ] && cat "$VPLTESTERRORS"
+			cat "$VPLTESTOUTPUT"
 		fi
 	fi
 	if [ "$result" == "0" ] ; then
@@ -106,6 +125,7 @@ function runAllTests {
 	local npass=0
     local finalResult=0
 	local cases=$(find $CASESDIR -name "*_vpl_run.sh" -print | sort | sed "s/^$CASESDIR\///g" | sed 's/\_vpl_run.sh$//g' )
+	[ -n "$1" ] && cases=$1
 	for case in $cases
 	do
 		let ntests=ntests+1
@@ -134,6 +154,10 @@ export TESTDIR="vpl_test.test"
 export CASESDIR="cases"
 export VPLTESTOUTPUT=".vpl_test_output"
 export VPLTESTERRORS=".vpl_test_errors"
-
-runAllTests
+[ "$2" == "DEBUG" ] && export DEBUG=true
+if [ "$1" == "DEBUG" ] ; then
+	shift
+	export DEBUG=true
+fi
+runAllTests $1
 cd "$OLDDIR"
