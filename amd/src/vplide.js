@@ -2024,8 +2024,8 @@ define(
                 'setResult': self.setResult,
                 'ajaxurl': options.ajaxurl,
                 'run': function(content, coninfo, ws) {
-                    var parsed = /^([^:]*):?(.*)/i.exec(content);
-                    var type = parsed[1];
+                    var parsed = /^([^:]*):?(.*)/.exec(content);
+                    var type = VPLUtil.sanitizeText(parsed[1]);
                     if (type == 'terminal' || type == 'webterminal') {
                         if (lastConsole && lastConsole.isOpen()) {
                             lastConsole.close();
@@ -2055,7 +2055,7 @@ define(
                                 });
                     } else if (type == "browser") {
                         var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
-                        URL += parsed[2] + "/httpPassthrough";
+                        URL += VPLUtil.sanitizeText(parsed[2]) + "/httpPassthrough";
                         if (isTeacher) {
                             URL += "?private";
                         }
