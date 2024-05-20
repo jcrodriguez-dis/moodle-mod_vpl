@@ -1,4 +1,4 @@
-name: VPL CI
+name: VPL CI Dev Moodle
 
 on: [workflow_dispatch]
 
