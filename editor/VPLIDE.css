@@ -273,6 +273,9 @@ img.vpl_ide_file {
     white-space: pre-wrap;
 }
 
+/* .ui-widget overrides fonts, so we have to increase the specificity */
+.ui-widget.vpl_ide_accordion_c_compilation,
+.ui-widget.vpl_ide_accordion_c_execution,
 .vpl_ide_accordion_c_compilation,
 .vpl_ide_accordion_c_execution {
     font-family:
