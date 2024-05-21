@@ -1,3 +1,4 @@
 Case=Bad
 Bad line=nothing
-
+    # This is a comment
+Other bad line

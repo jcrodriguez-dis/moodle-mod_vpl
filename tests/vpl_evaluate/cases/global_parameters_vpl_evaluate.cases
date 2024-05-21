@@ -1,0 +1,59 @@
+time limit = 0.5
+grade reduction = 1
+expected exit code = 1
+program to run = b.sh
+program arguments = 3
+fail output message =Custom fail message <<<input>>> - <<<expected_output>>> - <<<program_output>>>
+timeout message =Custom timeout message
+fail exit code message =Custom exit code message
+input = 33
+output = 331
+
+case = Test global input
+fail output message = Error Test global input <<<input>>> - <<<expected_output>>> - <<<program_output>>>
+expected exit code = -1
+program to run =
+
+case = Test local input
+fail output message = Correct Test local input <<<input>>> - <<<expected_output>>> - <<<program_output>>>
+expected exit code = -1
+program to run =
+input = 32
+
+case = Test global fail message
+expected exit code = -1
+program to run =
+input = 2
+
+case = Test global exit code fail message
+case = Test local exit code fail message
+fail exit code message =Local exit code message <<<input>>> - <<<expected_output>>> - <<<program_output>>>
+
+case = Test local exit code fail message
+fail exit code message =Local exit code message <<<input>>> - <<<expected_output>>> - <<<program_output>>>
+
+case = Test local exit code and program run
+program to run = a.sh
+input = 66
+expected exit code = 66
+fail exit code message = Error local exit code <<<input>>> - <<<expected_output>>> - <<<program_output>>> - <<<expected_exit_code>>> - <<<exit_code>>>
+
+case = Test local exit code and program run and global parameter
+fail exit code message = Error program global parameter <<<input>>> - <<<expected_output>>> - <<<program_output>>> - <<<expected_exit_code>>> - <<<exit_code>>>
+program to run = a.sh
+input = 66
+output = 6623
+
+case = Test local exit code and program run and local parameters
+program to run = a.sh
+program arguments =" Hola mi gente" 4
+input = 66
+output = 662 Hola mi gente4
+fail exit code message = Error program local parameters <<<input>>> - <<<expected_output>>> - <<<program_output>>> - <<<expected_exit_code>>> - <<<exit_code>>>
+
+case = Test local exit code and program run and local parameters
+program to run = a.sh
+program arguments =" Hola mi gente" 4
+input = 66
+output = 662 Hola gente4
+fail exit code message = Correct program local parameters <<<input>>> - <<<expected_output>>> - <<<program_output>>> - <<<expected_exit_code>>> - <<<exit_code>>>

@@ -4,9 +4,9 @@ cat > vpl_execution << "ENDOFSCRIPT"
 while true ; do
    read A
    if [ "$?" != "0" ] ; then
-  	  break
+  	   break
    else
-   	  echo "$A"      
+   	echo "$A"      
    fi
 done
 ENDOFSCRIPT

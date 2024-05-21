@@ -1,16 +1,19 @@
-case=Number error 1
-output=3 4 5.5 8.008
-case=Number 1
-output=3 4 5.5 8.000001
-case=Number 2
-output=3.0 4 5.5000 8
-case=Number 3
-output=3 4
-5.5 8
+case=Number error for more numbers
+output=3 4 5.5 8 9
+case=Number error for less numbers
+output=4 5.5 8
+case=Number error in float
+output=3 4 5.51 8
+case=Number error in int as float
+output=3 4.001 5.5 8
+case=Number error in number with asterisk
+output=* 3 5.5 8
+case=Number with text
+output=3 4 5.49e1 8
 case=Number 4
-output=3.0000001 4
+output=33 4
 5.5 8
-case=Number error 2
+case=Numbers with errors
 output=1 4.1 5.5 8
-case=Number error 3
+case=Numbers with errors
 output=3 4 5.501 8
