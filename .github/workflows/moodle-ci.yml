@@ -136,7 +136,7 @@ jobs:
           # Use i_add_to_course_section_and_i_fill_the_form_with instead available from MOODLE_401_STABLE
           # Workaround to use deprecated step
           CONFIG_FILE="/home/runner/work/moodle-mod_vpl/moodle-mod_vpl/moodle/config.php"
-          [ "${{ matrix.moodle-branch }}" == "MOODLE_404_STABLE" ] && $(echo -e "\n\$CFG->behat_usedeprecated = true" >> $CONFIG_FILE ) || nt__=
+          [ "${{ matrix.moodle-branch }}" == "MOODLE_404_STABLE" ] && $(echo -e "\n\$CFG->behat_usedeprecated = true;\n" >> $CONFIG_FILE ) || nt__=
           moodle-plugin-ci behat --profile chrome
   
       - name: Install valgrind
