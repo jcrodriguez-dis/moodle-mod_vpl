@@ -25,10 +25,14 @@ Feature: List submissions of students
       | student2 | C1 | student |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL activity 1 |
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I press "Save and display"
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL activity 2 |
+    And I press "Save and display"
     And I log out
 
   @javascript

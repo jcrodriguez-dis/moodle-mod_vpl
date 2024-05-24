@@ -23,9 +23,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere password => teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with password |
       | id_password | key |
+    And I press "Save and return to course"
     And I click on "VPL with password" "link" in the "region-main" "region"
     Then I should not see "A password is required"
 
@@ -33,9 +35,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with password |
       | id_password | key |
+    And I press "Save and display"
     And I log out
     When I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -46,9 +50,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere password => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with password |
       | id_password | key |
+    And I press "Save and display"
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
@@ -71,9 +77,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere network => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with network |
       | id_requirednet | 10.10.10.13 |
+    And I press "Save and display"
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
@@ -84,9 +92,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with SEB |
       | id_sebrequired | Yes |
+    And I press "Save and display"
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
@@ -97,9 +107,11 @@ Feature: Create and change VPL activity access settings
   Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a vpl activity to course "Course 1" section "1"
+    And I set the following fields to these values:
       | id_name | VPL with SEB |
       | id_sebkeys | afssdaff |
+    And I press "Save and display"
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
