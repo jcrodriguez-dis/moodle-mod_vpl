@@ -16,17 +16,9 @@ Feature: In a VPL activity, editing allows drop files
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-    And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a vpl activity to course "Course 1" section "1"
-    And I set the following fields to these values:
-      | id_name | VPL activity testing |
-      | id_shortdescription | VPL activity short description |
-      | id_duedate_enabled | "" |
-      | id_maxfiles | 33 |
-      | id_grade_modgrade_type | None |
-    And I press "Save and display"
-    And I log out
+    And the following "activities" exist:
+      | activity   | name                 | shortdescription  | maxfiles | course | section |
+      | vpl        | VPL activity testing | Short description | 33       | C1     | 1       |
 
   @javascript
   Scenario: A teacher drops files in "requested files"

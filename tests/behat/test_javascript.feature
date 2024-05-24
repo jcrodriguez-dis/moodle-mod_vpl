@@ -12,7 +12,7 @@ Feature: Runs JavaScript tests on browser
       | manager1 | C1 | manager |
     And I log in as "manager1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a vpl activity to course "Course 1" section "1"
+    And I open a new activity in section "1" of type VPL
     And I set the following fields to these values:
       | id_name | JavaScript test |
     And I press "Save and return to course"

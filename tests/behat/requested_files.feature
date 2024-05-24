@@ -18,7 +18,7 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
       | student1 | C1 | student |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a vpl activity to course "Course 1" section "1"
+    And I open a new activity in section "1" of type VPL
     And I set the following fields to these values:
       | id_name | VPL activity testing |
       | id_shortdescription | VPL activity short description |
