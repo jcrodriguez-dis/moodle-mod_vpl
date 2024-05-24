@@ -24,15 +24,6 @@ Feature: In a VPL activity get the list of VPL activities in the course
       | choice     | Choice3 | Choice3 | C1     | choice3     | 3       |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I edit the section "1" and I fill the form with:
-      | Section name      | Topic 1 |
-    And I am on "Course 1" course homepage with editing mode on
-    And I edit the section "2" and I fill the form with:
-      | Section name      | Topic 2 |
-    And I am on "Course 1" course homepage with editing mode on
-    And I edit the section "3" and I fill the form with:
-      | Section name      | Topic 3 |
-    And I am on "Course 1" course homepage with editing mode on
     And I add a vpl activity to course "Course 1" section "1"
     And I set the following fields to these values:
       | id_name | VPL activity one |
