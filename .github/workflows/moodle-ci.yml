@@ -130,14 +130,7 @@ jobs:
       - name: Behat features
         id: behat
         if: ${{ !cancelled() }}
-        run: |
-          # TODO:
-          # Remove deprecate Behat step e.g. "I add a "Virtual programming lab" to section "1" and I fill the form with"
-          # Use i_add_to_course_section_and_i_fill_the_form_with instead available from MOODLE_401_STABLE
-          # Workaround to use deprecated step
-          CONFIG_FILE="/home/runner/work/moodle-mod_vpl/moodle-mod_vpl/moodle/config.php"
-          [ "${{ matrix.moodle-branch }}" == "MOODLE_404_STABLE" ] && $(echo -e "\n\$CFG->behat_usedeprecated = true;\n" >> $CONFIG_FILE ) || nt__=
-          moodle-plugin-ci behat --profile chrome
+        run: moodle-plugin-ci behat --profile chrome
   
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
