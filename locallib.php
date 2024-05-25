@@ -336,6 +336,20 @@ function vpl_mod_href() {
 /**
  * @codeCoverageIgnore
  *
+ * @todo This function is to be remove when Moodle 3.10 be not supported by VPL.
+ * Return 'gradeoun' or 'grade' for backward compatibility.
+ * @return string
+ */
+function vpl_get_gradenoun_str() {
+    if (get_string_manager()->string_exists('gradenoun', 'core')) {
+        return 'gradenoun';
+    }
+    return 'grade';
+}
+
+/**
+ * @codeCoverageIgnore
+ *
  * generate URL relative page with params
  *
  * @param $page string

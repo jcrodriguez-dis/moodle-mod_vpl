@@ -1684,8 +1684,8 @@ class mod_vpl {
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0)) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
-                        $text = get_string('gradenoun');
-                        $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, 'gradenoun', 'core' );
+                        $text = get_string(vpl_get_gradenoun_str());
+                        $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, vpl_get_gradenoun_str(), 'core' );
                     }
                     if ($subinstance && ($grader || $similarity)) {
                         $href = vpl_mod_href( 'views/previoussubmissionslist.php', 'id', $cmid, 'userid', $userid );
