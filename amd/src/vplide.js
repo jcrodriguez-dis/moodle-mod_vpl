@@ -1030,8 +1030,8 @@ define(
             function resizeHeight() {
                 var newHeight = $(window).outerHeight();
                 newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 20);
-                if (newHeight < 150) {
-                    newHeight = 150;
+                if (newHeight < 250) {
+                    newHeight = 250;
                 }
                 tr.height(newHeight);
                 var panelHeight = newHeight - 3 * getTabsAir();
@@ -2024,8 +2024,8 @@ define(
                 'setResult': self.setResult,
                 'ajaxurl': options.ajaxurl,
                 'run': function(content, coninfo, ws) {
-                    var parsed = /^([^:]*):?(.*)/i.exec(content);
-                    var type = parsed[1];
+                    var parsed = /^([^:]*):?(.*)/.exec(content);
+                    var type = VPLUtil.sanitizeText(parsed[1]);
                     if (type == 'terminal' || type == 'webterminal') {
                         if (lastConsole && lastConsole.isOpen()) {
                             lastConsole.close();
@@ -2055,7 +2055,7 @@ define(
                                 });
                     } else if (type == "browser") {
                         var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
-                        URL += parsed[2] + "/httpPassthrough";
+                        URL += VPLUtil.sanitizeText(parsed[2]) + "/httpPassthrough";
                         if (isTeacher) {
                             URL += "?private";
                         }

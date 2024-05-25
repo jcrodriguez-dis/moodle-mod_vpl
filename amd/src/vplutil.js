@@ -74,7 +74,11 @@ define(
             if (typeof s == 'undefined' || s.replace(/^\s+$/g, '') == '') {
                 return '';
             }
-            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return s.replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
         };
 
         VPLUtil.setProtocol = function(coninfo) {
@@ -827,12 +831,11 @@ define(
              * @param {Array} results Output
              */
             function FileGroupHighlighter(files, results) {
-                this.files = files.slice();
-                this.results = results.slice();
-                files = [];
-                results = [];
+                this.files = files;
+                this.results = results;
                 this.shFiles = [];
                 this.shFileNames = [];
+                this.fileGroupId = nFileGroupHighlighter;
                 nFileGroupHighlighter++;
                 this.highlight();
             }
@@ -888,7 +891,7 @@ define(
                         });
                     return;
                 }
-                VPLUtil.delay("FFGH." + nFileGroupHighlighter, function() {
+                VPLUtil.delay("FFGH." + self.fileGroupId, function() {
                     self.highlightStep(0);
                 });
             };
@@ -945,7 +948,7 @@ define(
                 var text = tag.textContent || tag.innerText;
                 tag.innerHTML = VPLUtil.processResult(text, this.shFileNames, this.shFiles,
                     result.noFormat, result.folding);
-                VPLUtil.delay(tag + ".next", function() {
+                VPLUtil.delay(result.tagId + ".next", function() {
                     self.resultStep(pos + 1);
                 });
             };
@@ -963,7 +966,11 @@ define(
                  });
             };
             VPLUtil.syntaxHighlight = function() {
-                new FileGroupHighlighter(files, results);
+                var groupFiles = files;
+                var groupResults = results;
+                files = [];
+                results = [];
+                new FileGroupHighlighter(groupFiles, groupResults);
             };
             VPLUtil.flEventHandler = function(event) {
                 var tag = event.target.getAttribute('href').substring(1);

@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_files_to_keep
 Feature: In a VPL activity feature files to keep when running
   In order to use files to keep when running
   As a teacher save files in "execution files"
@@ -16,8 +16,10 @@ Feature: In a VPL activity feature files to keep when running
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
       | id_name | VPL activity testing |
+    And I press "Save and display"
     And I log out
 
   @javascript

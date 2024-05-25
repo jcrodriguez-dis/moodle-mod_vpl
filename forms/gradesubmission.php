@@ -35,7 +35,7 @@ function vpl_grade_header($vpl, $inpopup) {
     if ($inpopup) {
         $vpl->print_header_simple();
     } else {
-        $vpl->print_header( get_string('gradenoun') );
+        $vpl->print_header( get_string(vpl_get_gradenoun_str()) );
         $vpl->print_view_tabs( basename( __FILE__ ) );
     }
 }
@@ -50,16 +50,24 @@ vpl_sh_factory::include_js();
 
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
+
 $vpl = new mod_vpl( $id );
+
 $vpl->prepare_page( 'forms/gradesubmission.php', [
-        'id' => $id,
-        'userid' => $userid,
+    'id' => $id,
+    'userid' => $userid,
 ] );
+
+// Go to submission view if activity is not gradable.
+if ($vpl->get_grade() == 0) {
+    $link = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);
+    vpl_inmediate_redirect($link);
+}
 
 $jscript = '';
 $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
-// Read records.
+// Read submission to grade.
 $submissionid = optional_param( 'submissionid', false, PARAM_INT );
 if ($submissionid) {
     $subinstance = $DB->get_record( 'vpl_submissions', [

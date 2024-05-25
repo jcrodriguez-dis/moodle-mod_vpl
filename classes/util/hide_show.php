@@ -134,7 +134,7 @@ class hide_show {
     }
 
     public function get_tag_id() {
-        return 'shd' . $this->id;
+        return 'vpl_shc' . $this->id;
     }
 
 }

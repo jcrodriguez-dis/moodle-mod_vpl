@@ -644,12 +644,15 @@ string NumbersOutput::studentOutputExpected(){
 }
 
 bool NumbersOutput::operator==(const NumbersOutput& o)const{
-	size_t l=numbers.size();
-	if( o.numbers.size() < l ) return false;
+	size_t len = numbers.size();
 	int offset = 0;
-	if(startWithAsterisk)
-		offset = o.numbers.size()-l;
-	for(size_t i = 0; i < l; i++)
+	if(startWithAsterisk) {
+		if( o.numbers.size() < len ) return false;
+		offset = o.numbers.size() - len;
+	} else {
+		if (o.numbers.size() != len) return false;
+	}
+	for (size_t i = 0; i < len; i++)
 		if(numbers[i] != o.numbers[offset+i])
 			return false;
 	return true;

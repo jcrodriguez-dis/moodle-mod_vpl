@@ -21,10 +21,12 @@ Feature: In a VPL activity teacher grade submissions
       | student1 | C1 | student |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
       | id_name | VPL activity testing |
       | id_grade_modgrade_type | point |
       | id_grade_modgrade_point | 5 |
+    And I press "Save and display"
     And I log out
     # Student1's submission
     And I log in as "student1"

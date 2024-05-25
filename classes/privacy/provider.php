@@ -534,7 +534,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param int $userid the userid.
      * @return void.
      */
-    protected static function add_contexts_for_overrides(contextlist $list, int $userid) : void {
+    protected static function add_contexts_for_overrides(contextlist $list, int $userid): void {
         $sql = "SELECT DISTINCT ctx.id
                   FROM {context} ctx
                   JOIN {course_modules} cm ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule

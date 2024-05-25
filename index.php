@@ -68,7 +68,7 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     foreach ($sectionnames as $section => $sectionname) {
         $urlbase->param('section', $section);
         $url = $urlbase->out(false);
-        $urls[$url] = s($sectionname);
+        $urls[$url] = $sectionname;
         $urlindex[$section] = $url;
     }
     if (! isset($urlindex[$sectionfilter]) ) {
@@ -294,7 +294,7 @@ if ($grader && ! $nograde) {
     $table->align[] = 'right';
 }
 if ($student && ! $nograde) {
-    $table->head[] = get_string('gradenoun');
+    $table->head[] = get_string(vpl_get_gradenoun_str());
     $table->align[] = 'left';
 }
 if ($detailedmore) {
@@ -314,7 +314,7 @@ foreach ($vpls as $vpl) {
     $section = '';
     if ( ! empty($activities[$cmid])) {
         $section = $activities[$cmid]->section;
-        $sectionname = s( $sectionnames[$section] );
+        $sectionname = $sectionnames[$section];
     }
     $row = [
             count( $table->data ) + 1,
