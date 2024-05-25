@@ -59,8 +59,10 @@ class behat_mod_vpl extends behat_base {
      */
     public function i_open_a_new_activity_in_section_of_type_vpl($section) {
         $script = "(function() {
-        var urlpattern = /(.*\\/course\\/)view\\.php\\?id=(.*)/;
-        var urlreplacement = '$1modedit.php?add=vpl&type&course=$2&section=$section';
+        var section='$section';
+        section = section.replace('\"','').replace(' ','');
+        var urlpattern = /(.*\\/course\\/)view\\.php\\?id=([0-9]*)/;
+        var urlreplacement = '$1modedit.php?add=vpl&type&course=$2&section=' + section;
         window.location.href = window.location.href.replace(urlpattern, urlreplacement);
         })();";
         $this->getSession()->evaluateScript($script);
