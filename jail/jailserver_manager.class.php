@@ -35,6 +35,22 @@ require_once( __DIR__ . '/../locallib.php');
 class vpl_jailserver_manager {
     const RECHECK = 300; // Optional setable?
     const TABLE = 'vpl_jailservers';
+
+    private static $lastserverversion = '';
+
+    public static function get_last_server_version() {
+        return self::$lastserverversion;
+    }
+
+    public static function parse_headers($ch, $header) {
+        $parsed = explode(' ', $header);
+        if (count($parsed) == 3 &&
+            $parsed[0] == 'Server:' &&
+            $parsed[1] == 'vpl-jail-system') {
+            self::$lastserverversion = trim($parsed[2]);
+        }
+        return strlen($header);
+    }
     public static function get_curl($server, $request, $fresh = false) {
         if (! function_exists( 'curl_init' )) {
             throw new Exception( 'PHP cURL required' );
@@ -49,6 +65,8 @@ class vpl_jailserver_manager {
                 "Content-type: {$contenttype};charset=UTF-8",
                 'User-Agent: VPL ' . vpl_get_version(),
         ] );
+        self::$lastserverversion = '';
+        curl_setopt( $ch, CURLOPT_HEADERFUNCTION, 'vpl_jailserver_manager::parse_headers' );
         curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
         curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
         if ($fresh) {
@@ -119,7 +137,7 @@ class vpl_jailserver_manager {
             if ($rawresponse[0] == '{') {
                 $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
-                    $error = 'JSONRPC response is fault: ' . json_last_error_msg();
+                    $error = 'JSONRPC response is fault: ' . s(json_last_error_msg());
                 } else {
                     if ($response->id != self::get_jsonrpcid()) {
                         $error = 'JSONRPC response mismatch ID';
@@ -177,6 +195,7 @@ class vpl_jailserver_manager {
      */
     private static function server_fail(string $server, string $strerror) {
         global $DB;
+        $buggyserver = $strerror == get_string('message::bad_jailserver', VPL);
         if ($strerror == null) {
             $strerror = '';
         }
@@ -188,6 +207,7 @@ class vpl_jailserver_manager {
             $info->lastfail = time();
             $info->laststrerror = $strerror;
             $info->nfails ++;
+            $info->nbusy = $buggyserver ? -1000000 : $info->nbusy;
             vpl_truncate_jailservers( $info );
             $DB->update_record( self::TABLE, $info );
         } else {
@@ -197,6 +217,7 @@ class vpl_jailserver_manager {
             $info->laststrerror = $strerror;
             $info->nfails = 1;
             $info->serverhash = self::get_hash($server);
+            $info->nbusy = $buggyserver ? -1000000 : 0;
             vpl_truncate_jailservers( $info );
             $DB->insert_record( self::TABLE, $info );
         }
@@ -290,6 +311,9 @@ class vpl_jailserver_manager {
                 } else if (! isset( $response['status'] )) {
                     self::server_fail( $server, $error );
                     $feedback .= parse_url( $server, PHP_URL_HOST ) . " protocol error (No status)\n";
+                } else if (self::get_last_server_version() > '' && self::get_last_server_version() < '4.0.3') {
+                    self::server_fail( $server, get_string('message::bad_jailserver', VPL));
+                    $feedback .= parse_url( $server, PHP_URL_HOST ) . " not available.\n";
                 } else {
                     if ($response['status'] == 'ready') {
                         return $server;
@@ -350,15 +374,10 @@ class vpl_jailserver_manager {
         $serverlist = array_unique( self::get_server_list( $localserverlisttext ) );
         $feedback = [];
         foreach ($serverlist as $server) {
-            $status = null;
+            $status = '';
             $response = self::get_response( $server, $requestready, $status );
             $params = [ 'serverhash' => self::get_hash($server), 'server' => $server ];
             $info = $DB->get_record( self::TABLE, $params);
-            if ($response === false) {
-                self::server_fail( $server, $status );
-            } else {
-                $status = s( $response['status'] );
-            }
             if ($info == null) {
                 $info = new stdClass();
                 $info->server = $server;
@@ -366,14 +385,22 @@ class vpl_jailserver_manager {
                 $info->laststrerror = '';
                 $info->nfails = 0;
                 $info->serverhash = self::get_hash($server);
+                $info->nbusy = 0;
+            }
+            if ($response === false) {
+                $info->offline = true;
+                self::server_fail( $server, $status );
+            } else {
+                if (self::get_last_server_version() > '' && self::get_last_server_version() < '4.0.3') {
+                    $info->offline = true;
+                    $status = get_string('message::bad_jailserver', VPL);
+                } else {
+                    $info->offline = false;
+                    $status = s( $response['status'] );
+                }
             }
             $info->current_status = $status;
-            $info->offline = $response === false;
-            if (self::is_private_host( $server )) {
-                // TODO implement other way to warning.
-                $message = 'WARNING: not accessible from the internet';
-                $info->server = "{$info->server}\n[$message]";
-            }
+
             $feedback[] = $info;
         }
         return $feedback;
