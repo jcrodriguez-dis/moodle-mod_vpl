@@ -885,6 +885,9 @@ function vpl_truncate_vpl($instance) {
     if (isset($instance->password)) {
         $instance->password = trim($instance->password);
     }
+    if (property_exists($instance, 'jailservers') &&  $instance->jailservers == null) {
+        $instance->jailservers = '';
+    }
     foreach (['name', 'requirednet', 'password', 'variationtitle'] as $field) {
         if (isset($instance->$field)) {
             vpl_truncate_string( $instance->$field, 255 );
