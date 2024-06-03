@@ -116,6 +116,10 @@ $serverstable->data = [];
 $num = 0;
 foreach ($servers as $server) {
     $serverurl = remove_path($server->server);
+    if (vpl_jailserver_manager::is_private_host( $serverurl )) {
+        $message = 'WARNING: not accessible from the internet';
+        $serverurl = s($serverurl) . '<br>' . s($message);
+    }
     $num ++;
     if ($server->offline) {
         $status = '<div class="vpl_server_failed">' . $server->current_status . '</div>';
