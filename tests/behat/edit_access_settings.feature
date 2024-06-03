@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_access_settings
 Feature: Create and change VPL activity access settings
   In order to modify activity behaviour
   As an editing teacher
@@ -18,25 +18,23 @@ Feature: Create and change VPL activity access settings
       | teacher1 | C1 | editingteacher |
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
+    And I log in as "teacher1"
+    And the following "activities" exist:
+      | activity   | name               | password | requirednet | sebrequired | sebkeys | course | section |
+      | vpl        | VPL with password  | key      |             | 0           |         | C1     | 1       |
+      | vpl        | VPL with network   |          | 10.10.10.13 | 0           |         | C1     | 1       |
+      | vpl        | VPL with SEB       |          |             | 1           |         | C1     | 1       |
+      | vpl        | VPL with SEB key   |          |             | 0           | afssdaf | C1     | 1       |
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => teacher access
     Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with password |
-      | id_password | key |
+    And I am on "Course 1" course homepage
     And I click on "VPL with password" "link" in the "region-main" "region"
     Then I should not see "A password is required"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with password |
-      | id_password | key |
-    And I log out
     When I log in as "teacher2"
     And I am on "Course 1" course homepage
     And I click on "VPL with password" "link" in the "region-main" "region"
@@ -44,12 +42,6 @@ Feature: Create and change VPL activity access settings
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => student access
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with password |
-      | id_password | key |
-    And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I click on "VPL with password" "link" in the "region-main" "region"
@@ -69,11 +61,6 @@ Feature: Create and change VPL activity access settings
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere network => student access
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with network |
-      | id_requirednet | 10.10.10.13 |
     And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
@@ -82,12 +69,6 @@ Feature: Create and change VPL activity access settings
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with SEB |
-      | id_sebrequired | Yes |
-    And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
     And I click on "VPL with SEB" "link" in the "region-main" "region"
@@ -95,13 +76,7 @@ Feature: Create and change VPL activity access settings
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
-      | id_name | VPL with SEB |
-      | id_sebkeys | afssdaff |
-    And I log out
     When I log in as "student1"
     And I am on "Course 1" course homepage
-    And I click on "VPL with SEB" "link" in the "region-main" "region"
+    And I click on "VPL with SEB key" "link" in the "region-main" "region"
     Then I should see "Using SEB browser"

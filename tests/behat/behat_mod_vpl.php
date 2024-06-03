@@ -51,6 +51,24 @@ class behat_mod_vpl extends behat_base {
     }
 
     /**
+     * Open a new activity in section i of type vpl
+     *
+     * @Given /^I open a new activity in section "([^"]*)" of type VPL$/
+     * @param string $section
+     * @return void
+     */
+    public function i_open_a_new_activity_in_section_of_type_vpl($section) {
+        $script = "(function() {
+        var section='$section';
+        section = section.replace('\"','').replace(' ','');
+        var urlpattern = /(.*\\/course\\/)view\\.php\\?id=([0-9]*)/;
+        var urlreplacement = '$1modedit.php?add=vpl&type&course=$2&section=' + section;
+        window.location.href = window.location.href.replace(urlpattern, urlreplacement);
+        })();";
+        $this->getSession()->evaluateScript($script);
+    }
+
+    /**
      * Accept confirm popup
      *
      * @Given /^I accept confirm in VPL$/

@@ -16,12 +16,14 @@ Feature: In an VPL activity, editing teacher manage execution files
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
       | id_name | VPL activity testing |
       | id_shortdescription | VPL activity short description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 33 |
       | id_grade_modgrade_type | None |
+    And I press "Save and display"
     And I log out
 
   @javascript

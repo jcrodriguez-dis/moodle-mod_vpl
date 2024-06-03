@@ -294,7 +294,7 @@ if ($grader && ! $nograde) {
     $table->align[] = 'right';
 }
 if ($student && ! $nograde) {
-    $table->head[] = get_string('gradenoun');
+    $table->head[] = get_string(vpl_get_gradenoun_str());
     $table->align[] = 'left';
 }
 if ($detailedmore) {
