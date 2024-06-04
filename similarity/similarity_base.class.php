@@ -55,6 +55,10 @@ class vpl_files_pair {
     public $s1;
     public $s2;
     public $s3;
+    public $level;
+    public $level1;
+    public $level2;
+    public $level3;
     public $id;
     private $clusternumber;
     public function __construct($first = null, $second = null, $s1 = 0, $s2 = 0, $s3 = 0) {
