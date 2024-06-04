@@ -77,11 +77,13 @@ jobs:
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
+        continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        if: ${{ false }}
+        continue-on-error: true # This step will show errors but will not fail
+        if: ${{ always() }}
         run: moodle-plugin-ci phpdoc --max-warnings 0
 
       - name: Validating
@@ -97,7 +99,6 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        if: matrix.moodle-branch != 'MOODLE_311_STABLE'
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
