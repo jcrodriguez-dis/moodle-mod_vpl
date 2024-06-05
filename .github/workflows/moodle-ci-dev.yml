@@ -112,7 +112,10 @@ jobs:
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
         if: ${{ always() }}
-        run: sudo apt-get install -y valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}
