@@ -245,7 +245,7 @@ class mod_vpl {
             'runscript',
             'debugscript',
         ];
-        foreach($fields as $field) {
+        foreach ($fields as $field) {
             if (property_exists($vplinstace, $field) && $vplinstace->$field == null) {
                 $vplinstace->$field = '';
             }
