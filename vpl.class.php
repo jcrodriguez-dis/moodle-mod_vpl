@@ -202,10 +202,15 @@ class mod_vpl {
             self::$instancescache[$table] = [];
         }
         if (! isset(self::$instancescache[$table][$id])) {
-            self::$instancescache[$table][$id] = $DB->get_record($table, ["id" => $id]);
+            $instance = $DB->get_record($table, ["id" => $id]);
+            if ($instance !== false && $table == VPL) {
+                self::set_null_field_empty($instance);
+            }
+            self::$instancescache[$table][$id] = $instance;
         }
         return self::$instancescache[$table][$id];
     }
+
     /**
      * Remove one record or all records from cache
      *
@@ -218,6 +223,32 @@ class mod_vpl {
             self::$instancescache = [];
         } else {
             unset(self::$instancescache[$table][$id]);
+        }
+    }
+
+    /**
+     * Set string field with null to empty string.
+     *
+     * @param object $vplinstace
+     * @return void
+     */
+    public static function set_null_field_empty($vplinstace) {
+        $fields = [
+            'shortdescription',
+            'intro',
+            'requirednet',
+            'password',
+            'variationtitle',
+            'jailservers',
+            'reductionbyevaluation',
+            'sebkeys',
+            'runscript',
+            'debugscript',
+        ];
+        foreach($fields as $field) {
+            if (property_exists($vplinstace, $field) && $vplinstace->$field == null) {
+                $vplinstace->$field = '';
+            }
         }
     }
 
