@@ -29,6 +29,7 @@ global $CFG;
 
 require_once($CFG->libdir.'/formslib.php');
 class mod_vpl_password_form extends moodleform {
+    public $vpl;
     public function __construct($page, & $vpl) {
         $this->vpl = & $vpl;
         parent::__construct( $page );
