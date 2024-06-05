@@ -40,6 +40,6 @@ class vpl_tokenizer_base {
     const CR = "\r";
     const LF = "\n";
     const TAB = "\t";
-    protected $reserved;
+    protected $reserved = [];
     protected $linenumber;
 }

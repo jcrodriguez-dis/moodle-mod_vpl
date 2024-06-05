@@ -163,6 +163,12 @@ class mod_vpl {
     protected $errors = [];
 
     /**
+     * An internal cache for grade information.
+     *
+     */
+    protected $gradeinfo = null;
+
+    /**
      * The graders of this activity and group cached
      *
      * @var object[][]
@@ -1175,12 +1181,8 @@ class mod_vpl {
      * @return bool
      */
     public function is_group_activity() {
-        if (! isset( $this->group_activity )) {
-            $cm = $this->get_course_module();
-            $this->group_activity = $cm->groupingid > 0 && $this->get_instance()->worktype == 1;
-            // TODO check groups_get_activity_groupmode($cm)==SEPARATEGROUPS.
-        }
-        return $this->group_activity;
+        $cm = $this->get_course_module();
+        return $cm->groupingid > 0 && $this->get_instance()->worktype == 1;
     }
 
     /**
@@ -1395,19 +1397,19 @@ class mod_vpl {
      */
     public function get_grade_info() {
         global $CFG, $USER;
-        if (! isset( $this->grade_info )) {
-            $this->grade_info = false;
+        if (! isset( $this->gradeinfo )) {
+            $this->gradeinfo = false;
             if ($this->get_instance()->grade != 0) { // If 0 then NO GRADE.
                 $userid = ($this->has_capability( VPL_GRADE_CAPABILITY ) || $this->has_capability(
                         VPL_MANAGE_CAPABILITY )) ? null : $USER->id;
                 require_once($CFG->libdir . '/gradelib.php');
                 $gradinginfo = grade_get_grades( $this->get_course()->id, 'mod', 'vpl', $this->get_instance()->id, $userid );
                 foreach ($gradinginfo->items as $gi) {
-                    $this->grade_info = $gi;
+                    $this->gradeinfo = $gi;
                 }
             }
         }
-        return $this->grade_info;
+        return $this->gradeinfo;
     }
 
     /**

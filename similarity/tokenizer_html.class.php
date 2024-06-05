@@ -38,6 +38,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
     const IN_TAGATTRNAME = 5;
     const IN_TAGATTRVALUE = 6;
     protected $tokens;
+    protected $linenumber;
     protected function add_pending(&$rawpending, $state) {
         $pending = strtolower( $rawpending );
         $rawpending = '';

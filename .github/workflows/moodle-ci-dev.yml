@@ -30,9 +30,12 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1']
-        moodle-branch: ['master']
+        php: ['8.1', '8.2', '8.3']
+        moodle-branch: ['MOODLE_402_STABLE', 'MOODLE_404_STABLE', 'master']
         database: [pgsql, mariadb]
+        exclude:
+          - php: 8.3
+            moodle-branch: MOODLE_402_STABLE
 
     steps:
       - name: Check out repository code
@@ -74,11 +77,13 @@ jobs:
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
+        continue-on-error: true # This step will show errors but will not fail
         if: ${{ always() }}
         run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        if: ${{ false }}
+        continue-on-error: true # This step will show errors but will not fail
+        if: ${{ always() }}
         run: moodle-plugin-ci phpdoc --max-warnings 0
 
       - name: Validating
@@ -94,7 +99,6 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        if: matrix.moodle-branch != 'MOODLE_311_STABLE'
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
@@ -108,7 +112,10 @@ jobs:
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
         if: ${{ always() }}
-        run: sudo apt-get install -y valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
+
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}

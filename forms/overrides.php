@@ -243,9 +243,9 @@ if ($delete !== null) {
 if ($update !== null) {
     // Update or create an override.
     $override = $optionsform->get_data();
-    vpl_truncate_vpl($override); // Trim and cut password if too large.
-    unset($override->id); // The id field of the form is not the override id - do not use it.
     if ($override !== null) {
+        vpl_truncate_vpl($override); // Trim and cut password if too large.
+        unset($override->id); // The id field of the form is not the override id - do not use it.
         foreach ($fields as $field) {
             if (!isset($override->{'override_' . $field})) {
                 $override->$field = null;
