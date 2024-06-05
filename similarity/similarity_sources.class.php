@@ -47,6 +47,7 @@ class vpl_file_from_dir extends vpl_file_from_base {
     protected $dirname;
     protected $filename;
     protected $userid;
+    protected $vplid;
     // This is for compatibility with GAP 2.x application.
     public static function process_gap_userfile($filepath) {
         if (strtolower( basename( $filepath ) ) == 'datospersonales.gap') {

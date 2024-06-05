@@ -51,11 +51,15 @@ class vpl_files_pair {
     static protected $maxs3 = 100;
     public $first;
     public $second;
-    public $selected;
-    public $s1;
-    public $s2;
-    public $s3;
-    public $id;
+    protected $selected;
+    protected $s1;
+    protected $s2;
+    protected $s3;
+    protected $id;
+    protected $level;
+    protected $level1;
+    protected $level2;
+    protected $level3;
     private $clusternumber;
     public function __construct($first = null, $second = null, $s1 = 0, $s2 = 0, $s3 = 0) {
         $this->first = $first;
