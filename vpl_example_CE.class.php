@@ -45,11 +45,17 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
     }
 
     /**
+     * Cache file group used as submitted files.
+     * @var object
+     */
+    protected $submitted_fgm;
+
+    /**
      *
      * @return object file group manager for example files
      */
     public function get_submitted_fgm() {
-        if (! $this->submitted_fgm) {
+        if (! isset($this->submitted_fgm)) {
             $this->submitted_fgm = $this->vpl->get_required_fgm();
         }
         return $this->submitted_fgm;

@@ -110,7 +110,7 @@ class vpl_clusters {
             if (false) { // Debug zone.
                 echo "<h3>Añadimos" . (count( $this->adjlist[$next] )) . " ";
                 echo ($this->cmembers[$cluster] / 2) . "</h3>";
-                $this->print_cluster( $this->clusters[$cluster] );
+                $this->print_cluster( $this->clusters[$cluster], 1);
             }
 
         } else { // Diferent clusters.
@@ -134,8 +134,8 @@ class vpl_clusters {
             }
             if (false) { // Debug zone.
                 echo "<h3>Unimos</h3>";
-                $this->print_cluster( $this->clusters[$mincluster] );
-                $this->print_cluster( $this->clusters[$maxcluster] );
+                $this->print_cluster( $this->clusters[$mincluster], 1);
+                $this->print_cluster( $this->clusters[$maxcluster], 2);
             }
             foreach ($this->clusters[$mincluster] as $pairmove) { // Fusion.
                 $pairmove->first->cluster = $maxcluster;
@@ -143,7 +143,7 @@ class vpl_clusters {
                 $this->clusters[$maxcluster][] = $pairmove;
             }
             if (false) { // Debug zone.
-                $this->print_cluster( $this->clusters[$maxcluster] );
+                $this->print_cluster( $this->clusters[$maxcluster], 1);
             }
             $this->cmembers[$maxcluster] += $this->cmembers[$mincluster];
             $this->cmembers[$mincluster] = 0;

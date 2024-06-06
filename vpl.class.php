@@ -1373,6 +1373,12 @@ class mod_vpl {
     }
 
     /**
+     * Property for cache scale record
+     * @var object
+     */
+    private $scale;
+
+    /**
      * Return scale record if grade < 0
      *
      * @return Object or false
