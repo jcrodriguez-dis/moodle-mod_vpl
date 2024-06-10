@@ -207,71 +207,12 @@ function vpl_output_zip($zipfilename, $name) {
  *
  * @return string
  */
-function vpl_get_lang($bashadapt = true) {
+function vpl_get_lang() {
     global $SESSION, $USER, $CFG;
-    $commonlangs = [
-            'aa' => 'DJ',
-            'af' => 'ZA',
-            'am' => 'ET',
-            'an' => 'ES',
-            'az' => 'AZ',
-            'ber' => 'DZ',
-            'bg' => 'BG',
-            'ca' => 'ES',
-            'cs' => 'CZ',
-            'da' => 'DK',
-            'de' => 'DE',
-            'dz' => 'BT',
-            'en' => 'US',
-            'es' => 'ES',
-            'et' => 'EE',
-            'fa' => 'IR',
-            'fi' => 'FI',
-            'fr' => 'FR',
-            'he' => 'IL',
-            'hu' => 'HU',
-            'ig' => 'NG',
-            'it' => 'IT',
-            'is' => 'IS',
-            'ja' => 'JP',
-            'km' => 'KH',
-            'ko' => 'KR',
-            'lo' => 'LA',
-            'lv' => 'LV',
-            'pt' => 'PT',
-            'ro' => 'RO',
-            'ru' => 'RU',
-            'se' => 'NO',
-            'sk' => 'sk',
-            'so' => 'SO',
-            'sv' => 'SE',
-            'or' => 'IN',
-            'th' => 'th',
-            'ti' => 'ET',
-            'tk' => 'TM',
-            'tr' => 'TR',
-            'uk' => 'UA',
-            'yo' => 'NG',
-    ];
-    if (isset( $SESSION->lang )) {
-        $lang = $SESSION->lang;
-    } else if (isset( $USER->lang )) {
-        $lang = $USER->lang;
-    } else if (isset( $CFG->lang )) {
-        $lang = $CFG->lang;
-    } else {
-        return "en";
-    }
-    if ($bashadapt) {
-        $parts = explode( '_', $lang );
-        if (count($parts) == 2) {
-            $lang = $parts[0];
-        }
-        if (isset($commonlangs[$lang])) {
-            $lang = $lang . '_' . $commonlangs[$lang];
-        }
-        $lang .= '.UTF-8';
-    }
+    //Get current language from moodle ex: en_us
+    $suffix = current_language();
+    $parts = explode( '_', $suffix );
+    $lang = $parts[0] . '_' . strtoupper($parts[1]) . '.UTF-8';
     return $lang;
 }
 
