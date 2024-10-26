@@ -1,6 +1,7 @@
 #!/bin/bash
 cat > vpl_execution << "ENDOFSCRIPT"
 #!/bin/bash
+stty onlcr
 while true ; do
    read A
    if [ "$?" != "0" ] ; then
