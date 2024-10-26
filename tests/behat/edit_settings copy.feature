@@ -19,35 +19,38 @@ Feature: Create and change VPL activity settings
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
 
-    And I log in as "teacher1"
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
-      | id_name | VPL activity default |
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
-      | id_name | VPL activity full setting |
-      | id_shortdescription | VPL activity short description |
-      | id_introeditor | Full description |
-      | id_showdescription | 1 |
-      | id_duedate_enabled | "" |
-      | id_startdate_enabled | 1 |
-      | id_maxfiles | 13 |
-      | id_worktype | Group work |
-      | id_restrictededitor | 1 |
-      | id_maxfilesize | 16384 |
-      | id_password | key |
-      | id_requirednet | 10.10.10.13 |
-      | id_sebrequired | 1 |
-      | id_sebkeys | 1234567890 |
-      | id_grade_modgrade_type | Point |
-      | id_grade_modgrade_point | 17 |
-      | id_reductionbyevaluation | 1% |
-      | id_freeevaluations | 3 |
-    And I log out
+    And the following "activity" exists:
+      | activity         | vpl                  |
+      | course           | C1                   |
+      | name             | VPL activity default |
+      | shortdescription | s                    |
+      | duedate          | 1670803200           |
+      | grade            | 100                  |
 
+    And the following "activity" exists:
+      | activity | vpl |
+      | course   | C1  |
+      | name | VPL activity full setting |
+      | shortdescription | VPL activity short description |
+      | intro | Full description |
+      | showdescription | 1 |
+      | duedate | 1670803200 |
+      | startdate | 1670700000 |
+      | maxfiles | 13 |
+      | worktype | 1 |
+      | restrictededitor | 1 |
+      | maxfilesize | 16384 |
+      | password | key |
+      | requirednet | 10.10.10.13 |
+      | sebrequired | 1 |
+      | sebkeys | 1234567890 |
+      | grade | 17 |
+      | reductionbyevaluation | 1% |
+      | freeevaluations | 3 |
+ 
   @javascript
   Scenario: An editing teacher sees default VPL setting values
-    Given I log in as "teacher1"
-    And I am on "Course 1" course homepage
-    When I click on "VPL activity default" "link" in the "region-main" "region"
+    And I am on the "VPL activity default" Activity page logged in as teacher1
     Then I should see "Due date:"
     And I should not see "Available from:"
     And I should see "Maximum number of files: 1"

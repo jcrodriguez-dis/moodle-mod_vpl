@@ -17,15 +17,12 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I open a new activity in section "1" of type VPL
-    And I set the following fields to these values:
+    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
       | id_shortdescription | VPL activity short description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 33 |
       | id_grade_modgrade_type | None |
-    And I press "Save and display"
     And I log out
 
   @javascript
