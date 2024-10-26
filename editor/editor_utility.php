@@ -134,16 +134,6 @@ class vpl_editor_util {
                 class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
-    <div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
-        style="display: none;">
-        <fieldset>
-            <label for="vpl_ide_input_deletefilename">
-                <?php p(get_string('delete'));?></label> <input
-                type="text" id="vpl_ide_input_deletefilename"
-                name="vpl_ide_input_deletefilename" value=""
-                class="ui-widget-content ui-corner-all" autofocus /><br>
-        </fieldset>
-    </div>
     <div id="vpl_ide_dialog_sort" class="vpl_ide_dialog"
         style="display: none;">
         <ol id="vpl_sort_list"></ol>
