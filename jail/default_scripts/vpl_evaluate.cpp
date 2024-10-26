@@ -26,6 +26,7 @@
 #include <execinfo.h>
 #include <regex.h>
 #include <string>
+#include <termios.h>
 
 using namespace std;
 
@@ -45,6 +46,7 @@ public:
 	static int nextLine(const string &data);
 	static string caseFormat(string text);
 	static string toLower(const string &text);
+	static void removeCRs(string &text);
 	static string normalizeTag(const string &text);
 	static bool parseLine(const string &text, string &name, string &data);
 	static string trimRight(const string &text);
@@ -362,7 +364,32 @@ string Tools::readFile(string name) {
 	if (f != NULL)
 		while (fgets(buf, 1000, f) != NULL)
 			res += buf;
+	Tools::removeCRs(res);
 	return res;
+}
+
+void Tools::removeCRs(string &text) {
+	size_t len = text.size();
+	bool noNL = true;
+	for(size_t i = 0; i < len; i++) {
+		if (text[i] == '\n') {
+			noNL = false;
+		};
+	}
+	if (noNL) { //Replace CR by NL
+		for(size_t i = 0; i < len; i++) {
+			if (text[i] == '\r') {
+				text[i] == '\n';
+			}
+		}
+	} else { //Remove CRs if any
+		size_t lenClean = 0;
+		for(size_t i = 0; i < len; i++) {
+			text[lenClean] = text[i];
+			if (text[i] != '\r') lenClean++;
+		}
+		text.resize(lenClean);
+	}
 }
 
 vector<string> Tools::splitLines(const string &data) {
@@ -628,7 +655,7 @@ NumbersOutput::NumbersOutput(const string &text):OutputChecker(text){
 		char c=text[i];
 		if((isNum(c) && str.size()>0) || (isNumStart(c) && str.size()==0)){
 			str+=c;
-		}else if(str.size()>0){
+		}else if(str.size() > 0){
 			if(isNumStart(str[0]) && number.set(str)) numbers.push_back(number);
 			str="";
 		}
@@ -653,7 +680,7 @@ bool NumbersOutput::operator==(const NumbersOutput& o)const{
 		if (o.numbers.size() != len) return false;
 	}
 	for (size_t i = 0; i < len; i++)
-		if(numbers[i] != o.numbers[offset+i])
+		if(numbers[i] != o.numbers[offset + i])
 			return false;
 	return true;
 }
@@ -734,7 +761,7 @@ bool TextOutput::operator==(const TextOutput& o) {
 	if (o.tokens.size() < l) return false;
 	int offset = o.tokens.size() - l;
 	for (size_t i = 0; i < l; i++)
-		if (tokens[i] != o.tokens[ offset + i ])
+		if (tokens[i] != o.tokens[offset + i ])
 			return false;
 	return true;
 }
@@ -783,6 +810,21 @@ string ExactTextOutput::studentOutputExpected(){
 bool ExactTextOutput::operator==(const ExactTextOutput& o){
 	return match(o.text);
 }
+string showChars(const string& str) {
+	string out= "[";
+	for(int i = 0; i < str.size(); i++){
+		if (str[i] < ' ') {
+			char buf[100];
+			sprintf(buf, "%d", (int)str[i]);
+			out += buf;
+		} else {
+			out += str.substr(i, 1);
+		}
+		if (i < str.size() -1) out += ",";
+	}
+	out += "]";
+	return out;
+}
 
 bool ExactTextOutput::match(const string& output){
 	if (cleanText == output) return true;
@@ -797,6 +839,10 @@ bool ExactTextOutput::match(const string& output){
 		size_t start = cleanOutput.size() - cleanText.size();
 		return cleanText == cleanOutput.substr(start, cleanText.size());
 	} else {
+		if (cleanText != cleanOutput) {
+			cout << showChars(cleanText) << endl;
+			cout << showChars(cleanOutput) << endl;
+		}
 		return cleanText == cleanOutput;
 	}
 }
@@ -852,11 +898,12 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 					stringstream ss;
 					ss << wrongFlag;
 					ss >> flagCatch;
-					string errorType = string("Error: invalid flag in regex output ")+ string(errorCase)+ string (", found a ") + string(flagCatch) + string (" used as a flag, only i and m available.");
+					string errorType = string("Error: invalid flag in regex output ") + string(errorCase);
+					errorType += string (", found a ") + string(flagCatch) + string (" used as a flag, only i and m available.");
 					const char* flagError = errorType.c_str();
 					p_ErrorTest->addFatalError(flagError);
 					p_ErrorTest->outputEvaluation();
-					abort();
+					exit(0);
 			}
 			pos++;
 		}
@@ -865,12 +912,10 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 
 // Regular Expression compilation (with flags in mind) and comparison with the input and output evaluation
 bool RegularExpressionOutput::match (const string& output) {
-
-	reti=-1;
+	reti = -1;
 	const char * in = cleanText.c_str();
 	// Use POSIX-C regrex.h
-	// Flag compilation
-	if (flagI || flagM) {
+	if (flagI || flagM) { // Flag compilation
 		if (flagM && flagI) {
 			reti = regcomp(&expression, in, REG_EXTENDED | REG_NEWLINE | REG_ICASE);
 		} else if (flagM) {
@@ -878,9 +923,7 @@ bool RegularExpressionOutput::match (const string& output) {
 		} else {
 			reti = regcomp(&expression, in, REG_EXTENDED | REG_ICASE);
 		}
-
-	// No flag compilation
-	} else {
+	} else { // No flag compilation
 		reti = regcomp(&expression, in, REG_EXTENDED);
 	}
 
@@ -900,7 +943,7 @@ bool RegularExpressionOutput::match (const string& output) {
 			const char* flagError = errorType.c_str();
 			p_ErrorTest->addFatalError(flagError);
 			p_ErrorTest->outputEvaluation();
-			abort();
+			exit(0);
 		}
 
 	} else { // Compilation error
@@ -908,13 +951,14 @@ bool RegularExpressionOutput::match (const string& output) {
         char* bff = new char[length + 1];
         (void) regerror(reti, &expression, bff, length);
 		Evaluation* p_ErrorTest = Evaluation::getSinglenton();
-		string errorType = string("Error: regular expression compilation error")+string (" in case: ")+ string(errorCase) +string (".\n")+ string(bff);
+		string errorType = "Error: regular expression compilation error";
+		errorType += " in case: "+ string(errorCase) + string (": ") + string(bff);
 		const char* flagError = errorType.c_str();
 		p_ErrorTest->addFatalError(flagError);
 		p_ErrorTest->outputEvaluation();
-		abort();
-		return false;
+		exit(0);
 	}
+	return false;
 }
 
 // Returns the expression without flags nor '/'
@@ -1052,7 +1096,7 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 	char buf[MAX];
 	devices[0].events = POLLREAD;
 	devices[1].events = POLLOUT;
-	int res = poll(devices, programInput.size()>0?2:1, 0);
+	int res = poll(devices, 2, 500);
 	if (res == -1) // Error
 		return;
 	if (res == 0) // Nothing to do
@@ -1061,7 +1105,7 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 		int readed = read(fdread, buf, MAX);
 		if (readed > 0) {
 			sizeReaded += readed;
-			if (programInput.size() > 1) {
+			if (programInput.size() > 0) {
 				programOutputBefore += string(buf, readed);
 				cutOutputTooLarge(programOutputBefore);
 			} else {
@@ -1070,15 +1114,16 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 			}
 		}
 	}
-	if (programInput.size() > 0 && devices[1].revents & POLLOUT) { // Write to program
-		int written = write(fdwrite, programInput.c_str(), Tools::nextLine(
-				programInput));
-		if (written > 0) {
-			programInput.erase(0, written);
-		}
-		if(programInput.size()==0){
-			close(fdwrite);
-		}
+	if (devices[1].revents & POLLOUT) { // Write to program
+	    if (programInput.size() > 0) {
+    		int written = write(fdwrite, programInput.c_str(), Tools::nextLine(programInput));
+    		if (written > 0) {
+    			programInput.erase(0, written);
+    		}
+	    } else {
+	        // End of input then send EOF
+	        write(fdwrite, "\x04", 1);
+	    }
 	}
 }
 
@@ -1244,7 +1289,7 @@ string TestCase::getComment() {
 	char buf[100];
 	string ret;
 	if(output.size()==0){
-		ret += "Configuration error in the test case: the output is not defined";
+		ret += "Configuration error in the test case: the output is not defined\n";
 	}
 	if (programTimeout) {
 		ret += "Program timeout\n";
@@ -1317,14 +1362,6 @@ void TestCase::splitArgs(string programArgs) {
 
 void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	time_t start = time(NULL);
-	int pp1[2]; // Send data
-	int pp2[2]; // Receive data
-	if (pipe(pp1) == -1 || pipe(pp2) == -1) {
-		executionError = true;
-		sprintf(executionErrorReason, "Internal error: pipe error (%s)",
-				strerror(errno));
-		return;
-	}
 	if ( programToRun > "" && programToRun.size() < 512) {
 		command = programToRun.c_str();
 	}
@@ -1337,41 +1374,37 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	if ( programArgs.size() > 0) {
 		splitArgs(programArgs);
 	}
-	if ((pid = fork()) == 0) {
-		// Execute
-		close(pp1[1]);
-		dup2(pp1[0], STDIN_FILENO);
-		close(pp2[0]);
-		dup2(pp2[1], STDOUT_FILENO);
-		dup2(STDOUT_FILENO, STDERR_FILENO);
+	struct termios termp;
+    tcgetattr(STDIN_FILENO, &termp);
+	termp.c_lflag &= ~ ECHO;
+    termp.c_iflag |= IGNCR;  // Ignore CR on input
+    termp.c_iflag &= ~(ICRNL | INLCR);  // Disable CR to NL and NL to CR conversions
+    termp.c_oflag &= ~(ONLCR | OCRNL | ONOCR | ONLRET);  // Disable all CR and NL related conversions
+
+	int fdmaster = -1;
+	signal(SIGTERM, SIG_IGN);
+	signal(SIGKILL, SIG_IGN);
+	if ((pid = forkpty(&fdmaster, NULL, &termp, NULL)) == 0) {
 		setpgrp();
 		execve(command, (char * const *) argv, (char * const *) envv);
 		perror("Internal error, execve fails");
 		abort(); //end of child
 	}
-	if (pid == -1) {
+	if (pid == -1 || fdmaster == -1) {
 		executionError = true;
-		sprintf(executionErrorReason, "Internal error: fork error (%s)",
+		sprintf(executionErrorReason, "Internal error: forkpty error (%s)",
 				strerror(errno));
 		return;
 	}
-	close(pp1[0]);
-	close(pp2[1]);
-	int fdwrite = pp1[1];
-	int fdread = pp2[0];
-	Tools::fdblock(fdwrite, false);
-	Tools::fdblock(fdread, false);
+	Tools::fdblock(fdmaster, false);
 	programInput = input;
-	if(programInput.size()==0){ // No input
-		close(fdwrite);
-	}
 	programOutputBefore = "";
 	programOutputAfter = "";
 	pid_t pidr;
 	int status;
 	exitCode = std::numeric_limits<int>::min();
 	while ((pidr = waitpid(pid, &status, WNOHANG | WUNTRACED)) == 0) {
-		readWrite(fdread, fdwrite);
+		readWrite(fdmaster, fdmaster);
 		usleep(5000);
 		// TERMSIG or timeout or program output too large?
 		if (Stop::isTERMRequested() || (time(NULL) - start) >= timeout
@@ -1383,34 +1416,48 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 			int otherstatus;
 			usleep(5000);
 			if (waitpid(pid, &otherstatus, WNOHANG | WUNTRACED) == pid) {
+			    status = otherstatus;
 				break;
 			}
 			if (kill(pid, SIGQUIT) == 0) { // Kill
 				break;
 			}
+			usleep(5000);
+			if (waitpid(pid, &otherstatus, WNOHANG | WUNTRACED) == pid) {
+			    status = otherstatus;
+			}
 		}
 	}
 	if (pidr == pid) {
-		if (WIFSIGNALED(status)) {
+		if (WIFEXITED(status)) {
+    			exitCode = WEXITSTATUS(status);
+		} else if (WIFSIGNALED(status)) {
 			int signal = WTERMSIG(status);
 			executionError = true;
 			sprintf(executionErrorReason,
-					"Program terminated due to \"%s\" (%d)\n", strsignal(
+					"Program terminated due to \"%s\" (%d)", strsignal(
 							signal), signal);
-		}
-		if (WIFEXITED(status)) {
-			exitCode = WEXITSTATUS(status);
+        } else if (WIFSTOPPED(status)) {
+            executionError = true;
+            sprintf(executionErrorReason,
+                "Child process was stopped by signal: %d", WSTOPSIG(status));
+        } else if (WIFCONTINUED(status)) {
+            executionError = true;
+            sprintf(executionErrorReason, "Child process was continued.");
 		} else {
 			executionError = true;
-			strcpy(executionErrorReason,
-					"Program terminated but unknown reason.");
+			sprintf(executionErrorReason,
+				"Program terminated but unknown reason. (%d)", status);
 		}
 	} else if (pidr != 0) {
 		executionError = true;
 		strcpy(executionErrorReason, "waitpid error");
 	}
-	readWrite(fdread, fdwrite);
+	readWrite(fdmaster, fdmaster);
+	close(fdmaster);
 	correctExitCode = isExitCodeTested() && expectedExitCode == exitCode;
+	Tools::removeCRs(programOutputBefore);
+	Tools::removeCRs(programOutputAfter);
 	correctOutput = match(programOutputAfter)
 			     || match(programOutputBefore + programOutputAfter);
 }
@@ -1628,7 +1675,7 @@ void Evaluation::addFatalError(const char *m) {
 		ncomments = MAXCOMMENTS - 1;
 
 	snprintf(titles[ncomments], MAXCOMMENTSTITLELENGTH, "%s", m);
-	snprintf(titlesGR[ncomments], MAXCOMMENTSTITLELENGTH, "%s (%.2f)", m, reduction);
+	snprintf(titlesGR[ncomments], MAXCOMMENTSTITLELENGTH, "%s (%.2f)", m, -reduction);
 	strcpy(comments[ncomments], "");
 	ncomments ++;
 	grade = grademin;
