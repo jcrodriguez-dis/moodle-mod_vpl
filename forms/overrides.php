@@ -174,6 +174,10 @@ $vpl->prepare_page( 'forms/overrides.php', [ 'id' => $id ] );
 $vplid = $vpl->get_instance()->id;
 $overrides = vpl_get_overrides($vplid);
 
+if (!empty($edit) && !isset($overrides[$edit])) {
+    $edit = null;
+}
+
 $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
 
 // Prepare forms if we are editing or submitting an override.
