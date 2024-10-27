@@ -923,12 +923,7 @@ function vpl_reset_instance_userdata($vplid) {
     ] );
     // Delete overrides and associated events.
     $vpl = new mod_vpl(null, $vplid);
-    $sql = 'SELECT ao.id as aid, o.*, ao.userid as userids, ao.groupid as groupids
-                FROM {vpl_overrides} o
-                LEFT JOIN {vpl_assigned_overrides} ao ON ao.override = o.id
-                WHERE o.vpl = :vplid';
-    $overridesseparated = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-    $overrides = vpl_agregate_overrides($overridesseparated);
+    $overrides = vpl_get_overrides($vplid);
     foreach ($overrides as $override) {
         $vpl->update_override_calendar_events($override, null, true);
     }
