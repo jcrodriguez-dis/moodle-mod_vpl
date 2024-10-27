@@ -29,12 +29,29 @@ defined('MOODLE_INTERNAL') || die;
 require_once(dirname(__FILE__).'/../../locallib.php');
 
 /**
- * Class to hide & show div/span contents.
+ * Class to hide & show any tag contents (div, span, pre, etc.).
  */
 class hide_show {
+
+    /**
+     * @var int Global counter of ids to get a unique id for each tag.
+     */
     private static $globalid = 0;
+
+    /**
+     * @var int Current instance id.
+     */
     protected $id;
+
+    /**
+     * @var bool Indicate if the first state of the tag (show or hide).
+     */
     protected $show;
+
+    /**
+     * @var string Tag used, needed for closing the tag.
+     */
+    protected $tag;
 
     /**
      * Create a new object whit defined state.
@@ -73,68 +90,43 @@ class hide_show {
         return $html;
     }
 
+
     /**
-     * Generate begin of div for contents.
+     * Generate begin of tag for contents.
      * @return string HTML or empty
      */
-    public function begin_div(): string {
-        $html = '<div id="vpl_shc' . $this->id . '" class="vpl_show_hide_content"';
+    public function begin($tag): string {
+        $this->tag = $tag;
+        $html = "<$tag id='vpl_shc{$this->id}' class='vpl_show_hide_content'";
         if (! ($this->show)) {
-            $html .= ' style="display:none"';
+            $html .= " style='display:none'";
         }
         $html .= '>';
         return $html;
     }
 
     /**
-     * Generate end of div for contents.
+     * Generate end of tag for contents.
      * @return string HTML
      */
-    public function end_div(): string {
-        return '</div>';
+    public function end(): string {
+        return "</{$this->tag}>";
     }
 
     /**
-     * Generate div with contents.
+     * Generate tag with contents.
      * @param string $content Contents to use, must be escaped.
      * @return string HTML
      */
-    public function content_in_div($content): string {
-        return $this->begin_div() . $content . $this->end_div();
+    public function content_in_tag($tag, $content): string {
+        return $this->begin($tag) . $content . $this->end();
     }
 
     /**
-     * Generate begin of span for contents.
-     * @return string HTML
+     * Return tag ID.
+     * @return int
      */
-    public function begin_span(): string {
-        $html = '<span id="vpl_shc' . $this->id . '" class="vpl_show_hide_content"';
-        if (! ($this->show)) {
-            $html .= ' style="display:none"';
-        }
-        $html .= '>';
-        return $html;
-    }
-
-    /**
-     * Generate end of span for contents.
-     * @return string HTML
-     */
-    public function end_span() {
-        return '</span>';
-    }
-
-    /**
-     * Generate span with contents.
-     * @param string $content Contents to use, must be escaped.
-     * @return string HTML
-     */
-    public function content_in_span($content) {
-        return $this->begin_span() . $content . $this->end_span();
-    }
-
     public function get_tag_id() {
         return 'vpl_shc' . $this->id;
     }
-
 }
