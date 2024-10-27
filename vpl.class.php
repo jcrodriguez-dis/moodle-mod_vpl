@@ -638,7 +638,8 @@ class mod_vpl {
             }
             require_once('forms/password_form.php');
             $this->print_header();
-            $mform = new mod_vpl_password_form($_SERVER['SCRIPT_NAME'], $this);
+            $posturl = $_SERVER['SCRIPT_NAME'] . "?id={$this->cm->id}";
+            $mform = new mod_vpl_password_form($posturl, $this);
             $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
             if (isset( $SESSION->$passattempt)) {
                 vpl_notice(get_string('attemptnumber', VPL, $SESSION->$passattempt),
@@ -1941,7 +1942,7 @@ class mod_vpl {
                 $html .= $this->str_restriction_with_icon( 'password', $stryes, false, false, 'moodle');
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
-                $html .= $infohs->content_in_span(s($password));
+                $html .= $infohs->content_in_tag('span', s($password));
                 $html .= "<br>\n";
             }
             if (trim( $instance->requirednet ) > '') {
@@ -1954,7 +1955,7 @@ class mod_vpl {
                 $html .= $this->str_restriction_with_icon('sebkeys', $stryes, false, false);
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
-                $html .= $infohs->content_in_div(nl2br(s($instance->sebkeys)));
+                $html .= $infohs->content_in_tag('div', nl2br(s($instance->sebkeys)));
                 $html .= "<br>\n";
             }
             if ($instance->restrictededitor) {
@@ -2106,7 +2107,7 @@ class mod_vpl {
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
             $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate() . '</b><br>';
-            $html .= $div->begin_div();
+            $html .= $div->begin('div');
             if (! $this->instance->usevariations) {
                 $html .= '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
@@ -2120,7 +2121,7 @@ class mod_vpl {
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
             }
-            $html .= $div->end_div();
+            $html .= $div->end();
         }
         return $html;
     }
