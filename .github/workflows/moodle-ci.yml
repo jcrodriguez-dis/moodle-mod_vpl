@@ -30,21 +30,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        php: ['8.0', '8.1', '8.2', '8.3']
         moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE']
         database: [pgsql, mariadb]
         # Reduces DB versions
         exclude:
-          - php: '7.4'
-            moodle-branch: 'MOODLE_403_STABLE'
-          - php: '7.4'
+          - php: '8.0'
             moodle-branch: 'MOODLE_404_STABLE'
-          - php: '7.4'
+          - php: '8.0'
             moodle-branch: 'MOODLE_405_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_404_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_404_STABLE'
+          - php: '8.2'
+            moodle-branch: 'MOODLE_401_STABLE'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_401_STABLE'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_403_STABLE'
           - database: pgsql
             moodle-branch: MOODLE_402_STABLE
           - database: pgsql
