@@ -511,7 +511,7 @@ function vpl_get_select_time($maximum = null) {
     if ($maximum <= 0) {
         return $ret;
     }
-    $value = 4;
+    $value = 1;
     if ($maximum < $value) {
         $value = $maximum;
     }
