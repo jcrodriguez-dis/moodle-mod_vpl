@@ -130,14 +130,23 @@ class vpl_jailserver_manager {
         if ($rawresponse === false) {
             $error = 'request failed: ' . s( curl_error( $ch ) );
             curl_close( $ch );
-            return false;
         } else {
             curl_close( $ch );
             $error = '';
-            if ($rawresponse[0] == '{') {
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            if ( $httpcode != 200) {
+                $error = "HTTP Status Code: {$httpcode}";
+                if ($httpcode == 404) {
+                    $error .= " - Bad URLPATH?";
+                } else if ($httpcode >= 400 && $httpcode < 500) {
+                    $error .= " - Client Error";
+                } else if ($httpcode >= 500) {
+                    $error .= " - Internal Jail Server Error";
+                }
+            } else if ($rawresponse[0] == '{') {
                 $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
-                    $error = 'JSONRPC response is fault: ' . s(json_last_error_msg());
+                    $error = 'JSONRPC response is fault: ' . json_last_error_msg();
                 } else {
                     if ($response->id != self::get_jsonrpcid()) {
                         $error = 'JSONRPC response mismatch ID';
@@ -154,17 +163,18 @@ class vpl_jailserver_manager {
                     if (is_array( $response )) {
                         $xmlrpcisfault = 'xmlrpc_is_fault';
                         if ($xmlrpcisfault( $response )) {
-                            $error = 'XML-RPC is fault: ' . s( $response["faultString"] );
+                            $error = 'XML-RPC is fault: ' . $response["faultString"];
                         } else {
                             return $response;
                         }
                     } else {
-                        $error = 'HTTP error ' . s( strip_tags( $rawresponse ) );
+                        $rawresponse = mb_substr($rawresponse, 0, 40);
+                        $error = 'HTTP error ' . $rawresponse;
                     }
                 }
             }
-            return false;
         }
+        return false;
     }
     /**
      * Check if the server is tagged as down
@@ -348,14 +358,17 @@ class vpl_jailserver_manager {
      * @return bool
      */
     public static function is_private_host(string $url): bool {
+        if (filter_var($url, FILTER_VALIDATE_URL) === false) {
+            return false;
+        }
         $hostname = parse_url( $url, PHP_URL_HOST );
         if ($hostname === false) {
-            return true;
+            return false;
         }
-        $private = '10., 127., 172.16.0.0/12, 192.168., 169.254.';
         $name = $hostname . '.';
         $ip = gethostbyname( $name );
         if ($ip != $name) {
+            $private = '10., 127., 172.16-31, 192.168., 169.254., 224-239, 240.';
             return address_in_subnet( $ip, $private );
             // IPv6 not implemented fc00::/7 fe80::/10 .
         }
