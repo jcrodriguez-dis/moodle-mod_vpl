@@ -30,37 +30,27 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1']
-        moodle-branch: ['MOODLE_311_STABLE', 'MOODLE_400_STABLE', 'MOODLE_401_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE']
+        php: ['7.4', '8.0', '8.1', '8.2', '8.3']
+        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE']
         database: [pgsql, mariadb]
-        # Removes incompatible combinations and reduces DB versions
+        # Reduces DB versions
         exclude:
-          - php: 7.4
-            moodle-branch: MOODLE_402_STABLE
-          - php: 7.4
-            moodle-branch: MOODLE_403_STABLE
-          - php: 7.4
-            moodle-branch: MOODLE_404_STABLE
-          - php: 7.4
-            moodle-branch: MOODLE_405_STABLE
-          - php: 8.0
-            moodle-branch: MOODLE_404_STABLE
-          - php: 8.0
-            moodle-branch: MOODLE_405_STABLE
-          - php: 8.1
-            moodle-branch: MOODLE_311_STABLE
-          - php: 8.1
-            moodle-branch: MOODLE_400_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_311_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_400_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_401_STABLE
+          - php: '7.4'
+            moodle-branch: 'MOODLE_403_STABLE'
+          - php: '7.4'
+            moodle-branch: 'MOODLE_404_STABLE'
+          - php: '7.4'
+            moodle-branch: 'MOODLE_405_STABLE'
+          - php: '8.0'
+            moodle-branch: 'MOODLE_404_STABLE'
+          - php: '8.0'
+            moodle-branch: 'MOODLE_404_STABLE'
           - database: pgsql
             moodle-branch: MOODLE_402_STABLE
           - database: pgsql
             moodle-branch: MOODLE_403_STABLE
+          - database: pgsql
+            moodle-branch: MOODLE_404_STABLE
 
     steps:
       - name: Check out repository code

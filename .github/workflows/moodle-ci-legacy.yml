@@ -30,9 +30,14 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4']
-        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_310_STABLE']
+        php: ['7.4', '8.0']
+        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_310_STABLE', 'MOODLE_311_STABLE', 'MOODLE_400_STABLE']
         database: [pgsql, mariadb]
+        exclude:
+          - php: '8.0'
+            moodle-branch: MOODLE_39_STABLE
+          - database: '8.0'
+            moodle-branch: MOODLE_310_STABLE
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -113,7 +118,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y valgrind
-
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}
