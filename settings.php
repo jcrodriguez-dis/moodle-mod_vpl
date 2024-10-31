@@ -97,7 +97,7 @@ $settings->add(
                 get_string( 'use_xmlrpc_description', VPL ), 0 ) );
 $settings->add(
         new admin_setting_configcheckbox( $prefix . 'acceptcertificates', get_string( 'acceptcertificates', VPL ),
-                        get_string( 'acceptcertificates_description', VPL ), 1 ) );
+                        get_string( 'acceptcertificates_description', VPL ), 0 ) );
 $wsoptions = [
         'always_use_wss' => get_string( 'always_use_wss', VPL ),
         'always_use_ws' => get_string( 'always_use_ws', VPL ),
