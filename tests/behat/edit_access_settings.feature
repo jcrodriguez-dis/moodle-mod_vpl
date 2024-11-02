@@ -18,6 +18,7 @@ Feature: Create and change VPL activity access settings
       | teacher1 | C1 | editingteacher |
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
+    And I log in as "teacher1"
     And the following "activities" exist:
       | activity   | name               | password | requirednet | sebrequired | sebkeys | course | section |
       | vpl        | VPL with password  | key      |             | 0           |         | C1     | 1       |

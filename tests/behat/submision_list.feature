@@ -1,4 +1,4 @@
-@mod @mod_vpl @mod_vpl_submission_list
+@mod @mod_vpl
 Feature: List submissions of students
   In order to list submissions of students
   As an editing teacher or non-editing teacher
@@ -23,10 +23,17 @@ Feature: List submissions of students
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
       | student2 | C1 | student |
-    And the following "activities" exist:
-      | activity | name             | course | idnumber |
-      | vpl      | VPL activity 1   | C1     | vpl1  |
-      | vpl      | VPL activity 2   | C1     | vpl1  |
+    And I log in as "teacher1"
+    And I am on "Course 1" course homepage with editing mode on
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
+      | id_name | VPL activity 1 |
+    And I press "Save and return to course"
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
+      | id_name | VPL activity 2 |
+    And I press "Save and display"
+    And I log out
 
   @javascript
   Scenario: An editing teacher sees Submissions list

@@ -1,4 +1,4 @@
-@mod @mod_vpl @mod_vpl_execution_files
+@mod @mod_vpl
 Feature: In an VPL activity, editing teacher manage execution files
   In order to manages activity requested files
   As an editing teacher
@@ -15,12 +15,15 @@ Feature: In an VPL activity, editing teacher manage execution files
       | user | course | role |
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
+    And I am on "Course 1" course homepage with editing mode on
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
       | id_name | VPL activity testing |
       | id_shortdescription | VPL activity short description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 33 |
       | id_grade_modgrade_type | None |
+    And I press "Save and display"
     And I log out
 
   @javascript
@@ -84,7 +87,7 @@ Feature: In an VPL activity, editing teacher manage execution files
     When I click on "#vpl_ide_more" in VPL
     And I click on "#vpl_ide_delete" in VPL
     Then I should see "Delete file?"
-    And I click on "div.ui-dialog:nth-last-child(2) > div:nth-of-type(3) button" in VPL
+    And I click on "div.vpl_ide_dialog:last + div button" in VPL
     Then I should not see "other file_name.c"
     Then I click on "#vpl_ide_save" in VPL
     # Reload files

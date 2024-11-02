@@ -20,9 +20,12 @@ Feature: In a VPL activity, similarity feature
     | student2 | C1 | student |
     | student3 | C1 | student |
     And I log in as "teacher1"
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
+    And I am on "Course 1" course homepage with editing mode on
+    And I open a new activity in section "1" of type VPL
+    And I set the following fields to these values:
     | id_name | VPL activity testing |
     | id_maxfiles | 8 |
+    And I press "Save and display"
     And I log out
 
   @javascript

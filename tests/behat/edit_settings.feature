@@ -20,9 +20,15 @@ Feature: Create and change VPL activity settings
       | student1 | C1 | student |
 
     And I log in as "teacher1"
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
+    And I am on "Course 1" course homepage with editing mode on
+    And I open a new activity in section "1" of type VPL
+    And I expand all fieldsets
+    And I set the following fields to these values:
       | id_name | VPL activity default |
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
+    And I press "Save and return to course"
+    And I open a new activity in section "1" of type VPL
+    And I expand all fieldsets
+    And I set the following fields to these values:
       | id_name | VPL activity full setting |
       | id_shortdescription | VPL activity short description |
       | id_introeditor | Full description |
@@ -41,6 +47,7 @@ Feature: Create and change VPL activity settings
       | id_grade_modgrade_point | 17 |
       | id_reductionbyevaluation | 1% |
       | id_freeevaluations | 3 |
+    And I press "Save and display"
     And I log out
 
   @javascript

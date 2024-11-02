@@ -45,11 +45,28 @@ class behat_mod_vpl extends behat_base {
      * @return void
      */
     public function i_click_on_selector_in_vpl($selector) {
-        $script = "document.querySelector(\"$selector\").click();";
+        $script = "$(\"$selector\")[0].click();";
         $this->getSession()->evaluateScript($script);
         sleep(1);
     }
 
+    /**
+     * Open a new activity in section i of type vpl
+     *
+     * @Given /^I open a new activity in section "([^"]*)" of type VPL$/
+     * @param string $section
+     * @return void
+     */
+    public function i_open_a_new_activity_in_section_of_type_vpl($section) {
+        $script = "(function() {
+        var section='$section';
+        section = section.replace('\"','').replace(' ','');
+        var urlpattern = /(.*\\/course\\/)view\\.php\\?id=([0-9]*)/;
+        var urlreplacement = '$1modedit.php?add=vpl&type&course=$2&section=' + section;
+        window.location.href = window.location.href.replace(urlpattern, urlreplacement);
+        })();";
+        $this->getSession()->evaluateScript($script);
+    }
 
     /**
      * Accept confirm popup
@@ -115,14 +132,9 @@ class behat_mod_vpl extends behat_base {
             var file;
             $scriptfile;
             var fileList = [file];
-            var dropEvent = new Event('drop',
-                {
-                    bubbles: true,
-                    cancelable: true
-                });
-            dropEvent.dataTransfer = {files: fileList};
-            var element = document.querySelector('$selector');
-            element.dispatchEvent(dropEvent);
+            var drop = $.Event({type: 'drop', dataTransfer: {files: fileList}});
+            drop.isSimulated = true;
+            $('$selector').trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
         sleep(1);
@@ -155,15 +167,9 @@ class behat_mod_vpl extends behat_base {
             $scriptfile = $this->generate_drop_file($filename, $contents, 'file');
             $script .= "$scriptfile; fileList.push(file);";
         }
-        $script .= "var dropEvent = new Event('drop',
-                {
-                    bubbles: true,
-                    cancelable: true
-                });
-            dropEvent.dataTransfer = {files: fileList};
-            var element = document.querySelector('$selector');
-            element.dispatchEvent(dropEvent);
-
+        $script .= "var drop = $.Event({type: 'drop', dataTransfer: {files: fileList}});
+                drop.isSimulated = true;
+                $('$selector').trigger(drop);
         })()";
         $this->getSession()->evaluateScript($script);
         sleep(count($files));
