@@ -36,8 +36,13 @@ jobs:
         exclude:
           - php: '8.0'
             moodle-branch: MOODLE_39_STABLE
-          - database: '8.0'
+          - php: '8.0'
             moodle-branch: MOODLE_310_STABLE
+          - database: 'pgsql'
+            moodle-branch: MOODLE_310_STABLE
+          - database: 'pgsql'
+            moodle-branch: MOODLE_311_STABLE
+ 
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
