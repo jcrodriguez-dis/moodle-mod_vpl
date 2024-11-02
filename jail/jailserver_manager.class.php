@@ -131,9 +131,9 @@ class vpl_jailserver_manager {
             $error = 'request failed: ' . s( curl_error( $ch ) );
             curl_close( $ch );
         } else {
-            curl_close( $ch );
             $error = '';
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close( $ch );
             if ( $httpcode != 200) {
                 $error = "HTTP Status Code: {$httpcode}";
                 if ($httpcode == 404) {
