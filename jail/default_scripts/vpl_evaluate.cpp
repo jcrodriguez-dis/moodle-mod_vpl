@@ -25,7 +25,6 @@
 #include <cmath>
 #include <execinfo.h>
 #include <regex.h>
-#include <string>
 #include <termios.h>
 
 using namespace std;
@@ -129,7 +128,7 @@ class NumbersOutput:public OutputChecker{
 	bool calcStartWithAsterisk();
 
 public:
-	NumbersOutput(const string &text);//:OutputChecker(text);
+	NumbersOutput(const string &text);
 	string studentOutputExpected();
 	bool operator==(const NumbersOutput& o)const;
 	bool match(const string& output);
@@ -340,8 +339,8 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
 volatile bool Stop::TERMRequested = false;
-time_t Timer::startTime;
-const char **TestCase::envv=NULL;
+time_t Timer::startTime = 0;
+const char **TestCase::envv = NULL;
 Evaluation* Evaluation::singlenton = NULL;
 
 /**
@@ -361,9 +360,11 @@ string Tools::readFile(string name) {
 	char buf[1000];
 	string res;
 	FILE *f = fopen(name.c_str(), "r");
-	if (f != NULL)
+	if (f != NULL) {
 		while (fgets(buf, 1000, f) != NULL)
 			res += buf;
+		fclose(f);
+	}
 	Tools::removeCRs(res);
 	return res;
 }
@@ -374,19 +375,22 @@ void Tools::removeCRs(string &text) {
 	for(size_t i = 0; i < len; i++) {
 		if (text[i] == '\n') {
 			noNL = false;
+			break;
 		};
 	}
 	if (noNL) { //Replace CR by NL
 		for(size_t i = 0; i < len; i++) {
 			if (text[i] == '\r') {
-				text[i] == '\n';
+				text[i] = '\n';
 			}
 		}
 	} else { //Remove CRs if any
 		size_t lenClean = 0;
 		for(size_t i = 0; i < len; i++) {
-			text[lenClean] = text[i];
-			if (text[i] != '\r') lenClean++;
+			if (text[i] != '\r') {
+				text[lenClean] = text[i];
+				lenClean++;
+			}
 		}
 		text.resize(lenClean);
 	}
@@ -913,30 +917,20 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 // Regular Expression compilation (with flags in mind) and comparison with the input and output evaluation
 bool RegularExpressionOutput::match (const string& output) {
 	reti = -1;
-	const char * in = cleanText.c_str();
+	int cflag = REG_EXTENDED;
+	const char* in = cleanText.c_str();
 	// Use POSIX-C regrex.h
-	if (flagI || flagM) { // Flag compilation
-		if (flagM && flagI) {
-			reti = regcomp(&expression, in, REG_EXTENDED | REG_NEWLINE | REG_ICASE);
-		} else if (flagM) {
-			reti = regcomp(&expression, in, REG_EXTENDED | REG_NEWLINE);
-		} else {
-			reti = regcomp(&expression, in, REG_EXTENDED | REG_ICASE);
-		}
-	} else { // No flag compilation
-		reti = regcomp(&expression, in, REG_EXTENDED);
-	}
-
+	cflag |= flagI? REG_ICASE : 0;
+	cflag |= flagM? REG_NEWLINE : 0;
+	reti = regcomp(&expression, in, cflag);
 	if (reti == 0) { // Compilation was successful
-
 		const char * out = output.c_str();
 		reti = regexec(&expression, out, 0, NULL, 0);
-
+		regfree(&expression);
 		if (reti == 0) { // Match
 			return true;
 		} else if (reti == REG_NOMATCH){ // No match
 			return false;
-
 		} else { // Memory Error
 			Evaluation* p_ErrorTest = Evaluation::getSinglenton();
 			string errorType = string("Error: out of memory error, during matching case ") + string(errorCase);
@@ -956,6 +950,7 @@ bool RegularExpressionOutput::match (const string& output) {
 		const char* flagError = errorType.c_str();
 		p_ErrorTest->addFatalError(flagError);
 		p_ErrorTest->outputEvaluation();
+		delete []bff;
 		exit(0);
 	}
 	return false;
@@ -1374,21 +1369,25 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	if ( programArgs.size() > 0) {
 		splitArgs(programArgs);
 	}
-	struct termios termp;
-    tcgetattr(STDIN_FILENO, &termp);
-	termp.c_lflag &= ~ ECHO;
-    termp.c_iflag |= IGNCR;  // Ignore CR on input
-    termp.c_iflag &= ~(ICRNL | INLCR);  // Disable CR to NL and NL to CR conversions
-    termp.c_oflag &= ~(ONLCR | OCRNL | ONOCR | ONLRET);  // Disable all CR and NL related conversions
-
+	struct termios term;
+	struct termios * pterm = &term;
+    if (tcgetattr(STDIN_FILENO, pterm)==0) {
+        term.c_lflag |= ICANON;
+        // Ensure new line handling
+        term.c_iflag |= ICRNL;
+		term.c_lflag &= ~ ECHO;
+	} else {
+		pterm = NULL;
+	}
 	int fdmaster = -1;
 	signal(SIGTERM, SIG_IGN);
 	signal(SIGKILL, SIG_IGN);
-	if ((pid = forkpty(&fdmaster, NULL, &termp, NULL)) == 0) {
+	if ((pid = forkpty(&fdmaster, NULL, pterm, NULL)) == 0) {
 		setpgrp();
-		execve(command, (char * const *) argv, (char * const *) envv);
-		perror("Internal error, execve fails");
-		abort(); //end of child
+		if (execve(command, (char * const *) argv, (char * const *) envv) == -1) {
+			perror("Internal error, execve fails");
+			abort(); //end of child
+		}
 	}
 	if (pid == -1 || fdmaster == -1) {
 		executionError = true;
@@ -1815,12 +1814,13 @@ void setSignalsCatcher() {
 }
 
 int main(int argc, char *argv[], const char **env) {
+	string caseFileName = "evaluate.cases";
 	Timer::start();
 	TestCase::setEnvironment(env);
 	setSignalsCatcher();
 	Evaluation* obj = Evaluation::getSinglenton();
 	obj->loadParams();
-	obj->loadTestCases("evaluate.cases");
+	obj->loadTestCases(caseFileName);
 	obj->runTests();
 	obj->outputEvaluation();
 	return EXIT_SUCCESS;
