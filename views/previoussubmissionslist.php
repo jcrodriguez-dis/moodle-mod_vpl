@@ -94,14 +94,16 @@ $table->head = [
 $table->align = [
         'right',
         'left',
-        'right',
+        'left',
         'left',
 ];
-$table->nowrap = [
-        true,
-        true,
-        true,
+$table->wrap = [
+    'nowrap',
+    'nowrap',
+    '',
+    'nowrap',
 ];
+
 $submissionslist = $vpl->user_submissions( $userid );
 $submissions = [];
 $nsub = count( $submissionslist );

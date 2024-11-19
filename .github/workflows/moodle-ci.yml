@@ -30,35 +30,31 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0', '8.1']
-        moodle-branch: ['MOODLE_311_STABLE', 'MOODLE_400_STABLE', 'MOODLE_402_STABLE', 'MOODLE_403_STABLE', 'master']
+        php: ['8.0', '8.1', '8.2', '8.3']
+        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE']
         database: [pgsql, mariadb]
-        # Removes incompatible combinations and reduces DB versions
+        # Reduces DB versions
         exclude:
-          - php: 7.4
-            moodle-branch: MOODLE_402_STABLE
-          - php: 7.4
-            moodle-branch: MOODLE_403_STABLE
-          - php: 7.4
-            moodle-branch: master
-          - php: 8.0
-            moodle-branch: master
-          - php: 8.1
-            moodle-branch: MOODLE_311_STABLE
-          - php: 8.1
-            moodle-branch: MOODLE_400_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_311_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_400_STABLE
+          - php: '8.0'
+            moodle-branch: 'MOODLE_404_STABLE'
+          - php: '8.0'
+            moodle-branch: 'MOODLE_405_STABLE'
+          - php: '8.2'
+            moodle-branch: 'MOODLE_401_STABLE'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_401_STABLE'
+          - php: '8.3'
+            moodle-branch: 'MOODLE_403_STABLE'
           - database: pgsql
             moodle-branch: MOODLE_402_STABLE
           - database: pgsql
             moodle-branch: MOODLE_403_STABLE
+          - database: pgsql
+            moodle-branch: MOODLE_404_STABLE
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: plugin
 
@@ -80,62 +76,63 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        run: |
-          moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          # Uncomment this to run Behat tests using the Moodle App.
+          # MOODLE_APP: 'true'
 
       - name: PHP Lint
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
-
-      - name: PHP Copy/Paste Detector
-        continue-on-error: true # This step will show errors but will not fail
-        if: ${{ always() }}
-        run: moodle-plugin-ci phpcpd
-
+  
       - name: PHP Mess Detector
         continue-on-error: true # This step will show errors but will not fail
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
-        if: ${{ always() }}
+        continue-on-error: true # This step may fail but the job can continue
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        if: ${{ false }}
+        continue-on-error: true # This step may fail but the job can continue
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpdoc --max-warnings 0
 
       - name: Validating
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci validate
 
       - name: Check upgrade savepoints
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci savepoints
 
       - name: Mustache Lint
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        if: matrix.moodle-branch != 'MOODLE_311_STABLE'
+        if: ${{ matrix.moodle-branch != 'MOODLE_311_STABLE' }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
       - name: Behat features
-        if: ${{ always() }}
+        id: behat
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci behat --profile chrome
-
+  
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
         if: ${{ always() }}
-        run: sudo apt-get install -y valgrind
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y valgrind
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}

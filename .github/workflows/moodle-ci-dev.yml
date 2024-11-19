@@ -1,4 +1,4 @@
-name: VPL CI LEGACY
+name: VPL CI Dev Moodle
 
 on: [workflow_dispatch]
 
@@ -30,19 +30,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['7.4', '8.0']
-        moodle-branch: ['MOODLE_39_STABLE', 'MOODLE_310_STABLE', 'MOODLE_311_STABLE', 'MOODLE_400_STABLE']
+        php: ['8.2', '8.3']
+        moodle-branch: ['master']
         database: [pgsql, mariadb]
-        exclude:
-          - php: '8.0'
-            moodle-branch: MOODLE_39_STABLE
-          - php: '8.0'
-            moodle-branch: MOODLE_310_STABLE
-          - database: 'pgsql'
-            moodle-branch: MOODLE_310_STABLE
-          - database: 'pgsql'
-            moodle-branch: MOODLE_311_STABLE
- 
+
     steps:
       - name: Check out repository code
         uses: actions/checkout@v3
@@ -105,8 +96,6 @@ jobs:
         run: moodle-plugin-ci mustache
 
       - name: Grunt
-        continue-on-error: true # This step will show errors but will not fail      
-        if: ${{ always() }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
@@ -123,6 +112,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y valgrind
+
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}

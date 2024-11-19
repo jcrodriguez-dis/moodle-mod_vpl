@@ -61,7 +61,9 @@ $string['connection_fail'] = 'connection fail';
 $string['console'] = 'Console';
 $string['copy'] = 'Copy';
 $string['create_new_file'] = 'Create a new file';
-$string['crontask'] = 'Background processing for Virtual Programming Lab module';
+$string['crontask_check_vpljs'] = 'Report VPL Jail Servers';
+$string['messageprovider:bad_jailservers'] = 'Report VPL Jail Servers';
+$string['crontask'] = 'VPL background processing';
 $string['currentstatus'] = 'Current status';
 $string['cut'] = 'Cut';
 $string['datesubmitted'] = 'Date submitted';
@@ -402,7 +404,20 @@ $string['stop'] = 'Stop';
 $string['pause'] = 'Pause';
 $string['resume'] = 'Resume';
 $string['step'] = 'Step';
+$string['message::subject_bad_jailservers'] = 'Important Report of the VPL Plugin in Moodle on the \'{$a}\' Server';
+$string['message::body_header_bad_jailservers'] = '
+The VPL Jail servers in the following list
+**urgently** need to update the VPL-Jail-System software:';
+$string['message::body_footer_bad_jailservers'] = '
+To download the latest version of the VPL-Jail-System,
+visit the VPL for Moodle home page and navigate to the "Download" section.
+Remember to use the parameters URLPATH and/or TASK_ONLY_FROM
+to enhance your security settings as recommended.
 
+To locate activities using local VPL Jail servers,
+search in the field jailservers of the table {prefix}vpl.
+';
+$string['message::bad_jailserver'] = 'Not used due server software update required. Contact your system administrator';
 $string['check_jail_servers_help'] = "<p>This page check and show the status of execution servers used
 for this activity.</p>";
 $string['executionfiles_help'] = '<p>Here you set the files that are needed to prepare the execution,

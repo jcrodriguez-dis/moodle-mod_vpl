@@ -74,7 +74,11 @@ define(
             if (typeof s == 'undefined' || s.replace(/^\s+$/g, '') == '') {
                 return '';
             }
-            return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+            return s.replace(/&/g, "&amp;")
+                    .replace(/</g, "&lt;")
+                    .replace(/>/g, "&gt;")
+                    .replace(/"/g, "&quot;")
+                    .replace(/'/g, "&#39;");
         };
 
         VPLUtil.setProtocol = function(coninfo) {

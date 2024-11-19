@@ -47,8 +47,11 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
                 '</a>';
         return $save . $cancel;
     } else if ($editing === null) {
-        $edit = '<a href="?id=' . $id . '&edit=' . $overrideid . '">' .
+        $edit = '<a href="?id=' . $id . '&edit=' . $overrideid . '#scroll_point">' .
                     $OUTPUT->pix_icon( 'editthis', get_string('edit'), 'mod_vpl' ) .
+                '</a>';
+        $copy = '<a href="?id=' . $id . '&edit=0&copy=' . $overrideid . '#scroll_point">' .
+                    $OUTPUT->pix_icon( 'copy', get_string('copy'), 'mod_vpl' ) .
                 '</a>';
         $deletebuttonid = 'delete_override_' . $overrideid;
         $delete = '<a id="' . $deletebuttonid . '" href="?id=' . $id . '&delete=' . $overrideid . '">' .
@@ -56,7 +59,7 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
                   '</a>';
         $PAGE->requires->event_handler('#' . $deletebuttonid, 'click', 'M.util.show_confirm_dialog',
                 ['message' => get_string('confirmoverridedeletion', VPL)]);
-        return $edit . $delete;
+        return $edit . $copy. $delete;
     } else {
         return '';
     }
@@ -163,19 +166,17 @@ $id = required_param( 'id', PARAM_INT );
 $edit = optional_param('edit', null, PARAM_INT);
 $delete = optional_param('delete', null, PARAM_INT);
 $update = optional_param('update', null, PARAM_INT);
+$copyid = optional_param('copy', null, PARAM_INT);
 $vpl = new mod_vpl( $id );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 $vpl->prepare_page( 'forms/overrides.php', [ 'id' => $id ] );
 
 $vplid = $vpl->get_instance()->id;
+$overrides = vpl_get_overrides($vplid);
 
-$sql = 'SELECT ao.id as aid, o.*, ao.userid as userids, ao.groupid as groupids
-            FROM {vpl_overrides} o
-            LEFT JOIN {vpl_assigned_overrides} ao ON ao.override = o.id
-            WHERE o.vpl = :vplid
-            ORDER BY o.id ASC';
-$overridesseparated = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-$overrides = vpl_agregate_overrides($overridesseparated);
+if (!empty($edit) && !isset($overrides[$edit])) {
+    $edit = null;
+}
 
 $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
 
@@ -243,9 +244,9 @@ if ($delete !== null) {
 if ($update !== null) {
     // Update or create an override.
     $override = $optionsform->get_data();
-    vpl_truncate_vpl($override); // Trim and cut password if too large.
-    unset($override->id); // The id field of the form is not the override id - do not use it.
     if ($override !== null) {
+        vpl_truncate_vpl($override); // Trim and cut password if too large.
+        unset($override->id); // The id field of the form is not the override id - do not use it.
         foreach ($fields as $field) {
             if (!isset($override->{'override_' . $field})) {
                 $override->$field = null;
@@ -366,6 +367,7 @@ $table->size = [
 
 $table->data = [];
 
+$scrollpoint = "<i id='scroll_point'></i>";
 // Populate table with existing overrides.
 $i = 1;
 foreach ($overrides as $override) {
@@ -375,7 +377,7 @@ foreach ($overrides as $override) {
                 'users' => explode(',', $override->userids),
                 'groups' => explode(',', $override->groupids),
         ]);
-        $users = $usersform->render();
+        $users = $scrollpoint . $usersform->render();
         $formdata = [];
         foreach ($fields as $field) {
             if ($override->$field === null) {
@@ -421,7 +423,7 @@ foreach ($overrides as $override) {
             $overridedata .= get_string('password') . ' ';
             $infohs = new mod_vpl\util\hide_show();
             $overridedata .= $infohs->generate();
-            $overridedata .= $infohs->content_in_span(s($override->password)) . '<br>';
+            $overridedata .= $infohs->content_in_tag('span', s($override->password)) . '<br>';
         }
         foreach (['reductionbyevaluation', 'freeevaluations'] as $field) {
             if ($override->$field !== null) {
@@ -437,11 +439,20 @@ foreach ($overrides as $override) {
 
 if ($edit === 0) {
     // A new override is being created, put an additional row at the end.
-    $users = $usersform->render();
+    $users = $scrollpoint . $usersform->render();
     $formdata = [];
     foreach ($fields as $field) {
         $formdata[$field] = $vpl->get_instance()->$field;
         $formdata['override_' . $field] = false;
+    }
+    if (isset($overrides[$copyid])) {
+        $override = $overrides[$copyid];
+        foreach ($fields as $field) {
+            if ($override->$field !== null) {
+                $formdata[$field] = $override->$field;
+                $formdata['override_' . $field] = true;
+            }
+        }
     }
     $optionsform->set_data($formdata);
     $overridedata = $optionsform->render();
@@ -452,7 +463,7 @@ echo html_writer::table($table);
 
 if ($edit === null) {
     // No override is being edited, add a button to create one.
-    echo '<a href="?id=' . $id . '&edit=0" class="btn btn-secondary">' . get_string('addoverride', VPL) . '</a>';
+    echo '<a href="?id=' . $id . '&edit=0#scroll_point" class="btn btn-secondary">' . get_string('addoverride', VPL) . '</a>';
 }
 
 echo $OUTPUT->box_end();

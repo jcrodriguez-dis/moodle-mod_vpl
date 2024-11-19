@@ -40,7 +40,6 @@ class vpl_form {
                 case PARAM_BOOL :
                 case PARAM_CLEANFILE :
                 case PARAM_INT :
-                case PARAM_INTEGER :
                 case PARAM_URL :
                 case PARAM_TEXT :
                     // TODO implement filter.

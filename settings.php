@@ -88,7 +88,7 @@ $settings->add(
 $settings->add( new admin_setting_heading( 'heading2', '', get_string( 'jail_servers_config', VPL ) ) );
 $default = "# This server is only for test use.\n";
 $default .= "# Install your own Jail server and remove the following line as soon as possible.\n";
-$default .= 'http://demojail.dis.ulpgc.es';
+$default .= 'https://demojail.dis.ulpgc.es';
 $settings->add(
         new admin_setting_configtextarea( $prefix . 'jail_servers', get_string( 'jail_servers', VPL ),
                 get_string( 'jail_servers_description', VPL ), $default ) );
@@ -97,7 +97,7 @@ $settings->add(
                 get_string( 'use_xmlrpc_description', VPL ), 0 ) );
 $settings->add(
         new admin_setting_configcheckbox( $prefix . 'acceptcertificates', get_string( 'acceptcertificates', VPL ),
-                        get_string( 'acceptcertificates_description', VPL ), 1 ) );
+                        get_string( 'acceptcertificates_description', VPL ), 0 ) );
 $wsoptions = [
         'always_use_wss' => get_string( 'always_use_wss', VPL ),
         'always_use_ws' => get_string( 'always_use_ws', VPL ),

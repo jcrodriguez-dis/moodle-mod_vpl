@@ -712,10 +712,11 @@ class mod_vpl_submission {
     public function get_processed_comment($title, $comment, $empty = false) {
         GLOBAL $PAGE;
         $ret = '';
+        $tag = ($title == 'compilation' || $title == 'execution') ? 'pre' : 'div';
         if (strlen($comment) > 0 || $empty) {
             $div = new mod_vpl\util\hide_show( true );
             $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
-            $ret .= $div->content_in_div(s($comment));
+            $ret .= $div->content_in_tag($tag, s($comment));
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
         }
         return $ret;
@@ -751,7 +752,7 @@ class mod_vpl_submission {
             $a->gradername = fullname( $grader );
             $ret .= get_string( 'gradedonby', VPL, $a ) . '<br>';
             if ($this->vpl->get_grade() != 0) {
-                $ret .= $this->vpl->str_restriction('gradenoun', $this->get_grade_core(), false, 'core') . '<br>';
+                $ret .= $this->vpl->str_restriction(vpl_get_gradenoun_str(), $this->get_grade_core(), false, 'core') . '<br>';
                 if ($detailed) {
                     $ret .= $this->get_detailed_grade();
                 }
@@ -869,7 +870,7 @@ class mod_vpl_submission {
         if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
             $div = new mod_vpl\util\hide_show( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
             $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate() . '</b>';
-            $ret .= $div->begin_div();
+            $ret .= $div->begin('div');
             $ret .= $OUTPUT->box_start();
             if (strlen( $grade ) > 0) {
                 $ret .= '<b>' . $grade . '</b><br>';
@@ -882,7 +883,7 @@ class mod_vpl_submission {
                 $ret .= $this->get_processed_comment( 'comments', $proposedcomments, true);
             }
             $ret .= $OUTPUT->box_end();
-            $ret .= $div->end_div();
+            $ret .= $div->end();
         }
         if ($return) {
             return $ret;
@@ -936,11 +937,11 @@ class mod_vpl_submission {
     public static function find_proposedcomment(&$text) {
         $usecrnl = vpl_detect_newline($text) == "\r\n";
         if ($usecrnl) {
-            $startcommentreg = '/^(Comment :=>>([^\\r\\n]*)|<\\|--)\\r?$/m';
-            $endcommentreg = '/^--\\|>\\r?$/m';
+            $startcommentreg = '/^[ \\t]*(Comment :=>>([^\\r\\n]*)|<\\|--)[ \\t]*\\r?$/m';
+            $endcommentreg = '/^[ \\t]*--\\|>[ \\t]*\\r?$/m';
         } else {
-            $startcommentreg = '/^(Comment :=>>(.*)|<\\|--)$/m';
-            $endcommentreg = '/^--\\|>$/m';
+            $startcommentreg = '/^[ \\t]*(Comment :=>>(.*)|<\\|--)[ \\t]*$/m';
+            $endcommentreg = '/^[ \\t]*--\\|>[ \\t]*$/m';
         }
         $comments = '';
         $offset = 0;
@@ -1034,7 +1035,7 @@ class mod_vpl_submission {
                 $html .= '<b>';
                 $html .= s( $title );
                 $html .= '</b><br>';
-                $html .= $div->content_in_div($comment);
+                $html .= $div->content_in_tag('div', $comment);
             }
         } else if ($comment > '') { // No title comment.
             $html .= $comment;
@@ -1254,7 +1255,7 @@ class mod_vpl_submission {
         if ($response['compilation']) {
             $compilation = $this->result_to_html( $response['compilation'], $dropdown );
             if (strlen( $compilation )) {
-                $compilation = '<b>' . get_string( 'compilation', VPL ) . '</b><br>' . $compilation;
+                $compilation = '<b>' . get_string( 'compilation', VPL ) . '</b><br><pre>' . $compilation . '</pre>';
             }
         }
         if ($response['executed'] > 0) {
@@ -1280,7 +1281,7 @@ class mod_vpl_submission {
                 $div = new mod_vpl\util\hide_show();
                 $execution .= "<br>\n";
                 $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate() . "</b><br>\n";
-                $execution .= $div->content_in_div('<pre>' . s( $rawexecution ) . '</pre>');
+                $execution .= $div->content_in_tag('pre', s($rawexecution));
             }
         }
     }

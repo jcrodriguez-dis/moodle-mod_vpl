@@ -45,10 +45,11 @@ class behat_mod_vpl extends behat_base {
      * @return void
      */
     public function i_click_on_selector_in_vpl($selector) {
-        $script = "$(\"$selector\")[0].click();";
+        $script = "document.querySelector(\"$selector\").click();";
         $this->getSession()->evaluateScript($script);
         sleep(1);
     }
+
 
     /**
      * Accept confirm popup
@@ -114,9 +115,14 @@ class behat_mod_vpl extends behat_base {
             var file;
             $scriptfile;
             var fileList = [file];
-            var drop = $.Event({type: 'drop', dataTransfer: {files: fileList}});
-            drop.isSimulated = true;
-            $('$selector').trigger(drop);
+            var dropEvent = new Event('drop',
+                {
+                    bubbles: true,
+                    cancelable: true
+                });
+            dropEvent.dataTransfer = {files: fileList};
+            var element = document.querySelector('$selector');
+            element.dispatchEvent(dropEvent);
         })()";
         $this->getSession()->evaluateScript($script);
         sleep(1);
@@ -149,9 +155,15 @@ class behat_mod_vpl extends behat_base {
             $scriptfile = $this->generate_drop_file($filename, $contents, 'file');
             $script .= "$scriptfile; fileList.push(file);";
         }
-        $script .= "var drop = $.Event({type: 'drop', dataTransfer: {files: fileList}});
-                drop.isSimulated = true;
-                $('$selector').trigger(drop);
+        $script .= "var dropEvent = new Event('drop',
+                {
+                    bubbles: true,
+                    cancelable: true
+                });
+            dropEvent.dataTransfer = {files: fileList};
+            var element = document.querySelector('$selector');
+            element.dispatchEvent(dropEvent);
+
         })()";
         $this->getSession()->evaluateScript($script);
         sleep(count($files));

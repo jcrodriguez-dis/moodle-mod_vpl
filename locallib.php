@@ -336,6 +336,20 @@ function vpl_mod_href() {
 /**
  * @codeCoverageIgnore
  *
+ * @todo This function is to be remove when Moodle 3.10 be not supported by VPL.
+ * Return 'gradeoun' or 'grade' for backward compatibility.
+ * @return string
+ */
+function vpl_get_gradenoun_str() {
+    if (get_string_manager()->string_exists('gradenoun', 'core')) {
+        return 'gradenoun';
+    }
+    return 'grade';
+}
+
+/**
+ * @codeCoverageIgnore
+ *
  * generate URL relative page with params
  *
  * @param $page string
@@ -497,7 +511,7 @@ function vpl_get_select_time($maximum = null) {
     if ($maximum <= 0) {
         return $ret;
     }
-    $value = 4;
+    $value = 1;
     if ($maximum < $value) {
         $value = $maximum;
     }
@@ -871,6 +885,9 @@ function vpl_truncate_vpl($instance) {
     if (isset($instance->password)) {
         $instance->password = trim($instance->password);
     }
+    if (property_exists($instance, 'jailservers') &&  $instance->jailservers == null) {
+        $instance->jailservers = '';
+    }
     foreach (['name', 'requirednet', 'password', 'variationtitle'] as $field) {
         if (isset($instance->$field)) {
             vpl_truncate_string( $instance->$field, 255 );
@@ -1090,34 +1107,46 @@ function vpl_get_webservice_urlbase($vpl) {
            . '&wstoken=' . $token . '&id=' . $vpl->get_course_module()->id . '&wsfunction=';
 }
 
+
 /**
  * @codeCoverageIgnore
- * Agregate usersids and groupsids of array of objects of override assigned records
- * @param array $overridesseparated of objects of records
+ * Return array of override objects for a vpl activity.
+ * Asigned override as agregate userids and groupids.
+ * @param $vplid
  * @return array
  */
-function vpl_agregate_overrides($overridesseparated) {
-    $usersids = [];
+function vpl_get_overrides($vplid) {
+    global $DB;
+    $sql = 'SELECT * FROM {vpl_overrides}
+            WHERE vpl = :vplid
+            ORDER BY id ASC';
+    $overrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    $sql = 'SELECT * FROM {vpl_assigned_overrides}
+            WHERE vpl = :vplid';
+    $asignedoverrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    $userids = [];
     $groupids = [];
-    foreach ($overridesseparated as $override) {
-        if (!isset($usersids[$override->id])) {
-            $usersids[$override->id] = [];
-            $groupids[$override->id] = [];
-        }
-        if (!empty($override->usersids)) {
-            array_push($usersids[$override->id], $override->usersids);
-        }
-        if (!empty($override->groupids)) {
-            array_push($groupids[$override->id], $override->groupids);
+    foreach ($overrides as $override) {
+        $userids[$override->id] = [];
+        $groupids[$override->id] = [];
+    }
+
+    foreach ($asignedoverrides as $asigned) {
+        $oid = $asigned->override;
+        if (isset($userids[$oid])) { // TODO check consistence for false?
+            if (!empty($asigned->userid)) {
+                $userids[$oid][] = $asigned->userid;
+            }
+            if (!empty($asigned->groupid)) {
+                $groupids[$oid][] = $asigned->groupid;
+            }
         }
     }
-    $overrides = [];
-    foreach ($overridesseparated as $override) {
-        if (!isset($overrides[$override->id])) {
-            $override->usersids = implode(',', $usersids[$override->id]);
-            $override->groupids = implode(',', $groupids[$override->id]);
-            $overrides[$override->id] = $override;
-        }
+    foreach ($overrides as $override) {
+        $override->userids = implode(',', $userids[$override->id]);
+        $override->groupids = implode(',', $groupids[$override->id]);
     }
     return $overrides;
 }

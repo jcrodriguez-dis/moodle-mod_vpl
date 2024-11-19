@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_grade_submission
 Feature: In a VPL activity teacher grade submissions
   In order to teacher grade submissions and
   students submit files and teachers grade submissions
@@ -20,8 +20,7 @@ Feature: In a VPL activity teacher grade submissions
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
       | id_grade_modgrade_type | point |
       | id_grade_modgrade_point | 5 |

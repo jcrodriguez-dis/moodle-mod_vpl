@@ -36,7 +36,10 @@ abstract class similarity_base {
     protected $size;
     protected $sizeh;
     protected $vecfrec;
-    protected $hashses;
+    protected $hashes;
+    public $cluster;
+    public $fid;
+    public $id;
 
     // Array to convert string operators to numbers.
     static protected $valueconverter = [];
@@ -195,7 +198,7 @@ abstract class similarity_base {
             $htmls = vpl_s($this->vecfrec);
             $ret .= 'vecfrec=' . $htmls . '<br>';
             $htmls = vpl_s($this->hashes);
-            $ret .= 'hashses=' . $htmls . '<br>';
+            $ret .= 'hashes=' . $htmls . '<br>';
         }
 
         return $ret;

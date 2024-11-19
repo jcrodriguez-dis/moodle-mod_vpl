@@ -104,7 +104,7 @@ function evalTest {
 			    echo "The program has generated the following errors"
 			    cat $VPLTESTERRORS
 			else
-		    	cat "$VPLTESTOUTPUT"
+				cat "$VPLTESTOUTPUT"
 			fi
 		elif [ -n "$DEBUG" ] ; then
 			echo "OUTPUT Testing $1"

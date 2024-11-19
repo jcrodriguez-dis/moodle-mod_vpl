@@ -30,6 +30,9 @@ require_once(dirname(__FILE__).'/jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__).'/jail/running_processes.class.php');
 
 class mod_vpl_submission_CE extends mod_vpl_submission {
+    /**
+     * Associative array for detecting the programming language based on a file's extension
+     */
     private static $languageext = [
         'ada' => 'ada',
         'adb' => 'ada',
@@ -90,6 +93,23 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'ruby' => 'ruby',
         'ts' => 'typescript',
     ];
+
+    /**
+     * Associative array for detecting the build system based on the configuration file
+     */
+    private static $languageconfig = [
+        'Makefile' => 'make',
+        'makefile' => 'make',
+    ];
+    /*
+        Future config files.
+        CMakeLists.txt => cmake
+        build.ninja => ninja
+        build.xml => ant
+        build.gradle => gradle
+        pom.xml => maven
+    */
+
     private static $scriptname = [
         'vpl_run.sh' => 'run',
         'vpl_debug.sh' => 'debug',
@@ -126,6 +146,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return string programming language name
      */
     public static function get_pln($filelist) {
+        foreach ($filelist as $checkfilename) {
+            if (isset(self::$languageconfig[$checkfilename])) {
+                return self::$languageconfig[$checkfilename];
+            }
+        }
         foreach ($filelist as $checkfilename) {
             $ext = pathinfo( $checkfilename, PATHINFO_EXTENSION );
             if (isset(self::$languageext[$ext])) {
@@ -405,6 +430,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Info send with script.
         $info = "#!/bin/bash\n";
         $info .= vpl_bash_export('VPL_LANG', vpl_get_lang());
+        $info .= vpl_bash_export('MOODLE_COURSE_ID', $vpl->get_course()->id);
+        $info .= vpl_bash_export('MOODLE_ACTIVITY_ID', $vpl->get_course_module()->id);
         if (isset($data->userid)) {
             $userid = $data->userid;
             $info .= vpl_bash_export('MOODLE_USER_ID',  $userid);

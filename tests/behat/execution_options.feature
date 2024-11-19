@@ -17,14 +17,13 @@ Feature: In an VPL activity, editing teacher change options of execution
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And I log in as "teacher1"
-    And I am on "Course 1" course homepage with editing mode on
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity name |
       | id_shortdescription | VPL activity short description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 33 |
       | id_grade_modgrade_type | None |
-    And I add a "Virtual programming lab" to section "1" and I fill the form with:
+    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL base activity |
       | id_shortdescription | VPL activity short description |
       | id_duedate_enabled | "" |
