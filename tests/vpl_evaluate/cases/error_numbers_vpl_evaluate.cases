@@ -13,6 +13,13 @@ output=3 4 5.49e1 8
 case=Number 4
 output=33 4
 5.5 8
+case=Number 5
+output=33
+4
+
+5.5
+8
+
 case=Numbers with errors
 output=1 4.1 5.5 8
 case=Numbers with errors
