@@ -99,8 +99,11 @@ if ($inpopup) {
     $link = vpl_mod_href( 'forms/gradesubmission.php', 'id', $id, 'userid', $userid );
 }
 
-// No marked or marked by current user or automatic.
-if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subinstance->grader == 0) {
+// No marked or marked by current user or automatic or has edit others grades capability.
+if ($subinstance->dategraded == 0 ||
+    $subinstance->grader == $USER->id ||
+    $subinstance->grader == 0 ||
+    $vpl->has_capability( VPL_EDITOTHERSGRADES_CAPABILITY )) {
     if ($inpopup) {
         $href = $link;
     } else {

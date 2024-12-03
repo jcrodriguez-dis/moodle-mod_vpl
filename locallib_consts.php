@@ -32,6 +32,7 @@ const VPL_ASSIGNED_VARIATIONS = 'vpl_assigned_variations';
 const VPL_OVERRIDES = 'vpl_overrides';
 const VPL_ASSIGNED_OVERRIDES = 'vpl_assigned_overrides';
 const VPL_GRADE_CAPABILITY = 'mod/vpl:grade';
+const VPL_EDITOTHERSGRADES_CAPABILITY = 'mod/vpl:editothersgrades';
 const VPL_VIEW_CAPABILITY = 'mod/vpl:view';
 const VPL_SUBMIT_CAPABILITY = 'mod/vpl:submit';
 const VPL_SIMILARITY_CAPABILITY = 'mod/vpl:similarity';

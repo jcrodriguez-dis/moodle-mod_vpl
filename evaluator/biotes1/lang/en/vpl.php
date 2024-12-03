@@ -371,6 +371,7 @@ $string['vpl:setjails'] = 'Set execution servers for particular VPL instances';
 $string['vpl:similarity'] = 'Search VPL assignment similarity';
 $string['vpl:submit'] = 'Submit VPL assignment';
 $string['vpl:view'] = 'View full VPL assignment description';
+$string['vpl:editothersgrades'] = 'Edit grades assigned by others';
 $string['vpl'] = 'Virtual Programming Lab';
 $string['VPL_COMPILATIONFAILED'] = 'The compilation or preparation of execution has failed';
 $string['vpl_debug.sh'] = 'This script prepares the debugging';

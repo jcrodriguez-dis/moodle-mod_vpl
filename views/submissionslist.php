@@ -470,7 +470,7 @@ foreach ($alldata as $data) {
             }
             $result = []; // Dispose array.
             $text = '<div id="g' . $subid . '">' . $text . '</div>';
-            if ($subinstance->grader == $USER->id) {
+            if ($subinstance->grader == $USER->id || $vpl->has_capability(VPL_EDITOTHERSGRADES_CAPABILITY)) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
                 $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
                 $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
