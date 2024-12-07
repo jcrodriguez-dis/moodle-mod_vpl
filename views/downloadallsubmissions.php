@@ -112,7 +112,7 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
             $total += strlen($cecg['execution']);
         }
         foreach (['gradecomments', 'usercomments', 'grade'] as $ele) {
-            if ( $cecg[$ele] !== '' ) {
+            if ( ! empty($cecg[$ele])) {
                 $zip->addFromString( $zipdirname . $ele . '.txt', $cecg[$ele]);
                 $total += strlen($cecg[$ele]);
             }
@@ -171,6 +171,7 @@ foreach ($list as $uginfo) {
     if ($vpl->is_group_activity()) {
         $data->uginfo->firstname = 'Group';
         $data->uginfo->lastname = $uginfo->name;
+        $data->uginfo->username = '';
     }
     $usersubmissions = [];
     foreach ($submissions[$uginfo->id] as $subinstance) {
@@ -195,8 +196,8 @@ if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
     $sizearchived = 0;
     foreach ($alldata as $data) {
         $user = $data->uginfo;
-        $zipdirname = vpl_user_zip_dirname($user->lastname . ' ' . $user->firstname);
-        $zipdirname .= ' ' . $user->id . ' ' . $user->username;
+        $zipdirname = $user->lastname . ' ' . $user->firstname . ' ' . $user->id . ' ' . $user->username;
+        $zipdirname = vpl_user_zip_dirname($zipdirname);
         // Create directory.
         $zip->addEmptyDir( $zipdirname );
         $zipdirname .= '/';
