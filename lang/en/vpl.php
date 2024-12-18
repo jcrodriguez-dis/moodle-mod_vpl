@@ -223,6 +223,7 @@ $string['outofmemory'] = 'Out of memory';
 $string['override'] = 'Override';
 $string['overridefor'] = '{$a->base} is due for {$a->for}';
 $string['overrideforgroup'] = '{$a->base} is due for members of {$a->for}';
+$string['overriden'] = 'Overriden';
 $string['overrides'] = 'Overrides';
 $string['override_options'] = 'Override options';
 $string['override_users'] = 'Affected users';
