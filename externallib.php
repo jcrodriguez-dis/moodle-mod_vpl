@@ -120,10 +120,10 @@ class mod_vpl_webservice extends external_api {
         }
         $instance = $vpl->get_instance();
         $ret = [
-                'name' => $instance->name,
-                'shortdescription' => $instance->shortdescription,
-                'intro' => $instance->intro,
-                'introformat' => ( int ) $instance->introformat,
+                'name' => format_string($instance->name),
+                'shortdescription' => format_string($instance->shortdescription),
+                'intro' => $vpl->get_fulldescription(),
+                'introformat' => ( int ) FORMAT_HTML,
                 'reqpassword' => ($instance->password > '' ? 1 : 0),
                 'example' => ( int ) $instance->example,
                 'restrictededitor' => ( int ) $instance->restrictededitor,
