@@ -36,6 +36,22 @@ require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
  */
 class mod_vpl_webservice extends external_api {
     /**
+     * Rewrite a text by replacing pluginfile.php/... by tokenpluginfile.php/<token>/...,
+     * so that these files are readable from an external source.
+     * @param string $text
+     * @param int $contextid
+     * @return string Text with rewritten pluginfiles to be accessible from external sources.
+     */
+    protected static function rewrite_pluginfile_for_external($text, $contextid) {
+        // First, re-encode urls into @@PLUGINFILE@@ tokens.
+        $reencoded = file_rewrite_pluginfile_urls($text, 'pluginfile.php', $contextid,
+                'mod_vpl', 'intro', null, array('reverse' => true));
+        // Then, re-decode these @@PLUGINFILE@@ tokens into the tokenpluginfile form.
+        return file_rewrite_pluginfile_urls($reencoded, 'pluginfile.php', $contextid,
+                'mod_vpl', 'intro', null, array('includetoken' => true));
+    }
+
+    /**
      * Returns VPL activity object for coursemodule id.
      * Does checks fro required netwok and password if setted.
      *
@@ -122,7 +138,7 @@ class mod_vpl_webservice extends external_api {
         $ret = [
                 'name' => format_string($instance->name),
                 'shortdescription' => format_string($instance->shortdescription),
-                'intro' => $vpl->get_fulldescription(),
+                'intro' => self::rewrite_pluginfile_for_external($vpl->get_fulldescription(), context_module::instance($id)->id),
                 'introformat' => ( int ) FORMAT_HTML,
                 'reqpassword' => ($instance->password > '' ? 1 : 0),
                 'example' => ( int ) $instance->example,
