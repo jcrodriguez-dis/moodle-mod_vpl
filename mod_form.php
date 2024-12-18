@@ -93,6 +93,7 @@ class mod_vpl_mod_form extends moodleform_mod {
         ] );
         $mform->setType( 'requirednet', PARAM_TEXT );
         $mform->setDefault( 'requirednet', '' );
+        $mform->addHelpButton( 'requirednet', 'requirednet', VPL );
         $mform->setAdvanced( 'requirednet' );
         $mform->addElement( 'selectyesno', 'sebrequired', get_string( 'sebrequired', VPL ) );
         $mform->setDefault( 'sebrequired', 0 );
