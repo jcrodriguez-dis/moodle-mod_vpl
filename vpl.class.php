@@ -1838,6 +1838,16 @@ class mod_vpl {
     }
 
     /**
+     * Generate HTML fragment for overriden icon.
+     * @return string HTML
+     */
+    public function overriden_icon() {
+        $iconclass = mod_vpl_get_fontawesome_icon_map()['mod_vpl:overrides'];
+        $title = get_string('overriden', VPL);
+        return '<i class="fa ' . $iconclass . ' mx-2" title="' . $title . '" aria-label="' . $title . '"></i>';
+    }
+
+    /**
      * Return vpl submission period.
      * @param int $userid (optional) Show for given user, current user if null.
      * @return string HTML
@@ -1846,11 +1856,19 @@ class mod_vpl {
         $html = '';
         $startdate = $this->get_effective_setting('startdate', $userid);
         if ($startdate) {
-            $html .= $this->str_restriction_with_icon( 'startdate', userdate( $startdate ) );
+            $text = userdate( $startdate );
+            if ($startdate != $this->instance->startdate) {
+                $text .= $this->overriden_icon();
+            }
+            $html .= $this->str_restriction_with_icon( 'startdate', $text );
         }
         $duedate = $this->get_effective_setting('duedate', $userid);
         if ($duedate) {
-            $html .= $this->str_restriction_with_icon( 'duedate', userdate( $duedate ) );
+            $text = userdate( $duedate );
+            if ($duedate != $this->instance->duedate) {
+                $text .= $this->overriden_icon();
+            }
+            $html .= $this->str_restriction_with_icon( 'duedate', $text );
         }
         return $html;
     }
@@ -2044,9 +2062,15 @@ class mod_vpl {
         $reductionbyevaluation = $this->get_effective_setting('reductionbyevaluation', $userid);
         if ($reductionbyevaluation > 0) {
             $html .= $this->str_restriction( 'reductionbyevaluation', $reductionbyevaluation);
+            if ($reductionbyevaluation != $this->instance->reductionbyevaluation) {
+                $html .= $this->overriden_icon();
+            }
             $freeevaluations = $this->get_effective_setting('freeevaluations', $userid);
             if ( $freeevaluations > 0) {
                 $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
+                if ($freeevaluations != $this->instance->freeevaluations) {
+                    $html .= $this->overriden_icon();
+                }
             }
             $html .= $html . '<br>';
         }
