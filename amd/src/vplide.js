@@ -22,6 +22,7 @@
  */
 
 /* globals MathJax */
+/* globals Promise */
 
 define(
     [
@@ -127,14 +128,56 @@ define(
                     e.stopImmediatePropagation();
                     return false;
                 }
+                var droppedFiles = [];
+                // Function that lists all files and subfiles of given entry into droppedFiles.
+                var listDroppedFiles = function(entry, path="") {
+                    return new Promise(function(resolve){
+                        if (entry.isFile) {
+                            // Current entry is a file : add it to the list.
+                            entry.file(function(file) {
+                                // Change its name s.t. it preserves directories structure.
+                                var fullName = path + file.name;
+                                Object.defineProperty(file, "name", {
+                                    get: function(){ return fullName; }
+                                });
+                                droppedFiles.push(file);
+                                resolve();
+                            });
+                        } else if (entry.isDirectory) {
+                            // Current entry is a directory : process its content.
+                            var dirReader = entry.createReader();
+                            dirReader.readEntries(function(entries) {
+                                var dirPromises = [];
+                                for (var i=0; i<entries.length; i++) {
+                                    dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
+                                }
+                                Promise.all(dirPromises).then(resolve);
+                            });
+                        } else {
+                            // This is neither a directory nor a file : ignore it.
+                            resolve();
+                        }
+                    });
+                };
                 var dt = e.originalEvent.dataTransfer;
+
+                // List every element of the drop event.
+                var promises = [];
+                for (var i=0; i<dt.items.length; i++) {
+                    promises.push(listDroppedFiles(dt.items[i].webkitGetAsEntry()));
+                }
+
                 // Drop files.
                 if (dt.files.length > 0) {
-                    VPLUI.readSelectedFiles(dt.files, function(file) {
-                        return fileManager.addFile(file, true, updateMenu, showErrorMessage);
-                    },
-                    function() {
-                        fileManager.fileListVisibleIfNeeded();
+                    Promise.all(promises)
+                    .then(function(){
+                        VPLUI.readSelectedFiles(droppedFiles, function(file) {
+                            return fileManager.addFile(file, true, updateMenu, showErrorMessage);
+                        },
+                        function(){
+                            fileManager.fileListVisibleIfNeeded();
+                        });
+                        return;
                     });
                     e.stopImmediatePropagation();
                     return false;
