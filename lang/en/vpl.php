@@ -87,6 +87,7 @@ $string['directory_not_renamed'] = 'Directory \'{$a}\' has not been renamed';
 $string['disabled'] = 'Disabled';
 $string['discard_submission_period'] = 'Discard submission period';
 $string['discard_submission_period_description'] = 'For each student and assignment, the system tries to discard submissions. The system keep the last one and at least a submission for every period';
+$string['donotshowagain'] = 'Disable these messages for the current page';
 $string['download'] = 'Download';
 $string['downloadallsubmissions'] = 'Download all submissions';
 $string['downloadsubmissions'] = 'Download submissions';
