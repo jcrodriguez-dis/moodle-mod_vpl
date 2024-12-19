@@ -158,6 +158,7 @@ $string['indicator:cognitivedepth_help'] = 'This indicator is based on the cogni
 $string['indicator:socialbreadth'] = 'VPL social';
 $string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in an VPL activity.';
 $string['individualwork'] = 'Individual work';
+$string['inherit'] = 'Inherit';
 $string['instanceselection'] = 'VPL selection';
 $string['isexample'] = 'This activity acts as example';
 $string['jail_servers'] = 'Execution servers list';
