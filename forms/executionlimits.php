@@ -43,30 +43,45 @@ class mod_vpl_executionlimits_form extends moodleform {
         $mform->addElement( 'hidden', 'id', $id );
         $mform->setType( 'id', PARAM_INT );
         $mform->addElement( 'header', 'header_execution_limits', get_string( 'resourcelimits', VPL ) );
-        $mform->addElement( 'select', 'maxexetime', get_string( 'maxexetime', VPL )
-                           , vpl_get_select_time( ( int ) $plugincfg->maxexetime ) );
-        $mform->setType( 'maxexetime', PARAM_INT );
-        if ($instance->maxexetime) {
-            $mform->setDefault( 'maxexetime', $instance->maxexetime );
-        }
-        $mform->addElement( 'select', 'maxexememory', get_string( 'maxexememory', VPL )
-                           , vpl_get_select_sizes( 16 * 1024 * 1024, ( int ) $plugincfg->maxexememory ) );
-        $mform->setType( 'maxexememory', PARAM_INT );
-        if ($instance->maxexememory) {
-            $mform->setDefault( 'maxexememory', $instance->maxexememory );
-        }
-        $mform->addElement( 'select', 'maxexefilesize', get_string( 'maxexefilesize', VPL )
-                           , vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ) );
-        $mform->setType( 'maxexefilesize', PARAM_INT );
-        if ($instance->maxexefilesize) {
-            $mform->setDefault( 'maxexefilesize', $instance->maxexefilesize );
-        }
+
+        self::add_resource_limit_select($mform, 'maxexetime', get_string( 'maxexetime', VPL ),
+                vpl_get_select_time( ( int ) $plugincfg->maxexetime ),
+                $plugincfg->defaultexetime, $instance->maxexetime);
+
+        self::add_resource_limit_select($mform, 'maxexememory', get_string( 'maxexememory', VPL ),
+                vpl_get_select_sizes( 16 * 1024 * 1024, ( int ) $plugincfg->maxexememory ),
+                $plugincfg->defaultexememory, $instance->maxexememory);
+
+        self::add_resource_limit_select($mform, 'maxexefilesize', get_string( 'maxexefilesize', VPL ),
+                vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ),
+                $plugincfg->defaultexefilesize, $instance->maxexefilesize);
+
         $mform->addElement( 'text', 'maxexeprocesses', get_string( 'maxexeprocesses', VPL ) );
         $mform->setType( 'maxexeprocesses', PARAM_INT );
         if ($instance->maxexeprocesses) {
             $mform->setDefault( 'maxexeprocesses', $instance->maxexeprocesses );
         }
         $mform->addElement( 'submit', 'savelimitoptions', get_string( 'saveoptions', VPL ) );
+    }
+
+    /**
+     * Adds a select element to the resource limits form.
+     * @param MoodleQuickForm $mform The form to which the element will be added.
+     * @param string $name The name of the element.
+     * @param string $label The label of the element.
+     * @param array $selectoptions The selectable options of the element.
+     *  The [0] => 'select' option will be replaced by a localized string describing the default value.
+     * @param int $defaultvalue The default value to use when no other value is selected.
+     * @param int $currentvalue The value to which the element should be set when displaying the form.
+     */
+    private static function add_resource_limit_select($mform, $name, $label, $selectoptions, $defaultvalue, $currentvalue) {
+        $defaultvaluestring = $selectoptions[ vpl_get_array_key($selectoptions, $defaultvalue) ];
+        $selectoptions[0] = get_string('default') . ' (' . $defaultvaluestring . ')';
+        $mform->addElement( 'select', $name, $label, $selectoptions );
+        $mform->setType( $name, PARAM_INT );
+        if ($currentvalue) {
+            $mform->setDefault( $name, $currentvalue );
+        }
     }
 }
 
@@ -80,7 +95,7 @@ $vpl->prepare_page( 'forms/executionlimits.php', [
 vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
 // Display page.
-$vpl->print_header( get_string( 'execution', VPL ) );
+$vpl->print_header( get_string( 'resourcelimits', VPL ) );
 $vpl->print_heading_with_help( 'resourcelimits' );
 
 $mform = new mod_vpl_executionlimits_form( 'executionlimits.php', $vpl );
