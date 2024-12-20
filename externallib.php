@@ -113,6 +113,8 @@ class mod_vpl_webservice extends external_api {
                 'id' => $id,
                 'password' => $password,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if (! $vpl->is_visible()) {
@@ -179,6 +181,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'comments' => $comments,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         if ($userid == -1) {
             $userid = $USER->id;
@@ -220,6 +224,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if ($userid == -1) {
@@ -281,6 +287,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $instance = $vpl->get_instance();
         if ($userid == -1) {
@@ -341,6 +349,8 @@ if the websocket client send something to the server then the evaluation is stop
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();
