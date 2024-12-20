@@ -1,0 +1,29 @@
+.spoiler {
+    position: relative;
+    display: inline-block;
+}
+
+.spoiler .hider {
+    background-color: #444;
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+}
+
+.spoiler .hider:hover {
+    color: #eee;
+}
+
+.crypted {
+    font-size: 0;
+}
+
+.cryptchar:before {
+    content: '•';
+}

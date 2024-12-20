@@ -94,10 +94,9 @@ if ( $showfe ) {
 
 echo $OUTPUT->box_end();
 
-
-if (vpl_get_webservice_available()) {
-    echo "<a href='views/show_webservice.php?id=$id'>";
-    echo get_string( 'webservice', 'core_webservice' ) . '</a><br>';
+if (mod_vpl\webservice\manager::service_is_available()) {
+    echo html_writer::link('/mod/vpl/views/show_webservice.php?id=' . $id, get_string('webservice', VPL));
 }
+
 $vpl->print_footer();
 vpl_sh_factory::syntaxhighlight();
