@@ -35,6 +35,7 @@ Feature: List submissions of students
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     When I follow "Submissions list"
     Then I should see "VPL activity 1"
+    And I select "All" from the "Submission selection" singleselect
     And I should see "Submitted on"
     But I should not see "Error"
     And I should not see " is deprecated"
@@ -46,6 +47,7 @@ Feature: List submissions of students
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     When I follow "Submissions list"
     Then I should see "VPL activity 1"
+    And I select "All" from the "Submission selection" singleselect
     And I should see "Submitted on"
     But I should not see "Error"
     And I should not see " is deprecated"
@@ -56,6 +58,7 @@ Feature: List submissions of students
     And I am on "Course 1" course homepage
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     And I follow "Submissions list"
+    And I select "All" from the "Submission selection" singleselect
     And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download submissions"
     Then I should not see "Error"
@@ -66,6 +69,7 @@ Feature: List submissions of students
     And I am on "Course 1" course homepage
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     And I follow "Submissions list"
+    And I select "All" from the "Submission selection" singleselect
     And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download submissions"
     Then I should not see "Error"
@@ -76,6 +80,7 @@ Feature: List submissions of students
     And I am on "Course 1" course homepage
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     And I follow "Submissions list"
+    And I select "All" from the "Submission selection" singleselect
     And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download all submissions"
     Then I should not see "Error"
@@ -86,6 +91,7 @@ Feature: List submissions of students
     And I am on "Course 1" course homepage
     And I click on "VPL activity 1" "link" in the "region-main" "region"
     And I follow "Submissions list"
+    And I select "All" from the "Submission selection" singleselect
     And I click on "th a.dropdown-toggle" in VPL
     When I follow "Download all submissions"
     Then I should not see "Error"
