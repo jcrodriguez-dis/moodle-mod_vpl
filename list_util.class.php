@@ -102,30 +102,12 @@ class vpl_list_util {
 
     // Count submissions graded.
     public static function count_graded($vpl) {
-        $numsubs = 0;
-        $numgraded = 0;
-        $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid' );
-        if ($vpl->is_group_activity()) { // Fixes group activity userid.
-            foreach ($subs as $sub) {
-                $group = $vpl->get_group_members($sub->groupid);
-                if ( count($group) ) {
-                    $user = reset($group);
-                    $sub->userid = $user->id;
-                }
-            }
-        }
+        $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid, s.groupid' );
         $students = $vpl->get_students();
-        foreach ($subs as $sub) {
-            if (isset( $students[$sub->userid] )) {
-                $numsubs ++;
-                if ($sub->dategraded > 0) { // Is graded.
-                    $numgraded ++;
-                }
-            }
-        }
+        $subs = $vpl->filter_submissions_by_students( $subs, $students );
         return [
-                'submissions' => $numsubs,
-                'graded' => $numgraded,
+                'submissions' => count( $subs ),
+                'graded' => $vpl->number_of_graded_submissions( $subs ),
         ];
     }
 }
