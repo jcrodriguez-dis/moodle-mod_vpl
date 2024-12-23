@@ -948,12 +948,14 @@ class mod_vpl {
         } else {
             $idfield = 'userid';
         }
-        $query = "SELECT s.$idfield, $fields FROM {vpl_submissions} s";
-        $query .= ' inner join ';
-        $query .= ' (SELECT max(id) as maxid FROM {vpl_submissions} ';
-        $query .= '  WHERE {vpl_submissions}.vpl=? ';
-        $query .= "  GROUP BY {vpl_submissions}.$idfield) as ls";
-        $query .= ' on s.id = ls.maxid';
+        $query = <<<SQL
+        SELECT s.$idfield, s.vpl, s.id, $fields FROM {vpl_submissions} s
+            JOIN
+                (SELECT max(id) as maxid, vpl, $idfield FROM {vpl_submissions}
+                    WHERE vpl=?
+                    GROUP BY $idfield, vpl) as ls
+            ON s.vpl = ls.vpl AND s.$idfield = ls.$idfield AND s.id = ls.maxid;
+        SQL;
         return $DB->get_records_sql( $query, [ $id ] );
     }
 
@@ -1234,7 +1236,8 @@ class mod_vpl {
     public function user_picture($user) {
         global $OUTPUT;
         if ($this->is_group_activity()) {
-            return print_group_picture( $this->get_usergroup( $user->id ), $this->get_course()->id, false, true );
+            // TODO show group picture.
+            return '';
         } else {
             $options = ['courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb()];
             return $OUTPUT->user_picture( $user, $options);
@@ -1250,18 +1253,18 @@ class mod_vpl {
      */
     public function fullname($user, $withlink = true) {
         if ($this->is_group_activity()) {
-            $group = $this->get_usergroup( $user->id );
+            $group = $this->get_usergroup($user->id);
             if ($group !== false) {
                 if ($withlink) {
                     $url = vpl_abs_href( '/user/index.php', 'id', $this->get_course()->id, 'group', $group->id );
-                    return '<a href="' . $url . '">' . $group->name . '</a>';
+                    return '<a href="' . $url . '">' . s($group->name) . '</a>';
                 } else {
                     return $group->name;
                 }
             }
             return '';
         } else {
-            $fullname = fullname( $user );
+            $fullname = s(fullname($user));
             if ($withlink) {
                 $url = vpl_abs_href( '/user/view.php', 'id', $user->id, 'course', $this->get_course()->id);
                 $html = "<a href=\"$url\" title=\"$fullname\">$fullname</a>";
@@ -1671,12 +1674,12 @@ class mod_vpl {
                 } else {
                     $user = self::get_db_record( 'user', $userid);
                     if ($this->is_group_activity()) {
-                        $text = vpl_get_awesome_icon('group') . ' ';
+                        $icon = vpl_get_awesome_icon('group') . ' ';
                     } else {
-                        $text = vpl_get_awesome_icon('user') . ' ';
+                        $icon = vpl_get_awesome_icon('user') . ' ';
                     }
-                    $text .= $this->fullname( $user, false );
-                    $maintabs[] = new tabobject( $tabname, $href, $text, $text );
+                    $text = $this->fullname( $user, false );
+                    $maintabs[] = new tabobject( $tabname, $href, $icon . $text, $text );
                 }
             }
         }
@@ -1857,6 +1860,17 @@ class mod_vpl {
     }
 
     /**
+     * Show vpl submission status if user is grader.
+     */
+    public function print_submissions_status() {
+        $isgrader = $this->has_capability( VPL_GRADE_CAPABILITY );
+        if ($isgrader) {
+            echo vpl_get_awesome_icon('submissions');
+            echo $this->get_submissions_status() . '<br>';
+        }
+    }
+
+    /**
      * Show vpl submission period.
      * @param int $userid (optional) Show for given user, current user if null.
      */
@@ -1872,6 +1886,7 @@ class mod_vpl {
     public function str_submission_restriction($userid = null) {
         global $CFG, $USER;
         $html = '';
+        $isgrader = $this->has_capability( VPL_GRADE_CAPABILITY );
         $filegroup = $this->get_required_fgm();
         $files = $filegroup->getfilelist();
         if (count( $files )) {
@@ -1915,9 +1930,8 @@ class mod_vpl {
         if ($instance->example) {
             $html .= $this->str_restriction_with_icon( 'isexample', $stryes );
         }
-        $grader = $this->has_capability( VPL_GRADE_CAPABILITY );
         $strgradessettings = get_string('gradessettings', 'core_grades');
-        if ($grader) {
+        if ($isgrader) {
             require_once($CFG->libdir . '/gradelib.php');
             $html .= vpl_get_awesome_icon('grade');
             if ($gie = $this->get_grade_info()) {
@@ -1937,7 +1951,7 @@ class mod_vpl {
             }
         }
         $html .= $this->str_gradereduction($userid);
-        if ($grader) {
+        if ($isgrader) {
             $password = trim($this->get_effective_setting('password'));
             if ($password) {
                 $html .= $this->str_restriction_with_icon( 'password', $stryes, false, false, 'moodle');
@@ -2213,6 +2227,9 @@ class mod_vpl {
     }
 
     /**
+     * Get variations identification for this user
+     * @param integer $userid User Id default value 0
+     * @param array $already array of based on visited, default empty
      * return an array with variations for this user
      */
     public function get_variation_identification($userid = 0, &$already = []) {
@@ -2231,6 +2248,116 @@ class mod_vpl {
             $ret[] = $variation->identification;
         }
         return $ret;
+    }
+
+    /**
+     * Get HTML with submissions status from parameters or calculated.
+     * @param int $nstudents Number of students or groups. If null, it will be calculated.
+     * @param int $nsubmissions Number of submissions.
+     * @param int $ngraded Number of graded submissions.
+     * @return string HTML
+     */
+    public function get_submissions_status($nstudents=null, $nsubmissions=0, $ngraded=0) {
+        if ($nstudents === null) {
+            if ($this->is_group_activity()) {
+                $groupingid = $this->get_course_module()->groupingid;
+                $courseid = $this->get_course()->id;
+                $allstudents = groups_get_all_groups($courseid, 0, $groupingid);
+                $allstudents = $this->filter_empty_groups($allstudents);
+            } else {
+                $allstudents = $this->get_students();
+            }
+            $submissions = $this->all_last_user_submission('s.dategraded, s.userid, s.groupid');
+            $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
+            $nstudents = count($allstudents);
+            $nsubmissions = count($submissions);
+            $ngraded = $this->number_of_graded_submissions($submissions);
+        }
+        if ($nstudents == 0 || $nsubmissions == 0) {
+            $nsubmissionspc = 0;
+            $ngradedpc = 0;
+        } else {
+            $nsubmissionspc = round(100 * $nsubmissions / $nstudents, 2);
+            $ngradedpc = round(100 * $ngraded / $nsubmissions, 2);
+        }
+        $urlbase = '/mod/vpl/views/submissionslist.php';
+        $params = ['id' => $this->cm->id, 'selection' => 'all'];
+        if ($this->is_group_activity()) {
+            $html = get_string('groups') . ": ";
+        } else {
+            $html = get_string('students') . ": ";
+        }
+        $html .= html_writer::link(new moodle_url($urlbase, $params), $nstudents) . " / ";
+        $params['selection'] = 'allsubmissions';
+        $html .= html_writer::link(new moodle_url($urlbase, $params), $nsubmissions) . " ($nsubmissionspc%)";
+        if ($this->get_grade() != 0) {
+            $params['selection'] = 'graded';
+            $html .= " / " . html_writer::link(new moodle_url($urlbase, $params), $ngraded) . " ($ngradedpc%)";
+            if ($nsubmissions > $ngraded) {
+                $nnograded = $nsubmissions - $ngraded;
+                $nnogradedpc = round(100 * $nnograded / $nsubmissions, 2);
+                $params['selection'] = 'notgraded';
+                $html .= " - " . html_writer::link(new moodle_url($urlbase, $params), $nnograded) . " ($nnogradedpc%)";
+            }
+        }
+        return $html;
+    }
+
+    /**
+     * Filter submissions by students.
+     * @param array $submissions Array of submissions.
+     * @param array $students Array of students or groups.
+     * @return array Filtered submissions.
+     */
+    public function filter_submissions_by_students($submissions, $students) {
+        $filtersubmissions = [];
+        $field = $this->is_group_activity() ? 'groupid' : 'userid';
+        foreach ($submissions as $sub) {
+            if (isset($students[$sub->$field])) {
+                $filtersubmissions[$sub->$field] = $sub;
+            }
+        }
+        return $filtersubmissions;
+    }
+
+    /**
+     * Filter empty groups.
+     * @param array $groups Array of groups.
+     * @return array Filtered groups.
+     */
+    public function filter_empty_groups($groups) {
+        global $DB;
+        $sql = <<<SQL
+            SELECT gm.groupid, COUNT(gm.userid) AS nmembers
+            FROM {groups_members} gm
+            INNER JOIN {groupings_groups} gg ON gm.groupid = gg.groupid
+            WHERE gg.groupingid = :groupingid
+            GROUP BY gm.groupid;
+        SQL;
+        $groupingid = $this->get_course_module()->groupingid;
+        $groupmembers = $DB->get_records_sql($sql, ['groupingid' => $groupingid]);
+        $filtergroups = [];
+        foreach ($groups as $group) {
+            if (isset($groupmembers[$group->id]) && $groupmembers[$group->id]->nmembers > 0) {
+                $filtergroups[$group->id] = $group;
+            }
+        }
+        return $filtergroups;
+    }
+
+    /**
+     * Get number of graded submissions.
+     * @param array $submissions Array of submissions.
+     * @return int Number of graded submissions.
+     */
+    public function number_of_graded_submissions($submissions) {
+        $ngraded = 0;
+        foreach ($submissions as $sub) {
+            if ($sub->dategraded > 0) {
+                $ngraded ++;
+            }
+        }
+        return $ngraded;
     }
 
     /**
