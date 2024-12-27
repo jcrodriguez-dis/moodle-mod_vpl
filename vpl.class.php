@@ -1098,8 +1098,12 @@ class mod_vpl {
      * @return bool
      */
     public function has_capability($capability, $userid = null) {
-        return is_enrolled($this->get_context(), $userid, $capability, true) ||
-               is_siteadmin();
+        if (defined('WS_SERVER') && WS_SERVER) {
+            $has = has_capability($capability, $this->get_context(), $userid);
+        } else {
+            $has = is_enrolled($this->get_context(), $userid, $capability, true);
+        }
+        return $has || is_siteadmin();
     }
 
     /**
@@ -1236,8 +1240,12 @@ class mod_vpl {
     public function user_picture($user) {
         global $OUTPUT;
         if ($this->is_group_activity()) {
-            // TODO show group picture.
-            return '';
+            $group = $this->get_usergroup($user->id);
+            if ($group === false) {
+                return '';
+            }
+            $courseid = $this->get_course()->id;
+            return print_group_picture($group, $courseid, false, true);
         } else {
             $options = ['courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb()];
             return $OUTPUT->user_picture( $user, $options);
