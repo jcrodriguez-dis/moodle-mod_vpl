@@ -503,7 +503,7 @@ function vpl_js_alert($text, $print = true) {
 function vpl_get_select_time($maximum = null) {
     $minute = 60;
     if ($maximum === null) { // Default value.
-        $maximum = 35 * $minute;
+        $maximum = 120 * $minute;
     }
     $ret = [
             0 => get_string( 'select' ),
@@ -559,7 +559,7 @@ function vpl_conv_size_to_string($size) {
         }
         if ($size < $measure[$i + 1]) {
             $num = $size / $measure[$i];
-            if ($num >= 3 || $size % $measure[$i] == 0) {
+            if ($size % $measure[$i] == 0) {
                 return sprintf( '%4d %s', $num, $measurename[$i] );
             } else {
                 return sprintf( '%.2f %s', $num, $measurename[$i] );
