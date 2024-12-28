@@ -416,16 +416,20 @@ define(
                     $(this).dialog('close');
                 };
                 delete options.yes;
-            } else {
-                messageButtons[VPLUtil.str('close')] = function() {
-                    $(this).dialog('close');
-                };
             }
-            if (options.next) {
+            if (typeof initialoptions.stop == 'function') {
+                messageButtons[VPLUtil.str('stop')] = function() {
+                    $(this).dialog('close');
+                    initialoptions.stop();
+                };
+                delete options.stop;
+            }
+            if (typeof initialoptions.next == 'function') {
                 messageButtons[VPLUtil.str('next')] = function() {
                     $(this).dialog('close');
                     initialoptions.next();
                 };
+                delete options.next;
             }
             options.close = function() {
                     $(this).remove();
