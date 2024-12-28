@@ -395,15 +395,18 @@ class vpl_editor_util {
         $options['nexturl'] = $nexturl;
         $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options] );
     }
-    public static function generate_batch_evaluate_sript($ajaxurls) {
-        $options = [];
-        $options['ajaxurls'] = $ajaxurls;
-        $joptions = json_encode( $options );
-        self::print_js_i18n();
+    public static function generate_batch_evaluate_sript($ajaxurls, $users) {
+        global $PAGE;
+        $jsonusers = json_encode($users);
         ?>
-<script>
-    VPL_Batch_Evaluation(<?php echo $joptions;?>);
-</script>
+        <script src="<?php echo new moodle_url('/mod/vpl/jscript/updatesublist.js');?>"></script>
+        <script>
+            if  (typeof window.VPL === 'undefined') {
+                window.VPL = {};
+            }
+            window.VPL.evaluateStudents = <?php echo $jsonusers;?>;
+        </script>
         <?php
+        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'multievaluation', ['ajaxutls' => $ajaxurls]);
     }
 }
