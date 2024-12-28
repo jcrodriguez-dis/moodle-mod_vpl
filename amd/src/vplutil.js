@@ -278,19 +278,24 @@ define(
                 'JSON': 'json',
                 'JSP': 'jsp',
                 'JSX': 'jsx',
+                'OCaml': 'ocaml',
                 'Kotlin': 'kotlin',
+                'Makefile': 'makefile',
                 'Matlab': 'matlab',
                 'Markdown': 'markdown',
+                'LaTeX': 'latex',
                 'Less': 'less',
                 'LISP': 'lisp',
                 'Lua': 'lua',
                 'Pascal': 'pascal',
                 'Perl': 'perl',
                 'PHP': 'php',
+                'Plain text': 'plain_text',
                 'Prolog': 'prolog',
                 'PSeInt': 'pseint',
                 'Python': 'python',
                 'R': 'r',
+                'reStructuredText': 'rst',
                 'Ruby': 'ruby',
                 'Rust': 'rust',
                 'SASS': 'sass',
@@ -352,6 +357,8 @@ define(
                 'kt': 'Kotlin', 'kts': 'Kotlin',
                 'm': 'Matlab',
                 'md': 'Markdown',
+                'ml': 'OCaml', 'mli': 'OCaml',
+                'latex': 'LaTeX',
                 'less': 'Less',
                 'lisp': 'LISP', 'lsp': 'LISP',
                 'lua': 'Lua',
@@ -364,6 +371,7 @@ define(
                 'R': 'R', 'r': 'R',
                 'rb': 'Ruby', 'ruby': 'Ruby',
                 'rs': 'Rust',
+                'rst': 'reStructuredText',
                 's': 'x86 assembly',
                 'sass': 'SASS',
                 'scala': 'Scala',
@@ -383,22 +391,58 @@ define(
                 'v': 'Verilog', 'vh': 'Verilog',
                 'vhd': 'VHDL', 'vhdl': 'VHDL',
                 'xml': 'XML',
-                'yaml': 'YAML'
+                'yaml': 'YAML',
+                // Add dot to indicate that is not a file extension.
+                '.makefile': 'Makefile',
+                '.Makefile': 'Makefile'
             };
+
+            /**
+             * Returns the language names
+             * @returns {object} copy of the language names
+             */
             VPLUtil.getLangNames = function() {
                 return Object.assign({}, mapname);
             };
-            VPLUtil.langType = function(ext) {
+
+            /**
+             * Returns the Ace9 language type for a file
+             * @param {string} filenamepath
+             * @returns {string} language type
+             * @see https://ace.c9.io/#nav=api&api=edit_session
+             */
+            VPLUtil.langType = function(filenamepath) {
+                var ext = VPLUtil.fileExtension(filenamepath);
                 if (ext in mapname) {
                     return maplang[mapname[ext]];
                 }
+                var extfile = '.' + VPLUtil.getFileName(filenamepath);
+                if (extfile in mapname) {
+                    return maplang[mapname[extfile]];
+                }
                 return 'plain_text';
             };
-            VPLUtil.langName = function(ext) {
+
+            /**
+             * Returns the language name for a file
+             * @param {string} filenamepath
+             * @returns {string} language name
+             */
+            VPLUtil.langName = function(filenamepath) {
+                var ext = VPLUtil.fileExtension(filenamepath);
                 if (ext in mapname) {
                     return mapname[ext];
                 }
+                var extfile = '.' + VPLUtil.getFileName(filenamepath);
+                if (extfile in mapname) {
+                    return mapname[extfile];
+                }
                 return 'Plain text';
+            };
+
+            VPLUtil.useHardTabs = function(filenamepath) {
+                var type = VPLUtil.langType(filenamepath);
+                return type == 'makefile' || type == 'golang';
             };
         })();
         (function() {
