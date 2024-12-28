@@ -928,6 +928,9 @@ define(
                     $('#vpl_ide_shrightpanel').hide();
                 }
                 VPLUtil.delay('autoResizeTab', autoResizeTab);
+                VPLUtil.delay('fixAccordion', function() {
+                    result.accordion('option', 'active', gradeShow ? 1 : 0);
+                });
             };
 
             result.accordion({
@@ -2140,7 +2143,6 @@ define(
                     }
                 }
                 tabs.tabs('option', 'active', 0);
-
                 if (response.compilationexecution) {
                     self.setResult(response.compilationexecution, false);
                 }
@@ -2165,6 +2167,11 @@ define(
                     updateMenu();
                     autoResizeTab();
                     adjustTabsTitles(true);
+                    if (fileManager.length() > 0) {
+                        var file = fileManager.getFiles()[0];
+                        file.open();
+                        file.focus();
+                    }
                 });
             })
             .fail(showErrorMessage);
