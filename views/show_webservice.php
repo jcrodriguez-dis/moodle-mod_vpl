@@ -25,25 +25,42 @@
 
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__).'/../locallib.php');
 
-global $OUTPUT;
+global $PAGE, $OUTPUT;
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/show_webservice.php', [
-        'id' => $id,
-] );
+$vpl->prepare_page( 'views/show_webservice.php', [ 'id' => $id ] );
 $vpl->require_capability( VPL_VIEW_CAPABILITY );
+$vpl->restrictions_check();
 if (! $vpl->is_visible()) {
-    \mod_vpl\event\vpl_security_webservice::log( $vpl );
-    notice( get_string( 'notavailable' ) );
+    notice(get_string('notavailable'));
 }
-$vpl->print_header( get_string( 'createtokenforuser', 'core_webservice' ) );
+\mod_vpl\event\vpl_security_webservice::log( $vpl );
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/webservice.css'));
+$vpl->print_header(get_string('webservice', VPL));
 $vpl->print_view_tabs( 'view.php' );
-echo '<h1>' . get_string( 'webservice', 'core_webservice' ) . '</h1>';
-echo '<h3>' . get_string( 'createtokenforuserdescription', 'core_webservice' ) . '</h3>';
-$serviceurl = vpl_get_webservice_urlbase( $vpl );
-echo $OUTPUT->box( '<div style="white-space: pre-wrap">' . s( $serviceurl ) . '</div>' );
-notice( '', vpl_mod_href( 'view.php', 'id', $id ) );
+echo $OUTPUT->heading_with_help($vpl->get_printable_name() . ' - ' . get_string('webservice', VPL), 'webservice', VPL, '', '', 1);
+echo $OUTPUT->box_start('mb-3');
+
+// VPL ID info.
+vpl_print_copyable_info(get_string('webservicevplid', VPL), $id);
+
+$wsmanager = new \mod_vpl\webservice\manager($vpl);
+
+echo $OUTPUT->heading_with_help(get_string('webserviceglobal', VPL), 'webserviceglobal', VPL, '', '', 4, 'mt-2');
+
+if (\core\session\manager::is_loggedinas()) {
+    // Do not display token info if login as, to prevent access to personal info outside the course.
+    echo html_writer::div(get_string('webserviceloginasnotice', VPL));
+} else {
+    $wsmanager->print_webservice(\mod_vpl\webservice\manager::GLOBAL);
+}
+echo $OUTPUT->heading_with_help(get_string('webservicelocal', VPL), 'webservicelocal', VPL, '', '', 4, 'mt-2');
+$wsmanager->print_webservice(\mod_vpl\webservice\manager::LOCAL);
+
+echo $OUTPUT->box_end();
+echo $OUTPUT->continue_button(vpl_mod_href('view.php', 'id', $id));
 $vpl->print_footer();
