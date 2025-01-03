@@ -34,12 +34,16 @@ $string['attemptnumber'] = 'Attempt number {$a}';
 $string['autodetect'] = 'Autodetect';
 $string['automaticevaluation'] = 'Automatic evaluation';
 $string['automaticgrading'] = 'Automatic grade';
+$string['automaticgrading_help'] = 'If set to Yes, the grade proposed by the automatic evaluation will be applied as the grade for this activity.<br>
+If set to No, no grade will be applied by this activity; teachers will have to review proposed grades in order to apply them manually.';
 $string['averageperiods'] = 'Average periods {$a}';
 $string['averagetime'] = 'Average time {$a}';
 $string['basedon'] = 'Based on';
 $string['basedon_missed'] = 'The based-on activity was missed by restoring/importing. Please, include "{$a}"';
 $string['basedon_chain_broken'] = 'Error: The chain of based-on activities is broken. Please, review based-on activities.';
 $string['basedon_deleted'] = 'Error: The based-on activity missed (was deleted?). Please, set the based-on activity.';
+$string['basedon_help'] = 'This option describes a system of inheritance for execution scripts.<br>
+Execution scripts will be concatenated, first the parent (the base), then the child (this VPL). Several bases can be chained, resulting in multiple concatenations.';
 $string['basic'] = 'Basic';
 $string['binaryfile'] = 'Binary File';
 $string['breakpoint'] = 'Breakpoint';
@@ -104,7 +108,8 @@ $string['error:recursivedefinition'] = "Recursive basedon VPL definition";
 $string['error:uninstalling'] = 'Error uninstalling VPL. All data may have not been deleted';
 $string['error:zipnotfound'] = 'ZIP file not found';
 $string['evaluate'] = 'Evaluate';
-$string['evaluateonsubmission'] = 'Evaluate just on submission';
+$string['evaluateonsubmission'] = 'Evaluate upon files submission';
+$string['evaluateonsubmission_help'] = 'If set to Yes, performs an evaluation upon files submission via the "Submission" tab. This does not affect submissions via the "Edit" tab.';
 $string['evaluating'] = 'Evaluating';
 $string['evaluation'] = 'Evaluation';
 $string['examples'] = 'Examples';
