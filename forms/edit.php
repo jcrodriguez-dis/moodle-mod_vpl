@@ -87,8 +87,8 @@ $options['debug'] = ($instance->debug || $grader);
 $options['evaluate'] = ($instance->evaluate || $grader);
 $options['example'] = true && $instance->example;
 $options['comments'] = ! $options['example'];
-$options['username'] = $vpl->fullname($DB->get_record( 'user', [ 'id' => $userid ] ), false);
 $linkuserid = $copy ? $USER->id : $userid;
+$options['username'] = $vpl->fullname($DB->get_record( 'user', [ 'id' => $linkuserid ] ), false);
 $ajaxurl = "edit.json.php?id={$id}&userid={$linkuserid}";
 $options['ajaxurl'] = $ajaxurl . '&action=';
 if ( $copy ) {

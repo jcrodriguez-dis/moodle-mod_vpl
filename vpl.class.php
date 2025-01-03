@@ -1620,7 +1620,7 @@ class mod_vpl {
      */
     public function print_view_tabs($path) {
         // TODO refactor using functions.
-        global $USER, $DB;
+        global $USER, $DB, $PAGE;
         $active = basename( $path );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
@@ -1671,12 +1671,22 @@ class mod_vpl {
                 } else {
                     $user = self::get_db_record( 'user', $userid);
                     if ($this->is_group_activity()) {
-                        $text = vpl_get_awesome_icon('group') . ' ';
+                        $text = get_string( 'group' ) . ' ';
+                        $icon = vpl_get_awesome_icon('group') . ' ';
                     } else {
-                        $text = vpl_get_awesome_icon('user') . ' ';
+                        $text = get_string( 'user' ) . ' ';
+                        $icon = vpl_get_awesome_icon('user') . ' ';
                     }
                     $text .= $this->fullname( $user, false );
-                    $maintabs[] = new tabobject( $tabname, $href, $text, $text );
+                    $url = $PAGE->url->out( false, [ 'userid' => $USER->id ] );
+                    // Add button to return to own activity.
+                    // This is a simili-link because it is located inside an <a> tag, and we cannot put an <a> tag within another.
+                    $buttonexit = html_writer::tag('span', vpl_get_awesome_icon('exitrole'), [
+                            'class' => 'btn-link clickable pl-1',
+                            'title' => get_string('returntoownactivity', VPL),
+                            'onclick' => 'event.preventDefault(); window.location.href=\'' . $url . '\';',
+                    ]);
+                    $maintabs[] = new tabobject( $tabname, $href, $icon . $text . $buttonexit, $text );
                 }
             }
         }
@@ -2048,7 +2058,7 @@ class mod_vpl {
             if ( $freeevaluations > 0) {
                 $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
             }
-            $html .= $html . '<br>';
+            $html .= '<br>';
         }
         return $html;
     }
