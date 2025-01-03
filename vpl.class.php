@@ -2048,7 +2048,7 @@ class mod_vpl {
             if ( $freeevaluations > 0) {
                 $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
             }
-            $html .= $html . '<br>';
+            $html .= '<br>';
         }
         return $html;
     }
