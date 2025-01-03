@@ -294,6 +294,7 @@ $string['resetvpl'] = 'Reset {$a}';
 $string['resourcelimits'] = 'Resources limits';
 $string['restrictededitor'] = 'Disable external file upload, paste and drop external content';
 $string['retrieve'] = 'Retrieve results';
+$string['returntoownactivity'] = 'Return to own activity';
 $string['run'] = 'Run';
 $string['running'] = 'Running';
 $string['runscript'] = 'Run script';
