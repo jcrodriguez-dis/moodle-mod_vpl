@@ -1747,13 +1747,14 @@ define(
                     });
                 }
             });
+            var noconfirmation = false;
             menuButtons.add({
                 name: 'save',
                 originalAction: function() {
                     var data = {
                         files: fileManager.getFilesToSave(),
                         comments: $('#vpl_ide_input_comments').val(),
-                        version: fileManager.getVersion()
+                        version: noconfirmation ? -1 : fileManager.getVersion()
                     };
                     if (JSON.stringify(data).length > options.postMaxSize) {
                         showErrorMessage(str('maxpostsizeexceeded'));
@@ -1765,15 +1766,24 @@ define(
                     function doSave() {
                         VPLUI.requestAction('save', 'saving', data, options.ajaxurl)
                         .done(function(response) {
-                            if (response.requestsconfirmation) {
-                                showMessage(response.question, {
+                            if (response.requestsconfirmation && !noconfirmation) {
+                                var checkboxID = 'vpl_donotshowagain';
+                                var donotshowagain = '<input type="checkbox" id="' + checkboxID +'"'
+                                                    + ' class="align-text-bottom mr-1 mt-3">'
+                                                    + '<label for="' + checkboxID + '">' + str('donotshowagain') + '</label>';
+                                var $checkbox;
+                                showMessage(response.question + '<br>' + donotshowagain, {
                                     title: str('saving'),
                                     icon: 'alert',
                                     yes: function() {
+                                        if ($checkbox.length == 1 && $checkbox.prop('checked')) {
+                                            noconfirmation = true;
+                                        }
                                         data.version = 0;
                                         doSave();
                                     }
                                 });
+                                $checkbox = $('#' + checkboxID);
                             } else {
                                 fileManager.resetModified();
                                 fileManager.setVersion(response.version);
