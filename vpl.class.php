@@ -1961,6 +1961,9 @@ class mod_vpl {
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
                 $html .= $infohs->content_in_tag('span', s($password));
+                if ($password != $this->instance->password) {
+                    $html .= $this->overriden_icon();
+                }
                 $html .= "<br>\n";
             }
             if (trim( $instance->requirednet ) > '') {
