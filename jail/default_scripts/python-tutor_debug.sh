@@ -5,7 +5,7 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Using "Python Tutor (Python, JavaScript, C, C++, and Java)"
+# @vpl_script_description Using "External Python Tutor (Python, JavaScript, C, C++, and Java)"
 
 # load common script and check programs
 . common_script.sh
@@ -51,7 +51,8 @@ $ext2lang = [
     'java' => 'java',
     'cpp' => 'cpp',
     'C' => 'cpp',
-    'c++' => 'cpp'
+    'c++' => 'cpp',
+    'js' => 'js'
 ];
 $file_ext = getenv('FILE_EXT');
 $filecontent = file_get_contents($filename);
@@ -70,13 +71,40 @@ $params = [
 
 $query = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
 $URL = "https://pythontutor.com/iframe-embed.html#{$query}";
-header("Location: $URL");
-fclose(fopen('.vpl_stop_server', 'w'));
+if (getenv('VPL_USING_SEB') == '1') {
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Python Tutor + VPL</title>
+    <style>
+        body {
+            padding: 3px;
+        }
+        iframe {
+            width: 100%;
+            height: 600px;
+            border: 1px solid #00a;
+        }
+    </style>
+</head>
+<body>
+    <iframe src="<?php echo $URL; ?>"></iframe>
+</body>
+</html>
+<?php
+}else{
+    header("Location: $URL");
+}
+touch('.vpl_stop_server');
 
 END_OF_PHP
     # Calculate IP 127.X.X.X: (random port)
     if [ "$UID" == "" ] ; then
     	echo "Error: UID not set"
+    fi
+    if [ -f .vpl_using_seb ] ; then
+        export VPL_USING_SEB=1
     fi
     export serverPort=$((10000+$RANDOM%50000))
     export serverIP="127.$((1+$UID/1024%64)).$((1+$UID/16%64)).$((10+$UID%16))"
@@ -86,6 +114,7 @@ END_OF_PHP
 #!/bin/bash
 export FILE_EXT="${FIRST_SOURCE_FILE##*.}"
 export FIRST_SOURCE_FILE=$FIRST_SOURCE_FILE
+export VPL_USING_SEB=$VPL_USING_SEB
 $PHP -c .php.ini -S "$serverIP:$serverPort" .router.php &>/dev/null &
 PHP_SERVER_PID=$!
 while true; do
