@@ -402,7 +402,7 @@ function vpl_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_ADVANCED_GRADING:
-            return false;
+            return true;
         case FEATURE_CONTROLS_GRADE_VISIBILITY:
             return true;
         default:
@@ -413,6 +413,14 @@ function vpl_supports($feature) {
             }
             return null;
     }
+}
+/**
+ * Lists all gradable areas for the advanced grading methods gramework
+ *
+ * @return array('string'=>'string') An array with area names as keys and descriptions as values
+ */
+function vpl_grading_areas_list() {
+    return [ 'submissions' => get_string('submissions', 'vpl') ];
 }
 
 /**
@@ -603,6 +611,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:run' => 'fa-rocket',
             'mod_vpl:debug' => 'fa-bug',
             'mod_vpl:grade' => 'fa-check-circle',
+            'mod_vpl:gradenoun' => 'fa-check-circle',
             'mod_vpl:previoussubmissionslist' => 'fa-history',
             'mod_vpl:modulenameplural' => 'fa-list-ul',
             'mod_vpl:description' => 'fa-tasks',

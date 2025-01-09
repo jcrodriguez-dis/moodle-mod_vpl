@@ -49,6 +49,8 @@ $string['binaryfile'] = 'Binary File';
 $string['breakpoint'] = 'Breakpoint';
 $string['browserupdate'] = 'Please update your browser to the last version<br />or use another that supports Websocket.';
 $string['calculate'] = 'Calculate';
+$string['calculate_help'] = 'Calculate grade from grade reductions in comments.<br>
+Syntax for grade reduction is <pre>-&nbsp;Text&nbsp;(-points)</pre> (one line by reduction).';
 $string['calendardue'] = 'VPL submission is due';
 $string['calendarexpectedon'] = 'VPL submission expected';
 $string['changesNotSaved'] = 'Changes have not been saved';
@@ -68,6 +70,7 @@ $string['copy'] = 'Copy';
 $string['copytoclipboard'] = 'Copy to clipboard';
 $string['copytoclipboarderror'] = 'Failed to copy to clipboard.';
 $string['copytoclipboardsuccess'] = 'Copied!';
+$string['copy_help'] = 'Copy this submission in own editor (opens a new window)';
 $string['create_new_file'] = 'Create a new file';
 $string['crontask_check_vpljs'] = 'Report VPL Jail Servers';
 $string['messageprovider:bad_jailservers'] = 'Report VPL Jail Servers';
@@ -95,6 +98,7 @@ $string['directory_not_renamed'] = 'Directory \'{$a}\' has not been renamed';
 $string['disabled'] = 'Disabled';
 $string['discard_submission_period'] = 'Discard submission period';
 $string['discard_submission_period_description'] = 'For each student and assignment, the system tries to discard submissions. The system keep the last one and at least a submission for every period';
+$string['dograde'] = 'Grade';
 $string['donotshowagain'] = 'Disable these messages for the current page';
 $string['download'] = 'Download';
 $string['downloadallsubmissions'] = 'Download all submissions';
@@ -113,6 +117,7 @@ $string['error:recursivedefinition'] = "Recursive basedon VPL definition";
 $string['error:uninstalling'] = 'Error uninstalling VPL. All data may have not been deleted';
 $string['error:zipnotfound'] = 'ZIP file not found';
 $string['evaluate'] = 'Evaluate';
+$string['evaluate_help'] = 'Run automatic evaluation';
 $string['evaluateonsubmission'] = 'Evaluate upon files submission';
 $string['evaluateonsubmission_help'] = 'If set to Yes, performs an evaluation upon files submission via the "Submission" tab. This does not affect submissions via the "Edit" tab.';
 $string['evaluating'] = 'Evaluating';
@@ -159,7 +164,14 @@ $string['gradeoptions'] = 'Grade options';
 $string['grader'] = "Evaluator";
 $string['gradercomments'] = 'Assessment report';
 $string['graderemoved'] = 'The grade has been removed';
+$string['gradesaved'] = 'Grade saved';
+$string['gradesaved_redirect'] = 'Grade saved. This page should redirect automatically.';
 $string['groupwork'] = 'Group work';
+$string['importfromlastgradedsub'] = 'Import from last graded submission';
+$string['importfromlastmgradedsub'] = 'Import from last manually graded submission';
+$string['importgrade'] = 'Import grade and comments';
+$string['importgrade_help'] = 'Import grade, comments and (if applicable) advanced grading from a previously graded submission.<br>
+This action will only fill the form, no data will be submitted.';
 $string['inconsistentgroup'] = 'You are not member of only one group (0 o >1)';
 $string['incorrect_file_name'] = 'Incorrect file name';
 $string['incorrect_directory_name'] = 'Incorrect directory name';
@@ -204,6 +216,17 @@ $string['menuexecutionoptions'] = 'Options';
 $string['menukeepfiles'] = 'Files to keep';
 $string['menulocal_jail_servers'] = 'Local execution servers';
 $string['menuresourcelimits'] = 'Resources limits';
+$string['merge'] = 'Merge grade';
+$string['merge_help'] = 'Merge current proposed grade (from execution) and avdanced grading grid grade.
+<p>
+This will set the grade to
+&lt;proposed&nbsp;grade&gt; - &lt;max&nbsp;grid&nbsp;points&gt; * (&lt;proposed&nbsp;grade&gt;/&lt;max&nbsp;vpl&nbsp;grade&gt;) + &lt;grid&nbsp;points&gt;.<br>
+More simply, it ponderates grid points based on current proposed grade: a student with 100% points will need all grid points to keep 100% points;
+a student with 0 points will end up with all obtained grid points as their grade.
+</p>
+<p>
+Advanced grid grade is computed as the total of grid points, reduced by comments. Syntax for grade reduction is <pre>-&nbsp;Text&nbsp;(-points)</pre> (one line by reduction).
+</p>';
 $string['minsimlevel'] = 'Minimum similarity level to show';
 $string['moduleconfigtitle'] = 'VPL Module Config';
 $string['modulename'] = 'Virtual programming lab';
@@ -216,6 +239,7 @@ $string['next'] = 'Next';
 $string['nojailavailable'] = 'No execution server available';
 $string['noright'] = 'You don\'t have right to access';
 $string['nosubmission'] = 'No submission available';
+$string['nosuchsubmission'] = 'No such submission';
 $string['notexecuted'] = 'Not executed';
 $string['notgraded'] = 'Not graded';
 $string['notsaved'] = 'Not saved';
