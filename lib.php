@@ -414,14 +414,6 @@ function vpl_supports($feature) {
             return null;
     }
 }
-/**
- * Lists all gradable areas for the advanced grading methods gramework
- *
- * @return array('string'=>'string') An array with area names as keys and descriptions as values
- */
-function vpl_grading_areas_list() {
-    return [ 'submissions' => get_string('submissions', 'vpl') ];
-}
 
 /**
  * Returns an object with short information about what a user has done with a given particular

@@ -158,6 +158,7 @@ $string['graded'] = 'Graded';
 $string['gradedbyuser'] = 'Graded by user';
 $string['gradedon'] = "Evaluated on";
 $string['gradedonby'] = 'Reviewed on {$a->date} by {$a->gradername}';
+$string['gradeitem:submissions'] = 'Submissions';
 $string['gradenotremoved'] = 'The grade has NOT been removed. Check activity config in the gradebook.';
 $string['gradenotsaved'] = 'The grade has NOT been saved. Check activity config in the gradebook.';
 $string['gradeoptions'] = 'Grade options';
