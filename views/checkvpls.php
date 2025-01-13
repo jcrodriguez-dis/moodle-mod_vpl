@@ -25,7 +25,6 @@
 
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../list_util.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 
 global $DB, $PAGE, $OUTPUT, $USER;
@@ -38,24 +37,46 @@ if (! $course = $DB->get_record( "course", [ 'id' => $id ] )) {
 }
 require_course_login( $course );
 
-$PAGE->set_url( '/mod/views/checkvpls.php', [ 'id' => $id ] );
-$strvpls = get_string( 'modulenameplural', VPL );
-$PAGE->navbar->add( $strvpls );
-$PAGE->set_title( get_string('checkall') );
-$PAGE->set_heading( $course->fullname );
-echo $OUTPUT->header();
-echo $OUTPUT->heading( get_string('checkall'));
+$PAGE->set_url( '/mod/vpl/views/checkvpls.php', [ 'id' => $id ] );
 
-$einfo = ['context' => \context_course::instance( $course->id ),
+$admin = is_siteadmin();
+$sitewide = $admin && optional_param('sitewide', 0, PARAM_INT);
+$strvpls = get_string( 'modulenameplural', VPL );
+$pagetitle = get_string( 'checkgroups', VPL );
+$coursename = format_string( $course->fullname );
+if (!$sitewide) {
+    $pagetitle .= ' (' . $coursename . ')';
+}
+$PAGE->navbar->add( $strvpls );
+$PAGE->set_title( $pagetitle );
+$PAGE->set_heading( $coursename );
+echo $OUTPUT->header();
+echo $OUTPUT->heading( $pagetitle );
+
+$context = context_course::instance( $course->id );
+$einfo = [
+        'context' => $context,
         'objectid' => $course->id,
         'userid' => $USER->id,
 ];
 \mod_vpl\event\vpl_checkvpls::log( $einfo );
-$admin = is_siteadmin();
 $ovpls = [];
 if ($admin) {
+    $url = $PAGE->url;
+    $filterurls = [
+            $url->out(true, [ 'sitewide' => 0 ]),
+            $url->out(true, [ 'sitewide' => 1 ]),
+    ];
+    echo $OUTPUT->url_select([
+            $filterurls[0] => get_string( 'checkforcourse', VPL, $coursename ),
+            $filterurls[1] => get_string( 'checksitewide', VPL ),
+    ], $filterurls[$sitewide], null);
+    echo '<br>';
+}
+
+if ($sitewide) {
     $ovpls = $DB->get_records( VPL, [], 'id' );
-} else if (has_capability(VPL_MANAGE_CAPABILITY, $einfo['context'])) {
+} else if (has_capability(VPL_MANAGE_CAPABILITY, $context)) {
     $ovpls = get_all_instances_in_course( VPL, $course );
 }
 
@@ -65,12 +86,6 @@ foreach ($ovpls as $ovpl) {
     $instance = $vpl->get_instance();
     if ( $vpl->is_group_activity() ) {
         // Check groups concistence.
-        $title = '';
-        if ($admin) {
-            $title = $vpl->get_course()->shortname . ': ';
-        }
-        $title .= $vpl->get_printable_name();
-        echo '<h5>' . s($title) . '</h5>';
         $groupingid = $vpl->get_course_module()->groupingid;
         $groups = groups_get_all_groups($vpl->get_course()->id, 0, $groupingid);
         $students = $vpl->get_students();
@@ -105,25 +120,42 @@ foreach ($ovpls as $ovpl) {
         if ( $nogroup > '' ) {
             $nogroup .= '</ul>';
         }
-        echo $OUTPUT->box_start();
-        if ($multigroup > '') {
-            echo vpl_notice($multigroup, 'error');
+
+        $title = '';
+        if ($sitewide) {
+            $title = $vpl->get_course()->shortname . ' > ';
         }
+        $title .= $vpl->get_printable_name();
+        $icon = 'check';
+        $level = 'success';
+        $text = '';
         if ($nogroup > '') {
-            echo vpl_notice($nogroup, 'warning');
+            $icon = 'warning';
+            $level = 'warning';
+            $text = $OUTPUT->notification($nogroup, 'warning') . $text;
         }
-        if ( $multigroup == '' ) {
+        if ($multigroup > '') {
+            $icon = 'remove';
+            $level = 'error';
+            $text = $OUTPUT->notification($multigroup, 'error') . $text;
+        } else {
             $gradersid = array_keys($vpl->get_graders());
             $ing = $DB->get_in_or_equal($gradersid);
             $select = '( not userid ' . $ing[0] . ' ) and vpl = ? and groupid = 0';
             $params = $ing[1];
             $params[] = $instance->id;
             if ($DB->count_records_select(VPL_SUBMISSIONS, $select, $params) > 0 ) {
-                echo vpl_notice('Fixing submissions with no group or pre V3.3 data');
+                $text .= $OUTPUT->notification('Fixing submissions with no group or pre V3.3 data', 'success');
                 $vpl->update_group_v32();
             }
         }
-        echo $OUTPUT->box_end();
+        echo '<h5>';
+        echo '<a href="/mod/vpl/view.php?id='.$vpl->get_course_module()->id.'" class="text-'.$level.'">' . s($title) . '</a>';
+        echo ' <i class="icon fa fa-'.$icon.' text-'.$level.' fa-fw "></i>';
+        echo '</h5>';
+        if ($text > '') {
+            echo $OUTPUT->box($text);
+        }
     }
 }
 

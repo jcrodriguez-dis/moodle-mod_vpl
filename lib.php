@@ -605,6 +605,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:grade' => 'fa-check-circle',
             'mod_vpl:previoussubmissionslist' => 'fa-history',
             'mod_vpl:modulenameplural' => 'fa-list-ul',
+            'mod_vpl:checkgroups' => 'fa-group',
             'mod_vpl:description' => 'fa-tasks',
             'mod_vpl:similarity' => 'fa-binoculars',
             'mod_vpl:submissionslist' => 'fa-list-ul',
@@ -800,6 +801,9 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $testact->add_node( $node, $keybefore );
         $url = new moodle_url( '/mod/vpl/index.php', ['id' => $PAGE->cm->course]);
         $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url, navigation_node::TYPE_SETTING);
+        $vplnode->add_node( $node, $fkn );
+        $url = new moodle_url( '/mod/vpl/views/checkvpls.php', ['id' => $PAGE->cm->course]);
+        $node = vpl_navi_node_create($vplnode, 'checkgroups', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
     }
 }
