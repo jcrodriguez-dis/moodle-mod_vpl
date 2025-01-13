@@ -25,7 +25,6 @@
 
 require_once(__DIR__ . '/../../../config.php');
 require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/grade_form.php');
 require_once(dirname(__FILE__).'/../vpl.class.php');
 require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/../views/sh_factory.class.php');

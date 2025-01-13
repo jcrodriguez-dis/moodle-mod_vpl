@@ -28,25 +28,12 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/grade_form.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
-require_once(dirname(__FILE__) . '/../views/sh_factory.class.php');
-require_once(dirname(__FILE__) . '/../views/workinggraph.php');
 
-function vpl_grade_header($vpl, $inpopup) {
-    if ($inpopup) {
-        $vpl->print_header_simple();
-    } else {
-        $vpl->print_header( get_string(vpl_get_gradenoun_str()) );
-        $vpl->print_view_tabs( basename( __FILE__ ) );
-    }
-}
 require_login();
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/grade.css' ) );
 $PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
-vpl_include_jsfile( 'grade.js', false );
 vpl_include_jsfile( 'hide_footer.js', false );
-vpl_include_jsfile( 'updatesublist.js', false );
-vpl_sh_factory::include_js();
 
 $id = required_param( 'id', PARAM_INT );
 $userid = required_param( 'userid', PARAM_INT );
@@ -64,9 +51,16 @@ if ($vpl->get_grade() == 0) {
     vpl_inmediate_redirect($link);
 }
 
-$jscript = '';
 $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
 $vpl->require_capability( VPL_GRADE_CAPABILITY );
+
+if ($inpopup) {
+    $vpl->print_header_simple();
+} else {
+    $vpl->print_header( get_string( vpl_get_gradenoun_str() ) );
+    $vpl->print_view_tabs( basename( __FILE__ ) );
+}
+
 // Read submission to grade.
 $submissionid = optional_param( 'submissionid', false, PARAM_INT );
 if ($submissionid) {
@@ -79,17 +73,14 @@ if ($submissionid) {
 // Check consistence.
 $link = vpl_mod_href( 'view.php', 'id', $id, 'userid', $userid );
 if (! $subinstance) {
-    vpl_grade_header( $vpl, $inpopup );
     vpl_redirect( $link, get_string( 'nosubmission', VPL ), 'error');
 }
 $submissionid = $subinstance->id;
 
 if ($vpl->is_inconsistent_user( $subinstance->userid, $userid )) {
-    vpl_grade_header( $vpl, $inpopup );
     vpl_redirect( $link, 'vpl submission user inconsistence', 'error' );
 }
 if ($vpl->get_instance()->id != $subinstance->vpl) {
-    vpl_grade_header( $vpl, $inpopup );
     vpl_redirect( $link, 'vpl submission vpl inconsistence', 'error' );
 }
 $submission = new mod_vpl_submission( $vpl, $subinstance );
@@ -102,29 +93,24 @@ if ($inpopup) {
 // No marked or marked by current user or automatic.
 if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subinstance->grader == 0) {
     if ($inpopup) {
-        $href = $link;
+        $href = htmlspecialchars_decode($link);
     } else {
         $href = 'gradesubmission.php';
     }
-    $gradeform = new mod_vpl_grade_form( $href, $submission);
+    $gradeform = new mod_vpl_grade_form( $href, $vpl, $submission );
     if ($gradeform->is_cancelled()) { // Grading canceled.
         vpl_inmediate_redirect( $link );
     } else if ($fromform = $gradeform->get_data()) { // Grade (new or update).
-        if (isset( $fromform->evaluate )) {
-            $url = vpl_mod_href( 'forms/evaluation.php', 'id', $fromform->id, 'userid'
-                                 , $fromform->userid, 'grading', 1, 'inpopup', $inpopup );
-            vpl_inmediate_redirect( $url );
-        }
         if (isset( $fromform->removegrade )) {
-            vpl_grade_header( $vpl, $inpopup );
             if ($submission->remove_grade()) {
                 \mod_vpl\event\submission_grade_deleted::log( $submission );
                 if ($inpopup) {
-                    // FIXME don't work.
-                    // Change grade info at parent window.
-                    $jscript .= 'VPL.updatesublist(' . $submission->get_instance()->id . ',';
-                    $jscript .= "' ',' ',' ');";
-                    echo vpl_include_js( $jscript );
+                    $gradedata = new stdClass();
+                    $gradedata->grade = get_string('nograde');
+                    $gradedata->grader = '';
+                    $gradedata->gradedon = '';
+                    $gradedata->comments = '';
+                    $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'updateSubmissionsList', [ $submissionid, $gradedata, null ]);
                 }
                 vpl_redirect( $link, get_string( 'graderemoved', VPL ), 5 );
             } else {
@@ -147,45 +133,49 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
         if ($badgrade) {
             vpl_redirect( $link, get_string( 'badgrade', 'grades' ), 'error' );
         }
-        vpl_grade_header( $vpl, $inpopup );
         if ($submission->is_graded()) {
-            $action = 'update grade';
+            $logclass = \mod_vpl\event\submission_grade_updated::class;
         } else {
-            $action = 'grade';
+            $logclass = \mod_vpl\event\submission_graded::class;
         }
-        if (! $submission->set_grade( $fromform )) {
+        $gradinginstance = $submission->get_grading_instance();
+        if ($gradinginstance) {
+            $gradinginstance->submit_and_get_grade($fromform->advancedgrading, $submissionid);
+        }
+        if ($submission->set_grade( $fromform )) {
+            $logclass::log($submission);
+        } else {
             vpl_redirect( $link, get_string( 'gradenotsaved', VPL ), 'error' );
-        }
-        if ($action == 'grade') {
-            \mod_vpl\event\submission_graded::log( $submission );
-        } else {
-            \mod_vpl\event\submission_grade_updated::log( $submission );
         }
 
         if ($inpopup) {
             // Change grade info at parent window.
-            $text = $submission->get_grade_core();
-            $grader = fullname( $submission->get_grader( $USER->id ) );
-            $gradedon = userdate( $submission->get_instance()->dategraded );
-            $jscript .= 'VPL.updatesublist(' . $submission->get_instance()->id . ',';
-            $jscript .= '\'' . addslashes( $text ) . '\',';
-            $jscript .= '\'' . addslashes( $grader ) . '\',';
-            $jscript .= '\'' . addslashes( $gradedon ) . "');\n";
+            $gradedata = new stdClass();
+            $gradedata->grade = $submission->get_grade_core();
+            $gradedata->grader = fullname( $submission->get_grader( $USER->id ) );
+            $gradedata->gradedon = userdate( $submission->get_instance()->dategraded );
+            $gradedata->comments = nl2br($submission->get_detailed_grade() . $submission->print_ce(true));
             if (isset( $fromform->savenext )) {
-                $url = $CFG->wwwroot . '/mod/vpl/forms/gradesubmission.php?id=' . $id . '&inpopup=1&userid=';
-                $jscript .= 'VPL.goNext(\'' . $submission->get_instance()->id . '\',\'' . addslashes( $url ) . '\');';
+                $nexturl = $CFG->wwwroot . '/mod/vpl/forms/gradesubmission.php?id=' . $id . '&inpopup=1&userid=';
+                echo $OUTPUT->notification(get_string( 'gradesaved_redirect', VPL ), 'success');
             } else {
-                $jscript .= 'window.close();';
+                $nexturl = null;
+                echo $OUTPUT->notification(get_string( 'gradesaved', VPL ), 'success');
+                echo '<div class="continuebutton">
+                        <button class="btn btn-primary" onclick="window.close();">' .
+                            get_string('continue') .
+                        '</button>
+                    </div>';
             }
+            $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'updateSubmissionsList',  [ $submissionid, $gradedata, $nexturl ]);
+            $vpl->print_footer_simple();
         } else {
-            vpl_redirect( $link, get_string( 'graded', VPL ), 'success' );
+            vpl_redirect( $link, get_string( 'gradesaved', VPL ), 'success' );
         }
-        $vpl->print_footer();
-        echo vpl_include_js( $jscript );
         die();
     } else {
         // Show grade form.
-        vpl_grade_header( $vpl, $inpopup );
+        \mod_vpl\event\submission_grade_viewed::log($submission);
         $data = new stdClass();
         $data->id = $vpl->get_course_module()->id;
         $data->userid = $subinstance->userid;
@@ -215,38 +205,14 @@ if ($subinstance->dategraded == 0 || $subinstance->grader == $USER->id || $subin
                 }
             }
         }
-
         $gradeform->set_data( $data );
-        echo '<div id="vpl_grade_view">';
-        echo '<div id="vpl_grade_form">';
         $gradeform->display();
-        echo '</div>';
-        echo '<div id="vpl_grade_comments">';
-        $comments = $vpl->get_grading_help();
-        if ($comments > '') {
-            echo $OUTPUT->box_start();
-            echo '<b>' . get_string( 'listofcomments', VPL ) . '</b><hr />';
-            echo $comments;
-            echo $OUTPUT->box_end();
-        }
-        echo '</div>';
-        echo '</div>';
-        echo '<div id="vpl_submission_view">';
-        echo '<hr />';
-        $hours = vpl_user_total_working_time($vpl, $userid);
-        echo get_string('numhours', '', sprintf('%3.2f', $hours));
-        echo '<br>';
+        echo '<div class="m-t-2">';
         $submission->print_submission();
         echo '</div>';
-        $jscript .= 'VPL.hlrow(' . $submissionid . ');';
-        $jscript .= 'window.onunload= function(){VPL.unhlrow(' . $submissionid . ');};';
-        if ($inpopup) {
-            $jscript .= 'VPL.removeHeaderFooter();';
-        }
+        $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'highlightSubmission', [ $submissionid ]);
     }
 } else {
     vpl_inmediate_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ) );
 }
 $vpl->print_footer_simple();
-vpl_sh_factory::syntaxhighlight();
-echo vpl_include_js( $jscript );

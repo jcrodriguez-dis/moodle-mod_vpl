@@ -536,49 +536,6 @@ class mod_vpl {
     }
 
     /**
-     * Get grading information help
-     *
-     * @return string grade comments summary in html format
-     */
-    public function get_grading_help() {
-        $list = [];
-        $submissions = $this->all_last_user_submission();
-        foreach ($submissions as $submission) {
-            $sub = new mod_vpl_submission( $this, $submission );
-            $sub->filter_feedback( $list );
-        }
-        // TODO show evaluation criteria with show hidde button.
-        $all = [];
-        foreach ($list as $text => $info) {
-            $astext = s( addslashes_js( $text ) );
-            $html = '';
-            $html .= s( $text );
-            foreach (array_keys($info->grades) as $grade) {
-                if ($grade >= 0) { // No grade.
-                    $jscript = 'VPL.addComment(\'' . $astext . '\')';
-                } else {
-                    $jscript = 'VPL.addComment(\'' . $astext . ' (' . $grade . ')\')';
-                }
-                $link = '<a href="javascript:void(0)" onclick="' . $jscript . '">' . $grade . '</a>';
-                $html .= ' (' . $link . ')';
-            }
-            $html .= '<br>';
-            if (isset( $all[$info->count] )) {
-                $all[$info->count] .= '(' . $info->count . ') ' . $html;
-            } else {
-                $all[$info->count] = '(' . $info->count . ') ' . $html;
-            }
-        }
-        // Sort comments by number of occurrences.
-        krsort( $all );
-        $html = '';
-        foreach ($all as $info) {
-            $html .= $info;
-        }
-        // TODO show info about others review with show hidde button.
-        return $html;
-    }
-    /**
      * Get password
      */
     protected function get_password() {
