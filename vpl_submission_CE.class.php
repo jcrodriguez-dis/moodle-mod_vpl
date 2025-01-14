@@ -429,6 +429,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $vpl = new mod_vpl(false, $data->activityid);
         // Info send with script.
         $info = "#!/bin/bash\n";
+        $info .= vpl_bash_export('LC_ALL', vpl_get_lang());
         $info .= vpl_bash_export('VPL_LANG', vpl_get_lang());
         $info .= vpl_bash_export('MOODLE_COURSE_ID', $vpl->get_course()->id);
         $info .= vpl_bash_export('MOODLE_ACTIVITY_ID', $vpl->get_course_module()->id);
