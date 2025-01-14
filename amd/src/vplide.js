@@ -23,6 +23,7 @@
 
 /* globals MathJax */
 /* globals Promise */
+/* globals openpopup */
 
 define(
     [
@@ -77,6 +78,7 @@ define(
                 'resetfiles': true,
                 'sort': true,
                 'multidelete': true,
+                'showparentfiles': true,
                 'acetheme': true,
                 'console': true,
                 'comments': true
@@ -1629,6 +1631,17 @@ define(
                 }
             });
             menuButtons.add({
+                name: 'showparentfiles',
+                originalAction: function() {
+                    openpopup(null, {
+                        url: options.showparentfilesurl,
+                        options: 'width=' + Math.max(screen.availWidth/2, 780) +
+                                 ',height=' + screen.availHeight +
+                                 ',left=' + (screen.availWidth/4)
+                    });
+                }
+            });
+            menuButtons.add({
                 name: 'fontsize',
                 originalAction: function() {
                     dialogFontsize.dialog('open');
@@ -1979,6 +1992,7 @@ define(
             menuHtml += menuButtons.getHTML('resetfiles');
             menuHtml += menuButtons.getHTML('sort');
             menuHtml += menuButtons.getHTML('multidelete');
+            menuHtml += menuButtons.getHTML('showparentfiles');
             menuHtml += menuButtons.getHTML('fontsize');
             menuHtml += menuButtons.getHTML('theme');
             menuHtml += "</span> ";
@@ -2048,6 +2062,7 @@ define(
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
+                menuButtons.enable('showparentfiles', !modified);
                 menuButtons.enable('theme', true);
                 var sel;
                 if (!file || nfiles === 0) {

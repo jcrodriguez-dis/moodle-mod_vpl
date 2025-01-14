@@ -111,6 +111,8 @@ if ( $subid ) {
 
 $reqfgm = $vpl->get_required_fgm();
 $options['resetfiles'] = ($reqfgm->is_populated() && ! $instance->example);
+$options['showparentfiles'] = false;
+$options['showparentfilesurl'] = null;
 $options['maxfiles'] = intval($instance->maxfiles);
 $reqfilelist = $reqfgm->getFileList();
 $options['minfiles'] = count( $reqfilelist );
