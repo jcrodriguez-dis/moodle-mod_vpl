@@ -40,17 +40,7 @@ $PAGE->set_title($pagetitle);
 
 require_capability(VPL_MANAGE_CAPABILITY, $context);
 
-$data = new stdClass();
-$data->runscript = $vplinstance->runscript;
-$data->debugscript = $vplinstance->debugscript;
-
-$pln = mod_vpl_submission_CE::get_pln($vpl->get_required_fgm()->getfilelist());
-$defaultscripts = [
-        'vpl_run.sh' => mod_vpl_submission_CE::get_script('run', $pln, $data),
-        'vpl_debug.sh' => mod_vpl_submission_CE::get_script('debug', $pln, $data),
-        'vpl_evaluate.sh' => mod_vpl_submission_CE::get_script('evaluate', $pln, $data),
-];
-
+// Build arrays of defined scripts in each VPL in the basedon chain.
 $fgm = $vpl->get_execution_fgm();
 $definedscripts = [
         'vpl_run.sh' => [ [ $id => $fgm->getfiledata('vpl_run.sh') ] ],
@@ -64,7 +54,6 @@ while ($currentinstance->basedon) {
     if (isset($basedons[$currentinstance->basedon])) {
         throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
     }
-
     $currentvpl = new mod_vpl(null, $currentinstance->basedon);
     $basedons[$currentinstance->basedon] = $currentvpl;
     $currentinstance = $currentvpl->get_instance();
@@ -73,6 +62,17 @@ while ($currentinstance->basedon) {
         $definedscripts[$scriptname][] = [ $currentvpl->get_course_module()->id => $currentfgm->getfiledata($scriptname) ];
     }
 }
+
+// Retrieve default scripts.
+$data = new stdClass();
+$data->runscript = $vpl->get_closest_set_field_in_base_chain('runscript', '');
+$data->debugscript = $vpl->get_closest_set_field_in_base_chain('debugscript', '');
+$pln = mod_vpl_submission_CE::get_pln($vpl->get_required_fgm()->getfilelist());
+$defaultscripts = [
+        'vpl_run.sh' => mod_vpl_submission_CE::get_script('run', $pln, $data),
+        'vpl_debug.sh' => mod_vpl_submission_CE::get_script('debug', $pln, $data),
+        'vpl_evaluate.sh' => mod_vpl_submission_CE::get_script('evaluate', $pln, $data),
+];
 
 $finalscripts = [
         'vpl_run.sh' => [],
