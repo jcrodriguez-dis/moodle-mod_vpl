@@ -46,6 +46,8 @@ $options['evaluate'] = true;
 $options['ajaxurl'] = "executionfiles.json.php?id={$id}&action=";
 $options['download'] = "../views/downloadexecutionfiles.php?id={$id}";
 $options['resetfiles'] = false;
+$options['showparentfiles'] = true;
+$options['showparentfilesurl'] = (new moodle_url('/mod/vpl/views/concatexecfiles.php?id=' . $id))->out();
 $options['minfiles'] = 0;
 $options['maxfiles'] = 1000;
 $options['saved'] = true;

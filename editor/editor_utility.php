@@ -356,6 +356,7 @@ class vpl_editor_util {
                 'selectbreakpoint',
                 'removebreakpoint',
                 'maxpostsizeexceeded',
+                'showparentfiles',
         ];
         $words = [
                 'cancel',

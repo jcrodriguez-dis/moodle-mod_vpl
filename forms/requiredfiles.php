@@ -45,6 +45,8 @@ $options['evaluate'] = false;
 $options['ajaxurl'] = "requiredfiles.json.php?id={$id}&action=";
 $options['download'] = "../views/downloadrequiredfiles.php?id={$id}";
 $options['resetfiles'] = false;
+$options['showparentfiles'] = false;
+$options['showparentfilesurl'] = null;
 $options['minfiles'] = 0;
 $options['maxfiles'] = 1000;
 $options['saved'] = true;

@@ -96,15 +96,24 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->setDefault( 'basedon', $instance->basedon );
         $mform->addHelpButton( 'basedon', 'basedon', VPL );
 
-        $strautodetect = get_string('autodetect', VPL);
+        if ($instance->basedon) {
+            $basevpl = new mod_vpl(null, $instance->basedon);
+            $inheritedrun = strtoupper($basevpl->get_closest_set_field_in_base_chain('runscript', ''));
+            $inheriteddebug = strtoupper($basevpl->get_closest_set_field_in_base_chain('debugscript', ''));
+        } else {
+            $inheritedrun = '';
+            $inheriteddebug = '';
+        }
+        $strrundefault = $inheritedrun ? get_string('inherit', VPL, $inheritedrun) : get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
-        $runlist = array_merge(['' => $strautodetect], $this->get_runlist());
+        $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
         $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
         $mform->setDefault( 'runscript', $instance->runscript );
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
+        $strdebugdefault = $inheriteddebug ? get_string('inherit', VPL, $inheriteddebug) : get_string('autodetect', VPL);
         $strdebugscript = get_string('debugscript', VPL);
-        $debuglist = array_merge(['' => $strautodetect], $this->get_debuglist());
+        $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
         $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
         $mform->setDefault( 'debugscript', $instance->debugscript );
         $mform->addHelpButton('debugscript', 'debugscript', VPL);

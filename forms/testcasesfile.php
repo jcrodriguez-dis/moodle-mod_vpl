@@ -47,6 +47,8 @@ $options['evaluate'] = false;
 $options['ajaxurl'] = "testcasesfile.json.php?id={$id}&action=";
 $options['download'] = "../views/downloadexecutionfiles.php?id={$id}";
 $options['resetfiles'] = false;
+$options['showparentfiles'] = false;
+$options['showparentfilesurl'] = null;
 $options['minfiles'] = 1;
 $options['maxfiles'] = 1;
 $options['saved'] = true;
