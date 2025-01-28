@@ -62,7 +62,7 @@ if (! $userid || $userid == $USER->id) { // Make own submission.
 $instance = $vpl->get_instance();
 $vpl->print_header( get_string( 'submission', VPL ) );
 $vpl->print_view_tabs( basename( __FILE__ ) );
-$mform = new mod_vpl_submission_form( 'submission.php', $vpl );
+$mform = new mod_vpl_submission_form( 'submission.php', $vpl, $userid );
 if ($mform->is_cancelled()) {
     vpl_inmediate_redirect( vpl_mod_href( 'view.php', 'id', $id ) );
     die();
@@ -76,20 +76,94 @@ if ($fromform = $mform->get_data()) {
         die();
     }
     \mod_vpl\util\phpconfig::increase_memory_limit();
+    $rfn = $vpl->get_required_fgm();
+    $reqfiles = $rfn->getFileList();
     $files = [];
-    for ($i = 0; $i < $instance->maxfiles; $i ++) {
-        $attribute = 'file' . $i;
-        $name = $mform->get_new_filename( $attribute );
-        $data = $mform->get_file_content( $attribute );
-        if ($data !== false && $name !== false) {
+    $prevsub = $vpl->last_user_submission( $userid );
+    $firstsub = ($prevsub === false);
+    if (!$firstsub) {
+        $prevsubfiles = (new mod_vpl_submission( $vpl, $prevsub ))->get_submitted_fgm()->getAllFiles();
+    }
+    if ($fromform->submitmethod == 'archive') {
+        if (!$firstsub && $fromform->archiveaction == 'replace') {
+            // Use files of previous submission.
+            foreach ($prevsubfiles as $subfilename => $subfilecontent) {
+                $files[$subfilename] = $subfilecontent;
+            }
+        }
+        // Open archive.
+        $zipname = $mform->save_temp_file( 'archive' );
+        $zip = new ZipArchive();
+        $zip->open($zipname);
+        $subreqfiles = [];
+        $subotherfiles = [];
+        // Read archive and split between required / additional files.
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $filename = $zip->statIndex($i)['name'];
+            if (substr($filename, -1) == '/') { // Directory.
+                continue;
+            }
+            $filecontent = file_get_contents('zip://' . $zipname . '#' . $filename);
             // Autodetect text file encode if not binary.
-            if (! vpl_is_binary( $name )) {
-                $encode = mb_detect_encoding( $data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true );
-                if ($encode > '') { // If code detected.
-                    $data = iconv( $encode, 'UTF-8', $data );
+            if (! vpl_is_binary( $filename )) {
+                $encoding = mb_detect_encoding( $filecontent, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true );
+                if ($encoding > '') { // If code detected.
+                    $filecontent = iconv( $encoding, 'UTF-8', $filecontent );
+                }
+            } else {
+                if (in_array($filename . '.b64', $reqfiles)) {
+                    $filename = $filename . '.b64';
+                    $filecontent = base64_encode($filecontent);
                 }
             }
-            $files[$name] = $data;
+            if (in_array($filename, $reqfiles)) {
+                $subreqfiles[$filename] = $filecontent;
+            } else {
+                $subotherfiles[$filename] = $filecontent;
+            }
+        }
+        foreach ($reqfiles as $reqfile) {
+            if (isset($subreqfiles[$reqfile])) {
+                $files[$reqfile] = $subreqfiles[$reqfile];
+            }
+        }
+        foreach ($subotherfiles as $filename => $filecontent) {
+            $files[$filename] = $filecontent;
+        }
+        // Close archive.
+        $zip->close();
+        unlink($zipname);
+    } else {
+        for ($i = 0; $i < $instance->maxfiles; $i ++) {
+            $field = 'file' . $i;
+            if (!$firstsub && isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'keep') {
+                $filename = $fromform->{$field . 'name'};
+                $files[$filename] = $prevsubfiles[$filename];
+            } else {
+                if (isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'replace'
+                    || !empty($fromform->{$field . 'rename'}) && !empty($fromform->{$field . 'name'})) {
+                    $name = $fromform->{$field . 'name'};
+                } else {
+                    $name = $mform->get_new_filename( $field );
+                }
+                $data = $mform->get_file_content( $field );
+                if ($data !== false && $name !== false) {
+                    // Autodetect text file encode if not binary.
+                    if (! vpl_is_binary( $name )) {
+                        $encode = mb_detect_encoding( $data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true );
+                        if ($encode > '') { // If code detected.
+                            $data = iconv( $encode, 'UTF-8', $data );
+                        }
+                        $files[$name] = $data;
+                    } else {
+                        if (in_array($name . '.b64', $reqfiles)) {
+                            $files[$name . '.b64'] = base64_encode($data);
+                        } else {
+                            $files[$name] = $data;
+                        }
+                    }
+                }
+            }
         }
     }
     $errormessage = '';
@@ -102,15 +176,14 @@ if ($fromform = $mform->get_data()) {
 
         // If evaluate on submission.
         if ($instance->evaluate && $instance->evaluateonsubmission) {
-            vpl_redirect( vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid ),
-                          get_string( 'saved', VPL ));
+            $redirecturl = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid );
+        } else {
+            $redirecturl = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid );
         }
-        vpl_redirect( vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid ),
-                      get_string( 'saved', VPL ));
+        vpl_redirect( $redirecturl, get_string( 'saved', VPL ));
     } else {
-        vpl_notice( get_string( 'notsaved', VPL ) );
         vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
-                      $errormessage);
+                get_string( 'notsaved', VPL ) . '<br>' . $errormessage, 'error');
     }
 }
 

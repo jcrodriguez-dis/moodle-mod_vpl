@@ -1065,7 +1065,7 @@ function vpl_get_overrides($vplid) {
  * @param array $parms Parameters to pass to the function
  * @return mixed Value returned by the function or throw exception
  */
-function vpl_call_with_lock(string $locktype, string $resource, string $function, array $parms) {
+function vpl_call_with_lock(string $locktype, string $resource, string $function, array & $parms) {
     $lockfactory = \core\lock\lock_config::get_lock_factory($locktype);
     if ($lock = $lockfactory->get_lock($resource, VPL_LOCK_TIMEOUT)) {
         try {

@@ -809,7 +809,6 @@ class mod_vpl {
     public static function internal_add_submission($vpl, $userid, & $files, $comments, & $error) {
         global $USER, $DB;
         if (! $vpl->pass_submission_restriction( $files, $error )) {
-            $error = get_string('notavailable');
             return false;
         }
         $group = false;
