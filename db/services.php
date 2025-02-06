@@ -72,6 +72,22 @@ $functions = [
                 'requiredcapability' => 'mod/vpl:view',
                 'type' => 'write',
         ],
+        'mod_vpl_update_vpl_files' => [
+                'classname' => 'mod_vpl_webservice',
+                'methodname' => 'update_vpl_files',
+                'classpath' => 'mod/vpl/externallib.php',
+                'description' => 'Update vpl files',
+                'requiredcapability' => 'mod/vpl:view',
+                'type' => 'write',
+        ],
+        'mod_vpl_create_vpl' => [
+                'classname' => 'mod_vpl_webservice',
+                'methodname' => 'create_vpl',
+                'classpath' => 'mod/vpl/externallib.php',
+                'description' => 'Create vpl',
+                'requiredcapability' => 'mod/vpl:view',
+                'type' => 'write',
+        ],
 ];
 
 $services = [
@@ -82,6 +98,8 @@ $services = [
                         'mod_vpl_open',
                         'mod_vpl_evaluate',
                         'mod_vpl_get_result',
+                        'mod_vpl_update_vpl_files',
+                        'mod_vpl_create_vpl',
                 ],
                 'shortname' => 'mod_vpl_edit',
                 'restrictedusers' => 0,
