@@ -15,7 +15,8 @@ fi
 get_first_source_file py
 cat common_script.sh > vpl_execution
 echo "export TERM=ansi" >>vpl_execution
-echo "$PROGRAM \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+
+echo "$PROGRAM \"main.py\" \$@" >>vpl_execution
 chmod +x vpl_execution
 get_source_files py
 IFS=$'\n'
@@ -27,5 +28,27 @@ do
 		break
 	fi
 done
+
+#Added by Tamar
+if [ -f "Teacher/main.py.ta" ] ; then
+	if [ -s "Teacher/main.py.ta" ]; then
+		# Rename the teacher script to a Python file
+		mv Teacher/main.py.ta vpl_test_teacher.py
+		mv Teacher/Question.py.ta question.py
+
+		# Remove Windows-style carriage returns if any
+		sed -i 's/\r$//' vpl_test_teacher.py
+		sed -i 's/\r$//' question.py
+
+		
+		# Create a wrapper shell script to execute the teacher script via Python
+		echo "#!/bin/bash" > vpl_test_teacher
+		echo "$PROGRAM \"vpl_test_teacher.py\" \$@" >>vpl_test_teacher
+		
+		# Make the wrapper script executable
+		chmod +x vpl_test_teacher	
+	fi
+fi
+
 IFS=$SIFS
 

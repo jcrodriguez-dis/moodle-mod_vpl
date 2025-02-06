@@ -129,11 +129,19 @@ class mod_vpl_webservice extends external_api {
                 'restrictededitor' => ( int ) $instance->restrictededitor,
                 'maxfiles' => ( int ) $instance->maxfiles,
                 'reqfiles' => [],
+                //Added by Tamar
+                'exefiles' => [],
         ];
         $files = mod_vpl_edit::get_requested_files( $vpl );
         // Adapt array of name => value content to format array of objects {name, data}.
         $files = self::encode_files( $files );
         $ret['reqfiles'] = $files;
+
+        //Added by Tamar
+        $exefiles = mod_vpl_edit::get_executions_files( $vpl );
+        $exefiles = self::encode_files( $exefiles );
+        $ret['exefiles'] = $exefiles;
+        
         return $ret;
     }
     public static function info_returns() {
@@ -151,6 +159,11 @@ class mod_vpl_webservice extends external_api {
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
                 ] ), 'Required files', VALUE_REQUIRED),
+                'exefiles' => new external_multiple_structure( new external_single_structure( [
+                        'name' => new external_value( PARAM_TEXT, 'File name', VALUE_REQUIRED),
+                        'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
+                        'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
+                ] ), 'Execution files', VALUE_REQUIRED),
                 ], 'Parameters', VALUE_REQUIRED);
     }
 
@@ -168,16 +181,14 @@ class mod_vpl_webservice extends external_api {
                 ] ), 'Files', VALUE_REQUIRED),
                 'password' => new external_value( PARAM_RAW, 'Activity password', VALUE_DEFAULT, '' ),
                 'userid' => new external_value( PARAM_INT, $descuserid , VALUE_DEFAULT, -1 ),
-                'comments' => new external_value( PARAM_RAW, 'Student\'s comments', VALUE_DEFAULT, '' ),
         ], 'Parameters', VALUE_REQUIRED );
     }
-    public static function save($id, $files=[], $password='', $userid=-1, $comments='') {
+    public static function save($id, $files = [], $password = '', $userid = -1) {
         global $USER;
         self::validate_parameters( self::save_parameters(), [
                 'id' => $id,
                 'files' => $files,
                 'password' => $password,
-                'comments' => $comments,
         ] );
         $vpl = self::initial_checks( $id, $password );
         if ($userid == -1) {
@@ -195,7 +206,7 @@ class mod_vpl_webservice extends external_api {
         }
         // Adapts to the file format VPL3.2.
         $files = self::decode_files($files);
-        mod_vpl_edit::save($vpl, $userid, $files, $comments);
+        mod_vpl_edit::save( $vpl, $userid, $files );
     }
 
     public static function save_returns() {
@@ -236,12 +247,11 @@ class mod_vpl_webservice extends external_api {
         $files = self::encode_files( $files );
         $ret = [
                 'files' => $files,
-                'comments' => '',
                 'compilation' => '',
                 'evaluation' => '',
                 'grade' => '',
         ];
-        $attributes = ['compilation', 'evaluation', 'grade', 'comments'];
+        $attributes = ['compilation', 'evaluation', 'grade'];
         foreach ($attributes as $attribute) {
             if (isset($compilationexecution->$attribute)) {
                 $ret[$attribute] = $compilationexecution->$attribute;
@@ -256,7 +266,6 @@ class mod_vpl_webservice extends external_api {
                         'data' => new external_value( PARAM_RAW, 'File content', VALUE_REQUIRED),
                         'encoding' => new external_value( PARAM_INT, 'File enconding 1 => B64', VALUE_DEFAULT, 0),
                 ] ), 'Files', VALUE_REQUIRED),
-                'comments' => new external_value( PARAM_RAW, 'Student\'s comments', VALUE_REQUIRED ),
                 'compilation' => new external_value( PARAM_RAW, 'Compilation result', VALUE_REQUIRED),
                 'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
                 'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED),
@@ -308,15 +317,15 @@ class mod_vpl_webservice extends external_api {
     }
     public static function evaluate_returns() {
         $desc = "URL to the service that monitor the evaluation in the jail server.
-Protocol WebSocket may be ws: or wss: (SSL).
-The jail send information as text in this format:
-    (message|retrieve|close):(state(:detail)?)?
-'message': the jail server reports about the changes to the client.
-           With 'state' and optional 'detail?'
-'retrieve': the client must get the results of the evaluation
-            (call mod_vpl_get_result, the server is waiting).
-'close': the conection is to be closed.
-if the websocket client send something to the server then the evaluation is stopped.";
+        Protocol WebSocket may be ws: or wss: (SSL).
+        The jail send information as text in this format:
+            (message|retrieve|close):(state(:detail)?)?
+        'message': the jail server reports about the changes to the client.
+                With 'state' and optional 'detail?'
+        'retrieve': the client must get the results of the evaluation
+                    (call mod_vpl_get_result, the server is waiting).
+        'close': the conection is to be closed.
+        if the websocket client send something to the server then the evaluation is stopped.";
         return new external_single_structure( [
                 'monitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
                 'smonitorURL' => new external_value( PARAM_RAW, $desc, VALUE_REQUIRED),
@@ -381,5 +390,189 @@ if the websocket client send something to the server then the evaluation is stop
                 'evaluation' => new external_value( PARAM_RAW, 'Evaluation result', VALUE_REQUIRED),
                 'grade' => new external_value( PARAM_RAW, 'Proposed or final grade', VALUE_REQUIRED),
         ], 'Parameters', VALUE_REQUIRED);
+    }
+
+
+    public static function update_vpl_files_parameters() {
+        return new external_function_parameters([
+            'vplid'          => new external_value(PARAM_INT, 'The ID of the VPL instance'),
+            'requestedfiles' => new external_value(PARAM_RAW, 'JSON string of requested files'),
+            'executionfiles' => new external_value(PARAM_RAW, 'JSON string of execution files'),
+        ]);
+    }
+    
+    
+
+    public static function update_vpl_files($vplid, $requestedfilesJson, $executionfilesJson) {
+        global $CFG;
+    
+        // (1) Decode parameters, etc.
+        $params = self::validate_parameters(self::update_vpl_files_parameters(), [
+            'vplid'          => $vplid,
+            'requestedfiles' => $requestedfilesJson,
+            'executionfiles' => $executionfilesJson,
+        ]);
+        $requestedfiles = json_decode($params['requestedfiles'], true);
+        $executionfiles = json_decode($params['executionfiles'], true);
+    
+        // (2) Include VPL libs, create VPL object, check capabilities...
+        require_once($CFG->dirroot . '/mod/vpl/locallib.php');
+        require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
+        $vpl = new mod_vpl($params['vplid']);
+        require_login($vpl->get_course(), false);
+        $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+    
+        // (3) Base64-decode the files into [filename => content].
+        $processedRequested = [];
+        foreach ($requestedfiles as $file) {
+            $processedRequested[$file['name']] = base64_decode($file['content']);
+        }
+        $processedExecution = [];
+        foreach ($executionfiles as $file) {
+            $processedExecution[$file['name']] = base64_decode($file['content']);
+        }
+    
+        // (4) Update "Required" files (fully overwrite).
+        $fgmRequired = $vpl->get_required_fgm();
+        $fgmRequired->deleteallfiles();
+        $fgmRequired->addallfiles($processedRequested);
+    
+        // (5) Update "Execution" files (do NOT delete existing ones).
+        $fgmExecution = $vpl->get_execution_fgm();
+        $fgmExecution->addallfiles($processedExecution);
+    
+        // (6) Filter the "keep" list to only main/Main/Utils + config.json.
+        $existingKeepList = $fgmExecution->getFileKeepList();
+    
+        // Always ensure config.json is kept (if that's desired).
+        if (!in_array('config.json', $existingKeepList)) {
+            $existingKeepList[] = 'config.json';
+        }
+    
+        // For each newly added file, keep it only if it’s main.{ext}, Main.{ext}, or Utils.{ext}.
+        foreach ($processedExecution as $filename => $content) {
+            // Regex: Matches "main.{ext}", "Main.{ext}", or "Utils.{ext}" with any extension:
+            if (preg_match('/^(?:[mM]ain|[Uu]tils)\.\w+$/', $filename)) {
+                if (!in_array($filename, $existingKeepList)) {
+                    $existingKeepList[] = $filename;
+                }
+            }
+        }
+    
+        // (7) Update the keep list and save changes.
+        $fgmExecution->setFileKeepList($existingKeepList);
+        $vpl->update();
+    
+        // Return a response.
+        return [
+            'status'  => 'success',
+            'message' => 'VPL files updated successfully',
+        ];
+    }
+    
+    
+    
+    
+    
+    
+    // Define return structure.
+    public static function update_vpl_files_returns() {
+        return new external_single_structure([
+            'status'  => new external_value(PARAM_ALPHANUM, 'Status of the update'),
+            'message' => new external_value(PARAM_TEXT, 'Additional message')
+        ]);
+    }
+
+    public static function create_vpl_parameters() {
+        return new external_function_parameters([
+            'courseid'         => new external_value(PARAM_INT, 'ID of the course'),
+            'section'          => new external_value(PARAM_INT, 'Section number to add the vpl'),
+            'name'             => new external_value(PARAM_TEXT, 'Name of the new vpl'),
+            'shortdescription' => new external_value( PARAM_TEXT, 'Short description', VALUE_DEFAULT, ''),
+            'intro'            => new external_value(PARAM_RAW, 'VPL introduction', VALUE_DEFAULT, ''),
+            // Add more quiz-specific parameters as needed.
+        ]);
+    }
+
+    public static function create_vpl($courseid, $section, $name, $shortdescription = '', $intro = '') {
+        global $DB, $USER;
+    
+        // Validate parameters.
+        $params = self::validate_parameters(self::create_vpl_parameters(), [
+            'courseid'         => $courseid,
+            'section'          => $section,
+            'name'             => $name,
+            'shortdescription' => $shortdescription,
+            'intro'            => $intro,
+        ]);
+    
+        // Validate context and capability.
+        $coursecontext = context_course::instance($params['courseid']);
+        self::validate_context($coursecontext);
+        require_capability('moodle/course:manageactivities', $coursecontext);
+    
+        $module = $DB->get_record('modules', ['name' => 'vpl'], '*', MUST_EXIST);
+        // Get module info.
+        $course = get_course($params['courseid']);
+        $sectioninfo = $DB->get_record('course_sections', ['course' => $params['courseid'], 'section' => $section]);
+        if (!$sectioninfo) {
+            // Create section if needed.
+            $sectioninfo = course_create_section($course, $section);
+        }
+    
+        // Create course module entry.
+        $cm = new stdClass();
+        $cm->course = $course->id;
+        $cm->module = $module->id;
+        $cm->instance = 0;
+        $cm->section = $sectioninfo->id;
+        $cm->visible = 1;
+        // ... set other course module defaults.
+        $cm->id = add_course_module($cm);
+    
+        // Prepare new VPL record.
+        $vpl = new stdClass();
+        $vpl->course = $params['courseid'];
+        $vpl->name = $params['name'];
+        $vpl->shortdescription = $params['shortdescription'];
+        $vpl->intro = $params['intro'];
+        $vpl->introformat = FORMAT_HTML;
+        $vpl->maxfiles = 10;
+        $vpl->maxfilesize = 0;
+        $vpl->timecreated = time();
+        $vpl->timemodified = time();
+        $vpl->coursemodule = $cm->id;
+        $vpl->run = 1;
+        $vpl->evaluate = 1;
+        $vpl->automaticgrading = 1;
+        // Set default VPL settings.
+        $vpl->requiredfiles = '';
+        $vpl->executionfiles = '';
+        $vpl->evaluation = '';
+        $vpl->maxbytes = 1048576; // Default file size limit (1MB).
+        $vpl->grade = 100; // Default grade value.
+    
+        // Insert VPL instance into database.
+        $vpl->id = $DB->insert_record('vpl', $vpl);
+        if (empty($vpl->id)) {
+            throw new moodle_exception('VPL creation failed: no ID returned.');
+        }
+    
+        // Update the course module instance.
+        $DB->set_field('course_modules', 'instance', $vpl->id, ['id' => $cm->id]);
+    
+        // Add module to section.
+        course_add_cm_to_section($course, $cm->id, $sectioninfo->id);
+        rebuild_course_cache($course->id);
+    
+        return ['status' => 'success', 'vplid' => $vpl->id, 'cmid' => $cm->id];
+    }
+    
+    public static function create_vpl_returns() {
+        return new external_single_structure([
+            'status' => new external_value(PARAM_TEXT, 'Operation status'),
+            'vplid' => new external_value(PARAM_INT, 'ID of the newly created vpl'),
+            'cmid'   => new external_value(PARAM_INT, 'Course module id of the new vpl'),
+        ]);
     }
 }

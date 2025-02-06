@@ -1,0 +1,29 @@
+case=Competition Mode Test
+input size=10000
+program to run = inputFile.sh
+input=i{[1:10000:1]}
+output=50005000
+
+case=Large Input Size Test
+input size=10000
+program to run = inputFile.sh
+input=i{[1:1000000:1]}
+output=500000500000
+
+case=Competition Mode Test
+input size=10000
+program to run = inputFile.sh
+input=i{[1:10000:1]}
+output=50005000
+
+case=Large Input Size Test
+input size=10000
+program to run = inputFile.sh
+input=i{[1:1000000:1]}
+output=500000500000
+
+case=Large Input Size Test
+input size=10000
+program to run = inputFile.sh
+input=i{[1:1000000:1]}
+output=500000500000

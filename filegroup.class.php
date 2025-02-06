@@ -262,6 +262,15 @@ class file_group_process {
             } else {
                  $files[$filename] = '';
             }
+            //Added by Tamar
+            if ($filename == 'config.json' && trim($files[$filename]) == '') {
+                    $defaultConfig = '{
+    "epsilon": 0.5,
+    "maxRatioToReset": 0.5,
+    "maxDeletionFraction": 0.2
+}';
+                    $files[$filename] = $defaultConfig;  
+            }
         }
         return $files;
     }
@@ -345,7 +354,7 @@ class file_group_process {
     public function getversion() {
         try {
             $info = stat($this->dir);
-        } catch (\Throwable $e) {
+        } catch (Exception $e) {
             return 0;
         }
         if ($info !== false) {

@@ -16,5 +16,16 @@ get_source_files c
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Compile
-gcc -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil 
+gcc -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil
+
+#Added by Tamar
+
+
+if [ -f "Teacher/program.c.ta" ] ; then
+	mv Teacher/program.c.ta program.c
+	gcc -o vpl_test_teacher program.c
+	chmod +x vpl_test_teacher
+fi
+
+
 rm .vpl_source_files

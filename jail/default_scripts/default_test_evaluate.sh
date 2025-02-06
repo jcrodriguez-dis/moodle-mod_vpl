@@ -26,7 +26,7 @@ export fail_symbol='❌'
 export bug_symbol='🐞'
 export ERRORS=''
 export number_format="([0-9]+([.][0-9]*)?|[.][0-9]+)"
-export directory_format="/(pass|fail)- *([^-]*) *(-$number_format)?$"
+export directory_format="/(pass|fail|error)- *([^-]*) *(-$number_format)?(lt|le|gt|ge|eq|ne)?$"
 export home_dir=$(pwd)
 export oldtest_dir='vpl_evaluation_tests'
 export test_dir='.vpl_evaluation_tests'
@@ -71,22 +71,19 @@ function add_error {
 }
 
 function copy_configuration {
-	local envfile="$1/vpl_environment.sh"
 	cp -a $home_dir/* "$1"
 	rm "$1/vpl_test_evaluate.sh"
-	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$envfile"
-	[ ! -f "$envfile" ] && echo "#!/bin/bash" > "$envfile"
-	[ -n "$variation" ] && echo "export VPL_VARIATION=\"$variation\"" >> "$envfile"
-	chmod +x "$envfile"
+	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$1/vpl_environment.sh"
 }
 
 function compile_a_solution_test {
-	local solution="$1"
+	local solution=$1
 	copy_configuration "$solution"
 	[[ $solution =~ $directory_format ]]
 	local test_type="${BASH_REMATCH[1]}"
 	local test_name="${BASH_REMATCH[2]}"
 	local test_mark="${BASH_REMATCH[4]}"
+	local test_operand="${BASH_REMATCH[6]}"  # <, <=, >, >=, ==
 	local test_info=''
 	let ntest=$ntest+1
 	local title="$ntest) Preparing '$test_name' solution ($test_type type)"
@@ -180,7 +177,7 @@ export fail_symbol='❌'
 export bug_symbol='🐞'
 export star_symbol='⭐'
 export number_format=" *([0-9]+([.][0-9]*)?|[.][0-9]+) *"
-export directory_format="/(pass|fail)- *([^-]*) *(-$number_format)?$"
+export directory_format="/(pass|fail|error)- *([^-]*) *(-$number_format)?(lt|le|gt|ge|eq|ne)?$"
 export home_dir=$(pwd)
 export test_dir='.vpl_evaluation_tests'
 export compilation_results='.vpl_compilation_results.txt'
@@ -200,42 +197,77 @@ function echo_VPL_file {
 	echo_VPL "$(cat "$1")"
 }
 function run_a_solution_test {
-	local solution="$1"
+	local solution=$1
 	[[ $solution =~ $directory_format ]]
 	local test_type="${BASH_REMATCH[1]}"
 	local test_name="${BASH_REMATCH[2]}"
 	local test_mark="${BASH_REMATCH[4]}"
+	local test_operand="${BASH_REMATCH[6]}"  # <, <=, >, >=, ==
+	local expected_error_file="$solution/expected_error.txt"
+    local expected_error=""
 	local test_info=''
 	local mark=''
+
+	case $test_operand in
+        "lt") OP="<" ;;
+        "le") OP="<=" ;;
+        "gt") OP=">" ;;
+        "ge") OP=">=" ;;
+        "ne") OP="!=" ;;
+        "eq"|"") OP="==" ;; # Default to ==
+    esac
+
 	cd "$1"
 	let ntest=$ntest+1
 	if [ -x vpl_execution ] ; then
-		[[ $variation != "" ]] && export VPL_VARIATION="$variation"
-		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION\"$variation\"" >> ./vpl_environment.sh
 		./vpl_execution  &> "$solution/$evaluation_results"
 	else
 		test_info="$bug_symbol Progran test for '$test_name' not generated. See compilation."
 		echo "$test_info" > "$solution/$evaluation_results"
 	fi
-	# Check evaluation results
-	OP='=='
-	if [[ $test_mark == "" ]] ; then
-		test_mark=$VPL_GRADEMAX
-		if [[ $test_type == 'fail' ]] ; then
-			OP='<'
-		fi
+	
+	# Check if expected error file exists
+	if [[ -f "$expected_error_file" ]]; then
+		expected_error=$(cat "$expected_error_file")
 	fi
-	mark=$(grep -E 'Grade :=>>' "$solution/$evaluation_results" | tail -n1 | sed 's/Grade :=>> *//i')
-	if [[ $mark =~ $number_format ]] ; then
-		if [[ $(awk "END { print $mark $OP $test_mark }" <<< '') = 1 ]] ; then
-			pass=$pass_symbol
+	# Evaluate Results
+    if [[ $test_type == "error" ]]; then
+        # Check for expected error
+        if [[ -n "$expected_error" ]]; then
+            if grep -qF "$expected_error" "$solution/$evaluation_results"; then
+                pass=$pass_symbol
+            else
+                pass=$fail_symbol
+            fi
+        else
+            pass=$fail_symbol
+            test_info="$bug_symbol Expected error file not found or empty."
+        fi
+    else
+		# Check evaluation results
+		
+		# Default operand if not specified
+		if [[ $test_operand == "" ]]; then
+			OP="=="
+		fi
+
+		if [[ $test_mark == "" ]] ; then
+			test_mark=$VPL_GRADEMAX
+			if [[ $test_type == 'fail' ]] ; then
+				OP='<'
+			fi
+		fi
+		mark=$(grep -E 'Grade :=>>' "$solution/$evaluation_results" | tail -n1 | sed 's/Grade :=>> *//i')
+		if [[ $mark =~ $number_format ]] ; then
+			if [[ $(awk "END { print $mark $OP $test_mark }" <<< '') = 1 ]] ; then
+				pass=$pass_symbol
+			else
+				pass=$fail_symbol
+			fi
 		else
 			pass=$fail_symbol
 		fi
-	else
-		pass=$fail_symbol
 	fi
-
 	title="-$ntest) $pass "
 	[[ $variation != "" ]] && title="$title⤨ $variation: "
 	title="$title$test_name ($test_type type)"
@@ -264,7 +296,7 @@ function run_solutions_tests {
 	local solutions="$1/*"
 	local solution=
 	for solution in $solutions ; do
-		[ -d "$solution" ] && run_a_solution_test "$solution"
+		run_a_solution_test "$solution"
 	done
 }
 

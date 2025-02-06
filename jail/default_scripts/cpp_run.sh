@@ -17,4 +17,12 @@ get_source_files cpp C
 generate_file_of_files .vpl_source_files
 # Compile
 g++ -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil
+
+#Added by Tamar
+if [ -f "Teacher/program.cpp.ta" ] ; then
+	mv Teacher/program.cpp.ta program.cpp
+	g++ -g -o vpl_test_teacher program.cpp
+	chmod +x vpl_test_teacher
+fi
+
 rm .vpl_source_files

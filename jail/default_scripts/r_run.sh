@@ -13,25 +13,17 @@ if [ "$1" == "version" ] ; then
 	get_program_version --version 3
 fi
 
+check_program Rscript
 #Select first file
 get_first_source_file r R
-
-# Prepare execution
-if [ -f vpl_evaluate.sh ] ; then
-    # If in evaluation mode switch to text terminal
-    cat common_script.sh > vpl_execution
-    cat  "$FIRST_SOURCE_FILE" >> .Rprofile
-    echo "R --slave --no-readline -s" >>vpl_execution
-    chmod +x vpl_execution
+#compile
+cat common_script.sh > vpl_wexecution
+cat  "$FIRST_SOURCE_FILE" >> .Rprofile
+check_program x-terminal-emulator xterm
+if [ "$1" == "batch" ] ; then
+	echo "$PROGRAM -e R --vanilla -f \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
 else
-    cat common_script.sh > vpl_wexecution
-    cat  "$FIRST_SOURCE_FILE" >> .Rprofile
-    check_program x-terminal-emulator xterm
-    if [ "$1" == "batch" ] ; then
-    	echo "$PROGRAM -e R --vanilla -f \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
-    else
-    	echo "$PROGRAM -e R -q" >>vpl_wexecution
-    fi
-    echo "wait_end R" >>vpl_wexecution
-    chmod +x vpl_wexecution
+	echo "$PROGRAM -e R -q" >>vpl_wexecution
 fi
+echo "wait_end R" >>vpl_wexecution
+chmod +x vpl_wexecution

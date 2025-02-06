@@ -215,6 +215,59 @@ define(
                     }
                     return -1;
                 };
+
+                //Added by Tamar
+                this.isModified = function() {
+                    return fileManager.isModified();
+                };
+                this.save = function(callback) {
+                    var data = {
+                        files: fileManager.getFilesToSave(),
+                        comments: $('#vpl_ide_input_comments').val(),
+                        version: fileManager.getVersion()
+                    };
+                    if (JSON.stringify(data).length > options.postMaxSize) {
+                        showErrorMessage(str('maxpostsizeexceeded'));
+                        if (typeof callback === 'function') {
+                            callback(new Error(str('maxpostsizeexceeded')));
+                        }
+                        return;
+                    }
+                    function doSave() {
+                        VPLUI.requestAction('save', 'saving', data, options.ajaxurl)
+                        .done(function(response) {
+                            if (response.requestsconfirmation) {
+                                showMessage(response.question, {
+                                    title: str('saving'),
+                                    icon: 'alert',
+                                    yes: function() {
+                                        data.version = 0;
+                                        doSave();
+                                    }
+                                });
+                            } else {
+                                fileManager.resetModified();
+                                fileManager.setVersion(response.version);
+                                menuButtons.setTimeLeft(response);
+                                VPLUtil.delay('updateMenu', updateMenu);
+                                if (VPLUI.monitorRunning()) {
+                                    data.processid = VPLUtil.getProcessId();
+                                    VPLUI.requestAction('update', 'updating', data, options.ajaxurl);
+                                }
+                                if (typeof callback === 'function') {
+                                    callback(null); // Indicate success
+                                }
+                            }
+                        }).fail(function(err) {
+                            showErrorMessage(err);
+                            if (typeof callback === 'function') {
+                                callback(err);
+                            }
+                        });
+                    }
+                    doSave();
+                };
+                
                 /**
                  * Checks if name is included in current files names
                  * @param {string} name Name of file
@@ -590,14 +643,6 @@ define(
                     }
                     return false;
                 };
-                this.getCurrentFileName = function() {
-                    var currentFileName = '';
-                    var currentFile = fileManager.currentFile();
-                    if (currentFile) {
-                        currentFileName = currentFile.name;
-                    }
-                    return currentFileName;
-                };
                 this.currentPos = function() {
                     return tabs.tabs('option', 'active');
                 };
@@ -700,8 +745,7 @@ define(
                 this.getDirectoryStructure = function() {
                     var structure = {
                         isDir: true,
-                        content: {},
-                        path: '',
+                        content: {}
                     };
                     /**
                      * Adds a new file the structure of directories
@@ -712,27 +756,25 @@ define(
                         var fileName = file.getFileName();
                         var path = fileName.split("/");
                         var curdir = structure;
-                        var pathdir = '';
-                        for (var p = 0; p < path.length; p++) {
-                            var part = path[p];
-                            if (p == path.length - 1) { // File.
-                                curdir.content[part] = {
-                                    isDir: false,
-                                    content: file,
-                                    pos: i,
-                                };
-                            } else {
-                                pathdir += part;
-                                if (!curdir.content[part]) { // New dir.
+                        for (var p in path) {
+                            if (path.hasOwnProperty(p)) {
+                                var part = path[p];
+                                if (p == path.length - 1) { // File.
                                     curdir.content[part] = {
-                                        isDir: true,
-                                        content: {},
-                                        path: pathdir,
+                                        isDir: false,
+                                        content: file,
+                                        pos: i
                                     };
+                                } else {
+                                    if (!curdir.content[part]) { // New dir.
+                                        curdir.content[part] = {
+                                            isDir: true,
+                                            content: {}
+                                        };
+                                    }
+                                    // Descend Dir.
+                                    curdir = curdir.content[part];
                                 }
-                                // Descend Dir.
-                                pathdir += '/';
-                                curdir = curdir.content[part];
                             }
                         }
                     }
@@ -760,11 +802,10 @@ define(
                             if (dir.content.hasOwnProperty(name)) {
                                 fd = dir.content[name];
                                 if (fd.isDir) {
-                                    var dirpath = VPLUtil.sanitizeText(fd.path);
-                                    attrs = 'href="#" data-dirname="' + dirpath + '" ';
                                     sname = VPLUtil.sanitizeText(name);
+                                    attrs = 'href="#" data-dirname="' + sname + '" ';
                                     dirline = indent;
-                                    dirline += VPLUI.iconFolder() + '<a ' + attrs + '>' + sname + '</a>';
+                                    dirline += '<a ' + attrs + '>' + VPLUI.iconFolder() + sname + '</a>';
                                     lines.push(dirline);
                                     lister(fd, indent + dirIndent, lines);
                                 } else {
@@ -1030,8 +1071,8 @@ define(
             function resizeHeight() {
                 var newHeight = $(window).outerHeight();
                 newHeight -= menu.offset().top + menu.height() + (fullScreen ? getTabsAir() : 20);
-                if (newHeight < 250) {
-                    newHeight = 250;
+                if (newHeight < 150) {
+                    newHeight = 150;
                 }
                 tr.height(newHeight);
                 var panelHeight = newHeight - 3 * getTabsAir();
@@ -1226,12 +1267,10 @@ define(
             }));
             VPLUI.setDialogTitleIcon(dialogRenameDirectory, 'filelist');
             renameDiretoryAction = function(event) {
-                if (event.target.hasAttribute('data-dirname')) {
-                    var dirname = event.target.getAttribute('data-dirname');
-                    $('#vpl_ide_input_olddirectoryname').val(dirname);
-                    $('#vpl_ide_input_renamedirectory').val(dirname);
-                    dialogRenameDirectory.dialog('open');
-                }
+                var dirname = event.target.getAttribute('data-dirname');
+                $('#vpl_ide_input_olddirectoryname').val(dirname);
+                $('#vpl_ide_input_renamedirectory').val(dirname);
+                dialogRenameDirectory.dialog('open');
             };
             var dialogComments = $('#vpl_ide_dialog_comments');
             var oldStudentComments = '';
@@ -1775,8 +1814,7 @@ define(
              */
             function runAction() {
                 executionRequest('run', 'running', {
-                    XGEOMETRY: VNCClient.getCanvasSize(),
-                    currentFileName: fileManager.getCurrentFileName(),
+                    XGEOMETRY: VNCClient.getCanvasSize()
                 });
             }
             menuButtons.add({
@@ -1795,8 +1833,7 @@ define(
              */
             function debugAction() {
                 executionRequest('debug', 'debugging', {
-                    XGEOMETRY: VNCClient.getCanvasSize(),
-                    currentFileName: fileManager.getCurrentFileName(),
+                    XGEOMETRY: VNCClient.getCanvasSize()
                 });
             }
             menuButtons.add({
@@ -2024,8 +2061,8 @@ define(
                 'setResult': self.setResult,
                 'ajaxurl': options.ajaxurl,
                 'run': function(content, coninfo, ws) {
-                    var parsed = /^([^:]*):?(.*)/.exec(content);
-                    var type = VPLUtil.sanitizeText(parsed[1]);
+                    var parsed = /^([^:]*):?(.*)/i.exec(content);
+                    var type = parsed[1];
                     if (type == 'terminal' || type == 'webterminal') {
                         if (lastConsole && lastConsole.isOpen()) {
                             lastConsole.close();
@@ -2055,7 +2092,7 @@ define(
                                 });
                     } else if (type == "browser") {
                         var URL = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse + "/";
-                        URL += VPLUtil.sanitizeText(parsed[2]) + "/httpPassthrough";
+                        URL += parsed[2] + "/httpPassthrough";
                         if (isTeacher) {
                             URL += "?private";
                         }
@@ -2173,6 +2210,9 @@ define(
         return {
             init: function(rootId, options) {
                 vplIdeInstance = new VPLIDE(rootId, options);
+
+                //Added by Tamar
+                window.vpl_ide = vplIdeInstance; // Expose the IDE object globally
             }
         };
     }

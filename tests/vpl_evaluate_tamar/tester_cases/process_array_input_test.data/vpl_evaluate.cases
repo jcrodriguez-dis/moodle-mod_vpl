@@ -1,0 +1,3 @@
+case=Process Array Input Test
+input=i{[1:5:1]}
+output=15

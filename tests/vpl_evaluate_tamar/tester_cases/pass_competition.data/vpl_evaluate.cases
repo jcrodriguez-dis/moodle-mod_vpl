@@ -1,0 +1,4 @@
+case=Competition Mode Test
+input size=10000
+input=i{[1:10000:1]}
+output=50005000

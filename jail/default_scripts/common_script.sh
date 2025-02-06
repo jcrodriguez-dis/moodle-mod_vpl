@@ -10,26 +10,18 @@ if [ "$PROFILE_RUNNED" == "" ] ; then
 	if [ -f /etc/profile ] ; then
 		cp /etc/profile .localvplprofile
 		chmod +x .localvplprofile
-		. .localvplprofile 1>/dev/null 2>/dev/null
+		. .localvplprofile
 		rm .localvplprofile
 	fi
 fi
 . vpl_environment.sh
 #Use current lang
-{
-	for NEWLANG in $VPL_LANG en_US.UTF-8 C.utf8 POSIX C
-	do
-		export LC_ALL=$NEWLANG 2> .vpl_set_locale_error
-		if [ -s .vpl_set_locale_error ] ; then
-			rm .vpl_set_locale_error
-			continue
-		else
-			break
-		fi
-	done
-	rm .vpl_set_locale_error
-} &>/dev/null
-
+export LC_ALL=$VPL_LANG 1>/dev/null 2>vpl_set_locale_error
+#If current lang not available use en_US.UTF-8
+if [ -s vpl_set_locale_error ] ; then
+	export LC_ALL=en_US.UTF-8  1>/dev/null 2>/dev/null
+fi
+rm vpl_set_locale_error 1>/dev/null 2>/dev/null
 #functions
 
 # Wait until a program ($1 e.g. execution_int) of the current user ends. 

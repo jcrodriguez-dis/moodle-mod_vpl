@@ -15,7 +15,7 @@ fi
 get_first_source_file py
 cat common_script.sh > vpl_execution
 echo "export TERM=ansi" >>vpl_execution
-echo "python3 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+echo "python3 \"main.py\" \$@" >>vpl_execution
 chmod +x vpl_execution
 get_source_files py
 IFS=$'\n'

@@ -22,8 +22,6 @@ check_program jgrasp ddd jdb
 if [ "$1" == "version" ] ; then
 	if [ "$PROGRAM" == "jgrasp" ] ; then
 		get_program_version unknown
-	elif [ "$PROGRAM" == "jdb" ] ; then
-		get_program_version -version
 	else
 		get_program_version --version
 	fi

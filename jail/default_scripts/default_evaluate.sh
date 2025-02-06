@@ -7,6 +7,7 @@
 
 # Load VPL environment vars.
 . common_script.sh
+
 if [ "$VPL_MAXTIME" = "" ] ; then
 	export VPL_MAXTIME=20
 fi
@@ -20,15 +21,21 @@ fi
 if [ ! -s vpl_run.sh ] ; then
 	echo "I apologize, but I do not find a default action to run the submitted file types."
 else
+
 	# Avoid conflict with C++ compilation.
 	mv vpl_evaluate.cpp vpl_evaluate.cpp.save
 	# Prepare the run script/program (vpl_execution)
+	#cat ./vpl_run.sh
 	./vpl_run.sh &>>vpl_compilation_error.txt
 	cat vpl_compilation_error.txt
+
 	if [ -f vpl_execution ] ; then
 		mv vpl_execution vpl_test
 		if [ -f vpl_evaluate.cases ] ; then
 			mv vpl_evaluate.cases evaluate.cases
+			cp evaluate.cases evaluate.casess
+			cp evaluate.cases evaluate.casest
+
 		else
 			echo "Error: I need the file 'vpl_evaluate.cases' to do the evaluation."
 			exit 1
@@ -59,4 +66,7 @@ else
 		) > vpl_execution
 	fi
 	chmod +x vpl_execution
+
 fi
+
+

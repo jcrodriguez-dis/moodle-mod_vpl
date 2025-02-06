@@ -12,9 +12,17 @@ check_program g++
 if [ "$1" == "version" ] ; then
 	get_program_version --version
 fi 
-get_source_files cpp C
+./vpl_before_compile.sh
+
+get_source_files cpp C 
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Compile
 g++ -std=c++17 -pedantic -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil
+
+#Added by Tamar
+mv program.cpp.ta program.cpp
+g++ -g -o vpl_test_teacher program.cpp
+chmod +x vpl_test_teacher
+
 rm .vpl_source_files

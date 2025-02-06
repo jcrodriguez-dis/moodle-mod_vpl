@@ -1,0 +1,5 @@
+{
+    "epsilon": 0.5,
+    "maxRatioToReset": 0.5,
+    "maxDeletionFraction": 0.5
+}

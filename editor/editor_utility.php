@@ -60,6 +60,73 @@ class vpl_editor_util {
         $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor';
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', [$tagid, $options]);
+
+        // Added By Tamar
+        $tagid_js = json_encode($tagid);
+        $options_js = json_encode($options);
+
+        $PAGE->requires->js_init_code("
+            (function() {
+                var languageSelect = document.getElementById('language_select');
+                var previousLanguage = languageSelect.value; // Store the initial language selection
+        
+                languageSelect.addEventListener('change', function() {
+                    if (!document.getElementById('vpl_ide_run').classList.contains('ui-button-disabled')) {
+                        // Get the selected language
+                        var selectedLanguage = languageSelect.value;
+        
+                        // Prepare the data to send
+                        var data = {
+                            id: {$vpl->get_course_module()->id},
+                            action: 'setlanguage',
+                            selectedLanguage: selectedLanguage,
+                            sesskey: '".sesskey()."'
+                        };
+        
+                        // Convert data to URL-encoded string
+                        var params = Object.keys(data).map(
+                            function(k){ return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]); }
+                        ).join('&');
+        
+                        // Create and send the AJAX request
+                        var xhr = new XMLHttpRequest();
+                        xhr.open('POST', '".new moodle_url('/mod/vpl/forms/edit.json.php')."', true);
+                        xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+                        xhr.onreadystatechange = function() {
+                            if (xhr.readyState === XMLHttpRequest.DONE) {
+                                if (xhr.status === 200) {
+                                    var response = JSON.parse(xhr.responseText);
+                                    if (response.success) {
+                                        console.log('Language set successfully:', response.response.runscript);
+                                        // Reload the page to re-initialize the editor
+                                        window.location.reload();
+                                    } else {
+                                        console.error('Error:', response.error);
+                                    }
+                                } else {
+                                    console.error('Server error:', xhr.status);
+                                }
+                            }
+                        };
+                        xhr.send(params);
+                    } else {
+                        // Show alert and revert the dropdown to the previous language
+                        alert('You should save the code first');
+                        languageSelect.value = previousLanguage; // Reset to the previous selection
+                    }
+                });
+        
+                // Update previousLanguage when a valid language change occurs
+                languageSelect.addEventListener('change', function() {
+                    if (!document.getElementById('vpl_ide_run').classList.contains('ui-button-disabled')) {
+                        previousLanguage = languageSelect.value;
+                    }
+                });
+            })();
+        ");
+    
+
+
     }
     public static function print_js_i18n() {
         global $CFG;
@@ -83,9 +150,29 @@ class vpl_editor_util {
     }
     public static function print_tag() {
         $tagid = 'vplide';
+
+        //Added by Tamar
+        global $SESSION;
+        $selectedLanguage = isset($SESSION->runscript) ? $SESSION->runscript : '';
+        
         ?>
+        
 <div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
+
+    <!-- Added by Tamar: Dropdown for selecting language -->
+        <div>
+            <label for="language_select">Select Language: </label>
+            <select id="language_select" name="language_select">
+                <option value="" <?php echo $selectedLanguage == '' ? 'selected' : ''; ?>>Default</option>
+                <option value="python" <?php echo $selectedLanguage == 'python' ? 'selected' : ''; ?>>Python</option>
+                <option value="cpp" <?php echo $selectedLanguage == 'cpp' ? 'selected' : ''; ?>>C++</option>
+                <option value="java" <?php echo $selectedLanguage == 'java' ? 'selected' : ''; ?>>Java</option>
+                <option value="c" <?php echo $selectedLanguage == 'c' ? 'selected' : ''; ?>>C</option>
+                <!-- Add other language options as needed -->
+            </select>
+        </div>
+        
     <div id="vpl_tr" class="vpl_ide_tr">
         <div id="vpl_filelist" style="display: none;">
             <div id="vpl_filelist_header"><?php p(get_string('filelist', VPL));?></div>
@@ -113,6 +200,7 @@ class vpl_editor_util {
                 class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
+    
     <div id="vpl_ide_dialog_renamedir" class="vpl_ide_dialog"
         style="display: none;">
         <fieldset>
@@ -131,6 +219,16 @@ class vpl_editor_util {
                 <?php p(get_string('rename'));?></label> <input
                 type="text" id="vpl_ide_input_renamefilename"
                 name="vpl_ide_input_renamefilename" value=""
+                class="ui-widget-content ui-corner-all" autofocus /><br>
+        </fieldset>
+    </div>
+    <div id="vpl_ide_dialog_delete" class="vpl_ide_dialog"
+        style="display: none;">
+        <fieldset>
+            <label for="vpl_ide_input_deletefilename">
+                <?php p(get_string('delete'));?></label> <input
+                type="text" id="vpl_ide_input_deletefilename"
+                name="vpl_ide_input_deletefilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br>
         </fieldset>
     </div>
@@ -229,6 +327,7 @@ class vpl_editor_util {
         </ul>
         </div>
     </div>
+
     <form style="display: none;">
         <input type="file" multiple="multiple" id="vpl_ide_input_file" />
     </form>

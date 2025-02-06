@@ -71,21 +71,53 @@ try {
     }
     $instance = $vpl->get_instance();
     switch ($action) {
+	
+        //Added by Tamar
+        case 'setlanguage':
+            require_sesskey();
+            $selectedLanguage = required_param('selectedLanguage', PARAM_ALPHANUMEXT);
+            // You might want to validate $selectedLanguage against allowed values
+            // For example:
+            $allowedLanguages = ['python', 'cpp', 'java','c']; // Add other allowed languages
+            if (!in_array($selectedLanguage, $allowedLanguages) && $selectedLanguage != '') {
+                throw new Exception('Invalid language selected');
+            }
+    
+            // Use $SESSION global object for Moodle session management
+            global $SESSION;
+            $SESSION->runscript = $selectedLanguage;
+    
+            $result->response->runscript = $SESSION->runscript;
+            break;
+        
+        //Changed by Tamar
         case 'save':
             if ($userid != $USER->id) {
-                $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+                $vpl->require_capability(VPL_MANAGE_CAPABILITY);
             }
-            $files = mod_vpl_edit::filesfromide( $actiondata->files );
-            if ( empty($actiondata->comments) ) {
-                $actiondata->comments = '';
-            }
-            if ( empty($actiondata->version) ) {
-                $actiondata->version = -1;
+            // Files being saved by the student
+            $files = mod_vpl_edit::filesfromide($actiondata->files);
+        
+            // Retrieve files from the last submission
+            $previousFiles = [];
+            $lastSubmission = $vpl->last_user_submission($userid);
+            if ($lastSubmission) {
+                $submission = new mod_vpl_submission($vpl, $lastSubmission);
+                $previousFiles = $submission->get_submitted_fgm()->getallfiles();
             } else {
-                $actiondata->version = (int) $actiondata->version;
+                // No previous submission, so get required files
+                $previousFiles = mod_vpl_edit::get_requested_files($vpl);
             }
-            $result->response = mod_vpl_edit::save( $vpl, $userid, $files, $actiondata->comments, $actiondata->version );
+        
+            // Merge previous files with current files
+            foreach ($files as $filename => $filedata) {
+                $previousFiles[$filename] = $filedata;
+            }
+        
+            // Now save all files together
+            $result->response = mod_vpl_edit::save($vpl, $userid, $previousFiles, $actiondata->comments, $actiondata->version);
             break;
+            
         case 'update':
             $files = mod_vpl_edit::filesfromide( $actiondata->files );
             $filestodelete = isset($actiondata->filestodelete) ? $actiondata->filestodelete : [];
@@ -111,6 +143,37 @@ try {
             if ($copy) {
                 $load->version = -1;
             }
+
+            //Added by Tamar
+            // **Add this code to filter files based on selected language**
+            global $SESSION;
+            $selectedLanguage = isset($SESSION->runscript) ? $SESSION->runscript : '';
+            if ($selectedLanguage != '') {
+                // Define which file extensions correspond to each language
+                $languageExtensions = [
+                    'python' => ['.py'],
+                    'java' => ['.java'],
+                    'cpp' => ['.cpp', '.hpp'],
+                    'c' => ['.c', '.h'],
+                    // Add other languages and their extensions as needed
+                ];
+            
+                // Get the list of extensions for the selected language
+                $allowedExtensions = isset($languageExtensions[$selectedLanguage]) ? $languageExtensions[$selectedLanguage] : [];
+            
+                // Filter the files
+                $filteredFiles = [];
+                foreach ($load->files as $filename => $filedata) {
+                    foreach ($allowedExtensions as $extension) {
+                        if (substr($filename, -strlen($extension)) === $extension) {
+                            $filteredFiles[$filename] = $filedata;
+                            break; // Break the inner loop to avoid checking other extensions
+                        }
+                    }
+                }
+                $load->files = $filteredFiles;
+            }
+            
             $load->files = mod_vpl_edit::filestoide( $load->files );
             $result->response = $load;
             break;
@@ -135,6 +198,8 @@ try {
             $files = mod_vpl_edit::filesfromide( $actiondata->files );
             $result->response = mod_vpl_edit::directrun( $vpl, $userid, $actiondata->command, $files);
             break;
+        
+            
         default:
             throw new Exception( 'ajax action error: ' + $action );
     }
@@ -149,7 +214,7 @@ try {
             $result->response->timeLeft = $timeleft;
         }
     }
-} catch (\Throwable $e) {
+} catch ( Exception $e ) {
     $result->success = false;
     $result->error = $e->getMessage();
 }

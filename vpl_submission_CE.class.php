@@ -18,9 +18,9 @@
  * Compilation and Execution of submission class definition
  *
  * @package mod_vpl
- * @copyright 2013 onwards Juan Carlos Rodríguez-del-Pino
+ * @copyright 2013 onwards Juan Carlos Rodrֳ­guez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author Juan Carlos Rodrֳ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
 defined('MOODLE_INTERNAL') || die();
@@ -30,9 +30,6 @@ require_once(dirname(__FILE__).'/jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__).'/jail/running_processes.class.php');
 
 class mod_vpl_submission_CE extends mod_vpl_submission {
-    /**
-     * Associative array for detecting the programming language based on a file's extension
-     */
     private static $languageext = [
         'ada' => 'ada',
         'adb' => 'ada',
@@ -94,21 +91,48 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'ts' => 'typescript',
     ];
 
-    /**
-     * Associative array for detecting the build system based on the configuration file
-     */
-    private static $languageconfig = [
-        'Makefile' => 'make',
-        'makefile' => 'make',
+    private static $languageFullToShort = [
+    'ada' => 'ada',
+    'all' => 'all',
+    'asm' => 'asm',
+    'c' => 'c',
+    'cpp' => 'cpp',
+    'clojure' => 'clj',
+    'csharp' => 'cs',
+    'd' => 'd',
+    'erlang' => 'erl',
+    'go' => 'go',
+    'groovy' => 'groovy',
+    'java' => 'java',
+    'julia' => 'jl',
+    'javascript' => 'js',
+    'scala' => 'scala',
+    'sql' => 'sql',
+    'scheme' => 'scm',
+    'mips' => 's',
+    'kotlin' => 'kt',
+    'lisp' => 'lisp',
+    'lua' => 'lua',
+    'shell' => 'sh',
+    'pascal' => 'pas',
+    'fortran' => 'f',
+    'prolog' => 'pl',
+    'html' => 'html',
+    'haskell' => 'hs',
+    'matlab' => 'm',
+    'minizinc' => 'mzn',
+    'perl' => 'perl',
+    'php' => 'php',
+    'python' => 'py',
+    'pseint' => 'psc',
+    'verilog' => 'v',
+    'vhdl' => 'vhd',
+    'r' => 'r',
+    'ruby' => 'rb',
+    'rust' => 'rs',
+    'typescript' => 'ts'
     ];
-    /*
-        Future config files.
-        CMakeLists.txt => cmake
-        build.ninja => ninja
-        build.xml => ant
-        build.gradle => gradle
-        pom.xml => maven
-    */
+
 
     private static $scriptname = [
         'vpl_run.sh' => 'run',
@@ -146,11 +170,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return string programming language name
      */
     public static function get_pln($filelist) {
-        foreach ($filelist as $checkfilename) {
-            if (isset(self::$languageconfig[$checkfilename])) {
-                return self::$languageconfig[$checkfilename];
-            }
-        }
         foreach ($filelist as $checkfilename) {
             $ext = pathinfo( $checkfilename, PATHINFO_EXTENSION );
             if (isset(self::$languageext[$ext])) {
@@ -202,6 +221,12 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $detectedpln = $data->pln;
         $type = $data->type;
         $ret = [];
+
+        //Added by Tamar
+        //$ret['config.json'] = file_get_contents( vpl_get_scripts_dir() . '/config.json' );
+        $ret['json.hpp'] = file_get_contents( vpl_get_scripts_dir() . '/json.hpp' );
+        //$ret['inputFile.sh'] = file_get_contents( vpl_get_scripts_dir() . '/inputFile.sh' );
+        //$ret['ex_Utils.py'] = file_get_contents( vpl_get_scripts_dir() . '/ex_Utils.py' );
         $ret['vpl_run.sh'] = self::get_script('run', $detectedpln, $data);
         if ($type == 1) {
             $ret['vpl_debug.sh'] = self::get_script('debug', $detectedpln, $data);
@@ -266,6 +291,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data->runscript = $vplinstance->runscript;
             $data->debugscript = $vplinstance->debugscript;
         }
+
+	
+        //Added by Tamar
+        global $SESSION;
+        if (isset($SESSION->runscript) && $SESSION->runscript != ''){
+            $data->runscript = $SESSION->runscript;
+        }
+	
         // Execution files.
         $sfg = $vpl->get_execution_fgm();
         $list = $sfg->getFileList();
@@ -500,7 +533,29 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $data->filestodelete[$filename] = 1;
             }
         }
-        // Add script file with VPL environment information.
+
+	//Added By Tamar
+	$detectedpln = $data->pln;
+	if (array_key_exists($detectedpln, self::$languageFullToShort)) {
+    		$shortLang = self::$languageFullToShort[$detectedpln];
+    		$baseDir = '/var/www/html/moodle/mod/vpl/jail/default_scripts/utils/';
+    		$languageDir = $baseDir . $detectedpln . '/';
+
+    		// Get all files in the language directory
+    		$files = glob($languageDir . '*');
+
+    		foreach ($files as $file) {
+        		if (is_file($file)) {
+            			// Extract the filename without the path
+            			$filename = basename($file);
+            			// Add the file content to $data->files array
+            			$data->files[$filename] = file_get_contents($file);
+        		}
+    		}
+	}
+
+
+	// Add script file with VPL environment information.
         $data->files['vpl_environment.sh'] = $info;
         $data->files['common_script.sh'] = file_get_contents( vpl_get_scripts_dir() . '/common_script.sh');
         // TODO change jail server to avoid this patch.
@@ -560,6 +615,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             }
             throw new Exception( get_string( 'serverexecutionerror', VPL ) );
         }
+        
         return $response;
     }
     public function jailrequestaction($data, $maxmemory, $localservers, &$server) {
@@ -654,6 +710,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         unset( $data->jailservers );
         self::adaptbinaryfiles($data, $data->files);
         $jailserver = '';
+     
         $jailresponse = $this->jailrequestaction( $data, $maxmemory, $localservers, $jailserver );
         $parsed = parse_url( $jailserver );
         // Fix jail server port.
@@ -731,6 +788,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             throw new Exception(get_string('serverexecutionerror', VPL) . ' No process found');
         }
         $response = $this->jailreaction('getresult', $processinfo);
+
         if ($response === false) {
             throw new Exception(get_string('serverexecutionerror', VPL) . ' getresult no repsonse');
         }

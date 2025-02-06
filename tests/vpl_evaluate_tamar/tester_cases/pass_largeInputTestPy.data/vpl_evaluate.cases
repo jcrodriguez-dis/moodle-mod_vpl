@@ -1,0 +1,4 @@
+case=Large Input Size Test
+program to run = inputFile.sh
+input=i{[1:1000000:1]}
+output=500000500000

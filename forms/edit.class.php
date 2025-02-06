@@ -165,6 +165,13 @@ class mod_vpl_edit {
         return $reqfgm->getallfiles();
     }
 
+    //Added by Tamar
+    public static function get_executions_files($vpl) {
+        $reqfgm = $vpl->get_execution_fgm();
+        return $reqfgm->getallfiles();
+    }
+
+
     /**
      * Returns last submitted files of $vpl and userid.
      * If available $compilationexecution will return compilation and execution information.
@@ -181,14 +188,13 @@ class mod_vpl_edit {
             $fgp = $submission->get_submitted_fgm();
             $files = $fgp->getallfiles();
             $compilationexecution = $submission->get_CE_for_editor();
-            $compilationexecution->comments = $submission->get_instance()->comments;
         } else {
             $files = self::get_requested_files( $vpl );
             $compilationexecution = new stdClass();
-            $compilationexecution->comments = '';
             $compilationexecution->nevaluations = 0;
             $compilationexecution->freeevaluations = $vpl->get_effective_setting('freeevaluations', $userid);
             $compilationexecution->reductionbyevaluation = $vpl->get_effective_setting('reductionbyevaluation', $userid);
+
         }
         return $files;
     }
@@ -291,6 +297,7 @@ class mod_vpl_edit {
         } else {
             $submission = new mod_vpl_submission_CE($vpl, $lastsub);
         }
+        //throw new Exception( get_string('notavailable') );
         return $submission->retrieveResult($processid);
     }
 
@@ -311,7 +318,7 @@ class mod_vpl_edit {
                 $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
             }
             $submission->cancelProcess($processid);
-        } catch (\Throwable $e) {
+        } catch ( Exception $e ) {
             return $e->getMessage();
         }
         return '';
@@ -330,7 +337,7 @@ class mod_vpl_edit {
                 $data->adminticket = $process->adminticket;
                 $request = vpl_jailserver_manager::get_action_request('stop', $data);
                 vpl_jailserver_manager::get_response( $data->server, $request, $error );
-            } catch (\Throwable $e) {
+            } catch ( Exception $e ) {
                 debugging( "Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER );
             }
             vpl_running_processes::delete( $userid, $vplid, $process->adminticket);
@@ -367,6 +374,7 @@ class mod_vpl_edit {
 cat > vpl_execution <<CONTENTS
 #!/bin/bash
 $command
+echo "edit.class.php"
 CONTENTS
 chmod +x vpl_execution
 DIRECTRUNCODE;
@@ -378,7 +386,7 @@ DIRECTRUNCODE;
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
         $data->interactive = 1;
-        $data->lang = vpl_get_lang();
+        $data->lang = vpl_get_lang( true );
         $data->maxtime = 1000000;
         $data->maxfilesize = $maxmemory;
         $data->maxmemory = $maxmemory;
@@ -397,10 +405,8 @@ DIRECTRUNCODE;
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
-        $usinghttp = $parsed['scheme'] == 'http';
-        $usinghttps = $parsed['scheme'] == 'https';
-        $response->port = $usinghttp ? $parsed['port'] : $jailresponse['port'];
-        $response->securePort = $usinghttps ? $parsed['port'] : $jailresponse['secureport'];
+        $response->port = $jailresponse['port'];
+        $response->securePort = $jailresponse['secureport'];
         $response->wsProtocol = get_config('mod_vpl')->websocket_protocol;
         $response->homepath = $jailresponse['homepath'];
         $process = new stdClass();
