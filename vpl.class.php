@@ -57,6 +57,7 @@ class file_group_execution extends file_group_process {
             'vpl_debug.sh',
             'vpl_evaluate.sh',
             'vpl_evaluate.cases',
+            'config.json',
     ];
 
     /**
@@ -311,6 +312,7 @@ class mod_vpl {
     public function get_instance() {
         return $this->instance;
     }
+
 
     /**
      *
@@ -638,8 +640,7 @@ class mod_vpl {
             }
             require_once('forms/password_form.php');
             $this->print_header();
-            $posturl = $_SERVER['SCRIPT_NAME'] . "?id={$this->cm->id}";
-            $mform = new mod_vpl_password_form($posturl, $this);
+            $mform = new mod_vpl_password_form($_SERVER['SCRIPT_NAME'], $this);
             $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
             if (isset( $SESSION->$passattempt)) {
                 vpl_notice(get_string('attemptnumber', VPL, $SESSION->$passattempt),
@@ -789,7 +790,9 @@ class mod_vpl {
                 $a = new stdClass();
                 $a->expected = $list[$i];
                 $a->found = $name;
-                $error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br>";
+
+                //To Do - To look why its relevant...
+                //$error .= s( get_string( 'unexpected_file_name', VPL, $a ) ) . "<br>";
             }
             $i++;
         }
@@ -808,10 +811,10 @@ class mod_vpl {
      */
     public static function internal_add_submission($vpl, $userid, & $files, $comments, & $error) {
         global $USER, $DB;
-        if (! $vpl->pass_submission_restriction( $files, $error )) {
-            $error = get_string('notavailable');
-            return false;
-        }
+            if (! $vpl->pass_submission_restriction( $files, $error )) {
+                $error = get_string('notavailable');
+                return false;
+            }
         $group = false;
         if ($vpl->is_group_activity()) {
             $group = $vpl->get_usergroup($userid);
@@ -841,6 +844,7 @@ class mod_vpl {
                 return $lastsubins->id;
             }
         }
+        
         // Create submission record.
         $submissiondata = new stdClass();
         $submissiondata->vpl = $vpl->get_instance()->id;
@@ -1942,7 +1946,7 @@ class mod_vpl {
                 $html .= $this->str_restriction_with_icon( 'password', $stryes, false, false, 'moodle');
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
-                $html .= $infohs->content_in_tag('span', s($password));
+                $html .= $infohs->content_in_span(s($password));
                 $html .= "<br>\n";
             }
             if (trim( $instance->requirednet ) > '') {
@@ -1955,7 +1959,7 @@ class mod_vpl {
                 $html .= $this->str_restriction_with_icon('sebkeys', $stryes, false, false);
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
-                $html .= $infohs->content_in_tag('div', nl2br(s($instance->sebkeys)));
+                $html .= $infohs->content_in_div(nl2br(s($instance->sebkeys)));
                 $html .= "<br>\n";
             }
             if ($instance->restrictededitor) {
@@ -2107,7 +2111,7 @@ class mod_vpl {
             $html .= '<br>';
             $html .= vpl_get_awesome_icon('variations');
             $html .= ' <b>' . get_string( 'variations', VPL ) . $div->generate() . '</b><br>';
-            $html .= $div->begin('div');
+            $html .= $div->begin_div();
             if (! $this->instance->usevariations) {
                 $html .= '<b>' . get_string( 'variations_unused', VPL ) . '</b><br>';
             }
@@ -2121,7 +2125,7 @@ class mod_vpl {
                 $html .= $OUTPUT->box( $variation->description );
                 $number ++;
             }
-            $html .= $div->end();
+            $html .= $div->end_div();
         }
         return $html;
     }
