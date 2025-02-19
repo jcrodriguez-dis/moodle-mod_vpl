@@ -2361,4 +2361,29 @@ class mod_vpl {
             }
         }
     }
+
+    /**
+     * Retrieve the first non-empty setting in the basedon chain.
+     * @param string $field Setting name (DB column name)
+     * @param mixed $default Default to return if no VPL in basedon chain defines the setting
+     */
+    public function get_closest_set_field_in_base_chain($field, $default = null) {
+        $instance = $this->instance;
+        $basedons = [ $instance->id => true ];
+        if ($instance->{$field}) {
+            return $instance->{$field};
+        }
+        while ($instance->basedon) {
+            if (isset($basedons[$instance->basedon])) {
+                throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
+            }
+            $basedons[$instance->basedon] = true;
+            $instance = self::get_db_record(VPL, $instance->basedon);
+            if ($instance->{$field}) {
+                return $instance->{$field};
+            }
+        }
+        return $default;
+    }
+
 }
