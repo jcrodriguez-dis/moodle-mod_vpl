@@ -203,74 +203,14 @@ function vpl_output_zip($zipfilename, $name) {
 /**
  * @codeCoverageIgnore
  *
- * Get lang code @parm $bashadapt true adapt lang to bash LANG (default true)
+ * Get locale from current lang for using in Linux.
  *
  * @return string
  */
-function vpl_get_lang($bashadapt = true) {
-    global $SESSION, $USER, $CFG;
-    $commonlangs = [
-            'aa' => 'DJ',
-            'af' => 'ZA',
-            'am' => 'ET',
-            'an' => 'ES',
-            'az' => 'AZ',
-            'ber' => 'DZ',
-            'bg' => 'BG',
-            'ca' => 'ES',
-            'cs' => 'CZ',
-            'da' => 'DK',
-            'de' => 'DE',
-            'dz' => 'BT',
-            'en' => 'US',
-            'es' => 'ES',
-            'et' => 'EE',
-            'fa' => 'IR',
-            'fi' => 'FI',
-            'fr' => 'FR',
-            'he' => 'IL',
-            'hu' => 'HU',
-            'ig' => 'NG',
-            'it' => 'IT',
-            'is' => 'IS',
-            'ja' => 'JP',
-            'km' => 'KH',
-            'ko' => 'KR',
-            'lo' => 'LA',
-            'lv' => 'LV',
-            'pt' => 'PT',
-            'ro' => 'RO',
-            'ru' => 'RU',
-            'se' => 'NO',
-            'sk' => 'sk',
-            'so' => 'SO',
-            'sv' => 'SE',
-            'or' => 'IN',
-            'th' => 'th',
-            'ti' => 'ET',
-            'tk' => 'TM',
-            'tr' => 'TR',
-            'uk' => 'UA',
-            'yo' => 'NG',
-    ];
-    if (isset( $SESSION->lang )) {
-        $lang = $SESSION->lang;
-    } else if (isset( $USER->lang )) {
-        $lang = $USER->lang;
-    } else if (isset( $CFG->lang )) {
-        $lang = $CFG->lang;
-    } else {
-        return "en";
-    }
-    if ($bashadapt) {
-        $parts = explode( '_', $lang );
-        if (count($parts) == 2) {
-            $lang = $parts[0];
-        }
-        if (isset($commonlangs[$lang])) {
-            $lang = $lang . '_' . $commonlangs[$lang];
-        }
-        $lang .= '.UTF-8';
+function vpl_get_lang() {
+    $lang = get_string('locale', 'langconfig');
+    if (empty($lang) or $lang[0] == '[') {
+        $lang = 'en_US.UTF-8';
     }
     return $lang;
 }
