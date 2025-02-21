@@ -28,8 +28,9 @@ define(
     [
         'jquery',
         'core/log',
+        'core/url'
     ],
-    function($, log) {
+    function($, log, url) {
         var VPLUtil = {};
         VPLUtil.doNothing = $.noop;
         VPLUtil.returnFalse = function() {
@@ -48,7 +49,7 @@ define(
             $.ajax({
                 async: true,
                 type: "POST",
-                url: '../editor/userpreferences.json.php',
+                url: url.relativeUrl('/mod/vpl/editor/userpreferences.json.php'),
                 'data': JSON.stringify(pref),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
@@ -58,7 +59,7 @@ define(
             $.ajax({
                 async: true,
                 type: "POST",
-                url: '../editor/userpreferences.json.php',
+                url: url.relativeUrl('/mod/vpl/editor/userpreferences.json.php'),
                 'data': JSON.stringify({getPreferences: true}),
                 contentType: "application/json; charset=utf-8",
                 dataType: "json"
