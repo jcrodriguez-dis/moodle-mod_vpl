@@ -305,11 +305,11 @@ class locallib_test extends \advanced_testcase {
      */
     public function test_vpl_bash_export(): void {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
-        $this->assertEquals("export ALGO=\"text\"\n", vpl_bash_export('ALGO', 'text'));
-        $this->assertEquals("export ALGO=\"te\\\" \$'xt\"\n", vpl_bash_export('ALGO', 'te" $\'xt'));
-        $this->assertEquals("export ALGO=\"te''xt'\"\n", vpl_bash_export('ALGO', "te''xt'"));
+        $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
+        $this->assertEquals("export ALGO='te\" $'\"'\"'xt'\n", vpl_bash_export('ALGO', 'te" $\'xt'));
+        $this->assertEquals("export ALGO='te'\"'\"''\"'\"'xt'\"'\"''\n", vpl_bash_export('ALGO', "te''xt'"));
         $res = vpl_bash_export('a', [ "te''xt'", 'te" $\'xt']);
-        $this->assertEquals("export a=( \"te''xt'\" \"te\\\" \$'xt\" )\n", $res);
+        $this->assertEquals("export a=( 'te'\"'\"''\"'\"'xt'\"'\"'' 'te\" $'\"'\"'xt' )\n", $res);
     }
 
     /**

@@ -848,13 +848,13 @@ function vpl_bash_export($var, $value) {
     } else if (is_array($value)) {
         $ret = "export $var=( ";
         foreach ($value as $data) {
-            $ret .= '"' . str_replace('"', '\"', $data) . '" ';
+            $ret .= "'" . str_replace("'", "'\"'\"'", $data) . "' ";
         }
         $ret .= ")\n";
     } else {
-        $ret = "export $var=\"";
-        $ret .= str_replace('"', '\"', $value);
-        $ret .= "\"\n";
+        $ret = "export $var='";
+        $ret .= str_replace("'", "'\"'\"'", $value);
+        $ret .= "'\n";
     }
     return $ret;
 }
