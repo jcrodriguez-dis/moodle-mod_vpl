@@ -1920,6 +1920,20 @@ class mod_vpl {
             }
         }
         $html .= $this->str_gradereduction($userid);
+        $delayshtml = '';
+        foreach ([ 'minrundelay', 'mindebugdelay', 'minevaluationdelay' ] as $delayfield) {
+            $delay = $this->get_effective_setting($delayfield, $userid);
+            if ($delay > 0) {
+                $delayshtml .= ' ' . $this->str_restriction($delayfield, format_time($delay));
+                if ($delay != $this->instance->$delayfield) {
+                    $delayshtml .= $this->overriden_icon();
+                }
+                $delayshtml .= '. ';
+            }
+        }
+        if ($delayshtml > '') {
+            $html .= $delayshtml . '<br>';
+        }
         if ($grader) {
             $password = trim($this->get_effective_setting('password'));
             if ($password) {
@@ -2238,7 +2252,7 @@ class mod_vpl {
      */
     public function get_effective_setting($setting, $userid = null) {
         global $USER, $DB;
-        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
+        $fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'minrundelay', 'mindebugdelay', 'minevaluationdelay', 'password'];
         if (!in_array($setting, $fields)) {
             return $this->instance->$setting;
         }

@@ -128,7 +128,7 @@ class vpl_override_options_form extends moodleform {
         $mform->disabledIf($passwordfield, 'override_' . $passwordfield);
         $mform->addElement('html', '</div>');
 
-        foreach (['reductionbyevaluation', 'freeevaluations'] as $textfield) {
+        foreach (['reductionbyevaluation', 'freeevaluations', 'minrundelay', 'mindebugdelay', 'minevaluationdelay'] as $textfield) {
             $mform->addElement('html', '<div class="override-option">');
             $mform->addElement('checkbox', 'override_' . $textfield, get_string( $textfield, VPL ), get_string( 'override', VPL ));
             $mform->addHelpButton('override_' . $textfield, 'override', VPL);
@@ -154,6 +154,9 @@ class vpl_override_options_form extends moodleform {
         $errors = parent::validation($data, $files);
         self::validate('freeevaluations', '/^[0-9]*$/', '[0..]', $data, $errors);
         self::validate('reductionbyevaluation', '/^[0-9]*(\.[0-9]+)?%?$/', '#[.#][%]', $data, $errors);
+        self::validate('minrundelay', '/^[0-9]*$/', '[0..]', $data, $errors);
+        self::validate('mindebugdelay', '/^[0-9]*$/', '[0..]', $data, $errors);
+        self::validate('minevaluationdelay', '/^[0-9]*$/', '[0..]', $data, $errors);
         return $errors;
     }
 }
@@ -178,7 +181,7 @@ if (!empty($edit) && !isset($overrides[$edit])) {
     $edit = null;
 }
 
-$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
+$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'minrundelay', 'mindebugdelay', 'minevaluationdelay', 'password'];
 
 // Prepare forms if we are editing or submitting an override.
 if ($edit !== null || $update !== null) {
@@ -428,6 +431,16 @@ foreach ($overrides as $override) {
         foreach (['reductionbyevaluation', 'freeevaluations'] as $field) {
             if ($override->$field !== null) {
                 $overridedata .= get_string($field, VPL) . ': ' . $override->$field . '<br>';
+            }
+        }
+        foreach ([ 'minrundelay', 'mindebugdelay', 'minevaluationdelay' ] as $delayfield) {
+            if ($override->$delayfield !== null) {
+                $overridedata .= get_string($delayfield, VPL) . ': ';
+                if ($override->$delayfield > 0) {
+                    $overridedata .= format_time($override->$delayfield) . '<br>';
+                } else {
+                    $overridedata .= get_string('none') . '<br>';
+                }
             }
         }
         if ($overridedata == '') {

@@ -170,6 +170,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'timemodified',
         'freeevaluations',
         'reductionbyevaluation',
+        'minrundelay',
+        'mindebugdelay',
+        'minevaluationdelay',
         'sebrequired',
         'sebkeys',
         'runscript',
@@ -220,6 +223,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
             'duedate',
             'freeevaluations',
             'reductionbyevaluation',
+            'minrundelay',
+            'mindebugdelay',
+            'minevaluationdelay',
             'password',
     ];
 

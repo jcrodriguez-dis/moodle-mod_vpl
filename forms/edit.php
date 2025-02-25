@@ -121,6 +121,21 @@ if ($options['example']) {
 }
 $options['readOnlyFiles'] = $vpl->get_readonly_files();
 $options['saved'] = $lastsub && ! $copy;
+
+foreach ([ 'run' => 'minrundelay', 'debug' => 'mindebugdelay', 'evaluate' => 'minevaluationdelay' ] as $action => $delayfield) {
+    $code = [ 'run' => 0, 'debug' => 1, 'evaluate' => 2 ];
+    $executioninfo = [ 'userid' => $userid, 'vpl' => $vpl->get_instance()->id, 'type' => $code[$action] ];
+    $lastexec = $DB->get_record(VPL_LAST_EXECUTIONS, $executioninfo);
+    $priviledged = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+    if ($lastexec !== false && !$priviledged) {
+        $mindelay = $vpl->get_effective_setting($delayfield, $userid);
+        $nextruntime = $lastexec->time + $mindelay;
+        $options['delayuntil' . $action] = [ 'remaining' => max(0, $nextruntime - time()), 'over' => $mindelay ];
+    } else {
+        $options['delayuntil' . $action] = [ 'remaining' => 0, 'over' => 1 ];
+    }
+}
+
 if ($lastsub) {
     $submission = new mod_vpl_submission( $vpl, $lastsub );
     \mod_vpl\event\submission_edited::log( $submission );

@@ -62,6 +62,9 @@ class provider implements \core_privacy\local\metadata\provider,
             'grade' => 'privacy:metadata:vpl:grade',
             'reductionbyevaluation' => 'privacy:metadata:vpl:reductionbyevaluation',
             'freeevaluations' => 'privacy:metadata:vpl:freeevaluations',
+            'minrundelay' => 'privacy:metadata:vpl:minrundelay',
+            'mindebugdelay' => 'privacy:metadata:vpl:mindebugdelay',
+            'minevaluationdelay' => 'privacy:metadata:vpl:minevaluationdelay',
         ];
         $submisionsfields = [
             'userid' => 'privacy:metadata:vpl_submissions:userid',
@@ -90,12 +93,19 @@ class provider implements \core_privacy\local\metadata\provider,
             'server' => 'privacy:metadata:vpl_running_processes:server',
             'start_time' => 'privacy:metadata:vpl_running_processes:starttime',
         ];
+        $lastexecfields = [
+            'userid' => 'privacy:metadata:vpl_last_executions:userid',
+            'vpl' => 'privacy:metadata:vpl_last_executions:vplid',
+            'type' => 'privacy:metadata:vpl_last_executions:exectype',
+            'time' => 'privacy:metadata:vpl_last_executions:starttime',
+        ];
 
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
         $collection->add_database_table('vpl_assigned_variations', $variationsfields, 'privacy:metadata:vpl_assigned_variations');
         $collection->add_database_table('vpl_assigned_overrides', $overridesfields, 'privacy:metadata:vpl_assigned_overrides');
         $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
+        $collection->add_database_table('vpl_last_executions', $lastexecfields, 'privacy:metadata:vpl_last_executions');
         // IDE user preferences.
         $collection->add_user_preference('vpl_editor_fontsize', 'privacy:metadata:vpl_editor_fontsize');
         $collection->add_user_preference('vpl_acetheme', 'privacy:metadata:vpl_acetheme');
@@ -119,6 +129,7 @@ class provider implements \core_privacy\local\metadata\provider,
         self::add_contexts_for_variations($contextlist, $userid);
         self::add_contexts_for_overrides($contextlist, $userid);
         self::add_contexts_for_running($contextlist, $userid);
+        self::add_contexts_for_lastexecs($contextlist, $userid);
 
         return $contextlist;
     }
@@ -150,6 +161,7 @@ class provider implements \core_privacy\local\metadata\provider,
             self::export_user_assigned_override_data($contentwriter, $vplid, $userid);
             self::export_user_submissions_data($contentwriter, $vplid, $userid);
             self::export_user_running_processes_data($contentwriter, $vplid, $userid);
+            self::export_user_last_executions_data($contentwriter, $vplid, $userid);
         }
     }
 
@@ -253,6 +265,24 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
+     * Export last executions personal data.
+     *
+     * @param content_writer $contentwriter data writer object.
+     * @param int $vplid vpl DB id
+     * @param int $userid user DB id
+     */
+    public static function export_user_last_executions_data(content_writer $contentwriter, int $vplid, int $userid) {
+        global $DB;
+        $lastexecutions = self::get_last_executions_by_vpl_and_user($vplid, $userid);
+        $subcontextsequence = 1;
+        foreach ($lastexecutions as $lastexecution) {
+            $subcontext = [ get_string('privacy:lastexecutionpath', 'vpl', $subcontextsequence++) ];
+            $dataoutput = self::get_vpl_last_execution_output($lastexecution);
+            $contentwriter->export_data($subcontext, $dataoutput);
+        }
+    }
+
+    /**
      * Exports user preferences of mod_vpl.
      *
      * @param int $userid The userid of the user to export preferences
@@ -337,6 +367,9 @@ class provider implements \core_privacy\local\metadata\provider,
 
         // Delete running processes.
         self::delete_running_processes_by_contextlist($contextlist, $userid);
+
+        // Delete last executions.
+        self::delete_last_executions_by_contextlist($contextlist, $userid);
     }
 
     /**
@@ -396,6 +429,14 @@ class provider implements \core_privacy\local\metadata\provider,
                   JOIN {modules} m ON m.id = cm.module
                  WHERE cm.id = :instanceid AND m.name = :modulename";
         $userlist->add_from_sql('userid', $sql, $params);
+
+        // Last executions.
+        $sql = "SELECT DISTINCT le.userid
+                  FROM {vpl_last_executions} le
+                  JOIN {course_modules} cm ON le.vpl = cm.instance
+                  JOIN {modules} m ON m.id = cm.module
+                 WHERE cm.id = :instanceid AND m.name = :modulename";
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -449,6 +490,11 @@ class provider implements \core_privacy\local\metadata\provider,
         // Delete related running processes.
         $sql = "DELETE
                   FROM {vpl_running_processes}
+                 WHERE vpl = :vplid AND userid {$userssql}";
+        $DB->execute($sql, $params + $usersparams);
+        // Delete related last executions.
+        $sql = "DELETE
+                  FROM {vpl_last_executions}
                  WHERE vpl = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
     }
@@ -570,6 +616,30 @@ class provider implements \core_privacy\local\metadata\provider,
             'contextmodule' => CONTEXT_MODULE,
             'modulename'    => 'vpl',
             'userid'        => $userid,
+        ];
+
+        $list->add_from_sql($sql, $params);
+    }
+
+    /**
+     * Adds contexts of last executions for the specified user.
+     *
+     * @param contextlist $list the list of context.
+     * @param int $userid the userid.
+     * @return void.
+     */
+    protected static function add_contexts_for_lastexecs(contextlist $list, int $userid): void {
+        $sql = "SELECT DISTINCT ctx.id
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                  JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                  JOIN {vpl_last_executions} le ON le.vpl = cm.instance
+                 WHERE le.userid = :userid";
+
+        $params = [
+                'contextmodule' => CONTEXT_MODULE,
+                'modulename'    => 'vpl',
+                'userid'        => $userid,
         ];
 
         $list->add_from_sql($sql, $params);
@@ -738,6 +808,36 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
+     * Delete last executions for the user and their contextlist.
+     *
+     * @param object $contextlist Object with the contexts related to a userid.
+     * @param int $userid The user ID.
+     */
+    protected static function delete_last_executions_by_contextlist($contextlist, $userid) {
+        global $DB;
+        // Get sql partial where of contexts.
+        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+
+        $params = [
+                'contextmodule' => CONTEXT_MODULE,
+                'modulename' => 'vpl',
+                'userid' => $userid,
+        ];
+
+        $sql = "DELETE
+                  FROM {vpl_last_executions}
+                 WHERE userid = :userid AND
+                          vpl IN (
+                       SELECT cm.instance
+                         FROM {course_modules} cm
+                         JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                         JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                        WHERE ctx.id {$contextsql} )";
+        $params += $contextparams;
+        $DB->execute($sql, $params);
+    }
+
+    /**
      * Helper function to retrieve vpl submissions related with user (submitted or grader).
      *
      * @param int $vplid The vpl id to retrieve submissions.
@@ -824,6 +924,26 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
+     * Helper function to retrieve last executions of a user.
+     *
+     * @param int $vplid The vpl id to retrieve last executions.
+     * @param int $userid The user id to retrieve last executions.
+     * @return array Array of last executions details.
+     * @throws \dml_exception
+     */
+    protected static function get_last_executions_by_vpl_and_user($vplid, $userid) {
+        global $DB;
+        $params = [
+                'vplid' => $vplid,
+                'userid' => $userid,
+        ];
+        $sql = "SELECT *
+                  FROM {vpl_last_executions} le
+                 WHERE le.vpl = :vplid AND le.userid = :userid";
+        return $DB->get_records_sql($sql, $params);
+    }
+
+    /**
      * Helper function to copy object fields
      *
      * @param object $from  Object containing data.
@@ -876,6 +996,11 @@ class provider implements \core_privacy\local\metadata\provider,
                 $vpl->reductionbyevaluation = $vpldata->reductionbyevaluation;
                 $vpl->freeevaluations = $vpldata->freeevaluations;
             }
+            foreach ([ 'minrundelay', 'mindebugdelay', 'minevaluationdelay' ] as $field) {
+                if ($vpldata->$field != 0) {
+                    $vpl->$field = $vpldata->$field;
+                }
+            }
         } else {
             $vpl->grade = get_string('nograde');
         }
@@ -922,7 +1047,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted assigned override output for exporting.
      */
     protected static function get_vpl_assigned_override_output($assignedoverride) {
-        $fields = ['userid', 'vpl', 'reductionbyevaluation', 'freeevaluations'];
+        $fields = ['userid', 'vpl', 'reductionbyevaluation', 'freeevaluations', 'minrundelay', 'mindebugdelay', 'minevaluationdelay'];
         $datefields = ['startdate', 'duedate'];
         $data = new \stdClass();
         self::copy_fields($assignedoverride, $data, $fields);
@@ -942,6 +1067,23 @@ class provider implements \core_privacy\local\metadata\provider,
         self::copy_fields($runningprocess, $data, $fields);
         self::copy_date_fields($runningprocess, $data, ['start_time']);
         $data->server = parse_url($data->server, PHP_URL_HOST);
+        return $data;
+    }
+
+    /**
+     * Helper function generate last execution output object for exporting.
+     *
+     * @param object $lastexecution Object containing an instance record of last execution.
+     * @return object Formatted last execution output for exporting.
+     */
+    protected static function get_vpl_last_execution_output($lastexecution) {
+        $fields = ['userid', 'vpl'];
+        $data = new \stdClass();
+        self::copy_fields($lastexecution, $data, $fields);
+        self::copy_date_fields($lastexecution, $data, ['time']);
+        if (isset($lastexecution->type)) {
+            $data->type = get_string([ 0 => 'run', 1 => 'debug', 2 => 'evaluate' ][$lastexecution->type], 'mod_vpl');
+        }
         return $data;
     }
 }

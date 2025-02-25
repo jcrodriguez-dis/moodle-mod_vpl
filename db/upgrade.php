@@ -495,6 +495,87 @@ function xmldb_vpl_upgrade_2024010212() {
 }
 
 /**
+ * Upgrades VPL to 2025022500 version
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2025022500() {
+    global $DB;
+
+    $dbman = $DB->get_manager();
+    // Define field minrundelay to be added to vpl.
+    $table = new xmldb_table('vpl');
+    $field = new xmldb_field('minrundelay', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'reductionbyevaluation');
+
+    // Conditionally launch add field minrundelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define field mindebugdelay to be added to vpl.
+    $field = new xmldb_field('mindebugdelay', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'minrundelay');
+
+    // Conditionally launch add field mindebugdelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define field minevaluationdelay to be added to vpl.
+    $field = new xmldb_field('minevaluationdelay', XMLDB_TYPE_INTEGER, '10', null, null, null, '0', 'mindebugdelay');
+
+    // Conditionally launch add field minevaluationdelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define field minrundelay to be added to vpl_overrides.
+    $table = new xmldb_table('vpl_overrides');
+    $field = new xmldb_field('minrundelay', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'reductionbyevaluation');
+
+    // Conditionally launch add field minrundelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define field mindebugdelay to be added to vpl_overrides.
+    $field = new xmldb_field('mindebugdelay', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'minrundelay');
+
+    // Conditionally launch add field mindebugdelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define field minevaluationdelay to be added to vpl_overrides.
+    $field = new xmldb_field('minevaluationdelay', XMLDB_TYPE_INTEGER, '10', null, null, null, null, 'mindebugdelay');
+
+    // Conditionally launch add field minevaluationdelay.
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+
+    // Define table vpl_last_executions to be created.
+    $table = new xmldb_table('vpl_last_executions');
+
+    // Adding fields to table vpl_last_executions.
+    $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+    $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+    $table->add_field('vpl', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+    $table->add_field('type', XMLDB_TYPE_INTEGER, '4', null, XMLDB_NOTNULL, null, null);
+    $table->add_field('time', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+
+    // Adding keys to table vpl_last_executions.
+    $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+
+    // Adding indexes to table vpl_last_executions.
+    $table->add_index('user_vpl_type', XMLDB_INDEX_NOTUNIQUE, ['userid', 'vpl', 'type']);
+
+    // Conditionally launch create table for vpl_last_executions.
+    if (!$dbman->table_exists($table)) {
+        $dbman->create_table($table);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -550,6 +631,11 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     if ($oldversion < $vpl43) {
         xmldb_vpl_upgrade_2024010212();
         upgrade_mod_savepoint(true, $vpl43, 'vpl');
+    }
+
+    if ($oldversion < 2025022500) {
+        xmldb_vpl_upgrade_2025022500();
+        upgrade_mod_savepoint(true, 2025022500, 'vpl');
     }
 
     return true;
