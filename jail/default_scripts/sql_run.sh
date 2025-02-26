@@ -37,11 +37,10 @@ function vpl_sql_save_files {
 		if [ "" == "$FILENAME" ] ; then
 			break
 		fi
-		mv "$FILENAME" "$FILENAME.vpl_save"
-		#security check. Not moved => removed
+		[ -f "$FILENAME" ] && mv "$FILENAME" "$FILENAME.vpl_save"
+		#Not moved => try remove
 		if [ -f "$FILENAME" ] ; then
 			rm "$FILENAME"
-			echo "removed $FILENAME"
 		fi
 	done
 }
@@ -57,11 +56,7 @@ function vpl_sql_restore_files {
 		if [ "" == "$FILENAME" ] ; then
 			break
 		fi
-		mv "$FILENAME.vpl_save" "$FILENAME"
-		#security check
-		if [ ! -f "$FILENAME" ] ; then
-			echo "\"$FILENAME\" lost"
-		fi
+		[ -f "$FILENAME.vpl_save" ]  && mv "$FILENAME.vpl_save" "$FILENAME"
 	done
 }
 
