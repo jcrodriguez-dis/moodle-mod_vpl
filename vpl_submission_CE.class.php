@@ -44,6 +44,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'cpp' => 'cpp',
         'C' => 'cpp',
         'c++' => 'cpp',
+        'cbl' => 'cobol',
+        'cob' => 'cobol',
         'clj' => 'clojure',
         'cs' => 'csharp',
         'd' => 'd',
