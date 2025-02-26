@@ -8,6 +8,7 @@
 # @vpl_script_description Using default /bin/bash
 # load common script and check programs
 . common_script.sh
+check_program bash
 if [ "$1" == "version" ] ; then
 	get_program_version --version 3
 fi
