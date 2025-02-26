@@ -44,6 +44,8 @@ END_CONFIG
 	PROJECT_NAME="${filename_with_extension%.*}"
 }
 
+VPL_ERROR_FILE=.vpl_execution.error
+
 check_program dotnet csc mcs
 if [ "$PROGRAM" == "dotnet" ] ; then
 	export DOTNET_CLI_TELEMETRY_OPTOUT=1
@@ -63,7 +65,7 @@ if [ "$PROGRAM" == "dotnet" ] ; then
 		exit
 	fi
 	get_project csproj C#
-	dotnet build -v=q "$PROJECT_FILENAME"
+	dotnet build -v=q "$PROJECT_FILENAME" &> $VPL_ERROR_FILE
 	if [ "$?" == "0" ] ; then
 		if [ "$PROJECT_DIRECTORY" == "" ] ; then
 			EXE_FILENAME=$(ls "bin/Debug/"*"/$PROJECT_NAME")
@@ -88,6 +90,8 @@ if [ "$PROGRAM" == "dotnet" ] ; then
 		else
 			echo "Error: execution file not found"
 		fi
+	else
+		cat $VPL_ERROR_FILE
 	fi
 else
 	check_program mono

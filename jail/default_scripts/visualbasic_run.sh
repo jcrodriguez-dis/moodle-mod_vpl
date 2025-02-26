@@ -44,6 +44,7 @@ END_CONFIG
 	PROJECT_NAME="${filename_with_extension%.*}"
 }
 
+VPL_ERROR_FILE=.vpl_execution.error
 check_program dotnet
 export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_RUNNING_IN_CONTAINER=1
@@ -62,7 +63,7 @@ if [ "$1" == "version" ] ; then
 		exit
 fi
 get_project vbproj VisualBasic
-dotnet build -v=q "$PROJECT_FILENAME"
+dotnet build -v=q "$PROJECT_FILENAME" &> $VPL_ERROR_FILE
 if [ "$?" == "0" ] ; then
 	if [ "$PROJECT_DIRECTORY" == "" ] ; then
 		EXE_FILENAME=$(ls "bin/Debug/"*"/$PROJECT_NAME")
@@ -82,4 +83,6 @@ if [ "$?" == "0" ] ; then
 	else
 		echo "Error: execution file not found"
 	fi
+else
+	cat $VPL_ERROR_FILE
 fi
