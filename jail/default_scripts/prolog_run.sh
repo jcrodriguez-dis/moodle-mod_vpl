@@ -10,7 +10,7 @@
 . common_script.sh
 check_program swipl
 if [ "$1" == "version" ] ; then
-	get_program_version -v
+	get_program_version --version
 fi
 get_first_source_file pro pl
 swipl -q -s "$FIRST_SOURCE_FILE" -t halt 1> /dev/null < /dev/null
