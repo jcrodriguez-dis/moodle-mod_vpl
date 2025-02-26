@@ -22,17 +22,47 @@ if [ "$1" == "version" ] ; then
 fi
 get_source_files vhdl vhd
 export TERM=dumb
-# compile
+# Process request based on compiler detected
 if [ "$PROGRAM" == "ghdl" ] ; then
-    ghdl -c $SOURCE_FILES 2>&1 | sed 's/\x1b\[[0-9;]*m//g'
-    TOPENTITY="$(ghdl --find-top 2>/dev/null)"
-    if [ "$TOPENTITY" == "" ] ; then
-        echo "No top entity found"
-    else
-    	echo "#!/bin/bash" > vpl_execution
-		echo "ghdl -r $TOPENTITY" >> vpl_execution
-    	chmod +x vpl_execution
-    fi
+	get_first_source_file vhdl vhd
+	for SOURCE_FILE in $SOURCE_FILES; do
+	    ghdl -c $SOURCE_FILE &> /dev/null
+	    TOPENTITY="$(ghdl --find-top 2>/dev/null)"
+    	if [ "$TOPENTITY" != "" ] ; then
+		SOURCE_FILE_TE=$SOURCE_FILE
+			break
+		fi
+	done
+   	if [ "$TOPENTITY" == "" ] ; then
+		get_first_source_file vhdl vhd
+		TOPENTITY=${FIRST_SOURCE_FILE%.*}
+		SOURCE_FILE_TE=$FIRST_SOURCE_FILE
+        echo "No top entity found using ghdl --find-top"
+		echo "Using first filename as top entity name: $TOPENTITY"
+	fi
+	for SOURCE_FILE in $SOURCE_FILES; do
+		ghdl -a $SOURCE_FILE
+		if [ "$?" != "0" -a "$SOURCE_FILE" == "$SOURCE_FILE_TE" ] ; then
+			TOPENTITY=""
+		fi
+	done
+	if [ "$TOPENTITY" == "" ] ; then
+		echo "================================================"
+		echo "Compilation error: Check the code and try again."
+		exit
+	else
+		ghdl -e $TOPENTITY
+		if [ "$?" == "0" ] ; then
+			{
+				echo "#!/bin/bash"
+				echo "ghdl -r $TOPENTITY"
+			} > vpl_execution
+			chmod +x vpl_execution
+		else
+			echo "================================================"
+			echo "Top entity elaboration fails."
+		fi
+	fi
 else
     gvhdl $SOURCE_FILES
     get_first_source_file vhdl vhd
