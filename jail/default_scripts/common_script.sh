@@ -63,6 +63,7 @@ function wait_end {
 # $2: number of lines to show. Default 2
 function get_program_version {
 	local OUTPUTFILE
+	local ERRFILE
 	local nhl
 	echo $PROGRAM $1 $2
 	if [ "$2" == "" ] ; then
@@ -76,8 +77,12 @@ function get_program_version {
 		echo "echo \"$PROGRAM version unknown\"" >> vpl_execution
 	else
 		OUTPUTFILE=.stdoutput
-		echo "$PROGRAM $1 1> $OUTPUTFILE 2>/dev/null < /dev/null" >> vpl_execution
-		echo "cat $OUTPUTFILE | head -n $nhl" >> vpl_execution
+		ERRFILE=.stderror
+		{
+			echo "$PROGRAM $1 1> $OUTPUTFILE 2>$ERRFILE < /dev/null"
+			echo "[ \"\$?\" == \"0\" ] && cat $ERRFILE >> $OUTPUTFILE"
+			echo "cat $OUTPUTFILE | head -n $nhl"
+		} >> vpl_execution
 	fi
 	chmod +x vpl_execution
 	exit
@@ -86,46 +91,78 @@ function get_program_version {
 # Populate SOURCE_FILES, SOURCE_FILES_LINE and SOURCE_FILE0 with files
 # of extensions passed. E.g. get_source_files cpp C
 function get_source_files {
-	local ext
-	SOURCE_FILES=""
-	SOURCE_FILES_LINE=""
-	for ext in "$@"
-	do
-		if [ "$ext" == "NOERROR" ] ; then
-			break
-		fi
-	    local source_files_ext="$(find . -name "*.$ext" -print | sed 's/^.\///g' | sed 's/ /\\ /g')"
-	    if [ "$SOURCE_FILES_LINE" == "" ] ; then
-	        SOURCE_FILES_LINE="$source_files_ext"
-	    else
-	        SOURCE_FILES_LINE=$(echo -en "$SOURCE_FILES_LINE\n$source_files_ext")
-	    fi
-	    local source_files_ext_s="$(find . -name "*.$ext" -print | sed 's/^.\///g')"
-	    if [ "$SOURCE_FILES" == "" ] ; then
-	        SOURCE_FILES="$source_files_ext_s"
-	    else
-	        SOURCE_FILES=$(echo -en "$SOURCE_FILES\n$source_files_ext_s")
-	    fi
-	done
+    local ext
+    # Declare an array to hold all files
+    declare -a files=()
 
-    if [ "$SOURCE_FILES" != "" -o "$1" == "b64" ] ; then
-		local file_name
-		local SIFS=$IFS
-		IFS=$'\n'
-		for file_name in $SOURCE_FILES
-		do
-			SOURCE_FILE0=$file_name
-			break
-		done
-		IFS=$SIFS
-		return 0
-	fi
-	if [ "$ext" == "NOERROR" ] ; then
-		return 1
-	fi
+    # 1. Collect all files with the given extensions
+    for ext in "$@"; do
+        if [ "$ext" == "NOERROR" ]; then
+            break
+        fi
+        # Read find output into the array
+        while IFS= read -r file; do
+            # Remove leading "./" if present
+            files+=("${file#./}")
+        done < <(find . -name "*.$ext" -print)
+    done
 
-	echo "To run this type of program you need some file with extension \"$@\""
-	exit 0;
+    # If no files were found (and not b64), exit with an error message.
+    if [ ${#files[@]} -eq 0 ] && [ "$1" != "b64" ]; then
+        if [ "$ext" == "NOERROR" ]; then
+            return 1
+        fi
+        echo "To run this type of program you need some file with extension \"$@\""
+        exit 0
+    fi
+
+    # 2. Reorder the list so that files matching VPL_SUBFILE0, VPL_SUBFILE1, … come first.
+    declare -a ordered=()
+    local i=0
+    while true; do
+        local varname="VPL_SUBFILE${i}"
+        local vpl="${!varname}"
+        if [ -z "$vpl" ]; then
+            break
+        fi
+
+        # Search for vpl in the files array.
+        local found_index=-1
+        for j in "${!files[@]}"; do
+            if [ "${files[j]}" == "$vpl" ]; then
+                found_index="$j"
+                break
+            fi
+        done
+
+        if [ "$found_index" -ge 0 ]; then
+            ordered+=("$vpl")
+            # Remove the matched element from the files array.
+            unset 'files[found_index]'
+            # Re-index the array to avoid gaps.
+            files=("${files[@]}")
+        fi
+        i=$((i+1))
+    done
+
+    # Append any remaining files to the ordered array.
+    ordered+=("${files[@]}")
+
+    # SOURCE_FILES as a newline-separated list.
+    SOURCE_FILES=$(printf "%s\n" "${ordered[@]}")
+
+    # Build SOURCE_FILES_LINE by escaping spaces.
+    local escaped=()
+    for file in "${ordered[@]}"; do
+        # Replace spaces with "\ "
+        escaped+=("$(echo "$file" | sed 's/ /\\ /g')")
+    done
+    SOURCE_FILES_LINE="${escaped[*]}"
+
+    # Set SOURCE_FILE0 to the first file (if any)
+    SOURCE_FILE0="${ordered[0]}"
+    
+    return 0
 }
 
 # Take SOURCE_FILES and write at $1 file
