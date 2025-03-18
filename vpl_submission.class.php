@@ -34,6 +34,7 @@
  * path/usersdata/userid#/submissionid#/studenttest.txt
  */
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once($CFG->dirroot . '/grade/grading/lib.php');
@@ -736,30 +737,37 @@ class mod_vpl_submission {
      * @param string $title Title to show
      * @param string $comment Content to process
      * @param bool $empty Process empty comment
+     * @param bool $fordownload Whether to format ce info for download or do standard formatting.
      * @return string
      */
-    public function get_processed_comment($title, $comment, $empty = false) {
+    public function get_processed_comment($title, $comment, $empty = false, $fordownload = false) {
         GLOBAL $PAGE;
         $ret = '';
         $tag = ($title == 'compilation' || $title == 'execution') ? 'pre' : 'div';
         if (strlen($comment) > 0 || $empty) {
-            $div = new mod_vpl\util\hide_show( true );
-            $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
-            $ret .= $div->content_in_tag($tag, s($comment));
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
+            if ($fordownload) {
+                $ret .= '<b>' . get_string( $title, VPL ) . '</b><br>';
+                $ret .= s($comment);
+            } else {
+                $div = new mod_vpl\util\hide_show( true );
+                $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
+                $ret .= $div->content_in_tag($tag, s($comment));
+                $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
+            }
         }
         return $ret;
     }
 
     /**
      * Return sudmission detailed grade part in html format
+     * @param bool $fordownload Whether to format ce info for download or do standard formatting.
      * @return string
      */
-    public function get_detailed_grade($process = true) {
+    public function get_detailed_grade($process = true, $fordownload = false) {
         GLOBAL $PAGE;
         $ret = $this->reduce_grade_string() . '<br>';
         $feedback = $this->get_grade_comments($process);
-        $ret .= $this->get_processed_comment('gradercomments', $feedback);
+        $ret .= $this->get_processed_comment('gradercomments', $feedback, false, $fordownload);
         return $ret;
     }
 
@@ -904,9 +912,10 @@ class mod_vpl_submission {
      * Print compilation and execution
      *
      * @param bool $return True return string, false print string
+     * @param bool $fordownload Whether to format ce info for download or do standard formatting.
      * @return string empty or html
      */
-    public function print_ce($return = false) {
+    public function print_ce($return = false, $fordownload = false) {
         global $OUTPUT, $PAGE;
         $ce = $this->getce();
         if ($ce['compilation'] === 0) {
@@ -918,22 +927,28 @@ class mod_vpl_submission {
         $grade = '';
         $this->get_ce_html( $ce, $compilation, $execution, $grade, true, true );
         if (strlen( $compilation ) + strlen( $execution ) + strlen( $grade ) > 0) {
-            $div = new mod_vpl\util\hide_show( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
-            $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate() . '</b>';
-            $ret .= $div->begin('div');
+            if ($fordownload) {
+                $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . '</b><br>';
+            } else {
+                $div = new mod_vpl\util\hide_show( ! $this->is_graded() || ! $this->vpl->get_visiblegrade() );
+                $ret .= '<b>' . get_string( 'automaticevaluation', VPL ) . $div->generate() . '</b>';
+                $ret .= $div->begin('div');
+            }
             $ret .= $OUTPUT->box_start();
             if (strlen( $grade ) > 0) {
                 $ret .= '<b>' . $grade . '</b><br>';
                 $ret .= $this->reduce_grade_string() . '<br>';
             }
             $compilation = $ce['compilation'];
-            $ret .= $this->get_processed_comment('compilation', $compilation);
+            $ret .= $this->get_processed_comment('compilation', $compilation, false, $fordownload);
             if (strlen( $execution ) > 0) {
                 $proposedcomments = $this->proposedcomment( $ce['execution'] );
-                $ret .= $this->get_processed_comment( 'comments', $proposedcomments, true);
+                $ret .= $this->get_processed_comment( 'comments', $proposedcomments, true, $fordownload);
             }
             $ret .= $OUTPUT->box_end();
-            $ret .= $div->end();
+            if (!$fordownload) {
+                $ret .= $div->end();
+            }
         }
         if ($return) {
             return $ret;
