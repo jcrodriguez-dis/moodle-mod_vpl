@@ -427,7 +427,7 @@ class webservice_test extends base_test {
         foreach ($files as $name => $data) {
             $file = [];
             $file['name'] = $name;
-            if ( vpl_is_binary($name)) {
+            if ( vpl_is_binary($name, $data)) {
                 $file['encoding'] = 1;
                 $file['data'] = base64_encode($data);
             } else {

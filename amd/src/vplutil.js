@@ -132,19 +132,43 @@ define(
             };
         })();
         (function() {
-            var regExt = /\.([^.]*)$/;
-            var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
+            var regImg = /^(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i;
             var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt|exe|com)$/i;
             var regBlk = /^blockly[0123]?$/;
             VPLUtil.fileExtension = function(fileName) {
-                var res = regExt.exec(fileName);
-                return res !== null ? res[1] : '';
+                return fileName.split('.').pop();
             };
             VPLUtil.isImage = function(fileName) {
                 return regImg.test(VPLUtil.fileExtension(fileName));
             };
-            VPLUtil.isBinary = function(fileName) {
-                return VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName));
+            VPLUtil.isBinary = function(fileName, fileContents) {
+                if (VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName))) {
+                    return true;
+                }
+                if (typeof fileContents === 'undefined' || !fileContents) {
+                    return false;
+                }
+                var textBytes = [7, 8, 9, 10, 12, 13, 27]
+                                .concat([...Array(0x5f).keys()].map(i => i + 0x20)) // Include [0x20 -> 0x7e].
+                                .concat([...Array(0x80).keys()].map(i => i + 0x80)); // Include [0x80 -> 0xff].
+                textBytes = Object.entries(textBytes).reduce((obj, [key, value]) => ({...obj, [value]: key}), {});
+                var bytes = null;
+                if (fileContents instanceof Uint8Array) {
+                    bytes = fileContents;
+                } else if (fileContents instanceof ArrayBuffer) {
+                    bytes = new Uint8Array(fileContents);
+                } else if (fileContents instanceof String || typeof fileContents === 'string') {
+                    bytes = (new TextEncoder()).encode(fileContents.substring(0, 512));
+                } else {
+                    return false;
+                }
+                for (var i = 0; i < bytes.length; i++) {
+                    if (!textBytes.hasOwnProperty(bytes[i])) {
+                        // Byte is not a standard text byte, file is likely binary.
+                        return true;
+                    }
+                }
+                return false;
             };
             VPLUtil.isBlockly = function(fileName) {
                 return regBlk.test(VPLUtil.fileExtension(fileName));
@@ -162,20 +186,6 @@ define(
         })();
         VPLUtil.getCurrentTime = function() {
             return parseInt((new Date()).valueOf() / 1000);
-        };
-        VPLUtil.encodeBinary = function(name, data) {
-            if (!VPLUtil.isBinary(name)) {
-                return btoa(unescape(encodeURIComponent(data)));
-            }
-            return btoa(VPLUtil.ArrayBuffer2String(data));
-        };
-
-        VPLUtil.decodeBinary = function(name, data) {
-            var decoded = atob(data);
-            if (!VPLUtil.isBinary(name)) {
-                return decodeURIComponent(escape(decoded));
-            }
-            return VPLUtil.String2ArrayBuffer(decoded);
         };
 
         VPLUtil.validPath = function(path) {
@@ -204,8 +214,12 @@ define(
                 'jpg': 'image/jpeg',
                 'jpeg': 'image/jpeg',
                 'png': 'image/png',
-                'ico': 'image/vnd.microsoft.icon',
-                'pdf': 'application/pdf'
+                'ico': 'image/x-icon',
+                'webp': 'image/webp',
+                'avif': 'image/avif',
+                'bmp': 'image/bmp',
+                'svg': 'image/svg+xml',
+                'pdf': 'application/pdf',
             };
             VPLUtil.getMIME = function(fileName) {
                 var ext = VPLUtil.fileExtension(fileName);

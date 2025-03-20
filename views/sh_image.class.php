@@ -34,7 +34,11 @@ class vpl_sh_image extends vpl_sh_base {
                 'jpeg' => 'jpeg',
                 'gif' => 'gif',
                 'png' => 'png',
-                'ico' => 'vnd.microsoft.icon',
+                'ico' => 'x-icon',
+                'webp' => 'webp',
+                'avif' => 'avif',
+                'bmp' => 'bmp',
+                'svg' => 'svg+xml',
         ];
     }
     public function get_mime($name) {

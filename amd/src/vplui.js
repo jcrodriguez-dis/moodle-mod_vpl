@@ -86,7 +86,7 @@ define(
                     } else if (entry.compressionMethod === 8) {
                         uncompressed = JSInflate.inflate(entry.data);
                     }
-                    if (VPLUtil.isBinary(fileName)) {
+                    if (VPLUtil.isBinary(fileName, uncompressed)) {
                         // If binary use as arrayBuffer.
                         save({name: fileName, contents: btoa(uncompressed), encoding: 1});
                         // TODO Show message when error.
@@ -140,14 +140,13 @@ define(
                 }
                 var f = filesToRead[sec];
                 pb.processFile(f.name);
-                var binary = VPLUtil.isBinary(f.name);
                 var reader = new FileReader();
-                var ext = VPLUtil.fileExtension(f.name).toLowerCase();
                 reader.onload = function(e) {
-                    if (binary) {
-                        if (ext == 'zip') {
+                    var arrayBuffer = e.target.result;
+                    if (VPLUtil.isBinary(f.name, arrayBuffer)) {
+                        if (VPLUtil.fileExtension(f.name).toLowerCase() === 'zip') {
                             try {
-                                VPLUI.readZipFile(e.target.result, save, pb, function() {
+                                VPLUI.readZipFile(arrayBuffer, save, pb, function() {
                                                                                   readSecuencial(sec + 1);
                                                                                });
                                 return;
@@ -155,11 +154,11 @@ define(
                                 VPLUI.showErrorMessage(ex + " : " + f.name);
                             }
                         } else {
-                            var data = VPLUtil.dataFromURLData(e.target.result);
-                            save({name: f.name, contents: data, encoding: 1});
+                            var binaryString = VPLUtil.ArrayBuffer2String(arrayBuffer);
+                            save({name: f.name, contents: btoa(decodeURIComponent(encodeURIComponent(binaryString))), encoding: 1});
                         }
                     } else {
-                        save({name: f.name, contents: e.target.result, encoding: 0});
+                        save({name: f.name, contents: (new TextDecoder("utf-8")).decode(arrayBuffer), encoding: 0});
                     }
                     readSecuencial(sec + 1);
                 };
@@ -167,15 +166,7 @@ define(
                     errorsMessages += "Error \"" + e.target.error + "\" reading " + f.name + "\n";
                     readSecuencial(sec + 1);
                 };
-                if (binary) {
-                    if (ext == 'zip') {
-                        reader.readAsArrayBuffer(f);
-                    } else {
-                        reader.readAsDataURL(f);
-                    }
-                } else {
-                    reader.readAsText(f);
-                }
+                reader.readAsArrayBuffer(f);
             }
             readSecuencial(0);
         };

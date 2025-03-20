@@ -496,7 +496,7 @@ define(
                                twoBlockly(oldname, newname)) {
                             throw str('incorrect_file_name');
                         }
-                        if (VPLUtil.isBinary(oldname) && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
+                        if (files[pos].isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
                             throw str('incorrect_file_name');
                         }
                         if (VPLUtil.isBlockly(oldname) != VPLUtil.isBlockly(newname)) {

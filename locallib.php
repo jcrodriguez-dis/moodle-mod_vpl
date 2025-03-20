@@ -735,7 +735,7 @@ function vpl_fileextension($filename) {
  * @return boolean
  */
 function vpl_is_image($filename) {
-    return preg_match( '/^(gif|jpg|jpeg|png|ico)$/i', vpl_fileextension( $filename ) ) == 1;
+    return preg_match( '/^(avif|bmp|gif|ico|jpe?g|png|svg|webp)$/i', vpl_fileextension( $filename ) ) == 1;
 }
 
 /**
@@ -755,10 +755,20 @@ function vpl_is_binary($filename, &$data = false) {
     if ( preg_match( '/^(' . $fileext . ')$/i', vpl_fileextension( $filename ) ) == 1 ) {
         return true;
     }
-    if ($data === false) {
+    if (empty($data)) {
         return false;
     }
-    return mb_detect_encoding( $data, 'UTF-8', true ) != 'UTF-8';
+    static $textbytes = null;
+    if ($textbytes === null) {
+        $textbytes = array_flip(array_merge([ 7, 8, 9, 10, 12, 13, 27 ], range(0x20, 0x7e), range(0x80, 0xff)));
+    }
+    foreach (unpack('c*', substr($data, 0, 512)) as $byte) {
+        if (!isset($textbytes[$byte])) {
+            // Byte is not a standard text byte, file is likely binary.
+            return true;
+        }
+    }
+    return false;
 }
 
 /**
