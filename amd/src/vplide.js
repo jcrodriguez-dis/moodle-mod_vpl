@@ -1449,14 +1449,7 @@ define(
                 var value = fontsizeSlider.slider("value");
                 fileManager.setFontSize(value);
                 $(this).dialog('close');
-                $.ajax({
-                    async: true,
-                    type: "POST",
-                    url: '../editor/userpreferences.json.php',
-                    'data': JSON.stringify({fontSize: value}),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+                VPLUtil.setUserPreferences({fontSize: value});
             };
             dialogFontFizeButtons[str('cancel')] = function() {
                 fileManager.setFontSize(fontsizeSlider.data("vpl_fontsize"));
