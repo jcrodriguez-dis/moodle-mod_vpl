@@ -55,13 +55,11 @@ class vpl_sh_factory {
         }
         return self::$cache[$type];
     }
-    public static function get_sh($filename) {
-        if (vpl_is_binary( $filename )) {
-            if (vpl_is_image( $filename )) {
-                return self::get_object( 'image' );
-            } else {
-                return self::get_object( 'binary' );
-            }
+    public static function get_sh($filename, &$filecontents = false) {
+        if (vpl_is_image( $filename )) {
+            return self::get_object( 'image' );
+        } else if (vpl_is_binary( $filename, $filecontents )) {
+            return self::get_object( 'binary' );
         }
         return self::get_object( 'ace' );
     }
