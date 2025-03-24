@@ -77,6 +77,19 @@
     padding: 0.2em;
 }
 
+#vpl_ide_run.delayed::before,
+#vpl_ide_debug.delayed::before,
+#vpl_ide_evaluate.delayed::before {
+    background: conic-gradient(transparent var(--delayoverlayangle, 0deg), rgba(60,60,60,0.5) 0 0);
+    content: "";
+    width: var(--delayoverlaywidth, 100%);
+    height: var(--delayoverlayheight, 100%);
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+
 .vpl_ide_tr {
     border: 0;
     margin: 0;

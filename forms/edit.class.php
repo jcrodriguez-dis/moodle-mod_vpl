@@ -249,7 +249,7 @@ class mod_vpl_edit {
      * @return Object with execution information
      */
     public static function execute($vpl, $userid, $action, $options = []) {
-        global $USER;
+        global $DB, $USER;
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission($userid);
         if (! $lastsub && ! $example && $action != 'test_evaluate') {
@@ -261,11 +261,34 @@ class mod_vpl_edit {
             $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
         }
         $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
+        if ($code[$action] != 3) {
+            // Check that execution delay (if any) has elapsed.
+            $priviledged = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+            $setting = [ 0 => 'minrundelay', 1 => 'mindebugdelay', 2 => 'minevaluationdelay' ];
+            $mindelay = $priviledged ? 0 : $vpl->get_effective_setting($setting[$code[$action]], $userid);
+            $executioninfo = [ 'userid' => $USER->id, 'vpl' => $vpl->get_instance()->id, 'type' => $code[$action] ];
+            $lastexec = $DB->get_record(VPL_LAST_EXECUTIONS, $executioninfo);
+            if ($lastexec !== false) {
+                $elapsedtime = time() - $lastexec->time;
+                if ($mindelay > $elapsedtime) {
+                    throw new moodle_exception('error:executiondelaynotelapsed', VPL, '', format_time($mindelay - $elapsedtime));
+                }
+                $DB->delete_records(VPL_LAST_EXECUTIONS, $executioninfo);
+            }
+            // Store execution time.
+            $executioninfo['time'] = time();
+            $DB->insert_record(VPL_LAST_EXECUTIONS, $executioninfo);
+            $nextruntime = $executioninfo['time'] + $mindelay;
+        } else {
+            $nextruntime = 0;
+        }
         $traslate = ['run' => 'run', 'debug' => 'debugged',
                      'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated', ];
         $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
         $eventclass::log( $submission );
-        return $submission->run( $code[$action], $options );
+        $executiondata = $submission->run( $code[$action], $options );
+        $executiondata->delaybeforenext = max(0, $nextruntime - time());
+        return $executiondata;
     }
 
     /**

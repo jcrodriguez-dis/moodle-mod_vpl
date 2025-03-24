@@ -365,6 +365,7 @@ function vpl_delete_instance( $id ) {
             VPL_ASSIGNED_VARIATIONS,
             VPL_OVERRIDES,
             VPL_ASSIGNED_OVERRIDES,
+            VPL_LAST_EXECUTIONS,
     ];
     foreach ($tables as $table) {
         $DB->delete_records($table, ['vpl' => $id]);
@@ -934,6 +935,10 @@ function vpl_reset_instance_userdata($vplid) {
         $vpl->update_override_calendar_events($override, null, true);
     }
     $DB->delete_records( VPL_ASSIGNED_OVERRIDES, [
+            'vpl' => $vplid,
+    ] );
+    // Delete last executions records.
+    $DB->delete_records( VPL_LAST_EXECUTIONS, [
             'vpl' => $vplid,
     ] );
 

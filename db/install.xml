@@ -40,6 +40,9 @@
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Timestamp of when this VPL instance was last modified"/>
         <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Number of automatic evaluations that do not reduce final score"/>
         <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Reduce final score by a value or percentage for each automatic evaluation"/>
+        <FIELD NAME="minrundelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Minimal delay in seconds between two consecutive runs"/>
+        <FIELD NAME="mindebugdelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Minimal delay in seconds between two consecutive debugs"/>
+        <FIELD NAME="minevaluationdelay" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Minimal delay in seconds between two consecutive automatic evaluations"/>
         <FIELD NAME="sebrequired" TYPE="int" LENGTH="2" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="Safe Exam Browser required"/>
         <FIELD NAME="sebkeys" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="Safe Exam Browser keys, one by line"/>
         <FIELD NAME="runscript" TYPE="char" LENGTH="63" NOTNULL="false" SEQUENCE="false" COMMENT="Name of script to run code"/>
@@ -148,6 +151,9 @@
         <FIELD NAME="duedate" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, after this date this vpl instance will not be available"/>
         <FIELD NAME="freeevaluations" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, number of automatic evaluations that do not reduce final score"/>
         <FIELD NAME="reductionbyevaluation" TYPE="char" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, reduce final score by a value or percentage for each automatic evaluation"/>
+        <FIELD NAME="minrundelay" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, minimal delay in seconds between two consecutive runs"/>
+        <FIELD NAME="mindebugdelay" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, minimal delay in seconds between two consecutive debugs"/>
+        <FIELD NAME="minevaluationdelay" TYPE="int" LENGTH="10" NOTNULL="false" SEQUENCE="false" COMMENT="If set, minimal delay in seconds between two consecutive automatic evaluations"/>
         <FIELD NAME="password" TYPE="char" LENGTH="255" NOTNULL="false" SEQUENCE="false" COMMENT="If set, replace or set the password required to submit the task"/>
       </FIELDS>
       <KEYS>
@@ -171,6 +177,21 @@
       <INDEXES>
         <INDEX NAME="vpl" UNIQUE="false" FIELDS="vpl"/>
         <INDEX NAME="override" UNIQUE="false" FIELDS="override"/>
+      </INDEXES>
+    </TABLE>
+    <TABLE NAME="vpl_last_executions" COMMENT="Last executions by user and activity">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id"/>
+        <FIELD NAME="vpl" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="VPL id"/>
+        <FIELD NAME="type" TYPE="int" LENGTH="4" NOTNULL="true" SEQUENCE="false" COMMENT="Type of execution"/>
+        <FIELD NAME="time" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Start time of execution"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="user_vpl_type" UNIQUE="false" FIELDS="userid, vpl, type"/>
       </INDEXES>
     </TABLE>
   </TABLES>

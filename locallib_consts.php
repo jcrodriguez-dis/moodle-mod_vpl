@@ -31,6 +31,7 @@ const VPL_VARIATIONS = 'vpl_variations';
 const VPL_ASSIGNED_VARIATIONS = 'vpl_assigned_variations';
 const VPL_OVERRIDES = 'vpl_overrides';
 const VPL_ASSIGNED_OVERRIDES = 'vpl_assigned_overrides';
+const VPL_LAST_EXECUTIONS = 'vpl_last_executions';
 const VPL_GRADE_CAPABILITY = 'mod/vpl:grade';
 const VPL_VIEW_CAPABILITY = 'mod/vpl:view';
 const VPL_SUBMIT_CAPABILITY = 'mod/vpl:submit';

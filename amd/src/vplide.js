@@ -1811,6 +1811,32 @@ define(
             });
 
             /**
+             * Animate a delay on the action button.
+             *
+             * @param {HTMLElement} actionButton Action button for 'run', 'debug', 'evaluate'
+             * @param {Number} remainingDelay Delay in seconds before end of animation
+             * @param {Number} initialDelay Initial delay in seconds
+             */
+            function animateExecutionDelay(actionButton, remainingDelay, initialDelay) {
+                // Animate remaining delay before next execution on button.
+                var startTime = Date.now() - (initialDelay - remainingDelay) * 1000.0;
+                clearInterval(actionButton.dataset.delayIntervalID); // If an animation is still playing, cancel it.
+                actionButton.style.setProperty('--delayoverlayangle', '0deg');
+                actionButton.classList.add('delayed');
+                actionButton.dataset.delayIntervalID = setInterval(function() {
+                    var elapsedTime = Date.now() - startTime;
+                    if (elapsedTime >= initialDelay * 1000.0) {
+                        actionButton.classList.remove('delayed');
+                        clearInterval(actionButton.dataset.delayIntervalID);
+                        delete actionButton.dataset.delayIntervalID;
+                    } else {
+                        var angle = Math.round((elapsedTime / (initialDelay * 1000.0)) * 360);
+                        actionButton.style.setProperty('--delayoverlayangle', angle + 'deg');
+                    }
+                }, initialDelay * 1000.0 / 360.0);
+            }
+
+            /**
              * Launches the action
              *
              * @param {string} action Action 'run', 'debug', 'evaluate'
@@ -1824,6 +1850,10 @@ define(
                 if (!lastConsole.isConnected()) {
                     VPLUI.requestAction(action, '', data, options.ajaxurl)
                     .done(function(response) {
+                        if (response.delaybeforenext > 0) {
+                            animateExecutionDelay(document.getElementById('vpl_ide_' + action),
+                                response.delaybeforenext, response.delaybeforenext);
+                        }
                         VPLUI.webSocketMonitor(response, action, acting, executionActions);
                     })
                     .fail(showErrorMessage);
@@ -2026,6 +2056,33 @@ define(
             }
             menuButtons.setExtracontent('user', options.username);
             menuButtons.setTimeLeft(options);
+            var resizeDelayOverlay = function() {
+                ['run', 'debug', 'evaluate'].forEach(function(action) {
+                    // Set overlay width and height to an even number to avoid visual artifacts with coniv-gradient.
+                    var actionButton = document.getElementById('vpl_ide_' + action);
+                    if (actionButton === null) {
+                        return;
+                    }
+                    actionButton.style.setProperty('--delayoverlaywidth',
+                        Math.ceil(actionButton.clientWidth / 2) * 2 + 'px');
+                    actionButton.style.setProperty('--delayoverlayheight',
+                        Math.ceil(actionButton.clientHeight / 2) * 2 + 'px');
+                });
+            };
+            resizeDelayOverlay();
+            ['run', 'debug', 'evaluate'].forEach(function(action) {
+                // Display remaining delay (if any) on buttons upon IDE loading.
+                var actionButton = document.getElementById('vpl_ide_' + action);
+                if (actionButton === null || typeof options['delayuntil' + action] === 'undefined') {
+                    return;
+                }
+                new ResizeObserver(resizeDelayOverlay).observe(actionButton);
+                // Artificial offset of 1 second for IDE loading time.
+                if (options['delayuntil' + action].remaining > 1) {
+                    animateExecutionDelay(actionButton,
+                        options['delayuntil' + action].remaining - 1, options['delayuntil' + action].over);
+                }
+            });
             updateMenu = function() {
                 var i;
                 var file = fileManager.currentFile();

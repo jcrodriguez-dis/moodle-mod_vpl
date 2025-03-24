@@ -120,10 +120,25 @@ class mod_vpl_executionoptions_form extends moodleform {
 
         $mform->addElement( 'selectyesno', 'run', get_string( 'run', VPL ) );
         $mform->setDefault( 'run', $instance->run );
+        $mform->addElement( 'text', 'minrundelay', get_string( 'minrundelay', VPL ), [ 'size' => 8 ] );
+        $mform->setType( 'minrundelay', PARAM_INT );
+        $mform->setDefault( 'minrundelay', $instance->minrundelay );
+        $mform->disabledIf( 'minrundelay', 'run', 'eq', 0 );
+        $mform->addHelpButton( 'minrundelay', 'minrundelay', VPL );
         $mform->addElement( 'selectyesno', 'debug', get_string( 'debug', VPL ) );
         $mform->setDefault( 'debug', $instance->debug );
+        $mform->addElement( 'text', 'mindebugdelay', get_string( 'mindebugdelay', VPL ), [ 'size' => 8 ] );
+        $mform->setType( 'mindebugdelay', PARAM_INT );
+        $mform->setDefault( 'mindebugdelay', $instance->mindebugdelay );
+        $mform->disabledIf( 'mindebugdelay', 'debug', 'eq', 0 );
+        $mform->addHelpButton( 'mindebugdelay', 'mindebugdelay', VPL );
         $mform->addElement( 'selectyesno', 'evaluate', get_string( 'evaluate', VPL ) );
         $mform->setDefault( 'evaluate', $instance->evaluate );
+        $mform->addElement( 'text', 'minevaluationdelay', get_string( 'minevaluationdelay', VPL ), [ 'size' => 8 ] );
+        $mform->setType( 'minevaluationdelay', PARAM_INT );
+        $mform->setDefault( 'minevaluationdelay', $instance->minevaluationdelay );
+        $mform->disabledIf( 'minevaluationdelay', 'evaluate', 'eq', 0 );
+        $mform->addHelpButton( 'minevaluationdelay', 'minevaluationdelay', VPL );
         $mform->addElement( 'selectyesno', 'evaluateonsubmission', get_string( 'evaluateonsubmission', VPL ) );
         $mform->setDefault( 'evaluateonsubmission', $instance->evaluateonsubmission );
         $mform->disabledIf( 'evaluateonsubmission', 'evaluate', 'eq', 0 );
@@ -134,6 +149,16 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addHelpButton( 'automaticgrading', 'automaticgrading', VPL );
 
         $mform->addElement( 'submit', 'saveoptions', get_string( 'saveoptions', VPL ) );
+    }
+
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        foreach ([ 'minrundelay', 'mindebugdelay', 'minevaluationdelay' ] as $field) {
+            if ($data[$field] < 0) {
+                $errors[$field] = get_string('error:positiveintegerexpected', VPL);
+            }
+        }
+        return $errors;
     }
 }
 
@@ -159,6 +184,9 @@ if ($fromform = $mform->get_data()) {
         $instance->run = $fromform->run;
         $instance->debug = $fromform->debug;
         $instance->evaluate = $fromform->evaluate;
+        $instance->minrundelay = $fromform->minrundelay;
+        $instance->mindebugdelay = $fromform->mindebugdelay;
+        $instance->minevaluationdelay = $fromform->minevaluationdelay;
         $instance->evaluateonsubmission = $fromform->evaluate && $fromform->evaluateonsubmission;
         $instance->automaticgrading = $fromform->evaluate && $fromform->automaticgrading;
         if ( $vpl->update() ) {
