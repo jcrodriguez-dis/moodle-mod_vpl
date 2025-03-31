@@ -779,8 +779,22 @@ function vpl_truncate_string(&$string, $limit) {
     $string = substr( $string, 0, $limit - 3 ) . '...';
 }
 
+
 /**
  * @codeCoverageIgnore
+ * 
+ * Export a variable to bash.
+ * 
+ * This function is used to assign a value to an environment variable in Linux bash.
+ * It handles different types of values: integers, strings, and arrays.
+ * Each type is formatted appropriately for bash export:
+ *  - Integers are exported directly
+ *  - Strings are enclosed in single quotes with proper escaping
+ *  - Arrays are exported as bash arrays with each element in single quotes
+ * 
+ * @param string $var name of the variable
+ * @param mixed $value value of the variable (int, string or array)
+ * @return string bash export statement for the variable
  */
 function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
@@ -788,13 +802,13 @@ function vpl_bash_export($var, $value) {
     } else if (is_array($value)) {
         $ret = "export $var=( ";
         foreach ($value as $data) {
-            $ret .= '"' . str_replace('"', '\"', $data) . '" ';
+            $ret .= "'" . str_replace("'", "'\''", $data) . "' ";
         }
         $ret .= ")\n";
     } else {
-        $ret = "export $var=\"";
-        $ret .= str_replace('"', '\"', $value);
-        $ret .= "\"\n";
+        $ret = "export $var='";
+        $ret .= str_replace("'", "'\''", $value);
+        $ret .= "'\n";
     }
     return $ret;
 }

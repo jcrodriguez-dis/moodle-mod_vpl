@@ -18,7 +18,7 @@
  * Unit tests for mod/vpl/locallib.php.
  *
  * @package mod_vpl
- * @copyright  Juan Carlos RodrÃ­guez-del-Pino
+ * @copyright  Juan Carlos Rodrí­guez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos RodrÃ­guez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -36,6 +36,7 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 /**
  * Unit tests for mod/vpl/locallib.php functions.
  * @group mod_vpl
+ * @group mod_vpl_locallib
  */
 class locallib_test extends \advanced_testcase {
     /**
@@ -136,7 +137,7 @@ class locallib_test extends \advanced_testcase {
     /**
      * @covers \vpl_get_array_key
      */
-    public function tes_vpl_get_array_key() {
+    public function test_vpl_get_array_key() {
         $array = [0 => 'nothing', 1 => 'a', 2 => 'b', 5 => 'c', 1200 => 'd', 1500 => 'f'];
         $this->assertEquals(1, vpl_get_array_key($array, 1));
         $this->assertEquals(2, vpl_get_array_key($array, 2));
@@ -305,11 +306,11 @@ class locallib_test extends \advanced_testcase {
      */
     public function test_vpl_bash_export(): void {
         $this->assertEquals("export VPL=3\n", vpl_bash_export('VPL', 3));
-        $this->assertEquals("export ALGO=\"text\"\n", vpl_bash_export('ALGO', 'text'));
-        $this->assertEquals("export ALGO=\"te\\\" \$'xt\"\n", vpl_bash_export('ALGO', 'te" $\'xt'));
-        $this->assertEquals("export ALGO=\"te''xt'\"\n", vpl_bash_export('ALGO', "te''xt'"));
+        $this->assertEquals("export ALGO='text'\n", vpl_bash_export('ALGO', 'text'));
+        $this->assertEquals("export ALGO='te\" \$'\\''xt'\n", vpl_bash_export('ALGO', 'te" $\'xt'));
+        $this->assertEquals("export ALGO='te'\\'''\\''xt'\\'''\n", vpl_bash_export('ALGO', "te''xt'"));
         $res = vpl_bash_export('a', [ "te''xt'", 'te" $\'xt']);
-        $this->assertEquals("export a=( \"te''xt'\" \"te\\\" \$'xt\" )\n", $res);
+        $this->assertEquals("export a=( 'te'\\'''\\''xt'\\''' 'te\" \$'\\''xt' )\n", $res);
     }
 
     /**
