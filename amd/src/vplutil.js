@@ -580,7 +580,7 @@ define(
                 return t.replace(/[-[\]{}()*+?.,\\^$|#\s]/, "\\$&");
             }
             var regtitgra = /\([-]?[\d]+[.]?[\d]*\)\s*$/;
-            var regtit = /^-.*/;
+            var regtit = /^-/;
             var regcas = /^\s*>/;
             // TODO adds error? use first anotation for icon.
             var regError = new RegExp('\\[err\\]|error|' + escReg(VPLUtil.str('error')), 'i');
