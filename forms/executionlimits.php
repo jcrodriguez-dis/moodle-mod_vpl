@@ -55,7 +55,7 @@ class mod_vpl_executionlimits_form extends moodleform {
             } else {
                 $inheritedlimit = 0;
             }
-            $defaultvaluestring = trim($options[ vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name}) ]);
+            $defaultvaluestring = trim($options[vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name})]);
             if ($inheritedlimit) {
                 $defaultvaluestring = get_string('inherit', VPL, $defaultvaluestring);
             } else {

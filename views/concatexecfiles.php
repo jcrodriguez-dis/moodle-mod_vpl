@@ -1,6 +1,4 @@
 <?php
-use core\output\html_writer;
-
 // This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
 // VPL for Moodle is free software: you can redistribute it and/or modify
@@ -15,6 +13,8 @@ use core\output\html_writer;
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+use core\output\html_writer;
 
 require_once(__DIR__ . '/../../../config.php');
 
@@ -137,15 +137,21 @@ foreach ($finalscripts as $filename => $files) {
                 }
             } else if ($vplid == -1) {
                 $text = get_string('generatedshebang', 'mod_vpl');
-            } else { // $vplid == 0.
+            } else { // Then $vplid == 0.
                 $type = substr($filename, 4, -3); // Decompose into vpl_{$type}.sh.
                 if ($type === 'evaluate') {
                     $text = get_string('defaultevaluatescript', 'mod_vpl');
                 } else {
                     if (empty($data->{$type . 'script'})) {
-                        $details = [ 'pln' => $pln, 'origin' => get_string('determinedfromrequiredfiles', 'mod_vpl') ];
+                        $details = [
+                            'pln' => $pln,
+                            'origin' => get_string('determinedfromrequiredfiles', 'mod_vpl'),
+                        ];
                     } else {
-                        $details = [ 'pln' => $data->{$type . 'script'}, 'origin' => get_string('setbyexecutionoptions', 'mod_vpl') ];
+                        $details = [
+                            'pln' => $data->{$type . 'script'},
+                            'origin' => get_string('setbyexecutionoptions', 'mod_vpl'),
+                        ];
                     }
                     $text = get_string('defaultscriptforlang', 'mod_vpl', $details);
                 }

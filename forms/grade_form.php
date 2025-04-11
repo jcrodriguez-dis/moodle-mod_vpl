@@ -79,7 +79,7 @@ class mod_vpl_grade_form extends moodleform {
             }
             $gridscore = $gradinginstance->get_controller()->get_min_max_score()['maxscore'];
 
-            $mform->addElement('header','hAdvancedGrading', get_string('gradingmanagement', 'grading') );
+            $mform->addElement('header', 'hAdvancedGrading', get_string('gradingmanagement', 'grading'));
             $mform->addElement('grading',
                     'advancedgrading',
                     '',

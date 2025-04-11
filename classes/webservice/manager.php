@@ -90,7 +90,7 @@ class manager {
                 'externalserviceid' => self::get_service()->id,
                 'tokentype' => EXTERNAL_TOKEN_PERMANENT,
         ] );
-        if (! empty( $tokenrecord ) and $tokenrecord->validuntil > 0 and $tokenrecord->validuntil < $now) {
+        if (! empty( $tokenrecord ) && $tokenrecord->validuntil > 0 && $tokenrecord->validuntil < $now) {
             unset( $tokenrecord ); // Will be deleted before creating a new one.
         }
         if (empty( $tokenrecord )) {
