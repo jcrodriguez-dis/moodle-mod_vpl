@@ -39,6 +39,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 /**
  * Unit tests for mod/vpl/lib.php functions.
  * @group mod_vpl
+ * @group mod_vpl_lib
  */
 class lib_test extends base_test {
 
@@ -315,6 +316,7 @@ class lib_test extends base_test {
                 FEATURE_GRADE_OUTCOMES,
                 FEATURE_BACKUP_MOODLE2,
                 FEATURE_SHOW_DESCRIPTION,
+                FEATURE_ADVANCED_GRADING,
         ];
         foreach ($supp as $feature) {
             $this->assertTrue(vpl_supports($feature));
@@ -322,7 +324,6 @@ class lib_test extends base_test {
         $nosupp = [
                 FEATURE_COMPLETION_TRACKS_VIEWS,
                 FEATURE_COMPLETION_HAS_RULES,
-                FEATURE_ADVANCED_GRADING,
         ];
         foreach ($nosupp as $feature) {
             $this->assertFalse(vpl_supports($feature));
@@ -408,37 +409,167 @@ class lib_test extends base_test {
     }
 
     /**
-     * Method to test vpl_reset_userdata() function
+     * Method to test vpl_reset_userdata() for submissions function
      * @covers \vpl_reset_userdata
      */
-    public function test_vpl_reset_userdata(): void {
+    public function test_vpl_reset_submissions_userdata(): void {
         $nsubs = [];
+        $noverrides = [];
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $nsubs[$instance->id] = count($vpl->all_user_submission('s.id'));
+            $noverrides[$instance->id] = vpl_get_overrides($instance->id);
         }
         // Reset nothing.
         $data = new stdClass();
         $data->reset_vpl_submissions = false;
+        $data->courseid = $this->vpldefault->get_course()->id;
+        $data->reset_vpl_overrides = false;
+        $data->reset_vpl_group_overrides = false;
+        $data->reset_vpl_user_overrides = false;
+        $data->timeshift = 0;
+        $this->setUser($this->editingteachers[0]);
         $status = vpl_reset_userdata($data);
         $this->assertCount(0, $status);
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $count = count($vpl->all_user_submission('s.id'));
             $this->assertEquals($nsubs[$instance->id], $count, $instance->name);
+            $count = count(vpl_get_overrides($instance->id));
+            $this->assertEquals(count($noverrides[$instance->id]), $count, $instance->name);
         }
+        // Reset submissions.
         $data->reset_vpl_submissions = true;
-        $data->courseid = $this->vpldefault->get_course()->id;
         $status = vpl_reset_userdata($data);
-        $this->assertCount(count($this->vpls), $status);
-        foreach ($status as $st) {
-            $this->assertFalse($st['error']);
-        }
+        $this->assertCount(1, $status);
+        $this->assertFalse($status[0]['error']);
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $count = count($vpl->all_user_submission('s.id'));
             $this->assertEquals(0, $count, $instance->name);
+            $count = count(vpl_get_overrides($instance->id));
+            $this->assertEquals(count($noverrides[$instance->id]), $count, $instance->name);
         }
     }
 
+    /**
+     * Method to test vpl_reset_userdata() for submissions function
+     * @covers \vpl_reset_userdata
+     */
+    public function test_vpl_reset_override_userdata(): void {
+        $nsubs = [];
+        $noverrides = [];
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            $nsubs[$instance->id] = count($vpl->all_user_submission('s.id'));
+            $noverrides[$instance->id] = vpl_get_overrides($instance->id);
+        }
+        // Reset nothing.
+        $data = new stdClass();
+        $data->reset_vpl_submissions = false;
+        $data->courseid = $this->vpldefault->get_course()->id;
+        $data->reset_vpl_overrides = false;
+        $data->reset_vpl_group_overrides = false;
+        $data->reset_vpl_user_overrides = false;
+        $data->timeshift = 0;
+
+        // Reset group overrides.
+        $data->reset_vpl_group_overrides = true;
+        $this->setUser($this->editingteachers[0]);
+        $status = vpl_reset_userdata($data);
+        $this->assertCount(1, $status);
+        $this->assertFalse($status[0]['error']);
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            $newoverrides = vpl_get_overrides($instance->id);
+            foreach ($noverrides[$instance->id] as $override) {
+                $this->assertTrue(isset($newoverrides[$override->id]), $instance->name);
+                $this->assertEquals($newoverrides[$override->id]->userids, $override->userids, $instance->name);
+                $this->assertEquals($newoverrides[$override->id]->groupids, '', $instance->name);
+            }
+        }
+
+        // Reset user overrides.
+        $data->reset_vpl_group_overrides = false;
+        $data->reset_vpl_user_overrides = true;
+        $status = vpl_reset_userdata($data);
+        $this->assertCount(1, $status);
+        $this->assertFalse($status[0]['error']);
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            $newoverrides = vpl_get_overrides($instance->id);
+            foreach ($noverrides[$instance->id] as $override) {
+                $this->assertTrue(isset($newoverrides[$override->id]), $instance->name);
+                $this->assertEquals($newoverrides[$override->id]->userids, '', $instance->name);
+                $this->assertEquals($newoverrides[$override->id]->groupids, '', $instance->name);
+            }
+        }
+        // Reset overrides.
+        $data->reset_vpl_overrides = true;
+        $status = vpl_reset_userdata($data);
+        $this->assertCount(1, $status);
+        $this->assertFalse($status[0]['error']);
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            $newoverrides = vpl_get_overrides($instance->id);
+            foreach ($noverrides[$instance->id] as $override) {
+                $this->assertTrue(!isset($newoverrides[$override->id]), $instance->name);
+            }
+        }
+    }
+
+    /**
+     * Method to test vpl_reset_userdata() timeshift function
+     * @covers \vpl_reset_userdata
+     */
+    public function test_vpl_reset_timeshift(): void {
+        $timeshift = 13;
+        $nsubs = [];
+        $noverrides = [];
+        $instances = [];
+        foreach ($this->vpls as $vpl) {
+            $instance = $vpl->get_instance();
+            $instances[$instance->id] = $instance;
+            $nsubs[$instance->id] = count($vpl->all_user_submission('s.id'));
+            $noverrides[$instance->id] = vpl_get_overrides($instance->id);
+        }
+        // Reset nothing.
+        $data = new stdClass();
+        $data->reset_vpl_submissions = false;
+        $data->courseid = $this->vpldefault->get_course()->id;
+        $data->reset_vpl_overrides = false;
+        $data->reset_vpl_group_overrides = false;
+        $data->reset_vpl_user_overrides = false;
+        $data->timeshift = $timeshift;
+
+        // Reset group overrides.
+        $this->setUser($this->editingteachers[0]);
+        $status = vpl_reset_userdata($data);
+        $this->assertCount(1, $status);
+        $this->assertFalse($status[0]['error']);
+        foreach ($this->vpls as $oldvpl) {
+            $vpl = new \mod_vpl(null, $oldvpl->get_instance()->id);
+            $instance = $vpl->get_instance();
+            if ($instance->startdate > 0) {
+                $expected = $instances[$instance->id]->startdate + $timeshift;
+                $this->assertEquals($expected, $instance->startdate, $instance->name);
+            }
+            if ($instance->duedate > 0) {
+                $expected = $instances[$instance->id]->duedate + $timeshift;
+                $this->assertEquals($expected, $instance->duedate, $instance->name);
+            }
+
+            $newoverrides = vpl_get_overrides($instance->id);
+            foreach ($noverrides[$instance->id] as $override) {
+                if ($override->startdate > 0) {
+                    $expected = $override->startdate + $timeshift;
+                    $this->assertEquals($expected, $newoverrides[$override->id]->startdate, $instance->name);
+                }
+                if ($override->duedate > 0) {
+                    $expected = $override->duedate + $timeshift;
+                    $this->assertEquals($expected, $newoverrides[$override->id]->duedate, $instance->name);
+                }
+            }
+        }
+    }
 }
