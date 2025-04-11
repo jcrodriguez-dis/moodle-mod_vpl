@@ -990,7 +990,7 @@ function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
  * Get version string
  * @return string
  */
-function vpl_get_version() {
+function vpl_get_version(): string {
     static $version = '';
     if ($version === '' && false) { // Removed version information.
         $plugin = new stdClass();
@@ -1006,7 +1006,7 @@ function vpl_get_version() {
  * Polyfill for getting user picture fields
  * @return string List of fields separated by "," u.field
  */
-function vpl_get_picture_fields() {
+function vpl_get_picture_fields(): string {
     if (method_exists('\core_user\fields', 'get_picture_fields')) {
         return 'u.' . implode(',u.', \core_user\fields::get_picture_fields());
     } else {
@@ -1017,21 +1017,13 @@ function vpl_get_picture_fields() {
 /**
  * @codeCoverageIgnore
  * Return array of override objects for a vpl activity.
- * Asigned override as agregate userids and groupids.
+ * Asigned override as agregate in fields userids and groupids.
  * @param $vplid
+ * @param $overrides
+ * @param $asignedoverrides
  * @return array
  */
-function vpl_get_overrides($vplid) {
-    global $DB;
-    $sql = 'SELECT * FROM {vpl_overrides}
-            WHERE vpl = :vplid
-            ORDER BY id ASC';
-    $overrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-
-    $sql = 'SELECT * FROM {vpl_assigned_overrides}
-            WHERE vpl = :vplid';
-    $asignedoverrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-
+function vpl_agregate_overrides($overrides, $asignedoverrides): array {
     $userids = [];
     $groupids = [];
     foreach ($overrides as $override) {
@@ -1055,6 +1047,48 @@ function vpl_get_overrides($vplid) {
         $override->groupids = implode(',', $groupids[$override->id]);
     }
     return $overrides;
+}
+
+/**
+ * @codeCoverageIgnore
+ * Return array of override objects for a vpl activity.
+ * Asigned override as agregate userids and groupids.
+ * @param $vplid
+ * @return array
+ */
+function vpl_get_overrides($vplid): array {
+    global $DB;
+    $sql = 'SELECT * FROM {vpl_overrides}
+            WHERE vpl = :vplid
+            ORDER BY id ASC';
+    $overrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    $sql = 'SELECT * FROM {vpl_assigned_overrides}
+            WHERE vpl = :vplid';
+    $asignedoverrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    return vpl_agregate_overrides($overrides, $asignedoverrides);
+}
+
+/**
+ * @codeCoverageIgnore
+ * Return array of override objects for a course.
+ * Asigned override as agregate userids and groupids.
+ * @param $courseid
+ * @return array
+ */
+function vpl_get_overrides_incourse($courseid): array {
+    global $DB;
+    $sql = 'SELECT * FROM {vpl_overrides}
+            WHERE vpl IN (SELECT id FROM {vpl} WHERE course = :courseid)
+            ORDER BY id ASC';
+    $overrides = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+    $sql = 'SELECT * FROM {vpl_assigned_overrides}
+            WHERE vpl IN (SELECT id FROM {vpl} WHERE course = :courseid)';
+    $asignedoverrides = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+    return vpl_agregate_overrides($overrides, $asignedoverrides);
 }
 
 /**

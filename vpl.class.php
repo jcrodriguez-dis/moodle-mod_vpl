@@ -212,17 +212,21 @@ class mod_vpl {
     }
 
     /**
-     * Remove one record or all records from cache
+     * Remove one record, table or all (*) records from cache
      *
-     * @param string $table Table name
-     * @param int $id The id of the register to get from the table
+     * @param string $table Table name or '*' for all
+     * @param int $id The id of the register of the table to remove from cache
      * @return void
      */
-    public static function reset_db_cache($table = 'all', $id = -1) {
-        if ($table == 'all') {
+    public static function reset_db_cache($table = '*', $id = -1) {
+        if ($table == '*') {
             self::$instancescache = [];
         } else {
-            unset(self::$instancescache[$table][$id]);
+            if ($id == -1) {
+                self::$instancescache[$table] = [];
+            } else if (isset(self::$instancescache[$table][$id])) {
+                unset(self::$instancescache[$table][$id]);
+            }
         }
     }
 
