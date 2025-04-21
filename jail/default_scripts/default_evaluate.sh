@@ -48,7 +48,7 @@ else
 			echo "#!/bin/bash"
 			echo "echo"
 			echo "echo '<|--'"
-			echo "echo '-$VPL_COMPILATIONFAILED'"
+			echo 'echo "-$VPL_COMPILATIONFAILED"'
 			if [ -f vpl_wexecution ] ; then
 				echo "echo '======================'"
 				echo "echo 'It seems you are trying to test a program with a graphic user interface.'"
