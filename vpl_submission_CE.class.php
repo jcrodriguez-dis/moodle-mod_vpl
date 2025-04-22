@@ -441,10 +441,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             }
         }
         if ($vpl->is_group_activity() && isset($data->groupid)) {
-            $groupid = $data->groupid;
-            if ($group = $DB->get_record('groups', ['id' => $groupid])) {
-                $info .= vpl_bash_export('MOODLE_GROUP_ID',  $groupid);
-                $info .= vpl_bash_export('MOODLE_GROUP_NAME', $group->name);
+            $group = $vpl->get_usergroup($data->groupid);
+            if ($group) {
+                $info .= vpl_bash_export('MOODLE_GROUP_ID',  $group->id);
+                $info .= vpl_bash_export('MOODLE_GROUP_NAME', format_string($group->name));
             }
         }
         if ($data->type >= self::TEVALUATE) { // If evaluation then add information.
