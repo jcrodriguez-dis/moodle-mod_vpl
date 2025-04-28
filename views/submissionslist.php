@@ -24,11 +24,10 @@
  */
 
 require_once(dirname( __FILE__ ) . '/../../../config.php');
-global $CFG, $USER, $OUTPUT;
+global $CFG, $USER, $OUTPUT, $PAGE, $DB;
 require_once($CFG->dirroot.'/mod/vpl/locallib.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
-require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
 
 class vpl_submissionlist_order {
     protected static $field; // Field to compare.
@@ -222,6 +221,7 @@ $group = optional_param( 'group', - 1, PARAM_INT );
 $evaluate = optional_param( 'evaluate', 0, PARAM_INT );
 $nevaluation = optional_param( 'nevaluation', 0, PARAM_INT );
 $showgrades = optional_param( 'showgrades', 0, PARAM_INT );
+$downloadformat = optional_param('downloadformat', '', PARAM_RAW);
 $sort = vpl_get_set_session_var( 'subsort', 'lastname', 'sort' );
 $sortdir = vpl_get_set_session_var( 'subsortdir', 'move', 'sortdir' );
 $subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
@@ -237,11 +237,22 @@ $cm = $vpl->get_course_module();
 $vpl->require_capability(VPL_GRADE_CAPABILITY);
 \mod_vpl\event\vpl_all_submissions_viewed::log($vpl);
 
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-
-// Print header.
-$vpl->print_header( get_string( 'submissionslist', VPL ) );
-$vpl->print_view_tabs( basename( __FILE__ ) );
+// Create an invisible table for initials control.
+// We do not use a flexible table for the real display because we have our own sorting mecanism.
+$controltable = new flexible_table('mod_vpl-submissionslist');
+$controltable->set_attribute('class', 'd-none');
+$controltable->define_columns([ 'fullname' ]);
+$controltable->define_headers([ 'fullname' ]);
+$controltable->initialbars(true);
+$baseurl = new moodle_url('/mod/vpl/views/submissionslist.php', [ 'id' => $id ]);
+if ($showgrades) {
+    $baseurl->param('showgrades', 1);
+}
+if ($group) {
+    $baseurl->param('group', $group);
+}
+$controltable->define_baseurl($baseurl);
+$controltable->setup();
 
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode( $cm );
@@ -376,6 +387,8 @@ $hrefnsub = vpl_mod_href( 'views/activityworkinggraph.php', 'id', $id );
 $action = new popup_action( 'click', $hrefnsub, 'activityworkinggraph' . $id, $options );
 $linkworkinggraph = $OUTPUT->action_link( $hrefnsub, get_string( 'submissions', VPL ), $action );
 $strsubmisions = $linkworkinggraph . vpl_submissionlist_arrow( $baseurl, 'nsubmissions', $sort, $sortdir );
+$isdownloading = ($downloadformat > '');
+$downloaddata = [];
 $table = new html_table();
 $table->head = ['', '', $namesortselect];
 $table->align = ['right', 'left', 'left'];
@@ -424,6 +437,19 @@ foreach ($alldata as $data) {
         $user->lastname = $gr->name;
     } else {
         $user = $data->userinfo;
+
+        // Filter by initials.
+        if (($ifirst = $controltable->get_initial_first()) !== null) {
+            if (!preg_match("/^$ifirst/i", $user->firstname)) {
+                continue;
+            }
+        }
+        if (($ilast = $controltable->get_initial_last()) !== null) {
+            if (!preg_match("/^$ilast/i", $user->lastname)) {
+                continue;
+            }
+        }
+
     }
     $gradecomments = '';
     $linkparms = ['id' => $id, 'userid' => $user->id];
@@ -494,9 +520,12 @@ foreach ($alldata as $data) {
             }
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
-            if ($showgrades) {
-                $gradecomments .= $submission->get_detailed_grade();
-                $gradecomments .= $submission->print_ce(true);
+            if ($showgrades || $isdownloading) {
+                $gradecomments .= $submission->get_detailed_grade(true, $isdownloading);
+                if ($isdownloading) {
+                    $gradecomments .= '<br>';
+                }
+                $gradecomments .= $submission->print_ce(true, $isdownloading);
             }
         } else {
             $result = $submission->getCE();
@@ -528,8 +557,8 @@ foreach ($alldata as $data) {
                 $nextids[$lastid] = $user->id;
             }
             $lastid = $subid; // Save submission id as next index.
-            if ($showgrades) {
-                $gradecomments = $submission->print_ce(true);
+            if ($showgrades || $isdownloading) {
+                $gradecomments = $submission->print_ce(true, $isdownloading);
             }
         }
         // Add div id to submission info.
@@ -574,6 +603,84 @@ foreach ($alldata as $data) {
     }
     $row[] = $OUTPUT->render($actions);
     $table->data[] = $row;
+
+    $downloaddata[] = [
+            $vpl->fullname($user, false),
+            strip_links($subtime),
+            strip_links($grade),
+            $gradecomments,
+            $grader,
+            $gradedon,
+            strip_links($prev),
+    ];
+}
+
+if ($isdownloading) {
+    // This is a request to download the table.
+    confirm_sesskey();
+
+    if ($vpl->is_group_activity()) {
+        $strname = get_string('group');
+    } else {
+        if (method_exists('\core_user\fields', 'get_name_fields')) {
+            $namefields = \core_user\fields::get_name_fields();
+        } else {
+            $namefields = get_all_user_name_fields();
+        }
+        // Load name display format from language.
+        $nameformat = ($CFG->fullnamedisplay ?? 'language') === 'language' ? get_string('fullnamedisplay') : $CFG->fullnamedisplay;
+        $strname = implode(' / ', array_map('get_string', order_in_string($namefields, $nameformat)));
+    }
+
+    $headers = [
+            $strname,
+            get_string('submittedon', VPL),
+            get_string($gradenoun),
+            get_string('gradercomments', VPL),
+            get_string('grader', VPL),
+            get_string('gradedon', VPL),
+            get_string('submissions', VPL),
+    ];
+
+    $file = $CFG->dirroot . '/dataformat/' . $downloadformat . '/classes/writer.php';
+    if (is_readable($file)) {
+        include_once($file);
+    }
+    $writerclass = 'dataformat_' . $downloadformat. '\writer';
+    if (!class_exists($writerclass)) {
+        throw new moodle_exception('invalidparameter', 'debug');
+    }
+
+    $writer = new $writerclass();
+
+    $writer->set_filename(clean_filename('mod_vpl_sumbissionslist_export_' . format_string($vpl->get_instance()->name)));
+    $writer->send_http_headers();
+    $writer->set_sheettitle('submissionslist-' . format_string($vpl->get_instance()->name));
+    $writer->start_output();
+
+    $writer->start_sheet($headers);
+
+    // Post-process to format with or without HTML.
+    $removehtml = method_exists($writer, 'supports_html') ? !$writer->supports_html() : $downloadformat != 'html';
+    foreach ($downloaddata as &$row) {
+        foreach ($row as &$field) {
+            if ($removehtml) {
+                $field = html_entity_decode(strip_tags(preg_replace('#<br ?/?>#', "\n", $field)),
+                        ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML401, 'UTF-8');
+            } else {
+                $field = nl2br($field);
+            }
+        }
+    }
+
+    foreach ($downloaddata as $rownum => $row) {
+        $writer->write_record($row, $rownum + 1);
+    }
+
+    $writer->close_sheet($headers);
+
+    $writer->close_output();
+    exit();
 }
 
 if (count( $ngrades )) {
@@ -602,6 +709,11 @@ if (count( $ngrades )) {
         ];
     }
 }
+
+// Print header.
+$vpl->print_header( get_string( 'submissionslist', VPL ) );
+$vpl->print_view_tabs( basename( __FILE__ ) );
+
 // Menu for groups.
 if ($groupmode) {
     groups_print_activity_menu( $cm, $groupsurl );
@@ -644,7 +756,21 @@ if ($subselection != 'notgraded') {
     echo $OUTPUT->render( $urlsel );
 }
 echo '<br>';
+
+if (!$vpl->is_group_activity()) {
+    $controltable->add_data([ 'dummy' ]); // Add a dummy entry (or the control table won't display anything).
+    $controltable->finish_output();
+}
+
 echo html_writer::table( $table );
+
+echo $OUTPUT->download_dataformat_selector(
+        get_string('downloadas', 'table'),
+        $PAGE->url->out_omit_querystring(),
+        'downloadformat',
+        $PAGE->url->params()
+        );
+
 if (count( $ngrades ) > 0) {
     echo '<br>';
     echo html_writer::table( $tablegraders );
