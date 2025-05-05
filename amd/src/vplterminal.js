@@ -280,7 +280,9 @@ define(
                     controlDialogSize();
                     terminal.focus();
                 },
-                dialogClass: 'vpl_ide vpl_vnc',
+                classes: {
+                    "ui-dialog":  'vpl_ide vpl_vnc',
+                },
                 create: function() {
                     titleText = VPLUI.setTitleBar(tdialog, 'console', 'console',
                             ['clipboard', 'keyboard', 'theme'],

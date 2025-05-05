@@ -185,7 +185,9 @@ define(
             width: 'auto',
             closeText: VPLUtil.str('cancel'),
             modal: true,
-            dialogClass: 'vpl_ide vpl_ide_dialog'
+            classes: {
+                "ui-dialog":  'vpl_ide vpl_ide_dialog',
+            },
         };
         VPLUI.iconModified = function() {
             var html = '<span title="' + VPLUtil.str('modified') + '" class="vpl_ide_charicon">';
@@ -341,7 +343,9 @@ define(
                 height: 20,
                 minHeight: 20,
                 modal: true,
-                dialogClass: 'vpl_ide vpl_ide_dialog',
+                classes: {
+                    "ui-dialog":  'vpl_ide vpl_ide_dialog',
+                },
                 close: function(event) {
                     if (dialog) {
                         if (onUserClose && event.originalEvent) {

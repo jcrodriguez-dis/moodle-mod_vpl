@@ -27,6 +27,7 @@ define(
     [
         'jquery',
         'jqueryui',
+        'core/url',
         'mod_vpl/vplutil',
         'mod_vpl/vplui',
         'mod_vpl/vplidefile',
@@ -34,7 +35,7 @@ define(
         'mod_vpl/vplterminal',
         'mod_vpl/vplvnc',
     ],
-    function($, jqui, VPLUtil, VPLUI, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient) {
+    function($, jqui, coreURL, VPLUtil, VPLUI, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient) {
         if (typeof VPLIDE !== 'undefined') {
             return VPLIDE;
         }
@@ -59,7 +60,7 @@ define(
             var rootObj = $('#' + rootId);
             $("head").append('<meta name="viewport" content="initial-scale=1">')
                           .append('<meta name="viewport" width="device-width">')
-                          .append('<link rel="stylesheet" href="../editor/VPLIDE.css"/>');
+                          .append('<link rel="stylesheet" href="' + coreURL.relativeUrl('/mod/vpl/editor/VPLIDE.css') + '"/>');
             if (typeof rootObj != 'object') {
                 throw new Error("VPL: constructor tag_id not found");
             }
@@ -904,7 +905,11 @@ define(
                 hasContent = self.setResultTab('description', window.VPLDescription, window.VPLDescription);
                 if (hasContent && typeof MathJax == 'object') { // MathJax workaround.
                     var math = result.find(".vpl_ide_accordion_c_description")[0];
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+                    if (MathJax.Hub && MathJax.Hub.Queue) {
+                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+                    } else {
+                        MathJax.typesetPromise([math]);
+                    }
                 }
                 show = show || hasContent;
                 if (show) {

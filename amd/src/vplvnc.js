@@ -171,7 +171,9 @@ define(
                 modal: true,
                 width: 'auto',
                 height: 'auto',
-                dialogClass: 'vpl_ide vpl_vnc',
+                classes: {
+                    "ui-dialog":  'vpl_ide vpl_vnc',
+                },
                 create: function() {
                     titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
                             keyboardButton]);
