@@ -35,7 +35,10 @@ else
 		fi
 		mv vpl_evaluate.cpp.save vpl_evaluate.cpp
 		check_program g++
-		g++ vpl_evaluate.cpp -g -lm -lutil -o .vpl_tester
+		if [ "$VPL_DEBUG" != "" ] ; then
+			DEBUGMODE="-g -DDEBUG"
+		fi
+		g++ vpl_evaluate.cpp -o .vpl_tester -lm -lutil $DEBUGMODE
 		if [ ! -f .vpl_tester ] ; then
 			echo "Error compiling evaluation program"
 			exit 1
@@ -45,10 +48,11 @@ else
 		fi
 	else
 		(
-			echo "#!/bin/bash"
+			cat vpl_environment.sh
+			echo
 			echo "echo"
 			echo "echo '<|--'"
-			echo "echo '-$VPL_COMPILATIONFAILED'"
+			echo 'echo "-$VPL_COMPILATIONFAILED"'
 			if [ -f vpl_wexecution ] ; then
 				echo "echo '======================'"
 				echo "echo 'It seems you are trying to test a program with a graphic user interface.'"
