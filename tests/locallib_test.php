@@ -71,6 +71,9 @@ class locallib_test extends \advanced_testcase {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         $fpath = $testdir . $path;
+        if (file_exists($fpath) && is_dir($fpath)) {
+            $this->expectedNotice();
+        };
         $fp = vpl_fopen($fpath);
         $this->assertNotNull( $fp );
         fwrite($fp, $text);
@@ -193,6 +196,9 @@ class locallib_test extends \advanced_testcase {
             $fpath = $testdir . $bad;
             try {
                 $throwexception = false;
+                if(file_exists($fpath) && is_dir($fpath)) {
+                    $this->expectedNotice();
+                }
                 vpl_fwrite($fpath, $text);
             } catch (\Throwable $e) {
                 $throwexception = true;
