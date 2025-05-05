@@ -14,6 +14,10 @@ Feature: In an VPL activity, editing teacher change overrides
       | teacher2 | Teacher2  | Teacher  | teacher2@example.com |
       | student1 | Student1  | Student  | student1@example.com |
       | student2 | Student2  | Student  | student2@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
+      | teacher2 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |
@@ -36,6 +40,7 @@ Feature: In an VPL activity, editing teacher change overrides
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name                | VPL activity name |
       | id_shortdescription    | VPL activity short description |
+      | id_introeditor | No description |
       | id_duedate_enabled     | "" |
       | id_maxfiles            | 33 |
       | id_grade_modgrade_type | None |

@@ -23,13 +23,13 @@ Feature: In a VPL activity get the list of VPL activities in the course
       | choice     | Choice2 | Choice2 | C1     | choice2     | 2       |
       | choice     | Choice3 | Choice3 | C1     | choice3     | 3       |
     And the following "activities" exist:
-      | activity   | name               | course | section |
-      | vpl        | VPL activity one   | C1     | 1       |
-      | vpl        | VPL activity two   | C1     | 1       |
-      | vpl        | VPL activity three | C1     | 1       |
-      | vpl        | VPL activity four  | C1     | 2       |
-      | vpl        | VPL activity five  | C1     | 3       |
-      | vpl        | VPL activity six   | C1     | 3       |
+      | activity   | name               | intro   | course | section |
+      | vpl        | VPL activity one   | No desc | C1     | 1       |
+      | vpl        | VPL activity two   | No desc | C1     | 1       |
+      | vpl        | VPL activity three | No desc | C1     | 1       |
+      | vpl        | VPL activity four  | No desc | C1     | 2       |
+      | vpl        | VPL activity five  | No desc | C1     | 3       |
+      | vpl        | VPL activity six   | No desc | C1     | 3       |
     And I log in as "teacher1"
     And I am on "Course 1" course homepage with editing mode on
     And I click on "VPL activity one" "link" in the "region-main" "region"

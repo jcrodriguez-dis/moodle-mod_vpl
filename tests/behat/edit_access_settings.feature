@@ -19,11 +19,11 @@ Feature: Create and change VPL activity access settings
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity   | name               | password | requirednet | sebrequired | sebkeys | course | section |
-      | vpl        | VPL with password  | key      |             | 0           |         | C1     | 1       |
-      | vpl        | VPL with network   |          | 10.10.10.13 | 0           |         | C1     | 1       |
-      | vpl        | VPL with SEB       |          |             | 1           |         | C1     | 1       |
-      | vpl        | VPL with SEB key   |          |             | 0           | afssdaf | C1     | 1       |
+      | activity   | name               | intro   | password | requirednet | sebrequired | sebkeys | course | section |
+      | vpl        | VPL with password  | No desc | key      |             | 0           |         | C1     | 1       |
+      | vpl        | VPL with network   | No desc |          | 10.10.10.13 | 0           |         | C1     | 1       |
+      | vpl        | VPL with SEB       | No desc |          |             | 1           |         | C1     | 1       |
+      | vpl        | VPL with SEB key   | No desc |          |             | 0           | afssdaf | C1     | 1       |
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => teacher access

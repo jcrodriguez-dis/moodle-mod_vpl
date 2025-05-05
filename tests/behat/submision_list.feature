@@ -24,9 +24,9 @@ Feature: List submissions of students
       | student1 | C1 | student |
       | student2 | C1 | student |
     And the following "activities" exist:
-      | activity | name             | course | idnumber |
-      | vpl      | VPL activity 1   | C1     | vpl1  |
-      | vpl      | VPL activity 2   | C1     | vpl1  |
+      | activity | name           | intro   | course | idnumber |
+      | vpl      | VPL activity 1 | No desc | C1     | vpl1     |
+      | vpl      | VPL activity 2 | No desc | C1     | vpl2     |
 
   @javascript
   Scenario: An editing teacher sees Submissions list

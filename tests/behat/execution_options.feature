@@ -16,16 +16,22 @@ Feature: In an VPL activity, editing teacher change options of execution
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
+      | student1 | htmleditor | textarea |
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity name |
       | id_shortdescription | VPL activity short description |
+      | id_introeditor | No description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 33 |
       | id_grade_modgrade_type | None |
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL base activity |
       | id_shortdescription | VPL activity short description |
+      | id_introeditor | No description |
       | id_duedate_enabled | "" |
       | id_maxfiles | 100 |
       | id_grade_modgrade_type | None |

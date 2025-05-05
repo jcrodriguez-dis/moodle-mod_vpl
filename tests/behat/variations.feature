@@ -16,14 +16,9 @@ Feature: In an VPL activity, editing teacher change variations
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-    And I log in as "teacher1"
-    And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
-      | id_name | VPL activity name |
-      | id_shortdescription | VPL activity short description |
-      | id_duedate_enabled | "" |
-      | id_maxfiles | 33 |
-      | id_grade_modgrade_type | None |
-    And I log out
+    And the following "activities" exist:
+      | activity | name              | shortdescription               | intro          | maxfiles | course | section |
+      | vpl      | VPL activity name | VPL activity short description | No description | 33       | C1     | 1       |
 
   @javascript
   Scenario: A teacher set variation title and activate variations

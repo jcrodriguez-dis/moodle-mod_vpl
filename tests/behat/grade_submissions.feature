@@ -14,6 +14,10 @@ Feature: In a VPL activity teacher grade submissions
       | student1 | Student1 | L1 | student1@example.com |
       | student2 | Student2 | L2 | student2@example.com |
       | student3 | Student3 | l3 | student3@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
+      | teacher2 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
@@ -22,6 +26,7 @@ Feature: In a VPL activity teacher grade submissions
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
+      | id_introeditor | No description |
       | id_grade_modgrade_type | point |
       | id_grade_modgrade_point | 5 |
     And I log out
