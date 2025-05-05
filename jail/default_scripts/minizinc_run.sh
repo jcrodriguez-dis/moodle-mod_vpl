@@ -24,8 +24,8 @@ else
 	DATAFILE=
 fi
 # Show only first line if saying Hello
-if [[ $VPL_HELLO_MODE = "yes" ]] ; then
-	HELLO_FILTER="| head -n1"
+if [[ "$VPL_HELLO_MODE" == "yes" ]] ; then
+	HELLO_FILTER=" 2>/dev/null | head -n1"
 fi
 echo "#!/bin/bash" > vpl_execution
 if [ "$DATAFILE" == "" ] ; then
