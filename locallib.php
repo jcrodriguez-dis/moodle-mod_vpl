@@ -85,6 +85,10 @@ function vpl_fopen($filename) {
         $dir = dirname( $filename );
         vpl_create_dir($dir);
     }
+    if (is_dir( $filename )) { // Is a dir?
+        debugging( "Error creating file in VPL a directory with same name exists '$filename'.", DEBUG_NORMAL );
+        throw new file_exception('storedfileproblem', "Error creating file in VPL.");
+    }
     $fp = fopen( $filename, 'w+b' );
     if ($fp === false) {
         if (DIRECTORY_SEPARATOR == '\\' ) {
