@@ -4,9 +4,13 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-#load VPL environment vars
-if [ "$PROFILE_RUNNED" == "" ] ; then
-	export PROFILE_RUNNED=yes
+
+# Load environment variables set by VPL
+. vpl_environment.sh
+
+# Run system profile in the current directory
+if [ "$PROFILE_RAN" == "" ] ; then
+	export PROFILE_RAN=yes
 	if [ -f /etc/profile ] ; then
 		cp /etc/profile .localvplprofile
 		chmod +x .localvplprofile
@@ -14,8 +18,9 @@ if [ "$PROFILE_RUNNED" == "" ] ; then
 		rm .localvplprofile
 	fi
 fi
-. vpl_environment.sh
-#Use current lang
+
+# Try to set locale to VPL_LANG
+# if not possible set to en_US.UTF-8, C.utf8, POSIX or C
 {
 	for NEWLANG in $VPL_LANG en_US.UTF-8 C.utf8 POSIX C
 	do
