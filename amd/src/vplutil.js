@@ -764,7 +764,7 @@ define(
                 lastAnotation = false;
                 var ret = case_;
                 case_ = '';
-                return '<pre><i>' + ret + '</i></pre>';
+                return '<pre>' + ret + '</pre>';
             }
 
             for (var i = 0; i < lines.length; i++) {
