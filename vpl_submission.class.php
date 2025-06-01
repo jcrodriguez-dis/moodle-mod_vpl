@@ -716,7 +716,7 @@ class mod_vpl_submission {
         if (strlen($comment) > 0 || $empty) {
             $div = new mod_vpl\util\hide_show( true );
             $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
-            $ret .= $div->content_in_tag($tag, s($comment));
+            $ret .= $div->content_in_tag($tag, format_text($comment, FORMAT_PLAIN));
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
         }
         return $ret;
@@ -1064,9 +1064,9 @@ class mod_vpl_submission {
             $clean = trim( $line );
             // End of case?
             if (strlen( $casetoshow ) > 0 && ! (strlen( $clean ) > 0 && $clean[0] == '>')) {
-                $comment .= '<pre><i>';
+                $comment .= '<pre>';
                 $comment .= s( $casetoshow );
-                $comment .= '</i></pre>';
+                $comment .= '</pre>';
                 $casetoshow = '';
             }
             // Is title line.
@@ -1117,9 +1117,9 @@ class mod_vpl_submission {
             }
         }
         if (strlen( $casetoshow ) > 0) {
-            $comment .= '<pre><i>';
+            $comment .= '<pre>';
             $comment .= s( $casetoshow );
-            $comment .= '</i></pre>';
+            $comment .= '</pre>';
         }
         $html .= $this->get_last_comment( $title, $comment, $dropdown );
         return $html;
@@ -1281,7 +1281,7 @@ class mod_vpl_submission {
                 $div = new mod_vpl\util\hide_show();
                 $execution .= "<br>\n";
                 $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate() . "</b><br>\n";
-                $execution .= $div->content_in_tag('pre', s($rawexecution));
+                $execution .= $div->content_in_tag('pre', format_text($rawexecution, FORMAT_PLAIN));
             }
         }
     }
