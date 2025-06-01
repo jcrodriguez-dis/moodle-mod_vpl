@@ -17,86 +17,129 @@
 namespace mod_vpl\plugininfo;
 
 use core\plugininfo\base;
-use core_plugin_manager;
-use moodle_url;
 
 /**
  * VPL evaluator type subplugin info class.
  *
  * @package   mod_vpl
- * @copyright 2013 Petr Skoda {@link http://skodak.org}
- * @copyright 2024 Juan Calos Rodriguez del Pino {@ jc.rodriguezdelpino@ulpgc.es
+ * @copyright 2024 Juan Calos Rodriguez del Pino {@jc.rodriguezdelpino@ulpgc.es}
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 class vplevaluator extends base {
     /**
-     * name of the plugin type
+     * The plugin type.
+     * @var string
      */
-    const PLUGIN_TYPE = 'vplevaluator';
+    public const PLUGIN_TYPE = 'vplevaluator';
+
+    private static $plugin_lib_loaded = [];
+
+    /**
+     * Object to evaluate the plugin.
+     * @var ?\mod_vpl\plugininfo\vplevaluator_base
+     */
+    private ?\mod_vpl\plugininfo\vplevaluator_base $evaluator = null;
 
     public static function plugintype_supports_disabling(): bool {
+        return true;
+    }
+
+    /**
+     * Returns full pass to lib file.
+     * @param string $name of the plugin.
+     * @return string
+     */
+    public static function get_lib_path(string $name): string {
+        global $CFG;
+        return "{$CFG->dirroot}/mod/vpl/evaluator/{$name}/lib.php";
+    }
+
+    /**
+     * Finds all subplugins.
+     * @return array of enabled plugins $pluginname=>$pluginname
+     */
+    public static function get_enabled_plugins(): array {
+        global $DB;
+        global $CFG;
+        $pluginmanager = \core_plugin_manager::instance();
+        $plugins = $pluginmanager->get_plugins_of_type(self::PLUGIN_TYPE);
+        $enabledplugins = [];
+        foreach ($plugins as $plugin => $version) {
+            $plugininfo = $pluginmanager->get_plugin_info(self::PLUGIN_TYPE . "_{$plugin}");
+            if (!$plugininfo) {
+                // Plugin not found.
+                continue;
+            }
+            $filename = self::get_lib_path($plugin);
+            if (!$plugininfo->is_enabled() || !file_exists($filename)) {
+                // Plugin disable or disk missing.
+                continue;
+            }
+            $enabledplugins[$plugin] = $plugin;
+        }
+        return $enabledplugins;
+    }
+
+    /**
+     * Returns plugin full name.
+     * @return string
+     */
+    public function get_plugin_fullname(): string {
+        return self::PLUGIN_TYPE . "_{$this->name}";
+    }
+
+    /**
+     * Returns if the plugin is enabled.
+     * @return bool
+     */
+    public function is_enabled(): bool {
+        return !get_config($this->get_plugin_fullname(), 'disabled');
+    }
+
+    /**
+     * Returns if it is allowed to uninstall the plugin.
+     * @return bool
+     */
+    public function is_uninstall_allowed(): bool {
+        // It is correct to uninstall a plugin in use?
+        // Do not allow to uninstall the biotest plugin.
         return false;
     }
 
     /**
-     * Finds all enabled plugins, the result may include missing plugins.
-     * @return array|null of enabled plugins $pluginname=>$pluginname, null means unknown
+     * Returns the setting section name.
+     * @return string
      */
-    public static function get_enabled_plugins() {
-        global $DB;
+    public function get_settings_section_name(): string {
+        return $this->get_plugin_fullname();
+    }
 
-        $plugins = core_plugin_manager::instance()->get_installed_plugins(self::PLUGIN_TYPE);
-        if (!$plugins) {
-            return [];
-        }
-        $installed = [];
-        foreach ($plugins as $plugin => $version) {
-            $installed[] = self::PLUGIN_TYPE . '_'.$plugin;
-        }
-
-        list($installed, $params) = $DB->get_in_or_equal($installed, SQL_PARAMS_NAMED);
-        $disabled = $DB->get_records_select('config_plugins', "plugin $installed AND name = 'disabled'", $params, 'plugin ASC');
-        foreach ($disabled as $conf) {
-            if (empty($conf->value)) {
-                continue;
+    /**
+     * Returns instance of a vplevaluator plugin.
+     * @param string $name of plugin of type vplevaluator.
+     * @return \mod_vpl\plugininfo\vplevaluator_base
+     * @throws \moodle_exception if the plugin is not found.
+     */
+    public static function get_evaluator($name): \mod_vpl\plugininfo\vplevaluator_base {
+        global $CFG;
+        $pluginfullname = self::PLUGIN_TYPE . "_{$name}";
+        $classname = "\\mod_vpl\\evaluator\\{$name}";
+        if (!class_exists($classname)) {
+            // The class is not loaded, so we need to load it.
+            $pluginmanager = \core_plugin_manager::instance();
+            $plugininfo = $pluginmanager->get_plugin_info($pluginfullname);
+            if (!$plugininfo || !$plugininfo->is_enabled()) {
+                throw new \moodle_exception('error:invalidevaluator', 'vpl', '', $name);
             }
-            list($type, $name) = explode('_', $conf->plugin, 2);
-            unset($plugins[$name]);
+            $filename = self::get_lib_path($name);
+            if (!file_exists($filename)) {
+                throw new \moodle_exception('error:invalidevaluator', 'vpl', '', $name);
+            }
+            include_once($filename);
         }
-
-        $enabled = array();
-        foreach ($plugins as $plugin => $version) {
-            $enabled[$plugin] = $plugin;
+        if (!class_exists($classname)) {
+            throw new \moodle_exception('error:invalidevaluator', 'vpl', '', $name);
         }
-
-        return $enabled;
-    }
-
-    public static function enable_plugin(string $pluginname, int $enabled): bool {
-        $haschanged = false;
-
-        $plugin = elf::PLUGIN_TYPE . '_' . $pluginname;
-        $oldvalue = get_config($plugin, 'disabled');
-        $disabled = !$enabled;
-        // Only set value if there is no config setting or if the value is different from the previous one.
-        if ($oldvalue === false || ((bool) $oldvalue != $disabled)) {
-            set_config('disabled', $disabled, $plugin);
-            $haschanged = true;
-
-            add_to_config_log('disabled', $oldvalue, $disabled, $plugin);
-            \core_plugin_manager::reset_caches();
-        }
-        return $haschanged;
-    }
-
-    public function is_uninstall_allowed() {
-        // Check if used by some activity
-        return false;
-    }
-
-
-    public function get_settings_section_name() {
-        return $this->type . '_' . $this->name;
+        return new $classname($name);
     }
 }
