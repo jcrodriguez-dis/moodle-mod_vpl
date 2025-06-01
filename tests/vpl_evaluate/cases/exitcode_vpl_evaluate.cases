@@ -1,0 +1,15 @@
+case= Only exit code
+expected exit code = 3
+input=3
+case= Output
+expected exit code = 0
+input=3
+output=3
+case= Exit code
+expected exit code = 1
+input=1
+output=2
+case= Exit code error
+expected exit code = 123
+input=1
+output=2

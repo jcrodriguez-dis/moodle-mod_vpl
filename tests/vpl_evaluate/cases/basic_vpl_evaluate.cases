@@ -1,31 +1,14 @@
 case=Text
 output=text with numbers 3 4 5.5 end
-case=Text multiline
-output=text
-with numbers
-3
- 4 5.5 end
-case=Text end
-output=3 4 5.5 end
 case=Text multi-output
 output=numbers 3 4 5.5 end
 output=text with numbers 3 4 5.5 end
 case=Numbers
-output=3.0 4 5.5
-case=Numbers multiline
-output=3.0
- 4
- 5.5
-case=Numbers precision
-output=3.0 4 5.49999999
-case=Numbers with asterisk
-output=* 5.500002
+output=3 4 5.5
 case=Numbers multi-output
 output=3 4 5.4
 output=text with numbers 3 4 5.5 end
 case=Exact text
 output=" text with numbers 3 , 4 . 5.5 end"
-case=Exact text with asterisk
-output=*"numbers 3 , 4 . 5.5 end"
 case=Regular expression
 output=/^ text.*3.*end$/

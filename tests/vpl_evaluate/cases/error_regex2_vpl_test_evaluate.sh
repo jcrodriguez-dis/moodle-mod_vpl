@@ -2,4 +2,4 @@
 if [ -s "$VPLTESTERRORS" ] ; then
     exit 1
 fi
-assertOutput 'Grade :=>> 6$'
+grep -e 'Grade :=>> 6$' "$VPLTESTOUTPUT" >/dev/null
