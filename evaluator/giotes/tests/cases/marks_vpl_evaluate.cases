@@ -1,0 +1,10 @@
+case=Reduction 1
+grade reduction = 1.5
+output= no matched
+case=Reduction 2
+grade reduction = 50%
+output=no matched
+case=No reduction
+output=match
+case=No reduction
+output=match

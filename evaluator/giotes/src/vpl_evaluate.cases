@@ -1,0 +1,11 @@
+# This file defines the test cases for GIOTES VPL automatic evaluator.
+# Each test case is defined by a block starting with 'case = Name_of_Case'.
+# Input is provided using 'input =' and expected output using 'output ='.
+# For more complex cases or specific requirements, refer to the VPL documentation.
+#
+# This is an initial stub. Replace this with your actual test cases.
+
+# Example Case (to be removed)
+# case = Example Test
+# input = 3 5
+# output = 8
