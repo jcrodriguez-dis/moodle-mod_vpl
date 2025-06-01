@@ -845,14 +845,23 @@ class mod_vpl {
         $submissiondata = new stdClass();
         $submissiondata->vpl = $vpl->get_instance()->id;
         $submissiondata->userid = $userid;
+        if ( $group !== false ) {
+            $submissiondata->groupid = $group->id;
+        }
         $submissiondata->datesubmitted = time();
         $submissiondata->comments = $submittedby . $comments;
         if ( $lastsubins !== false ) {
             $submissiondata->nevaluations = $lastsubins->nevaluations;
+            $submissiondata->save_count = $lastsubins->save_count;
+            $submissiondata->run_count = $lastsubins->run_count;
+            $submissiondata->debug_count = $lastsubins->debug_count;
+        } else {
+            $submissiondata->nevaluations = 0;
+            $submissiondata->save_count = 0;
+            $submissiondata->run_count = 0;
+            $submissiondata->debug_count = 0;
         }
-        if ( $group !== false ) {
-            $submissiondata->groupid = $group->id;
-        }
+        $submissiondata->save_count ++; // Increment save count.
         $submissionid = $DB->insert_record( 'vpl_submissions', $submissiondata, true );
         if (! $submissionid) {
             $error = get_string( 'notsaved', VPL ) . "\ninserting vpl_submissions record";

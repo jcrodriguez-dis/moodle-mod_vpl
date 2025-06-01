@@ -40,6 +40,9 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
         $fake->datesubmitted = time() - 60;
         $fake->comments = '';
         $fake->nevaluations = 0;
+        $fake->save_count = 1;
+        $fake->run_count = 0;
+        $fake->debug_count = 0;
         $fake->groupid = 0;
         parent::__construct($vpl, $fake);
     }
