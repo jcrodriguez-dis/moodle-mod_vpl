@@ -18,3 +18,4 @@ generate_file_of_files .vpl_source_files
 # Compile
 gdc -o vpl_execution -lm -lutil @.vpl_source_files
 rm .vpl_source_files
+apply_run_mode

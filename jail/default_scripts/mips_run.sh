@@ -19,3 +19,4 @@ get_source_files s
 cat common_script.sh > vpl_execution
 echo "spim -file \"$SOURCE_FILE0\" | tail -n +6" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

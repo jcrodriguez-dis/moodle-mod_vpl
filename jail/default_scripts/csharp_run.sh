@@ -141,3 +141,6 @@ else
 		cat .vpl_compilation_message
 	fi
 fi
+rm -f .vpl_compilation_message
+rm -f $VPL_ERROR_FILE
+apply_run_mode

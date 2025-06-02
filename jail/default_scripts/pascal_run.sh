@@ -33,4 +33,5 @@ fi
 if [ ! -f vpl_execution ] ; then
 	cat .vpl_compilation_errors
 fi
-
+rm -f .vpl_compilation_errors
+apply_run_mode

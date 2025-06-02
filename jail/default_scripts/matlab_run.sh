@@ -81,3 +81,4 @@ else
 		mv vpl_execution vpl_wexecution
 	fi
 fi
+apply_run_mode

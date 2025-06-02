@@ -86,3 +86,4 @@ if [ "$?" == "0" ] ; then
 else
 	cat $VPL_ERROR_FILE
 fi
+apply_run_mode

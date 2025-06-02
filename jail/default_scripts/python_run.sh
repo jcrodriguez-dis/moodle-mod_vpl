@@ -28,4 +28,4 @@ do
 	fi
 done
 IFS=$SIFS
-
+apply_run_mode

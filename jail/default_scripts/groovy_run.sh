@@ -94,3 +94,4 @@ if [ ! "$MAINCLASS" = "" ] ; then
 else
 	echo "main method not found" >> vpl_execution
 fi
+apply_run_mode

@@ -173,3 +173,4 @@ else
         cat .vpl_compilation_message
     fi
 fi
+apply_run_mode

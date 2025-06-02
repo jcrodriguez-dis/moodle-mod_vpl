@@ -35,3 +35,4 @@ else
     echo "wait_end R" >>vpl_wexecution
     chmod +x vpl_wexecution
 fi
+apply_run_mode

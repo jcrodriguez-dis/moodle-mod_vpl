@@ -118,4 +118,4 @@ do
 		break
 	fi
 done
-
+apply_run_mode

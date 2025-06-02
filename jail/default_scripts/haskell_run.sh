@@ -27,3 +27,4 @@ if [ "$PROGRAM" == "hugs" ] ; then
 else
 	$PROGRAMPATH -v0 -o vpl_execution "$FIRST_SOURCE_FILE"
 fi
+apply_run_mode

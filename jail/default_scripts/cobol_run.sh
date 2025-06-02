@@ -42,5 +42,6 @@ cobc -x -o vpl_execution $2 $(cat $VPL_SOURCE_FILES) &> $VPL_ERROR_FILE
 if [ "$?" != "0" -a "$VPL_COMPILATION_ERROR" == "" ] ; then
 	clean_fortify_source
 fi
-rm $VPL_ERROR_FILE
-rm $VPL_SOURCE_FILES
+rm -f $VPL_ERROR_FILE
+rm -f $VPL_SOURCE_FILES
+apply_run_mode

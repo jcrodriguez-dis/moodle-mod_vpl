@@ -55,3 +55,5 @@ if [ -f $OUTPUTFILE ] ; then
 else
 	cat .vpl_compilation_message
 fi
+rm -f .vpl_compilation_message
+apply_run_mode

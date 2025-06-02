@@ -34,3 +34,4 @@ else
 	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\" \"$DATAFILE\"" >> vpl_execution
 fi
 chmod +x vpl_execution
+apply_run_mode

@@ -42,3 +42,4 @@ IFS=$'\n'
 ld -o vpl_execution @.vpl_object_files
 rm .vpl_object_files
 IFS=$SIFS
+apply_run_mode

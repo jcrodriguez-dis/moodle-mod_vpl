@@ -82,3 +82,4 @@ else
     	echo "Use lowercase in file names"
     fi
 fi
+apply_run_mode
