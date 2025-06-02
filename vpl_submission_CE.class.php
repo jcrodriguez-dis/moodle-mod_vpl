@@ -511,7 +511,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $variables['VPL_RUN_MODE'] = self::get_run_mode($data);
         }
         if ($data->type >= self::TEVALUATE) { // If evaluation then add information.
-            $variables['VPL_EVALUTION_MODE'] = !empty($data->evaluation_mode) ? $data->evaluation_mode : '0';
+            $variables['VPL_EVALUATION_MODE'] = !empty($data->evaluation_mode) ? $data->evaluation_mode : '0';
             $variables['VPL_MAXTIME'] = $data->maxtime;
             $variables['VPL_MAXMEMORY'] = $data->maxmemory;
             $variables['VPL_MAXFILESIZE'] = $data->maxfilesize;
@@ -614,6 +614,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->files['vpl_environment.sh'] = $enviromentcontent;
         // Add common script.
         $data->files['common_script.sh'] = file_get_contents( vpl_get_scripts_dir() . '/common_script.sh');
+        // Add new script for evaluation mode test_in_gui if needed.
+        if (isset($varsenv['VPL_EVALUATION_MODE']) &&  $varsenv['VPL_EVALUATION_MODE'] == '2') {
+            $data->files['default_evaluate_textingui.sh'] = file_get_contents( vpl_get_scripts_dir() . '/default_evaluate_textingui.sh');
+        }
         return $data;
     }
 
