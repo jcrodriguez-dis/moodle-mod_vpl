@@ -843,10 +843,12 @@ bool ExactTextOutput::match(const string& output){
 		size_t start = cleanOutput.size() - cleanText.size();
 		return cleanText == cleanOutput.substr(start, cleanText.size());
 	} else {
+		#ifdef DEBUG
 		if (cleanText != cleanOutput) {
 			cout << showChars(cleanText) << endl;
 			cout << showChars(cleanOutput) << endl;
 		}
+		#endif
 		return cleanText == cleanOutput;
 	}
 }
