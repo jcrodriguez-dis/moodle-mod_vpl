@@ -71,6 +71,32 @@ class mod_vpl_executionoptions_form extends moodleform {
         return $this->get_dirlist(vpl_get_scripts_dir(), '_debug.sh');
     }
 
+    protected function get_run_modelist() {
+        $runlist = [];
+        $runlist[''] = get_string('default');
+        $runlist['1'] = get_string('run_mode:default', VPL);
+        $runlist['2'] = get_string('run_mode:text', VPL);
+        $runlist['3'] = get_string('run_mode:gui', VPL);
+        $runlist['4'] = get_string('run_mode:webapp', VPL);
+        $runlist['5'] = get_string('run_mode:textingui', VPL);
+        return $runlist;
+    }
+    protected function get_evaluation_modelist() {
+        $evalutionlist = [];
+        $evalutionlist[''] = get_string('default');
+        $evalutionlist['1'] = get_string('evaluation_mode:default', VPL);
+        $evalutionlist['2'] = get_string('evaluation_mode:textingui', VPL);
+        return $evalutionlist;
+    }
+    protected function get_evaluatorlist() {
+        $evaluators = \mod_vpl\plugininfo\vplevaluator::get_enabled_plugins();
+        $evaluatorslist = ['' => get_string('default')];
+        foreach ($evaluators as $evaluator) {
+            $evaluatorslist[$evaluator] = get_string('pluginname', "vplevaluator_{$evaluator}");
+        }
+        return $evaluatorslist;
+    }
+
     protected function definition() {
         $mform = & $this->_form;
         $id = $this->vpl->get_course_module()->id;
@@ -107,6 +133,23 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
         $mform->setDefault( 'debugscript', $instance->debugscript );
         $mform->addHelpButton('debugscript', 'debugscript', VPL);
+
+        $strevaluator = get_string('evaluator', VPL);
+        $mform->addElement( 'select', 'evaluator', $strevaluator, $this->get_evaluatorlist());
+        $mform->setDefault( 'evaluator', $instance->evaluator );
+        $mform->addHelpButton('evaluator', 'evaluator', VPL);
+
+        $strrunmode = get_string( 'run_mode', VPL );
+        $runmodelist = $this->get_run_modelist();
+        $mform->addElement( 'select', 'run_mode', $strrunmode, $runmodelist );
+        $mform->setDefault( 'run_mode', $instance->run_mode );
+        $mform->addHelpButton('run_mode', 'run_mode', VPL);
+
+        $strevaluatemode = get_string( 'evaluation_mode', VPL );
+        $evaluatemodelist = $this->get_evaluation_modelist();
+        $mform->addElement( 'select', 'evaluation_mode', $strevaluatemode, $evaluatemodelist );
+        $mform->setDefault( 'evaluation_mode', $instance->evaluation_mode );
+        $mform->addHelpButton('evaluation_mode', 'evaluation_mode', VPL);
 
         $mform->addElement( 'selectyesno', 'run', get_string( 'run', VPL ) );
         $mform->setDefault( 'run', $instance->run );
@@ -147,6 +190,9 @@ if ($fromform = $mform->get_data()) {
         $instance->run = $fromform->run;
         $instance->debug = $fromform->debug;
         $instance->evaluate = $fromform->evaluate;
+        $instance->evaluator = $fromform->evaluator;
+        $instance->run_mode = $fromform->run_mode;
+        $instance->evaluation_mode = $fromform->evaluation_mode;
         $instance->evaluateonsubmission = $fromform->evaluate && $fromform->evaluateonsubmission;
         $instance->automaticgrading = $fromform->evaluate && $fromform->automaticgrading;
         if ( $vpl->update() ) {
