@@ -213,6 +213,7 @@ $string['override_users'] = 'Usuarios afectados';
 $string['paste'] = 'Pegar';
 $string['pluginadministration'] = 'Administración de VPL';
 $string['pluginname'] = 'Laboratorio virtual de programación';
+$string['pluginnotfound'] = 'Subplugin de VPL no encontrado o mal definido: {$a}';
 $string['previoussubmissionslist'] = 'Lista entregas previas';
 $string['print'] = 'Imprimir';
 $string['privacy:metadata:vpl'] = 'Informacion de la actividad';
@@ -233,6 +234,12 @@ $string['privacy:metadata:vpl_submissions:nevaluations'] = 'Número de evaluacio
 $string['privacy:metadata:vpl_submissions:dategraded'] = 'Fecha y hora de la evaluación';
 $string['privacy:metadata:vpl_submissions:grade'] = 'La nota obtenida en esta entrega. Esta nota puede no coincidir con la que aparece en el libro de calificaciones';
 $string['privacy:metadata:vpl_submissions:gradercomments'] = 'Comentarios del evaluador sobre esta entrega';
+$string['privacy:metadata:vpl_submissions:grader'] = 'Usuario que evaluó esta entrega';
+$string['privacy:metadata:vpl_submissions:userid'] = 'Identificador del usuario que realizó la entrega';
+$string['privacy:metadata:vpl_submissions:groupid'] = 'Identificador del grupo al que pertenece el usuario que realizó la entrega';
+$string['privacy:metadata:vpl_submissions:save_count'] = 'Número de veces que se ha guardado la entrega';
+$string['privacy:metadata:vpl_submissions:run_count'] = 'Número de veces que se ha ejecutado la entrega';
+$string['privacy:metadata:vpl_submissions:debug_count'] = 'Número de veces que se ha depurado la entrega';
 $string['privacy:submissionpath'] = 'entrega_{$a}';
 $string['proposedgrade'] = 'Nota propuesta: {$a}';
 $string['proxy'] = 'proxy';
@@ -258,6 +265,28 @@ $string['run'] = 'Ejecutar';
 $string['running'] = "Ejecutando";
 $string['runscript'] = 'Script de ejecución';
 $string['runscript_help'] = 'Seleccione el script a usar al ejecutar entregas en esta actividad';
+$string['run_mode'] = 'Modo de ejecución';
+$string['run_mode:default'] = 'Detectar automáticamente el modo de ejecución (predeterminado)';
+$string['run_mode:text'] = 'Ejecutar en una terminal de texto';
+$string['run_mode:gui'] = 'Ejecutar en una terminal gráfica';
+$string['run_mode:webapp'] = 'Ejecutar como una aplicación web';
+$string['run_mode:textingui'] = 'Ejecutar aplicación de texto en una terminal gráfica';
+$string['run_mode_help'] = 'Selecciona el modo de ejecución interactiva para esta actividad.<br>
+<b>Predeterminado</b>: Ejecutar usando detección automática (comportamiento original).
+En este modo, use @vpl_run_[text|gui|webapp|textingui]_mode dentro de un comentario al inicio del código para seleccionar el modo de ejecución.<br>
+<b>Texto</b>: Ejecutar en una terminal de texto (sin GUI).<br>
+<b>GUI</b>: Ejecutar en una terminal gráfica (GUI).<br>
+<b>Aplicación web</b>: Ejecutar como una aplicación web (sin terminal).<br>
+<b>Texto en GUI</b>: Ejecutar aplicación de texto en una terminal gráfica (GUI).<br>
+<b>Nota</b>: Todos los modos no están disponibles en todos los lenguajes.<br>
+Si se usa un script de ejecución personalizado, este puede ignorar el modo de ejecución seleccionado.<br>';
+$string['evaluation_mode'] = 'Modo de evaluación';
+$string['evaluation_mode:default'] = 'Evaluar en modo terminal (predeterminado)';
+$string['evaluation_mode:textingui'] = 'Evaluar aplicación de texto en modo GUI';
+$string['evaluation_mode_help'] = 'Selecciona el modo de ejecución del evaluador para esta actividad.<br>
+<b>Predeterminado</b>: Evaluar en modo terminal (comportamiento original).<br>
+<b>Texto en GUI</b>: Evaluar en entorno gráfico (GUI).<br>
+<b>Nota</b>: Si se usa un script de evaluación personalizado, este puede ignorar el modo seleccionado.<br>';
 $string['save'] = 'Guardar';
 $string['savecontinue'] = 'Guardar y continuar';
 $string['saved'] = 'Guardado';
@@ -297,6 +326,8 @@ $string['submissionview'] = 'Ver entrega';
 $string['submittedby'] = 'Entregada por {$a}';
 $string['submittedon'] = 'Entregada el';
 $string['submittedonp'] = 'Entregada el {$a}';
+$string['subplugintype_vplevaluator'] = 'Evalador de entregas para VPL';
+$string['subplugintype_vplevaluator_plural'] = 'Evaladores de entregas para VPL';
 $string['sureresetfiles'] = '¿Quiere perder todo su trabajo y reestablecer los ficheros a su estado original?';
 $string['test'] = 'Probar actividad';
 $string['testcases'] = 'Casos de prueba';

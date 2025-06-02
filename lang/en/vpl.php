@@ -107,6 +107,8 @@ $string['evaluate'] = 'Evaluate';
 $string['evaluateonsubmission'] = 'Evaluate just on submission';
 $string['evaluating'] = 'Evaluating';
 $string['evaluation'] = 'Evaluation';
+$string['evaluator'] = 'Evaluator';
+$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for orginal BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.';
 $string['examples'] = 'Examples';
 $string['execution'] = 'Execution';
 $string['executionfiles'] = 'Execution files';
@@ -229,6 +231,7 @@ $string['override_users'] = 'Affected users';
 $string['paste'] = 'Paste';
 $string['pluginadministration'] = 'VPL administration';
 $string['pluginname'] = 'Virtual programming lab';
+$string['pluginnotfound'] = 'VPL subplugin not found or bad defined: {$a}';
 $string['previoussubmissionslist'] = 'Previous submissions list';
 $string['print'] = 'Print';
 $string['privacy:metadata:vpl'] = 'Information of the activity';
@@ -254,6 +257,9 @@ $string['privacy:metadata:vpl_submissions:dategraded'] = 'Date and time of the e
 $string['privacy:metadata:vpl_submissions:grade'] = 'The mark for this submission. This value may no match the value in the grade book.';
 $string['privacy:metadata:vpl_submissions:graderid'] = 'grader user DB id';
 $string['privacy:metadata:vpl_submissions:gradercomments'] = 'Comments of the grader about this submission';
+$string['privacy:metadata:vpl_submissions:save_count'] = 'Number of times the submission has been saved';
+$string['privacy:metadata:vpl_submissions:run_count'] = 'Number of times the submission has been run';
+$string['privacy:metadata:vpl_submissions:debug_count'] = 'Number of times the submission has been debugged';
 $string['privacy:metadata:vpl_assigned_variations'] = 'Information of the activity variation assigned, if any';
 $string['privacy:metadata:vpl_assigned_variations:userid'] = 'User DB id.';
 $string['privacy:metadata:vpl_assigned_variations:vplid'] = 'VPL DB id';
@@ -297,6 +303,28 @@ $string['run'] = 'Run';
 $string['running'] = 'Running';
 $string['runscript'] = 'Run script';
 $string['runscript_help'] = 'Select the run script to use in this activity';
+$string['run_mode'] = 'Run mode';
+$string['run_mode:default'] = 'Autodetect run mode (default)';
+$string['run_mode:text'] = 'Run in a text terminal';
+$string['run_mode:gui'] = 'Run in a graphical terminal';
+$string['run_mode:webapp'] = 'Run as a web application';
+$string['run_mode:textingui'] = 'Run text app in a graphical terminal';
+$string['run_mode_help'] = 'Select run mode for this activity.<br>
+<b>Default</b>: Run using autodetect (original behaviour).
+In this mode use @vpl_run_[text|gui|webapp|textingui]_mode inside comment at the start of a code file to select run mode.<br>
+<b>Text</b>: Run in a text terminal (no GUI).<br>
+<b>GUI</b>: Run in a graphical terminal (GUI).<br>
+<b>Webapp</b>: Run as a web application (no terminal).<br>
+<b>Text in GUI</b>: Run text app in a graphical terminal (GUI).<br>
+<b>Note</b>: All modes are not available for all languages.<br>
+Custom scripts can ignore this setting.<br>';
+$string['evaluation_mode'] = 'Select evaluation mode';
+$string['evaluation_mode:default'] = 'Evaluate in terminal mode (default)';
+$string['evaluation_mode:textingui'] = 'Evaluate in GUI mode';
+$string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
+<b>Default</b>: Evaluate in terminal mode (original behaviour).<br>
+<b>Text in GUI</b>: Evaluate program in GUI mode.<br>
+<b>Note</b>: Custom scripts can ignore this setting.<br>';
 $string['save'] = 'Save';
 $string['save'] = 'Save';
 $string['savecontinue'] = 'Save and continue';
@@ -337,6 +365,9 @@ $string['submissionview'] = 'Submission view';
 $string['submittedby'] = 'Submitted by {$a}';
 $string['submittedon'] = 'Submitted on';
 $string['submittedonp'] = 'Submitted on {$a}';
+$string['subplugintype_vplevaluator'] = 'VPL submissions evaluator';
+$string['subplugintype_vplevaluator_plural'] = 'VPL submissions evaluators';
+$string['error:invalidevaluator'] = 'Invalid vplevaluator plugin ({$a}): disabled or missing';
 $string['sureresetfiles'] = 'Do you want to lost all your work and reset the files to its original state?';
 $string['test'] = 'Test activity';
 $string['testcases'] = 'Test cases';
@@ -386,7 +417,6 @@ $string['websocket_protocol_description'] = 'Type of WebSocket protocol (ws:// o
 $string['always_use_wss'] = 'Always use encrypted (wss) websocket protocol';
 $string['always_use_ws'] = 'Always use unencrypted (ws) websocket protocol';
 $string['depends_on_https'] = 'Use ws or wss depending on if using http or https';
-
 $string['basic'] = 'Basic';
 $string['intermediate'] = 'Intermediate';
 $string['advanced'] = 'Advanced';
@@ -481,7 +511,7 @@ The file "vpl_evaluate.cases" has the following format:<br>
 <ul>
 <li> "<b>case </b>= Description of case": Set an start of test case definition.</li>
 <li> "<b>input </b>= text": can use several lines. Ends with other instruction.</li>
-<li> "<b>output </b>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact test:
+<li> "<b>output </b>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact text:
 <ul>
 <li> <b>number</b>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, other text are ignored. Floats are checked with tolerance</li>
 <li> <b>text</b>: defined as text without double quote. Only words are checked and the rest of chars are ignored, the comparation is case-insensitive </li>
