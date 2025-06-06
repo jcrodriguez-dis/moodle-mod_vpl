@@ -120,16 +120,26 @@ class mod_vpl_executionoptions_form extends moodleform {
         $basedonlist[0] = get_string( 'select' );
         $mform->addElement( 'select', 'basedon', $strbasedon, $basedonlist );
         $mform->setDefault( 'basedon', $instance->basedon );
+        $mform->addHelpButton( 'basedon', 'basedon', VPL );
 
-        $strautodetect = get_string('autodetect', VPL);
+        if ($instance->basedon) {
+            $basevpl = new mod_vpl(null, $instance->basedon);
+            $inheritedrun = strtoupper($basevpl->get_closest_set_field_in_base_chain('runscript', ''));
+            $inheriteddebug = strtoupper($basevpl->get_closest_set_field_in_base_chain('debugscript', ''));
+        } else {
+            $inheritedrun = '';
+            $inheriteddebug = '';
+        }
+        $strrundefault = $inheritedrun ? get_string('inherit', VPL, $inheritedrun) : get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
-        $runlist = array_merge(['' => $strautodetect], $this->get_runlist());
+        $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
         $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
         $mform->setDefault( 'runscript', $instance->runscript );
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
+        $strdebugdefault = $inheriteddebug ? get_string('inherit', VPL, $inheriteddebug) : get_string('autodetect', VPL);
         $strdebugscript = get_string('debugscript', VPL);
-        $debuglist = array_merge(['' => $strautodetect], $this->get_debuglist());
+        $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
         $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
         $mform->setDefault( 'debugscript', $instance->debugscript );
         $mform->addHelpButton('debugscript', 'debugscript', VPL);
@@ -160,9 +170,11 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addElement( 'selectyesno', 'evaluateonsubmission', get_string( 'evaluateonsubmission', VPL ) );
         $mform->setDefault( 'evaluateonsubmission', $instance->evaluateonsubmission );
         $mform->disabledIf( 'evaluateonsubmission', 'evaluate', 'eq', 0 );
+        $mform->addHelpButton( 'evaluateonsubmission', 'evaluateonsubmission', VPL );
         $mform->addElement( 'selectyesno', 'automaticgrading', get_string( 'automaticgrading', VPL ) );
         $mform->setDefault( 'automaticgrading', $instance->automaticgrading );
         $mform->disabledIf( 'automaticgrading', 'evaluate', 'eq', 0 );
+        $mform->addHelpButton( 'automaticgrading', 'automaticgrading', VPL );
 
         $mform->addElement( 'submit', 'saveoptions', get_string( 'saveoptions', VPL ) );
     }

@@ -28,142 +28,244 @@ global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/form.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
 
-class mod_vpl_grade_form extends vpl_form {
+class mod_vpl_grade_form extends moodleform {
+    /**
+     * @var mod_vpl
+     */
+    protected $vpl;
+    /**
+     * @var mod_vpl_submission
+     */
     protected $submission;
-    protected function get_scale_selection() {
-        global $DB;
-        $vpl = $this->submission->get_vpl();
-        $scaleid = $vpl->get_grade();
-        $options = [];
-        $options[- 1] = get_string( 'nograde' );
-        if ($scaleid > 0) {
-            for ($i = 0; $i <= $scaleid; $i ++) {
-                $options[$i] = $i . ' / ' . $scaleid;
-            }
-        } else if ($scaleid < 0) {
-            $scaleid = - $scaleid;
-            if ($scale = $DB->get_record( 'scale', [
-                    'id' => $scaleid,
-            ] )) {
-                $options = $options + make_menu_from_list( $scale->scale );
-            }
-        }
-        return $options;
-    }
-    public function __construct($page, $submission) {
-        $this->submission = $submission;
+
+    public function __construct($page, & $vpl, & $submission) {
+        $this->vpl = & $vpl;
+        $this->submission = & $submission;
         parent::__construct( $page );
     }
     protected function definition() {
-        global $CFG, $OUTPUT;
-        $vpl = $this->submission->get_vpl();
-        $vplinstance = $vpl->get_instance();
-        $instance = $this->submission->get_instance();
+        global $CFG, $OUTPUT, $PAGE;
+        $mform = & $this->_form;
         $id = required_param( 'id', PARAM_INT );
         $userid = optional_param( 'userid', null, PARAM_INT );
         $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
-        $this->addHidden( 'id', $id );
-        $this->addHidden( 'userid', $userid );
-        $this->addHidden( 'submissionid', $instance->id );
-        $this->addHidden( 'inpopup', $inpopup );
-        // TODO Improve grade form (recalculate grade).
-        // Show assesment criteria.
-        // Show others evaluation.
-        // Type value => introduce value.
-        $grade = $vpl->get_grade();
-        if ($grade != 0) {
-            $this->addHTML( s( get_string(vpl_get_gradenoun_str()) . ' ' ) );
-            if ($grade > 0) {
-                $this->addText( 'grade', '', 6 );
-                $reduction = 0;
-                $percent = false;
-                $this->submission->grade_reduction($reduction, $percent);
-                if ($reduction > 0) {
-                    $value = $reduction;
-                    if ($percent) {
-                        $value = (100 - ( $value * 100 ) );
-                        $value = format_float($value, 2, true, true) . '%';
-                    } else {
-                        $value = format_float($value, 2, true, true);
-                    }
-                    $this->addHTML( ' -' . $value . ' ' );
-                }
+        $mform->addElement('hidden', 'id', $id );
+        $mform->setType( 'id', PARAM_INT );
+        $mform->addElement('hidden', 'userid', $userid );
+        $mform->setType( 'userid', PARAM_INT );
+        $submissionid = optional_param( 'submissionid', false, PARAM_INT );
+        if ($submissionid !== false) {
+            $mform->addElement('hidden', 'submissionid', $submissionid );
+            $mform->setType('submissionid', PARAM_INT );
+            $islastsubmission = $this->vpl->last_user_submission( $userid )->id == $submissionid;
+        } else {
+            $islastsubmission = true;
+        }
+
+        $mform->addElement('hidden', 'inpopup', $inpopup );
+        $mform->setType( 'inpopup', PARAM_INT );
+        $vplinstance = $this->vpl->get_instance();
+        $grade = $this->vpl->get_grade();
+        // TODO Show others evaluation.
+
+        $gradinginstance = $this->submission->get_grading_instance();
+        if ($gradinginstance) {
+            $res = $this->submission->getCE();
+            if ($res['executed']) {
+                $graderaw = $this->submission->proposedGrade($res['execution']);
             } else {
-                $this->addSelect( 'grade', $this->get_scale_selection() );
+                $graderaw = 0;
             }
-            $this->addHTML( ' &nbsp;' );
+            $gridscore = $gradinginstance->get_controller()->get_min_max_score()['maxscore'];
+
+            $mform->addElement('header', 'hAdvancedGrading', get_string('gradingmanagement', 'grading'));
+            $mform->addElement('grading',
+                    'advancedgrading',
+                    '',
+                    [ 'gradinginstance' => $gradinginstance ]);
+            $mform->addElement('hidden', 'advancedgradinginstanceid', $gradinginstance->get_id());
+            $mform->setType('advancedgradinginstanceid', PARAM_INT);
+            // Numeric grade.
+            if ($grade > 0) {
+                // Button to merge advanced grading grid points with grade.
+                $group = [];
+                $group[] =& $mform->createElement('button', null, get_string( 'merge', VPL ),
+                        [
+                                'data-role' => 'mergegrade',
+                                'data-maxgrade' => $grade,
+                                'data-currentgrade' => $graderaw,
+                                'data-maxgridpoints' => $gridscore,
+                        ]
+                );
+
+                $group[] =& $mform->createElement('html', $OUTPUT->help_icon('merge', VPL));
+                $mform->addGroup($group);
+            }
         }
-        $class = " class='btn btn-secondary'";
-        $this->addSubmitButton( 'save', get_string(vpl_get_gradenoun_str()) );
+        $mform->addElement('header', 'hGrade', get_string( vpl_get_gradenoun_str() ) );
+        $mform->setExpanded('hGrade');
+
+        $buttonarray = [];
+        if ($grade != 0) {
+            if ($grade > 0) {
+                $buttonarray[] =& $mform->createElement('text', 'grade', '', 'size="6"' );
+                $mform->setType( 'grade', PARAM_FLOAT );
+            } else {
+                $buttonarray[] =& $mform->createElement('select', 'grade', '',
+                        [ get_string('nograde') ] + make_grades_menu($grade));
+            }
+        }
+        $buttonarray[] =& $mform->createElement('submit', 'save', get_string( 'dograde', VPL ) );
         if ($inpopup) {
-            $this->addSubmitButton( 'savenext', get_string( 'gradeandnext', VPL ) );
+            $buttonarray[] =& $mform->createElement('submit', 'savenext', get_string( 'gradeandnext', VPL ) );
         }
-        $this->addSubmitButton( 'removegrade', get_string( 'removegrade', VPL ) );
-        $this->addHTML( '<br>' );
+        $buttonarray[] =& $mform->createElement('submit', 'removegrade', get_string( 'removegrade', VPL ) );
         // Tranfer files to teacher's work area.
-        $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $userid, 'privatecopy', 1 );
-        $options = [
-                'height' => 550,
-                'width' => 780,
-                'directories' => 0,
-                'location' => 0,
-                'menubar' => 0,
-                'personalbar' => 0,
-                'status' => 0,
-                'toolbar' => 0,
-        ];
-        $copyicon = vpl_get_awesome_icon('copy');
+        $url = new moodle_url('/mod/vpl/forms/edit.php', [ 'id' => $id, 'userid' => $userid, 'privatecopy' => 1 ]);
+        if (!$islastsubmission) {
+            $url->param('submissionid', $submissionid);
+        }
+        $buttonarray[] =& $mform->createElement('html', static::get_formgroup_button_link($url, 'copy', true));
 
-        $action = new popup_action( 'click', $url, 'privatecopy' . ($vplinstance->id), $options );
-        $atributes = ['class' => 'btn btn-secondary'];
-        $this->addHTML( ' ' . $OUTPUT->action_link( $url, $copyicon . get_string( 'copy', VPL ), $action,  $atributes) );
-
-        // Link to evaluate.
-        $evaluateicon = vpl_get_awesome_icon('evaluate');
-        $url = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid, 'grading', 1, 'inpopup', $inpopup );
-        $html = " <a href='$url' $class>" . $evaluateicon . s( get_string( 'evaluate', VPL ) ) . '</a>';
-        $this->addHTML( $html );
+        if ($vplinstance->evaluate && $islastsubmission) {
+            $url = new moodle_url('/mod/vpl/forms/evaluation.php', [
+                    'id' => $id,
+                    'userid' => $userid,
+                    'grading' => 1,
+                    'inpopup' => $inpopup,
+            ]);
+            $buttonarray[] =& $mform->createElement('html', static::get_formgroup_button_link($url, 'evaluate'));
+        }
         // Numeric grade.
         if ($grade > 0) {
             // Link to recalculate numeric grade from comments.
-            $calculateicon = vpl_get_awesome_icon('calculate');
-            $jscript = 'VPL.calculateGrade(' . $grade . ')';
-            $atext = $calculateicon . s( get_string( 'calculate', VPL ) );
-            $html = " <a href='javascript:void(0);' onclick='$jscript' $class>" . $atext . '</a>';
-            $this->addHTML( $html );
+            $buttonarray[] =& $mform->createElement('button', null, get_string( 'calculate', VPL ),
+                    [ 'data-role' => 'calculategrade', 'data-maxgrade' => $grade ]
+            );
+            $buttonarray[] =& $mform->createElement('html', $OUTPUT->help_icon('calculate', VPL));
+        }
+        $mform->addGroup($buttonarray, 'buttonar', get_string( vpl_get_gradenoun_str() ), '', false);
+
+        if ($grade != 0) {
+            $mform->addElement('textarea', 'comments', get_string( 'comments', VPL ), 'rows="18" cols="70"' );
         }
 
-        $this->addHTML( '<br>' );
-        if ($grade != 0) {
-            $commentsicon = vpl_get_awesome_icon('comments');
-            $this->addHTML( $commentsicon . s( get_string( 'comments', VPL ) ) . '<br>' );
-            $this->addTextArea( 'comments', '', 8, 70 );
-            $this->addHTML( '<br>' );
-        }
         if (! empty( $CFG->enableoutcomes )) {
-            $gradinginfo = grade_get_grades( $vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
+            $gradinginfo = grade_get_grades( $this->vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
             if (! empty( $gradinginfo->outcomes )) {
-                $this->addHTML( '<table border="0">' );
+                $mform->addElement('header', 'hOutcomes', get_string('outcomes', 'grades'));
+                $mform->setExpanded('hOutcomes');
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
-                    $this->addHTML( '<tr><td align="right">' );
-                    $options = make_grades_menu( - $outcome->scaleid );
-                    $options[0] = get_string( 'nooutcome', 'core_grades' );
-                    $this->addHTML( s( $outcome->name ) );
-                    $this->addHTML( '</td><td>' );
-                    $this->addSelect( 'outcome_grade_' . $oid, $options, $outcome->grades[$userid]->grade );
-                    $this->addHTML( '</td></tr>' );
+                    $mform->addElement('select', 'outcome_grade_' . $oid, s( $outcome->name ),
+                            [ get_string('nooutcome', 'grades') ] + make_grades_menu(- $outcome->scaleid));
                 }
-                $this->addHTML( '</table>' );
             }
         }
+
+        $mform->addElement('header', 'hImport', get_string('import') );
+
+        // Find last graded submission and last manually graded submission.
+        $prevsubmanuallygraded = null;
+        $prevsubgraded = null;
+        $submissionslist = $this->vpl->user_submissions( $userid );
+        foreach ($submissionslist as $submission) {
+            if ($submission->id == $this->submission->get_instance()->id) {
+                continue;
+            }
+            if ($prevsubmanuallygraded === null && $submission->grader != 0) {
+                $prevsubmanuallygraded = $submission;
+            }
+            if ($prevsubgraded === null && $submission->grade !== null) {
+                $prevsubgraded = $submission;
+            }
+            if ($prevsubmanuallygraded !== null && $prevsubgraded !== null) {
+                // End search if we have found both submissions.
+                break;
+            }
+        }
+
+        $thissubisgraded = $this->submission->get_instance()->grade !== null;
+
+        $mform->setExpanded('hImport', $prevsubmanuallygraded !== null || ($prevsubgraded !== null && !$thissubisgraded));
+
+        self::add_import_from_submission_button($mform, $id, $userid, 'importlastgradedsub',
+                get_string('importgrade', VPL), get_string('importfromlastgradedsub', VPL), $prevsubgraded, $gradinginstance);
+        self::add_import_from_submission_button($mform, $id, $userid, 'importlastmgradedsub',
+                '', get_string('importfromlastmgradedsub', VPL), $prevsubmanuallygraded, $gradinginstance);
+
+        $mform->addHelpButton('importlastgradedsub', 'importgrade', VPL);
+
+        $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'setup');
     }
-    public function display() {
-        global $OUTPUT;
-        echo $OUTPUT->box_start();
-        parent::display();
-        echo $OUTPUT->box_end();
+
+    /**
+     *
+     * @param moodle_url $url
+     * @param string $str
+     * @param bool $newtab
+     * @param string $component
+     * @return string
+     */
+    protected static function get_formgroup_button_link($url, $str, $newtab = false, $component = VPL) {
+        $attributes = [
+                'href' => $url->out(false),
+                'title' => get_string($str . '_help', $component),
+                'class' => 'form-group fitem btn btn-secondary',
+        ];
+        if ($newtab) {
+            $attributes['target'] = '_blank';
+        }
+        return html_writer::tag('a', get_string($str, $component), $attributes);
     }
+
+    protected function add_import_from_submission_button(&$mform, $id, $userid, $name, $title, $label, $subinstance) {
+        global $DB;
+        $group = [];
+        $attributes = [];
+
+        if ($subinstance !== null) {
+            $submission = new mod_vpl_submission( $this->vpl, $subinstance );
+            $canimport = $submission->is_graded();
+        } else {
+            $canimport = false;
+        }
+
+        if ($canimport) {
+            $grade = $subinstance->grade;
+            if (strlen($grade) > 0) {
+                $grade = format_float($grade, 2, true, true);
+            }
+
+            $comments = $submission->get_grade_comments();
+
+            $gradingmanager = get_grading_manager($this->vpl->get_context(), 'mod_vpl', 'submissions');
+            $gradingmethod = $gradingmanager->get_active_method();
+            $advgradinginstance = $submission->get_grading_instance();
+            if ($gradingmethod !== null && $advgradinginstance) {
+                $advgradinginstanceid = $advgradinginstance->get_id();
+                $advgradingdata = array_values($DB->get_records('gradingform_' . $gradingmethod . '_fillings',
+                        [ 'instanceid' => $advgradinginstanceid ]));
+            } else {
+                $advgradingdata = [];
+            }
+            $attributes['data-role'] = 'importfromsub';
+            $attributes['data-grade'] = $grade;
+            $attributes['data-comments'] = $comments;
+            $attributes['data-advgrading'] = json_encode($advgradingdata);
+
+            $subhref = vpl_mod_href( 'forms/gradesubmission.php', 'id', $id, 'userid', $userid, 'submissionid', $subinstance->id );
+            $gradingdetails = new stdClass();
+            $gradingdetails->date = userdate($subinstance->dategraded);
+            $gradingdetails->gradername = fullname(mod_vpl_submission::get_grader( $subinstance->grader ));
+            $subinfo = '<a href="' . $subhref . '">' . get_string('gradedonby', VPL, $gradingdetails) . '</a>';
+        } else {
+            $attributes['disabled'] = 'disabled';
+            $subinfo = '(' . get_string('nosuchsubmission', VPL) . ')';
+        }
+        $group[] =& $mform->createElement('button', null, $label, $attributes);
+        $group[] =& $mform->createElement('html', $subinfo);
+        $mform->addGroup($group, $name, $title);
+    }
+
 }

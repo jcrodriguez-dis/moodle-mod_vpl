@@ -287,6 +287,7 @@ class vpl_editor_util {
                 'delete_file_fq',
                 'delete_file_q',
                 'directory_not_renamed',
+                'donotshowagain',
                 'download',
                 'edit',
                 'evaluate',
@@ -355,6 +356,7 @@ class vpl_editor_util {
                 'selectbreakpoint',
                 'removebreakpoint',
                 'maxpostsizeexceeded',
+                'showparentfiles',
         ];
         $words = [
                 'cancel',

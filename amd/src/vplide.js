@@ -22,6 +22,8 @@
  */
 
 /* globals MathJax */
+/* globals Promise */
+/* globals openpopup */
 
 define(
     [
@@ -77,6 +79,7 @@ define(
                 'resetfiles': true,
                 'sort': true,
                 'multidelete': true,
+                'showparentfiles': true,
                 'acetheme': true,
                 'console': true,
                 'comments': true
@@ -128,14 +131,56 @@ define(
                     e.stopImmediatePropagation();
                     return false;
                 }
+                var droppedFiles = [];
+                // Function that lists all files and subfiles of given entry into droppedFiles.
+                var listDroppedFiles = function(entry, path="") {
+                    return new Promise(function(resolve){
+                        if (entry.isFile) {
+                            // Current entry is a file : add it to the list.
+                            entry.file(function(file) {
+                                // Change its name s.t. it preserves directories structure.
+                                var fullName = path + file.name;
+                                Object.defineProperty(file, "name", {
+                                    get: function(){ return fullName; }
+                                });
+                                droppedFiles.push(file);
+                                resolve();
+                            });
+                        } else if (entry.isDirectory) {
+                            // Current entry is a directory : process its content.
+                            var dirReader = entry.createReader();
+                            dirReader.readEntries(function(entries) {
+                                var dirPromises = [];
+                                for (var i=0; i<entries.length; i++) {
+                                    dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
+                                }
+                                Promise.all(dirPromises).then(resolve);
+                            });
+                        } else {
+                            // This is neither a directory nor a file : ignore it.
+                            resolve();
+                        }
+                    });
+                };
                 var dt = e.originalEvent.dataTransfer;
+
+                // List every element of the drop event.
+                var promises = [];
+                for (var i=0; i<dt.items.length; i++) {
+                    promises.push(listDroppedFiles(dt.items[i].webkitGetAsEntry()));
+                }
+
                 // Drop files.
                 if (dt.files.length > 0) {
-                    VPLUI.readSelectedFiles(dt.files, function(file) {
-                        return fileManager.addFile(file, true, updateMenu, showErrorMessage);
-                    },
-                    function() {
-                        fileManager.fileListVisibleIfNeeded();
+                    Promise.all(promises)
+                    .then(function(){
+                        VPLUI.readSelectedFiles(droppedFiles, function(file) {
+                            return fileManager.addFile(file, true, updateMenu, showErrorMessage);
+                        },
+                        function(){
+                            fileManager.fileListVisibleIfNeeded();
+                        });
+                        return;
                     });
                     e.stopImmediatePropagation();
                     return false;
@@ -1412,14 +1457,7 @@ define(
                 var value = fontsizeSlider.slider("value");
                 fileManager.setFontSize(value);
                 $(this).dialog('close');
-                $.ajax({
-                    async: true,
-                    type: "POST",
-                    url: '../editor/userpreferences.json.php',
-                    'data': JSON.stringify({fontSize: value}),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+                VPLUtil.setUserPreferences({fontSize: value});
             };
             dialogFontFizeButtons[str('cancel')] = function() {
                 fileManager.setFontSize(fontsizeSlider.data("vpl_fontsize"));
@@ -1594,6 +1632,17 @@ define(
                 }
             });
             menuButtons.add({
+                name: 'showparentfiles',
+                originalAction: function() {
+                    openpopup(null, {
+                        url: options.showparentfilesurl,
+                        options: 'width=' + Math.max(screen.availWidth/2, 780) +
+                                 ',height=' + screen.availHeight +
+                                 ',left=' + (screen.availWidth/4)
+                    });
+                }
+            });
+            menuButtons.add({
                 name: 'fontsize',
                 originalAction: function() {
                     dialogFontsize.dialog('open');
@@ -1712,13 +1761,14 @@ define(
                     });
                 }
             });
+            var noconfirmation = false;
             menuButtons.add({
                 name: 'save',
                 originalAction: function() {
                     var data = {
                         files: fileManager.getFilesToSave(),
                         comments: $('#vpl_ide_input_comments').val(),
-                        version: fileManager.getVersion()
+                        version: noconfirmation ? -1 : fileManager.getVersion()
                     };
                     if (JSON.stringify(data).length > options.postMaxSize) {
                         showErrorMessage(str('maxpostsizeexceeded'));
@@ -1730,15 +1780,24 @@ define(
                     function doSave() {
                         VPLUI.requestAction('save', 'saving', data, options.ajaxurl)
                         .done(function(response) {
-                            if (response.requestsconfirmation) {
-                                showMessage(response.question, {
+                            if (response.requestsconfirmation && !noconfirmation) {
+                                var checkboxID = 'vpl_donotshowagain';
+                                var donotshowagain = '<input type="checkbox" id="' + checkboxID +'"'
+                                                    + ' class="align-text-bottom mr-1 mt-3">'
+                                                    + '<label for="' + checkboxID + '">' + str('donotshowagain') + '</label>';
+                                var $checkbox;
+                                showMessage(response.question + '<br>' + donotshowagain, {
                                     title: str('saving'),
                                     icon: 'alert',
                                     yes: function() {
+                                        if ($checkbox.length == 1 && $checkbox.prop('checked')) {
+                                            noconfirmation = true;
+                                        }
                                         data.version = 0;
                                         doSave();
                                     }
                                 });
+                                $checkbox = $('#' + checkboxID);
                             } else {
                                 fileManager.resetModified();
                                 fileManager.setVersion(response.version);
@@ -1934,6 +1993,7 @@ define(
             menuHtml += menuButtons.getHTML('resetfiles');
             menuHtml += menuButtons.getHTML('sort');
             menuHtml += menuButtons.getHTML('multidelete');
+            menuHtml += menuButtons.getHTML('showparentfiles');
             menuHtml += menuButtons.getHTML('fontsize');
             menuHtml += menuButtons.getHTML('theme');
             menuHtml += "</span> ";
@@ -2003,6 +2063,7 @@ define(
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
+                menuButtons.enable('showparentfiles', !modified);
                 menuButtons.enable('theme', true);
                 var sel;
                 if (!file || nfiles === 0) {

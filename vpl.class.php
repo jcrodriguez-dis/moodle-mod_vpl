@@ -212,17 +212,21 @@ class mod_vpl {
     }
 
     /**
-     * Remove one record or all records from cache
+     * Remove one record, table or all (*) records from cache
      *
-     * @param string $table Table name
-     * @param int $id The id of the register to get from the table
+     * @param string $table Table name or '*' for all
+     * @param int $id The id of the register of the table to remove from cache
      * @return void
      */
-    public static function reset_db_cache($table = 'all', $id = -1) {
-        if ($table == 'all') {
+    public static function reset_db_cache($table = '*', $id = -1) {
+        if ($table == '*') {
             self::$instancescache = [];
         } else {
-            unset(self::$instancescache[$table][$id]);
+            if ($id == -1) {
+                self::$instancescache[$table] = [];
+            } else if (isset(self::$instancescache[$table][$id])) {
+                unset(self::$instancescache[$table][$id]);
+            }
         }
     }
 
@@ -536,49 +540,6 @@ class mod_vpl {
     }
 
     /**
-     * Get grading information help
-     *
-     * @return string grade comments summary in html format
-     */
-    public function get_grading_help() {
-        $list = [];
-        $submissions = $this->all_last_user_submission();
-        foreach ($submissions as $submission) {
-            $sub = new mod_vpl_submission( $this, $submission );
-            $sub->filter_feedback( $list );
-        }
-        // TODO show evaluation criteria with show hidde button.
-        $all = [];
-        foreach ($list as $text => $info) {
-            $astext = s( addslashes_js( $text ) );
-            $html = '';
-            $html .= s( $text );
-            foreach (array_keys($info->grades) as $grade) {
-                if ($grade >= 0) { // No grade.
-                    $jscript = 'VPL.addComment(\'' . $astext . '\')';
-                } else {
-                    $jscript = 'VPL.addComment(\'' . $astext . ' (' . $grade . ')\')';
-                }
-                $link = '<a href="javascript:void(0)" onclick="' . $jscript . '">' . $grade . '</a>';
-                $html .= ' (' . $link . ')';
-            }
-            $html .= '<br>';
-            if (isset( $all[$info->count] )) {
-                $all[$info->count] .= '(' . $info->count . ') ' . $html;
-            } else {
-                $all[$info->count] = '(' . $info->count . ') ' . $html;
-            }
-        }
-        // Sort comments by number of occurrences.
-        krsort( $all );
-        $html = '';
-        foreach ($all as $info) {
-            $html .= $info;
-        }
-        // TODO show info about others review with show hidde button.
-        return $html;
-    }
-    /**
      * Get password
      */
     protected function get_password() {
@@ -809,7 +770,6 @@ class mod_vpl {
     public static function internal_add_submission($vpl, $userid, & $files, $comments, & $error) {
         global $USER, $DB;
         if (! $vpl->pass_submission_restriction( $files, $error )) {
-            $error = get_string('notavailable');
             return false;
         }
         $group = false;
@@ -1640,7 +1600,7 @@ class mod_vpl {
      */
     public function print_view_tabs($path) {
         // TODO refactor using functions.
-        global $USER, $DB;
+        global $USER, $DB, $PAGE;
         $active = basename( $path );
         $cmid = $this->cm->id;
         $userid = optional_param( 'userid', null, PARAM_INT );
@@ -1691,12 +1651,22 @@ class mod_vpl {
                 } else {
                     $user = self::get_db_record( 'user', $userid);
                     if ($this->is_group_activity()) {
+                        $text = get_string( 'group' ) . ' ';
                         $icon = vpl_get_awesome_icon('group') . ' ';
                     } else {
+                        $text = get_string( 'user' ) . ' ';
                         $icon = vpl_get_awesome_icon('user') . ' ';
                     }
-                    $text = $this->fullname( $user, false );
-                    $maintabs[] = new tabobject( $tabname, $href, $icon . $text, $text );
+                    $text .= $this->fullname( $user, false );
+                    $url = $PAGE->url->out( false, [ 'userid' => $USER->id ] );
+                    // Add button to return to own activity.
+                    // This is a simili-link because it is located inside an <a> tag, and we cannot put an <a> tag within another.
+                    $buttonexit = html_writer::tag('span', vpl_get_awesome_icon('exitrole'), [
+                            'class' => 'btn-link clickable pl-1',
+                            'title' => get_string('returntoownactivity', VPL),
+                            'onclick' => 'event.preventDefault(); window.location.href=\'' . $url . '\';',
+                    ]);
+                    $maintabs[] = new tabobject( $tabname, $href, $icon . $text . $buttonexit, $text );
                 }
             }
         }
@@ -1859,6 +1829,16 @@ class mod_vpl {
     }
 
     /**
+     * Generate HTML fragment for overriden icon.
+     * @return string HTML
+     */
+    public function overriden_icon() {
+        $iconclass = mod_vpl_get_fontawesome_icon_map()['mod_vpl:overrides'];
+        $title = get_string('overriden', VPL);
+        return '<i class="fa ' . $iconclass . ' mx-2" title="' . $title . '" aria-label="' . $title . '"></i>';
+    }
+
+    /**
      * Return vpl submission period.
      * @param int $userid (optional) Show for given user, current user if null.
      * @return string HTML
@@ -1867,11 +1847,19 @@ class mod_vpl {
         $html = '';
         $startdate = $this->get_effective_setting('startdate', $userid);
         if ($startdate) {
-            $html .= $this->str_restriction_with_icon( 'startdate', userdate( $startdate ) );
+            $text = userdate( $startdate );
+            if ($startdate != $this->instance->startdate) {
+                $text .= $this->overriden_icon();
+            }
+            $html .= $this->str_restriction_with_icon( 'startdate', $text );
         }
         $duedate = $this->get_effective_setting('duedate', $userid);
         if ($duedate) {
-            $html .= $this->str_restriction_with_icon( 'duedate', userdate( $duedate ) );
+            $text = userdate( $duedate );
+            if ($duedate != $this->instance->duedate) {
+                $text .= $this->overriden_icon();
+            }
+            $html .= $this->str_restriction_with_icon( 'duedate', $text );
         }
         return $html;
     }
@@ -1975,6 +1963,9 @@ class mod_vpl {
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
                 $html .= $infohs->content_in_tag('span', s($password));
+                if ($password != $this->instance->password) {
+                    $html .= $this->overriden_icon();
+                }
                 $html .= "<br>\n";
             }
             if (trim( $instance->requirednet ) > '') {
@@ -2076,11 +2067,17 @@ class mod_vpl {
         $reductionbyevaluation = $this->get_effective_setting('reductionbyevaluation', $userid);
         if ($reductionbyevaluation > 0) {
             $html .= $this->str_restriction( 'reductionbyevaluation', $reductionbyevaluation);
+            if ($reductionbyevaluation != $this->instance->reductionbyevaluation) {
+                $html .= $this->overriden_icon();
+            }
             $freeevaluations = $this->get_effective_setting('freeevaluations', $userid);
             if ( $freeevaluations > 0) {
                 $html .= ' ' . $this->str_restriction( 'freeevaluations', $freeevaluations);
+                if ($freeevaluations != $this->instance->freeevaluations) {
+                    $html .= $this->overriden_icon();
+                }
             }
-            $html .= $html . '<br>';
+            $html .= '<br>';
         }
         return $html;
     }
@@ -2513,4 +2510,29 @@ class mod_vpl {
             }
         }
     }
+
+    /**
+     * Retrieve the first non-empty setting in the basedon chain.
+     * @param string $field Setting name (DB column name)
+     * @param mixed $default Default to return if no VPL in basedon chain defines the setting
+     */
+    public function get_closest_set_field_in_base_chain($field, $default = null) {
+        $instance = $this->instance;
+        $basedons = [ $instance->id => true ];
+        if ($instance->{$field}) {
+            return $instance->{$field};
+        }
+        while ($instance->basedon) {
+            if (isset($basedons[$instance->basedon])) {
+                throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
+            }
+            $basedons[$instance->basedon] = true;
+            $instance = self::get_db_record(VPL, $instance->basedon);
+            if ($instance->{$field}) {
+                return $instance->{$field};
+            }
+        }
+        return $default;
+    }
+
 }

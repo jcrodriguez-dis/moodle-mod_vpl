@@ -614,7 +614,7 @@ foreach ($alldata as $data) {
                 }
             }
             $result = []; // Dispose array.
-            $text = '<div id="g' . $subid . '">' . $text . '</div>';
+            $text = '<div id="g' . $subid . '" class="gd' . $subid . '">' . $text . '</div>';
             if ($subinstance->grader == $USER->id || $vpl->has_capability(VPL_EDITOTHERSGRADES_CAPABILITY)) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
                 $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
@@ -661,7 +661,7 @@ foreach ($alldata as $data) {
                 $text = get_string( 'nograde' );
             }
             $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $subinstance->userid, $options );
-            $text = '<div id="g' . $subid . '">' . $text . '</div>';
+            $text = '<div id="g' . $subid . '" class="gd' . $subid . '">' . $text . '</div>';
             $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
             $grader = '&nbsp;';
             $gradedon = '&nbsp;';
@@ -677,8 +677,8 @@ foreach ($alldata as $data) {
             }
         }
         // Add div id to submission info.
-        $grader = '<div id="m' . $subid . '">' . $grader . '</div>';
-        $gradedon = '<div id="o' . $subid . '">' . $gradedon . '</div>';
+        $grader = '<div id="m' . $subid . '" class="gd' . $subid . '">' . $grader . '</div>';
+        $gradedon = '<div id="o' . $subid . '" class="gd' . $subid . '">' . $gradedon . '</div>';
     }
     $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $user->id, 'privatecopy', 1 );
     $options = [
@@ -691,7 +691,12 @@ foreach ($alldata as $data) {
             'status' => 0,
             'toolbar' => 0,
     ];
-    $action = new popup_action('click', $url, 'privatecopyl' . $id, $options );
+    $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
+
+    if (isset($subid)) {
+        $gradecomments = '<div id="c' . $subid . '" class="gd' . $subid . '">' . $gradecomments . '</div>';
+    }
+
     $usernumber ++;
     $usernumberlink = $OUTPUT->action_link($url, $usernumber, $action);
     $linkcopyparms = ['id' => $id, 'userid' => $user->id, 'privatecopy' => 1];

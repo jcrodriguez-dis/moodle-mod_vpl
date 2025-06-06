@@ -36,6 +36,22 @@ require_once(dirname( __FILE__ ) . '/vpl_submission.class.php');
  */
 class mod_vpl_webservice extends external_api {
     /**
+     * Rewrite a text by replacing pluginfile.php/... by tokenpluginfile.php/<token>/...,
+     * so that these files are readable from an external source.
+     * @param string $text
+     * @param int $contextid
+     * @return string Text with rewritten pluginfiles to be accessible from external sources.
+     */
+    protected static function rewrite_pluginfile_for_external($text, $contextid) {
+        // First, re-encode urls into @@PLUGINFILE@@ tokens.
+        $reencoded = file_rewrite_pluginfile_urls($text, 'pluginfile.php', $contextid,
+                'mod_vpl', 'intro', null, ['reverse' => true]);
+        // Then, re-decode these @@PLUGINFILE@@ tokens into the tokenpluginfile form.
+        return file_rewrite_pluginfile_urls($reencoded, 'pluginfile.php', $contextid,
+                'mod_vpl', 'intro', null, ['includetoken' => true]);
+    }
+
+    /**
      * Returns VPL activity object for coursemodule id.
      * Does checks fro required netwok and password if setted.
      *
@@ -113,6 +129,8 @@ class mod_vpl_webservice extends external_api {
                 'id' => $id,
                 'password' => $password,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if (! $vpl->is_visible()) {
@@ -120,10 +138,10 @@ class mod_vpl_webservice extends external_api {
         }
         $instance = $vpl->get_instance();
         $ret = [
-                'name' => $instance->name,
-                'shortdescription' => $instance->shortdescription,
-                'intro' => $instance->intro,
-                'introformat' => ( int ) $instance->introformat,
+                'name' => format_string($instance->name),
+                'shortdescription' => format_string($instance->shortdescription),
+                'intro' => self::rewrite_pluginfile_for_external($vpl->get_fulldescription(), context_module::instance($id)->id),
+                'introformat' => ( int ) FORMAT_HTML,
                 'reqpassword' => ($instance->password > '' ? 1 : 0),
                 'example' => ( int ) $instance->example,
                 'restrictededitor' => ( int ) $instance->restrictededitor,
@@ -179,6 +197,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'comments' => $comments,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         if ($userid == -1) {
             $userid = $USER->id;
@@ -220,6 +240,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_VIEW_CAPABILITY );
         if ($userid == -1) {
@@ -281,6 +303,8 @@ class mod_vpl_webservice extends external_api {
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $instance = $vpl->get_instance();
         if ($userid == -1) {
@@ -341,6 +365,8 @@ if the websocket client send something to the server then the evaluation is stop
                 'password' => $password,
                 'userid' => $userid,
         ] );
+        self::validate_context(context_module::instance($id));
+
         $vpl = self::initial_checks( $id, $password );
         $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
         $instance = $vpl->get_instance();

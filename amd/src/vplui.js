@@ -225,6 +225,7 @@ define(
                 'rename': 'pencil',
                 'delete': 'trash',
                 'multidelete': 'trash|list',
+                'showparentfiles': 'eye|files-o',
                 'close': 'remove',
                 'comments': 'commenting',
                 'import': 'upload',

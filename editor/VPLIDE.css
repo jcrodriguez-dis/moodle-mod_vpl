@@ -408,6 +408,10 @@ pre.vpl_terminal {
     font-weight: bold;
 }
 
+label[for="vpl_donotshowagain"] {
+    font-size: 95%;
+}
+
 .vpl_bt_extrahtml {
     font-weight: 550;
 }

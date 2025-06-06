@@ -87,8 +87,6 @@ function vpl_grade_item_update($instance, $grades=null) {
  * @param stdClass $instance   of VPL database record
  * @param int      $userid     specific user only, 0 means all
  * @param bool     $nullifnone - not used
- *
- * @return bollean true correct, false fail
  */
 function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
     global $CFG, $USER;
@@ -137,7 +135,7 @@ function vpl_update_grades($instance, $userid=0, $nullifnone=true) {
             $grades[$grade->userid] = $grade;
         }
     }
-    return vpl_grade_item_update($instance, $grades);
+    vpl_grade_item_update($instance, $grades);
 }
 /**
  * Deletes grade_item from a vpl instance+id
@@ -287,9 +285,9 @@ function vpl_add_instance($instance) {
  * Updates a vpl instance event.
  *
  * @param object $instance VPL DB record
- * @return boolean OK
+ * @return void
  */
-function vpl_update_instance_event($instance) {
+function vpl_update_instance_event($instance): void {
     global $DB, $CFG;
     require_once($CFG->dirroot . '/calendar/lib.php');
     $event = vpl_create_event($instance, $instance->id);
@@ -402,7 +400,7 @@ function vpl_supports($feature) {
         case FEATURE_SHOW_DESCRIPTION:
             return true;
         case FEATURE_ADVANCED_GRADING:
-            return false;
+            return true;
         case FEATURE_CONTROLS_GRADE_VISIBILITY:
             return true;
         default:
@@ -603,8 +601,10 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:run' => 'fa-rocket',
             'mod_vpl:debug' => 'fa-bug',
             'mod_vpl:grade' => 'fa-check-circle',
+            'mod_vpl:gradenoun' => 'fa-check-circle',
             'mod_vpl:previoussubmissionslist' => 'fa-history',
             'mod_vpl:modulenameplural' => 'fa-list-ul',
+            'mod_vpl:checkgroups' => 'fa-group',
             'mod_vpl:description' => 'fa-tasks',
             'mod_vpl:similarity' => 'fa-binoculars',
             'mod_vpl:submissionslist' => 'fa-list-ul',
@@ -621,6 +621,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:cancel' => 'fa-remove',
             'mod_vpl:delete' => 'fa-trash',
             'mod_vpl:editthis' => 'fa-edit',
+            'mod_vpl:exitrole' => 'fa-close',
     ];
 }
 
@@ -800,6 +801,9 @@ function vpl_extend_settings_navigation(settings_navigation $settings, navigatio
         $url = new moodle_url( '/mod/vpl/index.php', ['id' => $PAGE->cm->course]);
         $node = vpl_navi_node_create($vplnode, 'modulenameplural', $url, navigation_node::TYPE_SETTING);
         $vplnode->add_node( $node, $fkn );
+        $url = new moodle_url( '/mod/vpl/views/checkvpls.php', ['id' => $PAGE->cm->course]);
+        $node = vpl_navi_node_create($vplnode, 'checkgroups', $url, navigation_node::TYPE_SETTING);
+        $vplnode->add_node( $node, $fkn );
     }
 }
 
@@ -914,26 +918,82 @@ function vpl_reset_instance_userdata($vplid) {
     global $CFG, $DB;
 
     // Delete submissions records.
-    $DB->delete_records( VPL_SUBMISSIONS, [
-            'vpl' => $vplid,
-    ] );
+    $paramselectingvpl = ['vpl' => $vplid];
+    $DB->delete_records( VPL_SUBMISSIONS, $paramselectingvpl );
     // Delete variations assigned.
-    $DB->delete_records( VPL_ASSIGNED_VARIATIONS, [
-            'vpl' => $vplid,
-    ] );
+    $DB->delete_records( VPL_ASSIGNED_VARIATIONS, $paramselectingvpl );
     // Delete overrides and associated events.
     $vpl = new mod_vpl(null, $vplid);
     $overrides = vpl_get_overrides($vplid);
     foreach ($overrides as $override) {
         $vpl->update_override_calendar_events($override, null, true);
     }
-    $DB->delete_records( VPL_ASSIGNED_OVERRIDES, [
-            'vpl' => $vplid,
-    ] );
+    $DB->delete_records( VPL_ASSIGNED_OVERRIDES, $paramselectingvpl );
 
     // Delete submission, execution and evaluation files.
     fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata' );
 }
+
+/**
+ * @codeCoverageIgnore
+ *
+ * This function is used by the reset_course_userdata function in moodlelib. This function
+ * will remove all submissions from the specified vpl instances and clean up any related data.
+ *
+ * @param $vplselection string with partial SQL to select VPL related records of a course.
+ * @param $vplids array of vpl ids of a course
+ * @param $courseid int course id
+ * @return bool true if successful, false otherwise
+ */
+function vpl_reset_submissions($vplselection, $vplids, $courseid): bool {
+    global $DB, $CFG;
+    try {
+        $DB->delete_records_select(VPL_SUBMISSIONS, $vplselection, [$courseid]);
+        $DB->delete_records_select(VPL_ASSIGNED_VARIATIONS, $vplselection, [$courseid]);
+        foreach ($vplids as $vplid) {
+            fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata' );
+        }
+        vpl_reset_gradebook($courseid);
+    } catch (\Throwable $e) {
+        debugging('Error reseting VPL submissions: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        return false;
+    }
+    return true;
+}
+
+/**
+ * @codeCoverageIgnore
+ *
+ * This function is used by the reset_course_userdata function in moodlelib. This function
+ * will remove all overrides from the specified vpl instances and clean up calendar events.
+ *
+ * @param $vplselection string with partial SQL to select VPL related records of a course.
+ * @param $courseid int course id
+ * @return bool true if successful, false otherwise
+ */
+function vpl_reset_overrides($vplselection, $courseid): bool {
+    global $DB, $CFG;
+    $result = true;
+    try {
+        $overrides = vpl_get_overrides_incourse($courseid);
+        foreach ($overrides as $override) {
+            $vpl = new mod_vpl(null, $override->vpl);
+            try {
+                $vpl->update_override_calendar_events($override, null, true);
+            } catch (\Throwable $e) {
+                debugging('Error removing VPL overrides calendar events: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $result = false;
+            }
+        }
+        $DB->delete_records_select(VPL_ASSIGNED_OVERRIDES, $vplselection, [$courseid]);
+        $DB->delete_records_select(VPL_OVERRIDES, $vplselection, [$courseid]);
+    } catch (\Throwable $e) {
+        debugging('Error reseting VPL overrides: ' . $e->getMessage(), DEBUG_DEVELOPER);
+        $result = false;
+    }
+    return $result;
+}
+
 
 /**
  * @codeCoverageIgnore
@@ -945,26 +1005,120 @@ function vpl_reset_instance_userdata($vplid) {
  * @return array status array
  */
 function vpl_reset_userdata($data) {
+    global $DB;
+    $vplselection = 'vpl IN (SELECT id FROM {vpl} WHERE course = ?)';
+    $courseparams = [$data->courseid];
+    $vplids = $DB->get_fieldset_select(VPL, 'id', 'course = ?', $courseparams);
+    $course = $DB->get_record('course', ['id' => $data->courseid], '*', MUST_EXIST);
+    $componentstr = get_string('modulenameplural', VPL);
     $status = [];
     if ($data->reset_vpl_submissions) {
-        $componentstr = get_string( 'modulenameplural', VPL );
-        if ($cms = get_coursemodules_in_course( VPL, $data->courseid )) {
-            foreach ($cms as $cm) { // For each vpl instance in course.
-                $vpl = new mod_vpl( $cm->id );
-                $instance = $vpl->get_instance();
-                $instancestatus = [
-                        'component' => $componentstr,
-                        'item' => get_string( 'resetvpl', VPL, $instance->name ),
-                        'error' => false,
-                ];
-                try {
-                    vpl_reset_instance_userdata($instance->id);
-                } catch (\Throwable $e) {
-                    $instancestatus['error'] = true;
+        $error = ! vpl_reset_submissions($vplselection, $vplids, $data->courseid);
+        $status[] = [
+            'component' => $componentstr,
+            'item' => get_string('resetvpl', VPL, $course->shortname),
+            'error' => $error,
+        ];
+    }
+    if ($data->reset_vpl_overrides) {
+        $error = ! vpl_reset_overrides($vplselection, $data->courseid);
+        $status[] = [
+            'component' => $componentstr,
+            'item' => get_string('removeoverrides', VPL),
+            'error' => $error,
+        ];
+    } else if ($data->reset_vpl_group_overrides || $data->reset_vpl_user_overrides) {
+        $error = false;
+        $overrides = vpl_get_overrides_incourse($course->id);
+        foreach ($overrides as $override) {
+            try {
+                $vpl = new mod_vpl(null, $override->vpl);
+                $newoverride = clone $override;
+                if ($data->reset_vpl_group_overrides) {
+                    $newoverride->groupids = '';
                 }
-                $status[] = $instancestatus;
+                if ($data->reset_vpl_user_overrides) {
+                    $newoverride->userids = '';
+                }
+                $vpl->update_override_calendar_events($newoverride, $override);
+            } catch (\Throwable $e) {
+                debugging('Error updating VPL overrides calendar events after course reset: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $error = true;
             }
         }
+        if ($data->reset_vpl_group_overrides) {
+            $selection = $vplselection . ' AND NOT (groupid IS NULL OR groupid = 0)';
+            $DB->delete_records_select(VPL_ASSIGNED_OVERRIDES, $selection, $courseparams);
+            $status[] = [
+                'component' => $componentstr,
+                'item' => get_string('removegroupoverrides', VPL),
+                'error' => $error,
+            ];
+        }
+        if ($data->reset_vpl_user_overrides) {
+            $selection = $vplselection . ' AND NOT (userid IS NULL OR userid = 0)';
+            $DB->delete_records_select(VPL_ASSIGNED_OVERRIDES, $selection, $courseparams);
+            $status[] = [
+                'component' => $componentstr,
+                'item' => get_string('removeuseroverrides', VPL),
+                'error' => $error,
+            ];
+        }
+    }
+
+    // Updating dates - shift may be negative too.
+    if ($data->timeshift != 0) {
+        // Shift dates in all vpl overrides in the course.
+        $error = false;
+        $overrides = vpl_get_overrides_incourse($course->id);
+        $params = ['timeshift' => $data->timeshift, 'courseid' => $data->courseid];
+        foreach (['startdate', 'duedate'] as $field) {
+            $sql = "UPDATE {vpl_overrides}
+                        SET $field = $field + :timeshift
+                        WHERE vpl IN (SELECT id FROM {vpl} WHERE course = :courseid)
+                              AND NOT ($field IS NULL OR $field = 0)";
+            $DB->execute($sql, $params);
+        }
+
+        $newoverrides = vpl_get_overrides_incourse($course->id);
+        foreach ($overrides as $override) {
+            try {
+                $vpl = new mod_vpl(null, $override->vpl);
+                if (isset($newoverrides[$override->id])) {
+                    $vpl->update_override_calendar_events($newoverrides[$override->id]);
+                } else {
+                    $vpl->update_override_calendar_events($override, null, true);
+                }
+            } catch (\Throwable $e) {
+                debugging('Error updating VPL overrides calendar events after time shifting: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $error = true;
+            }
+        }
+
+        // Shift dates in all vpl instances in the course.
+        foreach (['startdate', 'duedate'] as $field) {
+            $sql = "UPDATE {vpl}
+                        SET $field = $field + :timeshift
+                        WHERE course = :courseid
+                              AND NOT ($field IS NULL OR $field = 0)";
+            $DB->execute($sql, $params);
+        }
+        mod_vpl::reset_db_cache();
+        $vplinstances = $DB->get_records_select(VPL, 'course = ?', [$data->courseid]);
+        foreach ($vplinstances as $vplinstance) {
+            try {
+                vpl_update_instance_event($vplinstance);
+            } catch (\Throwable $e) {
+                debugging('Error updating VPL calendar events after time shiting: ' . $e->getMessage(), DEBUG_DEVELOPER);
+                $error = true;
+            }
+        }
+
+        $status[] = [
+                'component' => $componentstr,
+                'item' => get_string('timeshift', VPL, format_time($data->timeshift)),
+                'error' => $error,
+            ];
     }
     return $status;
 }
@@ -975,11 +1129,25 @@ function vpl_reset_userdata($data) {
  * Implementation of the function for printing the form elements that control whether
  * the course reset functionality affects VPL.
  *
- * @param $mform moodleform passed by reference
+ * @param $mform moodleform
  */
-function vpl_reset_course_form_definition(&$mform) {
-    $mform->addElement( 'header', 'vplheader', get_string( 'modulenameplural', VPL ) );
-    $mform->addElement( 'advcheckbox', 'reset_vpl_submissions', get_string( 'deleteallsubmissions', VPL ) );
+function vpl_reset_course_form_definition($mform) {
+    $mform->addElement('header', 'vplheader', get_string( 'modulenameplural', VPL));
+    $mform->addElement('static', 'reset_vpl_delete', get_string('delete'));
+    $mform->addElement('advcheckbox', 'reset_vpl_submissions',
+            get_string( 'removeallsubmissions', VPL));
+    $mform->addHelpButton('reset_vpl_submissions', 'removeallsubmissions', VPL);
+    $mform->addElement('advcheckbox', 'reset_vpl_overrides',
+            get_string('removeoverrides', VPL));
+    $mform->addHelpButton('reset_vpl_overrides', 'removeoverrides', VPL);
+    $mform->addElement('advcheckbox', 'reset_vpl_user_overrides',
+            get_string('removeuseroverrides', 'vpl'));
+    $mform->addHelpButton('reset_vpl_user_overrides', 'removeuseroverrides', VPL);
+    $mform->hideIf('reset_vpl_user_overrides', 'reset_vpl_overrides', 'checked');
+    $mform->addElement('advcheckbox', 'reset_vpl_group_overrides',
+            get_string('removegroupoverrides', 'vpl'));
+    $mform->addHelpButton('reset_vpl_group_overrides', 'removegroupoverrides', VPL);
+    $mform->hideIf('reset_vpl_group_overrides', 'reset_vpl_overrides', 'checked');
 }
 
 /**
@@ -988,5 +1156,10 @@ function vpl_reset_course_form_definition(&$mform) {
  * Course reset form defaults.
  */
 function vpl_reset_course_form_defaults($course) {
-    return ['reset_vpl_submissions' => 1];
+    return [
+        'reset_vpl_submissions' => 1,
+        'reset_vpl_overrides' => 1,
+        'reset_vpl_user_overrides' => 0,
+        'reset_vpl_group_overrides' => 0,
+    ];
 }

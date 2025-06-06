@@ -1,4 +1,3 @@
-<?php
 // This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
 // VPL for Moodle is free software: you can redistribute it and/or modify
@@ -15,28 +14,24 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Download execution files
- *
- * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * Submission form utility.
+ * @copyright 2024 Astor Bizard
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'NO_DEBUG_DISPLAY', true );
-
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-
-try {
-    require_login();
-    $id = required_param( 'id', PARAM_INT );
-    $vpl = new mod_vpl( $id );
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-    $filegroup = $vpl->get_execution_fgm();
-    $filegroup->download_files( $vpl->get_name() );
-    die();
-} catch (\Throwable $e) {
-    vpl_redirect('', $e->getMessage(), 'error' );
-}
+define(['jquery'], function($) {
+    return {
+        setup: function() {
+            var updateHeaders = function(submitType) {
+                var archive = submitType == 'archive';
+                $('#id_headersubmitarchive').toggle(archive).toggleClass('collapsed', !archive);
+                $('#id_headersubmitfiles').toggle(!archive).toggleClass('collapsed', archive);
+            };
+            var $select = $('select[name="submitmethod"]');
+            $select.change(function() {
+                updateHeaders($select.val());
+            });
+            updateHeaders($select.val());
+        }
+    };
+});
