@@ -22,7 +22,6 @@
  */
 
 /* globals MathJax */
-/* globals Promise */
 /* globals openpopup */
 
 define(
@@ -133,15 +132,17 @@ define(
                 }
                 var droppedFiles = [];
                 // Function that lists all files and subfiles of given entry into droppedFiles.
-                var listDroppedFiles = function(entry, path="") {
-                    return new Promise(function(resolve){
+                var listDroppedFiles = function(entry, path = '') {
+                    return new Promise(function(resolve) {
                         if (entry.isFile) {
                             // Current entry is a file : add it to the list.
                             entry.file(function(file) {
                                 // Change its name s.t. it preserves directories structure.
                                 var fullName = path + file.name;
                                 Object.defineProperty(file, "name", {
-                                    get: function(){ return fullName; }
+                                    get: function() {
+                                            return fullName;
+                                         }
                                 });
                                 droppedFiles.push(file);
                                 resolve();
@@ -154,7 +155,9 @@ define(
                                 for (var i=0; i<entries.length; i++) {
                                     dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
                                 }
-                                Promise.all(dirPromises).then(resolve);
+                                Promise.all(dirPromises).then(resolve).catch(function(err) {
+                                    VPLUtil.log("Error reading directory entries: " + err);
+                                });
                             });
                         } else {
                             // This is neither a directory nor a file : ignore it.
@@ -166,22 +169,26 @@ define(
 
                 // List every element of the drop event.
                 var promises = [];
-                for (var i=0; i<dt.items.length; i++) {
+                for (var i = 0; i < dt.items.length; i++) {
                     promises.push(listDroppedFiles(dt.items[i].webkitGetAsEntry()));
                 }
 
                 // Drop files.
                 if (dt.files.length > 0) {
                     Promise.all(promises)
-                    .then(function(){
+                    .then(function() {
                         VPLUI.readSelectedFiles(droppedFiles, function(file) {
                             return fileManager.addFile(file, true, updateMenu, showErrorMessage);
                         },
-                        function(){
+                        function() {
                             fileManager.fileListVisibleIfNeeded();
                         });
                         return;
+                    })
+                    .catch(function(err) {
+                        VPLUtil.log("Error processing dropped files: " + err);
                     });
+
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -1636,9 +1643,9 @@ define(
                 originalAction: function() {
                     openpopup(null, {
                         url: options.showparentfilesurl,
-                        options: 'width=' + Math.max(screen.availWidth/2, 780) +
+                        options: 'width=' + Math.max(screen.availWidth / 2, 780) +
                                  ',height=' + screen.availHeight +
-                                 ',left=' + (screen.availWidth/4)
+                                 ',left=' + (screen.availWidth / 4)
                     });
                 }
             });
@@ -1782,7 +1789,7 @@ define(
                         .done(function(response) {
                             if (response.requestsconfirmation && !noconfirmation) {
                                 var checkboxID = 'vpl_donotshowagain';
-                                var donotshowagain = '<input type="checkbox" id="' + checkboxID +'"'
+                                var donotshowagain = '<input type="checkbox" id="' + checkboxID + '"'
                                                     + ' class="align-text-bottom mr-1 mt-3">'
                                                     + '<label for="' + checkboxID + '">' + str('donotshowagain') + '</label>';
                                 var $checkbox;

@@ -91,7 +91,7 @@ function(VPLUI) {
             return grade;
         }
 
-         /**
+        /**
          * Evaluate a student
          * @param {number} id Student id
          * @param {number} subid Submission id
@@ -112,7 +112,9 @@ function(VPLUI) {
                     var showErrorMessage = function(message) {
                         VPLUI.showErrorMessage(message, {
                             closeOnEscape: false,
-                            close: function() {VPL.unhlrow(subid);},
+                            close: function() {
+                                VPL.unhlrow(subid);
+                            },
                             stop: cancel,
                             next: function() {
                                 VPL.updatesublist(subid, getGrade());
@@ -153,21 +155,20 @@ function(VPLUI) {
         async function evaluateStudents() {
             var students = VPL.evaluateStudents;
             var nstudents = students.length;
-            for(var i = 0; i < nstudents; i++) {
+            for (var i = 0; i < nstudents; i++) {
                 var student = students[i];
                 if (i === 0) {
                     VPL.hide_table_rows(student.subid);
                 }
-                var first_td = VPL.get_table_row(student.subid).querySelector('td');
-                first_td.innerHTML = (i + 1) + '/' + nstudents;
+                var firstTD = VPL.get_table_row(student.subid).querySelector('td');
+                firstTD.innerHTML = (i + 1) + '/' + nstudents;
                 VPL.show_table_row(student.subid);
                 try {
                     await evaluateStudent(student.id, student.subid);
-                }
-                catch (e) {
+                } catch (e) {
                     VPL.unhlrow(student.subid);
                     VPL.updatesublist(student.subid, getGrade());
-                    if (! goon) {
+                    if (!goon) {
                         break;
                     }
                 }

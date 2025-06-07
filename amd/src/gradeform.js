@@ -98,7 +98,7 @@ define(['jquery'], function($) {
             var currentgrade = $(this).data('currentgrade');
             var maxgridpoints = $(this).data('maxgridpoints');
 
-            var grade = formatGrade(currentgrade - maxgridpoints * (currentgrade/maxgrade) + gridpoints);
+            var grade = formatGrade(currentgrade - maxgridpoints * (currentgrade / maxgrade) + gridpoints);
             $form.find('[name="grade"]').val(grade);
 
             var $comments = $form.find('[name="comments"]');
