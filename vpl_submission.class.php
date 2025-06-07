@@ -34,6 +34,7 @@
  * path/usersdata/userid#/submissionid#/studenttest.txt
  */
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once($CFG->dirroot . '/grade/grading/lib.php');
