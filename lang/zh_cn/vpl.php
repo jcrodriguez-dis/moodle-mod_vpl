@@ -320,7 +320,7 @@ $string['executionoptions_help'] = '<p>Various execution options are set in this
 </ul>
 </li>
 <li><b>Run</b>, <b>Debug</b> and <b>Evalaute</b>: must be set to \'Yes\' if the corresponding action can be executed when editing the submission. This affects to the students only, users with  capability of grading can always execute these actions.</li>
-<li><b>Evaluate just on submission</b>: the submission is evaluated automatically when it is uploaded.</li>
+<li><b>Evaluate upon files submission</b>: the submission is evaluated automatically when it is uploaded.</li>
 <li><b>Automatic grading</b>: if the evaluation result includes grading codes, they are used to set the grade automatically.</li>
 </ul>';
 $string['fulldescription_help'] = '<p>You must write here a full description for the activity.</p>

@@ -49,7 +49,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should see "Run: No"
     And I should not see "Debug:"
     And I should see "Evaluate: No"
-    And I should not see "Evaluate just on submission:"
+    And I should not see "Evaluate upon files submission:"
     And I should not see "Automatic grade:"
 
   @javascript
@@ -64,7 +64,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should not see "Run:"
     And I should not see "Debug:"
     And I should not see "Evaluate:"
-    And I should not see "Evaluate just on submission:"
+    And I should not see "Evaluate upon files submission:"
     And I should not see "Automatic grade:"
 
   @javascript
@@ -80,7 +80,7 @@ Feature: In an VPL activity, editing teacher change options of execution
       | id_evaluate | 1 |
       | id_evaluateonsubmission | 1 |
       | id_automaticgrading  | 1 |
-    And I press "save options"
+    And I press "Save options"
     And I should see "Options have been saved"
     When I am on "Course 1" course homepage
     And I click on "VPL activity name" "link" in the "region-main" "region"
@@ -92,7 +92,7 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should see "Debug: Yes"
     And I should see "Evaluate: Yes"
     And I should see "Grade settings: No grade"
-    And I should see "Evaluate just on submission: Yes"
+    And I should see "Evaluate upon files submission: Yes"
     And I should see "Automatic grade: Yes"
 
   @javascript
@@ -108,7 +108,7 @@ Feature: In an VPL activity, editing teacher change options of execution
       | id_evaluate | 1 |
       | id_evaluateonsubmission | 1 |
       | id_automaticgrading  | 1 |
-    And I press "save options"
+    And I press "Save options"
     And I should see "Options have been saved"
     And I log out
     When I log in as "student1"
@@ -121,5 +121,5 @@ Feature: In an VPL activity, editing teacher change options of execution
     And I should not see "Run:"
     And I should not see "Debug:"
     And I should not see "Evaluate:"
-    And I should not see "Evaluate just on submission:"
+    And I should not see "Evaluate upon files submission:"
     And I should not see "Automatic grade:"

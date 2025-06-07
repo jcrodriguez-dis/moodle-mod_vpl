@@ -2272,6 +2272,7 @@ class mod_vpl {
      * @return string HTML
      */
     public function get_submissions_status($nstudents=null, $nsubmissions=0, $ngraded=0) {
+        global $PAGE;
         if ($nstudents === null) {
             if ($this->is_group_activity()) {
                 $groupingid = $this->get_course_module()->groupingid;
@@ -2285,35 +2286,47 @@ class mod_vpl {
             $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
             $nstudents = count($allstudents);
             $nsubmissions = count($submissions);
-            $ngraded = $this->number_of_graded_submissions($submissions);
         }
-        if ($nstudents == 0 || $nsubmissions == 0) {
-            $nsubmissionspc = 0;
-            $ngradedpc = 0;
+        if ($nstudents == 0) {
+            $nsubmissionspc = '-';
         } else {
             $nsubmissionspc = round(100 * $nsubmissions / $nstudents, 2);
-            $ngradedpc = round(100 * $ngraded / $nsubmissions, 2);
         }
+        $data = new stdClass();
         $urlbase = '/mod/vpl/views/submissionslist.php';
         $params = ['id' => $this->cm->id, 'selection' => 'all'];
-        if ($this->is_group_activity()) {
-            $html = get_string('groups') . ": ";
-        } else {
-            $html = get_string('students') . ": ";
-        }
-        $html .= html_writer::link(new moodle_url($urlbase, $params), $nstudents) . " / ";
+        $data->name = get_string($this->is_group_activity() ? 'groups':'students');
+        $data->ugcount = html_writer::link(new moodle_url($urlbase, $params), $nstudents);
         $params['selection'] = 'allsubmissions';
-        $html .= html_writer::link(new moodle_url($urlbase, $params), $nsubmissions) . " ($nsubmissionspc%)";
+        $data->subcount = html_writer::link(new moodle_url($urlbase, $params), $nsubmissions);
+        $data->subpercent = $nsubmissionspc;
         if ($this->get_grade() != 0) {
-            $params['selection'] = 'graded';
-            $html .= " / " . html_writer::link(new moodle_url($urlbase, $params), $ngraded) . " ($ngradedpc%)";
-            if ($nsubmissions > $ngraded) {
-                $nnograded = $nsubmissions - $ngraded;
-                $nnogradedpc = round(100 * $nnograded / $nsubmissions, 2);
-                $params['selection'] = 'notgraded';
-                $html .= " - " . html_writer::link(new moodle_url($urlbase, $params), $nnograded) . " ($nnogradedpc%)";
+            if ($nsubmissions == 0) {
+                $ngraded = 0;
+                $ngradedpc = '-';
+                $nnotgraded = 0;
+                $nnotgradedpc = '-';
+            } else {
+                $ngraded = $this->number_of_graded_submissions($submissions);
+                $ngradedpc = round(100 * $ngraded / $nsubmissions, 2);
+                $nnotgraded = $nsubmissions - $ngraded;
+                $nnotgradedpc = round(100 * $nnotgraded / $nsubmissions, 2);
             }
+            $params['selection'] = 'graded';
+            $data->gradedcount = html_writer::link(new moodle_url($urlbase, $params), $ngraded);
+            $data->gradedpercent = $ngradedpc;
+            $params['selection'] = 'notgraded';
+            $data->notgradedcount = html_writer::link(new moodle_url($urlbase, $params), $nnotgraded);
+            $data->notgradedpercent = $nnotgradedpc;
+            $strname = 'submissions_graded_overview';
+            $html = get_string('submissions_graded_overview', VPL, $data);
+        } else {
+            $strname = 'submissions_overview';
+            $html = get_string('submissions_overview', VPL, $data);
         }
+        $html = get_string($strname, VPL, $data);
+        $output = $PAGE->get_renderer('core');
+        $html .= $output->help_icon($strname, VPL);
         return $html;
     }
 

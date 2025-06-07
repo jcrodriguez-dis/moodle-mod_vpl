@@ -332,6 +332,11 @@ $string['submissionrestrictions'] = 'Restricciones de entrega';
 $string['submissions'] = 'Entregas';
 $string['submissionselection'] = 'Selección de entregas';
 $string['submissionslist'] = 'Lista de entregas';
+$string['submissions_overview_help'] = '[Número de estudiantes o grupos] / [Número de entregas] (% de estudiantes o grupos con entrega)';
+$string['submissions_graded_overview_help'] = '[Número de estudiantes o grupos]<br>
+ / [Entregas] (% de estudiantes o grupos con entrega)<br>
+ / [Entregas evaluadas] (% de entregas evaluadas)<br>
+ - [Entregas no evaluadas] (% de entregas no evaluadas)';
 $string['submissionview'] = 'Ver entrega';
 $string['submittedby'] = 'Entregada por {$a}';
 $string['submittedon'] = 'Entregada el';

@@ -50,23 +50,23 @@ Feature: In a VPL activity teacher grade submissions
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       | id_grade | 0 |
-    And I press "Grade"
-    And I should see "Graded"
+    And I press "Save grade"
+    And I should see "Grade saved"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL
     And I should see "Grade: 0"
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       | id_grade | 5 |
-    And I press "Grade"
-    And I should see "Graded"
+    And I press "Save grade"
+    And I should see "Grade saved"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL
     And I should see "Grade: 5"
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       |id_grade | 5.001 |
-    And I press "Grade"
+    And I press "Save grade"
     And I should see "Supplied grade is invalid"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL
@@ -86,23 +86,23 @@ Feature: In a VPL activity teacher grade submissions
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       | id_grade | 0 |
-    And I press "Grade"
-    And I should see "Graded"
+    And I press "Save grade"
+    And I should see "Grade saved"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL
     And I should see "Grade: 0"
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       | id_grade | 5 |
-    And I press "Grade"
-    And I should see "Graded"
+    And I press "Save grade"
+    And I should see "Grade saved"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL
     And I should see "Grade: 5"
     And I click on "li.nav-item a[title='Grade']" in VPL
     And I set the following fields to these values:
       |id_grade | 5.001 |
-    And I press "Grade"
+    And I press "Save grade"
     And I should see "Supplied grade is invalid"
     And I press "Continue"
     And I click on "li.nav-item a[title='Submission view']" in VPL

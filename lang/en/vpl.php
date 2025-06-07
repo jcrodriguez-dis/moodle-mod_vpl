@@ -110,7 +110,7 @@ $string['directory_not_renamed'] = 'Directory \'{$a}\' has not been renamed';
 $string['disabled'] = 'Disabled';
 $string['discard_submission_period'] = 'Discard submission period';
 $string['discard_submission_period_description'] = 'For each student and assignment, the system tries to discard submissions. The system keep the last one and at least a submission for every period';
-$string['dograde'] = 'Grade';
+$string['dograde'] = 'Save grade';
 $string['donotshowagain'] = 'Disable these messages for the current page';
 $string['download'] = 'Download';
 $string['downloadallsubmissions'] = 'Download all submissions';
@@ -170,7 +170,7 @@ $string['fulldescription'] = 'Full description';
 $string['fullscreen'] = 'Fullscreen';
 $string['generatedshebang'] = 'Generated because there was no specified shell';
 $string['getjails'] = 'Get execution servers';
-$string['gradeandnext'] = 'Grade & next';
+$string['gradeandnext'] = 'Save & next';
 $string['graded'] = 'Graded';
 $string['gradedbyuser'] = 'Graded by user';
 $string['gradedon'] = "Evaluated on";
@@ -394,12 +394,11 @@ $string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
 <b>Text in GUI</b>: Evaluate program in GUI mode.<br>
 <b>Note</b>: Custom scripts can ignore this setting.<br>';
 $string['save'] = 'Save';
-$string['save'] = 'Save';
 $string['savecontinue'] = 'Save and continue';
 $string['saved'] = 'Saved';
 $string['savedfile'] = "The '{\$a}' file has been saved";
 $string['saveforotheruser'] = "You are saving a submission for other user, are you sure?";
-$string['saveoptions'] = 'save options';
+$string['saveoptions'] = 'Save options';
 $string['saving'] = 'Saving';
 $string['scanactivity'] = 'Activity';
 $string['scandirectory'] = 'Directory';
@@ -431,6 +430,14 @@ $string['submissionrestrictions'] = 'Submission restrictions';
 $string['submissions'] = 'Submissions';
 $string['submissionselection'] = 'Submission selection';
 $string['submissionslist'] = 'Submissions list';
+$string['submissions'] = 'Submissions list';
+$string['submissions_overview'] = '{$a->name}: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
+$string['submissions_overview_help'] = 'students or grupos count / submissions count (% of students or groups with submissions)';
+$string['submissions_graded_overview'] = '{$a->name}: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
+$string['submissions_graded_overview_help'] = '[students or grupos count]<br>
+ / [submissions count] (% of students or groups with submissions)<br>
+ / [graded count] (% of submissions graded)<br>
+ - [not graded count] (% of submissions not graded)';
 $string['submissionview'] = 'Submission view';
 $string['submitarchive'] = 'Submit archive';
 $string['submitfiles'] = 'Submit files';
@@ -550,7 +557,7 @@ $string['executionoptions_help'] = '<p>Various execution options are set in this
 </ul>
 </li>
 <li><b>Run</b>, <b>Debug</b> and <b>Evalaute</b>: must be set to \'Yes\' if the corresponding action can be executed when editing the submission. This affects to the students only, users with  capability of grading can always execute these actions.</li>
-<li><b>Evaluate just on submission</b>: the submission is evaluated automatically when it is uploaded.</li>
+<li><b>Evaluate upon files submission</b>: the submission is evaluated automatically when it is uploaded.</li>
 <li><b>Automatic grading</b>: if the evaluation result includes grading codes, they are used to set the grade automatically.</li>
 </ul>';
 $string['fulldescription_help'] = '<p>You must write here a full description for the activity.</p>
