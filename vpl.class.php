@@ -1713,7 +1713,7 @@ class mod_vpl {
                         && ($subinstance->dategraded == 0
                             || $subinstance->grader == $USER->id
                             || $subinstance->grader == 0
-                            || $this->vpl->has_capability( VPL_EDITOTHERSGRADES_CAPABILITY ))) {
+                            || $this->has_capability( VPL_EDITOTHERSGRADES_CAPABILITY ))) {
                         $href = vpl_mod_href( 'forms/gradesubmission.php', 'id', $cmid, 'userid', $userid );
                         $text = get_string(vpl_get_gradenoun_str());
                         $tabs[] = vpl_create_tabobject( 'gradesubmission.php', $href, vpl_get_gradenoun_str(), 'core' );
