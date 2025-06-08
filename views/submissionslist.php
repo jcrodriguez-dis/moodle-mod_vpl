@@ -30,6 +30,7 @@ require_once($CFG->dirroot.'/mod/vpl/locallib.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
+require_once($CFG->libdir.'/tablelib.php');
 
 /**
  * Class to order submission list.
