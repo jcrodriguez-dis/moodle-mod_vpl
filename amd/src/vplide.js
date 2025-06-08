@@ -170,7 +170,23 @@ define(
                 // List every element of the drop event.
                 var promises = [];
                 for (var i = 0; i < dt.items.length; i++) {
-                    promises.push(listDroppedFiles(dt.items[i].webkitGetAsEntry()));
+                    var entry = dt.items[i].webkitGetAsEntry();
+                    if (!entry) { // Used if testing with Behat
+                        const file = dt.items[i].getAsFile();
+                        if (file) {
+                            // Create a fake entry to handle it like a file.
+                            entry = {
+                                isFile: true,
+                                isDirectory: false,
+                                file: function(callback) {
+                                    callback(file);
+                                }
+                            };
+                            promises.push(listDroppedFiles(entry));
+                        }
+                    } else if (entry.isFile || entry.isDirectory) {
+                        promises.push(listDroppedFiles(entry));
+                    }
                 }
 
                 // Drop files.
