@@ -431,9 +431,9 @@ $string['submissions'] = 'Submissions';
 $string['submissionselection'] = 'Submission selection';
 $string['submissionslist'] = 'Submissions list';
 $string['submissions'] = 'Submissions list';
-$string['submissions_overview'] = '{$a->name}: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
+$string['submissions_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
 $string['submissions_overview_help'] = 'students or grupos count / submissions count (% of students or groups with submissions)';
-$string['submissions_graded_overview'] = '{$a->name}: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
+$string['submissions_graded_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
 $string['submissions_graded_overview_help'] = '[students or grupos count]<br>
  / [submissions count] (% of students or groups with submissions)<br>
  / [graded count] (% of submissions graded)<br>
