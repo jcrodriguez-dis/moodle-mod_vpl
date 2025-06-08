@@ -491,7 +491,7 @@ function xmldb_vpl_upgrade_2022110512() {
 }
 
 /**
- * Upgrades VPL to 4.3 (2024010212) version
+ * Upgrades VPL to 4.2 (2024010212) version
  *
  * @return void
  */
@@ -526,7 +526,7 @@ function xmldb_vpl_upgrade_2025052313() {
     xmldb_vpl_addfield($dbman, $table, $field);
     $field = new xmldb_field('run_mode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'evaluator');
     xmldb_vpl_addfield($dbman, $table, $field);
-    $field = new xmldb_field('evaluation_mode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'run_environment');
+    $field = new xmldb_field('evaluation_mode', XMLDB_TYPE_INTEGER, '2', null, XMLDB_NOTNULL, null, '0', 'run_mode');
     xmldb_vpl_addfield($dbman, $table, $field);
 
     // Updating vpl_submissions table.
