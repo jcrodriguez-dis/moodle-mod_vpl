@@ -152,7 +152,7 @@ define(
                             var dirReader = entry.createReader();
                             dirReader.readEntries(function(entries) {
                                 var dirPromises = [];
-                                for (var i=0; i<entries.length; i++) {
+                                for (var i = 0; i < entries.length; i++) {
                                     dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
                                 }
                                 Promise.all(dirPromises).then(resolve).catch(function(err) {

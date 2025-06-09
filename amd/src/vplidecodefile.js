@@ -184,7 +184,7 @@ define(
                 var lang = VPLUtil.langType(filenamepath);
                 session.setMode("ace/mode/" + lang);
                 session.setTabSize(4);
-                session.setUseSoftTabs(! VPLUtil.useHardTabs(filenamepath));
+                session.setUseSoftTabs(!VPLUtil.useHardTabs(filenamepath));
                 this.setLang(lang);
             };
             this.getEditor = function() {
