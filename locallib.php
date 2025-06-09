@@ -64,10 +64,13 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
  */
 function vpl_create_dir($dir) {
     global $CFG;
-    if (! file_exists( $dir )) { // Create dir?
-        if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+    if (! @file_exists( $dir )) { // Create dir?
+        if (! @mkdir( $dir, $CFG->directorypermissions, true ) ) {
             throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
         }
+    }
+    if (! @is_dir( $dir )) { // Is a file?
+        throw new file_exception('storedfileproblem', "Error creating directory in VPL.");
     }
 }
 
@@ -81,12 +84,11 @@ function vpl_create_dir($dir) {
  * @return Object file descriptor
  */
 function vpl_fopen($filename) {
-    if (! file_exists( $filename )) { // Exists file?
+    if (! @file_exists( $filename )) { // Exists file?
         $dir = dirname( $filename );
         vpl_create_dir($dir);
     }
-    if (is_dir( $filename )) { // Is a dir?
-        debugging( "Error creating file in VPL a directory with same name exists '$filename'.", DEBUG_NORMAL );
+    if (@is_dir( $filename )) { // Is a dir?
         throw new file_exception('storedfileproblem', "Error creating file in VPL.");
     }
     $fp = fopen( $filename, 'w+b' );
@@ -118,8 +120,8 @@ function vpl_fopen($filename) {
  * @return void
  */
 function vpl_fwrite($filename, $contents) {
-    if ( is_file($filename) ) {
-        unlink($filename);
+    if (@is_file($filename) ) {
+        @unlink($filename);
     }
     $fd = vpl_fopen( $filename );
     $res = ftruncate ( $fd, 0);
@@ -139,9 +141,9 @@ function vpl_fwrite($filename, $contents) {
  */
 function vpl_delete_dir($dirname) {
     $ret = false;
-    if (file_exists( $dirname )) {
+    if (@file_exists( $dirname )) {
         $ret = true;
-        if (is_dir( $dirname )) {
+        if (@is_dir( $dirname )) {
             $dd = opendir( $dirname );
             if (! $dd) {
                 return false;
@@ -156,9 +158,9 @@ function vpl_delete_dir($dirname) {
             foreach ($list as $name) {
                 $ret = vpl_delete_dir( $dirname . '/' . $name ) && $ret;
             }
-            $ret = rmdir( $dirname ) && $ret;
+            $ret = @rmdir( $dirname ) && $ret;
         } else {
-            $ret = unlink( $dirname );
+            $ret = @unlink( $dirname );
         }
     }
     return $ret;

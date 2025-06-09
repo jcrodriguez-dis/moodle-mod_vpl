@@ -95,7 +95,7 @@ class locallib_test extends \advanced_testcase {
         $fpath = $testdir . '/nf.bbb';
         chmod($fpath, 0000);
         try {
-            if (file_get_contents($fpath) == $text) {
+            if (@file_get_contents($fpath) == $text) {
                 $chmodusefull = false;
             } else {
                 $chmodusefull = true;
@@ -173,7 +173,7 @@ class locallib_test extends \advanced_testcase {
         // Tests if the File System honor chmod.
         chmod($fpath, 0000);
         try {
-            if (file_get_contents($fpath) == $otext) {
+            if (@file_get_contents($fpath) == $otext) {
                 $chmodusefull = false;
             } else {
                 $chmodusefull = true;
@@ -196,9 +196,6 @@ class locallib_test extends \advanced_testcase {
             $fpath = $testdir . $bad;
             try {
                 $throwexception = false;
-                if(file_exists($fpath) && is_dir($fpath)) {
-                    $this->expectedNotice();
-                }
                 vpl_fwrite($fpath, $text);
             } catch (\Throwable $e) {
                 $throwexception = true;
