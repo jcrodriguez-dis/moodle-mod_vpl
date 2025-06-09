@@ -127,3 +127,15 @@ jobs:
       - name: Tests tester of automatic evaluation of students' programs
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
+
+      - name: Tests of evaluators subplugins
+        if: ${{ always() }}
+        run: |
+          cd ./plugin/evaluators
+          for evaluator in $(ls -d *); do
+            if [ -f "${evaluator}/tests/run_tests.sh" ]; then
+              cd "${evaluator}"
+              ./tests/run_tests.sh
+              cd -
+            fi
+          done
