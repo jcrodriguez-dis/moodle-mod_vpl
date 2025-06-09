@@ -49,6 +49,7 @@ class behat_mod_vpl extends behat_base {
     public function i_click_on_selector_in_vpl($selector) {
         $script = "document.querySelector(\"$selector\").click();";
         $this->getSession()->evaluateScript($script);
+        sleep(1); // Wait for the click to be processed.
     }
 
 
@@ -124,6 +125,7 @@ class behat_mod_vpl extends behat_base {
             element.dispatchEvent(dropEvent);
         })()";
         $this->getSession()->evaluateScript($script);
+        sleep(1); // Wait for the drop to be processed.
     }
 
     /**
@@ -169,5 +171,6 @@ class behat_mod_vpl extends behat_base {
             element.dispatchEvent(dropEvent);
         })()";
         $this->getSession()->evaluateScript($script);
+        sleep(count($files)); // Wait for the drop to be processed.
     }
 }
