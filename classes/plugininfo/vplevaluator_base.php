@@ -70,12 +70,14 @@ class vplevaluator_base {
      */
     public function get_help(): string {
         global $CFG;
+        $help = '';
         $helpfilename = $CFG->dirroot . "/mod/vpl/evaluator/{$this->name}/help.md";
         if (file_exists($helpfilename)) {
             $help = file_get_contents($helpfilename);
         }
-        return "";
+        return $help;
     }
+
     /**
      * Return the files to keep when running after compiling
      * @return array of file_names
@@ -99,7 +101,7 @@ class vplevaluator_base {
             $string = [];
             include_once($stringsfilename);
             $modname = 'vplevaluator_' . $this->name;
-            foreach ($string as $key => $value) {
+            foreach (array_keys($string) as $key) {
                 $strlist[$key] = get_string($key, $modname);
             }
         }

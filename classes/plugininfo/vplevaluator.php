@@ -32,14 +32,10 @@ class vplevaluator extends base {
      */
     public const PLUGIN_TYPE = 'vplevaluator';
 
-    private static $plugin_lib_loaded = [];
-
     /**
-     * Object to evaluate the plugin.
-     * @var ?\mod_vpl\plugininfo\vplevaluator_base
+     * Returns if the plugin type supports disabling.
+     * @return bool
      */
-    private ?\mod_vpl\plugininfo\vplevaluator_base $evaluator = null;
-
     public static function plugintype_supports_disabling(): bool {
         return true;
     }
@@ -59,12 +55,10 @@ class vplevaluator extends base {
      * @return array of enabled plugins $pluginname=>$pluginname
      */
     public static function get_enabled_plugins(): array {
-        global $DB;
-        global $CFG;
         $pluginmanager = \core_plugin_manager::instance();
         $plugins = $pluginmanager->get_plugins_of_type(self::PLUGIN_TYPE);
         $enabledplugins = [];
-        foreach ($plugins as $plugin => $version) {
+        foreach (array_keys($plugins) as $plugin) {
             $plugininfo = $pluginmanager->get_plugin_info(self::PLUGIN_TYPE . "_{$plugin}");
             if (!$plugininfo) {
                 // Plugin not found.
@@ -121,7 +115,6 @@ class vplevaluator extends base {
      * @throws \moodle_exception if the plugin is not found.
      */
     public static function get_evaluator($name): \mod_vpl\plugininfo\vplevaluator_base {
-        global $CFG;
         $pluginfullname = self::PLUGIN_TYPE . "_{$name}";
         $classname = "\\mod_vpl\\evaluator\\{$name}";
         if (!class_exists($classname)) {
