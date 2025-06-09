@@ -211,7 +211,7 @@ class mod_vpl_grade_form extends moodleform {
         $attributes = [
                 'href' => $url->out(false),
                 'title' => get_string($str . '_help', $component),
-                'class' => 'form-group fitem btn btn-secondary',
+                'class' => 'fitem btn btn-secondary',
         ];
         if ($newtab) {
             $attributes['target'] = '_blank';

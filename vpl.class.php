@@ -1650,23 +1650,19 @@ class mod_vpl {
                     $maintabs[] = vpl_create_tabobject( $tabname, $href, 'test' );
                 } else {
                     $user = self::get_db_record( 'user', $userid);
-                    if ($this->is_group_activity()) {
-                        $text = get_string( 'group' ) . ' ';
-                        $icon = vpl_get_awesome_icon('group') . ' ';
-                    } else {
-                        $text = get_string( 'user' ) . ' ';
-                        $icon = vpl_get_awesome_icon('user') . ' ';
-                    }
-                    $text .= $this->fullname( $user, false );
+                    $strname = $this->is_group_activity() ? 'group' : 'user';
+                    $text = get_string($strname);
+                    $icon = vpl_get_awesome_icon($strname);
+                    $text .= $this->fullname($user, false);
                     $url = $PAGE->url->out( false, [ 'userid' => $USER->id ] );
                     // Add button to return to own activity.
                     // This is a simili-link because it is located inside an <a> tag, and we cannot put an <a> tag within another.
                     $buttonexit = html_writer::tag('span', vpl_get_awesome_icon('exitrole'), [
-                            'class' => 'btn-link clickable pl-1',
+                            'class' => 'btn-link',
                             'title' => get_string('returntoownactivity', VPL),
                             'onclick' => 'event.preventDefault(); window.location.href=\'' . $url . '\';',
                     ]);
-                    $maintabs[] = new tabobject( $tabname, $href, $icon . $text . $buttonexit, $text );
+                    $maintabs[] = new tabobject( $tabname, $href, "$icon $text $buttonexit", $text );
                 }
             }
         }
@@ -2295,7 +2291,7 @@ class mod_vpl {
         $data = new stdClass();
         $urlbase = '/mod/vpl/views/submissionslist.php';
         $params = ['id' => $this->cm->id, 'selection' => 'all'];
-        $data->name = get_string($this->is_group_activity() ? 'groups':'students');
+        $data->name = get_string($this->is_group_activity() ? 'groups' : 'students');
         $data->ugcount = html_writer::link(new moodle_url($urlbase, $params), $nstudents);
         $params['selection'] = 'allsubmissions';
         $data->subcount = html_writer::link(new moodle_url($urlbase, $params), $nsubmissions);
