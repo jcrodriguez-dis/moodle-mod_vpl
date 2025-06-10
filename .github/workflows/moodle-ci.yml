@@ -37,6 +37,8 @@ jobs:
         exclude:
           - database: pgsql
             moodle-branch: MOODLE_405_STABLE
+          - php: '8.1'
+            moodle-branch: MOODLE_500_STABLE
 
     steps:
       - name: Check out repository code
@@ -134,6 +136,7 @@ jobs:
           cd ./plugin/evaluator
           for evaluator in $(ls -d *); do
             if [ -f "${evaluator}/tests/run_tests.sh" ]; then
-               "./${evaluator}/tests/run_tests.sh"
+              chmod +x "./${evaluator}/tests/run_tests.sh"
+              "./${evaluator}/tests/run_tests.sh"
             fi
           done
