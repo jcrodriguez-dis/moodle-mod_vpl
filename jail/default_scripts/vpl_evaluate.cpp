@@ -1373,6 +1373,7 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	}
 	struct termios term;
     if (tcgetattr(STDIN_FILENO, &term) < 0) {
+		memset(&term, 0, sizeof(struct termios));
 		// c_iflag - Input modes
 		term.c_iflag = ICRNL | IXON;
 		// c_oflag - Output modes

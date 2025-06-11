@@ -34,6 +34,7 @@ class TestCase {
 	void cutOutputTooLarge(string &output);
 	void readWrite(int fdread, int fdwrite);
 	void addOutput(const string &o, const string &actualCaseDescription);
+	void setTerminalMode(struct termios &term);
 	string formatCustomComment(const string &comment);
 public:
 	TestCase(int id, const Case &caso);
