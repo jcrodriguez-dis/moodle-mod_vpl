@@ -179,4 +179,6 @@ if [[ "$1" = "DEBUG" ]] ; then
 	export VPL_DEBUG=Yes
 fi
 runAllTests "$1"
+finalResult=$?
 cd "$OLDDIR"
+exit $finalResult
