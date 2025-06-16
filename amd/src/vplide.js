@@ -21,7 +21,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* globals MathJax */
 /* globals openpopup */
 
 define(
@@ -943,6 +942,26 @@ define(
                     return false;
                 }
             };
+            this.applyMathJax = function() {
+                if (typeof window.MathJax == 'object') { // MathJax is loaded
+                    try {
+                        let math = result.find(".vpl_ide_accordion_c_description")[0];
+                        if (math) {
+                            if (window.MathJax.Hub && window.MathJax.Hub.Queue) {
+                                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, math]);
+                            } else if (window.MathJax.startup && window.MathJax.startup.promise) {
+                                window.MathJax.startup.promise = window.MathJax.startup.promise
+                                .then(() => window.MathJax.typesetPromise([math]))
+                                .catch(e => {
+                                    VPLUtil.log("MathJax error" + e);
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        VPLUtil.log("MathJax error" + e);
+                    }
+                }
+            };
             this.setResult = function(res, go) {
                 self.updateEvaluationNumber(res);
                 var files = fileManager.getFiles();
@@ -971,13 +990,8 @@ define(
                 hasContent = self.setResultTab('execution', formated, res.execution);
                 show = show || hasContent;
                 hasContent = self.setResultTab('description', window.VPLDescription, window.VPLDescription);
-                if (hasContent && typeof MathJax == 'object') { // MathJax workaround.
-                    var math = result.find(".vpl_ide_accordion_c_description")[0];
-                    if (MathJax.Hub && MathJax.Hub.Queue) {
-                        MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
-                    } else {
-                        MathJax.typesetPromise([math]);
-                    }
+                if (hasContent) {
+                    self.applyMathJax();
                 }
                 show = show || hasContent;
                 if (show) {

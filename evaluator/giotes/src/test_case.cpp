@@ -400,6 +400,34 @@ void TestCase::splitArgs(string programArgs) {
 	argv[nargs] = NULL;
 }
 
+void TestCase::setTerminalMode(struct termios &term) {
+    if (tcgetattr(STDIN_FILENO, &term) < 0) {
+		// Full reset termios structure
+		memset(&term, 0, sizeof(struct termios));
+		// c_iflag - Input modes
+		term.c_iflag = ICRNL | IXON;
+		// c_cc - Special control characters		
+        term.c_cc[VINTR] = 0x03;    // ^C
+        term.c_cc[VQUIT] = 0x1c;    // ^backslash
+        term.c_cc[VERASE] = 0x7f;   // ^?
+        term.c_cc[VKILL] = 0x15;    // ^U
+        term.c_cc[VSTART] = 0x11;   // ^Q
+        term.c_cc[VSTOP] = 0x13;    // ^S
+        term.c_cc[VSUSP] = 0x1a;    // ^Z
+        term.c_cc[VREPRINT] = 0x12; // ^R
+        term.c_cc[VWERASE] = 0x17;  // ^W
+        term.c_cc[VLNEXT] = 0x16;   // ^V
+        term.c_cc[VDISCARD] = 0x0f; // ^O
+		cfsetospeed(&term, B115200);
+	}
+	term.c_cc[VMIN] = 1;
+	term.c_cc[VTIME] = 0;
+    term.c_cc[VEOF] = 0x04;     // ^D
+	term.c_cflag |= CS8 | CREAD | CLOCAL;
+    term.c_lflag |= ICANON | ISIG | IEXTEN;
+	term.c_lflag &= ~(ECHO | ECHONL);
+}
+
 void TestCase::runTest() {// Timeout in seconds
 	char buf[1024];
 	double timeout = caso.getTimeLimit();
@@ -414,33 +442,7 @@ void TestCase::runTest() {// Timeout in seconds
 	pid_t pid;
 	splitArgs(caso.getProgramArgs());
 	struct termios term;
-    if (tcgetattr(STDIN_FILENO, &term) < 0) {
-		// c_iflag - Input modes
-		term.c_iflag = ICRNL | IXON;
-		// c_cflag - Control modes
-		term.c_cflag = CS8 | CREAD;
-		// c_lflag - Local modes
-		term.c_lflag = ISIG | IEXTEN;
-		// c_cc - Special control characters		
-        term.c_cc[VINTR] = 0x03;    // ^C
-        term.c_cc[VQUIT] = 0x1c;    // ^backslash
-        term.c_cc[VERASE] = 0x7f;   // ^?
-        term.c_cc[VKILL] = 0x15;    // ^U
-        term.c_cc[VEOF] = 0x04;     // ^D
-        term.c_cc[VSTART] = 0x11;   // ^Q
-        term.c_cc[VSTOP] = 0x13;    // ^S
-        term.c_cc[VSUSP] = 0x1a;    // ^Z
-        term.c_cc[VREPRINT] = 0x12; // ^R
-        term.c_cc[VWERASE] = 0x17;  // ^W
-        term.c_cc[VLNEXT] = 0x16;   // ^V
-        term.c_cc[VDISCARD] = 0x0f; // ^O
-		cfsetospeed(&term, B115200);
-	}
-	term.c_cc[VMIN] = 1;
-	term.c_cc[VTIME] = 0;
-    term.c_cc[VEOF] = 0x04;     // ^D
-    term.c_lflag |= ICANON;
-	term.c_lflag &= ~(ECHO | ECHONL);
+	setTerminalMode(term);
 	int fdmaster = -1;
 	if ((pid = forkpty(&fdmaster, NULL, &term, NULL)) == 0) {
 		setpgrp();
