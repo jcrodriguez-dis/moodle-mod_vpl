@@ -386,7 +386,7 @@ In this mode use @vpl_run_[text|gui|webapp|textingui]_mode inside comment at the
 <b>Text in GUI</b>: Run text app in a graphical terminal (GUI).<br>
 <b>Note</b>: All modes are not available for all languages.<br>
 Custom scripts can ignore this setting.<br>';
-$string['evaluation_mode'] = 'Select evaluation mode';
+$string['evaluation_mode'] = 'Evaluation mode';
 $string['evaluation_mode:default'] = 'Evaluate in terminal mode (default)';
 $string['evaluation_mode:textingui'] = 'Evaluate in GUI mode';
 $string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
