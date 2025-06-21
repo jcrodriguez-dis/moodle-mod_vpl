@@ -50,17 +50,10 @@ class mod_vpl_executionlimits_form extends moodleform {
                 'exefilesize' => vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ),
         ];
         foreach ($settings as $name => $options) {
-            if ($instance->basedon) {
-                $inheritedlimit = (new mod_vpl(null, $instance->basedon))->get_closest_set_field_in_base_chain('max' . $name, 0);
-            } else {
-                $inheritedlimit = 0;
-            }
+            $inheritedlimit = $this->vpl->get_closest_set_field_in_base_chain('max' . $name, 0);
             $defaultvaluestring = trim($options[vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name})]);
-            if ($inheritedlimit) {
-                $defaultvaluestring = get_string('inherit', VPL, $defaultvaluestring);
-            } else {
-                $defaultvaluestring = get_string('default') . ' (' . $defaultvaluestring . ')';
-            }
+            $strname = $inheritedlimit ? 'inheritvalue':'defaultvalue';
+            $defaultvaluestring = get_string($strname, VPL, $defaultvaluestring);
             self::add_resource_limit_select($mform, 'max' . $name, get_string( 'max' . $name, VPL ),
                     $options, $defaultvaluestring, $instance->{'max' . $name});
         }
@@ -70,6 +63,11 @@ class mod_vpl_executionlimits_form extends moodleform {
         if ($instance->maxexeprocesses) {
             $mform->setDefault( 'maxexeprocesses', $instance->maxexeprocesses );
         }
+        $inheritedmax = $this->vpl->get_closest_set_field_in_base_chain('maxexeprocesses', 0);
+        $strname = $inheritedmax ? 'inheritvalue':'defaultvalue';
+        $defaultvalue = $inheritedmax? $inheritedmax : $plugincfg->defaultexeprocesses;
+        $mform->addElement( 'static', 'maxexeprocesses_default', '', get_string( $strname, VPL, $defaultvalue ) );
+
         $mform->addElement( 'submit', 'savelimitoptions', get_string( 'saveoptions', VPL ) );
     }
 
