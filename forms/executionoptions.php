@@ -79,6 +79,10 @@ class mod_vpl_executionoptions_form extends moodleform {
         $runlist['3'] = get_string('run_mode:gui', VPL);
         $runlist['4'] = get_string('run_mode:webapp', VPL);
         $runlist['5'] = get_string('run_mode:textingui', VPL);
+        $inherit = $this->vpl->get_closest_set_field_in_base_chain('run_mode', '');
+        if ($inherit && isset($runlist[$inherit])) {
+            $runlist[''] = get_string('inheritvalue', VPL, $runlist[$inherit]);
+        }
         return $runlist;
     }
     protected function get_evaluation_modelist() {
@@ -86,6 +90,10 @@ class mod_vpl_executionoptions_form extends moodleform {
         $evalutionlist[''] = get_string('default');
         $evalutionlist['1'] = get_string('evaluation_mode:default', VPL);
         $evalutionlist['2'] = get_string('evaluation_mode:textingui', VPL);
+        $inherit = $this->vpl->get_closest_set_field_in_base_chain('evaluation_mode', '');
+        if ($inherit && isset($evalutionlist[$inherit])) {
+            $evalutionlist[''] = get_string('inheritvalue', VPL, $evalutionlist[$inherit]);
+        }
         return $evalutionlist;
     }
     protected function get_evaluatorlist() {
@@ -93,6 +101,10 @@ class mod_vpl_executionoptions_form extends moodleform {
         $evaluatorslist = ['' => get_string('default')];
         foreach ($evaluators as $evaluator) {
             $evaluatorslist[$evaluator] = get_string('pluginname', "vplevaluator_{$evaluator}");
+        }
+        $inherit = $this->vpl->get_closest_set_field_in_base_chain('evaluator', '');
+        if ($inherit && isset($evaluatorslist[$inherit])) {
+            $evaluatorslist[''] = get_string('inheritvalue', VPL, $evaluatorslist[$inherit]);
         }
         return $evaluatorslist;
     }
@@ -122,22 +134,16 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->setDefault( 'basedon', $instance->basedon );
         $mform->addHelpButton( 'basedon', 'basedon', VPL );
 
-        if ($instance->basedon) {
-            $basevpl = new mod_vpl(null, $instance->basedon);
-            $inheritedrun = strtoupper($basevpl->get_closest_set_field_in_base_chain('runscript', ''));
-            $inheriteddebug = strtoupper($basevpl->get_closest_set_field_in_base_chain('debugscript', ''));
-        } else {
-            $inheritedrun = '';
-            $inheriteddebug = '';
-        }
-        $strrundefault = $inheritedrun ? get_string('inherit', VPL, $inheritedrun) : get_string('autodetect', VPL);
+        $inheritedrun = strtoupper($this->vpl->get_closest_set_field_in_base_chain('runscript', ''));
+        $inheriteddebug = strtoupper($this->vpl->get_closest_set_field_in_base_chain('debugscript', ''));
+        $strrundefault = $inheritedrun ? get_string('inheritvalue', VPL, $inheritedrun) : get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
         $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
         $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
         $mform->setDefault( 'runscript', $instance->runscript );
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
-        $strdebugdefault = $inheriteddebug ? get_string('inherit', VPL, $inheriteddebug) : get_string('autodetect', VPL);
+        $strdebugdefault = $inheriteddebug ? get_string('inheritvalue', VPL, $inheriteddebug) : get_string('autodetect', VPL);
         $strdebugscript = get_string('debugscript', VPL);
         $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
         $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
