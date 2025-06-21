@@ -2528,9 +2528,6 @@ class mod_vpl {
     public function get_closest_set_field_in_base_chain($field, $default = null) {
         $instance = $this->instance;
         $basedons = [ $instance->id => true ];
-        if ($instance->{$field}) {
-            return $instance->{$field};
-        }
         while ($instance->basedon) {
             if (isset($basedons[$instance->basedon])) {
                 throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
