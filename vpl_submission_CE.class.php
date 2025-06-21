@@ -688,7 +688,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $request = vpl_jailserver_manager::get_action_request($action, $data);
         $error = '';
         $response = vpl_jailserver_manager::get_response($server, $request, $error);
-        self::log_action($action, $request, $response);
+        // For logging uncomment this code: self::log_action($action, $request, $response);
         if ($response === false) {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             if ($manager) {
