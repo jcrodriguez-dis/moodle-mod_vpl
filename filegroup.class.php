@@ -343,7 +343,7 @@ class file_group_process {
      * @return int
      */
     public function getversion() {
-        if(file_exists( $this->dir )) {
+        if (file_exists( $this->dir )) {
             $info = stat($this->dir);
             if ($info !== false) {
                 return $info['mtime'];

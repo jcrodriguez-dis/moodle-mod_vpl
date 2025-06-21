@@ -19,18 +19,11 @@ namespace mod_vpl\evaluator;
 class giotes extends \mod_vpl\plugininfo\vplevaluator_base {
 
     /**
-     * Constructor.
-     * @param string $name of the evaluator.
-     */
-    public function __construct($name) {
-        parent::__construct($name);
-    }
-    /**
      * Files to add to the execution files.
      * Commonly include at least the file 'vpl_evaluate.sh'
      * @return array of files file_name => contents
      */
-    function get_execution_files(): array {
+    public function get_execution_files(): array {
         $files = [];
         $srcdir = __DIR__ . '/src';
         $pattern = '{*.cpp,*.hpp}';
@@ -49,14 +42,14 @@ class giotes extends \mod_vpl\plugininfo\vplevaluator_base {
      * Names must not collide with other execution files.
      * @return array of files file_name => contents
      */
-    function get_test_files(): array {
+    public function get_test_files(): array {
         return ['vpl_evaluate.cases' => file_get_contents(__DIR__ . '/src/vpl_evaluate.cases')];
     }
 
     /**
      * Returns the help for the evaluator in MD format
      */
-    function get_help(): string {
+    public function get_help(): string {
         return "";
     }
 

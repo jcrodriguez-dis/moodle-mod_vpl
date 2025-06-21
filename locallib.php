@@ -215,7 +215,7 @@ function vpl_output_zip($zipfilename, $name) {
  */
 function vpl_get_lang() {
     $lang = get_string('locale', 'langconfig');
-    if (empty($lang) or $lang[0] == '[') {
+    if (empty($lang) || $lang[0] == '[') {
         $lang = 'en_US.UTF-8';
     }
     return $lang;
@@ -788,16 +788,16 @@ function vpl_truncate_string(&$string, $limit) {
 
 /**
  * @codeCoverageIgnore
- * 
+ *
  * Export a variable to bash.
- * 
+ *
  * This function is used to assign a value to an environment variable in Linux bash.
  * It handles different types of values: integers, strings, and arrays.
  * Each type is formatted appropriately for bash export:
  *  - Integers are exported directly
  *  - Strings are enclosed in single quotes with proper escaping
  *  - Arrays are exported as bash arrays with each element in single quotes
- * 
+ *
  * @param string $var name of the variable
  * @param mixed $value value of the variable (int, string or array)
  * @return string bash export statement for the variable

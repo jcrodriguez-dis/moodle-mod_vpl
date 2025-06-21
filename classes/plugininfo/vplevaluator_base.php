@@ -62,7 +62,7 @@ class vplevaluator_base {
     public function get_test_files(): array {
         return [];
     }
-    
+
     /**
      * Returns the help for the evaluator in MD format.
      * This help is shown in the evaluator settings.

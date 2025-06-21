@@ -255,7 +255,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if (isset($vplused[$vplinstance->id])) {
             throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
         }
-        $finalaction = count($vplused) == 0;
+        $finalchecks = count($vplused) == 0;
         $vplused[$vplinstance->id] = true;
         // Load basedon files if needed.
         if ($vplinstance->basedon) {
@@ -340,7 +340,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ( ! empty($vplinstance->evaluation_mode) ) {
             $data->evaluation_mode = $vplinstance->evaluation_mode;
         }
-        if ($finalaction) { // Final checks
+        if ($finalchecks) { // Final checks.
             $data->activityid = $vplinstance->id;
             $data->type = $type;
             // Limit resources to minimum.
@@ -456,10 +456,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             '5' => self::RUN_TEXTINGUI_MODE_MARK,
         ];
         $chunklentgh = 2 * 1024;
-        if(! isset($data->submittedlist)) {
+        if (! isset($data->submittedlist)) {
             $data->submittedlist = [];
         }
-        // Search for marks in execution files
+        // Search for marks in execution files.
         foreach ($data->files as $filename => $filedata) {
             if (in_array($filename, $data->submittedlist)) {
                 continue; // Skip files submitted.
@@ -471,7 +471,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 }
             }
         }
-        // Search for marks in user submitted files in order
+        // Search for marks in user submitted files in order.
         foreach ($data->submittedlist as $filename) {
             if (!isset($data->files[$filename])) {
                 continue; // Skip files not found.
@@ -494,7 +494,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $variables['MOODLE_ACTIVITY_ID'] = $vpl->get_course_module()->id;
         if (isset($data->userid)) {
             $userid = $data->userid;
-            $variables['MOODLE_USER_ID'] =  $userid;
+            $variables['MOODLE_USER_ID'] = $userid;
             if ($user = $DB->get_record('user', ['id' => $userid])) {
                 $variables['MOODLE_USER_NAME'] = $vpl->fullname($user, false);
                 $variables['MOODLE_USER_EMAIL'] = $user->email;
@@ -503,7 +503,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($vpl->is_group_activity() && isset($data->groupid)) {
             $groupid = $data->groupid;
             if ($group = $DB->get_record('groups', ['id' => $groupid])) {
-                $variables['MOODLE_GROUP_ID'] =  $groupid;
+                $variables['MOODLE_GROUP_ID'] = $groupid;
                 $variables['MOODLE_GROUP_NAME'] = $group->name;
             }
         }
@@ -585,7 +585,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $data->files[$filename] = $filedata;
                 $data->filestodelete[$filename] = 1;
             }
-            foreach($evaluator->get_files_to_keep_when_running() as $filename) {
+            foreach ($evaluator->get_files_to_keep_when_running() as $filename) {
                 unset($data->filestodelete[$filename]);
             }
             foreach ($evaluator->get_strings() as $varname => $value) {
@@ -616,7 +616,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->files['common_script.sh'] = file_get_contents( vpl_get_scripts_dir() . '/common_script.sh');
         // Add new script for evaluation mode test_in_gui if needed.
         if (isset($varsenv['VPL_EVALUATION_MODE']) &&  $varsenv['VPL_EVALUATION_MODE'] == '2') {
-            $data->files['default_evaluate_textingui.sh'] = file_get_contents( vpl_get_scripts_dir() . '/default_evaluate_textingui.sh');
+            $filename = vpl_get_scripts_dir() . '/default_evaluate_textingui.sh';
+            $data->files['default_evaluate_textingui.sh'] = file_get_contents( $filename);
         }
         return $data;
     }
@@ -688,7 +689,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $request = vpl_jailserver_manager::get_action_request($action, $data);
         $error = '';
         $response = vpl_jailserver_manager::get_response($server, $request, $error);
-        // For logging uncomment this code: self::log_action($action, $request, $response);
+        // For logging you can call here log_action method.
         if ($response === false) {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             if ($manager) {
