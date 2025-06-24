@@ -381,6 +381,7 @@ $string['vpl:setjails'] = 'Establece servidores de ejecución para instancias co
 $string['vpl:similarity'] = 'Buscar similiudes entre entregas';
 $string['vpl:submit'] = 'Hacer entregas';
 $string['vpl:view'] = 'Ver la descripción completa de un VPL';
+$string['vpl:editothersgrades'] = 'Editar notas realizadas por otros';
 $string['vpl'] = 'Laboratorio virtual de programación';
 $string['VPL_COMPILATIONFAILED'] = 'La compilación o preparación de la ejecución ha fallado';
 $string['vpl_debug.sh'] = "Prepara la depuración del programa";
