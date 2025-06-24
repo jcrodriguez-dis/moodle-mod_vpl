@@ -2322,7 +2322,7 @@ class mod_vpl {
         }
         $html = get_string($strname, VPL, $data);
         $output = $PAGE->get_renderer('core');
-        $html .= $output->help_icon($strname, VPL);
+        $html .= $output->help_icon($strname, VPL, true);
         return $html;
     }
 
