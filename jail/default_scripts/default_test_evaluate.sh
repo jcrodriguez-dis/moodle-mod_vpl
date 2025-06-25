@@ -196,7 +196,9 @@ function compile_solutions_tests {
 
 let ntest=0
 if [[ -d "$home_dir/$oldtest_dir" ]] ; then
-	echo "━━━━ COMPILATION REPORT ━━━━"  >> "$home_dir/$compilation_results"
+	echo "⭐⭐ COMPILATION REPORT ⭐⭐"  >> "$home_dir/$compilation_results"
+	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  >> "$home_dir/$compilation_results"
+	echo ""  >> "$home_dir/$compilation_results"
 	echo "$star_symbol Using '$VPL_PLN' programming language (or custom code) to run solutions" >> "$home_dir/$compilation_results"
 	mv "$home_dir/$oldtest_dir" "$home_dir/$test_dir"
 	if [[ "$VPL_VARIATIONS" != "" ]] ; then
@@ -326,8 +328,11 @@ fi
 if [ -s "$home_dir/$compilation_results" ] ; then
 	echo_VPL_file "$home_dir/$compilation_results"
 fi
-
-echo_line_VPL "━━━━ EVALUATION REPORT ━━━━"
+echo_line_VPL " "
+echo_line_VPL " "
+echo_line_VPL "⭐⭐ EVALUATION REPORT ⭐⭐"
+echo_line_VPL "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo_line_VPL " "
 
 let ntest=0
 let ntestfail=0
@@ -338,7 +343,7 @@ if [[ "$VPL_VARIATIONS" != "" ]] ; then
 else
 	run_solutions_tests "$home_dir/$test_dir"
 fi
-echo_line_VPL
+echo_line_VPL " "
 if [[ $ntestfail -gt 0 ]] ; then
 	echo_line_VPL "- $star_symbol Final report: $fail_symbol $ntestfail of $ntest tests failed."
 	global_mark=$VPL_GRADEMIN
@@ -346,7 +351,11 @@ else
 	echo_line_VPL "- $star_symbol Final report: $pass_symbol All $ntest tests passed."
 	global_mark=$VPL_GRADEMAX
 fi
-echo_line_VPL "━━━━ FULL EVALUATION REPORT ━━━━"
+echo_line_VPL " "
+echo_line_VPL " "
+echo_line_VPL "⭐⭐ FULL EVALUATION REPORT ⭐⭐"
+echo_line_VPL "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo_line_VPL " "
 cat "$home_dir/$evaluation_results"
 echo "Grade :=>>$global_mark"
 if [[ $global_mark = $VPL_GRADEMAX ]] ; then
