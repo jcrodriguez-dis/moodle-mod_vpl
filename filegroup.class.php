@@ -110,8 +110,8 @@ class file_group_process {
      * @param int $numstaticfiles
      */
     public function __construct($dir, $maxnumfiles = 10000, $numstaticfiles = 0) {
-        $this->filelistname = dirname($dir) . "/" . basename($dir) . ".lst";
-        $this->dir = dirname($dir) . "/" . basename($dir) . "/";
+        $this->dir = dirname($dir) . "/" . basename($dir);
+        $this->filelistname = $this->dir . ".lst";
         $this->maxnumfiles = $maxnumfiles;
         $this->numstaticfiles = $numstaticfiles;
     }
@@ -155,7 +155,7 @@ class file_group_process {
         }
         ignore_user_abort( true );
         $filelist = $this->getFileList();
-        $path = $this->dir . self::encodeFileName( $filename );
+        $path = $this->dir . '/' . self::encodeFileName( $filename );
         if (array_search($filename, $filelist) !== false) {
             if ($data !== null) {
                 vpl_fwrite( $path, $data );
@@ -199,7 +199,7 @@ class file_group_process {
                 $data = '';
             }
             $fnencode = self::encodeFileName( $filename );
-            $path = $this->dir . $fnencode;
+            $path = $this->dir . '/' . $fnencode;
             if ( $otherdir != false ) {
                 $otherpath = $otherdir . $fnencode;
                 if (file_exists( $otherpath)
@@ -222,7 +222,7 @@ class file_group_process {
         ignore_user_abort( true );
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . self::encodeFileName( $filename );
+            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
             if (is_file( $fullname )) {
                 unlink( $fullname );
             }
@@ -256,7 +256,7 @@ class file_group_process {
         $files = [];
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . self::encodeFileName( $filename );
+            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
             if (is_file( $fullname )) {
                  $files[$filename] = file_get_contents( $fullname );
             } else {
@@ -296,7 +296,7 @@ class file_group_process {
             $num = $mix;
             $filelist = $this->getFileList();
             if ($num >= 0 && $num < count( $filelist )) {
-                $filename = $this->dir . self::encodeFileName( $filelist[$num] );
+                $filename = $this->dir . '/' . self::encodeFileName( $filelist[$num] );
                 if (is_file( $filename )) {
                     return file_get_contents( $filename );
                 } else {
@@ -306,7 +306,7 @@ class file_group_process {
         } else if (is_string( $mix )) {
             $filelist = $this->getFileList();
             if (array_search( $mix, $filelist ) !== false) {
-                $fullfilename = $this->dir . self::encodeFileName( $mix );
+                $fullfilename = $this->dir . '/' . self::encodeFileName( $mix );
                 if (is_file( $fullfilename )) {
                     return file_get_contents( $fullfilename );
                 } else {
@@ -326,7 +326,7 @@ class file_group_process {
     public function is_populated() {
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . self::encodeFileName( $filename );
+            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
             if (is_file( $fullname )) {
                 $info = stat( $fullname );
                 if ($info['size'] > 0) {
@@ -343,13 +343,13 @@ class file_group_process {
      * @return int
      */
     public function getversion() {
-        try {
+        if (file_exists( $this->dir )) {
             $info = stat($this->dir);
-        } catch (\Throwable $e) {
-            return 0;
-        }
-        if ($info !== false) {
-            return $info['mtime'];
+            if ($info !== false) {
+                return $info['mtime'];
+            } else {
+                return 0;
+            }
         } else {
             return 0;
         }
@@ -367,7 +367,7 @@ class file_group_process {
         $showbinary = self::$outputbinarysize < self::$outputbinarylimit;
         $showcode = self::$outputtextsize < self::$outputtextlimit;
         foreach ($filenames as $name) {
-            if (is_file( $this->dir . self::encodeFileName( $name ) )) {
+            if (is_file( $this->dir . '/' . self::encodeFileName( $name ) )) {
                 if ( vpl_is_binary($name) ) {
                     if ($showbinary) {
                         $printer = vpl_sh_factory::get_sh( $name );

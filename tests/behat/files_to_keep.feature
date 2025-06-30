@@ -11,6 +11,9 @@ Feature: In a VPL activity feature files to keep when running
     And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | 1 | teacher1@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
@@ -18,6 +21,7 @@ Feature: In a VPL activity feature files to keep when running
     And I am on "Course 1" course homepage with editing mode on
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
+      | id_introeditor | No description |
     And I log out
 
   @javascript
@@ -36,7 +40,7 @@ Feature: In a VPL activity feature files to keep when running
     And I should see "hello.adb"
     And I click on "#id_keepfile1" in VPL
     And I click on "#id_keepfile4" in VPL
-    And I press "save options"
+    And I press "Save options"
     Then I should see "Options have been saved"
     And "input[id=id_keepfile0]:not([checked])" "css_element" should exist
     And "input[id=id_keepfile1][checked]" "css_element" should exist
@@ -55,7 +59,7 @@ Feature: In a VPL activity feature files to keep when running
     And "input[id=id_keepfile4][checked]" "css_element" should exist
     And "input[id=id_keepfile5]:not([checked])" "css_element" should exist
     And I click on "#id_keepfile1" in VPL
-    And I press "save options"
+    And I press "Save options"
     Then I should see "Options have been saved"
     And "input[id=id_keepfile0]:not([checked])" "css_element" should exist
     And "input[id=id_keepfile1]:not([checked])" "css_element" should exist

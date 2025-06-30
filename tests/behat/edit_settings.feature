@@ -9,19 +9,25 @@ Feature: Create and change VPL activity settings
       | fullname | shortname | category | groupmode | format  | numsections | initsections |
       | Course 1 | C1        | 0        | 1         | topics  | 1           | 1            |
     And the following "users" exist:
-      | username | firstname | lastname | email |
-      | teacher1 | Teacher | 1 | teacher1@example.com |
-      | teacher2 | Teacher2 | 1 | teacher2@example.com |
-      | student1 | Student | 1 | student1@example.com |
+      | username | firstname | lastname | email                |
+      | teacher1 | Teacher   | 1        | teacher1@example.com |
+      | teacher2 | Teacher2  | 1        | teacher2@example.com |
+      | student1 | Student   | 1        | student1@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
+      | teacher2 | htmleditor | textarea |
+      | student1 | htmleditor | textarea |
     And the following "course enrolments" exist:
-      | user | course | role |
-      | teacher1 | C1 | editingteacher |
-      | teacher2 | C1 | teacher |
-      | student1 | C1 | student |
+      | user     | course | role           |
+      | teacher1 | C1     | editingteacher |
+      | teacher2 | C1     | teacher        |
+      | student1 | C1     | student        |
 
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity default |
+      | id_introeditor | No description |
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity full setting |
       | id_shortdescription | VPL activity short description |
@@ -57,7 +63,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Reduction by automatic evaluation:"
     And I should not see "Free evaluations:"
     And I should not see "Password:"
-    And I should not see "Allowed submission from net:"
+    And I should not see "Require network address:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
@@ -78,7 +84,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Reduction by automatic evaluation:"
     And I should not see "Free evaluations:"
     And I should not see "Password:"
-    And I should not see "Allowed submission from net:"
+    And I should not see "Require network address:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
@@ -98,7 +104,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Reduction by automatic evaluation:"
     And I should not see "Free evaluations:"
     And I should not see "Password:"
-    And I should not see "Allowed submission from net:"
+    And I should not see "Require network address:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
@@ -122,7 +128,7 @@ Feature: Create and change VPL activity settings
     And I should see "Reduction by automatic evaluation: 1%"
     And I should see "Free evaluations: 3"
     And I should see "Password: Yes"
-    And I should see "Allowed submission from net: 10.10.10.13"
+    And I should see "Require network address: 10.10.10.13"
     And I should see "SEB browser required: Yes"
     And I should see "SEB exam Key/s: Yes"
     And I should see "Disable external file upload"
@@ -146,7 +152,7 @@ Feature: Create and change VPL activity settings
     And I should see "Reduction by automatic evaluation: 1%"
     And I should see "Free evaluations: 3"
     And I should see "Password: Yes"
-    And I should see "Allowed submission from net: 10.10.10.13"
+    And I should see "Require network address: 10.10.10.13"
     And I should see "SEB browser required: Yes"
     And I should see "SEB exam Key/s: Yes"
     And I should see "Disable external file upload"
@@ -188,7 +194,7 @@ Feature: Create and change VPL activity settings
     And I should see "Reduction by automatic evaluation: 1%"
     And I should see "Free evaluations: 3"
     And I should see "Password:"
-    And I should not see "Allowed submission from net:"
+    And I should not see "Require network address:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should see "Disable external file upload"
@@ -214,7 +220,7 @@ Feature: Create and change VPL activity settings
     And I should see "Reduction by automatic evaluation: 1%"
     And I should see "Free evaluations: 3"
     And I should not see "Password:"
-    And I should not see "Allowed submission from net:"
+    And I should not see "Require network address:"
     And I should not see "SEB browser required:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Run: No"

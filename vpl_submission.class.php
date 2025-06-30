@@ -34,8 +34,10 @@
  * path/usersdata/userid#/submissionid#/studenttest.txt
  */
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
+require_once($CFG->dirroot . '/grade/grading/lib.php');
 
 // Non static due to usort error.
 function vpl_compare_filenamebylengh($f1, $f2) {
@@ -441,6 +443,10 @@ class mod_vpl_submission {
                 unlink( $fn );
             }
             // Update gradebook.
+            $gradinginstance = $this->get_grading_instance();
+            if ($gradinginstance) {
+                $gradinginstance->submit_and_get_grade($info->advancedgrading, $this->instance->id);
+            }
             $grades = [];
             $gradeinfo = [];
             // If no grade then don't set rawgrade and feedback.
@@ -639,6 +645,30 @@ class mod_vpl_submission {
     }
 
     /**
+     * Get an instance of a grading form if advanced grading is enabled.
+     * This is specific to the assignment, marker and student.
+     *
+     * @return mixed gradingform_instance|null $gradinginstance
+     */
+    public function get_grading_instance() {
+        global $USER;
+
+        $gradingmanager = get_grading_manager($this->vpl->get_context(), 'mod_vpl', 'submissions');
+        $gradinginstance = null;
+        if ($gradingmethod = $gradingmanager->get_active_method()) {
+            $controller = $gradingmanager->get_controller($gradingmethod);
+            if ($controller->is_form_available()) {
+                $instanceid = optional_param('advancedgradinginstanceid', 0, PARAM_INT);
+                $gradinginstance = $controller->get_or_create_instance($instanceid, $USER->id, $this->instance->id);
+                $grademenu = make_grades_menu($this->vpl->get_instance()->grade);
+                $allowgradedecimals = $this->vpl->get_instance()->grade > 0;
+                $gradinginstance->get_controller()->set_grade_range($grademenu, $allowgradedecimals);
+            }
+        }
+        return $gradinginstance;
+    }
+
+    /**
      * Get core grade @parm optional grade to show
      *
      * @return string
@@ -716,7 +746,7 @@ class mod_vpl_submission {
         if (strlen($comment) > 0 || $empty) {
             $div = new mod_vpl\util\hide_show( true );
             $ret = '<b>' . get_string( $title, VPL ) . $div->generate() . '</b><br>';
-            $ret .= $div->content_in_tag($tag, s($comment));
+            $ret .= $div->content_in_tag($tag, format_text($comment, FORMAT_PLAIN));
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
         }
         return $ret;
@@ -742,7 +772,7 @@ class mod_vpl_submission {
      * @return string/void
      */
     public function print_grade($detailed = false, $return = false) {
-        global $CFG, $OUTPUT, $PAGE;
+        global $CFG, $OUTPUT, $PAGE, $USER;
         $ret = '';
         $inst = $this->instance;
         if ($inst->dategraded > 0) {
@@ -757,6 +787,26 @@ class mod_vpl_submission {
                     $ret .= $this->get_detailed_grade();
                 }
             }
+
+            if ($detailed) {
+                require_once($CFG->libdir . '/gradelib.php');
+                $gradinginstance = $this->get_grading_instance();
+                if ($gradinginstance) {
+                    $cangrade = has_capability(VPL_GRADE_CAPABILITY, $this->vpl->get_context());
+                    // Only show the grade if it is not hidden in gradebook.
+                    $userid = ($cangrade || has_capability( VPL_MANAGE_CAPABILITY, $this->vpl->get_context() )) ? null : $USER->id;
+                    $gradeinfo = grade_get_grades( $this->vpl->get_course()->id, 'mod', 'vpl',
+                            $this->vpl->get_instance()->id, $userid );
+                    $ret .= '<div>' .
+                            $gradinginstance->get_controller()->render_grade($PAGE,
+                                $this->instance->id,
+                                $gradeinfo,
+                                $this->instance->grade,
+                                $cangrade) .
+                            '</div>';
+                }
+            }
+
             if (! empty( $CFG->enableoutcomes )) {
                 // Bypass unknow gradelib not load.
                 if (! function_exists( 'grade_get_grades' )) {
@@ -766,13 +816,16 @@ class mod_vpl_submission {
                                                  , 'vpl', $this->vpl->get_instance()->id
                                                  , $this->instance->userid );
                 if (! empty( $gradinginfo->outcomes )) {
-                    $ret .= '<b>' . get_string( 'outcomes', 'core_grades' ) . '</b><br>';
+                    $ret .= '<b>' . get_string( 'outcomes', 'core_grades' ) . '</b>:<br>';
+                    $ret .= '<ul class="m-b-0">';
                     foreach ($gradinginfo->outcomes as $outcome) {
-                        $ret .= s( $outcome->name );
-                        $ret .= ' ' . s( $outcome->grades[$inst->userid]->str_grade ) . '<br>';
+                        $ret .= '<li>' . s( $outcome->name );
+                        $ret .= ' &gt; ' . s( $outcome->grades[$inst->userid]->str_grade ) . '</li>';
                     }
+                    $ret .= '</ul>';
                 }
             }
+
         }
         if ($return) {
             return $ret;
@@ -842,11 +895,9 @@ class mod_vpl_submission {
                 echo '<br>';
             }
         }
-        $commmets = $this->instance->comments;
-        if ($commmets > '') {
-            echo '<br>';
-            echo '<b>' . get_string( 'comments', VPL ) . '</b>';
-            echo $OUTPUT->box( nl2br( s( $commmets ) ) );
+        $commments = trim($this->instance->comments);
+        if ($commments > '') {
+            echo $OUTPUT->box( '<h4>' . get_string( 'comments', VPL ) . '</h4>' . nl2br( s( $commments ) ) );
         }
     }
 
@@ -1064,9 +1115,9 @@ class mod_vpl_submission {
             $clean = trim( $line );
             // End of case?
             if (strlen( $casetoshow ) > 0 && ! (strlen( $clean ) > 0 && $clean[0] == '>')) {
-                $comment .= '<pre><i>';
+                $comment .= '<pre>';
                 $comment .= s( $casetoshow );
-                $comment .= '</i></pre>';
+                $comment .= '</pre>';
                 $casetoshow = '';
             }
             // Is title line.
@@ -1117,9 +1168,9 @@ class mod_vpl_submission {
             }
         }
         if (strlen( $casetoshow ) > 0) {
-            $comment .= '<pre><i>';
+            $comment .= '<pre>';
             $comment .= s( $casetoshow );
-            $comment .= '</i></pre>';
+            $comment .= '</pre>';
         }
         $html .= $this->get_last_comment( $title, $comment, $dropdown );
         return $html;
@@ -1281,7 +1332,7 @@ class mod_vpl_submission {
                 $div = new mod_vpl\util\hide_show();
                 $execution .= "<br>\n";
                 $execution .= '<b>' . get_string( 'execution', VPL ) . $div->generate() . "</b><br>\n";
-                $execution .= $div->content_in_tag('pre', s($rawexecution));
+                $execution .= $div->content_in_tag('pre', format_text($rawexecution, FORMAT_PLAIN));
             }
         }
     }

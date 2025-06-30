@@ -50,13 +50,10 @@ class mod_vpl_executionlimits_form extends moodleform {
                 'exefilesize' => vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ),
         ];
         foreach ($settings as $name => $options) {
-            $inheritedlimit = $instance->basedon ? self::get_closest_set_execution_limit($instance->basedon, 'max' . $name) : 0;
-            $defaultvaluestring = trim($options[ vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name}) ]);
-            if ($inheritedlimit) {
-                $defaultvaluestring = get_string('inherit', VPL) . ' (' . $defaultvaluestring . ')';
-            } else {
-                $defaultvaluestring = get_string('default') . ' (' . $defaultvaluestring . ')';
-            }
+            $inheritedlimit = $this->vpl->get_closest_set_field_in_base_chain('max' . $name, 0);
+            $defaultvaluestring = trim($options[vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name})]);
+            $strname = $inheritedlimit ? 'inheritvalue' : 'defaultvalue';
+            $defaultvaluestring = get_string($strname, VPL, $defaultvaluestring);
             self::add_resource_limit_select($mform, 'max' . $name, get_string( 'max' . $name, VPL ),
                     $options, $defaultvaluestring, $instance->{'max' . $name});
         }
@@ -66,6 +63,11 @@ class mod_vpl_executionlimits_form extends moodleform {
         if ($instance->maxexeprocesses) {
             $mform->setDefault( 'maxexeprocesses', $instance->maxexeprocesses );
         }
+        $inheritedmax = $this->vpl->get_closest_set_field_in_base_chain('maxexeprocesses', 0);
+        $strname = $inheritedmax ? 'inheritvalue' : 'defaultvalue';
+        $defaultvalue = $inheritedmax ? $inheritedmax : $plugincfg->defaultexeprocesses;
+        $mform->addElement( 'static', 'maxexeprocesses_default', '', get_string( $strname, VPL, $defaultvalue ) );
+
         $mform->addElement( 'submit', 'savelimitoptions', get_string( 'saveoptions', VPL ) );
     }
 
@@ -88,22 +90,6 @@ class mod_vpl_executionlimits_form extends moodleform {
         }
     }
 
-    /**
-     * Retrieve the first non-empty setting in the basedon chain.
-     * @param number $instanceid ID in 'vpl' table
-     * @param string $field Setting name (DB column name)
-     */
-    private static function get_closest_set_execution_limit($instanceid, $field) {
-        global $DB;
-        $vplinstance = $DB->get_record('vpl', [ 'id' => $instanceid ]);
-        if ($vplinstance->{$field}) {
-            return $vplinstance->{$field};
-        } else if ($vplinstance->basedon) {
-            return self::get_closest_set_execution_limit($vplinstance->basedon, $field);
-        } else {
-            return 0;
-        }
-    }
 }
 
 require_login();

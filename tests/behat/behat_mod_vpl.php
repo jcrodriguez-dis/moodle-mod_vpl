@@ -27,6 +27,8 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
+use Behat\Mink\Exception\ExpectationException as ExpectationException;
+
 /**
  * VPL activity definitions.
  *
@@ -47,7 +49,7 @@ class behat_mod_vpl extends behat_base {
     public function i_click_on_selector_in_vpl($selector) {
         $script = "document.querySelector(\"$selector\").click();";
         $this->getSession()->evaluateScript($script);
-        sleep(1);
+        sleep(1); // Wait for the click to be processed.
     }
 
 
@@ -79,7 +81,7 @@ class behat_mod_vpl extends behat_base {
         $type = array_search($ext, $binarytypes);
         $script = "(function() {";
         if ( $type === false ) {
-            $type = '';
+            $type = 'plain/text';
             $contentsesc = addcslashes($contents, "\\\"'\r\n\t\f");
             // Testing framework does not accept heredoc syntax.
             $script .= "var filedata = \"$contentsesc\";";
@@ -94,10 +96,7 @@ class behat_mod_vpl extends behat_base {
                 var filedata = new Uint8Array(bytes);";
         }
         $script .= "
-                var localfile = new Blob([filedata], {type: '$type'});
-                localfile.name = '$filename';
-                localfile.lastModifiedDate = new Date();
-                $target = localfile;
+                $target = new File([filedata], '$filename', {type: '$type', lastModified: Date.now()});
             })()";
         return $script;
     }
@@ -114,18 +113,19 @@ class behat_mod_vpl extends behat_base {
         $script = "(function() {
             var file;
             $scriptfile;
-            var fileList = [file];
+            var datat = new DataTransfer();
+            datat.items.add(file);
             var dropEvent = new Event('drop',
                 {
                     bubbles: true,
                     cancelable: true
                 });
-            dropEvent.dataTransfer = {files: fileList};
+            dropEvent.dataTransfer = datat;
             var element = document.querySelector('$selector');
             element.dispatchEvent(dropEvent);
         })()";
         $this->getSession()->evaluateScript($script);
-        sleep(1);
+        sleep(1); // Wait for the drop to be processed.
     }
 
     /**
@@ -139,8 +139,8 @@ class behat_mod_vpl extends behat_base {
      */
     public function i_drop_the_file_on_in_vpl($filenames, $selector) {
         $script = "(function() {
-            var fileList = [];
-            var file;";
+            var file;
+            var filelist = [];";
         $files = preg_split("/[|]/", $filenames);
         foreach ($files as $filename) {
             if ($filename == '') {
@@ -153,19 +153,24 @@ class behat_mod_vpl extends behat_base {
                     $this->getSession());
             }
             $scriptfile = $this->generate_drop_file($filename, $contents, 'file');
-            $script .= "$scriptfile; fileList.push(file);";
+            $script .= "$scriptfile; filelist.push(file);";
         }
+        $script .= "
+            var datat = new DataTransfer();
+            for (var i = 0; i < filelist.length; i++) {
+                datat.items.add(filelist[i]);
+            }
+        ";
         $script .= "var dropEvent = new Event('drop',
                 {
                     bubbles: true,
                     cancelable: true
                 });
-            dropEvent.dataTransfer = {files: fileList};
+            dropEvent.dataTransfer = datat;
             var element = document.querySelector('$selector');
             element.dispatchEvent(dropEvent);
-
         })()";
         $this->getSession()->evaluateScript($script);
-        sleep(count($files));
+        sleep(count($files)); // Wait for the drop to be processed.
     }
 }

@@ -185,7 +185,9 @@ define(
             width: 'auto',
             closeText: VPLUtil.str('cancel'),
             modal: true,
-            dialogClass: 'vpl_ide vpl_ide_dialog'
+            classes: {
+                "ui-dialog":  'vpl_ide vpl_ide_dialog',
+            },
         };
         VPLUI.iconModified = function() {
             var html = '<span title="' + VPLUtil.str('modified') + '" class="vpl_ide_charicon">';
@@ -223,6 +225,7 @@ define(
                 'rename': 'pencil',
                 'delete': 'trash',
                 'multidelete': 'trash|list',
+                'showparentfiles': 'eye|files-o',
                 'close': 'remove',
                 'comments': 'commenting',
                 'import': 'upload',
@@ -341,7 +344,9 @@ define(
                 height: 20,
                 minHeight: 20,
                 modal: true,
-                dialogClass: 'vpl_ide vpl_ide_dialog',
+                classes: {
+                    "ui-dialog":  'vpl_ide vpl_ide_dialog',
+                },
                 close: function(event) {
                     if (dialog) {
                         if (onUserClose && event.originalEvent) {
@@ -416,16 +421,20 @@ define(
                     $(this).dialog('close');
                 };
                 delete options.yes;
-            } else {
-                messageButtons[VPLUtil.str('close')] = function() {
-                    $(this).dialog('close');
-                };
             }
-            if (options.next) {
+            if (typeof initialoptions.stop == 'function') {
+                messageButtons[VPLUtil.str('stop')] = function() {
+                    $(this).dialog('close');
+                    initialoptions.stop();
+                };
+                delete options.stop;
+            }
+            if (typeof initialoptions.next == 'function') {
                 messageButtons[VPLUtil.str('next')] = function() {
                     $(this).dialog('close');
                     initialoptions.next();
                 };
+                delete options.next;
             }
             options.close = function() {
                     $(this).remove();

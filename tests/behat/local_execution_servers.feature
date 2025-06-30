@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_local_execution_servers
 Feature: In a VPL activity feature Local execution servers
   In order to use local execution servers
   As a teacher set URLs in "Local execution servers"
@@ -11,12 +11,16 @@ Feature: In a VPL activity feature Local execution servers
     And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | 1 | teacher1@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | teacher1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
+      | id_introeditor | No description |
     And I log out
 
   @javascript

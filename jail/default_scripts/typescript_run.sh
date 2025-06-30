@@ -28,3 +28,4 @@ FIRST_SOURCE_FILE="${FIRST_SOURCE_FILE%.*}.js"
 cat common_script.sh > vpl_execution
 echo "nodejs \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

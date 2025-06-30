@@ -21,13 +21,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* globals MathJax */
-/* globals Promise */
+/* globals openpopup */
 
 define(
     [
         'jquery',
         'jqueryui',
+        'core/url',
         'mod_vpl/vplutil',
         'mod_vpl/vplui',
         'mod_vpl/vplidefile',
@@ -35,7 +35,7 @@ define(
         'mod_vpl/vplterminal',
         'mod_vpl/vplvnc',
     ],
-    function($, jqui, VPLUtil, VPLUI, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient) {
+    function($, jqui, coreURL, VPLUtil, VPLUI, VPLFile, VPLIDEButtons, VPLTerminal, VPLVNCClient) {
         if (typeof VPLIDE !== 'undefined') {
             return VPLIDE;
         }
@@ -60,7 +60,7 @@ define(
             var rootObj = $('#' + rootId);
             $("head").append('<meta name="viewport" content="initial-scale=1">')
                           .append('<meta name="viewport" width="device-width">')
-                          .append('<link rel="stylesheet" href="../editor/VPLIDE.css"/>');
+                          .append('<link rel="stylesheet" href="' + coreURL.relativeUrl('/mod/vpl/editor/VPLIDE.css') + '"/>');
             if (typeof rootObj != 'object') {
                 throw new Error("VPL: constructor tag_id not found");
             }
@@ -77,6 +77,7 @@ define(
                 'resetfiles': true,
                 'sort': true,
                 'multidelete': true,
+                'showparentfiles': true,
                 'acetheme': true,
                 'console': true,
                 'comments': true
@@ -130,15 +131,17 @@ define(
                 }
                 var droppedFiles = [];
                 // Function that lists all files and subfiles of given entry into droppedFiles.
-                var listDroppedFiles = function(entry, path="") {
-                    return new Promise(function(resolve){
+                var listDroppedFiles = function(entry, path = '') {
+                    return new Promise(function(resolve) {
                         if (entry.isFile) {
                             // Current entry is a file : add it to the list.
                             entry.file(function(file) {
                                 // Change its name s.t. it preserves directories structure.
                                 var fullName = path + file.name;
                                 Object.defineProperty(file, "name", {
-                                    get: function(){ return fullName; }
+                                    get: function() {
+                                            return fullName;
+                                         }
                                 });
                                 droppedFiles.push(file);
                                 resolve();
@@ -148,10 +151,12 @@ define(
                             var dirReader = entry.createReader();
                             dirReader.readEntries(function(entries) {
                                 var dirPromises = [];
-                                for (var i=0; i<entries.length; i++) {
+                                for (var i = 0; i < entries.length; i++) {
                                     dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
                                 }
-                                Promise.all(dirPromises).then(resolve);
+                                Promise.all(dirPromises).then(resolve).catch(function(err) {
+                                    VPLUtil.log("Error reading directory entries: " + err);
+                                });
                             });
                         } else {
                             // This is neither a directory nor a file : ignore it.
@@ -163,22 +168,42 @@ define(
 
                 // List every element of the drop event.
                 var promises = [];
-                for (var i=0; i<dt.items.length; i++) {
-                    promises.push(listDroppedFiles(dt.items[i].webkitGetAsEntry()));
+                for (var i = 0; i < dt.items.length; i++) {
+                    var entry = dt.items[i].webkitGetAsEntry();
+                    if (!entry) { // Used if testing with Behat
+                        const file = dt.items[i].getAsFile();
+                        if (file) {
+                            // Create a fake entry to handle it like a file.
+                            entry = {
+                                isFile: true,
+                                isDirectory: false,
+                                file: function(callback) {
+                                    callback(file);
+                                }
+                            };
+                            promises.push(listDroppedFiles(entry));
+                        }
+                    } else if (entry.isFile || entry.isDirectory) {
+                        promises.push(listDroppedFiles(entry));
+                    }
                 }
 
                 // Drop files.
                 if (dt.files.length > 0) {
                     Promise.all(promises)
-                    .then(function(){
+                    .then(function() {
                         VPLUI.readSelectedFiles(droppedFiles, function(file) {
                             return fileManager.addFile(file, true, updateMenu, showErrorMessage);
                         },
-                        function(){
+                        function() {
                             fileManager.fileListVisibleIfNeeded();
                         });
                         return;
+                    })
+                    .catch(function(err) {
+                        VPLUtil.log("Error processing dropped files: " + err);
                     });
+
                     e.stopImmediatePropagation();
                     return false;
                 }
@@ -917,6 +942,26 @@ define(
                     return false;
                 }
             };
+            this.applyMathJax = function() {
+                if (typeof window.MathJax == 'object') { // MathJax is loaded
+                    try {
+                        let math = result.find(".vpl_ide_accordion_c_description")[0];
+                        if (math) {
+                            if (window.MathJax.Hub && window.MathJax.Hub.Queue) {
+                                window.MathJax.Hub.Queue(["Typeset", window.MathJax.Hub, math]);
+                            } else if (window.MathJax.startup && window.MathJax.startup.promise) {
+                                window.MathJax.startup.promise = window.MathJax.startup.promise
+                                .then(() => window.MathJax.typesetPromise([math]))
+                                .catch(e => {
+                                    VPLUtil.log("MathJax error" + e);
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        VPLUtil.log("MathJax error" + e);
+                    }
+                }
+            };
             this.setResult = function(res, go) {
                 self.updateEvaluationNumber(res);
                 var files = fileManager.getFiles();
@@ -945,9 +990,8 @@ define(
                 hasContent = self.setResultTab('execution', formated, res.execution);
                 show = show || hasContent;
                 hasContent = self.setResultTab('description', window.VPLDescription, window.VPLDescription);
-                if (hasContent && typeof MathJax == 'object') { // MathJax workaround.
-                    var math = result.find(".vpl_ide_accordion_c_description")[0];
-                    MathJax.Hub.Queue(["Typeset", MathJax.Hub, math]);
+                if (hasContent) {
+                    self.applyMathJax();
                 }
                 show = show || hasContent;
                 if (show) {
@@ -971,6 +1015,9 @@ define(
                     $('#vpl_ide_shrightpanel').hide();
                 }
                 VPLUtil.delay('autoResizeTab', autoResizeTab);
+                VPLUtil.delay('fixAccordion', function() {
+                    result.accordion('option', 'active', gradeShow ? 1 : 0);
+                });
             };
 
             result.accordion({
@@ -1447,14 +1494,7 @@ define(
                 var value = fontsizeSlider.slider("value");
                 fileManager.setFontSize(value);
                 $(this).dialog('close');
-                $.ajax({
-                    async: true,
-                    type: "POST",
-                    url: '../editor/userpreferences.json.php',
-                    'data': JSON.stringify({fontSize: value}),
-                    contentType: "application/json; charset=utf-8",
-                    dataType: "json"
-                });
+                VPLUtil.setUserPreferences({fontSize: value});
             };
             dialogFontFizeButtons[str('cancel')] = function() {
                 fileManager.setFontSize(fontsizeSlider.data("vpl_fontsize"));
@@ -1629,6 +1669,17 @@ define(
                 }
             });
             menuButtons.add({
+                name: 'showparentfiles',
+                originalAction: function() {
+                    openpopup(null, {
+                        url: options.showparentfilesurl,
+                        options: 'width=' + Math.max(screen.availWidth / 2, 780) +
+                                 ',height=' + screen.availHeight +
+                                 ',left=' + (screen.availWidth / 4)
+                    });
+                }
+            });
+            menuButtons.add({
                 name: 'fontsize',
                 originalAction: function() {
                     dialogFontsize.dialog('open');
@@ -1768,7 +1819,7 @@ define(
                         .done(function(response) {
                             if (response.requestsconfirmation && !noconfirmation) {
                                 var checkboxID = 'vpl_donotshowagain';
-                                var donotshowagain = '<input type="checkbox" id="' + checkboxID +'"'
+                                var donotshowagain = '<input type="checkbox" id="' + checkboxID + '"'
                                                     + ' class="align-text-bottom mr-1 mt-3">'
                                                     + '<label for="' + checkboxID + '">' + str('donotshowagain') + '</label>';
                                 var $checkbox;
@@ -1979,6 +2030,7 @@ define(
             menuHtml += menuButtons.getHTML('resetfiles');
             menuHtml += menuButtons.getHTML('sort');
             menuHtml += menuButtons.getHTML('multidelete');
+            menuHtml += menuButtons.getHTML('showparentfiles');
             menuHtml += menuButtons.getHTML('fontsize');
             menuHtml += menuButtons.getHTML('theme');
             menuHtml += "</span> ";
@@ -2048,6 +2100,7 @@ define(
                 menuButtons.enable('new', nfiles < maxNumberOfFiles);
                 menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
                 menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
+                menuButtons.enable('showparentfiles', !modified);
                 menuButtons.enable('theme', true);
                 var sel;
                 if (!file || nfiles === 0) {
@@ -2193,7 +2246,6 @@ define(
                     }
                 }
                 tabs.tabs('option', 'active', 0);
-
                 if (response.compilationexecution) {
                     self.setResult(response.compilationexecution, false);
                 }
@@ -2218,6 +2270,11 @@ define(
                     updateMenu();
                     autoResizeTab();
                     adjustTabsTitles(true);
+                    if (fileManager.length() > 0) {
+                        var file = fileManager.getFiles()[0];
+                        file.open();
+                        file.focus();
+                    }
                 });
             })
             .fail(showErrorMessage);

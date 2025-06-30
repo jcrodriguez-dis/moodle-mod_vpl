@@ -7,12 +7,16 @@ Feature: Runs JavaScript tests on browser
     And the following "users" exist:
       | username | firstname | lastname | email |
       | manager1 | Manager | Manager | teacher1@example.com |
+    And the following "user preferences" exist:
+      | user     | preference | value    |
+      | manager1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | manager1 | C1 | manager |
     And I log in as "manager1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | JavaScript test |
+      | id_introeditor | No description |
     And I click on "JavaScript test" "link" in the "region-main" "region"
     # "Edit setting" for Moodle < 4 and "Setting" for Moodle >= 4
     And I navigate to "ettings" in current page administration

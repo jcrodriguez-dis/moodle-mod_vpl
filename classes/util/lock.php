@@ -39,12 +39,15 @@ class lock {
         $start = time();
         $ntries = 0;
         while ($ntries < 10) {
-            try {
+            $fp = false;
+            if (! file_exists($this->lockfile)) {
                 $fp = fopen($this->lockfile, 'x');
-            } catch (\Throwable $e) {
-                $fp = false;
+                if ( $fp !== false ) { // Locked by me.
+                    fclose($fp);
+                    break;
+                }
             }
-            if ( $fp === false ) { // Locked.
+            if ( $fp === false ) { // Locked by other.
                 $time = filectime($this->lockfile);
                 if ( $time !== false && $time != $ctime) { // First time or locker changed.
                     $ctime = $time;
@@ -59,9 +62,6 @@ class lock {
                         continue;
                     }
                 }
-            } else {
-                fclose($fp);
-                break;
             }
         }
     }

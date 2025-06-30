@@ -15,3 +15,4 @@ if [ "$1" == "version" ] ; then
 fi 
 get_first_source_file rs
 rustc "$FIRST_SOURCE_FILE" --crate-name vpl_execution
+apply_run_mode

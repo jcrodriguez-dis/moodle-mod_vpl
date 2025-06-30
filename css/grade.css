@@ -16,3 +16,22 @@
 #vpl_submission_view {
     clear: both;
 }
+
+td.vpl_hl_evaluation_row{
+    background-color:yellow;
+    animation: changeHlColors 5s infinite;
+}
+
+td.vpl_finished_evaluation_row{
+    border-top: 4px solid lightgreen;
+}
+
+@keyframes changeHlColors {
+    0%   { border-bottom-color: yellow;}
+    50%  { background-color: orange;}
+    100%  { background-color: yellow;}
+}
+
+tr.vpl_hidden_evaluation_row{
+    display: none;
+}

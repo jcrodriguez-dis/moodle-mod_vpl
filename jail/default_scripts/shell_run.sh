@@ -8,6 +8,7 @@
 # @vpl_script_description Using default /bin/bash
 # load common script and check programs
 . common_script.sh
+check_program bash
 if [ "$1" == "version" ] ; then
 	get_program_version --version 3
 fi
@@ -15,3 +16,4 @@ get_first_source_file sh
 cat common_script.sh > vpl_execution
 cat "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

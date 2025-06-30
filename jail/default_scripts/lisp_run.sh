@@ -15,3 +15,4 @@ get_first_source_file lisp lsp
 cat common_script.sh > vpl_execution
 echo "clisp \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

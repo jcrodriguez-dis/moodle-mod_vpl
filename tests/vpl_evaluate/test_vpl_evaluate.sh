@@ -160,4 +160,6 @@ if [ "$1" == "DEBUG" ] ; then
 	export DEBUG=true
 fi
 runAllTests $1
+finalResult=$?
 cd "$OLDDIR"
+exit $finalResult

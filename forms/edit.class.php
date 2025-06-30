@@ -291,7 +291,7 @@ class mod_vpl_edit {
         } else {
             $submission = new mod_vpl_submission_CE($vpl, $lastsub);
         }
-        return $submission->retrieveResult($processid);
+        return $submission->retrieveresult($processid);
     }
 
     /**

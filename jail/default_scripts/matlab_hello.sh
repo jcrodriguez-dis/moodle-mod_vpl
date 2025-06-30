@@ -8,6 +8,7 @@
 cat >"vpl hello.m" <<'END_OF_FILE'
 source "matlab test/vpl message.m"
 hello();
+exit();
 
 END_OF_FILE
 
@@ -32,7 +33,8 @@ else
 
 cat >"matlab test/vpl message.m" <<'END_OF_FILE'
 function hello ()
-    fprintf("%s\n", fgetl(stdin()));
+	line = input('', 's');
+	printf("%s\n", line);
 endfunction
 END_OF_FILE
 fi

@@ -45,10 +45,10 @@ class mod_vpl_webservice extends external_api {
     protected static function rewrite_pluginfile_for_external($text, $contextid) {
         // First, re-encode urls into @@PLUGINFILE@@ tokens.
         $reencoded = file_rewrite_pluginfile_urls($text, 'pluginfile.php', $contextid,
-                'mod_vpl', 'intro', null, array('reverse' => true));
+                'mod_vpl', 'intro', null, ['reverse' => true]);
         // Then, re-decode these @@PLUGINFILE@@ tokens into the tokenpluginfile form.
         return file_rewrite_pluginfile_urls($reencoded, 'pluginfile.php', $contextid,
-                'mod_vpl', 'intro', null, array('includetoken' => true));
+                'mod_vpl', 'intro', null, ['includetoken' => true]);
     }
 
     /**

@@ -18,3 +18,4 @@ generate_file_of_files .vpl_source_files
 # Compile
 g++ -std=c++11 -pedantic -fno-diagnostics-color -o vpl_execution $2 @.vpl_source_files -lm -lutil
 rm .vpl_source_files
+apply_run_mode

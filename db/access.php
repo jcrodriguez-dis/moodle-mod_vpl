@@ -71,6 +71,20 @@ $capabilities = [
                 ],
         ],
 
+        'mod/vpl:editothersgrades' => [ // Allows editing grades assigned by others.
+                'riskbitmask' => RISK_PERSONAL,
+                'captype' => 'write',
+                'contextlevel' => CONTEXT_MODULE,
+                'archetypes' => [
+                        'guest' => CAP_PREVENT,
+                        'student' => CAP_PREVENT,
+                        'teacher' => CAP_PREVENT,
+                        'editingteacher' => CAP_PREVENT,
+                        'coursecreator' => CAP_ALLOW,
+                        'manager' => CAP_ALLOW,
+                ],
+        ],
+
         'mod/vpl:similarity' => [ // Allows to show submissions similarity.
                 'riskbitmask' => RISK_PERSONAL,
                 'captype' => 'read',

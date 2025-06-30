@@ -24,3 +24,4 @@ cat common_script.sh > vpl_execution
 echo "export GOPATH=$(pwd)" >>vpl_execution
 echo "./go_program" >>vpl_execution
 chmod +x vpl_execution
+apply_run_mode

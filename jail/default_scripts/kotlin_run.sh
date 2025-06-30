@@ -35,3 +35,4 @@ fi
 cat common_script.sh > vpl_execution
 echo "java -jar vpl_execution.jar \$@" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

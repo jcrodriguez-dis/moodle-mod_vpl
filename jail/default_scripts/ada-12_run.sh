@@ -16,3 +16,4 @@ fi
 get_first_source_file adb
 # compile
 gnat make -gnat2012 -gnatW8 -q -o vpl_execution "$FIRST_SOURCE_FILE"
+apply_run_mode

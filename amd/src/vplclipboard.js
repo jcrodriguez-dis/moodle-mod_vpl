@@ -50,7 +50,9 @@ define(
                 width: 'auto',
                 height: 'auto',
                 resizable: true,
-                dialogClass: 'vpl_clipboard vpl_ide',
+                classes: {
+                    "ui-dialog": 'vpl_clipboard vpl_ide',
+                },
             });
             if (onFocus) {
                 tdialog.on("click", onFocus);

@@ -30,6 +30,9 @@ $string['advanced'] = 'Advanced';
 $string['allfiles'] = 'All files';
 $string['allsubmissions'] = 'All submissions';
 $string['anyfile'] = 'Any file';
+$string['archive'] = 'Archive';
+$string['archivereplace'] = 'Replace only files present in archive';
+$string['archivereplacedelete'] = 'Replace all files and delete files not present in archive';
 $string['attemptnumber'] = 'Attempt number {$a}';
 $string['autodetect'] = 'Autodetect';
 $string['automaticevaluation'] = 'Automatic evaluation';
@@ -49,6 +52,8 @@ $string['binaryfile'] = 'Binary File';
 $string['breakpoint'] = 'Breakpoint';
 $string['browserupdate'] = 'Please update your browser to the last version<br />or use another that supports Websocket.';
 $string['calculate'] = 'Calculate';
+$string['calculate_help'] = 'Calculate grade from grade reductions in comments.<br>
+Syntax for grade reduction is <pre>-&nbsp;Text&nbsp;(-points)</pre> (one line by reduction).';
 $string['calendardue'] = 'VPL submission is due';
 $string['calendarexpectedon'] = 'VPL submission expected';
 $string['changesNotSaved'] = 'Changes have not been saved';
@@ -61,6 +66,8 @@ $string['clipboard'] = 'Clipboard';
 $string['closed'] = 'Closed';
 $string['comments'] = 'Comments';
 $string['compilation'] = 'Compilation';
+$string['concatenatedscripts'] = 'Concatenated execution scripts';
+$string['concatenatedscripts_help'] = 'This page shows the actual contents of execution scripts. If this VPL is based on another, scripts are concatenated. If any script is empty, then the default script is used.';
 $string['confirmoverridedeletion'] = 'Are you sure you want to delete this override set?';
 $string['connected'] = 'connected';
 $string['connecting'] = 'connecting';
@@ -71,6 +78,7 @@ $string['copy'] = 'Copy';
 $string['copytoclipboard'] = 'Copy to clipboard';
 $string['copytoclipboarderror'] = 'Failed to copy to clipboard.';
 $string['copytoclipboardsuccess'] = 'Copied!';
+$string['copy_help'] = 'Copy this submission in own editor (opens a new window)';
 $string['create_new_file'] = 'Create a new file';
 $string['crontask_check_vpljs'] = 'Report VPL Jail Servers';
 $string['messageprovider:bad_jailservers'] = 'Report VPL Jail Servers';
@@ -82,22 +90,28 @@ $string['debug'] = 'Debug';
 $string['debugging'] = 'Debugging';
 $string['debugscript'] = 'Debug script';
 $string['debugscript_help'] = 'Select the debug script to use in this activity';
+$string['defaultevaluatescript'] = 'Default evaluation script';
 $string['defaultexefilesize'] = 'Maximum default execution file size';
 $string['defaultexememory'] = 'Maximum default memory used';
 $string['defaultexeprocesses'] = 'Maximum default number of processes';
 $string['defaultexetime'] = 'Maximum default execution time';
 $string['defaultfilesize'] = 'Default maximum upload file size';
 $string['defaultresourcelimits'] = 'Default execution resources limits';
+$string['defaultscriptforlang'] = 'Default script for language {$a->pln} ({$a->origin})';
+$string['defaultvalue'] = 'Default ({$a})';
 $string['delete'] = 'Delete';
 $string['delete_file_fq'] = "delete '{\$a}' file?";
 $string['delete_file_q'] = 'Delete file?';
 $string['deleteallsubmissions'] = 'Delete all submissions';
+$string['deletefile'] = 'Delete file';
 $string['description'] = 'Description';
+$string['determinedfromrequiredfiles'] = 'determined from required files';
 $string['diff'] = 'diff';
 $string['directory_not_renamed'] = 'Directory \'{$a}\' has not been renamed';
 $string['disabled'] = 'Disabled';
 $string['discard_submission_period'] = 'Discard submission period';
 $string['discard_submission_period_description'] = 'For each student and assignment, the system tries to discard submissions. The system keep the last one and at least a submission for every period';
+$string['dograde'] = 'Save grade';
 $string['donotshowagain'] = 'Disable these messages for the current page';
 $string['download'] = 'Download';
 $string['downloadallsubmissions'] = 'Download all submissions';
@@ -116,10 +130,13 @@ $string['error:recursivedefinition'] = "Recursive basedon VPL definition";
 $string['error:uninstalling'] = 'Error uninstalling VPL. All data may have not been deleted';
 $string['error:zipnotfound'] = 'ZIP file not found';
 $string['evaluate'] = 'Evaluate';
+$string['evaluate_help'] = 'Run automatic evaluation';
 $string['evaluateonsubmission'] = 'Evaluate upon files submission';
 $string['evaluateonsubmission_help'] = 'If set to Yes, performs an evaluation upon files submission via the "Submission" tab. This does not affect submissions via the "Edit" tab.';
 $string['evaluating'] = 'Evaluating';
 $string['evaluation'] = 'Evaluation';
+$string['evaluator'] = 'Evaluator';
+$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for orginal BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.';
 $string['examples'] = 'Examples';
 $string['execution'] = 'Execution';
 $string['executionfiles'] = 'Execution files';
@@ -148,21 +165,32 @@ $string['find'] = "Find";
 $string['find_replace'] = 'Find/Replace';
 $string['freeevaluations'] = 'Free evaluations';
 $string['freeevaluations_help'] = 'Number of automatic evaluations that do not reduce final score';
+$string['fromthisvpl'] = 'From this VPL ({$a})';
+$string['fromvpl'] = 'From VPL {$a}';
 $string['fulldescription'] = 'Full description';
 $string['fullscreen'] = 'Fullscreen';
+$string['generatedshebang'] = 'Generated because there was no specified shell';
 $string['getjails'] = 'Get execution servers';
-$string['gradeandnext'] = 'Grade & next';
+$string['gradeandnext'] = 'Save & next';
 $string['graded'] = 'Graded';
 $string['gradedbyuser'] = 'Graded by user';
 $string['gradedon'] = "Evaluated on";
 $string['gradedonby'] = 'Reviewed on {$a->date} by {$a->gradername}';
+$string['gradeitem:submissions'] = 'Submissions';
 $string['gradenotremoved'] = 'The grade has NOT been removed. Check activity config in the gradebook.';
 $string['gradenotsaved'] = 'The grade has NOT been saved. Check activity config in the gradebook.';
 $string['gradeoptions'] = 'Grade options';
 $string['grader'] = "Evaluator";
 $string['gradercomments'] = 'Assessment report';
 $string['graderemoved'] = 'The grade has been removed';
+$string['gradesaved'] = 'Grade saved';
+$string['gradesaved_redirect'] = 'Grade saved. This page should redirect automatically.';
 $string['groupwork'] = 'Group work';
+$string['importfromlastgradedsub'] = 'Import from last graded submission';
+$string['importfromlastmgradedsub'] = 'Import from last manually graded submission';
+$string['importgrade'] = 'Import grade and comments';
+$string['importgrade_help'] = 'Import grade, comments and (if applicable) advanced grading from a previously graded submission.<br>
+This action will only fill the form, no data will be submitted.';
 $string['inconsistentgroup'] = 'You are not member of only one group (0 o >1)';
 $string['incorrect_file_name'] = 'Incorrect file name';
 $string['incorrect_directory_name'] = 'Incorrect directory name';
@@ -171,13 +199,15 @@ $string['indicator:cognitivedepth_help'] = 'This indicator is based on the cogni
 $string['indicator:socialbreadth'] = 'VPL social';
 $string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in an VPL activity.';
 $string['individualwork'] = 'Individual work';
-$string['inherit'] = 'Inherit';
+$string['inheritvalue'] = 'Inherit ({$a})';
+$string['inheritancechain'] = 'Inheritance chain:';
 $string['instanceselection'] = 'VPL selection';
 $string['isexample'] = 'This activity acts as example';
 $string['jail_servers'] = 'Execution servers list';
 $string['jail_servers_config'] = 'Execution servers config';
 $string['jail_servers_description'] = 'Write a line for each server';
 $string['joinedfiles'] = 'Joined selected files';
+$string['keepcurrentfile'] = 'Keep current file';
 $string['keepfiles'] = 'Files to keep when running';
 $string['keyboard'] = 'Keyboard';
 $string['lasterror'] = 'Last error info';
@@ -207,6 +237,17 @@ $string['menuexecutionoptions'] = 'Options';
 $string['menukeepfiles'] = 'Files to keep';
 $string['menulocal_jail_servers'] = 'Local execution servers';
 $string['menuresourcelimits'] = 'Resources limits';
+$string['merge'] = 'Merge grade';
+$string['merge_help'] = 'Merge current proposed grade (from execution) and avdanced grading grid grade.
+<p>
+This will set the grade to
+&lt;proposed&nbsp;grade&gt; - &lt;max&nbsp;grid&nbsp;points&gt; * (&lt;proposed&nbsp;grade&gt;/&lt;max&nbsp;vpl&nbsp;grade&gt;) + &lt;grid&nbsp;points&gt;.<br>
+More simply, it ponderates grid points based on current proposed grade: a student with 100% points will need all grid points to keep 100% points;
+a student with 0 points will end up with all obtained grid points as their grade.
+</p>
+<p>
+Advanced grid grade is computed as the total of grid points, reduced by comments. Syntax for grade reduction is <pre>-&nbsp;Text&nbsp;(-points)</pre> (one line by reduction).
+</p>';
 $string['minsimlevel'] = 'Minimum similarity level to show';
 $string['moduleconfigtitle'] = 'VPL Module Config';
 $string['modulename'] = 'Virtual programming lab';
@@ -219,6 +260,7 @@ $string['next'] = 'Next';
 $string['nojailavailable'] = 'No execution server available';
 $string['noright'] = 'You don\'t have right to access';
 $string['nosubmission'] = 'No submission available';
+$string['nosuchsubmission'] = 'No such submission';
 $string['notexecuted'] = 'Not executed';
 $string['notgraded'] = 'Not graded';
 $string['notsaved'] = 'Not saved';
@@ -244,6 +286,7 @@ $string['override_users'] = 'Affected users';
 $string['paste'] = 'Paste';
 $string['pluginadministration'] = 'VPL administration';
 $string['pluginname'] = 'Virtual programming lab';
+$string['pluginnotfound'] = 'VPL subplugin not found or bad defined: {$a}';
 $string['previoussubmissionslist'] = 'Previous submissions list';
 $string['print'] = 'Print';
 $string['privacy:metadata:vpl'] = 'Information of the activity';
@@ -269,6 +312,9 @@ $string['privacy:metadata:vpl_submissions:dategraded'] = 'Date and time of the e
 $string['privacy:metadata:vpl_submissions:grade'] = 'The mark for this submission. This value may no match the value in the grade book.';
 $string['privacy:metadata:vpl_submissions:graderid'] = 'grader user DB id';
 $string['privacy:metadata:vpl_submissions:gradercomments'] = 'Comments of the grader about this submission';
+$string['privacy:metadata:vpl_submissions:save_count'] = 'Number of times the submission has been saved';
+$string['privacy:metadata:vpl_submissions:run_count'] = 'Number of times the submission has been run';
+$string['privacy:metadata:vpl_submissions:debug_count'] = 'Number of times the submission has been debugged';
 $string['privacy:metadata:vpl_assigned_variations'] = 'Information of the activity variation assigned, if any';
 $string['privacy:metadata:vpl_assigned_variations:userid'] = 'User DB id.';
 $string['privacy:metadata:vpl_assigned_variations:vplid'] = 'VPL DB id';
@@ -298,14 +344,26 @@ $string['removebreakpoint'] = 'Remove breakpoint';
 $string['rename'] = 'Rename';
 $string['rename_file'] = 'Rename file';
 $string['rename_directory'] = 'Rename directory';
+$string['renameuploadedfile'] = 'Rename uploaded file';
 $string['replace_find'] = 'Replace/Find';
+$string['replacefile'] = 'Replace contents';
 $string['replacenewer'] = "A newer version was already saved.\nDo you want to replace the newer version with this one?";
 $string['requestedfiles'] = 'Requested files';
 $string['requirednet'] = 'Require network address';
 $string['requirednet_help'] = 'VPL access may be restricted to particular subnets on the LAN or Internet by specifying a comma-separated list of partial or full IP address numbers. This can be useful to ensure that only people in a certain location can access the VPL.';
 $string['requiredpassword'] = 'A password is required';
 $string['resetfiles'] = 'Reset files';
-$string['resetvpl'] = 'Reset {$a}';
+$string['reset'] = 'Reset VPL activities';
+$string['resetvpl'] = 'Reset VPL submissions in {$a}';
+$string['removeallsubmissions'] = 'Remove all submissions and grades';
+$string['removeallsubmissions_help'] = 'Remove all submissions and grades in all VPL activities in the selected course';
+$string['removeoverrides'] = 'Remove all overrides';
+$string['removeoverrides_help'] = 'Remove all overrides in all VPL activities in the selected course';
+$string['removeuseroverrides'] = 'Remove user asigned overrides';
+$string['removeuseroverrides_help'] = 'Remove all user asigned overrides, override definitions not deleted';
+$string['removegroupoverrides'] = 'Remove group asigned overrides';
+$string['removegroupoverrides_help'] = 'Remove all group asigned overrides, override definitions not deleted';
+$string['timeshift'] = 'Shifted dates in VPL by {$a}';
 $string['resourcelimits'] = 'Resources limits';
 $string['restrictededitor'] = 'Disable external file upload, paste and drop external content';
 $string['retrieve'] = 'Retrieve results';
@@ -314,13 +372,34 @@ $string['run'] = 'Run';
 $string['running'] = 'Running';
 $string['runscript'] = 'Run script';
 $string['runscript_help'] = 'Select the run script to use in this activity';
-$string['save'] = 'Save';
+$string['run_mode'] = 'Run mode';
+$string['run_mode:default'] = 'Autodetect run mode (default)';
+$string['run_mode:text'] = 'Run in a text terminal';
+$string['run_mode:gui'] = 'Run in a graphical terminal';
+$string['run_mode:webapp'] = 'Run as a web application';
+$string['run_mode:textingui'] = 'Run text app in a graphical terminal';
+$string['run_mode_help'] = 'Select run mode for this activity.<br>
+<b>Default</b>: Run using autodetect (original behaviour).
+In this mode use @vpl_run_[text|gui|webapp|textingui]_mode inside comment at the start of a code file to select run mode.<br>
+<b>Text</b>: Run in a text terminal (no GUI).<br>
+<b>GUI</b>: Run in a graphical terminal (GUI).<br>
+<b>Webapp</b>: Run as a web application (no terminal).<br>
+<b>Text in GUI</b>: Run text app in a graphical terminal (GUI).<br>
+<b>Note</b>: All modes are not available for all languages.<br>
+Custom scripts can ignore this setting.<br>';
+$string['evaluation_mode'] = 'Evaluation mode';
+$string['evaluation_mode:default'] = 'Evaluate in terminal mode (default)';
+$string['evaluation_mode:textingui'] = 'Evaluate in GUI mode';
+$string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
+<b>Default</b>: Evaluate in terminal mode (original behaviour).<br>
+<b>Text in GUI</b>: Evaluate program in GUI mode.<br>
+<b>Note</b>: Custom scripts can ignore this setting.<br>';
 $string['save'] = 'Save';
 $string['savecontinue'] = 'Save and continue';
 $string['saved'] = 'Saved';
 $string['savedfile'] = "The '{\$a}' file has been saved";
 $string['saveforotheruser'] = "You are saving a submission for other user, are you sure?";
-$string['saveoptions'] = 'save options';
+$string['saveoptions'] = 'Save options';
 $string['saving'] = 'Saving';
 $string['scanactivity'] = 'Activity';
 $string['scandirectory'] = 'Directory';
@@ -337,9 +416,11 @@ $string['select_all'] = 'Select all';
 $string['selectbreakpoint'] = 'Select breakpoint';
 $string['server'] = 'Server';
 $string['serverexecutionerror'] = 'Server execution error';
+$string['setbyexecutionoptions'] = 'set by execution options';
 $string['shortdescription'] = 'Short description';
 $string['shortcuts'] = 'Keyboard shortcuts';
 $string['shrightpanel'] = 'Show/hide right panel';
+$string['showparentfiles'] = 'Show parent files';
 $string['similarity'] = 'Similarity';
 $string['similarto'] = 'Similar to';
 $string['startdate'] = 'Available from';
@@ -350,10 +431,24 @@ $string['submissionrestrictions'] = 'Submission restrictions';
 $string['submissions'] = 'Submissions';
 $string['submissionselection'] = 'Submission selection';
 $string['submissionslist'] = 'Submissions list';
+$string['submissions'] = 'Submissions list';
+$string['submissions_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
+$string['submissions_overview_help'] = 'students or grupos count / submissions count (% of students or groups with submissions)';
+$string['submissions_graded_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
+$string['submissions_graded_overview_help'] = '[students or grupos count]<br>
+ / [submissions count] (% of students or groups with submissions)<br>
+ / [graded count] (% of submissions graded)<br>
+ - [not graded count] (% of submissions not graded)';
 $string['submissionview'] = 'Submission view';
+$string['submitarchive'] = 'Submit archive';
+$string['submitfiles'] = 'Submit files';
+$string['submitmethod'] = 'Submit method';
 $string['submittedby'] = 'Submitted by {$a}';
 $string['submittedon'] = 'Submitted on';
 $string['submittedonp'] = 'Submitted on {$a}';
+$string['subplugintype_vplevaluator'] = 'VPL submissions evaluator';
+$string['subplugintype_vplevaluator_plural'] = 'VPL submissions evaluators';
+$string['error:invalidevaluator'] = 'Invalid vplevaluator plugin ({$a}): disabled or missing';
 $string['sureresetfiles'] = 'Do you want to lost all your work and reset the files to its original state?';
 $string['test'] = 'Test activity';
 $string['testcases'] = 'Test cases';
@@ -390,6 +485,7 @@ $string['vpl:setjails'] = 'Set execution servers for particular VPL instances';
 $string['vpl:similarity'] = 'Search VPL assignment similarity';
 $string['vpl:submit'] = 'Submit VPL assignment';
 $string['vpl:view'] = 'View full VPL assignment description';
+$string['vpl:editothersgrades'] = 'Edit grades done by other users';
 $string['vpl'] = 'Virtual Programming Lab';
 $string['VPL_COMPILATIONFAILED'] = 'The compilation or preparation of execution has failed';
 $string['vpl_debug.sh'] = 'This script prepares the debugging';
@@ -415,7 +511,6 @@ $string['websocket_protocol_description'] = 'Type of WebSocket protocol (ws:// o
 $string['always_use_wss'] = 'Always use encrypted (wss) websocket protocol';
 $string['always_use_ws'] = 'Always use unencrypted (ws) websocket protocol';
 $string['depends_on_https'] = 'Use ws or wss depending on if using http or https';
-
 $string['basic'] = 'Basic';
 $string['intermediate'] = 'Intermediate';
 $string['advanced'] = 'Advanced';
@@ -464,7 +559,7 @@ $string['executionoptions_help'] = '<p>Various execution options are set in this
 </ul>
 </li>
 <li><b>Run</b>, <b>Debug</b> and <b>Evalaute</b>: must be set to \'Yes\' if the corresponding action can be executed when editing the submission. This affects to the students only, users with  capability of grading can always execute these actions.</li>
-<li><b>Evaluate just on submission</b>: the submission is evaluated automatically when it is uploaded.</li>
+<li><b>Evaluate upon files submission</b>: the submission is evaluated automatically when it is uploaded.</li>
 <li><b>Automatic grading</b>: if the evaluation result includes grading codes, they are used to set the grade automatically.</li>
 </ul>';
 $string['fulldescription_help'] = '<p>You must write here a full description for the activity.</p>
@@ -510,7 +605,7 @@ The file "vpl_evaluate.cases" has the following format:<br>
 <ul>
 <li> "<b>case </b>= Description of case": Set an start of test case definition.</li>
 <li> "<b>input </b>= text": can use several lines. Ends with other instruction.</li>
-<li> "<b>output </b>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact test:
+<li> "<b>output </b>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact text:
 <ul>
 <li> <b>number</b>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, other text are ignored. Floats are checked with tolerance</li>
 <li> <b>text</b>: defined as text without double quote. Only words are checked and the rest of chars are ignored, the comparation is case-insensitive </li>

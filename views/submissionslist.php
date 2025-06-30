@@ -25,11 +25,16 @@
 
 require_once(dirname( __FILE__ ) . '/../../../config.php');
 global $CFG, $USER, $OUTPUT;
+
 require_once($CFG->dirroot.'/mod/vpl/locallib.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot.'/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
+require_once($CFG->libdir.'/tablelib.php');
 
+/**
+ * Class to order submission list.
+ */
 class vpl_submissionlist_order {
     protected static $field; // Field to compare.
     protected static $ascending; // Value to return when ascending or descending order.
@@ -105,9 +110,10 @@ class vpl_submissionlist_order {
         }
     }
     /**
-     * Check and set data to sort return comparation function $field field to compare $descending order
-     *
-     * @return array with function name
+     * Check and set data to sort return comparation function.
+     * @param string $field field to sort
+     * @param bool $ascending true for ascending order
+     * @return array [comparator object, comparator function]
      */
     public static function set_order($field, $ascending = true) {
         if (self::$corder === null) {
@@ -141,50 +147,28 @@ class vpl_submissionlist_order {
         }
     }
 }
-function vpl_evaluate($vpl, $alldata, $userinfo, $nevaluation, $groupsurl) {
-    global $OUTPUT;
-    $nevaluation ++;
-    try {
-        echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
-        $text = $nevaluation . '/' . count( $alldata );
-        $text .= ' ' . $vpl->user_picture( $userinfo );
-        $text .= ' ' . fullname( $userinfo );
-        $text .= ' <a href="' . $groupsurl . '">' . get_string( 'cancel' ) . '</a>';
-        echo $OUTPUT->box( $text );
-        $id = $vpl->get_course_module()->id;
-        $ajaxurl = "../forms/edit.json.php?id={$id}&userid={$userinfo->id}&action=";
-        $url = vpl_url_add_param( $groupsurl, 'evaluate', optional_param( 'evaluate', 0, PARAM_INT ) );
-        $url = vpl_url_add_param( $url, 'nevaluation', $nevaluation );
-        $nexturl = str_replace( '&amp;', '&', urldecode( $url ) );
-        vpl_editor_util::print_js_i18n();
-        vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
-    } catch (\Throwable $e) {
-        vpl_notice( $e->getMessage(), 'error' );
+
+/**
+ * Preprare javascript to evaluate users
+ * @param int $id activity cm id
+ * @param array $evaluateusers list of users to evaluate
+ */
+function vpl_prepare_evaluation($id, $evaluateusers) {
+    $usersid = [];
+    foreach ($evaluateusers as $user) {
+        $usersid[] = ['id' => $user->id, 'subid' => $user->subid];
     }
-    $vpl->print_footer();
-    die();
+    $options = [ 'baseurl' => "../forms/edit.json.php?id={$id}&userid="];
+    vpl_editor_util::print_js_i18n();
+    vpl_editor_util::generate_batch_evaluate_sript($options, $usersid);
 }
-function vpl_submissionlist_arrow($burl, $sort, $selsort, $seldir) {
-    global $OUTPUT;
-    $newdir = 'down';
-    $url = vpl_url_add_param( $burl, 'sort', $sort );
-    if ($sort == $selsort) {
-        $sortdir = $seldir;
-        if ($sortdir == 'up') {
-            $newdir = 'down';
-        } else if ($sortdir == 'down') {
-            $newdir = 'up';
-        }
-    } else {
-        $sortdir = 'move';
-    }
-    $url = vpl_url_add_param( $url, 'sortdir', $newdir );
-    $showgrades = optional_param( 'showgrades', 0, PARAM_INT );
-    if ( $showgrades > 0 ) {
-        $url = vpl_url_add_param( $url, 'showgrades', 1 );
-    }
-    return ' <a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
-}
+
+/**
+ * Get list menu for submissions list
+ * @param bool $showgrades show feedback report
+ * @param int $id activity cm id
+ * @return action_menu
+ */
 function vpl_get_listmenu($showgrades, $id) {
     $menu = new action_menu();
     $url = new moodle_url( '/mod/vpl/views/activityworkinggraph.php', ['id' => $id]);
@@ -212,42 +196,209 @@ function vpl_get_listmenu($showgrades, $id) {
  */
 function vpl_get_action_link($str, $link, $comp = 'mod_vpl') {
     $stri18n = get_string($str, $comp);
-    return new action_menu_link_secondary($link, new pix_icon($str, '', 'mod_vpl'),  $stri18n);
+    $iconname = $str == 'gradenoun' ? 'grade' : $str;
+    return new action_menu_link_secondary($link, new pix_icon($iconname, '', 'mod_vpl'),  $stri18n);
+}
+
+/**
+ * Show perpage button if needed
+ * @param flexible_table $table
+ * @param int $ntabledata number of rows
+ * @param array $params url parameters
+ */
+function vpl_show_perpage_button($table, $ntabledata, $params) {
+    if ($ntabledata > 0) {
+        if ($table->get_default_per_page() < $table->get_page_size()) {
+            $perpagesize = $table->get_default_per_page();
+            $perpagestring = get_string('showperpage', '', $table->get_default_per_page());
+        } else if ($table->get_page_size() < $ntabledata) {
+            $perpagesize = TABLE_SHOW_ALL_PAGE_SIZE;
+            $perpagestring = get_string('showall', '', $ntabledata);
+        }
+        if (isset($perpagesize) && isset($perpagestring)) {
+            $perpageurl = new moodle_url('/mod/vpl/views/submissionslist.php', $params);
+            $perpageurl->param('tperpage', $perpagesize);
+            echo html_writer::link(
+                $perpageurl,
+                $perpagestring,
+                ['class' => 'btn btn-secondary']
+            );
+            echo '<br>';
+        }
+    }
+}
+
+/**
+ * Show graders table
+ * @param int $id activity cm id
+ * @param int $usernumber number of students
+ * @param array $gradersdata {graderid => marks}
+ */
+function vpl_show_graders_table($id, $usernumber, $gradersdata) {
+    global $CFG, $OUTPUT;
+    if (count($gradersdata)) {
+        $title = get_string('teachers');
+        echo '<br>';
+        echo html_writer::tag('b', $title);
+        echo '<br>';
+        if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).
+            $namehead = get_string( 'lastname' ) . ' / ' . get_string( 'firstname' );
+        } else {
+            $namehead = get_string( 'firstname' ) . ' / ' . get_string( 'lastname' );
+        }
+        $tablegraders = new flexible_table("vpl-submissionslist-graders-{$id}");
+        $tablegraders->set_attribute('title', $title);
+        $tablegraders->define_headers(['#', null, $namehead, get_string(vpl_get_gradenoun_str())]);
+        $tablegraders->define_columns(['#', 'userpic', 'fullname', 'grade']);
+        $tablegraders->define_baseurl(new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $id]));
+        $tablegraders->setup();
+        $gradernumber = 0;
+        foreach ($gradersdata as $graderid => $marks) {
+            $gradernumber ++;
+            $grader = mod_vpl_submission::get_grader($graderid);
+            $picture = '';
+            if ($graderid > 0) { // No automatic grading.
+                $picture = $OUTPUT->user_picture($grader, ['popup' => true]);
+            }
+            $graderdata = [
+                    $gradernumber,
+                    $picture,
+                    fullname( $grader ),
+                    sprintf( '%d/%d  (%5.2f%%)', $marks, $usernumber, ( float ) 100.0 * $marks / $usernumber ),
+            ];
+            $tablegraders->add_data($graderdata);
+        }
+        $tablegraders->finish_output();
+    }
+}
+
+/**
+ * Return list of students (in current group if apply) or groups in activity
+ * @param object $vpl mod_vpl object of activity
+ * @return array of objects
+ */
+function vpl_get_students($vpl) {
+    if ($vpl->is_group_activity()) {
+        $cm = $vpl->get_course_module();
+        return groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+    } else {
+        $currentgroup = groups_get_activity_group($vpl->get_course_module(), true );
+        if (! $currentgroup) {
+            $currentgroup = 0;
+        }
+        return $vpl->get_students($currentgroup);
+    }
+}
+
+/**
+ * Filter students by initials
+ * @param object $vpl mod_vpl
+ * @param array $allstudents list of students
+ * @return array of objects
+ */
+function vpl_filter_by_initials($vpl, $allstudents) {
+    $tilast = optional_param('tilast', '', PARAM_TEXT);
+    $tifirst = optional_param('tifirst', '', PARAM_TEXT);
+    if ($vpl->is_group_activity()) {
+        if ($tilast > '') {
+            $newlist = [];
+            foreach ($allstudents as $group) {
+                if (strcasecmp(substr($group->name, 0, 1), $tilast) == 0) {
+                    $newlist[$group->id] = $group;
+                }
+            }
+            $allstudents = $newlist;
+        }
+    } else {
+        if ($tilast > '' || $tifirst > '') {
+            $newlist = [];
+            foreach ($allstudents as $user) {
+                if ($tilast > '' && strcasecmp(substr($user->lastname, 0, 1), $tilast) != 0) {
+                    continue;
+                }
+                if ($tifirst > '' && strcasecmp(substr($user->firstname, 0, 1), $tifirst) != 0) {
+                    continue;
+                }
+                $newlist[$user->id] = $user;
+            }
+            $allstudents = $newlist;
+        }
+    }
+    return $allstudents;
 }
 
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
-$group = optional_param( 'group', - 1, PARAM_INT );
+$groupid = optional_param( 'group', - 1, PARAM_INT );
 $evaluate = optional_param( 'evaluate', 0, PARAM_INT );
-$nevaluation = optional_param( 'nevaluation', 0, PARAM_INT );
 $showgrades = optional_param( 'showgrades', 0, PARAM_INT );
 $sort = vpl_get_set_session_var( 'subsort', 'lastname', 'sort' );
-$sortdir = vpl_get_set_session_var( 'subsortdir', 'move', 'sortdir' );
+$sortdir = vpl_get_set_session_var( 'subsortdir', 3, 'sortdir' );
+$tilast = optional_param('tilast', '', PARAM_TEXT);
+$tifirst = optional_param('tifirst', '', PARAM_TEXT);
+$page = optional_param('page', 0, PARAM_INT);
+$tperpage = optional_param('tperpage', 30, PARAM_INT);
 $subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
+$download = optional_param('download', '', PARAM_ALPHA);
+
+$thiddenfields = explode(',', optional_param('thiddenfields', '', PARAM_RAW));
+$thide = optional_param('thide', '', PARAM_TEXT);
+if ($thide) {
+    $thiddenfields[] = $thide;
+    $thiddenfields = array_unique($thiddenfields);
+}
+$tshow = optional_param('tshow', '', PARAM_TEXT);
+if ($tshow) {
+    $thiddenfields = array_filter($thiddenfields, function($value) use ($tshow) {
+        return $value != $tshow;
+    });
+}
+
+$params = [
+    'id' => $id,
+    'showgrades' => $showgrades,
+    'group' => $groupid,
+    'tilast' => $tilast,
+    'tifirst' => $tifirst,
+    'tperpage' => $tperpage,
+    'thiddenfields' => implode(',', $thiddenfields),
+];
+$evaluateusers = [];
 if ($evaluate > 0) {
     require_once($CFG->dirroot.'/mod/vpl/editor/editor_utility.php');
     vpl_editor_util::generate_requires_evaluation();
 }
-
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('views/submissionslist.php', ['id' => $id]);
-
 $cm = $vpl->get_course_module();
 $vpl->require_capability(VPL_GRADE_CAPABILITY);
+$vpl->prepare_page('views/submissionslist.php', $params);
+$downloading = $download != '';
+$noevaluating = $evaluate == 0;
+
 \mod_vpl\event\vpl_all_submissions_viewed::log($vpl);
 
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-
-// Print header.
-$vpl->print_header( get_string( 'submissionslist', VPL ) );
-$vpl->print_view_tabs( basename( __FILE__ ) );
+if (! $downloading) {
+    $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
+    $PAGE->requires->css( new moodle_url('/mod/vpl/css/index.css'));
+    $PAGE->requires->css( new moodle_url('/mod/vpl/css/grade.css'));
+    // Print header.
+    $vpl->print_header( get_string( 'submissionslist', VPL ) );
+    $vpl->print_view_tabs( basename( __FILE__ ) );
+} else {
+    // Disable display debugging.
+    @ini_set('display_errors', '0');
+    $CFG->debugdisplay = 0;
+}
 
 // Find out current groups mode.
 $groupmode = groups_get_activity_groupmode( $cm );
 if (! $groupmode) {
     $groupmode = groups_get_course_groupmode( $vpl->get_course() );
 }
+
+$allstudents = vpl_get_students($vpl);
+$filteredstudents = vpl_filter_by_initials($vpl, $allstudents);
 
 // Find if using variations.
 $vplinstance = $vpl->get_instance();
@@ -264,25 +415,19 @@ if ($usevariations) {
     }
 }
 
-// Get graders.
+// Check if gradeable.
 $gradeable = $vpl->get_grade() != 0;
 
 // Get students.
-$currentgroup = groups_get_activity_group( $cm, true );
-if (! $currentgroup) {
-    $currentgroup = '';
-}
-if ($vpl->is_group_activity()) {
-    $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
-} else {
-    $list = $vpl->get_students( $currentgroup );
-}
-$submissions = $vpl->all_last_user_submission();
+// TODO Improve performance by selecting students using initials.
+
+$submissions = $vpl->filter_submissions_by_students($vpl->all_last_user_submission(), $allstudents);
 $submissionsnumber = $vpl->get_submissions_number();
 mod_vpl_submission::load_gradebook_grades($vpl);
-// Get all information.
+
+// Filter by evaluation and get all information.
 $alldata = [];
-foreach ($list as $uginfo) {
+foreach ($filteredstudents as $uginfo) {
     $submission = null;
     if (! isset( $submissions[$uginfo->id] )) {
         if ($subselection != 'all') {
@@ -339,76 +484,76 @@ foreach ($list as $uginfo) {
     }
     $alldata[] = $data;
 }
+
 $groupsurl = vpl_mod_href( 'views/submissionslist.php', 'id', $id, 'sort', $sort, 'sortdir', $sortdir, 'selection', $subselection );
-// Unblock user session.
-session_write_close();
+$baseurl = vpl_mod_href( 'views/submissionslist.php', 'id', $id, 'group', $groupid );
 
-$baseurl = vpl_mod_href( 'views/submissionslist.php', 'id', $id, 'group', $group );
-
-$firstname = get_string( 'firstname' ) . vpl_submissionlist_arrow( $baseurl, 'firstname', $sort, $sortdir );
-$lastname = get_string( 'lastname' ) . vpl_submissionlist_arrow( $baseurl, 'lastname', $sort, $sortdir );
-if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).
-    $namesortselect = $lastname . ' / ' . $firstname;
-} else {
-    $namesortselect = $firstname . ' / ' . $lastname;
-}
-if ($vpl->is_group_activity()) {
-    $namesortselect = get_string( 'group' ) . vpl_submissionlist_arrow( $baseurl, 'lastname', $sort, $sortdir );
-}
-$options = [
-        'height' => 550,
-        'width' => 780,
-        'directories' => 0,
-        'location' => 0,
-        'menubar' => 0,
-        'personalbar' => 0,
-        'status' => 0,
-        'toolbar' => 0,
-];
 // Load strings.
 $gradenoun = vpl_get_gradenoun_str();
-$strsubtime = get_string( 'submittedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'datesubmitted', $sort, $sortdir );
-$strgrade = get_string($gradenoun) . vpl_submissionlist_arrow( $baseurl, 'gradesortable', $sort, $sortdir );
-$strgrader = get_string( 'grader', VPL ) . vpl_submissionlist_arrow( $baseurl, 'grader', $sort, $sortdir );
-$strgradedon = get_string( 'gradedon', VPL ) . vpl_submissionlist_arrow( $baseurl, 'dategraded', $sort, $sortdir );
+$strsubtime = get_string( 'submittedon', VPL );
+$strgrade = get_string($gradenoun);
+$strgrader = get_string( 'grader', VPL );
+$strgradedon = get_string( 'gradedon', VPL );
 $strcomments = get_string( 'gradercomments', VPL );
-$hrefnsub = vpl_mod_href( 'views/activityworkinggraph.php', 'id', $id );
-$action = new popup_action( 'click', $hrefnsub, 'activityworkinggraph' . $id, $options );
-$linkworkinggraph = $OUTPUT->action_link( $hrefnsub, get_string( 'submissions', VPL ), $action );
-$strsubmisions = $linkworkinggraph . vpl_submissionlist_arrow( $baseurl, 'nsubmissions', $sort, $sortdir );
-$table = new html_table();
-$table->head = ['', '', $namesortselect];
-$table->align = ['right', 'left', 'left'];
-$table->size = ['', '', ''];
+$strsubmisions = get_string( 'submissions', VPL );
+$headers = ['#', ''];
+$fields = ['#', 'userpic'];
+if ($vpl->is_group_activity()) {
+    $headers[] = get_string('group');
+    $fields[] = 'lastname';
+} else {
+    $headers[] = '';
+    $fields[] = 'fullname';
+}
 if ($usevariations) {
-    $table->head[] = get_string('variations', VPL) . vpl_submissionlist_arrow( $baseurl, 'variation', $sort, $sortdir );;
-    $table->align[] = 'left';
-    $table->size[] = '';
+    $headers[] = get_string('variations', VPL);
+    $fields[] = 'variation';
 }
 if ($showgrades) {
-    $table->head = array_merge($table->head, [$strgrade, $strcomments]);
-    $table->align = array_merge($table->align, ['right', 'left']);
-    $table->size = array_merge($table->size, ['', '']);
+    $headers[] = $strgrade;
+    $headers[] = $strcomments;
+    $fields[] = 'gradesortable';
+    $fields[] = 'gradecomments';
 } else {
-    $table->head = array_merge($table->head, [$strsubtime, $strsubmisions]);
-    $table->align = array_merge($table->align, ['left', 'right']);
-    $table->size = array_merge($table->size, ['', '2em']);
+    $headers[] = $strsubtime;
+    $headers[] = $strsubmisions;
+    $fields[] = 'datesubmitted';
+    $fields[] = 'nsubmissions';
     if ($gradeable) {
-        $table->head = array_merge($table->head, [$strgrade, $strgrader, $strgradedon]);
-        $table->align = array_merge($table->align, ['right', 'left', 'left']);
-        $table->size = array_merge($table->size, ['', '', '']);
+        $headers[] = $strgrade;
+        $headers[] = $strgrader;
+        $headers[] = $strgradedon;
+        $fields[] = 'gradesortable';
+        $fields[] = 'grader';
+        $fields[] = 'dategraded';
     }
 }
 
-$table->head[] = $OUTPUT->render(vpl_get_listmenu($showgrades, $id));
-$table->align[] = 'right';
-$table->size[] = '2em';
-// Sort by sort field.
+// Unblock user session.
+if (! $downloading) {
+    session_write_close();
+    $headers[] = $OUTPUT->render(vpl_get_listmenu($showgrades, $id));
+    $fields[] = 'actions';
+}
 
-usort( $alldata, vpl_submissionlist_order::set_order( $sort, $sortdir != 'up' ) );
-$showphoto = count($alldata) < 100;
+// Sort by sort field.
+usort( $alldata, vpl_submissionlist_order::set_order( $sort, $sortdir != 4 ) );
+
+$options = [
+    'height' => 550,
+    'width' => 780,
+    'directories' => 0,
+    'location' => 0,
+    'menubar' => 0,
+    'personalbar' => 0,
+    'status' => 0,
+    'toolbar' => 0,
+];
+// Get table data.
+$tabledata = [];
+$showphoto = $tperpage < 100;
 $usernumber = 0;
-$ngrades = []; // Number of revisions made by teacher.
+$gradersdata = []; // Number of revisions made by teacher.
 $nextids = []; // Information to get next user in list.
 $lastid = 0; // Last id for next.
 foreach ($alldata as $data) {
@@ -455,8 +600,9 @@ foreach ($alldata as $data) {
             $prev = '';
         }
         $subid = $subinstance->id;
-        if ($evaluate == 4 && $nevaluation <= $usernumber) { // Need evaluation.
-            vpl_evaluate( $vpl, $alldata, $user, $usernumber, $groupsurl );
+        if ($evaluate == 4) { // Need evaluation all.
+            $user->subid = $subid;
+            $evaluateusers[] = $user;
         }
         if ($subinstance->dategraded > 0) {
             $text = $submission->get_grade_core();
@@ -469,8 +615,8 @@ foreach ($alldata as $data) {
                 }
             }
             $result = []; // Dispose array.
-            $text = '<div id="g' . $subid . '">' . $text . '</div>';
-            if ($subinstance->grader == $USER->id) {
+            $text = '<div id="g' . $subid . '" class="gd' . $subid . '">' . $text . '</div>';
+            if ($subinstance->grader == $USER->id || $vpl->has_capability(VPL_EDITOTHERSGRADES_CAPABILITY)) {
                 $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $user->id, $options );
                 $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
                 $link = new moodle_url('/mod/vpl/forms/gradesubmission.php', $linkparms);
@@ -487,10 +633,10 @@ foreach ($alldata as $data) {
             $graderid = $subinstance->grader;
             $graderuser = $submission->get_grader( $graderid );
             // Count evaluator marks.
-            if (isset( $ngrades[$graderid] )) {
-                $ngrades[$graderid] ++;
+            if (isset( $gradersdata[$graderid] )) {
+                $gradersdata[$graderid] ++;
             } else {
-                $ngrades[$graderid] = 1;
+                $gradersdata[$graderid] = 1;
             }
             $grader = fullname( $graderuser );
             $gradedon = userdate( $subinstance->dategraded );
@@ -501,10 +647,9 @@ foreach ($alldata as $data) {
         } else {
             $result = $submission->getCE();
             $text = '';
-            if (($evaluate == 1 && $result['compilation'] === 0)
-                || ($evaluate == 2 && $result['executed'] === 0 && $nevaluation <= $usernumber)
-                || ($evaluate == 3 && $nevaluation <= $usernumber)) { // Need evaluation.
-                    vpl_evaluate( $vpl, $alldata, $user, $usernumber, $groupsurl );
+            if (($evaluate == 2 && $result['executed'] === 0) || $evaluate == 3) { // Need evaluation.
+                $user->subid = $subid;
+                $evaluateusers[] = $user;
             }
             if ($result['executed'] !== 0) {
                 $prograde = $submission->proposedGrade( $result['execution'] );
@@ -517,7 +662,7 @@ foreach ($alldata as $data) {
                 $text = get_string( 'nograde' );
             }
             $action = new popup_action( 'click', $hrefgrade, 'gradesub' . $subinstance->userid, $options );
-            $text = '<div id="g' . $subid . '">' . $text . '</div>';
+            $text = '<div id="g' . $subid . '" class="gd' . $subid . '">' . $text . '</div>';
             $grade = $OUTPUT->action_link( $hrefgrade, $text, $action );
             $grader = '&nbsp;';
             $gradedon = '&nbsp;';
@@ -533,8 +678,8 @@ foreach ($alldata as $data) {
             }
         }
         // Add div id to submission info.
-        $grader = '<div id="m' . $subid . '">' . $grader . '</div>';
-        $gradedon = '<div id="o' . $subid . '">' . $gradedon . '</div>';
+        $grader = '<div id="m' . $subid . '" class="gd' . $subid . '">' . $grader . '</div>';
+        $gradedon = '<div id="o' . $subid . '" class="gd' . $subid . '">' . $gradedon . '</div>';
     }
     $url = vpl_mod_href( 'forms/edit.php', 'id', $id, 'userid', $user->id, 'privatecopy', 1 );
     $options = [
@@ -548,14 +693,18 @@ foreach ($alldata as $data) {
             'toolbar' => 0,
     ];
     $action = new popup_action( 'click', $url, 'privatecopyl' . $id, $options );
+
+    if (isset($subid)) {
+        $gradecomments = '<div id="c' . $subid . '" class="gd' . $subid . '">' . $gradecomments . '</div>';
+    }
+
     $usernumber ++;
-    $usernumberlink = $OUTPUT->action_link( $url, $usernumber, $action);
+    $usernumberlink = $OUTPUT->action_link($url, $usernumber, $action);
     $linkcopyparms = ['id' => $id, 'userid' => $user->id, 'privatecopy' => 1];
     $link = new moodle_url('/mod/vpl/forms/edit.php', $linkcopyparms);
     $actions->add(vpl_get_action_link('copy', $link));
-    $showphoto = false;
     $photo = $showphoto ? $vpl->user_picture( $user ) : '';
-    $row = [$usernumberlink, $photo, $vpl->fullname($user, !$showphoto)];
+    $row = [$usernumberlink, $photo, $vpl->fullname($user)];
     if ($usevariations) {
         $row[] = $data->variation;
     }
@@ -567,67 +716,48 @@ foreach ($alldata as $data) {
             $row = array_merge($row, [$grade, $grader, $gradedon]);
         }
     }
-    $row[] = $OUTPUT->render($actions);
-    $table->data[] = $row;
+    if ( ! $downloading) {
+        $row[] = $OUTPUT->render($actions);
+    }
+    $tabledata[] = $row;
 }
 
-if (count( $ngrades )) {
-    if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).
-        $namehead = get_string( 'lastname' ) . ' / ' . get_string( 'firstname' );
-    } else {
-        $namehead = get_string( 'firstname' ) . ' / ' . get_string( 'lastname' );
+if (! $downloading) {
+    // Menu for groups.
+    $nstudets = count($allstudents);
+    $nsubmissions = count($submissions);
+    $ngraded = $vpl->number_of_graded_submissions($submissions);
+    $vpl->print_submissions_status();
+    echo '<div class="d-flex flex-row flex-wrap justify-content-between">';
+    if ($groupmode && ! $vpl->is_group_activity()) {
+        groups_print_activity_menu( $cm, $groupsurl);
     }
-    $tablegraders = new html_table();
-    $tablegraders->head = ['#', $namehead, get_string($gradenoun)];
-    $tablegraders->align = ['right', 'left', 'center'];
-    $tablegraders->wrap = ['nowrap', 'nowrap', 'nowrap'];
-    $tablegraders->data = [];
-    $gradernumber = 0;
-    foreach ($ngrades as $graderid => $marks) {
-        $gradernumber ++;
-        $grader = mod_vpl_submission::get_grader($graderid);
-        $picture = '';
-        if ($graderid > 0) { // No automatic grading.
-            $picture = $OUTPUT->user_picture($grader, ['popup' => true]);
-        }
-        $tablegraders->data[] = [
-                $gradernumber,
-                $picture . ' ' . fullname( $grader ),
-                sprintf( '%d/%d  (%5.2f%%)', $marks, $usernumber, ( float ) 100.0 * $marks / $usernumber ),
-        ];
-    }
-}
-// Menu for groups.
-if ($groupmode) {
-    groups_print_activity_menu( $cm, $groupsurl );
-}
-// Print user selection by submission state.
-$urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort&group=$group&selection=";
-$urlindex = vpl_select_index( $urlbase, [
-        'all',
-        'allsubmissions',
-        'notgraded',
-        'graded',
-        'gradedbyuser',
-] );
-$urls = array_merge( [
-        $urlbase . 'all' => get_string( 'all' ),
-], vpl_select_array( $urlbase, [
-        'allsubmissions',
-        'notgraded',
-        'graded',
-        'gradedbyuser',
-] ) );
-$urlsel = new url_select( $urls, $urlindex[$subselection] );
-$urlsel->set_label( get_string( 'submissionselection', VPL ) );
-echo $OUTPUT->render( $urlsel );
-if ($subselection != 'notgraded') {
+    // Print user selection by submission state.
+    $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id={$id}&sort={$sort}&group={$groupid}&selection=";
+    $urlindex = vpl_select_index( $urlbase, [
+            'all',
+            'allsubmissions',
+            'notgraded',
+            'graded',
+            'gradedbyuser',
+    ] );
+    $urls = array_merge( [
+            $urlbase . 'all' => get_string( 'all' ),
+    ], vpl_select_array( $urlbase, [
+            'allsubmissions',
+            'notgraded',
+            'graded',
+            'gradedbyuser',
+    ] ) );
+    $urlsel = new url_select( $urls, $urlindex[$subselection] );
+    $urlsel->set_label(get_string( 'submissionselection', VPL ));
+    echo $OUTPUT->render($urlsel);
     $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort"
-               ."&sortdir=$sortdir&selection=$subselection&evaluate=";
+            ."&sortdir=$sortdir&selection=$subselection&evaluate=";
     $urls = [
             0 => null,
             2 => $urlbase . '2',
-            '3' => $urlbase . '3',
+            3 => $urlbase . '3',
             4 => $urlbase . '4',
     ];
     $urlsel = new url_select( [
@@ -635,23 +765,68 @@ if ($subselection != 'notgraded') {
             $urls[3] => get_string( 'notgraded', VPL ),
             $urls[4] => get_string( 'all' ),
     ], $urls[$evaluate] );
-    $urlsel->set_label( get_string( 'evaluate', VPL ) );
+    $urlsel->set_label(get_string( 'evaluate', VPL ));
     echo $OUTPUT->render( $urlsel );
-}
-echo '<br>';
-echo html_writer::table( $table );
-if (count( $ngrades ) > 0) {
     echo '<br>';
-    echo html_writer::table( $tablegraders );
-}
-
-// Generate next info as <div id="submissionid">nextuser</div>.
-if (count( $nextids )) {
-    // Hide info.
-    echo '<div style="display:none;">';
-    foreach ($nextids as $subid => $nextuser) {
-        echo '<div id="n' . $subid . '">' . $nextuser . '</div>';
-    }
     echo '</div>';
 }
+$table = new flexible_table("vpl-submissionslist-{$id}");
+if ($noevaluating) {
+    $table->is_downloading($download, $vpl->get_name() . '_submissions', $vpl->get_name());
+} else {
+    vpl_prepare_evaluation($id, $evaluateusers);
+}
+$table->define_baseurl(new moodle_url('/mod/vpl/views/submissionslist.php', $params));
+$table->define_columns($fields);
+$table->define_headers($headers);
+$table->set_hidden_columns($thiddenfields);
+$table->set_attribute('class', 'generaltable generalbox reporttable');
+if ($downloading) {
+    $table->setup();
+    foreach ($tabledata as $row) {
+        $table->add_data($row);
+    }
+    $table->finish_output();
+    die();
+}
+$table->set_control_variables([TABLE_VAR_SORT => 'sort', TABLE_VAR_DIR => 'sortdir']);
+$table->sortable($noevaluating, $sort, $sortdir);
+foreach (['#', 'userpic', 'actions'] as $field) {
+    $table->no_sorting($field);
+}
+$ntabledata = count($tabledata);
+if ($noevaluating) {
+    $table->collapsible(true);
+    $table->initialbars(count($allstudents) > 10);
+    $table->show_download_buttons_at([TABLE_P_BOTTOM]);
+    $table->pageable($table->get_page_size() < $ntabledata);
+    $table->set_default_per_page(30);
+    $table->pagesize($tperpage, $ntabledata);
+    $pagesize = $table->get_page_size();
+    $pagestart = $page * $pagesize;
+} else {
+    $pagestart = 0;
+    $pagesize = $ntabledata;
+}
+$table->setup();
+$pageend = min($pagestart + $pagesize, $ntabledata);
+for ($i = $pagestart; $i < $pageend; $i++) {
+    $table->add_data($tabledata[$i]);
+}
+$table->finish_output();
+if ($noevaluating) {
+    vpl_show_perpage_button($table, $ntabledata, $params);
+    vpl_show_graders_table($id, $usernumber, $gradersdata);
+    // For manual evaluation.
+    // Generate next info as <div id="submissionid">nextuser</div>.
+    if (count( $nextids )) {
+        // Hide info.
+        echo '<div style="display:none;">';
+        foreach ($nextids as $subid => $nextuser) {
+            echo '<div id="n' . $subid . '">' . $nextuser . '</div>';
+        }
+        echo '</div>';
+    }
+}
+
 $vpl->print_footer();

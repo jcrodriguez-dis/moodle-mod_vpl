@@ -1,0 +1,10 @@
+case=Regex error 1
+output=/Line.+\/.+\\\$$/
+case=Regex 1
+output=/Line 1.+\\.+\$$/mi
+case=Regex 2
+output=/Line 2.+\[ \($/mi
+case=Regex error 2
+output=/LinE 2.+\[ \( $/
+case=Regex 3
+output=/Line 2/m

@@ -43,3 +43,4 @@ if [ ! -f vpl_evaluate.sh ] ; then
 	done
 fi
 IFS=$SIFS
+apply_run_mode

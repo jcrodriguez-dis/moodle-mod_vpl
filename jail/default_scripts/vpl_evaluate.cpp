@@ -843,10 +843,12 @@ bool ExactTextOutput::match(const string& output){
 		size_t start = cleanOutput.size() - cleanText.size();
 		return cleanText == cleanOutput.substr(start, cleanText.size());
 	} else {
+		#ifdef DEBUG
 		if (cleanText != cleanOutput) {
 			cout << showChars(cleanText) << endl;
 			cout << showChars(cleanOutput) << endl;
 		}
+		#endif
 		return cleanText == cleanOutput;
 	}
 }
@@ -1371,6 +1373,7 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	}
 	struct termios term;
     if (tcgetattr(STDIN_FILENO, &term) < 0) {
+		memset(&term, 0, sizeof(struct termios));
 		// c_iflag - Input modes
 		term.c_iflag = ICRNL | IXON;
 		// c_oflag - Output modes
@@ -1400,8 +1403,6 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 	// Ensure new line handling
 	term.c_iflag |= ICRNL;
 	term.c_lflag &= ~ ECHO;
-	signal(SIGTERM, SIG_IGN);
-	signal(SIGKILL, SIG_IGN);
 	int fdmaster = -1;
 	if ((pid = forkpty(&fdmaster, NULL, &term, NULL)) == 0) {
 		setpgrp();

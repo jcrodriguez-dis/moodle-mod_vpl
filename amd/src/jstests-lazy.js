@@ -149,9 +149,18 @@ define(
             'test': function() {
                 var mapnames = VPLUtil.getLangNames();
                 for (var ext in mapnames) {
-                    assert(VPLUtil.langType(ext) != 'plain_text', 'VPLUtil.langType');
+                    var filename;
+                    if (ext == 'plain_text') {
+                        continue;
+                    }
+                    if (ext.startsWith('.')) {
+                        filename = ext.substring(1);
+                    } else {
+                        filename = 'filename.' + ext;
+                    }
+                    assert(VPLUtil.langType(filename) != 'plain_text', 'VPLUtil.langType');
                 }
-                assert(VPLUtil.langType('otra cosa') == 'plain_text', 'VPLUtil.langType');
+                assert(VPLUtil.langType('otra_cosa') == 'plain_text', 'VPLUtil.langType');
             }
         });
         runTests();

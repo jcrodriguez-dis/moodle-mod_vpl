@@ -1,0 +1,32 @@
+case = Test end multiline input
+multiLine End =INPUT_END
+input =
+input = algo
+output = algo
+fail output message = algoINPUT_END
+pass message =
+<<<input>>>
+expected exit code = 0
+
+case = Test end multiline output
+input =
+multiLine End =OUTPUT_END
+output =algo
+input =
+pass output message = algo
+expected exit code = 0
+OUTPUT_END
+pass message =
+<<<expected_output>>>
+expected exit code = 0
+
+case = Test end multiline pass mesage
+input =
+output =algo
+expected exit code = 0
+multiLine End = MESSAGE_END
+pass message =
+<<<expected_output>>>
+<<<expected_exit_code>>>
+MESSAGE_END
+expected exit code = 0

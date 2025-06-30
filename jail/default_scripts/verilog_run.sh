@@ -16,3 +16,4 @@ get_source_files v
 generate_file_of_files .vpl_source_files NOQUOTE
 #compile
 iverilog -ovpl_execution -f.vpl_source_files
+apply_run_mode

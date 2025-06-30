@@ -327,16 +327,31 @@ var Keyboard, Mouse;
             return true;
         },
 
-
         // Public methods
+        // JCRdP Fix for the Safe Exam Browser that erroneously reports touch support by
+        //       adding pinter events support.
+        pointerEventsAvailable: function () {  // Check if pointer Events available
+            return window.PointerEvent;
+        },
+        touchEventsAvailable: function () {  // Check if touch Events available
+            return 'ontouchstart' in document.documentElement;
+        },
         grab: function () {
             var c = this._target;
 
-            if ('ontouchstart' in document.documentElement) {
+            if (Mouse.prototype.pointerEventsAvailable()) {
+                Util.addEvent(c, 'pointerdown', this._eventHandlers.mousedown);
+                Util.addEvent(window, 'pointerup', this._eventHandlers.mouseup);
+                Util.addEvent(c, 'pointerup', this._eventHandlers.mouseup);
+                Util.addEvent(c, 'pointermove', this._eventHandlers.mousemove);
+                Util.addEvent(c, 'mousewheel', this._eventHandlers.mousewheel);
+                Util.Warn("Using pointer events");
+            } else if (Mouse.prototype.touchEventsAvailable()) {
                 Util.addEvent(c, 'touchstart', this._eventHandlers.mousedown);
                 Util.addEvent(window, 'touchend', this._eventHandlers.mouseup);
                 Util.addEvent(c, 'touchend', this._eventHandlers.mouseup);
                 Util.addEvent(c, 'touchmove', this._eventHandlers.mousemove);
+                Util.Warn("Using touch device events");
             } else {
                 Util.addEvent(c, 'mousedown', this._eventHandlers.mousedown);
                 Util.addEvent(window, 'mouseup', this._eventHandlers.mouseup);
@@ -344,6 +359,7 @@ var Keyboard, Mouse;
                 Util.addEvent(c, 'mousemove', this._eventHandlers.mousemove);
                 Util.addEvent(c, (Util.Engine.gecko) ? 'DOMMouseScroll' : 'mousewheel',
                               this._eventHandlers.mousewheel);
+                Util.Warn("Using mouse events");
             }
 
             /* Work around right and middle click browser behaviors */
@@ -354,7 +370,13 @@ var Keyboard, Mouse;
         ungrab: function () {
             var c = this._target;
 
-            if ('ontouchstart' in document.documentElement) {
+            if (Mouse.prototype.pointerEventsAvailable()) {
+                Util.removeEvent(c, 'pointerdown', this._eventHandlers.mousedown);
+                Util.removeEvent(window, 'pointerup', this._eventHandlers.mouseup);
+                Util.removeEvent(c, 'pointerup', this._eventHandlers.mouseup);
+                Util.removeEvent(c, 'pointermove', this._eventHandlers.mousemove);
+                Util.removeEvent(c, 'mousewheel', this._eventHandlers.mousewheel);
+            } else if (Mouse.prototype.touchEventsAvailable()) {
                 Util.removeEvent(c, 'touchstart', this._eventHandlers.mousedown);
                 Util.removeEvent(window, 'touchend', this._eventHandlers.mouseup);
                 Util.removeEvent(c, 'touchend', this._eventHandlers.mouseup);
@@ -371,7 +393,6 @@ var Keyboard, Mouse;
             /* Work around right and middle click browser behaviors */
             Util.removeEvent(document, 'click', this._eventHandlers.mousedisable);
             Util.removeEvent(document.body, 'contextmenu', this._eventHandlers.mousedisable);
-
         }
     };
 

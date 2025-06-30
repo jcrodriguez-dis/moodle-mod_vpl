@@ -1,0 +1,25 @@
+case=Empty
+input=
+output=
+case=One line 1
+input=abcd ef
+output="abcd ef
+"
+case=One line 2
+input=
+abcd ef
+output="
+abcd ef
+"
+case=Multi lines
+input=
+Line 1
+Line 2
+Line 3
+...
+output="
+Line 1
+Line 2
+Line 3
+...
+"

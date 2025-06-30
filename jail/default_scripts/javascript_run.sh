@@ -18,3 +18,4 @@ cat common_script.sh > vpl_execution
 [ "$(command -pv npm)" != "" ] && (echo "export NODE_PATH=$(npm root -g)" >> vpl_execution)
 echo "nodejs \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
 chmod +x vpl_execution
+apply_run_mode

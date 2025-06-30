@@ -174,6 +174,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'sebkeys',
         'runscript',
         'debugscript',
+        'evaluator',
+        'run_mode',
+        'evaluation_mode',
     ];
 
     /**
@@ -187,10 +190,11 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         'grader',
         'dategraded',
         'grade',
-        'mailed',
-        'highlight',
-        'nevaluations',
         'groupid',
+        'nevaluations',
+        'save_count',
+        'run_count',
+        'debug_count',
     ];
 
     /**

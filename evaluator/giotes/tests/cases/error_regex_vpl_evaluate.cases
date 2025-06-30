@@ -1,0 +1,12 @@
+case=Regex error 1
+output=/Line 1 regular  expression test/
+case=Regex 1
+output=/Line 1 regular expression test
+Line 2 regular expression test
+/mi
+case=Regex 2
+output=/LinE .* tEst/i
+case=Regex error 2
+output=/LinE 2/
+case=Regex 3
+output=/Line 2/m

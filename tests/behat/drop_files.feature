@@ -17,8 +17,8 @@ Feature: In a VPL activity, editing allows drop files
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity   | name                 | shortdescription  | maxfiles | course | section |
-      | vpl        | VPL activity testing | Short description | 33       | C1     | 1       |
+      | activity   | name                 | shortdescription  | intro   | maxfiles | course | section |
+      | vpl        | VPL activity testing | Short description | No desc | 33       | C1     | 1       |
 
   @javascript
   Scenario: A teacher drops files in "requested files"

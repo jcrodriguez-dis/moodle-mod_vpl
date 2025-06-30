@@ -19,3 +19,4 @@ generate_file_of_files .vpl_source_files
 # Compile
 gfortran -o vpl_execution @.vpl_source_files
 rm .vpl_source_files
+apply_run_mode

@@ -14,12 +14,14 @@ if [ "$1" == "version" ] ; then
 fi
 cp ./common_script.sh vpl_execution
 cat vpl_environment.sh >> vpl_execution
-cat >> vpl_execution << END_OF_SCRIPT
+cat >> vpl_execution << 'END_OF_SCRIPT'
 export TERM=ansi
-rm vpl_environment.sh &>  /dev/null
-rm common_script.sh &>  /dev/null
+rm vpl_environment.sh &> /dev/null
+rm common_script.sh &> /dev/null
 rm .vpl_* &> /dev/null
 rm vpl_execution
 /bin/bash
+
 END_OF_SCRIPT
 chmod +x vpl_execution
+apply_run_mode

@@ -37,11 +37,10 @@ function vpl_sql_save_files {
 		if [ "" == "$FILENAME" ] ; then
 			break
 		fi
-		mv "$FILENAME" "$FILENAME.vpl_save"
-		#security check. Not moved => removed
+		[ -f "$FILENAME" ] && mv "$FILENAME" "$FILENAME.vpl_save"
+		#Not moved => try remove
 		if [ -f "$FILENAME" ] ; then
 			rm "$FILENAME"
-			echo "removed $FILENAME"
 		fi
 	done
 }
@@ -57,11 +56,7 @@ function vpl_sql_restore_files {
 		if [ "" == "$FILENAME" ] ; then
 			break
 		fi
-		mv "$FILENAME.vpl_save" "$FILENAME"
-		#security check
-		if [ ! -f "$FILENAME" ] ; then
-			echo "\"$FILENAME\" lost"
-		fi
+		[ -f "$FILENAME.vpl_save" ]  && mv "$FILENAME.vpl_save" "$FILENAME"
 	done
 }
 
@@ -94,7 +89,7 @@ IFS=$'\n'
 for FILENAME in $SOURCE_FILES
 do
 	if [ "${FILENAME##*.}" == "sql" ] ; then
-		sqlite3 $DBFILE < "$FILENAME"
+		sqlite3 -batch $DBFILE < "$FILENAME"
 	fi
 done
 IFS=$SAVEIFS
@@ -107,7 +102,11 @@ vpl_sql_add_files
 
 #interactive console
 if [ "$1" != "batch" ] ; then
-	echo "sqlite3 $DBFILE" >> vpl_execution
+	if [ -f vpl_evaluate.sh ] ; then
+		BATCHOPTION="-batch"
+	fi
+	echo "sqlite3 $BATCHOPTION $DBFILE" >> vpl_execution
 fi
 
 chmod +x vpl_execution
+apply_run_mode

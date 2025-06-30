@@ -180,9 +180,11 @@ define(
                 if (!this.isOpen()) {
                     return;
                 }
-                var ext = VPLUtil.fileExtension(this.getFileName());
-                var lang = (ext !== '') ? VPLUtil.langType(ext) : 'text';
+                var filenamepath = this.getFileName();
+                var lang = VPLUtil.langType(filenamepath);
                 session.setMode("ace/mode/" + lang);
+                session.setTabSize(4);
+                session.setUseSoftTabs(!VPLUtil.useHardTabs(filenamepath));
                 this.setLang(lang);
             };
             this.getEditor = function() {
@@ -209,7 +211,7 @@ define(
                     text = fullname + ' ';
                 }
                 text += "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
-                text += " " + VPLUtil.langName(VPLUtil.fileExtension(name));
+                text += " " + VPLUtil.langName(name);
                 VPLUI.showIDEStatus(text);
             };
 
@@ -243,8 +245,6 @@ define(
                 editor.$blockScrolling = Infinity;
                 editor.gotoLine(1, 0);
                 editor.setReadOnly(readOnly);
-                session.setUseSoftTabs(true);
-                session.setTabSize(4);
                 // Avoid undo of editor initial content.
                 session.setUndoManager(new ace.UndoManager());
                 this.setOpen(true);

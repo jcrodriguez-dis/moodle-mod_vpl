@@ -1,0 +1,46 @@
+final report message =-Custom Final Report
+  Num tests => <<<num_tests>>>
+  Num run tests => <<<num_tests_run>>>
+  Num test passed => <<<num_tests_passed>>>
+  Num test failed => <<<num_tests_failed>>>
+  Num test timeout => <<<num_tests_timeout>>>
+  Num test error => <<<num_tests_error>>>
+fail mark=MAL
+pass mark=BIEN
+error mark=ERROR
+timeout mark=TIMEOUT
+Case title format = Prueba_<<<case_id>>>_de_<<<num_tests>>>_<<<case_title>>>_<<<test_result_mark>>>
+
+Case = CORRECTOUTPUT
+input=5
+output=16
+pass message=Correcto_<<<input_inline>>>-<<<expected_output_inline>>>-<<<program_output_inline>>>
+case = OUTPUTFAIL
+input = 3
+output = 55
+fail output message =<<<input>>>
+output_expected: <<<expected_output>>>
+program_output: <<<program_output>>>
+<<<fail_mark>>>-<<<pass_mark>>>-<<<timeout_mark>>>-<<<error_mark>>>
+
+case = OUTPUTFAILINLINE
+input = 1
+output = 66
+time limit = 3
+fail output message =i:<<<input_inline>>>-<<<expected_output_inline>>>-<<<program_output_inline>>>
+<<<case_id>>>_<<<case_title>>>_<<<test_result_mark>>>_<<<fail_mark>>>_<<<pass_mark>>>
+<<<error_mark>>>_<<<timeout_mark>>>_<<<expected_exit_code>>>_<<<exit_code>>>_<<<time_limit>>>
+_<<<case_id>>>---<<<case_title>>>----_
+
+case = EXITCODEFAIL
+expected exit code = 4
+input=-1
+output=O
+fail exit code message=fail_exit_code_<<<case_id>>>_<<<expected_exit_code>>>_<<<exit_code>>>
+EXITCODEFAIL-<<<input_inline>>>-<<<expected_output_inline>>>-<<<program_output_inline>>>
+case = TIMEOUTFAIL
+time limit=0.3333
+input=0
+timeout message =Fin tiempo: esperando <<<time_limit>>> segundos
+case = ERRORFAIL
+program to run = no_existe

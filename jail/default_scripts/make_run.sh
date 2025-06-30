@@ -45,3 +45,4 @@ if [  ! -f "$TARGET" ] ; then
 fi
 
 mv "$TARGET" vpl_execution
+apply_run_mode

@@ -24,4 +24,4 @@ else
 fi
 
 chmod +x vpl_execution
-
+apply_run_mode

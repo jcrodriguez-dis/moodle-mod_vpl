@@ -4,11 +4,11 @@ on: [workflow_dispatch]
 
 jobs:
   test:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
 
     services:
       postgres:
-        image: postgres:13
+        image: postgres:14
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -30,29 +30,15 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.0', '8.1', '8.2', '8.3']
-        moodle-branch: ['MOODLE_401_STABLE', 'MOODLE_403_STABLE', 'MOODLE_404_STABLE', 'MOODLE_405_STABLE', 'MOODLE_500_STABLE']
+        php: ['8.1', '8.2', '8.3']
+        moodle-branch: ['MOODLE_404_STABLE', 'MOODLE_405_STABLE', 'MOODLE_500_STABLE']
         database: [pgsql, mariadb]
         # Reduces DB versions
         exclude:
-          - php: '8.0'
-            moodle-branch: 'MOODLE_404_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_405_STABLE'
-          - php: '8.0'
-            moodle-branch: 'MOODLE_500_STABLE'
-          - php: '8.2'
-            moodle-branch: 'MOODLE_401_STABLE'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_401_STABLE'
-          - php: '8.3'
-            moodle-branch: 'MOODLE_403_STABLE'
           - database: pgsql
-            moodle-branch: MOODLE_402_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_403_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_404_STABLE
+            moodle-branch: MOODLE_405_STABLE
+          - php: '8.1'
+            moodle-branch: MOODLE_500_STABLE
 
     steps:
       - name: Check out repository code
@@ -143,3 +129,14 @@ jobs:
       - name: Tests tester of automatic evaluation of students' programs
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
+
+      - name: Tests of evaluators subplugins
+        if: ${{ always() }}
+        run: |
+          cd ./plugin/evaluator
+          for evaluator in $(ls -d *); do
+            if [ -f "${evaluator}/tests/run_tests.sh" ]; then
+              chmod +x "./${evaluator}/tests/run_tests.sh"
+              "./${evaluator}/tests/run_tests.sh"
+            fi
+          done

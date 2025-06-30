@@ -64,10 +64,13 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
  */
 function vpl_create_dir($dir) {
     global $CFG;
-    if (! file_exists( $dir )) { // Create dir?
-        if (! mkdir( $dir, $CFG->directorypermissions, true ) ) {
+    if (! @file_exists( $dir )) { // Create dir?
+        if (! @mkdir( $dir, $CFG->directorypermissions, true ) ) {
             throw new file_exception('storedfileproblem', 'Error creating a directory to save files in VPL');
         }
+    }
+    if (! @is_dir( $dir )) { // Is a file?
+        throw new file_exception('storedfileproblem', "Error creating directory in VPL.");
     }
 }
 
@@ -81,9 +84,12 @@ function vpl_create_dir($dir) {
  * @return Object file descriptor
  */
 function vpl_fopen($filename) {
-    if (! file_exists( $filename )) { // Exists file?
+    if (! @file_exists( $filename )) { // Exists file?
         $dir = dirname( $filename );
         vpl_create_dir($dir);
+    }
+    if (@is_dir( $filename )) { // Is a dir?
+        throw new file_exception('storedfileproblem', "Error creating file in VPL.");
     }
     $fp = fopen( $filename, 'w+b' );
     if ($fp === false) {
@@ -114,8 +120,8 @@ function vpl_fopen($filename) {
  * @return void
  */
 function vpl_fwrite($filename, $contents) {
-    if ( is_file($filename) ) {
-        unlink($filename);
+    if (@is_file($filename) ) {
+        @unlink($filename);
     }
     $fd = vpl_fopen( $filename );
     $res = ftruncate ( $fd, 0);
@@ -135,9 +141,9 @@ function vpl_fwrite($filename, $contents) {
  */
 function vpl_delete_dir($dirname) {
     $ret = false;
-    if (file_exists( $dirname )) {
+    if (@file_exists( $dirname )) {
         $ret = true;
-        if (is_dir( $dirname )) {
+        if (@is_dir( $dirname )) {
             $dd = opendir( $dirname );
             if (! $dd) {
                 return false;
@@ -152,9 +158,9 @@ function vpl_delete_dir($dirname) {
             foreach ($list as $name) {
                 $ret = vpl_delete_dir( $dirname . '/' . $name ) && $ret;
             }
-            $ret = rmdir( $dirname ) && $ret;
+            $ret = @rmdir( $dirname ) && $ret;
         } else {
-            $ret = unlink( $dirname );
+            $ret = @unlink( $dirname );
         }
     }
     return $ret;
@@ -203,74 +209,14 @@ function vpl_output_zip($zipfilename, $name) {
 /**
  * @codeCoverageIgnore
  *
- * Get lang code @parm $bashadapt true adapt lang to bash LANG (default true)
+ * Get locale from current lang for using in Linux.
  *
  * @return string
  */
-function vpl_get_lang($bashadapt = true) {
-    global $SESSION, $USER, $CFG;
-    $commonlangs = [
-            'aa' => 'DJ',
-            'af' => 'ZA',
-            'am' => 'ET',
-            'an' => 'ES',
-            'az' => 'AZ',
-            'ber' => 'DZ',
-            'bg' => 'BG',
-            'ca' => 'ES',
-            'cs' => 'CZ',
-            'da' => 'DK',
-            'de' => 'DE',
-            'dz' => 'BT',
-            'en' => 'US',
-            'es' => 'ES',
-            'et' => 'EE',
-            'fa' => 'IR',
-            'fi' => 'FI',
-            'fr' => 'FR',
-            'he' => 'IL',
-            'hu' => 'HU',
-            'ig' => 'NG',
-            'it' => 'IT',
-            'is' => 'IS',
-            'ja' => 'JP',
-            'km' => 'KH',
-            'ko' => 'KR',
-            'lo' => 'LA',
-            'lv' => 'LV',
-            'pt' => 'PT',
-            'ro' => 'RO',
-            'ru' => 'RU',
-            'se' => 'NO',
-            'sk' => 'sk',
-            'so' => 'SO',
-            'sv' => 'SE',
-            'or' => 'IN',
-            'th' => 'th',
-            'ti' => 'ET',
-            'tk' => 'TM',
-            'tr' => 'TR',
-            'uk' => 'UA',
-            'yo' => 'NG',
-    ];
-    if (isset( $SESSION->lang )) {
-        $lang = $SESSION->lang;
-    } else if (isset( $USER->lang )) {
-        $lang = $USER->lang;
-    } else if (isset( $CFG->lang )) {
-        $lang = $CFG->lang;
-    } else {
-        return "en";
-    }
-    if ($bashadapt) {
-        $parts = explode( '_', $lang );
-        if (count($parts) == 2) {
-            $lang = $parts[0];
-        }
-        if (isset($commonlangs[$lang])) {
-            $lang = $lang . '_' . $commonlangs[$lang];
-        }
-        $lang .= '.UTF-8';
+function vpl_get_lang() {
+    $lang = get_string('locale', 'langconfig');
+    if (empty($lang) || $lang[0] == '[') {
+        $lang = 'en_US.UTF-8';
     }
     return $lang;
 }
@@ -503,7 +449,7 @@ function vpl_js_alert($text, $print = true) {
 function vpl_get_select_time($maximum = null) {
     $minute = 60;
     if ($maximum === null) { // Default value.
-        $maximum = 35 * $minute;
+        $maximum = 120 * $minute;
     }
     $ret = [
             0 => get_string( 'select' ),
@@ -559,7 +505,7 @@ function vpl_conv_size_to_string($size) {
         }
         if ($size < $measure[$i + 1]) {
             $num = $size / $measure[$i];
-            if ($num >= 3 || $size % $measure[$i] == 0) {
+            if ($size % $measure[$i] == 0) {
                 return sprintf( '%4d %s', $num, $measurename[$i] );
             } else {
                 return sprintf( '%.2f %s', $num, $measurename[$i] );
@@ -839,8 +785,22 @@ function vpl_truncate_string(&$string, $limit) {
     $string = substr( $string, 0, $limit - 3 ) . '...';
 }
 
+
 /**
  * @codeCoverageIgnore
+ *
+ * Export a variable to bash.
+ *
+ * This function is used to assign a value to an environment variable in Linux bash.
+ * It handles different types of values: integers, strings, and arrays.
+ * Each type is formatted appropriately for bash export:
+ *  - Integers are exported directly
+ *  - Strings are enclosed in single quotes with proper escaping
+ *  - Arrays are exported as bash arrays with each element in single quotes
+ *
+ * @param string $var name of the variable
+ * @param mixed $value value of the variable (int, string or array)
+ * @return string bash export statement for the variable
  */
 function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
@@ -848,13 +808,13 @@ function vpl_bash_export($var, $value) {
     } else if (is_array($value)) {
         $ret = "export $var=( ";
         foreach ($value as $data) {
-            $ret .= '"' . str_replace('"', '\"', $data) . '" ';
+            $ret .= "'" . str_replace("'", "'\''", $data) . "' ";
         }
         $ret .= ")\n";
     } else {
-        $ret = "export $var=\"";
-        $ret .= str_replace('"', '\"', $value);
-        $ret .= "\"\n";
+        $ret = "export $var='";
+        $ret .= str_replace("'", "'\''", $value);
+        $ret .= "'\n";
     }
     return $ret;
 }
@@ -990,7 +950,7 @@ function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
  * Get version string
  * @return string
  */
-function vpl_get_version() {
+function vpl_get_version(): string {
     static $version = '';
     if ($version === '' && false) { // Removed version information.
         $plugin = new stdClass();
@@ -1006,7 +966,7 @@ function vpl_get_version() {
  * Polyfill for getting user picture fields
  * @return string List of fields separated by "," u.field
  */
-function vpl_get_picture_fields() {
+function vpl_get_picture_fields(): string {
     if (method_exists('\core_user\fields', 'get_picture_fields')) {
         return 'u.' . implode(',u.', \core_user\fields::get_picture_fields());
     } else {
@@ -1017,21 +977,13 @@ function vpl_get_picture_fields() {
 /**
  * @codeCoverageIgnore
  * Return array of override objects for a vpl activity.
- * Asigned override as agregate userids and groupids.
+ * Asigned override as agregate in fields userids and groupids.
  * @param $vplid
+ * @param $overrides
+ * @param $asignedoverrides
  * @return array
  */
-function vpl_get_overrides($vplid) {
-    global $DB;
-    $sql = 'SELECT * FROM {vpl_overrides}
-            WHERE vpl = :vplid
-            ORDER BY id ASC';
-    $overrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-
-    $sql = 'SELECT * FROM {vpl_assigned_overrides}
-            WHERE vpl = :vplid';
-    $asignedoverrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
-
+function vpl_agregate_overrides($overrides, $asignedoverrides): array {
     $userids = [];
     $groupids = [];
     foreach ($overrides as $override) {
@@ -1058,6 +1010,48 @@ function vpl_get_overrides($vplid) {
 }
 
 /**
+ * @codeCoverageIgnore
+ * Return array of override objects for a vpl activity.
+ * Asigned override as agregate userids and groupids.
+ * @param $vplid
+ * @return array
+ */
+function vpl_get_overrides($vplid): array {
+    global $DB;
+    $sql = 'SELECT * FROM {vpl_overrides}
+            WHERE vpl = :vplid
+            ORDER BY id ASC';
+    $overrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    $sql = 'SELECT * FROM {vpl_assigned_overrides}
+            WHERE vpl = :vplid';
+    $asignedoverrides = $DB->get_records_sql($sql, ['vplid' => $vplid]);
+
+    return vpl_agregate_overrides($overrides, $asignedoverrides);
+}
+
+/**
+ * @codeCoverageIgnore
+ * Return array of override objects for a course.
+ * Asigned override as agregate userids and groupids.
+ * @param $courseid
+ * @return array
+ */
+function vpl_get_overrides_incourse($courseid): array {
+    global $DB;
+    $sql = 'SELECT * FROM {vpl_overrides}
+            WHERE vpl IN (SELECT id FROM {vpl} WHERE course = :courseid)
+            ORDER BY id ASC';
+    $overrides = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+    $sql = 'SELECT * FROM {vpl_assigned_overrides}
+            WHERE vpl IN (SELECT id FROM {vpl} WHERE course = :courseid)';
+    $asignedoverrides = $DB->get_records_sql($sql, ['courseid' => $courseid]);
+
+    return vpl_agregate_overrides($overrides, $asignedoverrides);
+}
+
+/**
  * Calls a function with lock.
  * @param string $locktype Name of the lock type (unique)
  * @param string $resource Name of the resourse (unique)
@@ -1065,7 +1059,7 @@ function vpl_get_overrides($vplid) {
  * @param array $parms Parameters to pass to the function
  * @return mixed Value returned by the function or throw exception
  */
-function vpl_call_with_lock(string $locktype, string $resource, string $function, array $parms) {
+function vpl_call_with_lock(string $locktype, string $resource, string $function, array & $parms) {
     $lockfactory = \core\lock\lock_config::get_lock_factory($locktype);
     if ($lock = $lockfactory->get_lock($resource, VPL_LOCK_TIMEOUT)) {
         try {
