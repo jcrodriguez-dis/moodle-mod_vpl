@@ -25,7 +25,7 @@ do
 done
 # Use PHP Built-in web server if file index.php exists or if run mode is 4 (web execution)
 # or run mode is not 2 (text mode)
-if [[ ( -f "index.php" || "$VPL_RUN_MODE" == "4" ) && "$VPL_RUN_MODE" != "2" ]];; then
+if [[ ( -f "index.php" || "$VPL_RUN_MODE" == "4" ) && "$VPL_RUN_MODE" != "2" ]] ; then
     IFS=$SIFS
     compile_typescript
     compile_scss
