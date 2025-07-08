@@ -2,34 +2,44 @@
     position: relative;
     display: flex;
 }
+
 #vpl_grade_form {
     width: auto;
 }
+
 #vpl_grade_form textarea {
     resize: both;
     margin: 0 1em;
 }
+
 #vpl_grade_comments {
     height: 10em;
     overflow: auto;
 }
+
 #vpl_submission_view {
     clear: both;
 }
 
-td.vpl_hl_evaluation_row{
-    background-color:yellow;
+td.vpl_hl_evaluation_row {
+    background-color: yellow;
     animation: changeHlColors 5s infinite;
 }
 
-td.vpl_finished_evaluation_row{
+td.vpl_finished_evaluation_row {
     border-top: 4px solid lightgreen;
 }
 
 @keyframes changeHlColors {
-    0%   { border-bottom-color: yellow;}
-    50%  { background-color: orange;}
-    100%  { background-color: yellow;}
+    0% {
+        border-bottom-color: yellow;
+    }
+    50% {
+        background-color: orange;
+    }
+    100% {
+        background-color: yellow;
+    }
 }
 
 tr.vpl_hidden_evaluation_row{

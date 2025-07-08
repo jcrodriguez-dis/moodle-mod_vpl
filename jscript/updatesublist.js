@@ -31,7 +31,7 @@
      * Returns opener or current window.
      * @returns {Window} opener or current window
      */
-    function get_window() {
+    function getWindow() {
         if (opener === null) {
             return window;
         } else {
@@ -43,7 +43,7 @@
      * @param {Node} node Node to get tr ancestor
      * @returns {Node} td element
      */
-    function get_ancestor(node, typeName) {
+    function getAncestor(node, typeName) {
         while (node && node.tagName != typeName) {
             node = node.parentNode;
         }
@@ -55,27 +55,27 @@
      * @param {Node} node Node to get tr ancestor
      * @returns {Node} tr element
      */
-    function get_tr(node) {
-        return get_ancestor(node, 'TR');
+    function getTr(node) {
+        return getAncestor(node, 'TR');
     }
     /**
      * Get the td element ancestor of a node
      * @param {Node} node Node to get td ancestor
      * @returns {Node} td element
      */
-    function get_td(node) {
-        return get_ancestor(node, 'TD');
+    function getTd(node) {
+        return getAncestor(node, 'TD');
     }
     /**
      * Get nodes to highlight
      * @param {number} subid submission identification
      */
-    function get_nodes(subid) {
-        var win = get_window();
+    function getNodes(subid) {
+        var win = getWindow();
         var ssubid = "" + subid;
-        var tdgrade = get_td(win.document.getElementById('g' + ssubid));
-        var tdgrader = get_td(win.document.getElementById('m' + ssubid));
-        var tdgradeon = get_td(win.document.getElementById('o' + ssubid));
+        var tdgrade = getTd(win.document.getElementById('g' + ssubid));
+        var tdgrader = getTd(win.document.getElementById('m' + ssubid));
+        var tdgradeon = getTd(win.document.getElementById('o' + ssubid));
         return [tdgrade, tdgrader, tdgradeon];
     }
     /**
@@ -84,31 +84,33 @@
      * @returns {Node} tr element
      */
     VPL.get_table_row = function(subid) {
-        var win = get_window();
+        var win = getWindow();
         var ssubid = "" + subid;
-        return get_tr(win.document.getElementById('g' + ssubid));
-    }
+        return getTr(win.document.getElementById('g' + ssubid));
+    };
     /**
      * Hide all table rows
      * @param {number} subid submission identification
      */
     VPL.hide_table_rows = function(subid) {
-        var win = get_window();
+        var win = getWindow();
         var ssubid = "" + subid;
-        var table = get_ancestor(win.document.getElementById('g' + ssubid), 'TABLE');
+        var table = getAncestor(win.document.getElementById('g' + ssubid), 'TABLE');
         var list = table.querySelectorAll('tr');
-        for (let i=1; i < list.length; i++) {
+        for (let i = 1; i < list.length; i++) {
             list[i].classList.add('vpl_hidden_evaluation_row');
         }
-    }
+    };
     /**
      * Show table row
      * @param {number} subid submission identification
      */
     VPL.show_table_row = function(subid) {
         var row = VPL.get_table_row(subid);
-        row && row.classList.remove('vpl_hidden_evaluation_row');
-    }
+        if (row) {
+            row.classList.remove('vpl_hidden_evaluation_row');
+        }
+    };
     /**
      * Highlight table elements evaluating
      * @param {number} subid submission identification
@@ -118,10 +120,12 @@
         if (typeof cssClass === 'undefined') {
             cssClass = 'vpl_hl_evaluation_row';
         }
-        var nodes = get_nodes(subid);
+        var nodes = getNodes(subid);
         var node;
-        for(node of nodes) {
-            node && node.classList.add(cssClass);
+        for (node of nodes) {
+            if (node) {
+                node.classList.add(cssClass);
+            }
         }
         if (node) {
             node.scrollIntoView({block: 'nearest', behavior: 'smooth'});
@@ -133,9 +137,11 @@
      * @param {number} subid submission identification
     */
     VPL.unhlrow = function(subid) {
-        var nodes = get_nodes(subid);
-        for(let node of nodes) {
-            node && node.classList.remove('vpl_hl_evaluation_row');
+        var nodes = getNodes(subid);
+        for (let node of nodes) {
+            if (node) {
+                node.classList.remove('vpl_hl_evaluation_row');
+            }
         }
         VPL.hlrow(subid, 'vpl_finished_evaluation_row');
     };
@@ -148,15 +154,21 @@
      * @param {string} gradeon Grade date
     */
     VPL.updatesublist = function(subid, grade, grader, gradeon) {
-        var win = get_window();
+        var win = getWindow();
         VPL.unhlrow(subid);
         var ssubid = "" + subid;
         var tdgrade = win.document.getElementById('g' + ssubid);
         var tdgrader = win.document.getElementById('m' + ssubid);
         var tdgradeon = win.document.getElementById('o' + ssubid);
-        tdgrade && typeof grade != 'undefined' && (tdgrade.innerHTML = grade);
-        tdgrader && typeof grader != 'undefined' && (tdgrader.innerHTML = grader);
-        tdgradeon && typeof gradeon != 'undefined' && (tdgradeon.innerHTML = gradeon);
+        if (tdgrade && typeof grade != 'undefined') {
+            tdgrade.innerHTML = grade;
+        }
+        if (tdgrader && typeof grader != 'undefined') {
+            tdgrader.innerHTML = grader;
+        }
+        if (tdgradeon && typeof gradeon != 'undefined') {
+            tdgradeon.innerHTML = gradeon;
+        } 
     };
 
     /**

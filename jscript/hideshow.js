@@ -29,18 +29,18 @@
     }
 
     VPL.showHideDiv = function(id) {
-        var button_show = window.document.getElementById('vpl_shb' + id + 's');
-        var button_hide = window.document.getElementById('vpl_shb' + id + 'h');
+        var buttonShow = window.document.getElementById('vpl_shb' + id + 's');
+        var buttonHide = window.document.getElementById('vpl_shb' + id + 'h');
         var content = window.document.getElementById('vpl_shc' + id);
         if (content) {
             if (content.style.display == 'none') {
                 content.style.display = '';
-                button_show.style.display = 'none';
-                button_hide.style.display = '';
+                buttonShow.style.display = 'none';
+                buttonHide.style.display = '';
             } else {
                 content.style.display = 'none';
-                button_show.style.display = '';
-                button_hide.style.display = 'none';
+                buttonShow.style.display = '';
+                buttonHide.style.display = 'none';
             }
         }
     };
