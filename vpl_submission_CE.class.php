@@ -292,7 +292,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 continue;
             }
             // Skip unneeded script.
-            if (isset(self::$stript2type[$filename]) && self::$stript2type[$filename] > $type) {
+            if (isset(self::$script2type[$filename]) && self::$script2type[$filename] > $type) {
                 continue;
             }
             // Concatene or replace based-on files.
