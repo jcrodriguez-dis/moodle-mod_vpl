@@ -83,7 +83,7 @@
      * @param {number} subid submission identification
      * @returns {Node} tr element
      */
-    VPL.get_table_row = function(subid) {
+    VPL.getTableRow = function(subid) {
         var win = getWindow();
         var ssubid = "" + subid;
         return getTr(win.document.getElementById('g' + ssubid));
@@ -92,7 +92,7 @@
      * Hide all table rows
      * @param {number} subid submission identification
      */
-    VPL.hide_table_rows = function(subid) {
+    VPL.hideTableRows = function(subid) {
         var win = getWindow();
         var ssubid = "" + subid;
         var table = getAncestor(win.document.getElementById('g' + ssubid), 'TABLE');
@@ -105,8 +105,8 @@
      * Show table row
      * @param {number} subid submission identification
      */
-    VPL.show_table_row = function(subid) {
-        var row = VPL.get_table_row(subid);
+    VPL.showTableRow = function(subid) {
+        var row = VPL.getTableRow(subid);
         if (row) {
             row.classList.remove('vpl_hidden_evaluation_row');
         }
@@ -168,7 +168,7 @@
         }
         if (tdgradeon && typeof gradeon != 'undefined') {
             tdgradeon.innerHTML = gradeon;
-        } 
+        }
     };
 
     /**
