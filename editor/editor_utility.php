@@ -22,9 +22,17 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 class vpl_editor_util {
+
+    /**
+     * @var bool $jquerynoload Flag to indicate if jQuery and jQuery UI libraries have been loaded.
+     */
     private static $jquerynoload = true;
+
+    /**
+     * Generates the jQuery and jQuery UI libraries if not already loaded.
+     * This function is called when the page may need jQuery.
+     */
     public static function generate_jquery() {
         global $PAGE;
         if (self::$jquerynoload) {
@@ -34,11 +42,23 @@ class vpl_editor_util {
             self::$jquerynoload = false;
         }
     }
+
+    /**
+     * Generates the CSS and JavaScript required for evaluation.
+     * This function is called when the page may need evaluation.
+     */
     public static function generate_requires_evaluation() {
         global $PAGE;
         self::generate_jquery();
         $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
     }
+
+    /**
+     * Generates the JavaScript and HTML required for the VPL IDE.
+     *
+     * @param \mod_vpl $vpl The VPL instance.
+     * @param array $options Additional options for the IDE.
+     */
     public static function generate_requires($vpl, $options) {
         global $PAGE;
         global $CFG;
@@ -61,34 +81,60 @@ class vpl_editor_util {
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', [$tagid, $options]);
     }
+
+    /**
+     * Prints the JavaScript i18n translations for the VPL editor.
+     */
     public static function print_js_i18n() {
         global $CFG;
-        ?>
+        $i18n = json_encode(self::i18n());
+        $html = <<<"HTML"
         <script>
-        window.VPLi18n = <?php echo json_encode(self::i18n());?>;
+        window.VPLi18n = $i18n;
         </script>
-        <?php
+        HTML;
         if ($CFG->debugdeveloper) {
-            echo '<script>window.VPLDebugMode = true;</script>';
+            $html .= <<<"HTML"
+            <script>window.VPLDebugMode = true;</script>'
+            HTML;
         }
+        echo $html;
     }
+
+    /**
+     * Prints the JavaScript description of the VPL activity.
+     *
+     * @param \mod_vpl\local\vpl $vpl The VPL instance.
+     * @param int $userid The user ID for which to get the variation HTML.
+     */
     public static function print_js_description($vpl, $userid) {
-        $html = $vpl->get_variation_html($userid);
-        $html .= $vpl->get_fulldescription_with_basedon();
-        ?>
+        $description = $vpl->get_variation_html($userid);
+        $description .= $vpl->get_fulldescription_with_basedon();
+        $descriptionstr = json_encode($description);
+        $html = <<<"HTML"
         <script>
-        window.VPLDescription = <?php echo json_encode($html);?>;
+        window.VPLDescription = $descriptionstr;
         </script>
-        <?php
+        HTML;
+        echo $html;
     }
+
+    /**
+     * Prints the HTML tag for the VPL IDE.
+     */
     public static function print_tag() {
         $tagid = 'vplide';
-        ?>
-<div id="<?php echo $tagid;?>" class="vpl_ide vpl_ide_root">
+        $filelist = s(get_string('filelist', VPL));
+        $newfilename = s(get_string('new_file_name', VPL));
+        $rename = s(get_string('rename'));
+        $comments = s(get_string('comments', VPL));
+
+        $html = <<<"HTML"
+<div id="$tagid" class="vpl_ide vpl_ide_root">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
     <div id="vpl_tr" class="vpl_ide_tr">
         <div id="vpl_filelist" style="display: none;">
-            <div id="vpl_filelist_header"><?php p(get_string('filelist', VPL));?></div>
+            <div id="vpl_filelist_header">$filelist</div>
             <div id="vpl_filelist_content"></div>
         </div>
         <div id="vpl_tabs" class="vpl_ide_tabs">
@@ -107,7 +153,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_newfilename">
-                <?php p(get_string('new_file_name', VPL));?></label> <input
+                $newfilename</label> <input
                 type="text" id="vpl_ide_input_newfilename"
                 name="vpl_ide_input_newfilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br>
@@ -117,7 +163,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_renamedirectory">
-                <?php p(get_string('rename'));?></label> <input
+                $rename</label> <input
                 type="text" id="vpl_ide_input_renamedirectory"
                 name="vpl_ide_input_renamedirectory" value=""
                 class="ui-widget-content ui-corner-all" autofocus />
@@ -128,7 +174,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_renamefilename">
-                <?php p(get_string('rename'));?></label> <input
+                $rename</label> <input
                 type="text" id="vpl_ide_input_renamefilename"
                 name="vpl_ide_input_renamefilename" value=""
                 class="ui-widget-content ui-corner-all" autofocus /><br>
@@ -192,7 +238,7 @@ class vpl_editor_util {
         style="display: none;">
         <fieldset>
             <label for="vpl_ide_input_comments">
-                <?php p(get_string('comments', VPL));?></label> <textarea
+                $comments</label> <textarea
                 id="vpl_ide_input_comments" name="vpl_ide_input_comments"
                 class="ui-widget-content ui-corner-all" autofocus ></textarea>
         </fieldset>
@@ -256,8 +302,10 @@ class vpl_editor_util {
          </canvas>
     </div>
 </div>
-        <?php
+HTML;
+        echo $html;
     }
+
     /**
      * Get the list of i18n translations for the editor
      */
@@ -390,6 +438,13 @@ class vpl_editor_util {
         $list['theme'] = get_string( 'theme' );
         return $list;
     }
+
+    /**
+     * Generates the script to evaluate a student.
+     *
+     * @param string $ajaxurl The AJAX URL for evaluation.
+     * @param string $nexturl The URL to redirect after evaluation.
+     */
     public static function generate_evaluate_script($ajaxurl, $nexturl) {
         global $PAGE;
         $options = [];
@@ -397,18 +452,27 @@ class vpl_editor_util {
         $options['nexturl'] = $nexturl;
         $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options] );
     }
+
+    /**
+     * Generates the script to evaluate multiple students in a batch.
+     *
+     * @param array $ajaxurls Array of AJAX URLs for evaluation.
+     * @param array $users Array of users to be evaluated.
+     */
     public static function generate_batch_evaluate_sript($ajaxurls, $users) {
         global $PAGE;
         $jsonusers = json_encode($users);
-        ?>
-        <script src="<?php echo new moodle_url('/mod/vpl/jscript/updatesublist.js');?>"></script>
+        $url = new moodle_url('/mod/vpl/jscript/updatesublist.js');
+        $html = <<<"HTML"
+        <script src="{$url}"></script>
         <script>
             if  (typeof window.VPL === 'undefined') {
                 window.VPL = {};
             }
-            window.VPL.evaluateStudents = <?php echo $jsonusers;?>;
+            window.VPL.evaluateStudents = {$jsonusers};
         </script>
-        <?php
+        HTML;
+        echo $html;
         $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'multievaluation', ['ajaxutls' => $ajaxurls]);
     }
 }
