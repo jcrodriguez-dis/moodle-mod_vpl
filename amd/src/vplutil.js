@@ -951,8 +951,7 @@ define(
                 if (VPLUtil.isBlockly(file.fileName)) {
                     this.highlightBlockly(preid);
                 } else {
-                    var ext = VPLUtil.fileExtension(file.fileName);
-                    var lang = VPLUtil.langType(ext);
+                    var lang = VPLUtil.langType(file.fileName);
                     $('#' + preid).show();
                     $('#' + preid + 'load').remove();
                     var sh = ace.edit(preid);
