@@ -33,13 +33,39 @@ require_once($CFG->dirroot.'/mod/vpl/views/sh_factory.class.php');
 require_once($CFG->libdir.'/tablelib.php');
 
 /**
- * Class to order submission list.
+ * Class to compare userinfo and submission objects.
+ *
+ * This class is used by usort to order the list of submissions.
  */
 class vpl_submissionlist_order {
-    protected static $field; // Field to compare.
-    protected static $ascending; // Value to return when ascending or descending order.
-    protected static $corder = null; // Funtion usort of old PHP versions don't call static class functions.
-    // Compare two users ids.
+    /**
+     * Field to compare.
+     * @var string
+     */
+    protected static $field;
+    /**
+     * Value to return when ascending or descending order.
+     * @var int
+     */
+    protected static $ascending;
+
+    /**
+     * Static class to compare userinfo objects.
+     *
+     * This is used by usort to order the list of submissions.
+     * It is static because usort does not call static methods in old PHP versions.
+     *
+     * @var vpl_submissionlist_order
+     */
+    protected static $corder = null;
+
+    /**
+     * Compare two userinfo objects by user id.
+     *
+     * @param object $a first object
+     * @param object $b second object
+     * @return int -1, 0 or 1
+     */
     public static function cpm_userid($a, $b) {
         if ($a->userinfo->id < $b->userinfo->id) {
             return self::$ascending;
@@ -47,7 +73,17 @@ class vpl_submissionlist_order {
             return - self::$ascending;
         }
     }
-    // Compare two userinfo fields.
+
+    /**
+     * Compare two userinfo objects.
+     *
+     * If userinfo is not set, compare by user id.
+     * If userinfo is set, compare by field and then by user id.
+     *
+     * @param object $a first object
+     * @param object $b second object
+     * @return int -1, 0 or 1
+     */
     public static function cpm_userinfo($a, $b) {
         $field = self::$field;
         $adata = $a->userinfo->$field;
@@ -62,7 +98,16 @@ class vpl_submissionlist_order {
         }
     }
 
-    // Compare two submission fields.
+    /**
+     * Compare two submissions.
+     *
+     * If submission is not set, compare by user id.
+     * If submission is set, compare by field and then by user id.
+     *
+     * @param object $a first object
+     * @param object $b second object
+     * @return int -1, 0 or 1
+     */
     public static function cpm_submission($a, $b) {
         $field = self::$field;
         $submissiona = $a->submission;
@@ -93,7 +138,16 @@ class vpl_submissionlist_order {
         }
     }
 
-    // Compare two variations.
+    /**
+     * Compare two variations.
+     *
+     * If variation is not set, compare by user id.
+     * If variation is set, compare by variation and then by user id.
+     *
+     * @param object $a first object
+     * @param object $b second object
+     * @return int -1, 0 or 1
+     */
     public static function cpm_variation($a, $b) {
         if (!isset($a->variation)) {
             return self::cpm_userid( $a, $b );

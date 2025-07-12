@@ -29,15 +29,33 @@ namespace mod_vpl\tokenizer;
  * but it has many useful tools used by tokenizers.
  */
 class tokenizer_base {
+
+    /**
+     * @var array $states List of states for current tokenizer
+     * This is used to store the rules for each state.
+     */
     protected array $states;
+
+    /**
+     * @var array $matchmappings List of matching maps for each state
+     * This is used to map the tokens to the states.
+     */
     protected array $matchmappings;
+
+    /**
+     * @var array $regexprs List of regular expressions for each state
+     * This is used to match the tokens in the source code.
+     */
     protected array $regexprs;
+
+    /**
+     * @var array $tokens List of tokens for current tokenizer
+     */
     protected array $tokens;
 
     /**
+     * Constructor for tokenizer_base
      * @codeCoverageIgnore
-     *
-     * Initialize an empty tokenizer
      */
     public function __construct() {
         $this->tokens = [];
@@ -47,44 +65,40 @@ class tokenizer_base {
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get tokens for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     public function get_tokens(): array {
         return $this->tokens;
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get states for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function get_states(): array {
         return $this->states;
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get matching map for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function get_matchmappings(): array {
         return $this->matchmappings;
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get regex of each state for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function get_regexprs(): array {
         return $this->regexprs;

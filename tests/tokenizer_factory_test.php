@@ -99,6 +99,13 @@ class tokenizer_factory_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Method to check if the tokenizer is valid
+     *
+     * @param object $tokenizer The tokenizer object to check
+     * @param string $namelang The name of the language for the tokenizer
+     * @param bool $newtokenizer If true, checks for new tokenizer class
+     */
     private function check_tokenizer($tokenizer, $namelang, $newtokenizer=false) {
         $this->assertTrue(isset($tokenizer) === true);
         $classname = $newtokenizer === false ? 'vpl_tokenizer_' . $namelang : 'mod_vpl\tokenizer\tokenizer';

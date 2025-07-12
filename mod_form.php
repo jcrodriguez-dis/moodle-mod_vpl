@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__).'/../../course/moodleform_mod.php');
+require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(__FILE__).'/vpl.class.php');
+
 /**
  * VPL instance form
  *
@@ -22,12 +27,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/../../course/moodleform_mod.php');
-require_once(dirname(__FILE__).'/lib.php');
-require_once(dirname(__FILE__).'/vpl.class.php');
-
 class mod_vpl_mod_form extends moodleform_mod {
+
+    /**
+     * Define the form elements.
+     */
     protected function definition() {
         global $CFG;
         $plugincfg = get_config('mod_vpl');
@@ -125,6 +129,17 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->add_action_buttons();
     }
 
+    /**
+     * Validate a field against a regular expression pattern.
+     *
+     * This method checks if the given field's value matches the specified pattern.
+     *
+     * @param string $field The name of the field to validate.
+     * @param string $pattern The regular expression pattern to match against.
+     * @param string $message The error message to set if validation fails.
+     * @param array $data The form data array.
+     * @param array $errors The errors array to populate with validation errors.
+     */
     public function validate($field, $pattern, $message, & $data, & $errors) {
         $data[$field] = trim( $data[$field] );
         $res = preg_match($pattern, $data[$field]);
@@ -133,6 +148,15 @@ class mod_vpl_mod_form extends moodleform_mod {
         }
     }
 
+    /**
+     * Form validation.
+     *
+     * This method validates the form data and checks for specific patterns in the input fields.
+     *
+     * @param array $data The submitted form data.
+     * @param array $files The uploaded files (not used in this form).
+     * @return array An array of errors, if any.
+     */
     public function validation($data, $files) {
         $errors = parent::validation($data, $files);
         $this->validate('freeevaluations', '/^[0-9]*$/', '[0..]', $data, $errors);

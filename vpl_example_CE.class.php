@@ -25,6 +25,15 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/vpl_submission_CE.class.php');
 
+/**
+ * Class mod_vpl_example_CE
+ *
+ * This class to manage example activities using a fake submission.
+ * It extends the mod_vpl_submission_CE class, which handles the compilation execution
+ * of submissions in VPL activities.
+ *
+ * @package mod_vpl
+ */
 class mod_vpl_example_CE extends mod_vpl_submission_CE {
     /**
      * Constructor

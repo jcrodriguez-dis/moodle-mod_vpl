@@ -15,9 +15,14 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_vpl\plugininfo;
+
 /**
  * Base class for VPL evaluators.
  * This class is used to define the interface for VPL evaluators.
+ *
+ * @package   mod_vpl
+ * @copyright 2024 Juan Calos Rodriguez del Pino {@jc.rodriguezdelpino@ulpgc.es}
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class vplevaluator_base {
 

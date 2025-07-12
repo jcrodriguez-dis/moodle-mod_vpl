@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+
 /**
  * M (Octave) programing language tokenizer class
  *
@@ -22,22 +26,69 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/tokenizer_base.class.php');
-
 class vpl_tokenizer_matlab extends vpl_tokenizer_base {
+    /**
+     * @var int State for regular parsing.
+     * This state is used when the tokenizer is not currently processing a string, macro, comment,
+     * line comment, or number. It is the default state for parsing.
+     */
     const REGULAR = 0;
+
+    /**
+     * @var int State for parsing strings.
+     */
     const IN_STRING = 1;
+
+    /**
+     * @var int State for parsing macros.
+     */
     const IN_MACRO = 3;
+
+    /**
+     * @var int State for parsing block comments.
+     */
     const IN_COMMENT = 4;
+
+    /**
+     * @var int State for parsing line comments.
+     */
     const IN_LINECOMMENT = 5;
+
+    /**
+     * @var int State for parsing numbers.
+     * This state is used when the tokenizer is currently processing a number.
+     */
     const IN_NUMBER = 6;
+
+    /**
+     * @var array Reserved words for MATLAB/Octave.
+     * This is a static variable to avoid re-initializing the reserved words
+     */
     protected static $creserved = null;
+
+    /**
+     * @var int current Line number.
+     */
     protected $linenumber;
+
+    /**
+     * @var array Reserved words for MATLAB/Octave.
+     */
     protected $tokens;
+
+    /**
+     * @var string String delimiter used for string literals.
+     * This can be either a single quote (') or a double quote (").
+     * It is set when entering an IN_STRING state.
+     */
     protected $stringdelimiter;
+
+    /**
+     * Check if the given text is a valid identifier.
+     *
+     * @param string $text The text to check.
+     * @return bool True if the text is a valid identifier, false otherwise.
+     */
     protected function is_indentifier($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -45,6 +96,13 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         $first = $text[0];
         return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
     }
+
+    /**
+     * Check if the given text is a number.
+     *
+     * @param string $text The text to check.
+     * @return bool True if the text is a number, false otherwise.
+     */
     protected function is_number($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -55,6 +113,12 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         }
         return $first >= '0' && $first <= '9';
     }
+
+    /**
+     * Add a pending token to the list of tokens.
+     *
+     * @param string &$pending The pending token to add.
+     */
     protected function add_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
@@ -78,6 +142,12 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
+
+    /**
+     * Constructor.
+     *
+     * Initializes the reserved words for MATLAB/Octave.
+     */
     public function __construct() {
         if (self::$creserved === null) {
             self::$creserved = [ // Source MATLAB Quick Reference Author: Jialong He.
@@ -190,6 +260,12 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         }
         $this->reserved = &self::$creserved;
     }
+
+    /**
+     * Parse the given file data and tokenize it.
+     *
+     * @param string $filedata The content of the file to parse.
+     */
     public function parse($filedata) {
         $this->tokens = [];
         $state = self::REGULAR;
@@ -315,9 +391,19 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         $this->add_pending( $pending );
         $this->compact_operators();
     }
+
+    /**
+     * Get the list of tokens.
+     *
+     * @return vpl_token[] List of tokens.
+     */
     public function get_tokens() {
         return $this->tokens;
     }
+
+    /**
+     * Compact operators in the token list.
+     */
     protected function compact_operators() {
         $correct = [];
         $current = false;
@@ -338,6 +424,10 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         }
         $this->tokens = $correct;
     }
+
+    /**
+     * Show the list of tokens.
+     */
     public function show_tokens() {
         foreach ($this->tokens as $token) {
             $token->show();

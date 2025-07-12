@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
 /**
  * Class to find and show clusters of similar files
  *
@@ -22,20 +26,39 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_base.class.php');
-
 class vpl_clusters {
-    protected $clusters; // Array of clusters.
-    protected $cmembers; // Array with number of cluster members.
-    protected $adjlist; // Adjacency list access by fid.
-    const MAX_MEMBERS = 5;
     /**
+     * @var array Clusters of similar files.
      *
-     * @param $selected array
-     *            of cases (similar files pairs)
+     * This is an associative array where the key is the cluster id and the value
+     * is an array of file pairs that belong to that cluster.
+     */
+    protected $clusters; // Array of clusters.
+
+    /**
+     * @var array Number of members in each cluster.
+     *
+     * This is an associative array where the key is the cluster id and the value
+     * is the number of members in that cluster.
+     */
+    protected $cmembers;
+
+    /**
+     * @var array Adjacency list of files.
+     *
+     * This is an array where the key is the file id (fid) and the value is an
+     * associative array of other file ids that are similar to the key file.
+     */
+    protected $adjlist;
+
+    /**
+     * @var int Maximum number of members in a cluster.
+     */
+    const MAX_MEMBERS = 5;
+
+    /**
+     * Constructor
+     * @param array $selected Array of file pairs to process.
      */
     public function __construct($selected) {
         $this->clusters = [];
@@ -69,11 +92,11 @@ class vpl_clusters {
         }
         $this->assign_number();
     }
+
     /**
      * Assign cluster
      *
-     * @param $pair object
-     *            with similar file information
+     * @param object $pair file pair to process
      */
     public function process($pair) {
         $c1 = $pair->first->cluster;
@@ -150,11 +173,28 @@ class vpl_clusters {
             $this->clusters[$mincluster] = []; // Remove cluster.
         }
     }
+
+    /**
+     * Assign file id.
+     *
+     * This method assigns a unique identifier to a file if it does not already have one.
+     * It increments the provided id counter for each new file assigned.
+     *
+     * @param object $file The file object to assign an id to.
+     * @param int &$id The current id counter, which will be incremented.
+     */
     public function assign_file_id(&$file, &$id) {
         if (! isset( $file->id )) {
             $file->id = $id ++;
         }
     }
+
+    /**
+     * Assign cluster numbers to pairs.
+     *
+     * This method iterates through the clusters and assigns a unique cluster number
+     * to each pair of files in clusters that contain two or more pairs.
+     */
     public function assign_number() {
         $clusternumber = 1;
         foreach ($this->clusters as $cluster) {
@@ -166,6 +206,16 @@ class vpl_clusters {
             }
         }
     }
+
+    /**
+     * Print a cluster.
+     *
+     * This method prints the details of a cluster, including the files and their
+     * similarities, in a formatted table.
+     *
+     * @param array $cluster The cluster to print, containing pairs of similar files.
+     * @param int $clusternumber The number of the cluster being printed.
+     */
     public function print_cluster($cluster, $clusternumber) {
         // Assign ids (0..num_files-1) to files.
         foreach ($cluster as $pair) {
@@ -267,6 +317,13 @@ class vpl_clusters {
         echo '<b>' . s( get_string( 'numcluster', VPL, $clusternumber ) ) . '</b>';
         echo html_writer::table( $table );
     }
+
+    /**
+     * Print all clusters.
+     *
+     * This method iterates through the clusters and prints each one that has
+     * more than one file.
+     */
     public function print_clusters() {
         $clusternumber = 1;
         foreach ($this->clusters as $cluster) {

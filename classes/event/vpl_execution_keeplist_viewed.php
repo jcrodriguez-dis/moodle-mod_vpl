@@ -26,12 +26,29 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when the execution keep list is viewed.
+ * This class is used to log the event when the execution keep file form is viewed.
+ */
 class vpl_execution_keeplist_viewed extends vpl_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
         $this->legacyaction = 'execution keep file form';
     }
+
+    /**
+     * Returns the event description.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'list of files to keep in execution' );
     }

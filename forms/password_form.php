@@ -28,12 +28,31 @@ defined( 'MOODLE_INTERNAL' ) || die();
 global $CFG;
 
 require_once($CFG->libdir.'/formslib.php');
+
+/**
+ * Class to define the password form for VPL
+ *
+ * This form is used to request a password before accessing certain functionalities of VPL.
+ */
 class mod_vpl_password_form extends moodleform {
+    /**
+     * @var mod_vpl $vpl The VPL instance for which the password is being requested.
+     */
     public $vpl;
+
+    /**
+     * Constructor
+     * @param moodle_page $page The page where the form will be displayed.
+     * @param mod_vpl $vpl The VPL instance.
+     */
     public function __construct($page, & $vpl) {
         $this->vpl = & $vpl;
         parent::__construct( $page );
     }
+
+    /**
+     * Defines the form elements
+     */
     protected function definition() {
         $mform = & $this->_form;
         $mform->addElement( 'header', 'headerpassword', get_string( 'requiredpassword', VPL ) );

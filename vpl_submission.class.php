@@ -39,13 +39,35 @@ require_once(dirname(__FILE__).'/vpl.class.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
 require_once($CFG->dirroot . '/grade/grading/lib.php');
 
-// Non static due to usort error.
+/**
+ * Compare two filenames by length
+ *
+ * @param string $f1 first file name
+ * @param string $f2 second file name
+ * @return int -1 if $f1 is shorter than $f2, 1 if longer, 0 if equal
+ */
 function vpl_compare_filenamebylengh($f1, $f2) {
     return strlen( $f2 ) - strlen( $f1 );
 }
 
+/**
+ * Class mod_vpl_submission
+ *
+ * This class is used to manage a submission instance.
+ * It provides methods to get and set submitted files, grade, comments, etc.
+ */
 class mod_vpl_submission {
+    /**
+     * Internal var object to vpl instance
+     *
+     * @var mod_vpl
+     */
     protected $vpl;
+    /**
+     * Internal var object to submission instance
+     *
+     * @var object of submission instance
+     */
     protected $instance;
 
     /**
@@ -94,6 +116,7 @@ class mod_vpl_submission {
     public function get_vpl() {
         return $this->vpl;
     }
+
     /**
      * Return the proper userid
      *
@@ -166,6 +189,13 @@ class mod_vpl_submission {
         $fg = $this->get_submitted_fgm();
         return $fg->getallfiles();
     }
+
+    /**
+     * Set submitted files as array of file names
+     *
+     * @param array $files array of files with name and data
+     * @param mod_vpl_submission $othersub other submission to add files
+     */
     public function set_submitted_file($files, $othersub = null) {
         $fg = $this->get_submitted_fgm();
         if ($othersub != null) {
@@ -176,6 +206,14 @@ class mod_vpl_submission {
             $fg->addallfiles($files);
         }
     }
+
+    /**
+     * Check if submitted files and comment are equal to the given ones.
+     *
+     * @param array $files array of files with name and data
+     * @param string $comment comment to check
+     * @return bool true if equal, false otherwise
+     */
     public function is_equal_to(&$files, $comment = '') {
         if ($this->instance->comments != $comment) {
             return false;
@@ -224,7 +262,17 @@ class mod_vpl_submission {
         return $this->instance->dategraded > 0;
     }
 
+    /**
+     * Cache of gradebook grades of VPL instances.
+     * @var array
+     */
     private static $gradecache = [];
+
+    /**
+     * Load gradebook grades in cache for this VPL instance.
+     *
+     * @param mod_vpl $vpl VPL instance
+     */
     public static function load_gradebook_grades($vpl) {
         if ($vpl->get_grade() != 0) {
             $cm = $vpl->get_course_module();
@@ -242,10 +290,22 @@ class mod_vpl_submission {
             }
         }
     }
+
+    /**
+     * Reset gradebook cache.
+     *
+     * This is used to reset the cache when a grade is removed or updated.
+     */
     public static function reset_gradebook_cache() {
         self::$gradecache = [];
     }
 
+    /**
+     * Get grade in gradebook for this submission instance.
+     *
+     * @param int $userid user id to get the grade, if 0 then use instance userid
+     * @return false|grade_grade object with grade info or false if not found
+     */
     public function get_gradebook_grade($userid = 0) {
         $vplid = $this->vpl->get_instance()->id;
         if ($userid == 0) {
@@ -323,10 +383,8 @@ class mod_vpl_submission {
     /**
      * Get current grade reduction.
      *
-     * @param & $reduction
-     *          value or factor
-     * @param & $percent bool
-     *          if true then $reduction is factor
+     * @param string & $reduction value or factor
+     * @param bool & $percent bool if true then $reduction is factor
      * @return float grade reduction
      */
     public function grade_reduction(& $reduction, & $percent) {
@@ -959,11 +1017,29 @@ class mod_vpl_submission {
         $this->get_submitted_fgm()->print_files();
     }
 
+    /**
+     * Tag for proposed grade.
+     */
     const GRADETAG = 'Grade :=>>';
+    /**
+     * Tag for line comment.
+     */
     const COMMENTTAG = 'Comment :=>>';
+    /**
+     * Begin multiline comment tag.
+     */
     const BEGINCOMMENTTAG = '<|--';
+    /**
+     * End multiline comment tag.
+     */
     const ENDCOMMENTTAG = '--|>';
 
+    /**
+     * Find proposed grade in text.
+     *
+     * @param string $text Text to be converted
+     * @return string Proposed grade
+     */
     public static function find_proposedgrade(&$text) {
         $reggrademark = '/^Grade :=>>(.*)$/m';
         $grademark = '';
@@ -981,10 +1057,22 @@ class mod_vpl_submission {
         return $grademark;
     }
 
+    /**
+     * Find proposed grade in text.
+     *
+     * @param string $text Text to be converted
+     * @return string Proposed grade
+     */
     public function proposedgrade(&$text) {
         return self::find_proposedgrade($text);
     }
 
+    /**
+     * Find proposed comment in text.
+     *
+     * @param string $text Text to be converted
+     * @return string Proposed comment
+     */
     public static function find_proposedcomment(&$text) {
         $usecrnl = vpl_detect_newline($text) == "\r\n";
         if ($usecrnl) {
@@ -1028,6 +1116,12 @@ class mod_vpl_submission {
         return $comments;
     }
 
+    /**
+     * Find proposed comment in text.
+     *
+     * @param string $text Text to be converted
+     * @return string Proposed comment
+     */
     public function proposedcomment(&$text) {
         return self::find_proposedcomment($text);
     }
@@ -1176,7 +1270,10 @@ class mod_vpl_submission {
         return $html;
     }
     /**
-     * Add a new text to the list
+     * Add oe uodate a new text to the list
+     * @param array &$list List to be filled with feedbacks
+     * @param string $text Text to be added
+     * @param int $grade Grade associated to the text
      */
     public function filter_feedback_add(&$list, $text, $grade = 0) {
         $text = trim( $text );
@@ -1189,11 +1286,9 @@ class mod_vpl_submission {
         $list[$text]->grades[$grade] = true;
     }
     /**
-     * Filter Convert compilation/execution result to HTML
+     *  Processs grade comments to generate a list of feedbacks
      *
-     * @param
-     *            text to be filter
-     * @return array of mensajes
+     * @param array &$list List to be filled with feedbacks
      */
     public function filter_feedback(&$list) {
         $text = $this->get_grade_comments();
@@ -1219,7 +1314,13 @@ class mod_vpl_submission {
             }
         }
     }
+    /**
+     * File name used to save compilation results.
+     */
     const COMPILATIONFN = 'compilation.txt';
+    /**
+     * File name used to save execution results.
+     */
     const EXECUTIONFN = 'execution.txt';
 
     /**
@@ -1336,6 +1437,14 @@ class mod_vpl_submission {
             }
         }
     }
+    /**
+     * Get compilation, execution and proposed grade for editor
+     *
+     * Return stdClass with compilation, execution, evaluation, grade and nevaluations as attributes.
+     *
+     * @param array $response Response from server
+     * @return stdClass Object for editor
+     */
     public function get_ce_for_editor($response = null) {
         $ce = new stdClass();
         $ce->compilation = '';
@@ -1370,6 +1479,11 @@ class mod_vpl_submission {
         }
         return $ce;
     }
+    /**
+     * Get detail of submission as string with file names, size and lines
+     *
+     * @return string
+     */
     public function get_detail() {
         $ret = '';
         $subf = $this->get_submitted_fgm();

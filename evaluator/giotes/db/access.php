@@ -18,6 +18,7 @@
  * Capability definitions for this module.
  *
  * @package   vplevaluator_giotes
+ * @copyright 2025 Juan Carlos Rodríguez-del-Pino
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 

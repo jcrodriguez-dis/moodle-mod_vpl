@@ -34,6 +34,14 @@ global $CFG, $USER, $OUTPUT;
 
 require_login();
 
+/**
+ * Creates an action menu for submission actions.
+ *
+ * @param int $id The VPL module instance ID.
+ * @param int $userid The user ID for whom the actions are being created.
+ * @param int $subid The submission ID for which the actions are being created.
+ * @return action_menu The action menu containing links for viewing and copying the submission.
+ */
 function vpl_actions_menu($id, $userid, $subid) {
     $menu = new action_menu();
     $linkparms = ['id' => $id, 'userid' => $userid, 'submissionid' => $subid, 'privatecopy' => 1];

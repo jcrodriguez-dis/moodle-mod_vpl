@@ -26,8 +26,24 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 
+/**
+ * Class to show an image
+ *
+ * This class is used to show an image.
+ * It can be used to show the content of an image file.
+ */
 class vpl_sh_image extends vpl_sh_base {
+    /**
+     * @var array mime types for the images
+     * This array contains the mime types for the images.
+     */
     private $mime;
+
+    /**
+     * Constructor
+     *
+     * Initializes the mime types for the images.
+     */
     public function __construct() {
         $this->mime = [
                 'jpg' => 'jpeg',
@@ -37,10 +53,24 @@ class vpl_sh_image extends vpl_sh_base {
                 'ico' => 'vnd.microsoft.icon',
         ];
     }
+
+    /**
+     * Get the mime type of a file
+     *
+     * @param string $name name of the file
+     * @return string mime type of the file
+     */
     public function get_mime($name) {
         $ext = strtolower( vpl_fileextension( $name ) );
         return $this->mime[$ext];
     }
+
+    /**
+     * Print an image file
+     *
+     * @param string $name name of the file to show
+     * @param string $data content of the file to show
+     */
     public function print_file($name, $data) {
         echo "<h4>" . s( $name ) . '</h4>';
         echo '<div class="vpl_sh vpl_g">';

@@ -18,8 +18,11 @@
  * Estonian partial translation, 07/2013
  *
  * @author Aivar Annamaa, University of Tartu, Estonia
+ * @copyright 2013 Aivar Annamaa, University of Tartu, Estonia
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
+
 $string['vpl'] = 'Virtual Programming Lab';
 $string['novpls'] = 'Ühtki VPL harjutust pole defineeritud';
 $string['moduleconfigtitle'] = 'VPL mooduli seaded';

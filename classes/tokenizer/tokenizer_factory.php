@@ -27,7 +27,19 @@ namespace mod_vpl\tokenizer;
 use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\util\assertf;
 
+/**
+ * Factory class to get the tokenizer for a programming language.
+ * It will try to load the new tokenizer first, and if not available,
+ * it will try to load the old one.
+ *
+ * @codeCoverageIgnore
+ */
 class tokenizer_factory {
+
+    /**
+     * @var array $tkloaded Array of loaded tokenizers
+     * This is used to avoid loading the same tokenizer multiple times.
+     */
     private static array $tkloaded = [];
 
     /**
@@ -55,7 +67,7 @@ class tokenizer_factory {
     }
 
     /**
-     * Load include file and returns object of calss loaded
+     * Include file and returns object of class loaded
      *
      * @param string $namelang name of a programming language
      * @return ?tokenizer|?vpl_tokenizer
@@ -76,6 +88,12 @@ class tokenizer_factory {
         return null;
     }
 
+    /**
+     * Load include file and returns object of class loaded
+     *
+     * @param string $namelang name of a programming language
+     * @return ?tokenizer
+     */
     private static function get_object(string $namelang) {
         $rulefilename = dirname(__FILE__) . '/../../similarity/tokenizer_rules/';
         $rulefilename .= $namelang . '_tokenizer_rules.json';

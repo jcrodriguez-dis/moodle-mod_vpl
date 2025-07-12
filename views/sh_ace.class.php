@@ -28,14 +28,49 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/sh_base.class.php');
 require_once(dirname(__FILE__).'/sh_factory.class.php');
 
+/**
+ * VPL Syntaxhighlighters for Ace editor
+ *
+ * This class is used to print the content of a file using the Ace editor.
+ */
 class vpl_sh_ace extends vpl_sh_base {
+    /**
+     * Unique file id
+     *
+     * @var int
+     */
     protected static $fid = 0;
-    protected static $executionfiles = ['vpl_run.sh', 'vpl_debug.sh',
-                                              'vpl_evaluate.sh', 'vpl_evaluate.cases', ];
+
+    /**
+     * List of files in execution files
+     *
+     * @var array
+     */
+    protected static $executionfiles = [
+                                        'vpl_run.sh',
+                                        'vpl_debug.sh',
+                                        'vpl_evaluate.sh',
+                                         'vpl_evaluate.cases',
+                                       ];
+    /**
+     * Get a unique id for the file
+     * @return string unique id for the file
+     */
     protected static function getid() {
         self::$fid ++;
         return 'fileid' . self::$fid;
     }
+
+    /**
+     * This function prints the content of a file.
+     *
+     * @param string $filename name of the file
+     * @param string $filedata content of the file
+     * @param bool $showln show line numbers
+     * @param int $nl number of lines to show
+     * @param bool $title show title
+     * @return void
+     */
     public function print_file($filename, $filedata, $showln = true, $nl = 3000, $title = true) {
         global $PAGE;
         if ( array_search($filename, self::$executionfiles) !== false &&

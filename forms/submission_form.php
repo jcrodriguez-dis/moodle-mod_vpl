@@ -29,17 +29,48 @@ global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 
+/**
+ * Class to define the submission form for VPL
+ *
+ * This form allows users to submit their work, including file uploads and comments.
+ */
 class mod_vpl_submission_form extends moodleform {
+
+    /**
+     * @var mod_vpl $vpl The VPL instance for which the submission is being made.
+     */
     protected $vpl;
+
+    /**
+     * @var int $userid The user ID for whom the submission is being made.
+     */
     protected $userid;
+
+    /**
+     * Returns the internal form object.
+     *
+     * @return moodleform The internal form object.
+     */
     protected function getinternalform() {
         return $this->_form;
     }
+
+    /**
+     * Constructor
+     *
+     * @param moodle_page $page The page where the form will be displayed.
+     * @param mod_vpl $vpl The VPL instance.
+     * @param int $userid The user ID for whom the submission is being made.
+     */
     public function __construct($page, $vpl, $userid) {
         $this->vpl = $vpl;
         $this->userid = $userid;
         parent::__construct( $page );
     }
+
+    /**
+     * Defines the form elements
+     */
     protected function definition() {
         global $CFG, $OUTPUT, $PAGE;
         $mform = & $this->_form;
@@ -141,6 +172,12 @@ class mod_vpl_submission_form extends moodleform {
 
         $PAGE->requires->js_call_amd('mod_vpl/submissionform', 'setup');
     }
+
+    /**
+     * Set the data for the form.
+     *
+     * @param stdClass $data The data to set in the form.
+     */
     public function set_data($data) {
         for ($i = 0; $i < $this->vpl->get_instance()->maxfiles; $i++) {
             $data->{'file'.$i.'action'} = 'keep';

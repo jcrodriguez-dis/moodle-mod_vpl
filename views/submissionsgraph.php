@@ -29,6 +29,8 @@ require_once(dirname(__FILE__).'/vpl_graph.class.php');
 
 /**
  * Draws the graph of userid submissions
+ * @param mod_vpl $vpl the vpl instance
+ * @param int $userid the user id to show the submissions
  */
 function vpl_submissions_graph($vpl, $userid) {
     global $DB;

@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
 /**
  * HTML similarity class
  *
@@ -22,18 +26,32 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_base.class.php');
-
 class vpl_similarity_html extends vpl_similarity_base {
+
+    /**
+     * Returns the type of similarity.
+     *
+     * @return int The type of similarity, which is 9 for HTML.
+     */
     public function get_type() {
         return 9;
     }
+
+    /**
+     * Normalizes the syntax of the given tokens.
+     *
+     * @param array $tokens The tokens to normalize.
+     * @return array The normalized tokens.
+     */
     public function sintax_normalize(&$tokens) {
         return $tokens;
     }
+
+    /**
+     * Returns the tokenizer for the HTML language.
+     *
+     * @return vpl_tokenizer The tokenizer instance for HTML.
+     */
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'html' );
     }

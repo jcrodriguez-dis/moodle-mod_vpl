@@ -18,6 +18,8 @@
  * English to Japanese translation, 02/2012
  *
  * @author Imaizumi Takashi (Chiba University)
+ * @copyright 2012 Imaizumi Takashi (Chiba University)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['VPL_COMPILATIONFAILED'] = 'コンパイルか実行の準備に失敗しました';

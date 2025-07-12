@@ -27,6 +27,13 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/vpl_graph.class.php');
 
+/**
+ * Get working periods for a user in a VPL activity
+ *
+ * @param  mod_vpl $vpl    VPL activity object.
+ * @param  int     $userid Id of the user.
+ * @return array  Array of working periods in hours.
+ */
 function vpl_get_working_periods($vpl, $userid) {
     $submissionslist = $vpl->user_submissions($userid, false);
     if (count($submissionslist) == 0) {
@@ -81,6 +88,12 @@ function vpl_user_total_working_time(mod_vpl $vpl, int $userid): float {
     return $hours;
 }
 
+/**
+ * Graph working periods for a user in a VPL activity
+ *
+ * @param  mod_vpl $vpl    VPL activity object.
+ * @param  int     $userid Id of the user.
+ */
 function vpl_user_working_periods_graph($vpl, $userid) {
     global $DB;
     $ydata = vpl_get_working_periods($vpl, $userid);
@@ -105,6 +118,11 @@ function vpl_user_working_periods_graph($vpl, $userid) {
     vpl_graph::draw($title, $titlex, get_string('hours'), $xdata, $ydata, null, true);
 }
 
+/**
+ * Graph working periods for a VPL activity
+ *
+ * @param  mod_vpl $vpl VPL activity object.
+ */
 function vpl_working_periods_graph($vpl) {
     global $DB;
     $cm = $vpl->get_course_module();

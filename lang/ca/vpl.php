@@ -17,6 +17,8 @@
 /**
  * Catalan translation, 06/2013
  * @author Antonio Piedras Morente (Universitat de Barcelona)
+ * @copyright 2013 Antonio Piedras Morente (Universitat de Barcelona)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['downloadsubmissions'] = 'Baixa totes les trameses';

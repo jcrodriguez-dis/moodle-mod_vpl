@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Version of GIOTES evaluator plugin for VPL activities.
+ *
+ * @package mod_vpl
+ * @copyright 2025 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
+ */
+
 defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2024012400;

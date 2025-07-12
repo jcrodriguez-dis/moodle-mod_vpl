@@ -27,7 +27,19 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 
+/**
+ * VPL Syntaxhighlighters for binary files
+ *
+ * This class is used to print the content of a binary file.
+ */
 class vpl_sh_binary extends vpl_sh_base {
+    /**
+     * This method prints the content of a binary file.
+     *
+     * @param string $name name of the file
+     * @param string $data content of the file (ignored for binary files)
+     * @return void
+     */
     public function print_file($name, $data) {
         echo "<h4>" . s( $name ) . '</h4>';
         echo get_string( 'binaryfile', VPL );

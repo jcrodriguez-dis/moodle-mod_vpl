@@ -75,6 +75,14 @@ correct URL to the standard protocol server.
 require_once(dirname(__FILE__).'/../../../config.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
 
+/**
+ * Call a VPL web service function
+ *
+ * @param string $url The base URL of the VPL web service
+ * @param string $fun The name of the function to call
+ * @param string $request The request parameters to send to the function
+ * @return mixed The response from the web service function, or an error message
+ */
 function vpl_call_service($url, $fun, $request = '') {
     if (! function_exists( 'curl_init' )) {
         throw new Exception( 'PHP cURL requiered' );
@@ -104,6 +112,13 @@ function vpl_call_service($url, $fun, $request = '') {
         return $res;
     }
 }
+
+/**
+ * Print the response of a web service call
+ *
+ * @param string $fun The name of the function called
+ * @param mixed $res The response of the function
+ */
 function vpl_call_print($fun, $res) {
     echo "<h4>Funtion $fun response</h4>\n";
     echo "<pre>";

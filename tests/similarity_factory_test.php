@@ -134,6 +134,13 @@ class similarity_factory_test extends \advanced_testcase {
         $this->check_similarity($similarityclass, 'prolog', 2);
     }
 
+    /**
+     * Method to check if the similarity class is valid
+     *
+     * @param object $similarityclass The similarity class object to check
+     * @param string $namelang The name of the language for the similarity class
+     * @param int|null $similaritytype If not null, checks for specific similarity type
+     */
     private function check_similarity($similarityclass, $namelang, $similaritytype=null) {
         $this->assertTrue(isset($similarityclass) === true);
 

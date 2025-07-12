@@ -25,12 +25,30 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when an override is updated.
+ * This class is used to log the event when an override is updated in the VPL module.
+ */
 class override_updated extends override_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     * It sets the CRUD operation type and the legacy action for logging purposes.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'u';
         $this->legacyaction = 'updated override';
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'updated' );
     }

@@ -36,18 +36,59 @@ require_once($CFG->dirroot . '/mod/vpl/filegroup.class.php');
 
 /**
  * Unit tests for file_group_process class.
+ *
  * @group mod_vpl
  * @covers \mod_vpl\file_group_process
  */
 class filegroup_test extends \advanced_testcase {
+    /**
+     * Base directory for file group process tests.
+     * @var string
+     */
     protected $basedir = null;
+
+    /**
+     * Fixture for file group with no files.
+     * @var \file_group_process
+     */
     protected $gpempty = null;
+
+    /**
+     * Fixture for file group with no files.
+     * @var \file_group_process
+     */
     protected $gponefile = null;
+
+    /**
+     * Fixture for with more than one file.
+     * @var \file_group_process
+     */
     protected $gpfiles = null;
+
+    /**
+     * Fixture for file group with directories.
+     * @var \file_group_process
+     */
     protected $gpdirectory = null;
+
+    /**
+     * Fixture for one file contents.
+     * @var array
+     */
     protected $gponefilecontents = null;
+
+    /**
+     * Fixture more than one file contents.
+     * @var array
+     */
     protected $gpfilescontents = null;
+
+    /**
+     * Fixture for directory contents.
+     * @var array
+     */
     protected $gpdirectorycontents = null;
+
     /**
      * Method to create the fixture
      */
@@ -182,6 +223,16 @@ class filegroup_test extends \advanced_testcase {
         $this->assertEquals('a=b=c.d', \file_group_process::encodefilename('a/b/c.d'));
     }
 
+    /**
+     * Helper method to test file_group_process::addfile
+     * This method is used to test if the file group can add files correctly.
+     * It checks if the file group can add a file with data and if it returns the expected result.
+     *
+     * @param \file_group_process $fg The file group process instance to test.
+     * @param string $fn The filename to add.
+     * @param string|null $data The data to add to the file, or null for an empty file.
+     * @param bool $added Expected result of the add operation.
+     */
     private function internal_test_one_addfile($fg, $fn, $data, $added) {
         $res = $fg->addfile($fn, $data);
         $this->assertEquals($added, $res);
@@ -266,6 +317,14 @@ class filegroup_test extends \advanced_testcase {
         $this->assertEquals($expected, $this->gpempty->getfilecomment(3));
     }
 
+    /**
+     * Helper method to test file_group_process::getfiledata
+     * This method is used to test if the file group can retrieve file data correctly.
+     * It checks if the file group can get file data by index and by filename.
+     *
+     * @param \file_group_process $fg The file group process instance to test.
+     * @param array $fgdata The expected file data indexed by filename.
+     */
     private function internal_test_one_getfiledata($fg, $fgdata): void {
         $i = 0;
         foreach ($fgdata as $fn => $fd) {
@@ -284,6 +343,13 @@ class filegroup_test extends \advanced_testcase {
         $this->internal_test_one_getfiledata($this->gpdirectory, $this->gpdirectorycontents);
     }
 
+    /**
+     * Helper method to test file_group_process::is_populated
+     * This method is used to test if the file group is populated with files.
+     * It checks if the file group has files and if they are added correctly.
+     *
+     * @param \file_group_process $fg The file group process instance to test.
+     */
     private function internal_test_one_is_populated($fg): void {
         $fnl = $fg->getfilelist();
         foreach ($fnl as $fn) {

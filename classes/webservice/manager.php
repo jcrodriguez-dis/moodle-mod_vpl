@@ -38,26 +38,40 @@ use webservice, moodle_url, html_writer;
  */
 class manager {
 
+    /**
+     * @var int LOCAL scope for the webservice.
+     */
     public const LOCAL = 0;
+
+    /**
+     * @var int GLOBAL scope for the webservice.
+     */
     public const GLOBAL = 1;
 
     /**
-     * @var \mod_vpl
+     * @var \mod_vpl The VPL instance this webservice is associated with.
      */
     protected $vpl;
 
     /**
-     * @var object|null
+     * @var ?object The VPL webservice record.
      */
     protected static $service = null;
 
     /**
-     * @param \mod_vpl $vpl
+     * Constructor for the webservice manager.
+     * @param \mod_vpl $vpl The VPL instance this webservice is associated with.
      */
     public function __construct($vpl) {
         $this->vpl = $vpl;
     }
 
+    /**
+     * Get the VPL webservice DB record.
+     * This is a singleton method to retrieve the VPL webservice.
+     *
+     * @return object The VPL webservice record.
+     */
     protected static function get_service() {
         global $DB;
         if (self::$service === null) {
@@ -66,6 +80,12 @@ class manager {
         return self::$service;
     }
 
+    /**
+     * Check if the webservice is available.
+     * This checks if webservices are enabled and if the VPL service exists.
+     *
+     * @return bool True if the service is available, false otherwise.
+     */
     public static function service_is_available() {
         global $CFG;
         return $CFG->enablewebservices && !empty(self::get_service());
@@ -139,6 +159,11 @@ class manager {
         return external_generate_token(EXTERNAL_TOKEN_EMBEDDED, self::get_service(), $userid, $contextid, time() + DAYSECS);
     }
 
+    /**
+     * Print the webservice information for the current VPL instance.
+     *
+     * @param int $scope The scope of the webservice, either LOCAL or GLOBAL.
+     */
     public function print_webservice($scope) {
         switch ($scope) {
             case self::LOCAL:
@@ -175,11 +200,25 @@ class manager {
         }
     }
 
+    /**
+     * Create a spoiler div with a clickable text to show the content.
+     *
+     * @param string $text The text to hide initially.
+     * @return string HTML div with the text and a clickable hider.
+     */
     protected static function spoiler($text) {
         $hider = html_writer::div(get_string('clicktoshow', VPL), 'hider', [ 'onclick' => 'this.remove()' ]);
         return html_writer::div($text . $hider, 'spoiler');
     }
 
+    /**
+     * Visual encryption of a text, to be used in webservice URLs.
+     * This is not meant to be secure, only to hide the text from casual view.
+     *
+     * @param string $text The text to encrypt visually.
+     * @param int|null $length Optional length of the visual encryption, defaults to the length of the text.
+     * @return string HTML span with the encrypted text and cryptchar spans.
+     */
     protected static function visual_encrypt($text, $length = null) {
         return html_writer::span(s($text), 'crypted') . str_repeat(html_writer::span('', 'cryptchar'), $length ?? strlen($text));
     }

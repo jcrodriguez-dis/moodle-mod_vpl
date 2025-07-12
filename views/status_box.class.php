@@ -26,13 +26,30 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../locallib.php');
 
+/**
+ * Class to show a status box
+ *
+ * This class is used to show a status box with a text.
+ * It can be used to show the status of a process.
+ */
 class vpl_status_box {
+    /**
+     * @var int last id used for the box
+     * This is used to generate unique ids for each box.
+     */
     protected static $lastid = 0;
+    /**
+     * @var string id of the box
+     */
     protected $id;
+    /**
+     * @var int time when the box was created
+     */
     protected $starttime;
 
     /**
      * Constructor
+     * @param string $text text to show in the box
      */
     public function __construct($text = '') {
         global $OUTPUT;
@@ -43,7 +60,7 @@ class vpl_status_box {
     }
 
     /**
-     * print text
+     * Print text
      */
     public function print_text($text) {
         $javascript = 'window.document.getElementById(\'';
@@ -57,7 +74,7 @@ class vpl_status_box {
     }
 
     /**
-     * hide box
+     * Hide box
      */
     public function hide() {
         $javascript = 'window.document.getElementById(\'';
@@ -68,13 +85,34 @@ class vpl_status_box {
         flush();
     }
 }
+
+/**
+ * Class to show a progress bar in a box
+ */
 class vpl_progress_bar extends vpl_status_box {
+    /**
+     * @var int minimum value
+     */
     protected $min;
+    /**
+     * @var int maximum value
+     */
     protected $max;
+    /**
+     * @var int last time the progress bar was updated
+     */
     protected $lasttime;
+    /**
+     * @var string text to show in the progress bar
+     */
     protected $text;
+
     /**
      * Constructor
+     *
+     * @param string $text text to show in the progress bar
+     * @param int $min minimum value (default 0)
+     * @param int $max maximum value (default 100)
      */
     public function __construct($text = '', $min = 0, $max = 100) {
         parent::__construct( $text );
@@ -83,6 +121,12 @@ class vpl_progress_bar extends vpl_status_box {
         $this->max = $max;
         $this->lasttime = 0;
     }
+
+    /**
+     * Set the value of the progress bar
+     *
+     * @param int $value current value
+     */
     public function set_value($value) {
         if (is_string( $value )) {
             $this->print_text( $this->text . ' (' . $value . ')' );
@@ -105,6 +149,12 @@ class vpl_progress_bar extends vpl_status_box {
             }
         }
     }
+
+    /**
+     * Set the maximum value
+     *
+     * @param int $max maximum value
+     */
     public function set_max($max) {
         $this->max = $max;
     }

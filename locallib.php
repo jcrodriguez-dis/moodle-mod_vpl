@@ -28,17 +28,13 @@ require_once(dirname(__FILE__).'/locallib_consts.php');
 require_once(dirname(__FILE__).'/vpl.class.php');
 
 /**
- * @codeCoverageIgnore
- *
  * Set get vpl session var
  *
- * @param string $varname
- *            name of the session var without 'vpl_'
- * @param string $default
- *            default value
- * @param string $parname
- *            optional parameter name
+ * @param string $varname name of the session var without 'vpl_'
+ * @param string $default default value
+ * @param string $parname optional parameter name
  * @return $varname/param value
+ * @codeCoverageIgnore
  */
 function vpl_get_set_session_var($varname, $default, $parname = null) {
     global $SESSION;
@@ -56,11 +52,10 @@ function vpl_get_set_session_var($varname, $default, $parname = null) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Create directory if not exist
  *
- * @param $dir string path to directory
+ * @param string $dir path to directory
+ * @codeCoverageIgnore
  */
 function vpl_create_dir($dir) {
     global $CFG;
@@ -76,12 +71,11 @@ function vpl_create_dir($dir) {
 
 
 /**
- * @codeCoverageIgnore
- *
  * Open/create a file and its dir
  *
  * @param $filename string path to file
  * @return Object file descriptor
+ * @codeCoverageIgnore
  */
 function vpl_fopen($filename) {
     if (! @file_exists( $filename )) { // Exists file?
@@ -110,14 +104,12 @@ function vpl_fopen($filename) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Open/create a file and its dir and write contents
  *
  * @param string $filename. Path to the file to open
  * @param string $contents. Contents to write into the file
- * @exception file_exception
- * @return void
+ * @throws file_exception
+ * @codeCoverageIgnore
  */
 function vpl_fwrite($filename, $contents) {
     if (@is_file($filename) ) {
@@ -133,11 +125,10 @@ function vpl_fwrite($filename, $contents) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Recursively delete a directory
  *
  * @return bool All delete
+ * @codeCoverageIgnore
  */
 function vpl_delete_dir($dirname) {
     $ret = false;
@@ -167,13 +158,11 @@ function vpl_delete_dir($dirname) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Outputs a zip file and removes it. Must be called before any other output
  *
  * @param string $zipfilename. Name of the ZIP file with the data
  * @param string $name of file to be shown, without '.zip'
- *
+ * @codeCoverageIgnore
  */
 function vpl_output_zip($zipfilename, $name) {
     if (! file_exists($zipfilename)) {
@@ -207,11 +196,10 @@ function vpl_output_zip($zipfilename, $name) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Get locale from current lang for using in Linux.
  *
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_get_lang() {
     $lang = get_string('locale', 'langconfig');
@@ -222,22 +210,15 @@ function vpl_get_lang() {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * generate URL to page with params
  *
- * @param $page string
- *            page from wwwroot
- * @param $var1 string
- *            var1 name optional
- * @param $value1 string
- *            value of var1 optional
- * @param $var2 string
- *            var2 name optional
- * @param $value2 string
- *            value of var2 optional
- * @param
- *            ...
+ * @param $page string page from wwwroot
+ * @param string $parm1 name of the first parameter
+ * @param string $value1 value of the first parameter
+ * @param string $parm2 name of the second parameter
+ * @param string $value2 value of the second parameter
+ * etc.
+ * @codeCoverageIgnore
  */
 function vpl_abs_href() {
     global $CFG;
@@ -251,22 +232,15 @@ function vpl_abs_href() {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * generate URL to page with params
  *
- * @param $page string
- *            page from wwwroot/mod/vpl/
- * @param $var1 string
- *            var1 name optional
- * @param $value1 string
- *            value of var1 optional
- * @param $var2 string
- *            var2 name optional
- * @param $value2 string
- *            value of var2 optional
- * @param
- *            ...
+ * @param $page string page from wwwroot/mod/vpl/
+ * @param string $parm1 name of the first parameter
+ * @param string $value1 value of the first parameter
+ * @param string $parm2 name of the second parameter
+ * @param string $value2 value of the second parameter
+ * etc.
+ * @codeCoverageIgnore
  */
 function vpl_mod_href() {
     global $CFG;
@@ -280,11 +254,11 @@ function vpl_mod_href() {
 }
 
 /**
- * @codeCoverageIgnore
- *
- * @todo This function is to be remove when Moodle 3.10 be not supported by VPL.
  * Return 'gradeoun' or 'grade' for backward compatibility.
+ * @todo This function is to be remove when Moodle 3.10 be not supported by VPL.
+ *
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_get_gradenoun_str() {
     if (get_string_manager()->string_exists('gradenoun', 'core')) {
@@ -294,22 +268,16 @@ function vpl_get_gradenoun_str() {
 }
 
 /**
+ * Generate URL relative page with params
+ *
+ * @param string $url URL to the page
+ * @param string $parm1 name of the first parameter
+ * @param string $value1 value of the first parameter
+ * @param string $parm2 name of the second parameter
+ * @param string $value2 value of the second parameter
+ * etc.
+ * @return string URL with parameters
  * @codeCoverageIgnore
- *
- * generate URL relative page with params
- *
- * @param $page string
- *            page relative
- * @param $var1 string
- *            var1 name optional
- * @param $value1 string
- *            value of var1 optional
- * @param $var2 string
- *            var2 name optional
- * @param $value2 string
- *            value of var2 optional
- * @param
- *            ...
  */
 function vpl_rel_url() {
     $parms = func_get_args();
@@ -320,16 +288,14 @@ function vpl_rel_url() {
     }
     return $url;
 }
+
 /**
- * @codeCoverageIgnore
- *
  * Add a parm to a url
  *
- * @param $url string
- * @param $parm string
- *            name
- * @param $value string
- *            value of parm
+ * @param string $url
+ * @param string $parm name
+ * @param string $value value of parm
+ * @codeCoverageIgnore
  */
 function vpl_url_add_param($url, $parm, $value) {
     if (strpos( $url, '?' )) {
@@ -340,14 +306,11 @@ function vpl_url_add_param($url, $parm, $value) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Print a message and redirect
  *
  * @param string $link. The URL to redirect to
  * @param string $message to be print
  * @param string $type of message (success, info, warning, error). Default = info
- * @return void
  */
 function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
     global $OUTPUT;
@@ -361,12 +324,10 @@ function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Inmediate redirect
  *
  * @param string $url URL to redirect to
- * @return void
+ * @codeCoverageIgnore
  */
 function vpl_inmediate_redirect($url) {
     global $OUTPUT;
@@ -384,16 +345,13 @@ function vpl_inmediate_redirect($url) {
     echo $OUTPUT->footer();
     die();
 }
+
 /**
- * @codeCoverageIgnore
- *
  * Set JavaScript file from subdir jscript to be load
  *
- * @param $file string
- *            name of file to load
- * @param $defer boolean
- *            optional set if the load is inmediate or deffered
- * @return void
+ * @param string $file name of file to load
+ * @param boolean $defer optional set if the load is inmediate or deffered
+ * @codeCoverageIgnore
  */
 function vpl_include_jsfile($file, $defer = true) {
     global $PAGE;
@@ -401,13 +359,10 @@ function vpl_include_jsfile($file, $defer = true) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Set JavaScript code to be included
  *
- * @param $jscript string
- *            JavaScript code
- * @return void
+ * @param string $jscript JavaScript code
+ * @codeCoverageIgnore
  */
 function vpl_include_js($jscript) {
     if ($jscript == '') {
@@ -421,13 +376,11 @@ function vpl_include_js($jscript) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Popup message box to show text
  *
  * @param string $text to show. It use s() to sanitize text
  * @param boolean $print or not
- * @return void
+ * @codeCoverageIgnore
  */
 function vpl_js_alert($text, $print = true) {
     $aux = addslashes( $text ); // Sanitize text.
@@ -444,6 +397,12 @@ function vpl_js_alert($text, $print = true) {
 }
 
 /**
+ * Returns an array with the format [time in seconds] => text.
+ *
+ * The first element is [0] => select.
+ *
+ * @param int $maximum The maximum time in seconds to generate.
+ * @return array Key value => Text value
  * @codeCoverageIgnore
  */
 function vpl_get_select_time($maximum = null) {
@@ -475,14 +434,12 @@ function vpl_get_select_time($maximum = null) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Converts a size in byte to string in Kb, Mb, Gb and Tb.
  * Follows IEC "Prefixes for binary multiples".
  *
  * @param int $size Size in bytes
- *
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_conv_size_to_string($size) {
     static $measure = [
@@ -515,13 +472,12 @@ function vpl_conv_size_to_string($size) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Return the array key after or equal to value
  *
  * @param $array
  * @param int $value of key to search >=
  * @return int key found
+ * @codeCoverageIgnore
  */
 function vpl_get_array_key($array, int $value) {
     reset($array);
@@ -539,15 +495,13 @@ function vpl_get_array_key($array, int $value) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Returns un array with the format [size in bytes] => size in text.
  * The first element is [0] => select.
  *
  * @param int $minimum the initial value
  * @param int $maximum the limit of values generates
- *
  * @return array Key value => Text value
+ * @codeCoverageIgnore
  */
 function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): array {
     $maximum = ( int ) $maximum;
@@ -586,13 +540,11 @@ function vpl_get_select_sizes(int $minimum = 0, int $maximum = PHP_INT_MAX): arr
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Detects end of line separator.
  *
  * @param string& $data Text to check.
- *
  * @return string Newline separator "\r\n", "\n", "\r".
+ * @codeCoverageIgnore
  */
 function vpl_detect_newline(&$data) {
     // Detect text newline chars.
@@ -608,6 +560,10 @@ function vpl_detect_newline(&$data) {
 }
 
 /**
+ * Print a message in the page
+ *
+ * @param string $text Text to show
+ * @param string $type Type of message (success, info, warning, error). Default = success
  * @codeCoverageIgnore
  */
 function vpl_notice(string $text, $type = 'success') {
@@ -616,13 +572,11 @@ function vpl_notice(string $text, $type = 'success') {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Remove trailing right zeros from a float as string
  *
  * @param string $value float to remove right zeros
- *
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_rtzeros($value) {
     if (strpos($value, '.') || strpos($value, ',')) {
@@ -632,13 +586,12 @@ function vpl_rtzeros($value) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Generate an array with index an values $url.index
  *
  * @param string $url base
  * @param $array array of index
  * @return array with index as key and url as value
+ * @codeCoverageIgnore
  */
 function vpl_select_index($url, $array) {
     $ret = [];
@@ -649,13 +602,12 @@ function vpl_select_index($url, $array) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Generate an array ready to be use in $OUTPUT->select_url
  *
  * @param string $url base
  * @param array $array of values
  * @return array with url as key and text as value
+ * @codeCoverageIgnore
  */
 function vpl_select_array($url, $array) {
     $ret = [];
@@ -666,6 +618,10 @@ function vpl_select_array($url, $array) {
 }
 
 /**
+ * Get file extension from filename
+ *
+ * @param string $filename
+ * @return string file extension
  * @codeCoverageIgnore
  */
 function vpl_fileextension($filename) {
@@ -674,23 +630,23 @@ function vpl_fileextension($filename) {
 
 
 /**
- * @codeCoverageIgnore
- *
  * Get if filename has image extension
+ *
  * @param string $filename
  * @return boolean
+ * @codeCoverageIgnore
  */
 function vpl_is_image($filename) {
     return preg_match( '/^(gif|jpg|jpeg|png|ico)$/i', vpl_fileextension( $filename ) ) == 1;
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Get if filename has binary extension or binary data
+ *
  * @param string $filename
  * @param string &$data file contents
  * @return boolean
+ * @codeCoverageIgnore
  */
 function vpl_is_binary($filename, &$data = false) {
     if ( vpl_is_image( $filename ) ) {
@@ -708,35 +664,35 @@ function vpl_is_binary($filename, &$data = false) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Return data encoded to base64
+ *
  * @param string $filename
  * @param string &$data file contents
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_encode_binary($filename, &$data) {
     return base64_encode( $data );
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Return data decoded from base64
+ *
  * @param string $filename
  * @param string &$data file contents
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_decode_binary($filename, $data) {
     return base64_decode( $data );
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Return if path is valid
+ *
  * @param string $path
  * @return boolean
+ * @codeCoverageIgnore
  */
 function vpl_is_valid_path_name($path) {
     if (strlen( $path ) > 256) {
@@ -752,11 +708,11 @@ function vpl_is_valid_path_name($path) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Return if file or directory name is valid
+ *
  * @param string $name
  * @return boolean
+ * @codeCoverageIgnore
  */
 function vpl_is_valid_file_name($name) {
     $backtick = chr( 96 ); // Avoid warnning in codecheck.
@@ -772,11 +728,11 @@ function vpl_is_valid_file_name($name) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Truncate string to the limit passed
+ *
  * @param string &$string
  * @param int $limit
+ * @codeCoverageIgnore
  */
 function vpl_truncate_string(&$string, $limit) {
     if (strlen( $string ) <= $limit) {
@@ -787,8 +743,6 @@ function vpl_truncate_string(&$string, $limit) {
 
 
 /**
- * @codeCoverageIgnore
- *
  * Export a variable to bash.
  *
  * This function is used to assign a value to an environment variable in Linux bash.
@@ -801,6 +755,7 @@ function vpl_truncate_string(&$string, $limit) {
  * @param string $var name of the variable
  * @param mixed $value value of the variable (int, string or array)
  * @return string bash export statement for the variable
+ * @codeCoverageIgnore
  */
 function vpl_bash_export($var, $value) {
     if ( is_int($value) ) {
@@ -820,10 +775,13 @@ function vpl_bash_export($var, $value) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * For debug purpose
+ *
  * Return content of vars ready to HTML
+ *
+ * @param mixed $var variable to dump
+ * @return string HTML ready content of var_dump
+ * @codeCoverageIgnore
  */
 function vpl_s() {
     $var = func_get_args();
@@ -835,11 +793,10 @@ function vpl_s() {
 }
 
 /**
- * @codeCoverageIgnore
+ * Truncate string fields of the VPL record instance
  *
- * Truncate string fields of the VPL table
  * @param $instance object with the record
- * @return void
+ * @codeCoverageIgnore
  */
 function vpl_truncate_vpl($instance) {
     if (isset($instance->password)) {
@@ -856,33 +813,31 @@ function vpl_truncate_vpl($instance) {
 }
 
 /**
- * @codeCoverageIgnore
+ * Truncate string fields of the variation record instance
  *
- * Truncate string fields of the variations table
- * @param $instance object with the record
+ * @param object $instance object with the variation instance
  * @return void
+ * @codeCoverageIgnore
  */
 function vpl_truncate_variations($instance) {
     vpl_truncate_string( $instance->identification, 40 );
 }
 
 /**
- * @codeCoverageIgnore
+ * Truncate string fields of the running_processes record instance
  *
- * Truncate string fields of the running_processes table
- * @param $instance object with the record
- * @return void
+ * @param object $instance object with the record
+ * @codeCoverageIgnore
  */
 function vpl_truncate_running_processes($instance) {
     vpl_truncate_string( $instance->server, 255 );
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Truncate string fields of the jailservers table
- * @param $instance object with the record
- * @return void
+ *
+ * @param object $instance object with the record
+ * @codeCoverageIgnore
  */
 function vpl_truncate_jailservers($instance) {
     vpl_truncate_string( $instance->laststrerror, 255 );
@@ -890,14 +845,12 @@ function vpl_truncate_jailservers($instance) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Check if IP is within networks
  *
- * @param $networks string with conma separate networks
- * @param $ip string optional with the IP to check, if omited then remote IP
- *
+ * @param string $networks string with conma separate networks
+ * @param string $ip string optional with the IP to check, if omited then remote IP
  * @return boolean true found
+ * @codeCoverageIgnore
  */
 function vpl_check_network($networks, $ip = false) {
     $networks = trim($networks);
@@ -911,11 +864,11 @@ function vpl_check_network($networks, $ip = false) {
 }
 
 /**
- * @codeCoverageIgnore
- *
  * Get awesome icon for action
+ *
  * @param String $id
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_get_awesome_icon($str, $classes = '') {
     $icon = 'mod_vpl:' . $str;
@@ -929,14 +882,14 @@ function vpl_get_awesome_icon($str, $classes = '') {
 
 
 /**
- * @codeCoverageIgnore
- *
  * Create a new tabobject for navigation
+ *
  * @param String $id
  * @param string|moodle_url $href
  * @param string $str to be i18n
  * @param string $comp component
  * @return tabobject
+ * @codeCoverageIgnore
  */
 function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
     $stri18n = get_string( $str, $comp);
@@ -945,10 +898,10 @@ function vpl_create_tabobject($id, $href, $str, $comp = 'mod_vpl') {
 }
 
 /**
- * @codeCoverageIgnore
+ * Get version string.
  *
- * Get version string
  * @return string
+ * @codeCoverageIgnore
  */
 function vpl_get_version(): string {
     static $version = '';
@@ -961,10 +914,10 @@ function vpl_get_version(): string {
 }
 
 /**
- * @codeCoverageIgnore
+ * Polyfill for getting user picture fields.
  *
- * Polyfill for getting user picture fields
  * @return string List of fields separated by "," u.field
+ * @codeCoverageIgnore
  */
 function vpl_get_picture_fields(): string {
     if (method_exists('\core_user\fields', 'get_picture_fields')) {
@@ -975,13 +928,13 @@ function vpl_get_picture_fields(): string {
 }
 
 /**
- * @codeCoverageIgnore
  * Return array of override objects for a vpl activity.
  * Asigned override as agregate in fields userids and groupids.
- * @param $vplid
+ *
  * @param $overrides
  * @param $asignedoverrides
  * @return array
+ * @codeCoverageIgnore
  */
 function vpl_agregate_overrides($overrides, $asignedoverrides): array {
     $userids = [];
@@ -1010,11 +963,12 @@ function vpl_agregate_overrides($overrides, $asignedoverrides): array {
 }
 
 /**
- * @codeCoverageIgnore
  * Return array of override objects for a vpl activity.
  * Asigned override as agregate userids and groupids.
+ *
  * @param $vplid
  * @return array
+ * @codeCoverageIgnore
  */
 function vpl_get_overrides($vplid): array {
     global $DB;
@@ -1031,11 +985,12 @@ function vpl_get_overrides($vplid): array {
 }
 
 /**
- * @codeCoverageIgnore
  * Return array of override objects for a course.
  * Asigned override as agregate userids and groupids.
+ *
  * @param $courseid
  * @return array
+ * @codeCoverageIgnore
  */
 function vpl_get_overrides_incourse($courseid): array {
     global $DB;
@@ -1053,6 +1008,7 @@ function vpl_get_overrides_incourse($courseid): array {
 
 /**
  * Calls a function with lock.
+ *
  * @param string $locktype Name of the lock type (unique)
  * @param string $resource Name of the resourse (unique)
  * @param string $function Name of the function to call
@@ -1078,6 +1034,7 @@ function vpl_call_with_lock(string $locktype, string $resource, string $function
 
 /**
  * Calls a function with DB transactions.
+ *
  * @param string $function Name of the function to call
  * @param array $parms Parameters to pass to the function
  * @return mixed Value returned by the function or throw exception
@@ -1118,8 +1075,8 @@ function vpl_info_icon() {
 
 /**
  * Generate HTML fragment of a button to copy given text to clipboard.
- * @param string $text Text to copy to clipboard.
  *
+ * @param string $text Text to copy to clipboard.
  * @return string HTML fragment
  * @codeCoverageIgnore
  */
@@ -1150,7 +1107,6 @@ function vpl_get_copytoclipboard_control($text) {
  * @param string $title A title to put before, will be non-selectable for easier select-copy of the text.
  * @param string $displayedinfo What will be displayed.
  * @param string|null $copyinfo Can be different from actual displayed info if provided.
- *
  * @codeCoverageIgnore
  */
 function vpl_print_copyable_info($title, $displayedinfo, $copyinfo = null) {

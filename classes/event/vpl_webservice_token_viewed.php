@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_vpl\event;
+
+defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
 /**
  * Class for logging of webservice token view events
  *
@@ -22,16 +27,21 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-namespace mod_vpl\event;
-
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_webservice_token_viewed extends vpl_base {
+
+    /**
+     * Initializes the event.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
         $this->legacyaction = 'show_webservice';
     }
+
+    /**
+     * Returns the event description.
+     * @return string The description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'webservice token' );
     }

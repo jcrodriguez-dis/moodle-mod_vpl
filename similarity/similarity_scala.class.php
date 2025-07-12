@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_c.class.php');
+
 /**
  * Scala language similarity class
  *
@@ -23,16 +27,22 @@
  * @author Lückl Bernd <bernd.lueckl.ima10@fh-joanneum.at>
  * @author Lang Johannes <johannes.lang.ima10@fh-joanneum.at>
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @copyright all authors
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_c.class.php');
-
 class vpl_similarity_scala extends vpl_similarity_c {
+
+    /**
+     * Returns the type of similarity.
+     *
+     * @return int The type of similarity, which is 7 for Scala.
+     */
     public function get_type() {
         return 7;
     }
+
+    /**
+     * Returns the tokenizer for the Scala language.
+     */
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'scala' );
     }

@@ -28,6 +28,13 @@ require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/list_util.class.php');
 require_once(dirname(__FILE__).'/vpl_submission.class.php');
 
+/**
+ * Returns a select for instance filter.
+ *
+ * @param moodle_url $urlbase Base URL to use.
+ * @param string $instancefilter Instance filter value.
+ * @return url_select
+ */
 function get_select_instance_filter($urlbase, $instancefilter) {
     $urls = [];
     $urlindex = [];
@@ -58,6 +65,14 @@ function get_select_instance_filter($urlbase, $instancefilter) {
     return $select;
 }
 
+/**
+ * Returns a select for section filter.
+ *
+ * @param moodle_url $urlbase Base URL to use.
+ * @param array $sectionnames Array of section names indexed by section number.
+ * @param string $sectionfilter Section filter value.
+ * @return url_select
+ */
 function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     $urls = [];
     $urlindex = [];
@@ -79,6 +94,13 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
     return $select;
 }
 
+/**
+ * Returns a select for detailed more.
+ *
+ * @param moodle_url $urlbase Base URL to use.
+ * @param string $value Value to select.
+ * @return url_select
+ */
 function get_select_detailedmore($urlbase, $value = '0') {
     $urls = [];
     $urlbase->param( 'detailedmore', '0' );

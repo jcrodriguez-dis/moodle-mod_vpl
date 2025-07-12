@@ -28,18 +28,46 @@ defined('MOODLE_INTERNAL') || die();
 use mod_vpl\tokenizer\token;
 use mod_vpl\tokenizer\token_type;
 
+/**
+ * Class for backward compatibility with old token types.
+ */
 class vpl_token_type extends token_type {
 
 }
 
+/**
+ * Class for backward compatibility with old token.
+ */
 class vpl_token extends token {
 
 }
 
+/**
+ * Base class for tokenizers in VPL.
+ */
 class vpl_tokenizer_base {
+    /**
+     * @var string CR The carriage return character used for new lines in the source code.
+     */
     const CR = "\r";
+
+    /**
+     * @var string LF The line feed character used for new lines in the source code.
+     */
     const LF = "\n";
+
+    /**
+     * @var string TAB The tab character used for indentation in the source code.
+     */
     const TAB = "\t";
+
+    /**
+     * @var array $reserved Reserved keywords for the programming language.
+     */
     protected $reserved = [];
+
+    /**
+     * @var int $linenumber The current line number in the source code being tokenized.
+     */
     protected $linenumber;
 }

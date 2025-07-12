@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class to lock based on directory path
+ * VPL report edit dates integration.
  *
  * @package mod_vpl
  * @copyright 2022 onwards Juan Carlos Rodríguez-del-Pino
@@ -27,12 +27,26 @@ defined('MOODLE_INTERNAL') || die;
 
 require_once(dirname(__FILE__).'/../locallib.php');
 
+/**
+ * Class for integrating VPL with the report_editdates module.
+ */
 class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_extractor {
+    /**
+     * Constructor for the VPL report edit dates integration.
+     *
+     * @param \stdClass $course The course object containing the VPL instances.
+     */
     public function __construct($course) {
         parent::__construct($course, VPL);
         parent::load_data();
     }
 
+    /**
+     * Get the settings for the VPL instance.
+     *
+     * @param \cm_info $cm The course module information.
+     * @return array An array of date settings for the VPL instance.
+     */
     public function get_settings(\cm_info $cm) {
         $vplinstance = $this->mods[$cm->instance];
 
@@ -48,6 +62,13 @@ class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_ex
         ];
     }
 
+    /**
+     * Validate the dates for the VPL instance.
+     *
+     * @param \cm_info $cm The course module information.
+     * @param array $dates The dates to validate.
+     * @return string|null Error message if validation fails, null otherwise.
+     */
     public function validate_dates(\cm_info $cm, array $dates) {
         if ($dates['startdate'] && $dates['duedate']
                 && $dates['duedate'] < $dates['startdate']) {
@@ -55,6 +76,12 @@ class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_ex
         }
     }
 
+    /**
+     * Save the dates for the VPL instance.
+     *
+     * @param \cm_info $cm The course module information.
+     * @param array $dates The dates to save.
+     */
     public function save_dates(\cm_info $cm, array $dates) {
         global $DB;
 

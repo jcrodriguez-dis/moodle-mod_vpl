@@ -26,19 +26,45 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when a submission is graded.
+ * This class is used to log the event when a submission is graded in the VPL module.
+ */
 class submission_graded extends submission_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     * It sets the CRUD action, educational level, and legacy action for the event.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->legacyaction = 'grade';
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @param string $mod The type of modification (e.g., 'updated', 'deleted').
+     * @return string Description of the event.
+     */
     protected function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $this->action;
         $desc .= ' ' . $mod . ' VPL submission with id ' . $this->objectid;
         $desc .= ' of user with id ' . $this->relateduserid;
         return $desc;
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( '' );
     }

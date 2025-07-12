@@ -47,6 +47,7 @@ class tokenizer_base_test extends \advanced_testcase {
      *
      * - key   => input value to test
      * - value => expected result.
+     * @var array
      */
     protected static array $testcasesrcg;
 
@@ -55,6 +56,7 @@ class tokenizer_base_test extends \advanced_testcase {
      *
      * - key   => available data type
      * - value => [ true => [ list_of_valid_values ], false => [ list_of_invalid_values ] ]
+     * @var array
      */
     protected static array $testcasesckt;
 
@@ -63,6 +65,7 @@ class tokenizer_base_test extends \advanced_testcase {
      *
      * - key   => expected value to get
      * - value => list of input tokens to test
+     * @var array
      */
     protected static array $testcasesctk;
 
@@ -71,16 +74,19 @@ class tokenizer_base_test extends \advanced_testcase {
      *
      * - key      => integer value, not a real use
      * - value    => [ input => [ types, value, and regex to test ], output => expected value to get ]
+     * @var array
      */
     protected static array $testcasesgat;
 
     /**
      * State to use to test tokenizer_base::contains_rule
+     * @var array
      */
     protected static array $statetosearchrules;
 
     /**
      * Available tokens to use to test tokenizer::check_token
+     * @var array
      */
     protected const AVAILABLETOKENS = [
         "text" => 0,

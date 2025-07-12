@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use mod_vpl\similarity\similarity_factory;
+
 /**
  * Similarity object factory classes
  *
@@ -22,9 +24,6 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-use mod_vpl\similarity\similarity_factory;
-
 class vpl_similarity_factory extends similarity_factory {
 
 }

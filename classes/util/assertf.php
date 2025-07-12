@@ -27,11 +27,12 @@ namespace mod_vpl\util;
 use Exception;
 
 /**
+ * Class to assert with customized error messages
  * @codeCoverageIgnore
  */
 class assertf {
     /**
-     * Flag for enable or disable asserts, default disable.
+     * @var bool $disable Flag for enable or disable asserts, default disable.
      */
     private static bool $disable = true;
 
@@ -49,7 +50,7 @@ class assertf {
     }
 
     /**
-     * Flag to enable or disable the colors at error messages.
+     * @var bool $messagewithcolors Flag to enable or disable the colors at error messages.
      * This option must be false at production.
      */
     public static bool $messagewithcolors = false;

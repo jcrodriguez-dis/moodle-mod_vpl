@@ -29,39 +29,88 @@ use mod_vpl\tokenizer\tokenizer_base;
 
 // @codeCoverageIgnoreStart
 if (!function_exists('str_starts_with')) {
+    /**
+     * Check if a string starts with a given substring.
+     *
+     * @param string $haystack The string to search in.
+     * @param string $needle The substring to search for at the start of $haystack.
+     * @return bool True if $haystack starts with $needle, false otherwise.
+     */
     function str_starts_with($haystack, $needle) {
         return (string)$needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
     }
 }
 
 if (!function_exists('str_ends_with')) {
+    /**
+     * Check if a string ends with a given substring.
+     *
+     * @param string $haystack The string to search in.
+     * @param string $needle The substring to search for at the end of $haystack.
+     * @return bool True if $haystack ends with $needle, false otherwise.
+     */
     function str_ends_with($haystack, $needle) {
         return $needle !== '' && substr($haystack, -strlen($needle)) === (string)$needle;
     }
 }
-
-// Adjust this flag in order to avoid showing error messages
-// which are not catched as exceptions. On production, this
-// should be commnented or set to false.
-define('TOKENIZER_ON_TEST', true);
 // @codeCoverageIgnoreEnd
 
+/**
+ * Adjust this flag in order to avoid showing error messages
+ * which are not catched as exceptions. On production, this
+ * should be commnented or set to false.
+ * define('TOKENIZER_ON_TEST', true);
+ */
+
+/**
+ * Tokenizer class for tokenizer rules JSON files.
+ * This class is used to parse the rules defined in the JSON file
+ * and tokenize the source code based on those rules.
+ *
+ * @codeCoverageIgnore
+ */
 class tokenizer extends tokenizer_base {
+
+    /**
+     * @var string $name Name of the tokenizer.
+     * This is used to identify the tokenizer and to load the rules from the JSON file.
+     */
     protected string $name = 'default';
+
+    /**
+     * @var array $extension List of extensions for current tokenizer.
+     */
     protected array $extension = ['no-ext'];
+
+    /**
+     * @var bool $checkrules true to check rules defined in the JSON file
+     */
     protected bool $checkrules = true;
+
+    /**
+     * @var array $inheritrules List of inherited rules from other tokenizers.
+     */
     protected string $inheritrules;
+
+    /**
+     * @var bool $setcheckrules true to set checkrules=true and false to define it based on $rulefilename
+     * This is used to avoid setting checkrules if it is already defined in the JSON file.
+     */
     protected bool $setcheckrules;
+
+    /**
+     * @var array $rawoverridetokens Raw override tokens defined in the JSON file.
+     */
     protected array $rawoverridetokens = [];
 
     /**
-     * Maximum number of tokens that tokenizer allow
+     * @var int $maxtokencount Maximum number of tokens in a line that tokenizer allow
      * before performance gets worse
      */
-    protected int $maxtokencount = 2000;
+    protected int $maxtokencount = 20000;
 
     /**
-     * Available data types for token's options,
+     * @var array TOKENTYPES Available data types for token's options,
      * which could be numbers, strings, arrays, and objects.
      *
      * Keys of this array are the token's names, and
@@ -75,7 +124,7 @@ class tokenizer extends tokenizer_base {
     ];
 
     /**
-     * Group of rule's options which must be defined together.
+     * @var array REQUIREDGROUPRULEOPTIONS Group of rule's options which must be defined together.
      * This was defined in order to avoid no-sense definitions.
      */
     protected const REQUIREDGROUPRULEOPTIONS = [
@@ -84,7 +133,7 @@ class tokenizer extends tokenizer_base {
     ];
 
     /**
-     * List of all VPL token types used at override_tokens
+     * @var array VPLTOKENTYPES List of all VPL token types used at override_tokens
      */
     protected const VPLTOKENTYPES = [
         "vpl_identifier", "vpl_literal", "vpl_operator",
@@ -92,7 +141,7 @@ class tokenizer extends tokenizer_base {
     ];
 
     /**
-     * Available names for tokens based on TextMate and ACE editor.
+     * @var array $availabletokens Available names for tokens based on TextMate and ACE editor.
      *
      * Each token must be declared as one of the vpl_token_type avaiable types
      * in order to be compatible for similarity classes.
@@ -188,33 +237,30 @@ class tokenizer extends tokenizer_base {
     ];
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get availabletokens for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function get_override_tokens(): array {
         return $this->availabletokens;
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get rawoverridetokens for current tokenizer
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected function get_raw_override_tokens(): array {
         return $this->rawoverridetokens;
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get maxtokencount for current tokenizer
      *
      * @return int
+     * @codeCoverageIgnore
      */
     protected function get_max_token_count(): int {
         return $this->maxtokencount;
@@ -263,11 +309,10 @@ class tokenizer extends tokenizer_base {
     }
 
     /**
-     * @codeCoverageIgnore
-     *
      * Set tokenizer::$maxtokencount whether $maxtokencount is natural
      *
      * @param int $maxtokencount natural number to set to $maxtokencount
+     * @codeCoverageIgnore
      */
     public function set_max_token_count(int $maxtokencount=0): void {
         if ($maxtokencount >= 0) {
@@ -349,7 +394,8 @@ class tokenizer extends tokenizer_base {
     }
 
     /**
-     * Get all tokens for passed line based on Ace Editor
+     * Get all tokens for passed line
+     * Based on Ace Editor
      * (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
      *
      * @param string $line content of the line
@@ -474,8 +520,16 @@ class tokenizer extends tokenizer_base {
         return [ "state"  => $currentstate, "tokens" => $tokens ];
     }
 
-    // Preparation based on Ace Editor tokenizer.js
-    // (https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js).
+    /**
+     * Prepare tokenizer based on the rules defined in the JSON file.
+     * This method processes the rules for each state,
+     * compiles regular expressions, and sets up mappings for token types.
+     *
+     * @param string $rulefilename name of the file with rules
+     *
+     * This method is based on the Ace Editor's tokenizer.js
+     * https://github.com/ajaxorg/ace/blob/master/lib/ace/tokenizer.js
+     */
     private function prepare_tokenizer(string $rulefilename): void {
         foreach ($this->states as $statename => $rules) {
             $ruleregexpr = [];
@@ -544,6 +598,15 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Add a token to the tokens array if it has a valid type
+     * and its value is not empty or, if settrim is true,
+     * its trimmed value is not empty.
+     *
+     * @param array $tokens array of tokens to add the token to
+     * @param token $token the token to add
+     * @param bool $settrim whether to trim the token value before checking its length
+     */
     private static function add_token(array &$tokens, token $token, bool $settrim=false): void {
         if (isset($token->type)) {
             $cond = !$settrim ? strlen($token->value) >= 1 : strlen(trim($token->value)) >= 1;
@@ -554,6 +617,15 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Load JSON file and return its content as an object.
+     * This method reads the file content,
+     * removes C-style comments and blank lines,
+     * and decodes the JSON into an object.
+     *
+     * @param string $filename name of the JSON file to load
+     * @return object JSON object containing the rules
+     */
     private static function load_json(string $filename): object {
         $data = file_get_contents($filename);
 
@@ -566,6 +638,17 @@ class tokenizer extends tokenizer_base {
         return $jsonobj;
     }
 
+    /**
+     * Initialize max_token_count from JSON object.
+     *
+     * This method checks that the "max_token_count" option is defined,
+     * and if checkrules is true, it validates that the value is numeric
+     * and non-negative.
+     * It sets the maxtokencount property to the value of the option.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_max_token_count(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->max_token_count)) {
             if ($this->checkrules === true) {
@@ -585,6 +668,17 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize override tokens from JSON object.
+     *
+     * This method checks that the "override_tokens" option is defined,
+     * and if checkrules is true, it validates that the value is an object.
+     * It sets the availabletokens property to the values defined in the
+     * "override_tokens" option, allowing for custom token types to be defined.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_override_tokens(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->override_tokens)) {
             if ($this->checkrules === true) {
@@ -629,6 +723,16 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize tokenizer name from JSON object.
+     *
+     * This method checks that the "name" option is defined,
+     * and if checkrules is true, it validates that the value is a string.
+     * It sets the name property to the value of the option.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_tokenizer_name(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->name)) {
             if ($this->checkrules === true) {
@@ -643,6 +747,17 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize extension from JSON object.
+     *
+     * This method checks that the "extension" option is defined,
+     * and if checkrules is true, it validates that the value is a string
+     * or an array of strings. It sets the extension property to the value
+     * of the option.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_extension(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->extension)) {
             if ($this->checkrules === true) {
@@ -671,6 +786,16 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize check rules from JSON object.
+     *
+     * This method checks that the "check_rules" option is defined,
+     * and if checkrules is true, it validates that the value is a boolean.
+     * It sets the checkrules property to the value of the option.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_check_rules(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->check_rules)) {
             $optionval = $jsonobj->check_rules;
@@ -688,6 +813,16 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize inherit rules from JSON object.
+     *
+     * This method checks that the "inherit_rules" option is defined,
+     * and if checkrules is true, it validates that the file exists.
+     * It sets the inheritrules property to the path of the inherited rules.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_inherit_rules(string $rulefilename, object $jsonobj) {
         if (isset($jsonobj->inherit_rules)) {
             $optionval = $jsonobj->inherit_rules;
@@ -710,6 +845,16 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Initialize states from JSON object.
+     *
+     * This method checks that the "states" option is defined, and if
+     * checkrules is true, it validates the structure of each state,
+     * ensuring that each state is an object with valid rules.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param object $jsonobj JSON object containing the rules
+     */
     private function init_states(string $rulefilename, object $jsonobj) {
         assertf::assert(isset($jsonobj->states), $rulefilename, '"states" option must be defined');
 
@@ -741,6 +886,19 @@ class tokenizer extends tokenizer_base {
         unset($jsonobj->states);
     }
 
+    /**
+     * Check rules for a state.
+     *
+     * This method checks that each rule in the state is an object,
+     * that all options are valid, and that required options are
+     * defined together.
+     *
+     * @param string $rulefilename name of the file with rules
+     * @param string $statename name of the state
+     * @param array $state array of rules for the state
+     * @param int $nstate number of the state
+     * @param int $nrule number of the rule in the state
+     */
     private function check_rules(string $rulefilename, string $statename, array $state, int $nstate, int $nrule): void {
         foreach ($state as $rule) {
             $errmssg = "rule " . $nrule . " of state \"" . $statename . "\" no. " . $nstate . " must be an object";
@@ -796,6 +954,14 @@ class tokenizer extends tokenizer_base {
         }
     }
 
+    /**
+     * Apply inheritance rules to current tokenizer.
+     *
+     * This method will merge the states of the current tokenizer with
+     * the states of the inherited tokenizer, ensuring that if a state
+     * exists in both, the rules from the inherited tokenizer are added
+     * to the current one without overwriting existing rules.
+     */
     private function apply_inheritance(): void {
         if (!empty($this->inheritrules)) {
             $inherittokenizer = new tokenizer($this->inheritrules);

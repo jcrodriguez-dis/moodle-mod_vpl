@@ -23,8 +23,25 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_sh_factory {
+    /**
+     * @var array $cache cache of the syntaxhighlighter objects
+     * This array is used to cache the syntaxhighlighter objects.
+     * It is used to avoid creating multiple objects of the same type.
+     */
     protected static $cache = [];
+
+    /**
+     * @var bool $loaded true if the javascript has been loaded
+     * This variable is used to avoid loading the javascript multiple times.
+     */
     protected static $loaded = false;
+
+    /**
+     * Include the javascript for the syntaxhighlighter
+     *
+     * This function includes the javascript for the syntaxhighlighter in the page.
+     * It should be called before using any of the syntaxhighlighter functions.
+     */
     public static function include_js() {
         global $PAGE;
         global $CFG;
@@ -35,18 +52,36 @@ class vpl_sh_factory {
             self::$loaded = true;
         }
     }
+
+    /**
+     * Include the syntaxhighlighter javascript
+     *
+     * This function call the javascript for the syntaxhighlighter.
+     * It should be called before using any of the syntaxhighlighter functions.
+     */
     public static function syntaxhighlight() {
         global $PAGE;
         self::include_js();
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlight');
     }
 
+    /**
+     * Syntaxhighlight a file
+     *
+     * @param array $parms parameters to pass to the syntaxhighlighter
+     */
     public static function syntaxhighlight_file($parms) {
         global $PAGE;
         self::include_js();
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'syntaxHighlightFile', $parms);
     }
 
+    /**
+     * Get the syntaxhighlighter object for a type
+     *
+     * @param string $type type of the syntaxhighlighter object
+     * @return vpl_sh_base object to show the file
+     */
     public static function get_object($type) {
         if (! isset( self::$cache[$type] )) {
             require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');
@@ -55,6 +90,13 @@ class vpl_sh_factory {
         }
         return self::$cache[$type];
     }
+
+    /**
+     * Get the syntaxhighlighter object for a file
+     *
+     * @param string $filename name of the file
+     * @return vpl_sh_base object to show the file
+     */
     public static function get_sh($filename) {
         if (vpl_is_binary( $filename )) {
             if (vpl_is_image( $filename )) {

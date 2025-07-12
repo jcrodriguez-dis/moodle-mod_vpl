@@ -41,7 +41,6 @@ class phpconfig {
      * Returns number of bytes from string values in Kb, Mb or Gb
      *
      * @param string $value Value to convert e.g 2M, 1.5Gb, 32K
-     *
      * @return int Nummer of bytes
      */
     public static function get_bytes(string $value): int {
@@ -95,8 +94,6 @@ class phpconfig {
 
     /**
      * Increase PHP memory limit to post_max_size * 3
-     *
-     * @return void
      */
     public static function increase_memory_limit(): void {
         gc_enable();
@@ -116,8 +113,6 @@ class phpconfig {
      * Throws an exception if the PHP free memory is less than needed
      *
      * @param int $memoryneeded Memory needed
-     *
-     * @return void
      */
     public static function checks_free_memory(int $memoryneeded): void {
         $memoryused = memory_get_usage();

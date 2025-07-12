@@ -15,6 +15,11 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * Spanish language strings for the VPL module.
+ *
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
+ * @copyright 2010-2025 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['about'] = 'Acerca de';

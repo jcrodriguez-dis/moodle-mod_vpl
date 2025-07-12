@@ -26,10 +26,35 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
+
+/**
+ * Class to tokenize Scheme programs
+ *
+ * This class extends the vpl_tokenizer_base class to provide specific
+ * tokenization for Scheme programming language.
+ */
 class vpl_tokenizer_scheme extends vpl_tokenizer_base {
+
+    /**
+     * @var array list of reserved words
+     */
     protected $reserved = null;
+
+    /**
+     * @var int current line number
+     * This is used to report the line number of the token found.
+     */
     protected $linenumber;
+
+    /**
+     * @var array tokens found
+     */
     protected $tokens;
+
+    /**
+     * Constructor
+     * Initialize the reserved words for Scheme
+     */
     public function __construct() {
         // TODO need more reserved and functions.
         $list = [
@@ -75,6 +100,14 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             $this->reserved[$word] = 1;
         }
     }
+
+    /**
+     * Check if the previous character is an open parenthesis
+     *
+     * @param string $string the string to check
+     * @param int $pos position in the string to check
+     * @return bool true if the previous character is an open parenthesis, false otherwise
+     */
     protected function is_previous_open_parenthesis(& $string, $pos) {
         for (; $pos >= 0; $pos --) {
             $char = $string[$pos];
@@ -87,6 +120,13 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         }
         return false;
     }
+
+    /**
+     * Check if the text is an identifier
+     *
+     * @param string $text the text to check
+     * @return bool true if it is an identifier, false otherwise
+     */
     protected function is_indentifier($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -94,6 +134,13 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $first = $text[0];
         return ($first >= 'a' && $first <= 'z') || ($first >= 'A' && $first <= 'Z') || $first == '_';
     }
+
+    /**
+     * Check if the text is a number
+     *
+     * @param string $text the text to check
+     * @return bool true if it is a number, false otherwise
+     */
     protected function is_number($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -101,9 +148,19 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $first = $text[0];
         return $first >= '0' && $first <= '9';
     }
+
+    /**
+     * Add a parenthesis to the list of tokens
+     */
     protected function add_parenthesis() {
         $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
     }
+
+    /**
+     * Add a parameter to the list of tokens
+     *
+     * @param string &$pending the parameter
+     */
     protected function add_parameter_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
@@ -112,6 +169,12 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $this->tokens[] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
         $pending = '';
     }
+
+    /**
+     * Add a function to the list of tokens
+     *
+     * @param string &$pending function name
+     */
     protected function add_function_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
@@ -125,10 +188,32 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
         $pending = '';
     }
+
+    /**
+     * @var int parser in regular state
+     */
     const IN_REGULAR = 0;
+
+    /**
+     * @var int parser state for be inside of a string
+     */
     const IN_STRING = 1;
+
+    /**
+     * @var int parser state for be inside of a character
+     */
     const IN_CHAR = 2;
+
+    /**
+     * @var int parser state for be inside of a comment
+     */
     const IN_COMMENT = 4;
+
+    /**
+     * Parse a Scheme file and return the tokens found
+     *
+     * @param string $filedata content of the file to parse
+     */
     public function parse($filedata) {
         $this->tokens = [];
         $this->linenumber = 1;
@@ -200,6 +285,12 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             }
         }
     }
+
+    /**
+     * Get the tokens found in the file
+     *
+     * @return array of vpl_token objects
+     */
     public function get_tokens() {
         return $this->tokens;
     }

@@ -31,7 +31,7 @@ namespace mod_vpl\task;
  */
 class cron_task extends \core\task\scheduled_task {
     /**
-     * @var boolean. The state of verbosity of the task.
+     * @var bool $verbose The state of verbosity of the task.
      */
     private $verbose = true;
 

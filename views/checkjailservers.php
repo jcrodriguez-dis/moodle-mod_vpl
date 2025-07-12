@@ -37,7 +37,6 @@ require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
  *
  * @return string List of jail servers, one per line
  */
-
 function get_currentjailservers($vpl, &$already = []) {
     $serverlist = '';
     $vplinstance = $vpl->get_instance();
@@ -63,7 +62,6 @@ function get_currentjailservers($vpl, &$already = []) {
  *
  * @return string URL without path
  */
-
 function remove_path($url) {
     $path = parse_url( $url, PHP_URL_PATH );
     if ($path > '/') {

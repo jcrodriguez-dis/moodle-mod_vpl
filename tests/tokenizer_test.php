@@ -63,6 +63,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: input value to test
      * value: expected error message to catch
+     * @var array
      */
     protected static array $invalidtestcases;
 
@@ -71,6 +72,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of testable JSON file
      * value: expected error message to catch
+     * @var array
      */
     protected static array $invalidpreparsecases;
 
@@ -79,6 +81,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected value for max_token_count
+     * @var array
      */
     protected static array $maxtokencountcases;
 
@@ -87,6 +90,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected list of override tokens
+     * @var array
      */
     protected static array $overridetokenscases;
 
@@ -95,6 +99,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected list of states
+     * @var array
      */
     protected static array $mergetestcases;
 
@@ -103,6 +108,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected regexprs and matchmappings
+     * @var array
      */
     protected static array $preparetestcases;
 
@@ -111,6 +117,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: input and expected result of tokenizer::get_line_tokens
+     * @var array
      */
     protected static array $getlinetokenstestcases;
 
@@ -119,6 +126,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: input and expected result of tokenizer::get_line_tokens
+     * @var array
      */
     protected static array $getlinetokenoverflowstestcases;
 
@@ -127,6 +135,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected list of tokens and state
+     * @var array
      */
     protected static array $preparsetestcases;
 
@@ -135,6 +144,7 @@ class tokenizer_test extends \advanced_testcase {
      *
      * key: path of a testable JSON file
      * value: expected list of tokens
+     * @var array
      */
     protected static array $parsetestcases;
 
@@ -452,6 +462,9 @@ class tokenizer_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Method to prepare test cases for invalid files
+     */
     private static function setup_invalid_cases(): void {
         self::$invalidtestcases = [
             self::gettestpath() . 'invalid/dump_test.json' => (
@@ -559,6 +572,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to setup max tokens count cases
+     */
     private static function setup_max_token_count_cases(): void {
         self::$maxtokencountcases = [
             self::gettestpath() . 'valid/max_token_count/max_token_count_zero_tokenizer_rules.json' => 0,
@@ -566,6 +582,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to setup override tokens cases
+     */
     private static function setup_override_tokens_cases(): void {
         self::$overridetokenscases = [
             self::gettestpath() . 'valid/override_tokens/empty_override_tokens_tokenizer_rules.json' => [ ],
@@ -602,6 +621,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to setup merge cases
+     */
     private static function setup_merge_cases(): void {
         self::$mergetestcases = [
             self::gettestpath() . 'valid/merge/merge_one_to_one_state_tokenizer_rules.json' => (
@@ -636,6 +658,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to prepare test cases
+     */
     private static function setup_prepare_cases(): void {
         self::$preparetestcases = [
             self::gettestpath() . 'valid/prepare/prepare_with_one_state_tokenizer_rules.json' => (
@@ -710,6 +735,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to setup preparse test cases
+     */
     private static function setup_preparse_cases(): void {
         self::$preparsetestcases = [
             self::gettestpath() . 'valid/get_all_tokens/no_line_tokenizer_rules.json' => (
@@ -861,6 +889,9 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Method to test tokenizer::get_line_tokens
+     */
     private static function setup_get_line_tokens_cases(): void {
         self::$getlinetokenstestcases = [
             self::gettestpath() . 'valid/get_line_tokens/no_matchs_tokenizer_rules.json' => (
@@ -992,6 +1023,11 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Setup the test cases for the parse method.
+     *
+     * @return void
+     */
     private static function setup_parse_cases(): void {
         self::$parsetestcases = [
             self::gettestpath() . 'valid/parse/no_line_tokenizer_rules.json' => (
@@ -1082,6 +1118,14 @@ class tokenizer_test extends \advanced_testcase {
         ];
     }
 
+    /**
+     * Generate the Behat data files for the tokenizer.
+     *
+     * @param tokenizer $tokenizer The tokenizer instance.
+     * @param array $extensions The extensions to include.
+     * @param bool $isnew Whether to use the new tokenizer or not.
+     * @return void
+     */
     private static function get_behat($tokenizer, array $extensions, bool $isnew): void {
         global $CFG;
         $outputdir = $CFG->dataroot . '/temp/vpl/';

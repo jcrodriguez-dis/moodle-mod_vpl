@@ -14,6 +14,15 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+/**
+ * Concatenated execution files for a VPL
+ *
+ * @package mod_vpl
+ * @copyright 2024 Astor Bizard
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Astor Blizard
+ */
+
 use core\output\html_writer;
 
 require_once(__DIR__ . '/../../../config.php');

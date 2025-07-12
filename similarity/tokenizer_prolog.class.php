@@ -14,6 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
 
 /**
  * Prolog programing language tokenizer class
@@ -23,15 +26,30 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
-
 class vpl_tokenizer_prolog extends vpl_tokenizer_base {
+
+    /**
+     * @var array of reserved words in Prolog.
+     */
     protected $reserved = null;
+
+    /**
+     * @var int the current line number in the file.
+     */
     protected $linenumber;
+
+    /**
+     * @var array of tokens found in the file.
+     */
     protected $tokens;
+
+    /**
+     * Check if there is a next open parenthesis in the string.
+     *
+     * @param string $s the string to check
+     * @param int $ini the initial index to start checking
+     * @return bool true if there is a next open parenthesis, false otherwise
+     */
     protected function isnextopenparenthesis(& $s, $ini) {
         $l = strlen( $s );
         for ($i = $ini; $i < $l; $i ++) {
@@ -45,9 +63,24 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         }
         return false;
     }
+
+    /**
+     * Check if the text is an identifier.
+     *
+     * @param string $text the text to check
+     * @return bool true if it is an identifier, false otherwise
+     */
     protected function isidentifierchar($c) {
         return ($c >= 'a' && $c <= 'z') || ($c >= 'A' && $c <= 'Z') || ($c >= '0' && $c <= '9') || ($c == '_');
     }
+
+    /**
+     * Add a pending token to the list of tokens.
+     *
+     * @param string $rest the pending string to add
+     * @param string|null $s the source string (optional)
+     * @param int|null $i the index in the source string (optional)
+     */
     protected function add_pending(&$rest, &$s = null, $i = null) {
         $rest = trim( $rest );
         if (strlen( $rest ) == 0) {
@@ -67,13 +100,46 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         }
         $rest = '';
     }
+
+    /**
+     * @var int regular state of the tokenizer.
+     */
     const IN_REGULAR = 0;
+
+    /**
+     * @var int state of the tokenizer in string parsing.
+     */
     const IN_STRING = 1;
+
+    /**
+     * @var int state of the tokenizer in char parsing.
+     */
     const IN_CHAR = 2;
+
+    /**
+     * @var int state of the tokenizer in macro parsing.
+     */
     const IN_MACRO = 3;
+
+    /**
+     * @var int state of the tokenizer in block comment parsing.
+     */
     const IN_COMMENT = 4;
+
+    /**
+     * @var int state of the tokenizer in line comment parsing.
+     */
     const IN_LINECOMMENT = 5;
+
+    /**
+     * @var int state of the tokenizer in identifier parsing.
+     */
     const IN_IDENTIFIER = 6;
+
+    /**
+     * Parse the file data and extract tokens.
+     * @param string $filedata the file data to parse
+     */
     public function parse($filedata) {
         $this->tokens = [];
         $this->linenumber = 1;
@@ -184,6 +250,13 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         }
         $this->compactoperators();
     }
+
+    /**
+     * Compact operators in the token list.
+     *
+     * This method merges consecutive operator tokens into a single token
+     * if they are not special characters like parentheses, brackets, etc.
+     */
     protected function compactoperators() {
         $correct = [];
         $current = false;
@@ -204,6 +277,12 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         }
         $this->tokens = $correct;
     }
+
+    /**
+     * Get the list of tokens found in the file.
+     *
+     * @return vpl_token[] the list of tokens
+     */
     public function get_tokens() {
         return $this->tokens;
     }

@@ -26,19 +26,55 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Base event class for variation-related events.
+ * This class is used to log events related to variations in the VPL module.
+ */
 class variation_base extends base {
+
+    /**
+     * Returns the object ID mapping for the event.
+     * This method is used to define how the object ID associated with the event should be mapped.
+     * In this case, it maps the object ID to the VPL variations table.
+     *
+     * @return array Returns an array with 'db' and 'restore' keys pointing to VPL_VARIATIONS.
+     */
     public static function get_objectid_mapping() {
         return ['db' => VPL_VARIATIONS, 'restore' => VPL_VARIATIONS];
     }
+
+    /**
+     * Returns the mapping for other data.
+     * This method is used to define how other data associated with the event should be mapped.
+     * In this case, there is no other data to map, so it returns false.
+     *
+     * @return bool|false Returns false as there is no other data to map.
+     */
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
     }
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     * It sets the CRUD action, educational level, and object table for the event.
+     */
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = VPL_VARIATIONS;
     }
+
+    /**
+     * Logs the variation event.
+     * This method is used to log the event when a variation is updated, deleted, or viewed.
+     *
+     * @param \mod_vpl $vpl The VPL instance.
+     * @param int $varid The ID of the variation.
+     * @param int|null $userid The ID of the user related to the event (optional).
+     */
     public static function logvpl($vpl, $varid, $userid = null) {
         global $USER;
         $vplinstance = $vpl->get_instance();
@@ -52,9 +88,24 @@ class variation_base extends base {
         ];
         parent::log( $info );
     }
+
+    /**
+     * Returns the URL for viewing the variation.
+     * This method is used to generate the URL for viewing the variation in the VPL module.
+     *
+     * @return string The URL for viewing the variation.
+     */
     public function get_url() {
         return $this->get_url_base( 'view.php' );
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @param string $mod The type of modification (e.g., 'updated', 'deleted').
+     * @return string Description of the event.
+     */
     public function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $mod;
         $desc .= ' variation with id ' . $this->objectid . ' of VPL activity with id ' . $this->other['vplid'];

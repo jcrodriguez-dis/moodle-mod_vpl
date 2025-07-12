@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
 /**
  * Prolog language similarity class
  *
@@ -22,15 +26,23 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_base.class.php');
-
 class vpl_similarity_prolog extends vpl_similarity_base {
+
+    /**
+     * Returns the type of similarity.
+     *
+     * @return int The type of similarity, which is 6 for Prolog.
+     */
     public function get_type() {
         return 6;
     }
+
+    /**
+     * Normalizes the syntax of the given tokens.
+     *
+     * @param array $tokens The tokens to normalize.
+     * @return array The normalized tokens.
+     */
     public function sintax_normalize(&$tokens) {
         $ret = [];
         foreach ($tokens as $token) {
@@ -40,6 +52,12 @@ class vpl_similarity_prolog extends vpl_similarity_base {
         }
         return $ret;
     }
+
+    /**
+     * Returns the tokenizer for the Prolog language.
+     *
+     * @return vpl_tokenizer The tokenizer instance for Prolog.
+     */
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'prolog' );
     }

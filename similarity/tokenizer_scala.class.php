@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+
 /**
  * Scala programing language tokenizer class
  *
@@ -23,13 +27,19 @@
  * @author Lückl Bernd <bernd.lueckl.ima10@fh-joanneum.at>
  * @author Lang Johannes <johannes.lang.ima10@fh-joanneum.at>
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @copyright authors
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
 class vpl_tokenizer_scala extends vpl_tokenizer_c {
+
+    /**
+     * @var array list of reserved words
+     */
     protected static $sreserved = null;
+
+    /**
+     * Constructor
+     * Initialize the reserved words for Scala.
+     */
     public function __construct() {
         if (self::$sreserved === null) {
             self::$sreserved = [
@@ -86,6 +96,12 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
         }
         $this->reserved = &self::$sreserved;
     }
+
+    /**
+     * Parse the file data and extract tokens.
+     *
+     * @param string $filedata the file data to parse
+     */
     public function parse($filedata) {
         $this->tokens = [];
         $this->linenumber = 1;

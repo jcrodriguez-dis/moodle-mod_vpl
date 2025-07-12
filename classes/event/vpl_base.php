@@ -26,19 +26,53 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Base event class for VPL events.
+ * This class is used to log events related to VPL instances, such as viewing or modifying them.
+ */
 class vpl_base extends base {
+
+    /**
+     * Returns the object ID mapping for this event.
+     * This method is used to define how the object ID associated with the event should be mapped.
+     * In this case, it maps the VPL instance ID to the database and restore.
+     *
+     * @return array Returns an array with 'db' and 'restore' keys mapping to VPL.
+     */
     public static function get_objectid_mapping() {
         return ['db' => VPL, 'restore' => VPL];
     }
+
+    /**
+     * Returns the mapping for other data.
+     * This method is used to define how other data associated with the event should be mapped.
+     * In this case, there is no other data to map, so it returns false.
+     *
+     * @return bool|false Returns false as there is no other data to map.
+     */
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
     }
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     * It sets the action, data, and other properties of the event.
+     */
     protected function init() {
         $this->data['crud'] = 'u';
         $this->data['edulevel'] = self::LEVEL_TEACHING;
         $this->data['objecttable'] = VPL;
     }
+
+    /**
+     * Logs the event.
+     * This method is used to log the event when a VPL instance is viewed or modified.
+     *
+     * @param \mod_vpl|array $vpl The VPL instance to log.
+     */
     public static function log($vpl) {
         if (is_array( $vpl )) {
             parent::log( $vpl );
@@ -50,9 +84,24 @@ class vpl_base extends base {
             parent::log( $einfo );
         }
     }
+
+    /**
+     * Returns the URL associated with this event.
+     * This method is used to provide a URL that can be used to view the event in Moodle.
+     *
+     * @return \moodle_url The URL associated with this event.
+     */
     public function get_url() {
         return $this->get_url_base( 'view.php' );
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @param string $mod The type of modification (e.g., 'updated', 'deleted').
+     * @return string Description of the event.
+     */
     public function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $this->action;
         $desc .= ' ' . $mod . ' of VPL activity with id ' . $this->objectid;

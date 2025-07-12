@@ -29,12 +29,32 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Class to define the form for setting execution limits in VPL
+ *
+ * This form allows users to set execution limits such as time, memory, file size,
+ * and process limits for a VPL instance.
+ */
 class mod_vpl_executionlimits_form extends moodleform {
+    /**
+     * @var mod_vpl $vpl The VPL instance for which execution limits are being set.
+     */
     protected $vpl;
+
+    /**
+     * Constructor for the execution limits form.
+     *
+     * @param moodle_page $page The page on which the form will be displayed.
+     * @param mod_vpl $vpl The VPL instance for which execution limits are being set.
+     */
     public function __construct($page, $vpl) {
         $this->vpl = $vpl;
         parent::__construct( $page );
     }
+
+    /**
+     * Defines the form elements for setting execution limits.
+     */
     protected function definition() {
         $plugincfg = get_config('mod_vpl');
         $mform = & $this->_form;

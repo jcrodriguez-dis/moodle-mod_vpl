@@ -36,6 +36,11 @@ require_once(dirname(__FILE__).'/../locallib.php');
  */
 class util_lock_test extends \advanced_testcase {
 
+    /**
+     * Base directory for test locks
+     *
+     * @var string
+     */
     private $basedir;
 
     /**

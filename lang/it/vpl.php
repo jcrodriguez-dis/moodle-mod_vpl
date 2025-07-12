@@ -14,10 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * English to Italian translation, 10/2016
  * @author Andrea Pruccoli (Maggioli Informatica - http://www.maggioli.it/divisioni/maggioli-informatica/)
+ * @copyright 2016 Andrea Pruccoli (Maggioli Informatica - http://www.maggioli.it/divisioni/maggioli-informatica/)
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 

@@ -29,9 +29,17 @@ require_once(dirname(__FILE__).'/vpl_submission.class.php');
 require_once(dirname(__FILE__).'/jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__).'/jail/running_processes.class.php');
 
+/**
+ * Class mod_vpl_submission_CE
+ *
+ * This class is used to manage the compilation and execution of submissions in VPL.
+ * It extends the base mod_vpl_submission class and provides additional functionality
+ * specific to compilation and execution tasks.
+ */
 class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Associative array for detecting the programming language based on a file's extension
+     * @var array
      */
     private static $languageext = [
         'ada' => 'ada',
@@ -98,6 +106,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
 
     /**
      * Associative array for detecting the build system based on the configuration file
+     * @var array
      */
     private static $languageconfig = [
         'Makefile' => 'make',
@@ -112,6 +121,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         pom.xml => maven
     */
 
+    /**
+     * Associative array for detecting the action name based on the script name
+     * @var array
+     */
     private static $scriptname = [
         'vpl_run.sh' => 'run',
         'vpl_debug.sh' => 'debug',
@@ -119,17 +132,54 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'vpl_test_evaluate.sh' => 'test_evaluate',
     ];
 
+    /**
+     * Identify the run execution type.
+     */
     const TRUN = 0;
+    /**
+     * Identify the debug execution type.
+     */
     const TDEBUG = 1;
+    /**
+     * Identify the evaluation execution type.
+     */
     const TEVALUATE = 2;
+    /**
+     * Identify the test evaluation execution type.
+     */
     const TTESTEVALUATE = 3;
+    /**
+     * Directory name for evaluation tests.
+     * This directory must be in the execution files.
+     * It is used to store the evaluation tests of evaluation.
+     */
     const DIR_TEST_EVALUATION = 'vpl_evaluation_tests';
 
+    /**
+     * Mark to set the running mode to text.
+     * This mark must appear in the first part of any code file.
+     */
     const RUN_TEXT_MODE_MARK = '@vpl_run_text_mode';
+    /**
+     * Mark to set the running mode to GUI.
+     * This mark must appear in the first part of any code file.
+     */
     const RUN_GUI_MODE_MARK = '@vpl_run_gui_mode';
+    /**
+     * Mark to set the running mode to webapp.
+     * This mark must appear in the first part of any code file.
+     */
     const RUN_WEBAPP_MODE_MARK = '@vpl_run_webapp_mode';
+    /**
+     * Mark to set the running mode to text in GUI mode.
+     * This mark must appear in the first part of any code file.
+     */
     const RUN_TEXTINGUI_MODE_MARK = '@vpl_run_textingui_mode';
 
+    /**
+     * Associative array for getting the execution type based on the script name.
+     * @var array
+     */
     private static $script2type = [
         'vpl_run.sh' => self::TRUN,
         'vpl_debug.sh' => self::TDEBUG,
@@ -137,6 +187,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'vpl_evaluate.cases' => self::TEVALUATE,
         'vpl_test_evaluate.sh' => self::TTESTEVALUATE,
     ];
+    /**
+     * Associative array for getting the script to use based on the execution type.
+     * @var array
+     */
     private static $type2script = [
         self::TRUN => 'vpl_run.sh',
         self::TDEBUG => 'vpl_debug.sh',
@@ -486,6 +540,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         return '0';
     }
 
+    /**
+     * Get the anrry of environment variables to be used in the jail.
+     *
+     * @param mod_vpl $vpl VPL activity instance.
+     * @param object $data Data object containing execution information.
+     * @return array Associative array of environment variables.
+     */
     public static function get_environment_variables($vpl, $data) {
         global $DB;
         $variables = [];
@@ -699,6 +760,15 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         return $response;
     }
+    /**
+     * Request an action of run, debug, evaluate and test_evaluate on VPL instance and submission.
+     *
+     * @param object $data Data to be sent to the jail server
+     * @param int $maxmemory Maximum memory to be used by the jail server
+     * @param string $localservers List of local servers
+     * @param string &$server Jail server selected
+     * @return object Response from the jail server with task information for the client.
+     */
     public function jailrequestaction($data, $maxmemory, $localservers, &$server) {
         $error = '';
         $server = vpl_jailserver_manager::get_server($maxmemory, $localservers, $error);
@@ -712,6 +782,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         return self::jailaction($this->vpl, $server, 'request', $data );
     }
+    /**
+     * Request an action of run, debug, evaluate and test_evaluate on VPL instance and submission.
+     *
+     * @param string $action Action to be executed
+     * @param object|false $processinfo Process information, if false then get from vpl_running_processes.
+     * @return object Response from the jail server with task information for the client.
+     */
     public function jailreaction($action, $processinfo = false) {
         if ($processinfo === false) {
             $vplid = $this->vpl->get_instance()->id;
@@ -865,7 +942,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         return $response['update'] > 0;
     }
-
+    /**
+     * Retrieve the result of a process.
+     *
+     * @param int $processid Process ID to retrieve the evaluation result.
+     * @throws Exception If no process found or if there is an error retrieving the result.
+     * @return string The evaluation result.
+     */
     public function retrieveresult($processid) {
         $vplid = $this->vpl->get_instance()->id;
         $processinfo = vpl_running_processes::get_by_id($vplid, $this->instance->userid, $processid);
@@ -892,6 +975,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         return $this->get_CE_for_editor( $response );
     }
+    /**
+     * Check if the process is running.
+     *
+     * @return bool True if running, false otherwise.
+     */
     public function isrunning() {
         try {
             $response = $this->jailreaction( 'running' );

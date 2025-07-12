@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_c.class.php');
+
 /**
  * C++ language similarity class
  *
@@ -22,15 +26,22 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_c.class.php');
-
 class vpl_similarity_cpp extends vpl_similarity_c {
+
+    /**
+     * Returns the type of similarity.
+     *
+     * @return int The type of similarity, which is 2 for C++.
+     */
     public function get_type() {
         return 2;
     }
+
+    /**
+     * Returns the tokenizer for the C++ language.
+     *
+     * @return vpl_tokenizer The tokenizer instance for C++.
+     */
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'cpp' );
     }

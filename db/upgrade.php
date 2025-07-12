@@ -15,6 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * VPL upgrade code.
  *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
@@ -22,6 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+/**
+ * Adds a field to a table if it does not exist.
+ *
+ * @param xmldb_manager $dbman The database manager
+ * @param xmldb_table $table The table to add the field to
+ * @param xmldb_field $field The field to add
+ */
 function xmldb_vpl_addfield($dbman, $table, $field) {
     if ($dbman->field_exists($table, $field)) {
         return;
@@ -29,6 +37,13 @@ function xmldb_vpl_addfield($dbman, $table, $field) {
     $dbman->add_field($table, $field);
 }
 
+/**
+ * Drops a field from a table if it exists
+ *
+ * @param xmldb_manager $dbman The database manager
+ * @param xmldb_table $table The table to drop the field from
+ * @param string $fieldname The name of the field to drop
+ */
 function xmldb_vpl_dropfield($dbman, $table, $fieldname) {
     $field = new xmldb_field($fieldname);
     if (! $dbman->field_exists($table, $field)) {

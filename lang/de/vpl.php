@@ -15,6 +15,11 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * German language strings for the VPL module.
+ *
+ * @author
+ * @copyright authors
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['vpl'] = 'Virtual Programming Lab';

@@ -14,15 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-/**
- * Class to show two files diff
- *
- * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
- * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
- */
-
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__).'/../locallib.php');
@@ -31,12 +22,19 @@ require_once(dirname(__FILE__).'/../vpl_submission.class.php');
 require_once(dirname(__FILE__).'/similarity_factory.class.php');
 require_once(dirname(__FILE__).'/similarity_sources.class.php');
 
+/**
+ * Class to show two files diff
+ *
+ * @package mod_vpl
+ * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ */
 class vpl_diff {
     /**
      * Remove chars and digits
      *
-     * @param $line string
-     *            to process
+     * @param string $line to process
      * @return string without chars and digits
      */
     public static function removealphanum($line) {
@@ -55,10 +53,8 @@ class vpl_diff {
     /**
      * Calculate the similarity of two lines
      *
-     * @param
-     *            $line1
-     * @param
-     *            $line2
+     * @param string $line1 the first line to compare
+     * @param string $line2 the second line to compare
      * @return int (3 => trimmed equal, 2 =>removealphanum , 1 => start of line , 0 => not equal)
      */
     public static function diffline($line1, $line2) {
@@ -100,6 +96,15 @@ class vpl_diff {
         }
         return $i > 0 ? 1 : 0;
     }
+
+    /**
+     * Create a new line info object
+     *
+     * @param string $type The type of the line ('<', '>', '=', '1', '2', '#').
+     * @param int $ln1 The line number in the first file.
+     * @param int $ln2 The line number in the second file (optional, default is 0).
+     * @return StdClass An object containing the type and line numbers.
+     */
     public static function newlineinfo($type, $ln1, $ln2 = 0) {
         $ret = new StdClass();
         $ret->type = $type;
@@ -113,8 +118,8 @@ class vpl_diff {
      *
      * @param array $matrix  of arrays to initialize
      * @param array $prev of arrays to initialize
-     * @param $nl1 number of rows
-     * @param $nl2 number of columns
+     * @param int $nl1 number of rows
+     * @param int $nl2 number of columns
      * @return void
      */
     public static function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
@@ -136,6 +141,14 @@ class vpl_diff {
         }
     }
 
+    /**
+     * Check if two lines are similar
+     *
+     * @param string $line1 The first line.
+     * @param string $line2 The second line.
+     * @param string $pattern The pattern to use for similarity check.
+     * @return bool True if the lines are similar, false otherwise.
+     */
     public static function similine($line1, $line2, $pattern) {
         return preg_replace($pattern, '', $line1) == preg_replace($pattern, '', $line2);
     }
@@ -143,10 +156,8 @@ class vpl_diff {
     /**
      * Calculate diff for two array of lines
      *
-     * @param $lines1 array
-     *            of string
-     * @param $lines2 array
-     *            of string
+     * @param array $lines1 of string
+     * @param array $lines2 of string
      * @return array of objects with info to show the two array of lines
      */
     public static function calculatediff($lines1, $lines2) {
@@ -255,6 +266,17 @@ class vpl_diff {
         }
         return $ret;
     }
+
+    /**
+     * Show the diff of two files.
+     *
+     * @param string $filename1 The name of the first file.
+     * @param string $data1 The content of the first file.
+     * @param string $htmlheader1 The HTML header for the first file.
+     * @param string $filename2 The name of the second file.
+     * @param string $data2 The content of the second file.
+     * @param string $htmlheader2 The HTML header for the second file.
+     */
     public static function show($filename1, $data1, $htmlheader1, $filename2, $data2, $htmlheader2) {
         // Get file lines.
         $nl = vpl_detect_newline( $data1 );
@@ -346,6 +368,15 @@ class vpl_diff {
         echo '<div style="clear:both;"></div>';
         vpl_sh_factory::syntaxhighlight();
     }
+
+    /**
+     * Get the file to show in the diff view.
+     *
+     * @param int $f The file number.
+     * @param string &$htmlheader The HTML header to be filled.
+     * @param string &$filename The filename to be filled.
+     * @param string &$data The file data to be filled.
+     */
     public static function vpl_get_similfile($f, &$htmlheader, &$filename, &$data) {
         global $DB;
         $htmlheader = '';

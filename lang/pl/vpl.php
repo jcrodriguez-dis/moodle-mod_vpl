@@ -14,12 +14,13 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * English to Polish translation, 02/02/2011
  *
  * @author Marcin Kolodziej
  * @author Michal Kedzia
+ * @copyright 2011 Marcin Kolodziej and Michal Kedzia
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['vpl'] = 'Wirtualne Laboratorium Programowania';

@@ -24,10 +24,19 @@
  */
 
  /**
+  * VPL module data generator class for testing.
+  *
   * @codeCoverageIgnore
   */
 class mod_vpl_generator extends testing_module_generator {
-    public function create_instance($record = null, array $options = null) {
+    /**
+     * Create a new instance of the VPL module.
+     *
+     * @param object|null $record The record to create the instance with.
+     * @param ?array $options Additional options for creating the instance.
+     * @return stdClass The created instance.
+     */
+    public function create_instance($record = null, ?array $options = null) {
         // Normalize parameter $record to object.
         $record = (object)(array)$record;
 

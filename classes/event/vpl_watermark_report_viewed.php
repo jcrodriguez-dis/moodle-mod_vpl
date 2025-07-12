@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_vpl\event;
+
+defined( 'MOODLE_INTERNAL' ) || die();
+require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
 /**
  * Class for logging of watermark report view events
  *
@@ -22,16 +27,24 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-namespace mod_vpl\event;
-
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
 class vpl_watermark_report_viewed extends vpl_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
         $this->legacyaction = 'view watermarks';
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'watermarks report' );
     }

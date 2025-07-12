@@ -53,7 +53,6 @@ class webservice_test extends base_test {
      * @param string $request Request to send
      * @return string JSON response or error message
      */
-
     private function vpl_call_service($url, $fun, $request = '') {
         if (! function_exists( 'curl_init' )) {
             return 'PHP cURL requiered';

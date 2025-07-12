@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+
 /**
  * Python programing language tokenizer class
  *
@@ -24,15 +28,18 @@
  * @author Lückl Bernd <bernd.lueckl.ima10@fh-joanneum.at>
  * @author Lang Johannes <johannes.lang.ima10@fh-joanneum.at>
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @copyright authors
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
 class vpl_tokenizer_python extends vpl_tokenizer_c {
 
+    /**
+     * @var array list of reserved words
+     */
     protected static $pythonreserved = null;
 
+    /**
+     * Check if the text is an identifier.
+     */
     protected function is_text($text) {
         if (strlen( $text ) == 0) {
             return false;
@@ -41,6 +48,10 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         return $first == '"' || $first == "'";
     }
 
+    /**
+     * Add a pending token to the list of tokens.
+     * @param string $pending the pending token to add
+     */
     protected function add_pending(&$pending) {
         if ($pending <= ' ') {
             $pending = '';
@@ -63,6 +74,10 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         $pending = '';
     }
 
+    /**
+     * Constructor
+     * Initialize the reserved words for Python.
+     */
     public function __construct() {
         if (self::$pythonreserved === null) {
             self::$pythonreserved = [
@@ -104,6 +119,11 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         $this->reserved = &self::$pythonreserved;
     }
 
+    /**
+     * Parse the file data and extract tokens.
+     *
+     * @param string $filedata the file data to parse
+     */
     public function parse($filedata) {
         $this->tokens = [];
         $this->linenumber = 1;

@@ -14,7 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-
 /**
  * Class for logging of similary form view events
  *
@@ -27,12 +26,28 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when a similarity form is viewed.
+ * This class is used to log the event when a similarity form is viewed.
+ */
 class vpl_similarity_form_viewed extends vpl_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
         $this->legacyaction = 'similarity form';
     }
+
+    /**
+     * Returns the event description.
+     * This method is used to provide a human-readable description of the event.
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'similarity form' );
     }

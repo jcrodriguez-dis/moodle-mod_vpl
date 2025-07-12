@@ -27,6 +27,12 @@ namespace mod_vpl\similarity;
 use Exception;
 use mod_vpl\similarity\similarity_generic;
 
+/**
+ * Class similarity_factory
+ *
+ * This class is responsible for creating instances of similarity processors based on file types.
+ * It maps file extensions to programming languages and retrieves the appropriate similarity class.
+ */
 class similarity_factory {
     /**
      * @var string[] $ext2typearray Relates file extension to file type.
@@ -56,11 +62,10 @@ class similarity_factory {
     ];
 
     /**
-     * @codeCoverageIgnore
-     *
      * Get all available languages for similarity
      *
      * @return array
+     * @codeCoverageIgnore
      */
     protected static function get_available_languages(): array {
         return array_unique(array_values(self::$ext2typearray));
@@ -105,6 +110,13 @@ class similarity_factory {
         return $similarityclass;
     }
 
+    /**
+     * Returns an object of a class derived from similarity_base to process a file of a type.
+     * This method is used for classes that follow the new naming convention.
+     *
+     * @param string $type File type
+     * @return object|null Object of a class derived from similarity_base or null if not found
+     */
     private static function get_with_similarity_class(string $type) {
         $similarityclass = '\mod_vpl\similarity\similarity_' . $type;
 
@@ -115,6 +127,13 @@ class similarity_factory {
         }
     }
 
+    /**
+     * Returns an object of a class derived from similarity_generic to process a file of a type.
+     * This method is used for generic similarity classes that follow the new naming convention.
+     *
+     * @param string $type File type
+     * @return object|null Object of a class derived from similarity_generic or null if not found
+     */
     private static function get_with_generic(string $type) {
         $tokenizerrule = dirname(__FILE__) . '/../../similarity/tokenizer_rules/';
         $tokenizerrule .= $type . '_tokenizer_rules.json';
@@ -126,6 +145,13 @@ class similarity_factory {
         }
     }
 
+    /**
+     * Returns an object of a class derived from similarity_base to process a file of a type.
+     * This method is used for legacy classes that do not follow the new naming convention.
+     *
+     * @param string $type File type
+     * @return object|null Object of a class derived from similarity_base or null if not found
+     */
     private static function get_with_old_similarity_class(string $type) {
         if (!isset(self::$classloaded[$type])) {
             $include = dirname(__FILE__) . '/../../similarity/similarity_';

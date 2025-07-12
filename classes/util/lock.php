@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+namespace mod_vpl\util;
+
 /**
  * Class to lock based on directory path
  *
@@ -22,13 +24,31 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-namespace mod_vpl\util;
-
 class lock {
+    /**
+     * @var string The path to the lock file.
+     * This is the full path where the lock file will be created.
+     */
     protected $lockfile;
+
+    /**
+     * Get the filename for the lock file.
+     * This is a static method that returns the name of the lock file.
+     *
+     * @return string The name of the lock file.
+     */
     public static function filename() {
         return '/vpl.lock';
     }
+
+    /**
+     * Constructor for the lock class.
+     * This will create a lock file in the specified directory.
+     * If the lock file already exists, it will wait until it can create it.
+     *
+     * @param string $dir The directory where the lock file will be created.
+     * @param int $timeout The maximum time to wait for the lock in seconds.
+     */
     public function __construct($dir, $timeout = 5) {
         global $CFG;
         if ( ! file_exists ($dir) ) {
@@ -65,6 +85,11 @@ class lock {
             }
         }
     }
+
+    /**
+     * Remove the lock file when the object is destroyed.
+     * This is called automatically when the script ends or the object goes out of scope.
+     */
     public function __destruct() {
         if (file_exists($this->lockfile)) {
             unlink($this->lockfile);

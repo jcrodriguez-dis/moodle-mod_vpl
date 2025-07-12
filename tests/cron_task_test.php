@@ -45,6 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 class cron_task_test extends base_test {
     /**
      * Fixture object of class \mod_vpl\task\cron_task
+     * @var \mod_vpl\task\cron_task
      */
     private $crontask;
     /**

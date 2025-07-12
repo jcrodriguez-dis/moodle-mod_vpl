@@ -38,13 +38,41 @@ require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
  * @covers \vpl_running_processes
  */
 class running_processes_test extends base_test {
+    /**
+     * Table name for running processes
+     *
+     * @var string
+     */
     const TABLE = 'vpl_running_processes';
+    /**
+     * @var object
+     */
     protected object $run;
+    /**
+     * @var object
+     */
     protected object $debug;
+
+    /**
+     * @var object
+     */
     protected object $evaluate;
+
+    /**
+     * @var object
+     */
     protected object $directrun;
+
+    /**
+     * @var object
+     */
     protected object $otheruserrun;
+
+    /**
+     * @var object
+     */
     protected object $othervplrun;
+
     /**
      * Method to create the fixture
      */
@@ -90,6 +118,12 @@ class running_processes_test extends base_test {
         parent::tearDown();
     }
 
+    /**
+     * Helper method to check if the record matches the expected values
+     *
+     * @param object $expected The expected record
+     * @param object $actual The actual record retrieved
+     */
     protected function check_record($expected, $actual) {
         $fields = ['id', 'userid', 'vpl', 'type', 'server', 'adminticket'];
         foreach ($fields as $field) {
@@ -98,6 +132,11 @@ class running_processes_test extends base_test {
         $this->assertTrue(time() - $actual->start_time <= 10 && time() >= $actual->start_time);
     }
 
+    /**
+     * Method to test vpl_running_processes::get_run
+     *
+     * @covers \vpl_running_processes::get_run
+     */
     public function test_get_run(): void {
         $userid = $this->students[0]->id;
         $otheruserid = $this->students[1]->id;
@@ -123,6 +162,11 @@ class running_processes_test extends base_test {
         $this->assertFalse($actual);
     }
 
+    /**
+     * Method to test vpl_running_processes::get_directrun
+     *
+     * @covers \vpl_running_processes::get_directrun
+     */
     public function test_get_directrun(): void {
         $userid = $this->students[0]->id;
         $otheruserid = $this->students[1]->id;
@@ -142,6 +186,11 @@ class running_processes_test extends base_test {
         $this->check_record($this->directrun, $actual[$this->directrun->id]);
     }
 
+    /**
+     * Helper method to test vpl_running_processes::get_by_id
+     *
+     * @param array $records List of records to test
+     */
     protected function internal_test_get_by_id($records) {
         foreach ($records as $record) {
             $actual = \vpl_running_processes::get_by_id($record->vpl, $record->userid, $record->id);
@@ -149,6 +198,11 @@ class running_processes_test extends base_test {
         }
     }
 
+    /**
+     * Method to test vpl_running_processes::get_by_id
+     *
+     * @covers \vpl_running_processes::get_by_id
+     */
     public function test_get_by_id(): void {
         $records = [
             $this->run,
@@ -160,6 +214,12 @@ class running_processes_test extends base_test {
         ];
         $this->internal_test_get_by_id($records);
     }
+
+    /**
+     * Method to test vpl_running_processes::delete
+     *
+     * @covers \vpl_running_processes::delete
+     */
     public function test_delete(): void {
         $record = $this->debug;
         \vpl_running_processes::delete($record->userid, $record->vpl, $record->adminticket);
@@ -199,6 +259,11 @@ class running_processes_test extends base_test {
         $this->internal_test_get_by_id($records);
     }
 
+    /**
+     * Method to test vpl_running_processes::lanched_processes
+     *
+     * @covers \vpl_running_processes::lanched_processes
+     */
     public function test_lanched_processes(): void {
         $actual = \vpl_running_processes::lanched_processes($this->course->id);
         $this->assertCount(6, $actual);

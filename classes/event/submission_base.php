@@ -26,22 +26,61 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Base event class for VPL submission events.
+ * This class is used to log events related to VPL submissions, such as creation, editing, and viewing.
+ */
 class submission_base extends base {
+
+    /**
+     * Returns the mapping for object IDs.
+     * This method is used to map the object IDs in the database to the event.
+     *
+     * @return array An associative array with 'db' and 'restore' keys for object ID mapping.
+     */
     public static function get_objectid_mapping() {
         return ['db' => 'vpl_submissions', 'restore' => 'vpl_submissions'];
     }
+
+    /**
+     * Returns the mapping for other related data.
+     * This method is used to map any other related data that is not directly associated with the submission.
+     *
+     * @return bool|false Returns false if there is no other mapping to be done.
+     */
     public static function get_other_mapping() {
         // Nothing to map.
         return false;
     }
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         $this->data['crud'] = 'c';
         $this->data['edulevel'] = self::LEVEL_PARTICIPATING;
         $this->data['objecttable'] = VPL_SUBMISSIONS;
     }
+
+    /**
+     * Returns the URL for the event.
+     * This method is used to provide a URL that can be used to view the submission.
+     *
+     * @return string The URL for viewing the submission.
+     */
     public function get_url() {
         return $this->get_url_base( 'forms/submissionview.php' );
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @param string $mod The type of modification (e.g., 'updated', 'deleted').
+     * @return string Description of the event.
+     */
     protected function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $this->action;
         $desc .= ' ' . $mod . ' VPL submission with id ' . $this->objectid;
@@ -50,6 +89,13 @@ class submission_base extends base {
         }
         return $desc;
     }
+
+    /**
+     * Logs the event for a submission.
+     * This method is used to log the event when a submission is created, edited, or viewed.
+     *
+     * @param mixed $submission The submission object or an array of submission data.
+     */
     public static function log($submission) {
         if (is_array( $submission )) {
             parent::log( $submission );
@@ -65,6 +111,13 @@ class submission_base extends base {
             parent::log( $einfo );
         }
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( '' );
     }

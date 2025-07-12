@@ -15,6 +15,15 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
+ * GIOTES strings for the German language.
+ *
+ * @package mod_vpl
+ * @copyright 2025 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
+ */
+
+/**
  * @var array $string
  */
 $string['pluginname'] = 'GIOTES Bewerter';

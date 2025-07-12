@@ -26,10 +26,20 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when a submission is load in the VPL IDE.
+ * This class is used to log the event when a submission is load in the VPL IDE.
+ */
 class submission_edited extends submission_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
-        $this->legacyaction = 'edit submission';
+        $this->legacyaction = 'load submission in IDE';
     }
 }

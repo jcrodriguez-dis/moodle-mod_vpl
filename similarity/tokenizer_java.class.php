@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/tokenizer_c.class.php');
+
 /**
  * Java programing language tokenizer class
  *
@@ -22,13 +26,18 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/tokenizer_c.class.php');
-
 class vpl_tokenizer_java extends vpl_tokenizer_c {
+
+    /**
+     * @var array Reserved words for Java.
+     */
     static private $reservedjava = null;
+
+    /**
+     * Constructor.
+     *
+     * Initializes the reserved words for Java.
+     */
     public function __construct() {
         if (self::$reservedjava === null) {
             self::$reservedjava = [

@@ -29,21 +29,72 @@ use mod_vpl\tokenizer\token_type;
 use mod_vpl\tokenizer\token;
 
 /**
+ * Base class for similarity processors.
+ * This class is used to define the interface for similarity processors.
  * @codeCoverageIgnore
  */
 abstract class similarity_base {
+
+    /**
+     * @var object $from Source of the content to parse.
+     * This is used to store the origin of the content, such as a file or a directory.
+     */
     protected $from;
+
+    /**
+     * @var int $size Size of the current tokens.
+     * This is used to store the number of tokens in the similarity instance.
+     */
     protected $size;
+
+    /**
+     * @var int $sizeh Size of the hash table.
+     * This is used to store the number of unique tokens in the hash table.
+     */
     protected $sizeh;
+
+    /**
+     * @var array $vecfrec Array to store the vector of frequencies of tokens.
+     * This is used to calculate the similarity between different files.
+     */
     protected $vecfrec;
+
+    /**
+     * @var array $hashes Array to store the hashes of the tokens.
+     * This is used to calculate the similarity between different files.
+     */
     protected $hashes;
+
+    /**
+     * @var object $cluster Cluster object containing information about the cluster.
+     * This is used to group similar files together in the similarity instance.
+     */
     public $cluster;
+
+    /**
+     * @var int $fid Unique identifier for the file.
+     * This is used to differentiate between different files in the similarity instance.
+     */
     public $fid;
+
+    /**
+     * @var int $id Unique identifier for the similarity instance.
+     * This is used to differentiate between different similarity instances.
+     */
     public $id;
 
-    // Array to convert string operators to numbers.
+    /**
+     * @var array $valueconverter Array to convert string operators to numbers.
+     */
     static protected $valueconverter = [];
 
+    /**
+     * Get value id for a given value.
+     * This method ensures that each unique value is assigned a unique integer id.
+     *
+     * @param string $value The value to convert to an id.
+     * @return int The unique id for the value.
+     */
     protected static function get_value_id($value) {
         if (!isset(self::$valueconverter[$value])) {
             self::$valueconverter[$value] = count(self::$valueconverter);
@@ -67,6 +118,7 @@ abstract class similarity_base {
     abstract public function get_tokenizer();
 
     /**
+     * Get size of current tokens
      * @return int size of current tokens
      */
     public function get_size() {
@@ -74,6 +126,7 @@ abstract class similarity_base {
     }
 
     /**
+     * Get size of current hash table
      * @return int size of current hash table
      */
     public function get_sizeh() {
@@ -83,12 +136,20 @@ abstract class similarity_base {
     /**
      * Normalize current syntax of tokens parsed
      * by the current tokenizer
+     * @param array $tokens tokens to normalize
      */
     public function sintax_normalize(&$tokens) {
 
     }
 
+    /**
+     * @var int HASH_SIZE This value is used to calculate the hash table.
+     */
     const HASH_SIZE = 4;
+
+    /**
+     * @var int HASH_REDUCTION This value is used to reduce the size of the hash table.
+     */
     const HASH_REDUCTION = 1000;
 
     /**

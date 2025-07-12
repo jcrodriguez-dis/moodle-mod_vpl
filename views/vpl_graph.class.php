@@ -28,6 +28,13 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->libdir . '/graphlib.php');
 
+/**
+ * Class vpl_graph
+ *
+ * Class to draw graphs for VPL activities.
+ *
+ * @package mod_vpl
+ */
 class vpl_graph {
     /**
      * Draw a graph image. Staked area

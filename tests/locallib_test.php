@@ -35,11 +35,14 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 /**
  * Unit tests for mod/vpl/locallib.php functions.
+ *
  * @group mod_vpl
  * @group mod_vpl_locallib
  */
 class locallib_test extends \advanced_testcase {
     /**
+     * Tests the function vpl_delete_dir.
+     *
      * @covers \vpl_delete_dir
      */
     public function test_vpl_delete_dir(): void {
@@ -67,6 +70,13 @@ class locallib_test extends \advanced_testcase {
         $this->assertFalse(file_exists($testdir) && is_dir($testdir),  $testdir);
     }
 
+    /**
+     * Helper method to test vpl_fopen.
+     *
+     * @param string $path The path to the file.
+     * @param string $text The text to write to the file.
+     * @return void
+     */
     public function internal_test_vpl_fopen($path, $text = 'Example text') {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
@@ -82,6 +92,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_fopen.
+     *
      * @covers \vpl_fopen
      */
     public function test_vpl_fopen(): void {
@@ -138,6 +150,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_get_array_key.
+     *
      * @covers \vpl_get_array_key
      */
     public function test_vpl_get_array_key() {
@@ -155,6 +169,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_fwrite.
+     *
      * @covers \vpl_fwrite
      */
     public function test_vpl_fwrite(): void {
@@ -222,6 +238,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_get_set_session_var.
+     *
      * @covers \vpl_get_set_session_var
      */
     public function test_vpl_get_set_session_var(): void {
@@ -261,6 +279,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_is_image.
+     *
      * @covers \vpl_is_image
      */
     public function test_vpl_is_image(): void {
@@ -281,6 +301,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_truncate_string.
+     *
      * @covers \vpl_truncate_string
      */
     public function test_vpl_truncate_string(): void {
@@ -305,6 +327,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_bash_export.
+     *
      * @covers \vpl_bash_export
      */
     public function test_vpl_bash_export(): void {
@@ -317,6 +341,8 @@ class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_is_valid_file_name.
+     *
      * @covers \vpl_is_valid_file_name
      */
     public function test_vpl_is_valid_file_name(): void {

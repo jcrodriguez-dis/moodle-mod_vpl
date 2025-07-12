@@ -13,6 +13,7 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
  * Unit tests for mod/vpl/lib.php.
  *
@@ -50,15 +51,25 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  */
 class privacy_provider_test extends base_test {
     /**
-     * Fixture object of class \mod_vpl\privacy\provider
+     * Fixture object of class \mod_vpl\privacy\provider.
+     * @var \mod_vpl\privacy\provider
      */
     private $provider;
+
     /**
-     * Fixture object of class mod_vpl_submission_CE
+     * Fixture object of class mod_vpl_submission_CE.
+     * @var mod_vpl_submission_CE
      */
-    private $submission1, $submission2;
+     private $submission1;
+
     /**
-     * Method to create lib test fixture
+     * Fixture object of class mod_vpl_submission_CE.
+     * @var mod_vpl_submission_CE
+     */
+    private $submission2;
+
+    /**
+     * Method to create lib test fixture.
      */
     protected function setUp(): void {
         parent::setUp();
@@ -103,6 +114,13 @@ class privacy_provider_test extends base_test {
         parent::tearDown();
     }
 
+    /**
+     * Method to check that the contexts of the VPLs are the same as the ones in the array.
+     *
+     * @param array $vpls The array of VPLs.
+     * @param contextlist $contexts The context list to check.
+     * @param string $message The message to show if the test fails.
+     */
     protected function check_vpls_contexts(array $vpls, contextlist $contexts, $message) {
         $this->assertEquals(count($vpls), count($contexts));
         foreach ($vpls as $vpl) {
@@ -138,6 +156,9 @@ class privacy_provider_test extends base_test {
         }
     }
 
+    /**
+     * Method to export setup.
+     */
     protected function export_set_up() {
         $this->setUser($this->students[4]);
         $files = ['a.c' => "int main(){\nprintf(\"student4\");\n}"];
@@ -537,7 +558,18 @@ class privacy_provider_test extends base_test {
  * as public to test it.
  */
 class testable_provider extends \mod_vpl\privacy\provider {
+    /**
+     * This variable is used to remove codecheck warning.
+     * It is not used in this class.
+     * @var bool
+     */
     private static $nothing = false;
+    /**
+     * Method to expose get_user_preferences.
+     *
+     * @param int $userid The user id.
+     * @return array The user preferences.
+     */
     public static function get_user_preferences(int $userid): array {
         self::$nothing = true; // Removes codecheck warning.
         return parent::get_user_preferences($userid);

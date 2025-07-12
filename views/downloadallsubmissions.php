@@ -51,6 +51,7 @@ function vpl_user_zip_dirname( $name ) {
     $name = str_replace( '<', '_', $name );
     $name = str_replace( '>', '_', $name );
     $name = str_replace( '|', '_', $name );
+    $name = str_replace( '/', '_', $name );
     return $name;
 }
 
@@ -62,7 +63,7 @@ function vpl_user_zip_dirname( $name ) {
  * @param string             $sourcedir  Source directory name
  * @param string             $zipdirname Zip directory name
  * @param file_group_process $fgm        Object that manages group of files
- * @param string             $ziperrors  Output message if error
+ * @param string             &$ziperrors  Output message if error
  *
  * @return int Bytes archived
  */
@@ -91,8 +92,9 @@ function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) 
  * Adds new files to the zip file.
  * Returns bytes archived
  *
- * @param ZipArchive         $zip        Object that represents a zip file.
- * @param string             $zipdirname Zip directory name
+ * @param ZipArchive $zip Object that represents a zip file.
+ * @param mod_vpl_submission_CE $submission Submission object
+ * @param string $zipdirname Zip directory name
  *
  * @return int Bytes archived
  */
@@ -126,6 +128,10 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
 require_login();
 $id = required_param( 'id', PARAM_INT );
 $all = optional_param( 'all', 0, PARAM_INT );
+
+/**
+ * @var int Size trigger to close the zip file and reopen it.
+ */
 const SIZE_TRIGGER = 64 * 1024 * 1024; // 64Mb.
 $vpl = new mod_vpl( $id );
 $cm = $vpl->get_course_module();

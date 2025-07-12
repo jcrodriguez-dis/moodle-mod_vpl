@@ -18,6 +18,8 @@
  * English to Chinese(simplified) translation, 19/10/2020
  *
  * @author Computer Science Education group of Beijing Technology and Business University
+ * @copyright 2020 Computer Science Education group of Beijing Technology and Business University
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 

@@ -32,9 +32,7 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
  */
 abstract class base extends \core\event\base {
     /**
-     * The legacy action.
-     *
-     * @var string
+     * @var string $legacyaction The legacy action
      */
     protected $legacyaction = '';
     /**

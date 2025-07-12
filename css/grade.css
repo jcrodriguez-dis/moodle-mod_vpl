@@ -42,6 +42,6 @@ td.vpl_finished_evaluation_row {
     }
 }
 
-tr.vpl_hidden_evaluation_row{
+tr.vpl_hidden_evaluation_row {
     display: none;
 }

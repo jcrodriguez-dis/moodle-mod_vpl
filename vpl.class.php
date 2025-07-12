@@ -46,6 +46,13 @@ defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/filegroup.class.php');
 require_once(dirname(__FILE__).'/lib.php');
 
+/**
+ * Class file_group_process
+ *
+ * Manage file groups for VPL activities.
+ *
+ * @package mod_vpl
+ */
 class file_group_execution extends file_group_process {
     /**
      * Name of fixed file names
@@ -119,6 +126,13 @@ class file_group_execution extends file_group_process {
     }
 }
 
+/**
+ * Class mod_vpl
+ *
+ * This class to manage VPL activities.
+ *
+ * @package mod_vpl
+ */
 class mod_vpl {
     /**
      * Internal var for course_module
@@ -165,6 +179,7 @@ class mod_vpl {
     /**
      * An internal cache for grade information.
      *
+     * @var object|null
      */
     protected $gradeinfo = null;
 
@@ -1354,7 +1369,13 @@ class mod_vpl {
         }
         return false;
     }
+
+    /**
+     * Cache of user groups
+     * @var array
+     */
     protected static $usergroupscache = [];
+
     /**
      * If is a group activity return group members for the groupid
      *
@@ -1371,6 +1392,7 @@ class mod_vpl {
         }
         return self::$usergroupscache[$groupid];
     }
+
     /**
      * If is a group activity return group members for the group of the userid
      *
@@ -1481,6 +1503,11 @@ class mod_vpl {
         echo $OUTPUT->footer();
     }
 
+    /**
+     * Map of actions to pagelayouts
+     *
+     * @var array
+     */
     protected static $pagelayoutmap = [
         'executionfiles' => 'admin',
         'executionlimits' => 'admin',
@@ -1500,6 +1527,12 @@ class mod_vpl {
         'index' => 'incourse',
     ];
 
+    /**
+     * Get pagelayout for the action
+     *
+     * @param string $action
+     * @return string
+     */
     public function get_pagelayout($action) {
         if (isset(self::$pagelayoutmap[$action])) {
             return self::$pagelayoutmap[$action];
@@ -1528,7 +1561,18 @@ class mod_vpl {
         }
     }
 
+    /**
+     * Save if print header was printed
+     *
+     * @var bool
+     */
     protected static $headerisout = false;
+
+    /**
+     * Return if header is already printed
+     *
+     * @return bool
+     */
     public static function header_is_out() {
         return self::$headerisout;
     }
@@ -1559,6 +1603,11 @@ class mod_vpl {
             vpl_notice($errormessage, 'error');
         }
     }
+    /**
+     * Print header with simple title
+     *
+     * @param $info string title and last nav option
+     */
     public function print_header_simple($info = '') {
         global $OUTPUT, $PAGE;
         if (self::$headerisout) {

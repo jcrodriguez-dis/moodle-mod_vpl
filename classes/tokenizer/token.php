@@ -25,13 +25,21 @@
 namespace mod_vpl\tokenizer;
 
 /**
+ * Class token
+ *
+ * This class represents a token in the tokenizer.
+ * It contains properties for the token type, value, and line number.
  * @codeCoverageIgnore
  */
 class token {
+    /**
+     * @var array $hashvalues Cache for hash values of tokens
+     * This is used to avoid recalculating the hash for the same token value multiple times.
+     */
     private static array $hashvalues = [];
 
     /**
-     * Type of current token
+     * @var string $type of current token
      */
     public $type;
 

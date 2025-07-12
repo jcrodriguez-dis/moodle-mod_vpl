@@ -26,7 +26,18 @@
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
 
+/**
+ * Class to show a text/code whitout sh
+ *
+ * This class is used to show a text/code whitout sh.
+ * It can be used to show the content of a file.
+ */
 class vpl_sh_text_nsh extends vpl_sh_base {
+    /**
+     * Constructor
+     * @param string $name name of the file to show
+     * @param string $data content of the file to show
+     */
     public function print_file($name, $data) {
         echo "<h4>" . s( $name ) . '</h4>';
         echo '<pre class="vpl_sh vpl_g">';

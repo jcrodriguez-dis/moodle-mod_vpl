@@ -28,12 +28,32 @@ require_once(dirname( __FILE__ ) . '/../locallib.php');
 require_once(dirname( __FILE__ ) . '/../vpl.class.php');
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
+
+/**
+ * Class to define the form for setting files to keep during execution in VPL
+ *
+ * This form allows users to select which files should be kept during the execution of a VPL instance.
+ */
 class mod_vpl_executionkeepfiles_form extends moodleform {
+    /**
+     * @var \mod_vpl\filegroupmanager $fgp The file group manager instance for managing files.
+     */
     protected $fgp;
+
+    /**
+     * Constructor for the execution keep files form.
+     *
+     * @param moodle_page $page The page on which the form will be displayed.
+     * @param \mod_vpl\filegroupmanager $fgp The file group manager instance for managing files.
+     */
     public function __construct($page, $fgp) {
         $this->fgp = $fgp;
         parent::__construct( $page );
     }
+
+    /**
+     * Defines the form elements for setting files to keep during execution.
+     */
     protected function definition() {
         $mform = & $this->_form;
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );

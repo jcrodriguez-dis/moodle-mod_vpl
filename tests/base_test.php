@@ -16,10 +16,11 @@
 
 /**
  * Base fixture for unit tests
- * Code based on mod/assign/tests/base_test.php
- *
+ * Code inspired on mod/assign/tests/base_test.php
  * @package mod_vpl
+ * @copyright Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 
 namespace mod_vpl;
@@ -37,15 +38,19 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
  * Code based on mod/assign/tests/base_test.php
  */
 class base_test extends \advanced_testcase {
-    /** @const Default number of students to create */
+    /** @var number of students to create */
     const DEFAULT_STUDENT_COUNT = 7;
-    /** @const Default number of teachers to create */
+
+    /** @var number of teachers to create */
     const DEFAULT_TEACHER_COUNT = 2;
-    /** @const Default number of editing teachers to create */
+
+    /** @var number of editing teachers to create */
     const DEFAULT_EDITING_TEACHER_COUNT = 2;
-    /** @const Number of groups to create */
+
+    /** @var number of groups to create */
     const GROUP_COUNT = 4;
-    /** @const Number of groups to create */
+
+    /** @var number of groups to create */
     const GROUPING_COUNT = 2;
 
     /** @var stdClass $course New course created to hold VPL instances */
@@ -70,7 +75,7 @@ class base_test extends \advanced_testcase {
     protected $groupings = null;
 
     /**
-     * Setup function - we will create a course and add an assign instance to it.
+     * Setup function - we will create a course and add an VPL instances to it.
      */
     protected function setUp(): void {
         global $DB;
@@ -158,22 +163,75 @@ class base_test extends \advanced_testcase {
     }
 
     /**
-     * Setup function - we will create a course and add an assign instance to it.
+     * Tear down function - we will remove the course and VPL instance in it.
      */
     protected function tearDown(): void {
         \mod_vpl::reset_db_cache();
         parent::tearDown();
     }
 
+    /**
+     * @var \mod_vpl\mod_vpl $vpldefault Instance of VPL default tests.
+     *
+     * This will be used to access the default instance in the tests.
+     */
     protected $vpldefault = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vplnotavailable Instance of VPL not available for students tests.
+     *
+     * This will be used to access the not available for students instance in the tests.
+     */
     protected $vplnotavailable = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vplonefile Instance of VPL with one file tests.
+     *
+     * This will be used to access the one file instance in the tests.
+     */
     protected $vplonefile = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vplmultifile Instance of VPL for multifile tests.
+     *
+     * This will be used to access the multifile instance in the tests.
+     */
     protected $vplmultifile = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vplvariations Instance of VPL for variations tests.
+     *
+     * This will be used to access the variations instance in the tests.
+     */
+
     protected $vplvariations = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vploverrides Instance of VPL for overrides tests.
+     *
+     * This will be used to access the overrides instance in the tests.
+     */
     protected $vploverrides = null;
+
+    /**
+     * @var \mod_vpl\mod_vpl $vplteamwork Instance of VPL for teamwork tests.
+     *
+     * This will be used to access the teamwork instance in the tests.
+     */
     protected $vplteamwork = null;
+
+    /**
+     * @var array $vpls List of VPL instances created in the setup.
+     *
+     * This will be used to access the instances in the tests.
+     */
     protected $vpls = null;
 
+    /**
+     * Setup function - we will create VPL instances.
+     *
+     * This function will create VPL instances that will be used in the tests.
+     */
     protected function setupinstances() {
         // Add VPL instances.
         $this->setup_default_instance();
@@ -195,12 +253,22 @@ class base_test extends \advanced_testcase {
         return;
     }
 
+    /**
+     * Setup function - we will create a default instance.
+     *
+     * This instance will be used as the default one for tests.
+     */
     protected function setup_default_instance() {
         $this->setUser($this->editingteachers[0]);
         $parms = ['name' => 'default', 'evaluate' => 1];
         $this->vpldefault = $this->create_instance($parms);
     }
 
+    /**
+     * Setup function - we will create a not available instance.
+     *
+     * This instance will be not available for students.
+     */
     protected function setup_notavailable_instance() {
         $this->setUser($this->editingteachers[0]);
         $parms = [
@@ -220,6 +288,11 @@ class base_test extends \advanced_testcase {
         $this->vplnotavailable = $this->create_instance($parms);
     }
 
+    /**
+     * Setup function - we will create a onefile instance.
+     *
+     * This instance will have one file and one submission.
+     */
     protected function setup_onefile_instance() {
         $this->setUser($this->editingteachers[0]);
         $parms = [
@@ -245,6 +318,11 @@ class base_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Setup function - we will create a multifile instance.
+     *
+     * This instance will have multiple files and submissions.
+     */
     protected function setup_multifile_instance() {
         $this->setUser($this->editingteachers[0]);
         $parms = [
@@ -284,6 +362,11 @@ class base_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Setup function - we will create a variations instance.
+     *
+     * This instance will have variations and submissions.
+     */
     protected function setup_variations_instance() {
         global $DB;
         $this->setUser($this->editingteachers[0]);
@@ -335,6 +418,11 @@ class base_test extends \advanced_testcase {
         }
     }
 
+    /**
+     * Setup function - we will create an overrides instance.
+     *
+     * This instance will have overrides for students and teachers.
+     */
     protected function setup_overrides_instance() {
         global $DB;
         $this->setUser($this->editingteachers[0]);
@@ -424,6 +512,9 @@ class base_test extends \advanced_testcase {
         $this->vploverrides->update_override_calendar_events($override);
     }
 
+    /**
+     * Setup function - we will create a VPL instance with teamwork.
+     */
     protected function setup_vplteamwork_instance() {
         global $DB;
         $this->setUser($this->editingteachers[0]);
@@ -487,6 +578,8 @@ class base_test extends \advanced_testcase {
     }
 
     /**
+     * Test that we can create an instance of mod_vpl.
+     *
      * @covers \mod_vpl\base_test
      */
     public function test_create_instance(): void {
@@ -513,7 +606,7 @@ class base_test extends \advanced_testcase {
 
 /**
  * Class to use instead of mod_vpl.
- * This derived class of mod_vpl expose protected methods as public to test it.
+ * This derived class of mod_vpl exposes protected methods as public to test it.
  */
 class testable_vpl extends \mod_vpl {
 
@@ -523,6 +616,11 @@ class testable_vpl extends \mod_vpl {
  * Utilities for tokenizer/similarity tests
  */
 class tokenizer_similarity_utils {
+    /**
+     * Get the list of available tokenizer languages.
+     *
+     * @return array List of available tokenizer languages.
+     */
     public static function get_tokenizer_langs(): array {
         $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
         $scanarr = scandir($dir);
@@ -543,37 +641,91 @@ class tokenizer_similarity_utils {
 
 /**
  * Class to use instead of tokenizer_base.
- * This derived class of tokenizer_base expose protected methods as public to test it
+ * This derived class of tokenizer_base exposes protected methods as public to test it
  */
 class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
+    /**
+     * Get the maximum token count for the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return int The maximum token count.
+     */
     public static function get_states_from($tokenizer): array {
         return $tokenizer->get_states();
     }
 
+    /**
+     * Get the match mappings from the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return array The match mappings used by the tokenizer.
+     */
     public static function get_matchmappings_from($tokenizer): array {
         return $tokenizer->get_matchmappings();
     }
 
+    /**
+     * Get the regular expressions from the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return array The regular expressions used by the tokenizer.
+     */
     public static function get_regexprs_from($tokenizer): array {
         return $tokenizer->get_regexprs();
     }
 
+    /**
+     * Check if a value matches a given type.
+     *
+     * @param mixed $value The value to check.
+     * @param string $typename The type name to check against.
+     * @return bool True if the value matches the type, false otherwise.
+     */
     public static function check_type($value, string $typename) {
         return \mod_vpl\tokenizer\tokenizer_base::check_type($value, $typename);
     }
 
+    /**
+     * Check if a rule is in the list of available rules.
+     *
+     * @param array $state The current state of the tokenizer.
+     * @param object $rule The rule to check.
+     * @return bool True if the rule is available, false otherwise.
+     */
     public static function contains_rule(array $state, object $rule): bool {
         return \mod_vpl\tokenizer\tokenizer_base::contains_rule($state, $rule);
     }
 
+    /**
+     * Check if a token is in the list of available tokens.
+     *
+     * @param string $token The token to check.
+     * @param array $availabletokens The list of available tokens.
+     * @return bool True if the token is available, false otherwise.
+     */
     public static function check_token($token, array $availabletokens): bool {
         return \mod_vpl\tokenizer\tokenizer_base::check_token($token, $availabletokens);
     }
 
+    /**
+     * Remove capturing groups from a regex source string.
+     *
+     * @param string $src The source regex string.
+     * @return string The modified regex string without capturing groups.
+     */
     public static function remove_capturing_groups(string $src): string {
         return \mod_vpl\tokenizer\tokenizer_base::remove_capturing_groups($src);
     }
 
+    /**
+     * Get a token array.
+     *
+     * @param int $numline The line number of the token.
+     * @param array $type The type of the token.
+     * @param string $value The value of the token.
+     * @param string $regex The regex pattern for the token.
+     * @return array The token array.
+     */
     public static function get_token_array(int $numline, array $type, string $value, string $regex): array {
         return \mod_vpl\tokenizer\tokenizer_base::get_token_array($numline, $type, $value, $regex);
     }
@@ -581,21 +733,45 @@ class testable_tokenizer_base extends \mod_vpl\tokenizer\tokenizer_base {
 
 /**
  * Class to use instead of tokenizer.
- * This derived class of tokenizer expose protected methods as public to test it
+ * This derived class of tokenizer exposes protected methods as public to test it
  */
 class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
+    /**
+     * Get the maximum token count for the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return int The maximum token count.
+     */
     public static function get_max_token_count_from($tokenizer): int {
         return $tokenizer->get_max_token_count();
     }
 
+    /**
+     * Get the name of the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return string The name of the tokenizer.
+     */
     public static function get_name($tokenizer): string {
         return $tokenizer->name;
     }
 
+    /**
+     * Get the extensions for the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return array The extensions.
+     */
     public static function get_extensions($tokenizer): array {
         return $tokenizer->extension;
     }
 
+    /**
+     * Get the available tokens for the tokenizer.
+     *
+     * @param \mod_vpl\tokenizer\tokenizer $tokenizer The tokenizer instance.
+     * @return array The available tokens.
+     */
     public static function get_available_tokens($tokenizer): array {
         return $tokenizer->availabletokens;
     }
@@ -603,9 +779,14 @@ class testable_tokenizer extends \mod_vpl\tokenizer\tokenizer {
 
 /**
  * Class to use instead of similarity_factory.
- * This derived class of similarity expose protected methods as public to test it
+ * This derived class of similarity exposes protected methods as public to test it
  */
 class testable_similarity_factory extends \mod_vpl\similarity\similarity_factory {
+    /**
+     * Get the available languages for similarity.
+     *
+     * @return array
+     */
     public static function get_available_languages(): array {
         return \mod_vpl\similarity\similarity_factory::get_available_languages();
     }

@@ -23,6 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_sh_base {
+    /**
+     * This function prints the content of a file.
+     *
+     * @param string $filename name of the file
+     * @param string $data content of the file
+     * @return void
+     */
     public function print_file($filename, $data) {
     }
 }

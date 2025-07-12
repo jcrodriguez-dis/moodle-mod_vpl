@@ -26,7 +26,17 @@ namespace mod_vpl\event;
 
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname( __FILE__ ) . '/../../locallib.php');
+
+/**
+ * Event class for when a submission is uploaded.
+ * This class is used to log the event when a submission is uploaded in the VPL module.
+ */
 class submission_uploaded extends submission_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'c';

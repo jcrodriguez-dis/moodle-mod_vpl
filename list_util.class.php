@@ -22,11 +22,36 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 class vpl_list_util {
-    static protected $fields; // Field to compare.
-    static protected $ascending; // Value to return when ascending or descending order.
-    // Compare two submission fields.
+    /**
+     * @var array $fields
+     * Static array of fields to compare.
+     * This array contains the fields that will be used for sorting VPL instances.
+     * The order of the fields matters, as it determines the priority of comparison.
+     * For example, if 'duedate' is first, it will be compared before 'startdate'.
+     */
+    static protected $fields;
+
+    /**
+     * @var int $ascending
+     * Value to return when ascending or descending order.
+     * -1 for ascending order, 1 for descending order.
+     */
+    static protected $ascending;
+
+    /**
+     * Compare two VPL instances for sorting.
+     *
+     * This method compares two VPL instances based on the fields set in
+     * the static $fields array. It returns a negative value if the first
+     * instance should come before the second, a positive value if the first
+     * instance should come after the second, and zero if they are equal.
+     * It uses the static $ascending value to determine the order.
+     *
+     * @param object $avpl First VPL instance to compare.
+     * @param object $bvpl Second VPL instance to compare.
+     * @return int Returns -1, 0, or 1 based on the comparison
+     */
     public static function cpm($avpl, $bvpl) {
         $a = $avpl->get_instance();
         $b = $bvpl->get_instance();
@@ -45,7 +70,14 @@ class vpl_list_util {
     }
 
     /**
-     * Check and set data to sort return comparation function $field field to compare $descending order
+     * Set field and order to sort by.
+     *
+     * This method sets the fields to sort by and the order (ascending or descending).
+     * If the field is not known, it will default to 'duedate'.
+     * The order is set to ascending by default.
+     *
+     * @param string $field Field to sort by.
+     * @param bool $ascending True for ascending order, false for descending.
      */
     public static function set_order($field, $ascending = true) {
         $sortfields = [
@@ -79,6 +111,16 @@ class vpl_list_util {
             self::$ascending = 1;
         }
     }
+    /**
+     * Return a URL for selecting order ascent or descending.
+     *
+     * @param string $burl Base URL to add parameters.
+     * @param string $sort Sort field.
+     * @param string $instanceselection Instance selection.
+     * @param string $selsort Current selected sort field.
+     * @param string $seldir Current selected sort direction.
+     * @return string HTML link with icon to change sort direction.
+     */
     public static function vpl_list_arrow($burl, $sort, $instanceselection, $selsort, $seldir) {
         global $OUTPUT;
         $newdir = 'down'; // Dir to go if clicked.
@@ -100,7 +142,9 @@ class vpl_list_util {
         return '<a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
     }
 
-    // Count submissions graded.
+    /**
+     * Count the number of graded submissions in a VPL instance.
+     */
     public static function count_graded($vpl) {
         $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid, s.groupid' );
         $students = $vpl->get_students();

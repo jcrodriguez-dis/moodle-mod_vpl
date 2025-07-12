@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/tokenizer_c.class.php');
+
 /**
  * C++ programing language tokenizer class
  *
@@ -22,12 +26,11 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/tokenizer_c.class.php');
-
 class vpl_tokenizer_cpp extends vpl_tokenizer_c {
+
+    /**
+     * Constructor for the C++ tokenizer class.
+     */
     public function __construct() {
         parent::__construct();
         $added = [

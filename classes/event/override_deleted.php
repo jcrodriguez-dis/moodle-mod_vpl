@@ -25,12 +25,29 @@ namespace mod_vpl\event;
 
 defined('MOODLE_INTERNAL') || die();
 require_once(dirname(__FILE__).'/../../locallib.php');
+
+/**
+ * Event class for when an override is deleted.
+ * This class is used to log the event when an override is deleted in the VPL module.
+ */
 class override_deleted extends override_base {
+
+    /**
+     * Initializes the event.
+     * This method is called when the event is created.
+     */
     protected function init() {
         parent::init();
         $this->data['crud'] = 'd';
         $this->legacyaction = 'deleted override';
     }
+
+    /**
+     * Returns the description of the event.
+     * This method is used to provide a human-readable description of the event.
+     *
+     * @return string Description of the event.
+     */
     public function get_description() {
         return $this->get_description_mod( 'deleted' );
     }

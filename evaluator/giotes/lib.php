@@ -16,6 +16,14 @@
 
 namespace mod_vpl\evaluator;
 
+/**
+ * GIOTES evaluator plugin for VPL activities.
+ *
+ * @package mod_vpl
+ * @copyright 2025 Juan Carlos Rodríguez-del-Pino
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
+ */
 class giotes extends \mod_vpl\plugininfo\vplevaluator_base {
 
     /**

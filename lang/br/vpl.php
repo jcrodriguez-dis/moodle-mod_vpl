@@ -13,7 +13,13 @@
 //
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
 /**
+ * Brazilian Portuguese language strings for the VPL module.
+ *
+ * @author Gabriel P. Silva UFRJ
+ * @copyright 2018 Gabriel P. Silva UFRJ
+ * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
  */
 $string['about'] = 'Sobre';

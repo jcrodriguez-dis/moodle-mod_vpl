@@ -14,6 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined('MOODLE_INTERNAL') || die();
+
+require_once(dirname(__FILE__).'/similarity_base.class.php');
+
 /**
  * C language similarity class
  *
@@ -22,22 +26,34 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__).'/similarity_base.class.php');
-
 class vpl_similarity_c extends vpl_similarity_base {
+
+    /**
+     * Returns the type of similarity.
+     *
+     * @return int The type of similarity, which is 1 for C.
+     */
     public function get_type() {
         return 1;
     }
+
+    /**
+     * Expands the operator in the array of tokens.
+     */
     public static function expand_operator(&$array, &$from) {
         $last = count( $array ) - 1; // Array alredy with equal =.
-        for ($i = $from; $i < $last; $i ++) { // Replicate from las instruction to =.
+        for ($i = $from; $i < $last; $i ++) { // Replicate from last instruction to =.
             $array[] = $array[$i];
         }
         $from = count( $array ) + 1;
     }
+
+    /**
+     * Normalizes the syntax of the given tokens.
+     *
+     * @param array $tokens The tokens to normalize.
+     * @return array The normalized tokens.
+     */
     public function sintax_normalize(&$tokens) {
         $posiniinst = 0;
         $openbrace = false;
@@ -142,6 +158,12 @@ class vpl_similarity_c extends vpl_similarity_base {
         }
         return $ret;
     }
+
+    /**
+     * Returns the tokenizer for the C language.
+     *
+     * @return vpl_tokenizer The tokenizer instance for C.
+     */
     public function get_tokenizer() {
         return vpl_tokenizer_factory::get( 'c' );
     }

@@ -14,6 +14,11 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+defined( 'MOODLE_INTERNAL' ) || die();
+
+global $CFG;
+require_once($CFG->libdir.'/formslib.php');
+
 /**
  * Similarity form class
  *
@@ -22,18 +27,30 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
-defined( 'MOODLE_INTERNAL' ) || die();
-
-global $CFG;
-require_once($CFG->libdir.'/formslib.php');
-
 class vpl_similarity_form extends moodleform {
+
+    /**
+     * The VPL instance to which this form belongs.
+     * @var mod_vpl
+     */
     private $vpl;
+
+    /**
+     * Constructor for the similarity form.
+     *
+     * @param moodle_page $page The page where the form will be displayed.
+     * @param mod_vpl $vpl The VPL instance to which this form belongs.
+     */
     public function __construct($page, $vpl) {
         $this->vpl = $vpl;
         parent::__construct( $page );
     }
+
+    /**
+     * Returns the list of VPL activities.
+     * @param int $vplid The ID of the current VPL instance.
+     * @return array An associative array of VPL instances names with their IDs as keys
+     */
     protected function list_activities($vplid) {
         global $DB;
         global $USER;
@@ -88,6 +105,12 @@ class vpl_similarity_form extends moodleform {
         $list[''] = get_string( 'select' );
         return $list;
     }
+
+    /**
+     * Set the form definition.
+     *
+     * This method defines the form elements and their properties.
+     */
     protected function definition() {
         $mform = & $this->_form;
         $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );

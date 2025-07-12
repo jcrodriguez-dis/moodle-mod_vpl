@@ -29,21 +29,39 @@ require_once($CFG->libdir.'/formslib.php');
 require_once($CFG->libdir.'/gradelib.php');
 require_once(dirname(__FILE__).'/../locallib.php');
 
+/**
+ * Form to grade a VPL submission.
+ *
+ * This form allows teachers to grade a submission, add comments, and manage advanced grading instances.
+ * It includes options for importing grades from previous submissions and merging advanced grading grid points.
+ */
 class mod_vpl_grade_form extends moodleform {
     /**
-     * @var mod_vpl
+     * @var mod_vpl $vpl The VPL instance to grade.
      */
     protected $vpl;
+
     /**
-     * @var mod_vpl_submission
+     * @var mod_vpl_submission $submission Th submission to grade.
      */
     protected $submission;
 
+    /**
+     * Constructor for the grade form.
+     *
+     * @param moodle_page $page The page object.
+     * @param mod_vpl $vpl The VPL instance.
+     * @param mod_vpl_submission $submission The submission to grade.
+     */
     public function __construct($page, & $vpl, & $submission) {
         $this->vpl = & $vpl;
         $this->submission = & $submission;
         parent::__construct( $page );
     }
+
+    /**
+     * Defines the form elements for grading a submission.
+     */
     protected function definition() {
         global $CFG, $OUTPUT, $PAGE;
         $mform = & $this->_form;
@@ -219,6 +237,17 @@ class mod_vpl_grade_form extends moodleform {
         return html_writer::tag('a', get_string($str, $component), $attributes);
     }
 
+    /**
+     * Adds a button to import grade and comments from a previous submission.
+     *
+     * @param moodleform $mform The form to add the button to.
+     * @param int $id The VPL activity ID.
+     * @param int $userid The user ID to import from.
+     * @param string $name The name of the button element.
+     * @param string $title The title of the button group.
+     * @param string $label The label for the button.
+     * @param mod_vpl_submission|null $subinstance The submission instance to import from, or null if not applicable.
+     */
     protected function add_import_from_submission_button(&$mform, $id, $userid, $name, $title, $label, $subinstance) {
         global $DB;
         $group = [];

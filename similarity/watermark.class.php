@@ -22,10 +22,24 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 class vpl_watermark {
+
+    /**
+     * Start mark of userid as watermarks.
+     * @var string
+     */
     const PRE = "\t \t  ";
+
+    /**
+     * End mark of userid as watermarks.
+     * @var string
+     */
     const POST = "  \t \t";
+
+    /**
+     * Encoder data for watermarks.
+     * @var array
+     */
     private static $encoder = [
             "\t",
             "\t ",
@@ -35,6 +49,13 @@ class vpl_watermark {
             "\t     ",
             "\t      ",
     ];
+
+    /**
+     * Encode a water mark
+     *
+     * @param int $wm watermark to encode
+     * @return string encoded watermark with spaces and tabs
+     */
     private static function encode($wm) {
         $wm = ( int ) $wm;
         $ret = '';
@@ -44,6 +65,13 @@ class vpl_watermark {
         }
         return $ret;
     }
+
+    /**
+     * Decode a water mark
+     *
+     * @param string $wm with spaces and tabs
+     * @return int decoded watermark
+     */
     private static function decode($wm) {
         $ret = 0;
         $digits = explode( "\t", $wm );
@@ -67,6 +95,7 @@ class vpl_watermark {
     }
 
     /**
+     * Get watermark from a string
      *
      * @param string $data
      * @return int userid found in watermark
@@ -96,6 +125,7 @@ class vpl_watermark {
     }
 
     /**
+     * Get watermark from a file
      *
      * @param string $filename
      * @return int userid found in watermark
@@ -108,11 +138,10 @@ class vpl_watermark {
     }
 
     /**
+     * Add watermark to the data for C/C++/Java/JS files
      *
-     * @param string $data
-     *            file content
-     * @param
-     *            userid of wm
+     * @param string $data file content
+     * @param string $userid of wm
      * @return string $data with water mark
      */
     public static function addwm_c($data, $userid) {
@@ -148,10 +177,8 @@ class vpl_watermark {
     /**
      * Add watermark to the end of data
      *
-     * @param string $data
-     *            file content
-     * @param
-     *            userid of wm
+     * @param string $data file content
+     * @param string userid of wm
      * @return string $data with water mark
      */
     public static function addwm_generic($data, $userid) {
@@ -163,11 +190,12 @@ class vpl_watermark {
         }
         return $data;
     }
+
     /**
+     * Add watermark to the data
      *
      * @param string $data
-     * @param
-     *            string filename
+     * @param string filename
      * @param int $userid
      * @return $data with watermark added
      */

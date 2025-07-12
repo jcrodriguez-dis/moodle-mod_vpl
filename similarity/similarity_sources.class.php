@@ -26,14 +26,28 @@
 defined('MOODLE_INTERNAL') || die();
 
 /**
- * @abstract class to represent files from any source
+ * Class to represent files from any source.
  */
 class vpl_file_from_base {
+    /**
+     * Returns the file information.
+     * @return string HTML string with the file information.
+     */
     public function show_info() {
     }
+
+    /**
+     * Returns if the file can be accessed.
+     * @return bool True if the file can be accessed, false otherwise.
+     */
     public function can_access() {
         return false;
     }
+
+    /**
+     * Returns the user ID of the file.
+     * @return string The user ID associated with the file.
+     */
     public function get_userid() {
         return '';
     }
@@ -43,12 +57,40 @@ class vpl_file_from_base {
  * Information of a file from a directory
  */
 class vpl_file_from_dir extends vpl_file_from_base {
+    /**
+     * @var array $usersname Static array to store user names indexed by their IDs.
+     * This is static to avoid loading the same user multiple times.
+     */
     static protected $usersname = [];
+
+    /**
+     * @var string $dirname Directory name where the file is located.
+     */
     protected $dirname;
+
+    /**
+     * @var string $filename Name of the file.
+     */
     protected $filename;
+
+    /**
+     * @var string $userid User ID associated with the file.
+     */
     protected $userid;
+
+    /**
+     * @var int $vplid ID of the VPL activity.
+     */
     protected $vplid;
-    // This is for compatibility with GAP 2.x application.
+
+    /**
+     * Processes a GAP user file to extract user information.
+     * This method reads the contents of a file named 'datospersonales.gap'
+     * and extracts the user's NIF, name, and surname.
+     * It then stores the user's full name in the static $usersname array.
+     * This is for compatibility with GAP 2.x application.
+     * @param string $filepath The path to the file to process.
+     */
     public static function process_gap_userfile($filepath) {
         if (strtolower( basename( $filepath ) ) == 'datospersonales.gap') {
             $nif = '';
@@ -77,7 +119,12 @@ class vpl_file_from_dir extends vpl_file_from_base {
         }
     }
 
-    // This is for compatibility with GAP 2.x application.
+    /**
+     * Returns the user ID from the filename.
+     * This is for compatibility with GAP 2.x application.
+     * @param string $filename The name of the file.
+     * @return string The user ID if found, otherwise an empty string.
+     */
     public static function get_user_id_from_file($filename) {
         if (count( self::$usersname )) {
             $filename = strtolower( $filename );
@@ -89,15 +136,34 @@ class vpl_file_from_dir extends vpl_file_from_base {
         }
         return '';
     }
+
+    /**
+     * Constructor for the vpl_file_from_dir class.
+     *
+     * @param string $filename The name of the file.
+     * @param int $vplid The ID of the VPL activity.
+     * @param string $dirname The directory name where the file is located.
+     * @param string $userid The user ID associated with the file (optional).
+     */
     public function __construct(&$filename, $vplid, $dirname, $userid = '') {
         $this->filename = $filename;
         $this->dirname = $dirname;
         $this->vplid = $vplid;
         $this->userid = self::get_user_id_from_file( $filename );
     }
+
+    /**
+     * Returns the user ID of the file.
+     * @return string The user ID associated with the file.
+     */
     public function get_userid() {
         return $this->userid;
     }
+
+    /**
+     * Returns the file information.
+     * @return string HTML string with the file information
+     */
     public function show_info() {
         $ret = '';
         $ret .= '<a href="' . 'file.php' . '">';
@@ -108,9 +174,21 @@ class vpl_file_from_dir extends vpl_file_from_base {
         }
         return $ret;
     }
+
+    /**
+     * Returns if the file can be accessed.
+     * @return bool True if the file can be accessed, false otherwise
+     */
     public function can_access() {
         return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
+
+    /**
+     * Returns the parameters to link to this file.
+     *
+     * @param int $t Type of link (1 for directory, 2 for activity, 3 for zip)
+     * @return array Associative array with parameters for the link
+     */
     public function link_parms($t) {
         $res = [
                 'type' . $t => 2,
@@ -128,6 +206,11 @@ class vpl_file_from_dir extends vpl_file_from_base {
  * Information of a file from a zip file
  */
 class vpl_file_from_zipfile extends vpl_file_from_dir {
+
+    /**
+     * Returns the file information.
+     * @return string HTML string with the file information
+     */
     public function show_info() {
         $ret = '';
         $ret .= s( $this->filename );
@@ -136,9 +219,17 @@ class vpl_file_from_zipfile extends vpl_file_from_dir {
         }
         return $ret;
     }
+
+    /**
+     * Returns if the file can be accessed.
+     */
     public function can_access() {
         return true;
     }
+
+    /**
+     * Returns the parameters to link to this file.
+     */
     public function link_parms($t) {
         $res = [
                 'type' . $t => 3,
@@ -157,11 +248,39 @@ class vpl_file_from_zipfile extends vpl_file_from_dir {
  * Information of a file from other vpl activity
  */
 class vpl_file_from_activity extends vpl_file_from_base {
+    /**
+     * @var array $vpls Array to store VPL activities.
+     * This is static to avoid loading the same activity multiple times.
+     */
     static protected $vpls = [];
+
+    /**
+     * @var int $vplid ID of the VPL activity.
+     */
     protected $vplid;
+
+    /**
+     * @var string $filename Name of the file.
+     */
     protected $filename;
+
+    /**
+     * @var string $subid Submission ID of the file.
+     */
     protected $subid;
+
+    /**
+     * @var string $userid User ID of the file.
+     */
     protected $userid;
+
+    /**
+     * Constructor for the vpl_file_from_activity class.
+     *
+     * @param string $filename The name of the file.
+     * @param mod_vpl $vpl The VPL activity object.
+     * @param object $subinstance The subinstance object containing user ID and submission ID.
+     */
     public function __construct(&$filename, &$vpl, $subinstance) {
         $id = $vpl->get_instance()->id;
         if (! isset( self::$vpls[$id] )) {
@@ -172,6 +291,12 @@ class vpl_file_from_activity extends vpl_file_from_base {
         $this->userid = $subinstance->userid;
         $this->subid = $subinstance->id;
     }
+
+    /**
+     * Shows the file information.
+     *
+     * @return string HTML string with the file information
+     */
     public function show_info() {
         global $DB;
         $vpl = self::$vpls[$this->vplid];
@@ -199,12 +324,29 @@ class vpl_file_from_activity extends vpl_file_from_base {
         }
         return $ret;
     }
+
+    /**
+     * Returns the user ID of the file.
+     * @return string The user ID associated with the file.
+     */
     public function get_userid() {
         return $this->userid;
     }
+
+    /**
+     * Returns if the file can be accessed.
+     * @return bool True if the file can be accessed, false otherwise
+     */
     public function can_access() {
         return $this->filename != vpl_similarity_preprocess::JOINEDFILENAME;
     }
+
+    /**
+     * Returns the parameters to link to this file.
+     *
+     * @param int $t Type of link (1 for directory, 2 for activity, 3 for zip)
+     * @return array Associative array with parameters for the link
+     */
     public function link_parms($t) {
         return [
                 'type' . $t => 1,
@@ -388,11 +530,27 @@ class vpl_similarity_preprocess {
             }
         }
     }
+
+    /**
+     * Returns the file path for a ZIP file.
+     *
+     * @param int $vplid ID of the VPL activity.
+     * @param string $zipname Name of the ZIP file.
+     * @return string Full path to the ZIP file.
+     */
     public static function get_zip_filepath($vplid, $zipname) {
         global $CFG;
         $zipname = basename( $zipname );
         return $CFG->dataroot . '/temp/vpl_zip/' . $vplid . '_' . $zipname;
     }
+
+    /**
+     * Creates a ZIP file with the given data.
+     *
+     * @param int $vplid ID of the VPL activity.
+     * @param string $zipname Name of the ZIP file to create.
+     * @param string $zipdata Content of the ZIP file.
+     */
     public static function create_zip_file($vplid, $zipname, $zipdata) {
         $filename = self::get_zip_filepath( $vplid, $zipname );
         vpl_fwrite( $filename, $zipdata );

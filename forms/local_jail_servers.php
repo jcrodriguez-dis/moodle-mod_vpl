@@ -29,7 +29,15 @@ require_once(dirname(__FILE__).'/../vpl.class.php');
 global $CFG;
 require_once($CFG->libdir.'/formslib.php');
 
+/**
+ * Class to define the form for setting local jail servers in VPL
+ *
+ * This form allows users to set the local jail servers for VPL execution.
+ */
 class mod_vpl_setjails_form extends moodleform {
+    /**
+     * Defines the form elements
+     */
     protected function definition() {
         $mform = & $this->_form;
         $mform->addElement( 'header', 'headersetjails', get_string( 'local_jail_servers', VPL ) );
