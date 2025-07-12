@@ -158,11 +158,11 @@ function(VPLUI) {
             for (var i = 0; i < nstudents; i++) {
                 var student = students[i];
                 if (i === 0) {
-                    VPL.hide_table_rows(student.subid);
+                    VPL.hideTableRows(student.subid);
                 }
-                var firstTD = VPL.get_table_row(student.subid).querySelector('td');
+                var firstTD = VPL.getTableRow(student.subid).querySelector('td');
                 firstTD.innerHTML = (i + 1) + '/' + nstudents;
-                VPL.show_table_row(student.subid);
+                VPL.showTableRow(student.subid);
                 try {
                     await evaluateStudent(student.id, student.subid);
                 } catch (e) {
