@@ -37,6 +37,7 @@ do
 	VPL_SUBFILE0=
 	VPL_SUBFILE1=
 	rm .curerror &>/dev/null
+	export VPL_RUN_MODE=0
 	. $HELLOSCRIPT gui &>.curerror
 	if [ "$VPL_SUBFILE0" == "" ] ; then
 		echo " No hello program"

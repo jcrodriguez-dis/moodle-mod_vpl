@@ -35,6 +35,7 @@ do
 	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
 	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
 	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
+	export VPL_RUN_MODE=0
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_execution ] ; then
 		let "NG=NG+1"
