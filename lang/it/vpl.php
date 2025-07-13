@@ -20,8 +20,11 @@
  * @copyright 2016 Andrea Pruccoli (Maggioli Informatica - http://www.maggioli.it/divisioni/maggioli-informatica/)
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
+ * @package mod_vpl
  */
 
+$string['Clipboard'] = 'Appunti';
+$string['VPL_COMPILATIONFAILED'] = 'La compilazione o la preparazione della esecuzione ha fallito';
 $string['about'] = 'Informazioni su';
 $string['acceptcertificates'] = 'Accetta certificati autofirmati';
 $string['acceptcertificates_description'] = 'Se i server di esecuzione non stanno usando certificati autofirmati, disispunta questa opzione';
@@ -49,7 +52,6 @@ $string['calculate'] = 'Calcola';
 $string['changesNotSaved'] = 'Le modifiche non sono state salvate';
 $string['check_jail_servers'] = 'Controllo dei server di esecuzione';
 $string['check_jail_servers_help'] = '<p>Questa pagina controlla e mostra lo stato deli server di esecuzione utilizzato per questa attività.</p>';
-$string['Clipboard'] = 'Appunti';
 $string['closed'] = 'Chiuso';
 $string['comments'] = 'Commenti';
 $string['compilation'] = 'Compilazione';
@@ -154,12 +156,12 @@ $string['executionoptions_help'] = '<p>Varie opzioni di esecuzione sono modifica
 <li><b>Valuta alla consegna</b>: la consegna è valutata automaticamente quando è consegnata.</li>
 <li><b>Correzione automatica</b>: se il risultato della valutazione include regole di giudizio, queste vengono utilizzate per impostare il voto in modo automatico.</li>
 </ul>';
+$string['fileNotChanged'] = 'Il file non è stato modifcato';
 $string['file_name'] = 'Nome file';
 $string['fileadded'] = 'Il file \'{$a}\' è stato aggiunto';
 $string['filedeleted'] = 'Il file \'{$a}\' è stato eliminato';
 $string['filelist'] = 'Lista di file';
 $string['filenotadded'] = 'Il file non è stato aggiunto';
-$string['fileNotChanged'] = 'Il file non è stato modifcato';
 $string['filenotdeleted'] = 'Il file \'{$a}\' NON è stato eliminato';
 $string['filenotrenamed'] = 'Il file \'{$a}\' NON è stato rinominato';
 $string['filerenamed'] = 'Il file \'{$a->from}\' è stato rinominato come \'{$a->to}\'';
@@ -366,11 +368,6 @@ $string['variations_unused'] = 'L\'attività ha variazioni, ma sono disabilitati
 $string['variationtitle'] = 'Titolo variazione';
 $string['varidentification'] = 'Identificazione';
 $string['visiblegrade'] = 'Visibile';
-$string['VPL_COMPILATIONFAILED'] = 'La compilazione o la preparazione della esecuzione ha fallito';
-$string['vpl_debug.sh'] = 'Questi script preparano il debugging';
-$string['vpl_evaluate.cases'] = 'Casi di test per la valutazione';
-$string['vpl_evaluate.sh'] = 'Questo script prepara la valutazione';
-$string['vpl_run.sh'] = 'Questo script prepara l\'esecuzione';
 $string['vpl:addinstance'] = 'Aggiungi nuove istanze VPL';
 $string['vpl:grade'] = 'Correggi compito VPL';
 $string['vpl:manage'] = 'Gestisci compito VPL';
@@ -378,6 +375,10 @@ $string['vpl:setjails'] = 'Imposta i server di esecuzione per particolari istanz
 $string['vpl:similarity'] = 'Cerca similarità compito VPL';
 $string['vpl:submit'] = 'Consegna compito VPL';
 $string['vpl:view'] = 'Visualizza la descrizione completa del compito VPL';
+$string['vpl_debug.sh'] = 'Questi script preparano il debugging';
+$string['vpl_evaluate.cases'] = 'Casi di test per la valutazione';
+$string['vpl_evaluate.sh'] = 'Questo script prepara la valutazione';
+$string['vpl_run.sh'] = 'Questo script prepara l\'esecuzione';
 $string['websocket_protocol'] = 'Protoccolo WebSocket';
 $string['websocket_protocol_description'] = 'Tipo di protocollo WebSocket (ws:// o wss://) usato dal browser per connettere i server di esecuzione.';
 $string['workingperiods'] = 'Periodi di lavoro';

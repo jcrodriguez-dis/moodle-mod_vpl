@@ -22,257 +22,62 @@
  * @copyright 2011 Marcin Kolodziej and Michal Kedzia
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @var array $string
+ * @package mod_vpl
  */
-$string['vpl'] = 'Wirtualne Laboratorium Programowania';
-$string['novpls'] = 'Brak zdefiniowanego laboratorium';
-$string['moduleconfigtitle'] = 'Moduł konfiguracji VPL';
-$string['modulename'] = 'Wirtualne Laboratorium Programowania';
-$string['pluginname'] = 'Wirtualne Laboratorium Programowania';
-$string['modulenameplural'] = 'Wirtualne Laboratoria Programowania';
-$string['shortdescription'] = 'Krótki opis';
-$string['fulldescription'] = 'Pełny opis';
-$string['submissionperiod'] = 'Okres składania';
-$string['startdate'] = 'Dostępny od';
-$string['duedate'] = 'Do';
-$string['submissionrestrictions'] = 'Ograniczenia składania';
-$string['maxfiles'] = 'Maksymalna liczba plików';
-$string['maxfilesexceeded'] = 'Maksymalna liczba plików przekroczona';
-$string['maxfilesize'] = 'Maksymalny rozmiar wysyłanego pliku';
-$string['maxfilesizeexceeded'] = 'Maksymalny rozmiar pliku przekroczony';
-$string['requirednet'] = 'Dozwolone wysyłanie z sieci';
-$string['gradeoptions'] = 'Opcje oceniania';
-$string['visiblegrade'] = 'Widoczny';
-$string['nojailavailable'] = 'Brak dostępnego Jail Serwera';
-$string['noright'] = 'Nie masz prawa dostępu';
-$string['requestedfiles'] = 'Żądane pliki';
-$string['execution'] = 'Wykonanie';
-$string['editing'] = 'Edycja';
-$string['basic'] = 'Podstawy';
+
+$string['about'] = 'O';
+$string['addfile'] = 'Dodaj plik';
 $string['advanced'] = 'Zaawansowany';
+$string['allfiles'] = 'Wszystkie pliki';
+$string['allsubmissions'] = 'Wszystkie złożenia';
+$string['anyfile'] = 'Dowolny plik';
+$string['attemptnumber'] = 'Próba numeru {$a}';
+$string['automaticevaluation'] = 'Automatyczne ocenianie';
+$string['automaticgrading'] = 'Automatyczna ocena';
+$string['basedon'] = 'W oparciu o';
+$string['basic'] = 'Podstawy';
+$string['calculate'] = 'przelicz';
+$string['case_sensitive'] = 'Uwzględnij wielkość znaków';
+$string['changesNotSaved'] = 'Zmiany nie zostały zapisane';
+$string['check_jail_servers'] = 'Check jail servers';
+$string['closed'] = 'Zamknięty';
 $string['comments'] = 'Komentarze';
 $string['compilation'] = 'Kompilacja';
-$string['anyfile'] = 'Dowolny plik';
-$string['submission'] = 'Składanie';
-$string['nsubmissions'] = '{$a} złożono';
-$string['submissions'] = 'Złożono';
-$string['submittedon'] = 'Złożono';
-$string['submittedonp'] = 'Złożono {$a}';
-$string['submittedby'] = 'Napisane przez {$a}';
-$string['gradercomments'] = 'Komentarze oceniającego';
-$string['automaticgrading'] = 'Automatyczna ocena';
-$string['open'] = 'Otwarty';
-$string['closed'] = 'Zamknięty';
-$string['timelimited'] = 'Czas ograniczony';
-$string['timeunlimited'] = 'Czas nieograniczony';
-$string['manualgrading'] = 'Ręczne ocenianie';
-
-$string['automaticevaluation'] = 'Automatyczne ocenianie';
-$string['submissionslist'] = 'Lista składania';
-$string['previoussubmissionslist'] = 'Poprzednia lista składania';
-$string['description'] = 'Opis';
-$string['download'] = 'Pobierz';
-$string['edit'] = 'Edycja';
-$string['submissionview'] = 'Widok składania';
-$string['nosubmission'] = 'Składanie niedostępne';
-$string['notexecuted'] = 'Nie wykonane';
-$string['addfile'] = 'Dodaj plik';
-$string['uploadfile'] = 'Importuj plik';
-$string['save'] = 'Zapisz';
-$string['saved'] = 'Zapisane';
-$string['savedfile'] = "Plik '{\$a}' został zapisany";
-$string['saveoptions'] = 'opcje zapisu';
-$string['optionssaved'] = 'Opcje zostały zapisane';
-$string['optionsnotsaved'] = 'Opcje nie zostały zapisane';
-$string['savecontinue'] = 'Zapisz i kontynuuj';
-$string['changesNotSaved'] = 'Zmiany nie zostały zapisane';
-$string['fileNotChanged'] = 'Plik nie został zmieniony';
-$string['filesNotChanged'] = 'Pliki nie zostały zmienione';
-$string['filesChangedNotSaved'] = 'Pliki zostały zmienione, ale nie zostały zapisane';
-$string['executionfiles'] = 'Pliki wykonywalne';
-$string['menuexecutionfiles'] = 'Pliki wykonywalne';
-$string['filerenamed'] = "Nazwa pliku '{\$a->from}' została zmieniona na '{\$a->to}'";
-$string['filenotrenamed'] = 'Nazwa pliku \'{$a}\' nie została zmieniona';
-$string['filedeleted'] = "Plik '{\$a}' został usunięty";
-$string['filenotdeleted'] = 'Plik \'{$a}\' nie został usunięty';
-$string['fileadded'] = "Plik '{\$a}' został dodany";
-$string['fileupdated'] = "Plik '{\$a}' zotał zaktualizowany";
-$string['filenotadded'] = 'Plik nie został dodany';
-$string['fullscreen'] = 'Pełny ekran';
-$string['regularscreen'] = 'Normalny ekran';
-$string['resetfiles'] = 'Zresetuj pliki';
-$string['sureresetfiles'] = 'Czy chcesz utracić całą pracę i zresetować pliki do postaci pierwotnej?';
-$string['test'] = 'Składnik testu';
-$string['testcases'] = 'Przypadków testowych';
-$string['datesubmitted'] = 'Data dodana';
-$string['restrictededitor'] = 'Składanie tylko w zastrzeżonym edytorze';
-$string['isexample'] = 'Ćwiczenie przykładowe';
-$string['examples'] = 'Przykłady';
-$string['gradedonby'] = "Przeglądane dnia {\$a->date} przez {\$a->gradername}";
-$string['grader'] = "Oceniający";
-$string['gradedon'] = "Oceniony";
-$string['run'] = 'Wykonaj';
-$string['debug'] = 'Debuguj';
-$string['evaluate'] = 'Sprawdź';
-$string['evaluation'] = 'Sprawdzanie';
-$string['evaluateonsubmission'] = 'Sprawdzenie poprzez złożenie';
-$string['basedon'] = 'W oparciu o';
-$string['maxexetime'] = 'Maksymalny czas wykonania';
-$string['maxexememory'] = 'Maksymalna zużyta pamięć';
-$string['maxexefilesize'] = 'Maksymalny rozmiar wykonywalnych plików';
-$string['maxexeprocesses'] = 'Maksymalna liczba procesów';
-$string['executionoptions'] = 'Opcje wykonania';
-$string['menuexecutionoptions'] = 'Opcje';
-$string['resourcelimits'] = 'Limity zasobów wykonania';
-$string['menuresourcelimits'] = 'Limity zasobów';
-$string['keepfiles'] = 'Pliki używane podczas wykonania';
-$string['menukeepfiles'] = 'Pliki używane';
-$string['submissionselection'] = 'Wybór składania';
-$string['instanceselection'] = 'Wybór VPL';
-$string['graded'] = 'Oceniony';
-$string['notgraded'] = 'Nieoceniony';
-$string['allsubmissions'] = 'Wszystkie złożenia';
-$string['gradedbyuser'] = 'Ocenione przez użytkownika';
-$string['variation_n'] = 'Wariacja {$a}';
-$string['variation_n_i'] = 'Wariacja {$a->number}: {$a->identification}';
-$string['variations'] = 'Wariacje';
-$string['usevariations'] = 'Użyj wariacji';
-$string['variationtitle'] = 'Tytuł wariacji';
-$string['varidentification'] = 'Identyfikacja';
-$string['variation_options'] = 'Opcje wariacji';
-$string['variations_unused'] = 'Ta czynność ma wariacje, ale są wyłączone';
-$string['deleteallsubmissions'] = 'Usuń wszystkie złożenia';
-$string['maxsimilarityoutput'] = 'Maksymalne wyjście przez podobieństwo';
-$string['resetvpl'] = 'Resetuj {$a}';
-$string['numcluster'] = 'Klaster {$a}';
-
-$string['similarity'] = 'Podobieństwo';
-$string['listwatermarks'] = 'Lista znaków wodnych';
-$string['nowatermark'] = 'Własny znak wodny {$a}';
-$string['origin'] = 'Pochodzenie';
-$string['filestoscan'] = 'Pliki do skanowania';
-$string['scanoptions'] = 'Opcje skanowania';
-$string['allfiles'] = 'Wszystkie pliki';
-$string['joinedfiles'] = 'Dołączone wybrane pliki';
-$string['minsimlevel'] = 'Minimalny poziom podobieństwa';
-$string['othersources'] = 'Inne źródła do skanowania';
-$string['scanactivity'] = 'Czynność';
-$string['scanzipfile'] = 'Plik Zip';
-$string['scandirectory'] = 'Katalog';
-$string['scanother'] = 'Skanuj podobieństwa w dodanych plikach';
-$string['listsimilarity'] = 'Lista podobieństw znaleziona';
-$string['similarto'] = 'Podobne do';
-$string['diff'] = 'diff';
-$string['scanningdir'] = 'Skanowanie katalogu ...';
-$string['unzipping'] = 'Rozpakowywanie ...';
-
-$string['requiredpassword'] = 'Potrzebne hasło';
-$string['attemptnumber'] = 'Próba numeru {$a}';
-$string['opnotallowfromclient'] = 'Akcja niedozwolona z tej maszyny';
-$string['listofcomments'] = 'Lista komentarzy';
-$string['removegrade'] = 'Usuń ocenę';
-$string['graderemoved'] = 'Ocena została usunięta';
-$string['gradenotremoved'] = 'Ocena nie została usunięta. Sprawdż konfigurację czynności w dzienniku ocen.';
-$string['gradenotsaved'] = 'Ocena nie została zapisana. Sprawdź konfigurację czynności w dzienniku ocen.';
-$string['calculate'] = 'przelicz';
-$string['gradeandnext'] = 'Oceń i przejdź dalej';
-
-$string['vpl_run.sh'] = 'Ten skrypt przygotowuje wykonanie przesłanego programu';
-$string['vpl_debug.sh'] = 'Ten skrypt przygotowuje debugowanie przesłanego programu';
-$string['vpl_evaluate.sh'] = 'Ten skrypt przygotowuje sprawdzenie przesłanego programu';
-$string['jail_servers_config'] = 'Konfiguracja Jail serwerów';
-$string['jail_servers'] = 'Lista Jail serwerów';
-$string['local_jail_servers'] = 'Lokalne jail serwery';
-$string['menulocal_jail_servers'] = 'Lokalne jail';
-$string['check_jail_servers'] = 'Check jail servers';
-$string['menucheck_jail_servers'] = 'Check jails';
-$string['jail_servers_description'] = 'Napisz linię dla każdego serwera';
-$string['proposedgrade'] = 'Proponowana ocena: {$a}';
-$string['discard_submission_period'] = 'Odrzuć okres wysyłania';
-$string['discard_submission_period_description'] = 'Dla każdego studenta i każdego przypisania system próbuje odrzucić wysyłanie. System utrzymuje ostatnie i przynajmniej jedno dla każdego okresu';
-$string['serverexecutionerror'] = 'Błąd wykonania serwera';
-$string['server'] = 'serwer';
-$string['currentstatus'] = 'Current status';
-$string['lasterror'] = 'Last error info';
-$string['lasterrordate'] = 'Last error date';
-$string['totalnumberoferrors'] = "Errors";
-$string['inconsistentgroup'] = 'Nie jesteś członkiem tylko jednej grupy (0 o> 1)';
-
-$string['vpl:view'] = 'Pokaż pełny opis przypisania VPL';
-$string['vpl:submit'] = 'Wyślij przypisanie VPL';
-$string['vpl:grade'] = 'Oceń przypisanie VPL';
-$string['vpl:manage'] = 'Zarządzaj przypisaniem VPL';
-$string['vpl:similarity'] = 'Szukaj podobieństw przypisań VPL';
-$string['vpl:setjails'] = 'Ustaw jail serwery dla poszczególnych instancji VPL';
-
-// Code Editor.
-$string['previous_page'] = 'Poprzednia strona';
-$string['return_to_previous_page'] = 'Wróć do poprzedniej strony';
-$string['next_page'] = 'Następna strona';
-$string['go_next_page'] = 'Idź do następnej strony';
-$string['help'] = 'Pomoc';
+$string['connected'] = 'połączono';
+$string['connecting'] = 'łączenie';
+$string['connection_closed'] = 'zamknięto połączenie';
+$string['connection_fail'] = 'błąd połączenia';
+$string['console'] = 'Konsola';
 $string['contextual_help'] = 'Pomoc kontekstowa';
-$string['general_help'] = 'Ogólna pomoc językowa';
-$string['file'] = 'Plik';
-$string['options'] = 'Opcje';
-$string['new'] = 'Nowy';
-$string['create_new_file'] = 'Utwórz nowy plik';
-$string['file_name'] = 'Nazwa pliku';
-$string['incorrect_file_name'] = 'Niepoprawna nazwa pliku';
-$string['rename'] = 'Zmień nazwę';
-$string['renameFile'] = 'Zmień nazwę pliku';
-$string['new_file_name'] = 'Nowa nazwa pliku';
-$string['delete'] = 'Usuń';
-$string['delete_file'] = 'Usuń plik';
-$string['delete_file_q'] = 'Usunąć plik?';
-$string['delete_file_fq'] = "usunąć plik '{\$a}'?";
-$string['save'] = 'Zapisz';
-$string['undo'] = 'Cofnij';
-$string['undo_change'] = 'Cofnij zmianę';
-$string['redo'] = 'Ponów';
-$string['redo_undone'] = 'Ponów poprzednio wprowadzone zmiany';
-$string['cut'] = 'Wytnij';
-$string['cut_text'] = 'Wytnij zaznaczony tekst do schowka';
 $string['copy'] = 'Kopiuj';
 $string['copy_text'] = 'Kopiuj zaznaczony tekst do schowka';
-$string['paste'] = 'Wklej';
-$string['paste_text'] = 'Wklej tekst ze schowka';
-$string['select_all'] = 'Zaznacz wszystko';
-$string['select_all_text'] = 'Zaznacz cały tekst';
-$string['find_replace'] = 'Znajdź/Zamień';
-$string['find_find_replace'] = 'Znajdź lub Znajdź i zamień';
-$string['program_help'] = 'Pomoc programu';
-$string['page_unaccessible'] = 'Strona niedostępna';
-$string['about'] = 'O';
-$string['help_about'] = 'Pomoc na temat';
-$string['figure'] = 'Image';
-$string['line_number'] = 'Numer linii';
-$string['toggle_show_line_number'] = 'Włącz numerowanie linii';
-$string['next'] = 'Następny';
-$string['find_next_search_string'] = 'Znajdź następny szukany łańcuch w tekście';
-$string['replace'] = 'Zamień';
-$string['replace_selection_if_match'] = 'Zamień zaznaczone jeśli pasuje do wyszukiwanego łańcucha';
-$string['replace_find'] = 'Zamień/Znajdź';
-$string['replace_find_next'] = 'Zamień i znajdź następny łańcuch';
-$string['replace_all'] = 'Zamień wszystko';
-$string['replace_all_next'] = 'Zamień wszystkie następne szukane łańcuchy';
-$string['language_help'] = 'Pomoc językowa';
-$string['console'] = 'Konsola';
-$string['find'] = 'Znajdź';
-$string['case_sensitive'] = 'Uwzględnij wielkość znaków';
-$string['replace_find'] = 'Zamień/Znajdź';
-$string['font_size'] = 'Rozmiar czcionki';
-$string['connecting'] = 'łączenie';
-$string['connection_fail'] = 'błąd połączenia';
-$string['connected'] = 'połączono';
-$string['connection_closed'] = 'zamknięto połączenie';
-
-// Editor status.
-$string['notsaved'] = 'Nie zapisano';
-$string['saving'] = 'Zapisywanie';
-$string['running'] = 'Wykonywanie';
-$string['evaluating'] = 'Sprawdzanie';
+$string['create_new_file'] = 'Utwórz nowy plik';
+$string['currentstatus'] = 'Current status';
+$string['cut'] = 'Wytnij';
+$string['cut_text'] = 'Wytnij zaznaczony tekst do schowka';
+$string['datesubmitted'] = 'Data dodana';
+$string['debug'] = 'Debuguj';
 $string['debugging'] = 'Debugowanie';
-
+$string['delete'] = 'Usuń';
+$string['delete_file'] = 'Usuń plik';
+$string['delete_file_fq'] = "usunąć plik '{\$a}'?";
+$string['delete_file_q'] = 'Usunąć plik?';
+$string['deleteallsubmissions'] = 'Usuń wszystkie złożenia';
+$string['description'] = 'Opis';
+$string['diff'] = 'diff';
+$string['discard_submission_period'] = 'Odrzuć okres wysyłania';
+$string['discard_submission_period_description'] = 'Dla każdego studenta i każdego przypisania system próbuje odrzucić wysyłanie. System utrzymuje ostatnie i przynajmniej jedno dla każdego okresu';
+$string['download'] = 'Pobierz';
+$string['duedate'] = 'Do';
+$string['edit'] = 'Edycja';
+$string['editing'] = 'Edycja';
+$string['evaluate'] = 'Sprawdź';
+$string['evaluateonsubmission'] = 'Sprawdzenie poprzez złożenie';
+$string['evaluating'] = 'Sprawdzanie';
+$string['evaluation'] = 'Sprawdzanie';
+$string['examples'] = 'Przykłady';
+$string['execution'] = 'Wykonanie';
+$string['executionfiles'] = 'Pliki wykonywalne';
 $string['executionfiles_help'] = '
 <h1>Pliki wykonywalne</h1>
 <h1>VPL wersji 1.3</h1>
@@ -302,6 +107,7 @@ lub jako bloki komentarzy zaczynające się linią zawierającą jedynie \'&lt;|
 Ocena znajduje się w ostatniej linii zawierającej \'Grade :=&gt;&gt;\'.
 </p>
 ';
+$string['executionoptions'] = 'Opcje wykonania';
 $string['executionoptions_help'] = '
 <h1>Opcje wykonania</h1>
 <p>Na tej stronie ustawiane są róne opcje wykonania.</p>
@@ -318,12 +124,50 @@ $string['executionoptions_help'] = '
 <li><b>Automatyczna ocena</b>: jeżli rezultat sprawdzenia zawiera kody oceny, używane są one do automatycznego oceniania.</li>
 </ul>
 ';
+$string['figure'] = 'Image';
+$string['file'] = 'Plik';
+$string['fileNotChanged'] = 'Plik nie został zmieniony';
+$string['file_name'] = 'Nazwa pliku';
+$string['fileadded'] = "Plik '{\$a}' został dodany";
+$string['filedeleted'] = "Plik '{\$a}' został usunięty";
+$string['filenotadded'] = 'Plik nie został dodany';
+$string['filenotdeleted'] = 'Plik \'{$a}\' nie został usunięty';
+$string['filenotrenamed'] = 'Nazwa pliku \'{$a}\' nie została zmieniona';
+$string['filerenamed'] = "Nazwa pliku '{\$a->from}' została zmieniona na '{\$a->to}'";
+$string['filesChangedNotSaved'] = 'Pliki zostały zmienione, ale nie zostały zapisane';
+$string['filesNotChanged'] = 'Pliki nie zostały zmienione';
+$string['filestoscan'] = 'Pliki do skanowania';
+$string['fileupdated'] = "Plik '{\$a}' zotał zaktualizowany";
+$string['find'] = 'Znajdź';
+$string['find_find_replace'] = 'Znajdź lub Znajdź i zamień';
+$string['find_next_search_string'] = 'Znajdź następny szukany łańcuch w tekście';
+$string['find_replace'] = 'Znajdź/Zamień';
+$string['font_size'] = 'Rozmiar czcionki';
+$string['fulldescription'] = 'Pełny opis';
 $string['fulldescription_help'] = '
 <h1>Pełny opis</h1>
 <p>Musisz tutaj napisać pełny opis czynności.</p>
 <p>Jeśli nic tutaj nie napiszesz, w zamian pokaże się krótki opis.</p>
 <p>Jeśli chcesz sprawdzić automatycznie, interfejsy dla przypisań muszą być dokładne i jednoznaczne.</p>
 ';
+$string['fullscreen'] = 'Pełny ekran';
+$string['general_help'] = 'Ogólna pomoc językowa';
+$string['go_next_page'] = 'Idź do następnej strony';
+$string['gradeandnext'] = 'Oceń i przejdź dalej';
+$string['graded'] = 'Oceniony';
+$string['gradedbyuser'] = 'Ocenione przez użytkownika';
+$string['gradedon'] = "Oceniony";
+$string['gradedonby'] = "Przeglądane dnia {\$a->date} przez {\$a->gradername}";
+$string['gradenotremoved'] = 'Ocena nie została usunięta. Sprawdż konfigurację czynności w dzienniku ocen.';
+$string['gradenotsaved'] = 'Ocena nie została zapisana. Sprawdź konfigurację czynności w dzienniku ocen.';
+$string['gradeoptions'] = 'Opcje oceniania';
+$string['grader'] = "Oceniający";
+$string['gradercomments'] = 'Komentarze oceniającego';
+$string['graderemoved'] = 'Ocena została usunięta';
+$string['help'] = 'Pomoc';
+$string['help_about'] = 'Pomoc na temat';
+$string['inconsistentgroup'] = 'Nie jesteś członkiem tylko jednej grupy (0 o> 1)';
+$string['incorrect_file_name'] = 'Niepoprawna nazwa pliku';
 $string['index_help'] = '
 <h1>Wirtualne laboratorium programowania</h1>
 <ul>
@@ -341,11 +185,26 @@ $string['index_help'] = '
   </li>
 </ul>
 ';
+$string['instanceselection'] = 'Wybór VPL';
+$string['isexample'] = 'Ćwiczenie przykładowe';
+$string['jail_servers'] = 'Lista Jail serwerów';
+$string['jail_servers_config'] = 'Konfiguracja Jail serwerów';
+$string['jail_servers_description'] = 'Napisz linię dla każdego serwera';
+$string['joinedfiles'] = 'Dołączone wybrane pliki';
+$string['keepfiles'] = 'Pliki używane podczas wykonania';
 $string['keepfiles_help'] = '
 <h1>Pliki używane podczas wykonania</h1>
 <p>W związku z kwestią bezpieczeństwa, wszystkie pliki dodane jako &quot;Pliki wykonywalne&quot;  vpl_execution.</p>
 Jeżeli któryś z plików jest wymagany podczas wykonania (na przykład jako dane testowe), musi być to tutaj zaznaczone.
 ';
+$string['language_help'] = 'Pomoc językowa';
+$string['lasterror'] = 'Last error info';
+$string['lasterrordate'] = 'Last error date';
+$string['line_number'] = 'Numer linii';
+$string['listofcomments'] = 'Lista komentarzy';
+$string['listsimilarity'] = 'Lista podobieństw znaleziona';
+$string['listwatermarks'] = 'Lista znaków wodnych';
+$string['local_jail_servers'] = 'Lokalne jail serwery';
 $string['local_jail_servers_help'] = '
 <h1>Lokalne jail serwery</h1>
 <p>Dla tej czynności możesz tutaj ustawić lokalny jail serwer i te, które są na nim oparte.</p>
@@ -353,6 +212,25 @@ $string['local_jail_servers_help'] = '
 <p>Jeśli nie chcesz używać większej ilości jail serwerów oraz serwerów pochodnych, na końcu listy serwerów dodaj linię "end_of_jails".
 </p>
 ';
+$string['manualgrading'] = 'Ręczne ocenianie';
+$string['maxexefilesize'] = 'Maksymalny rozmiar wykonywalnych plików';
+$string['maxexememory'] = 'Maksymalna zużyta pamięć';
+$string['maxexeprocesses'] = 'Maksymalna liczba procesów';
+$string['maxexetime'] = 'Maksymalny czas wykonania';
+$string['maxfiles'] = 'Maksymalna liczba plików';
+$string['maxfilesexceeded'] = 'Maksymalna liczba plików przekroczona';
+$string['maxfilesize'] = 'Maksymalny rozmiar wysyłanego pliku';
+$string['maxfilesizeexceeded'] = 'Maksymalny rozmiar pliku przekroczony';
+$string['maxsimilarityoutput'] = 'Maksymalne wyjście przez podobieństwo';
+$string['menucheck_jail_servers'] = 'Check jails';
+$string['menuexecutionfiles'] = 'Pliki wykonywalne';
+$string['menuexecutionoptions'] = 'Opcje';
+$string['menukeepfiles'] = 'Pliki używane';
+$string['menulocal_jail_servers'] = 'Lokalne jail';
+$string['menuresourcelimits'] = 'Limity zasobów';
+$string['minsimlevel'] = 'Minimalny poziom podobieństwa';
+$string['moduleconfigtitle'] = 'Moduł konfiguracji VPL';
+$string['modulename'] = 'Wirtualne Laboratorium Programowania';
 $string['modulename_help'] = '
 <p><img alt="VPL" src="<?php echo $CFG->wwwroot?>/mod/vpl/icon.gif" />&nbsp;
 <b>VPL. Wirtualnego Laboratorium Programowania</b></p>
@@ -368,6 +246,49 @@ $string['modulename_help'] = '
 </ul>
 <p><a href="http://vpl.dis.ulpgc.es">Virtual Programming lab</a></p>';
 $string['modulename_link'] = 'mod/vpl/view';
+$string['modulenameplural'] = 'Wirtualne Laboratoria Programowania';
+$string['new'] = 'Nowy';
+$string['new_file_name'] = 'Nowa nazwa pliku';
+$string['next'] = 'Następny';
+$string['next_page'] = 'Następna strona';
+$string['nojailavailable'] = 'Brak dostępnego Jail Serwera';
+$string['noright'] = 'Nie masz prawa dostępu';
+$string['nosubmission'] = 'Składanie niedostępne';
+$string['notexecuted'] = 'Nie wykonane';
+$string['notgraded'] = 'Nieoceniony';
+$string['notsaved'] = 'Nie zapisano';
+$string['novpls'] = 'Brak zdefiniowanego laboratorium';
+$string['nowatermark'] = 'Własny znak wodny {$a}';
+$string['nsubmissions'] = '{$a} złożono';
+$string['numcluster'] = 'Klaster {$a}';
+$string['open'] = 'Otwarty';
+$string['opnotallowfromclient'] = 'Akcja niedozwolona z tej maszyny';
+$string['options'] = 'Opcje';
+$string['optionsnotsaved'] = 'Opcje nie zostały zapisane';
+$string['optionssaved'] = 'Opcje zostały zapisane';
+$string['origin'] = 'Pochodzenie';
+$string['othersources'] = 'Inne źródła do skanowania';
+$string['page_unaccessible'] = 'Strona niedostępna';
+$string['paste'] = 'Wklej';
+$string['paste_text'] = 'Wklej tekst ze schowka';
+$string['pluginname'] = 'Wirtualne Laboratorium Programowania';
+$string['previous_page'] = 'Poprzednia strona';
+$string['previoussubmissionslist'] = 'Poprzednia lista składania';
+$string['program_help'] = 'Pomoc programu';
+$string['proposedgrade'] = 'Proponowana ocena: {$a}';
+$string['redo'] = 'Ponów';
+$string['redo_undone'] = 'Ponów poprzednio wprowadzone zmiany';
+$string['regularscreen'] = 'Normalny ekran';
+$string['removegrade'] = 'Usuń ocenę';
+$string['rename'] = 'Zmień nazwę';
+$string['renameFile'] = 'Zmień nazwę pliku';
+$string['replace'] = 'Zamień';
+$string['replace_all'] = 'Zamień wszystko';
+$string['replace_all_next'] = 'Zamień wszystkie następne szukane łańcuchy';
+$string['replace_find'] = 'Zamień/Znajdź';
+$string['replace_find_next'] = 'Zamień i znajdź następny łańcuch';
+$string['replace_selection_if_match'] = 'Zamień zaznaczone jeśli pasuje do wyszukiwanego łańcucha';
+$string['requestedfiles'] = 'Żądane pliki';
 $string['requestedfiles_help'] = '
 <h1>Żądane pliki</h1>
 <p>Tutaj ustawia się nazwy żądanych plików do maksymalnego numeru pliku, który został określony w podstawowych wymaganiach ćwiczenia.</p>
@@ -375,18 +296,87 @@ $string['requestedfiles_help'] = '
 <p>Możesz także dodać zawartość żądanych plików, zawartość ta będzie dostępna za pierwszym razem, gdy zostaną one otwarte w edytorze, jeśli
 nie istnieją poprzednie wpisy.</p>
 ';
+$string['requirednet'] = 'Dozwolone wysyłanie z sieci';
+$string['requiredpassword'] = 'Potrzebne hasło';
+$string['resetfiles'] = 'Zresetuj pliki';
+$string['resetvpl'] = 'Resetuj {$a}';
+$string['resourcelimits'] = 'Limity zasobów wykonania';
 $string['resourcelimits_help'] = '
 <h1>Limity zasobów wykonania</h1>
 <p>Maksymalny limit może być ustawiony dla czasu wykonania, użytej pamięci, rozmiaru wykonywalnych plików i liczby procesów wykonywanych równocześnie.</p>
 <p>Limity te są używane podczas uruchomienia plików skryptowych vpl_run.sh, vpl_debug.sh i vpl_evaluate.sh oraz wbudowanego w nie pliku vpl_execution.</p>
 <p>Jeśli dana czynność jest oparta na innej czynności, limity mogą wpływać na bazowe pliki oraz ich potomków lub na globalną konfigurację tego modułu.</p>
 ';
+$string['restrictededitor'] = 'Składanie tylko w zastrzeżonym edytorze';
+$string['return_to_previous_page'] = 'Wróć do poprzedniej strony';
+$string['run'] = 'Wykonaj';
+$string['running'] = 'Wykonywanie';
+$string['save'] = 'Zapisz';
+$string['savecontinue'] = 'Zapisz i kontynuuj';
+$string['saved'] = 'Zapisane';
+$string['savedfile'] = "Plik '{\$a}' został zapisany";
+$string['saveoptions'] = 'opcje zapisu';
+$string['saving'] = 'Zapisywanie';
+$string['scanactivity'] = 'Czynność';
+$string['scandirectory'] = 'Katalog';
+$string['scanningdir'] = 'Skanowanie katalogu ...';
+$string['scanoptions'] = 'Opcje skanowania';
+$string['scanother'] = 'Skanuj podobieństwa w dodanych plikach';
+$string['scanzipfile'] = 'Plik Zip';
+$string['select_all'] = 'Zaznacz wszystko';
+$string['select_all_text'] = 'Zaznacz cały tekst';
+$string['server'] = 'serwer';
+$string['serverexecutionerror'] = 'Błąd wykonania serwera';
+$string['shortdescription'] = 'Krótki opis';
+$string['similarity'] = 'Podobieństwo';
+$string['similarto'] = 'Podobne do';
+$string['startdate'] = 'Dostępny od';
+$string['submission'] = 'Składanie';
+$string['submissionperiod'] = 'Okres składania';
+$string['submissionrestrictions'] = 'Ograniczenia składania';
+$string['submissions'] = 'Złożono';
+$string['submissionselection'] = 'Wybór składania';
+$string['submissionslist'] = 'Lista składania';
+$string['submissionview'] = 'Widok składania';
+$string['submittedby'] = 'Napisane przez {$a}';
+$string['submittedon'] = 'Złożono';
+$string['submittedonp'] = 'Złożono {$a}';
+$string['sureresetfiles'] = 'Czy chcesz utracić całą pracę i zresetować pliki do postaci pierwotnej?';
+$string['test'] = 'Składnik testu';
+$string['testcases'] = 'Przypadków testowych';
 $string['testcases_help'] = '
 <b>Przykro nam, patrz wersja angielska</b>
 ';
+$string['timelimited'] = 'Czas ograniczony';
+$string['timeunlimited'] = 'Czas nieograniczony';
+$string['toggle_show_line_number'] = 'Włącz numerowanie linii';
+$string['totalnumberoferrors'] = "Errors";
+$string['undo'] = 'Cofnij';
+$string['undo_change'] = 'Cofnij zmianę';
+$string['unzipping'] = 'Rozpakowywanie ...';
+$string['uploadfile'] = 'Importuj plik';
+$string['usevariations'] = 'Użyj wariacji';
+$string['variation_n'] = 'Wariacja {$a}';
+$string['variation_n_i'] = 'Wariacja {$a->number}: {$a->identification}';
+$string['variation_options'] = 'Opcje wariacji';
+$string['variations'] = 'Wariacje';
 $string['variations_help'] = '
 <h1>Wariacje</h1>
 <p>Zestaw wariacji może być zdefiniowany dla każdej czynności. Wariacje te są losowo przypisywane do studentów.</p>
 <p>Możesz tutaj wskazać czy czynność zawiera wariacje, ustawić tytuł zestawowi wariacji i dodać pożądane wariacje.</p>
 <p>Każda wariacja ma kod identyfikacyjny oraz opis. Kod identyfikacyjny jest używany przez plik <b>vpl_enviroment.sh</b> aby przekazać wariację przypisaną do każdego studenta plikowi skryptowemu. Opis w formacie HTML jest pokazywany studentom, którzy przypisali odpowiednie zmiany.</p>
 ';
+$string['variations_unused'] = 'Ta czynność ma wariacje, ale są wyłączone';
+$string['variationtitle'] = 'Tytuł wariacji';
+$string['varidentification'] = 'Identyfikacja';
+$string['visiblegrade'] = 'Widoczny';
+$string['vpl'] = 'Wirtualne Laboratorium Programowania';
+$string['vpl:grade'] = 'Oceń przypisanie VPL';
+$string['vpl:manage'] = 'Zarządzaj przypisaniem VPL';
+$string['vpl:setjails'] = 'Ustaw jail serwery dla poszczególnych instancji VPL';
+$string['vpl:similarity'] = 'Szukaj podobieństw przypisań VPL';
+$string['vpl:submit'] = 'Wyślij przypisanie VPL';
+$string['vpl:view'] = 'Pokaż pełny opis przypisania VPL';
+$string['vpl_debug.sh'] = 'Ten skrypt przygotowuje debugowanie przesłanego programu';
+$string['vpl_evaluate.sh'] = 'Ten skrypt przygotowuje sprawdzenie przesłanego programu';
+$string['vpl_run.sh'] = 'Ten skrypt przygotowuje wykonanie przesłanego programu';
