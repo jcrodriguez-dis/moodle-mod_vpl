@@ -172,10 +172,10 @@ class similarity_factory {
     }
 
     /**
-     * Get similarity class for passed programming language
+     * Get similarity class for passed file name
      *
-     * @param string $namelang name of a programming language
-     * @return ?similariy|?vpl_similarity|?similarity_generic
+     * @param string $filename name of a file
+     * @return mix
      */
     public static function get(string $filename) {
         $ext = pathinfo($filename, PATHINFO_EXTENSION);

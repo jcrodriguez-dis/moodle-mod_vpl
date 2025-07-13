@@ -63,7 +63,7 @@ function vpl_user_zip_dirname( $name ) {
  * @param string             $sourcedir  Source directory name
  * @param string             $zipdirname Zip directory name
  * @param file_group_process $fgm        Object that manages group of files
- * @param string             &$ziperrors  Output message if error
+ * @param string             $ziperrors  Output message if error
  *
  * @return int Bytes archived
  */

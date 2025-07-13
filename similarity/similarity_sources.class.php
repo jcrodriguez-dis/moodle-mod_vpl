@@ -229,6 +229,9 @@ class vpl_file_from_zipfile extends vpl_file_from_dir {
 
     /**
      * Returns the parameters to link to this file.
+     *
+     * @param int $t Type of link (1 for directory, 2 for activity, 3 for zip)
+     * @return array Associative array with parameters for the link
      */
     public function link_parms($t) {
         $res = [
@@ -559,7 +562,7 @@ class vpl_similarity_preprocess {
     /**
      * Preprocesses ZIP file, loading processesed files into $simil array
      *
-     * @param array &$simil Input/output array that saves the new files found to process
+     * @param array $simil Input/output array that saves the new files found to process
      * @param string $zipname Zip file name
      * @param string $zipdata Zip file content
      * @param object $vpl Current VPL activity

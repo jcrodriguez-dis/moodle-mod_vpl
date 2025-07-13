@@ -29,7 +29,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
 
 /**
@@ -37,7 +37,7 @@ require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
  * @group mod_vpl
  * @covers \vpl_running_processes
  */
-class running_processes_test extends base_test {
+final class running_processes_test extends base_fixture {
     /**
      * Table name for running processes
      *

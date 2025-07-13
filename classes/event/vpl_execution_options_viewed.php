@@ -17,7 +17,7 @@
 /**
  * Class for logging of execution options view events
  *
- * @package mod_vpl.
+ * @package mod_vpl
  * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

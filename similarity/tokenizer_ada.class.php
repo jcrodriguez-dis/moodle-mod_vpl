@@ -91,7 +91,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
     /**
      * Add a pending token to the list of tokens.
      *
-     * @param string $pending The pending token to add.
+     * @param string $rawpending The pending token to add.
      */
     protected function add_pending(&$rawpending) {
         $pending = strtolower( $rawpending );

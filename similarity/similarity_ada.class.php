@@ -39,6 +39,9 @@ class vpl_similarity_ada extends vpl_similarity_base {
 
     /**
      * Normalizes the syntax of the given tokens.
+     *
+     * @param array $tokens The tokens to normalize.
+     * @return array The normalized tokens.
      */
     public function sintax_normalize(&$tokens) {
         $identifierlist = false;

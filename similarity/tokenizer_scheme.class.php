@@ -159,7 +159,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     /**
      * Add a parameter to the list of tokens
      *
-     * @param string &$pending the parameter
+     * @param string $pending the parameter
      */
     protected function add_parameter_pending(&$pending) {
         if ($pending <= ' ') {
@@ -173,7 +173,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     /**
      * Add a function to the list of tokens
      *
-     * @param string &$pending function name
+     * @param string $pending function name
      */
     protected function add_function_pending(&$pending) {
         if ($pending <= ' ') {

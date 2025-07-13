@@ -76,7 +76,6 @@ class file_group_execution extends file_group_process {
     /**
      * Constructor
      *
-     * @param string $filelistname
      * @param string $dir
      */
     public function __construct($dir) {
@@ -412,9 +411,8 @@ class mod_vpl {
     }
 
     /**
-     *
-     * @param $files array
-     *            of required files
+     * Set the required files
+     * @param array $files array of file names to set
      */
     public function set_required_files($files) {
         $this->get_required_fgm()->setfilelist($files);
@@ -570,6 +568,8 @@ class mod_vpl {
 
     /**
      * Check if pass password restriction
+     * @param string $passset Password to check
+     * @return bool true if passed
      */
     public function pass_password_check($passset = '') {
         $password = $this->get_password();
@@ -736,11 +736,8 @@ class mod_vpl {
 
     /**
      * Check submission restriction
-     *
-     * @param $data Object
-     *            with submitted data
-     * @param & $error
-     *            string
+     * @param array $alldata Array of submitted files (name => data)
+     * @param string $error Error message to return if not passed
      * @return bool
      *
      */
@@ -775,11 +772,11 @@ class mod_vpl {
     /**
      * Internal checks and adds submission if possible. Removes unneeded submissions.
      *
-     * @param Object $vpl
+     * @param mod_vpl $vpl
      * @param int $userid
-     * @param array & $files submitted files
+     * @param array $files submitted files
      * @param string $comments
-     * @param string & $error Error message
+     * @param string $error Error message
      * @return int|false Submission id or false if error
      */
     public static function internal_add_submission($vpl, $userid, & $files, $comments, & $error) {
@@ -862,9 +859,9 @@ class mod_vpl {
      * Checks and adds submission if possible. Removes unneeded submissions.
      *
      * @param int $userid
-     * @param array & $files submitted files
+     * @param array $files submitted files
      * @param string $comments
-     * @param string & $error Error message
+     * @param string $error Error message
      * @return int|false Submission id or false if error
      */
     public function add_submission($userid, & $files, $comments, & $error) {
@@ -889,8 +886,8 @@ class mod_vpl {
     /**
      * Get user submissions, order reverse submission id
      *
-     * @param $userid int the user id to retrieve submissions
-     * @param $groupifga boolean if group activity get group submissions. default true
+     * @param int $userid the user id to retrieve submissions
+     * @param bool $groupifga if group activity get group submissions. default true
      * @return array of objects
      */
     public function user_submissions($userid, $groupifga = true) {
@@ -982,7 +979,7 @@ class mod_vpl {
      * Update the submission groupid for VPL version <= 3.2
      *
      * Set the correct groupid when groupid = 0
-     * @param int $groupid. If no $groupid => update $groupid of all groups of the activity
+     * @param int $groupid If no $groupid => update $groupid of all groups of the activity
      * @return void
      */
     public function update_group_v32($groupid = '') {
@@ -1093,7 +1090,7 @@ class mod_vpl {
     /**
      * Delete overflow submissions. If three submissions within the period central is delete
      *
-     * @param $userid
+     * @param int $userid User id to check.
      * @return void
      *
      */
@@ -1159,6 +1156,7 @@ class mod_vpl {
     /**
      * is visible this vpl instance
      *
+     * @param int $userid (optional) Check for given user, current user if null.
      * @return bool
      */
     public function is_visible($userid = false) {
@@ -1322,8 +1320,10 @@ class mod_vpl {
     }
 
     /**
-     * Return if is group activity
+     * Return if the current user is inconsistent with the real user.
      *
+     * @param int $current Current user id
+     * @param int $real Real user id
      * @return bool
      */
     public function is_inconsistent_user($current, $real) {
@@ -1337,7 +1337,8 @@ class mod_vpl {
     /**
      * If is a group activity search for a group leader for the group of the userid (0 is not found)
      *
-     * @return Integer userid
+     * @param int $userid User id to retrieve group leader
+     * @return int Leader id or $userid if not found
      */
     public function get_group_leaderid($userid) {
         $leaderid = $userid;
@@ -1355,7 +1356,8 @@ class mod_vpl {
     /**
      * If is a group activity return the group of the userid
      *
-     * @return Object/false
+     * @param int $userid User id to retrieve group
+     * @return object|false
      */
     public function get_usergroup($userid) {
         if ($this->is_group_activity()) {
@@ -1379,6 +1381,7 @@ class mod_vpl {
     /**
      * If is a group activity return group members for the groupid
      *
+     * @param int $groupid Group id to retrieve members
      * @return Array of user objects
      */
     public function get_group_members($groupid) {
@@ -1396,7 +1399,8 @@ class mod_vpl {
     /**
      * If is a group activity return group members for the group of the userid
      *
-     * @return Array of user objects
+     * @param int $userid User id to retrieve group members
+     * @return array of user objects
      */
     public function get_usergroup_members($userid) {
         $group = $this->get_usergroup( $userid );
@@ -1540,7 +1544,10 @@ class mod_vpl {
         return 'standard';
     }
     /**
-     * prepare_page initialy
+     * Prepare page initialy
+     *
+     * @param string $url the url to set, if false then no url is set
+     * @param array $parms parameters to add to the url
      */
     public function prepare_page($url = false, $parms = []) {
         global $PAGE, $CFG;
@@ -1580,7 +1587,7 @@ class mod_vpl {
     /**
      * print header
      *
-     * @param $info string title and last nav option
+     * @param string $info title and last nav option
      */
     public function print_header($info = '') {
         global $PAGE, $OUTPUT;
@@ -1606,7 +1613,7 @@ class mod_vpl {
     /**
      * Print header with simple title
      *
-     * @param $info string title and last nav option
+     * @param string $info title and last nav option
      */
     public function print_header_simple($info = '') {
         global $OUTPUT, $PAGE;
@@ -1631,8 +1638,7 @@ class mod_vpl {
     /**
      * Print heading action with help
      *
-     * @param $action string
-     *            base text and help
+     * @param string $action base text and help
      */
     public function print_heading_with_help($action) {
         global $OUTPUT;
@@ -1859,8 +1865,10 @@ class mod_vpl {
      * Return a VPL setting with icon
      * @param string $str setting string i18n to get descriptoin
      * @param string $value setting value, default null
-     * @param boolean $raw if true $str if raw string, default false
-     * @param boolean $newline if true print new line after setting, default false
+     * @param bool $raw if true $str if raw string, default false
+     * @param bool $newline if true print new line after setting, default false
+     * @param string $comp component for i18n, default mod_vpl
+     * @return string HTML
      */
     public function str_restriction_with_icon($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
         $html = vpl_get_awesome_icon($str);
@@ -2202,6 +2210,9 @@ class mod_vpl {
 
     /**
      * Get user variation. Assign one if needed
+     * @param int $userid User Id
+     * @return stdClass|false Variation object or false if no variation assigned.
+     * @throws moodle_exception if variation assigned is not valid.
      */
     public function get_variation($userid) {
         global $DB;

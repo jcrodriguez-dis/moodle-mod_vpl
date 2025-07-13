@@ -34,7 +34,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @covers \mod_vpl_webservice
  * @runTestsInSeparateProcesses
  */
-class webservice_test extends base_test {
+final class webservice_test extends base_fixture {
     /**
      * Auxiliar method to call web service
      * @param string $url URL of the web service
@@ -136,7 +136,9 @@ class webservice_test extends base_test {
     }
 
     /**
-     * Auxiliar method to test files
+     * Auxiliar method to test files.
+     * @param array $files Array of files to check
+     * @param array $filesarray Array of expected files with name, data and encoding
      */
     private function internal_test_files($files, $filesarray) {
         $this->assertEquals(count($files), count($filesarray));
@@ -237,7 +239,14 @@ class webservice_test extends base_test {
     }
 
     /**
-     * Intenal method to Test webservice open
+     * Intenal method to Test webservice open.
+     * @param int $id Course module ID
+     * @param array $files Array of files to open
+     * @param string $compilation Compilation result, empty by default
+     * @param string $grade Grade result, empty by default
+     * @param string $comments Comments for the submission, empty by default
+     * @param string $password Password for the VPL instance, empty by default
+     * @param int $userid User ID to open the submission for, -1 for current user, -1 by default
      */
     private function internal_test_vpl_webservice_open($id, $files = [],
             $compilation ='', $evaluation = '',
@@ -429,7 +438,12 @@ class webservice_test extends base_test {
     }
 
     /**
-     * Intenal method to Test webservice save
+     * Intenal method to Test webservice save.
+     * @param int $id Course module ID
+     * @param array $files Array of files to save
+     * @param string $password Password for the VPL instance
+     * @param int $userid User ID to save the submission for, -1 for current user
+     * @param bool $submitedby If true, add a comment indicating who submitted the files
      */
     private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1, $submitedby=false) {
         global $USER;

@@ -34,7 +34,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
  * @group mod_vpl
  * @covers \mod_vpl\util\lock
  */
-class util_lock_test extends \advanced_testcase {
+final class util_lock_test extends \advanced_testcase {
 
     /**
      * Base directory for test locks

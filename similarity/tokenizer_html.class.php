@@ -74,6 +74,9 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
 
     /**
      * Add a pending token to the list of tokens.
+     *
+     * @param string $rawpending The pending token to add.
+     * @param int $state The current state of the tokenizer.
      */
     protected function add_pending(&$rawpending, $state) {
         $pending = strtolower( $rawpending );

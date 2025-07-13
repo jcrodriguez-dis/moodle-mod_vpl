@@ -598,7 +598,6 @@ class provider implements \core_privacy\local\metadata\provider,
      *
      * @param object $context The context module object of the VPL to return.
      * @return mixed The vpl record associated with the context module or null if not found.
-     * @throws \dml_exception
      */
     protected static function get_vpl_by_context($context) {
         global $DB;
@@ -622,8 +621,6 @@ class provider implements \core_privacy\local\metadata\provider,
      * @param object $contextlist Object with the contexts related to a userid.
      * @param int $userid The user ID to find vpl submissions that were submitted by.
      * @return array Array of vpl submission details.
-     * @throws \coding_exception
-     * @throws \dml_exception
      */
     protected static function get_vpl_submissions_by_contextlist($contextlist, $userid) {
         global $DB;
@@ -763,12 +760,11 @@ class provider implements \core_privacy\local\metadata\provider,
     }
 
     /**
-     * Helper function to retrieve assigned variation related with user.
+     * Helper function to retrieve assigned variation related with user and VPL instance.
      *
      * @param int $vplid The vpl id to retrieve variation.
      * @param int $userid The user id to retrieve assigned variation.
      * @return array Array of assigned variation details.
-     * @throws \dml_exception
      */
     protected static function get_assigned_variation_by_vpl_and_user($vplid, $userid) {
         global $DB;
@@ -827,9 +823,9 @@ class provider implements \core_privacy\local\metadata\provider,
     /**
      * Helper function to copy object fields
      *
-     * @param object $from  Object containing data.
-     * @param object $to    Object to modify.
-     * @param array  $fiels List of fields to copy.
+     * @param object $from Object containing data.
+     * @param object $to Object to modify.
+     * @param array $fields List of fields to copy.
      * @return void
      */
     protected static function copy_fields($from, $to, $fields) {
@@ -843,9 +839,9 @@ class provider implements \core_privacy\local\metadata\provider,
     /**
      * Helper function to copy and convert object date fields
      *
-     * @param object $from  Object containing data.
-     * @param object $to    Object to modify.
-     * @param array  $fiels List of fields to copy.
+     * @param object $from Object containing data.
+     * @param object $to Object to modify.
+     * @param array $datefields List of fields to copy.
      * @return void
      */
     protected static function copy_date_fields($from, $to, $datefields) {
@@ -858,7 +854,7 @@ class provider implements \core_privacy\local\metadata\provider,
     /**
      * Helper function generate vpl output object for exporting.
      *
-     * @param object $vplinstance Object containing vpl record.
+     * @param object $vpldata Object containing vpl record.
      * @return object Formatted vpl output object for exporting.
      */
     protected static function get_vpl_output($vpldata) {
@@ -934,7 +930,7 @@ class provider implements \core_privacy\local\metadata\provider,
     /**
      * Helper function generate running process output object for exporting.
      *
-     * @param object $assignedvariation Object containing an instance record of running process.
+     * @param object $runningprocess Object containing an instance record of running process.
      * @return object Formatted running process output for exporting.
      */
     protected static function get_vpl_running_process_output($runningprocess) {

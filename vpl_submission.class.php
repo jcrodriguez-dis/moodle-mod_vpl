@@ -81,7 +81,7 @@ class mod_vpl_submission {
      * Constructor
      *
      * @param mod_vpl $vpl
-     * @param Object/id $mix submission DB record instance object or record id
+     * @param int|object $rid submission DB record instance object or record id
      */
     public function __construct(mod_vpl $vpl, $rid) {
         global $DB;
@@ -383,8 +383,8 @@ class mod_vpl_submission {
     /**
      * Get current grade reduction.
      *
-     * @param string & $reduction value or factor
-     * @param bool & $percent bool if true then $reduction is factor
+     * @param string $reduction value or factor
+     * @param bool $percent bool if true then $reduction is factor
      * @return float grade reduction
      */
     public function grade_reduction(& $reduction, & $percent) {
@@ -458,8 +458,8 @@ class mod_vpl_submission {
      * Set/update grade
      *
      * @param object $info with grade and comments fields
-     * @param boolean $automatic if automatic grading (default false)
-     * @return boolean. true => OK
+     * @param bool $automatic if automatic grading (default false)
+     * @return bool true => OK
      */
     public function set_grade($info, $automatic = false) {
         global $USER;
@@ -575,7 +575,7 @@ class mod_vpl_submission {
     /**
      * Removes in title grade reduction if exists
      *
-     * @param string title
+     * @param string $title title to remove grade reduction from
      *
      * @return string
      */
@@ -681,8 +681,8 @@ class mod_vpl_submission {
     /**
      * Return user from DB with cache (automatic grader info for $id===0)
      *
-     * @param $id Grader id (user id record) or 0 for automatic grader
-     * @return false/user object
+     * @param ?int $id Grader id (user id record) or 0 for automatic grader
+     * @return object user object with standard name fields
      */
     public static function get_grader($id) {
         global $DB;
@@ -729,6 +729,7 @@ class mod_vpl_submission {
     /**
      * Get core grade @parm optional grade to show
      *
+     * @param float|null $grade grade to show, if null then get from gradebook
      * @return string
      */
     public function get_grade_core($grade = null) {
@@ -812,6 +813,8 @@ class mod_vpl_submission {
 
     /**
      * Return sudmission detailed grade part in html format
+     *
+     * @param bool $process if true then process comments (default true)
      * @return string
      */
     public function get_detailed_grade($process = true) {
@@ -825,9 +828,9 @@ class mod_vpl_submission {
     /**
      * Print sudmission grade
      *
-     * @param boolean $detailed show detailed grade (default false)
-     * @param boolean $return. Return string/ false print grade (default false)
-     * @return string/void
+     * @param bool $detailed show detailed grade (default false)
+     * @param bool $return If true return string else print grade (default false)
+     * @return string|void
      */
     public function print_grade($detailed = false, $return = false) {
         global $CFG, $OUTPUT, $PAGE, $USER;
@@ -896,7 +899,7 @@ class mod_vpl_submission {
 
     /**
      * Print sudmission info
-     * @param boolean $autolink. Add links. default = false
+     * @param bool $autolink Add links. default = false
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
@@ -1162,7 +1165,7 @@ class mod_vpl_submission {
      * Convert last comment compilation/execution result to HTML.
      *
      * @param string $title Title of comment.
-     * @param string &$comment Comment to change.
+     * @param string $comment Comment to change.
      * @param bool $dropdown Show as dropdown or not.
      * @return string HTML.
      */
@@ -1192,7 +1195,7 @@ class mod_vpl_submission {
      * Convert compilation/execution result to HTML
      *
      * @param string $text to be converted
-     * @param bool Show as dropdown or not.
+     * @param bool $dropdown Show as dropdown or not.
      * @return string HTML
      */
     public function result_to_html($text, $dropdown = true) {
@@ -1270,8 +1273,8 @@ class mod_vpl_submission {
         return $html;
     }
     /**
-     * Add oe uodate a new text to the list
-     * @param array &$list List to be filled with feedbacks
+     * Add or update a new text to the list
+     * @param array $list List to be filled with feedbacks
      * @param string $text Text to be added
      * @param int $grade Grade associated to the text
      */
@@ -1288,7 +1291,7 @@ class mod_vpl_submission {
     /**
      *  Processs grade comments to generate a list of feedbacks
      *
-     * @param array &$list List to be filled with feedbacks
+     * @param array $list List to be filled with feedbacks
      */
     public function filter_feedback(&$list) {
         $text = $this->get_grade_comments();
@@ -1326,8 +1329,7 @@ class mod_vpl_submission {
     /**
      * Save Compilation Execution result to files
      *
-     * @param $result array
-     *            response from server
+     * @param array $result response from server
      * @return void
      */
     public function savece($result) {
@@ -1395,9 +1397,11 @@ class mod_vpl_submission {
      * Get compilation, execution and proposed grade from array
      *
      * @param array $response Response from server
-     * @param string &$compilation in HTML
-     * @param string &$execution in HTML
-     * @param string &$grade in HTML
+     * @param string $compilation in HTML
+     * @param string $execution in HTML
+     * @param string $grade in HTML
+     * @param bool $dropdown Show as dropdown or not.
+     * @param bool $returnrawexecution Return raw execution if true, else return HTML.
      * @return void
      */
     public function get_ce_html($response, &$compilation, &$execution, &$grade, $dropdown, $returnrawexecution = false) {

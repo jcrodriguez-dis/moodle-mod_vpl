@@ -27,7 +27,7 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_factory.class.php');
 
 use mod_vpl\similarity\similarity_factory;
@@ -42,7 +42,7 @@ use vpl_similarity_factory;
  * @group mod_vpl_similarity_factory
  * @covers \mod_vpl\similarity\similarity_factory
  */
-class similarity_factory_test extends \advanced_testcase {
+final class similarity_factory_test extends \advanced_testcase {
     /**
      * Method to test similarity_factory::ext2type
      */

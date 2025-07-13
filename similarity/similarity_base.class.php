@@ -234,6 +234,8 @@ class vpl_files_pair {
      * Returns the type of similarity.
      * This method is used to identify the type of similarity for this file pair.
      *
+     * @param mixed $a The first file in the pair.
+     * @param mixed $b The second file in the pair.
      * @return int The type of similarity, which is 0 for generic file pairs.
      */
     public static function cmp($a, $b) {
@@ -297,6 +299,11 @@ class vpl_files_pair {
 
     /**
      * Normalizes the similarity level to a range of 0-11.
+     *
+     * @param float $value The similarity score to normalize.
+     * @param float $min The minimum score for normalization.
+     * @param float $max The maximum score for normalization.
+     * @return float The normalized level, capped at 11.
      */
     public static function normalize_level($value, $min, $max) {
         if (abs( $max - $min ) < 0.001) {

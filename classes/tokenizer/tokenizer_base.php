@@ -107,7 +107,7 @@ class tokenizer_base {
     /**
      * Check if passed value has an available data type
      *
-     * @param $value value to check
+     * @param mix $value value to check
      * @param string $typename data type which must have $value
      * @return bool|int
      */

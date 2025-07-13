@@ -155,9 +155,9 @@ abstract class similarity_base {
     /**
      * Initialize similarity processor
      *
-     * @param &$data content to parse
-     * @param $from origin source of the content
-     * @param $toremove object used to remove
+     * @param string $data content to parse
+     * @param int $from origin source of the content
+     * @param object $toremove used to remove data that is in all submissions
      */
     public function init(&$data, $from, $toremove = null) {
         $this->from = $from;
@@ -249,6 +249,9 @@ abstract class similarity_base {
 
     /**
      * Show information at current form
+     *
+     * @param bool $ext if true, show extended information
+     * @return string the information to show
      */
     public function show_info($ext = false) {
         $ret = $this->from->show_info();
@@ -281,6 +284,9 @@ abstract class similarity_base {
 
     /**
      * Link parameters
+     *
+     * @param string $t the text to link
+     * @return string the linked text
      */
     public function link_parms($t) {
         return $this->from->link_parms($t);
@@ -358,8 +364,8 @@ abstract class similarity_base {
     /**
      * Clone passed token updating its value
      *
-     * @param $token token to clone
-     * @param $value value to update at new copy
+     * @param token $token to clone
+     * @param string $value value to update at new copy
      */
     public static function clone_token($token, $value) {
         return new token($token->type, $value, $token->line);

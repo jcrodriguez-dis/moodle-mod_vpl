@@ -56,7 +56,7 @@ class token {
     /**
      * Creates a new token with passed type and value
      *
-     * @param $type type of current token
+     * @param string $type type of current token
      * @param ?string $value value of current token
      * @param int $line number of line of current token
      */

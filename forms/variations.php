@@ -81,7 +81,6 @@ class mod_vpl_variation_form extends moodleform {
      * Defines the form elements
      */
     protected function definition() {
-        global $CFG;
         $mform = & $this->_form;
         if ($this->number > 0) {
             $title = get_string( 'variation_n', VPL, "{$this->number}" );
@@ -143,7 +142,6 @@ function get_variation_with_edit_html($variation, $cmid, $number) {
  * @return string HTML
  */
 function get_link_variation_html($variation, $cmid, $number) {
-    global $OUTPUT;
     $parms = ['id' => $cmid];
     $anchor = "vpl_variation_{$cmid}_{$number}";
     $url = new moodle_url( '/mod/vpl/forms/variations.php', $parms, $anchor);
@@ -172,7 +170,7 @@ function get_add_variation_html($cmid) {
  * @param object $vpl current VPL activity
  */
 function print_basic_html($form, $vpl) {
-    global $DB, $OUTPUT;
+    global $DB;
     $form->set_data($vpl->get_instance());
     $form->display();
     $list = $DB->get_records('vpl_variations', ['vpl' => $vpl->get_instance()->id]);

@@ -131,8 +131,6 @@ class vpl_jailserver_manager {
     /**
      * Generate a new JSONRPC id.
      *
-     * @param string $method
-     * @param object $data
      * @return string
      */
     public static function generate_jsonrpcid() {
@@ -290,7 +288,7 @@ class vpl_jailserver_manager {
     /**
      * Return the defined server list
      *
-     * @param string $localserverlisttext='' List of local server in text
+     * @param string $localserverlisttext List of local server in text
      * @return array of servers
      */
     public static function get_server_list(string $localserverlisttext) {
@@ -316,8 +314,8 @@ class vpl_jailserver_manager {
     /**
      * Returns action request XMLRPC or JSONRPC.
      *
-     * @param string action
-     * @param object data
+     * @param string $action
+     * @param object $data
      * @return string
      */
     public static function get_action_request(string $action, object $data): string {
@@ -341,7 +339,7 @@ class vpl_jailserver_manager {
 
     /**
      * Returns available request XMLRPC or JSONRPC.
-     * @param int $maxmemory, required
+     * @param int $maxmemory Maximum memory in bytes for the request.
      * @return string
      */
     public static function get_available_request(int $maxmemory): string {
@@ -353,9 +351,9 @@ class vpl_jailserver_manager {
     /**
      * Return a valid server to be used, May tag some servers as faulty
      *
-     * @param int $maxmemory. Required
-     * @param string $localserverlisttext=''. List of local server in text.
-     * @param string $feedback. Info about jail servers response
+     * @param int $maxmemory Required
+     * @param string $localserverlisttext List of local server in text.
+     * @param ?string $feedback Info about jail servers response
      * @return string
      */
     public static function get_server(int $maxmemory, string $localserverlisttext = '',
@@ -476,7 +474,7 @@ class vpl_jailserver_manager {
     /**
      * Return the https URL servers list
      *
-     * @param string $localserverlisttext='' List of local server in text
+     * @param string $localserverlisttext List of local server in text, default ''
      * @return array of URLs
      */
     public static function get_https_server_list(string $localserverlisttext = ''): array {

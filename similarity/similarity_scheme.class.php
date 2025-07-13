@@ -38,6 +38,9 @@ class vpl_similarity_scheme extends vpl_similarity_base {
 
     /**
      * Normalizes the syntax of the given tokens.
+     *
+     * @param array $tokens The array of tokens to normalize.
+     * @return array The normalized tokens, which only include operators.
      */
     public function sintax_normalize(&$tokens) {
         $ret = [];

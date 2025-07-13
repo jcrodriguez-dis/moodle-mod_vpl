@@ -41,9 +41,8 @@ class cron_task extends \core\task\scheduled_task {
     const STARTDATE_RANGE = 300;
 
     /**
-     * Set the verbose state.
-     * @param $state: bool. Setting the value to true shows the name of the activity
-     * and false no shows.
+     * Get the range of time around the start date.
+     * @return int The range of time in seconds.
      */
     public function get_startdate_range(): int {
         return self::STARTDATE_RANGE;
@@ -51,7 +50,7 @@ class cron_task extends \core\task\scheduled_task {
 
     /**
      * Set the verbose state.
-     * @param $state: bool. Setting the value to true shows the name of the activity
+     * @param bool $state Setting the value to true shows the name of the activity
      * and false no shows.
      */
     public function set_verbose(bool $state): void {

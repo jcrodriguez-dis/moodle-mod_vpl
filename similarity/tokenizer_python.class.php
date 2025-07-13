@@ -39,6 +39,9 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
 
     /**
      * Check if the text is an identifier.
+     *
+     * @param string $text the text to check
+     * @return bool true if the text is an identifier, false otherwise
      */
     protected function is_text($text) {
         if (strlen( $text ) == 0) {

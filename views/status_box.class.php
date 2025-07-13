@@ -61,6 +61,8 @@ class vpl_status_box {
 
     /**
      * Print text
+     *
+     * @param string $text text to show in the box
      */
     public function print_text($text) {
         $javascript = 'window.document.getElementById(\'';

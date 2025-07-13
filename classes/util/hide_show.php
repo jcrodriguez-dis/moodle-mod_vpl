@@ -93,6 +93,7 @@ class hide_show {
 
     /**
      * Generate begin of tag for contents.
+     * @param string $tag Tag to use, e.g. div, span, pre, etc.
      * @return string HTML or empty
      */
     public function begin($tag): string {
@@ -115,6 +116,7 @@ class hide_show {
 
     /**
      * Generate tag with contents.
+     * @param string $tag Tag to use, e.g. div, span, pre, etc.
      * @param string $content Contents to use, must be escaped.
      * @return string HTML
      */

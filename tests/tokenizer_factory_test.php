@@ -27,7 +27,7 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/tokenizer_factory.class.php');
 
 use Exception;
@@ -46,7 +46,7 @@ use vpl_tokenizer_factory;
  * @group mod_vpl_tokenizer_factory
  * @covers \mod_vpl\tokenizer\tokenizer_factory
  */
-class tokenizer_factory_test extends \advanced_testcase {
+final class tokenizer_factory_test extends \advanced_testcase {
     /**
      * Method to test tokenizer_factory::get when tokenizer is not valid
      */

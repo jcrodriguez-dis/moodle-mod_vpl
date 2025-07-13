@@ -17,6 +17,7 @@
 /**
  * Manage running tasks
  *
+ * @package mod_vpl
  * @copyright 2013 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
@@ -27,16 +28,12 @@ defined('MOODLE_INTERNAL') || die();
 require_once( __DIR__ . '/jailserver_manager.class.php');
 
 /**
- * Class that manage the Table of running processes.
- *
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * Class that manages the persistence of running processes.
  */
 class vpl_running_processes {
 
     /**
-     * Name of the table running_processes in the database.
-     *
-     * @var string
+     * @var string TABLE Name of the table running_processes in the database.
      */
     const TABLE = 'vpl_running_processes';
 
@@ -66,7 +63,7 @@ class vpl_running_processes {
     /**
      * For a user and (optional) a VPL activity returns directruns.
      * @param int $userid
-     * @param (int|null) $vplid
+     * @param ?int $vplid
      * @return array processes records
      */
     public static function get_directrun(int $userid, ?int $vplid = null) {
@@ -94,7 +91,7 @@ class vpl_running_processes {
     /**
      * Adds a proccess information to the vpl_running_processes DB table.
      *
-     * @param Object $data {userid, server, vplid, adminticket}
+     * @param object $data {userid, server, vplid, adminticket}
      * @return int Process id in the DB table
      */
     public static function set(object $data) {
