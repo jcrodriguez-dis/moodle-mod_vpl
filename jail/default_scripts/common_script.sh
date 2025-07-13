@@ -48,9 +48,9 @@ function apply_run_mode {
 
 # Run original vpl_execution script in terminal emulator in GUI mode
 if command -v gnome-terminal &> /dev/null; then
-	gnome-terminal -- bash -c "./vpl_execution_in_gui"
+	gnome-terminal -- bash -c "./vpl_execution_in_gui; echo; read -p 'Press Enter to continue...'"
 elif command -v xterm &> /dev/null; then
-	xterm -e "./vpl_execution_in_gui"
+	xterm -e bash -c "./vpl_execution_in_gui; echo; read -p 'Press Enter to continue...'"
 	wait
 elif command -v konsole &> /dev/null; then
 	konsole --noclose -e "./vpl_execution_in_gui"
@@ -70,6 +70,7 @@ END_SCRIPT
 			fi
 			;;
 	esac
+	unset VPL_RUN_MODE
 }
 
 function apply_evaluation_mode {
