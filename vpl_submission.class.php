@@ -82,7 +82,6 @@ class mod_vpl_submission {
      *
      * @param mod_vpl $vpl
      * @param int|object $rid submission DB record instance object or record id
-     * @param int|object $rid submission DB record instance object or record id
      */
     public function __construct(mod_vpl $vpl, $rid) {
         global $DB;
@@ -386,8 +385,6 @@ class mod_vpl_submission {
      *
      * @param string $reduction value or factor
      * @param bool $percent bool if true then $reduction is factor
-     * @param string $reduction value or factor
-     * @param bool $percent bool if true then $reduction is factor
      * @return float grade reduction
      */
     public function grade_reduction(& $reduction, & $percent) {
@@ -581,8 +578,6 @@ class mod_vpl_submission {
      * Removes in title grade reduction if exists
      *
      * @param string $title title to remove grade reduction from
-     * @param string $title title to remove grade reduction from
-     *
      * @return string
      */
     public static function remove_grade_reduction($title) {
@@ -689,8 +684,6 @@ class mod_vpl_submission {
      *
      * @param ?int $id Grader id (user id record) or 0 for automatic grader
      * @return object user object with standard name fields
-     * @param ?int $id Grader id (user id record) or 0 for automatic grader
-     * @return object user object with standard name fields
      */
     public static function get_grader($id) {
         global $DB;
@@ -737,8 +730,7 @@ class mod_vpl_submission {
     /**
      * Get core grade @parm optional grade to show
      *
-     * @param float|null $grade grade to show, if null then get from gradebook
-     * @param float|null $grade grade to show, if null then get from gradebook
+     * @param ?float $grade grade to show, if null then get from gradebook
      * @return string
      */
     public function get_grade_core($grade = null) {
@@ -840,9 +832,6 @@ class mod_vpl_submission {
      * @param bool $detailed show detailed grade (default false)
      * @param bool $return If true return string else print grade (default false)
      * @return string|void
-     * @param bool $detailed show detailed grade (default false)
-     * @param bool $return. Return string/ false print grade (default false)
-     * @return string|void
      */
     public function print_grade($detailed = false, $return = false) {
         global $CFG, $OUTPUT, $PAGE, $USER;
@@ -912,7 +901,6 @@ class mod_vpl_submission {
     /**
      * Print sudmission info
      * @param bool $autolink Add links. default = false
-     * @param bool $autolink. Add links. default = false
      */
     public function print_info($autolink = false) {
         // TODO improve show submission info.
@@ -1209,7 +1197,6 @@ class mod_vpl_submission {
      *
      * @param string $text to be converted
      * @param bool $dropdown Show as dropdown or not.
-     * @param bool $dropdown Show as dropdown or not.
      * @return string HTML
      */
     public function result_to_html($text, $dropdown = true) {
@@ -1289,8 +1276,6 @@ class mod_vpl_submission {
     /**
      * Add or update a new text to the list
      * @param array $list List to be filled with feedbacks
-     * Add or update a new text to the list
-     * @param array $list List to be filled with feedbacks
      * @param string $text Text to be added
      * @param int $grade Grade associated to the text
      */
@@ -1307,7 +1292,6 @@ class mod_vpl_submission {
     /**
      *  Processs grade comments to generate a list of feedbacks
      *
-     * @param array $list List to be filled with feedbacks
      * @param array $list List to be filled with feedbacks
      */
     public function filter_feedback(&$list) {
@@ -1346,7 +1330,6 @@ class mod_vpl_submission {
     /**
      * Save Compilation Execution result to files
      *
-     * @param array $result response from server
      * @param array $result response from server
      * @return void
      */
@@ -1415,11 +1398,6 @@ class mod_vpl_submission {
      * Get compilation, execution and proposed grade from array
      *
      * @param array $response Response from server
-     * @param string $compilation in HTML
-     * @param string $execution in HTML
-     * @param string $grade in HTML
-     * @param bool $dropdown Show as dropdown or not.
-     * @param bool $returnrawexecution Return raw execution if true, else return HTML.
      * @param string $compilation in HTML
      * @param string $execution in HTML
      * @param string $grade in HTML

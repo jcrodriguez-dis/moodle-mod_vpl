@@ -243,6 +243,7 @@ final class webservice_test extends base_fixture {
      * @param int $id Course module ID
      * @param array $files Array of files to open
      * @param string $compilation Compilation result, empty by default
+     * @param string $evaluation Evaluation result, empty by default
      * @param string $grade Grade result, empty by default
      * @param string $comments Comments for the submission, empty by default
      * @param string $password Password for the VPL instance, empty by default

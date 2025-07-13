@@ -309,7 +309,7 @@ function vpl_url_add_param($url, $parm, $value) {
 /**
  * Print a message and redirect
  *
- * @param string $link. The URL to redirect to
+ * @param string $link The URL to redirect to
  * @param string $message to be print
  * @param string $type of message (success, info, warning, error). Default = info
  * @param string $errorcode optional error code to show
