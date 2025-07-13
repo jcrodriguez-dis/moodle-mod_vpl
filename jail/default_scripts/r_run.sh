@@ -16,23 +16,23 @@ fi
 #Select first file
 get_first_source_file r R
 
-# Prepare execution
-if [ -f vpl_evaluate.sh ] ; then
-    # If in evaluation mode switch to text terminal
-    cat common_script.sh > vpl_execution
-    cat  "$FIRST_SOURCE_FILE" >> .Rprofile
-    echo "R --slave --no-readline -s" >>vpl_execution
-    chmod +x vpl_execution
-else
-    cat common_script.sh > vpl_wexecution
-    cat  "$FIRST_SOURCE_FILE" >> .Rprofile
-    check_program x-terminal-emulator xterm
-    if [ "$1" == "batch" ] ; then
-    	echo "$PROGRAM -e R --vanilla -f \"$FIRST_SOURCE_FILE\"" >>vpl_wexecution
-    else
-    	echo "$PROGRAM -e R -q" >>vpl_wexecution
-    fi
-    echo "wait_end R" >>vpl_wexecution
-    chmod +x vpl_wexecution
-fi
+cat common_script.sh > vpl_execution
+echo "Rscript --vanilla \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+chmod +x vpl_execution
+
 apply_run_mode
+
+# Running R Code
+# By default, code is run in text mode using Rscript.
+# Remember using readLines(file("stdin"), n = 1) to read input lines.
+# To run in a GUI environment, either:
+#   - Add a comment with @vpl_run_textingui_mode, or
+#   - Change the run mode in the Moodle activity settings.
+# To display graphics, use the following steps:
+#   - Save the plot using png("filename.png") or jpeg("filename.jpg").
+#   - Close the graphics device with dev.off().
+#   - Open the image using:
+#       system("nohup xdg-open filename.png &")
+#       or
+#       system("nohup xdg-open filename.png")
+
