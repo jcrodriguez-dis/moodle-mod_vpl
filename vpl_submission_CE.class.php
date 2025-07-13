@@ -500,6 +500,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return string Run mode code.
      */
     public static function get_run_mode($data) {
+        if (isset($data->pln) && $data->pln == 'all') {
+            // If the programming language is 'all', return the default run mode.
+            return '0';
+        }
         if (! empty($data->run_mode) && $data->run_mode > '1') {
             return $data->run_mode;
         }
