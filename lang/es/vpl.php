@@ -35,8 +35,6 @@ probar a usar una conexión http (no cifrada) u otro navegador.</p>
 <p>Por favor, pulse sobre los siguientes enlaces (Servidor #) y acepte los certificados ofrecidos.</p>';
 $string['addfile'] = 'Añadir fichero';
 $string['advanced'] = 'Avanzado';
-
-// Added without order.
 $string['allfiles'] = 'Todos los ficheros';
 $string['allsubmissions'] = 'Todas las entregas';
 $string['always_use_ws'] = 'Siempre usar protocolo websocket sin cifrado (ws)';
@@ -186,7 +184,7 @@ $string['gradercomments'] = "Comentarios del revisor";
 $string['graderemoved'] = 'La calificación ha sido eliminada';
 $string['groupwork'] = 'En grupo';
 $string['inconsistentgroup'] = 'Usted no es miembro de un único grupo (0 o >1)';
-$string['incorrect_directory_name'] = 'Nombre de directorio incorrecto';;
+$string['incorrect_directory_name'] = 'Nombre de directorio incorrecto';
 $string['incorrect_file_name'] = 'Nombre de fichero incorrecto';
 $string['individualwork'] = 'Individual';
 $string['inheritvalue'] = 'Heredado ({$a})';
