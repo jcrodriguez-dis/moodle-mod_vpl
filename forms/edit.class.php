@@ -101,8 +101,9 @@ class mod_vpl_edit {
      *
      * @param mod_vpl $vpl VPL instance
      * @param int $userid
-     * @param string[string] $files internal format
+     * @param array $files internal format
      * @param string $comments
+     * @param int $version -1 for new version, or the version to replace
      * @throws Exception
      * @return int saved record id
      */
@@ -146,7 +147,8 @@ class mod_vpl_edit {
      * @param mod_vpl $vpl VPL instance
      * @param int $userid
      * @param int $processid
-     * @param string[string] $files internal format
+     * @param array $files internal format
+     * @param array $filestodelete files to delete in the running task
      * @throws Exception
      * @return boolean True if updated
      */
@@ -318,7 +320,7 @@ class mod_vpl_edit {
 
     /**
      * Request to stop the direct run for this user and vpl activity if any
-     * @param mod_vpl $vpl
+     * @param int $vplid
      * @param int $userid
      */
     public static function stopdirectrun($vplid, $userid) {
@@ -338,9 +340,12 @@ class mod_vpl_edit {
 
     /**
      * Request the direct run code in an execution server
+     *
      * @param mod_vpl $vpl
      * @param int $userid
      * @param string $command
+     * @param array $files
+     * @return stdClass with the response information
      * @throws Exception
      */
     public static function directrun($vpl, $userid, $command, $files) {

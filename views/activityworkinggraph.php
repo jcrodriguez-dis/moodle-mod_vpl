@@ -17,7 +17,7 @@
 /**
  * Show activity working graph for all students
  *
- * @package VPL. Grade submission
+ * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>

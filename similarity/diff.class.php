@@ -373,9 +373,10 @@ class vpl_diff {
      * Get the file to show in the diff view.
      *
      * @param int $f The file number.
-     * @param string &$htmlheader The HTML header to be filled.
-     * @param string &$filename The filename to be filled.
-     * @param string &$data The file data to be filled.
+     * @param string $htmlheader The HTML header to be filled.
+     * @param string $filename The filename to be filled.
+     * @param string $data The file data to be filled.
+     * @throws moodle_exception If the type is invalid or if the zip file cannot be opened.
      */
     public static function vpl_get_similfile($f, &$htmlheader, &$filename, &$data) {
         global $DB;

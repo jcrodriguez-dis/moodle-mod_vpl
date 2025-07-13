@@ -144,6 +144,11 @@ class vpl_list_util {
 
     /**
      * Count the number of graded submissions in a VPL instance.
+     *
+     * @param object $vpl VPL instance to count graded submissions for.
+     * @return array An associative array with two keys:
+     *               - 'submissions': Total number of submissions.
+     *               - 'graded': Number of graded submissions.
      */
     public static function count_graded($vpl) {
         $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid, s.groupid' );

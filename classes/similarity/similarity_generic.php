@@ -87,6 +87,8 @@ class similarity_generic extends similarity_base {
      * Get the type number for a given tokenizer class.
      * This method ensures that each tokenizer class
      * has a unique type number.
+     * @param string $tokenizerclass The class name of the tokenizer.
+     * @return int The type number for the tokenizer class.
      */
     private static function get_type_number($tokenizerclass) {
         if (!isset(self::$typenumbers[$tokenizerclass])) {

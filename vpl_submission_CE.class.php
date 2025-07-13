@@ -298,9 +298,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Recopile base execution data to be send to the jail
      *
-     * @param mod_vpl $vpl. VPl instance to process.
-     * @param int $type. Execution type code
-     * @param array $vplused=[]. List of based on instances, usefull to avoid infinite recursion.
+     * @param mod_vpl $vpl VPl instance to process.
+     * @param int $type Execution type code
+     * @param array $vplused List of based on instances, usefull to avoid infinite recursion.
      * @return object with files, limits, interactive and other info
      */
     public static function prepare_execution_base($vpl, $type, &$vplused = []) {
@@ -409,7 +409,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Adds to $data submission information data to be send to the jail
      *
-     * @param object $data. Data to send to the jail.
+     * @param object $data Data to send to the jail.
      * @return object $data updated.
      */
     public function prepare_execution_submission($data) {
@@ -442,7 +442,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Adds to $data submission information data to be send to the jail
      *
-     * @param object $data. Data to send to the jail.
+     * @param object $data Data to send to the jail.
      * @return object $data object updated.
      */
     public static function prepare_execution_evaluation_tests($data) {
@@ -613,7 +613,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     /**
      * Adds to $data execution info to be send to the jail.
      *
-     * @param object $data. Data to send to the jail requiere: activityid, type
+     * @param object $data Data to send to the jail requiere: activityid, type
      * @return object $data updated.
      */
     public static function prepare_execution_info($data) {
@@ -766,7 +766,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @param object $data Data to be sent to the jail server
      * @param int $maxmemory Maximum memory to be used by the jail server
      * @param string $localservers List of local servers
-     * @param string &$server Jail server selected
+     * @param string $server Jail server selected
      * @return object Response from the jail server with task information for the client.
      */
     public function jailrequestaction($data, $maxmemory, $localservers, &$server) {
@@ -915,8 +915,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @param mod_vpl $vpl VPL instance
      * @param int $userid
      * @param int $processid
-     * @param string[string] $files internal format
-     * @throws Exception
+     * @param array $files internal format
+     * @param array $filestodelete List of files to delete in the running task
      * @return boolean True if updated
      */
     public static function update($vpl, $userid, $processid, $files,  $filestodelete = []) {

@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
  * @group mod_vpl
  * @group mod_vpl_locallib
  */
-class locallib_test extends \advanced_testcase {
+final class locallib_test extends \advanced_testcase {
     /**
      * Tests the function vpl_delete_dir.
      *

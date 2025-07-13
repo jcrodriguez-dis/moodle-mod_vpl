@@ -181,7 +181,7 @@ class vpl_clusters {
      * It increments the provided id counter for each new file assigned.
      *
      * @param object $file The file object to assign an id to.
-     * @param int &$id The current id counter, which will be incremented.
+     * @param int $id The current id counter, which will be incremented.
      */
     public function assign_file_id(&$file, &$id) {
         if (! isset( $file->id )) {

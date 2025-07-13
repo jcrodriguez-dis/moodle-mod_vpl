@@ -39,12 +39,14 @@ class vpl_graph {
     /**
      * Draw a graph image. Staked area
      *
-     * @param $title string title of graph
-     * @param $xlabel string x label
-     * @param $ylabel string y label
-     * @param $legends array of strings, values are the names of every serie
-     * @param $xdata array x labels
-     * @param $ydata array of array of numbers first array is indexed by legend.
+     * @param string $title title of graph
+     * @param string $xlabel x label
+     * @param string $ylabel y label
+     * @param array $legends of strings, values are the names of every serie
+     * @param array $xdata array of x labels
+     * @param array $ydata array of numbers first array is indexed by legend.
+     * @param bool $legends legends for the graph, if false, only one serie is drawn
+     * @param bool $typebar if true, the graph is a bar graph
      * @return void
      */
     public static function draw($title, $xlabel, $ylabel, $xdata, $ydata, $legends = false, $typebar = false) {

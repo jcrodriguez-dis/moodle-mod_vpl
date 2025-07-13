@@ -59,8 +59,8 @@ if (!function_exists('str_ends_with')) {
  * Adjust this flag in order to avoid showing error messages
  * which are not catched as exceptions. On production, this
  * should be commnented or set to false.
- * define('TOKENIZER_ON_TEST', true);
  */
+define('TOKENIZER_ON_TEST', true);
 
 /**
  * Tokenizer class for tokenizer rules JSON files.

@@ -73,6 +73,7 @@ class phpconfig {
     /**
      * Return the post maximum size in bytes
      *
+     * @param string $value Value to convert e.g 2M, 1.5Gb, 32K
      * @return int Number of bytes
      */
     public static function get_post_max_size_internal($value): int {

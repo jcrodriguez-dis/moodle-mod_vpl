@@ -51,9 +51,9 @@ class file_group_process {
     /**
      * Save an array of strings in a file
      *
-     * @param $filename string
-     * @param $list array of strings
-     * @param $otherfln string If not false, use this file name to save the list.
+     * @param string $filename Name of the file to save the list.
+     * @param array $list Array of strings to save in the file.
+     * @param string $otherfln If not false, use this file name to save the list.
      *
      * @return void
      */
@@ -77,9 +77,9 @@ class file_group_process {
     }
 
     /**
-     * get parsed lines of a file
+     * Get parsed lines of a file
      *
-     * @param $filename string
+     * @param string $filename string
      * @return array of lines of the file
      */
     public static function read_list($filename) {
@@ -97,7 +97,6 @@ class file_group_process {
     /**
      * Constructor
      *
-     * @param string $filelistname Name of the file list.
      * @param string $dir Path to the directory where files are saved.
      * @param int $maxnumfiles Maximum number of files in the group.
      * @param int $numstaticfiles Number of files that must exist.
@@ -127,7 +126,7 @@ class file_group_process {
 
     /**
      * Encode file path to be a file name
-     * @param path file path
+     * @param string $path file path
      * @return string
      */
     public static function encodefilename($path) {

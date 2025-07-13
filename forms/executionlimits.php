@@ -98,7 +98,7 @@ class mod_vpl_executionlimits_form extends moodleform {
      * @param string $label The label of the element.
      * @param array $selectoptions The selectable options of the element.
      *  The [0] => 'select' option will be replaced by a localized string describing the default value.
-     * @param int $defaultvalue The default value to use when no other value is selected.
+     * @param int $defaultvaluestring The default value to use when no other value is selected.
      * @param int $currentvalue The value to which the element should be set when displaying the form.
      */
     private static function add_resource_limit_select($mform, $name, $label, $selectoptions, $defaultvaluestring, $currentvalue) {

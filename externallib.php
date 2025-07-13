@@ -56,8 +56,9 @@ class mod_vpl_webservice extends external_api {
      * Does checks fro required netwok and password if setted.
      *
      * @param int $id The coursemodule id.
-     * @param string $pssword The password for using the VPL activity.
+     * @param string $password The password for using the VPL activity.
      * @return \mod_vpl object or throws exception if not available.
+     * @throws Exception if not available or not allowed.
      */
     private static function initial_checks($id, $password) {
         $vpl = new mod_vpl( $id );
@@ -77,7 +78,7 @@ class mod_vpl_webservice extends external_api {
      * Encode file format from array if key = value (filename => data),
      * to an array of arrays with 'name', 'data' and 'enconding' for each file.
      *
-     * @param array $files of (filename => data).
+     * @param array $oldfiles of (filename => data).
      * @return array of array with 'name', 'data' and 'conding' keys.
      */
     private static function encode_files(&$oldfiles) {
@@ -100,8 +101,8 @@ class mod_vpl_webservice extends external_api {
     /**
      * Revert encode_files action.
      *
-     * @param array of array with 'name', 'data' and 'conding' keys.
-     * @return array $files of (filename => data).
+     * @param array $oldfiles of array with 'name', 'data' and 'conding' keys.
+     * @return array files of (filename => data).
      */
     private static function decode_files(&$oldfiles) {
         $files = [];

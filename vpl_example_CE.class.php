@@ -38,7 +38,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
     /**
      * Constructor
      *
-     * @param mod_vpl $vpl. instance of mod_vpl
+     * @param mod_vpl $vpl instance of mod_vpl
      */
     public function __construct($vpl) {
         global $USER;
@@ -76,8 +76,7 @@ class mod_vpl_example_CE extends mod_vpl_submission_CE {
     /**
      * Save Compilation Execution result. Removed
      *
-     * @param $result array
-     *            response from server
+     * @param array $result response from server
      * @return void
      */
     public function savece($result) {

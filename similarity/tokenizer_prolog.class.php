@@ -65,9 +65,9 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
     }
 
     /**
-     * Check if the text is an identifier.
+     * Check if the character is an identifier.
      *
-     * @param string $text the text to check
+     * @param string $c the character to check
      * @return bool true if it is an identifier, false otherwise
      */
     protected function isidentifierchar($c) {

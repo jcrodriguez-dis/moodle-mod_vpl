@@ -47,9 +47,7 @@ class activity extends \core_search\base_activity {
 
     /**
      * Returns if the current user has access to $id VPL activity.
-     *
-     * VPL limits access to description also by password and network.
-     *
+     * @param int $id the VPL activity id
      * @return bool
      */
     public function check_access($id) {

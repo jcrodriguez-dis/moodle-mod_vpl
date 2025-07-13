@@ -73,8 +73,8 @@ function vpl_create_dir($dir) {
 /**
  * Open/create a file and its dir
  *
- * @param $filename string path to file
- * @return Object file descriptor
+ * @param string $filename string path to file
+ * @return object file descriptor
  * @codeCoverageIgnore
  */
 function vpl_fopen($filename) {
@@ -106,8 +106,8 @@ function vpl_fopen($filename) {
 /**
  * Open/create a file and its dir and write contents
  *
- * @param string $filename. Path to the file to open
- * @param string $contents. Contents to write into the file
+ * @param string $filename Path to the file to open
+ * @param string $contents Contents to write into the file
  * @throws file_exception
  * @codeCoverageIgnore
  */
@@ -127,7 +127,8 @@ function vpl_fwrite($filename, $contents) {
 /**
  * Recursively delete a directory
  *
- * @return bool All delete
+ * @param string $dirname Name of the directory to delete
+ * @return bool true if the directory was deleted, false otherwise
  * @codeCoverageIgnore
  */
 function vpl_delete_dir($dirname) {
@@ -160,7 +161,7 @@ function vpl_delete_dir($dirname) {
 /**
  * Outputs a zip file and removes it. Must be called before any other output
  *
- * @param string $zipfilename. Name of the ZIP file with the data
+ * @param string $zipfilename Name of the ZIP file with the data
  * @param string $name of file to be shown, without '.zip'
  * @codeCoverageIgnore
  */
@@ -212,11 +213,11 @@ function vpl_get_lang() {
 /**
  * generate URL to page with params
  *
- * @param $page string page from wwwroot
- * @param string $parm1 name of the first parameter
- * @param string $value1 value of the first parameter
- * @param string $parm2 name of the second parameter
- * @param string $value2 value of the second parameter
+ * param $page string page from wwwroot
+ * param string $parm1 name of the first parameter
+ * param string $value1 value of the first parameter
+ * param string $parm2 name of the second parameter
+ * param string $value2 value of the second parameter
  * etc.
  * @codeCoverageIgnore
  */
@@ -234,11 +235,11 @@ function vpl_abs_href() {
 /**
  * generate URL to page with params
  *
- * @param $page string page from wwwroot/mod/vpl/
- * @param string $parm1 name of the first parameter
- * @param string $value1 value of the first parameter
- * @param string $parm2 name of the second parameter
- * @param string $value2 value of the second parameter
+ * param $page string page from wwwroot/mod/vpl/
+ * param string $parm1 name of the first parameter
+ * param string $value1 value of the first parameter
+ * param string $parm2 name of the second parameter
+ * param string $value2 value of the second parameter
  * etc.
  * @codeCoverageIgnore
  */
@@ -270,11 +271,11 @@ function vpl_get_gradenoun_str() {
 /**
  * Generate URL relative page with params
  *
- * @param string $url URL to the page
- * @param string $parm1 name of the first parameter
- * @param string $value1 value of the first parameter
- * @param string $parm2 name of the second parameter
- * @param string $value2 value of the second parameter
+ * param string $url URL to the page
+ * param string $parm1 name of the first parameter
+ * param string $value1 value of the first parameter
+ * param string $parm2 name of the second parameter
+ * param string $value2 value of the second parameter
  * etc.
  * @return string URL with parameters
  * @codeCoverageIgnore
@@ -311,6 +312,7 @@ function vpl_url_add_param($url, $parm, $value) {
  * @param string $link. The URL to redirect to
  * @param string $message to be print
  * @param string $type of message (success, info, warning, error). Default = info
+ * @param string $errorcode optional error code to show
  */
 function vpl_redirect($link, $message, $type = 'info', $errorcode='') {
     global $OUTPUT;
@@ -474,7 +476,7 @@ function vpl_conv_size_to_string($size) {
 /**
  * Return the array key after or equal to value
  *
- * @param $array
+ * @param array $array
  * @param int $value of key to search >=
  * @return int key found
  * @codeCoverageIgnore
@@ -589,7 +591,7 @@ function vpl_rtzeros($value) {
  * Generate an array with index an values $url.index
  *
  * @param string $url base
- * @param $array array of index
+ * @param array $array of index
  * @return array with index as key and url as value
  * @codeCoverageIgnore
  */
@@ -644,8 +646,8 @@ function vpl_is_image($filename) {
  * Get if filename has binary extension or binary data
  *
  * @param string $filename
- * @param string &$data file contents
- * @return boolean
+ * @param string $data file contents
+ * @return bool
  * @codeCoverageIgnore
  */
 function vpl_is_binary($filename, &$data = false) {
@@ -667,7 +669,7 @@ function vpl_is_binary($filename, &$data = false) {
  * Return data encoded to base64
  *
  * @param string $filename
- * @param string &$data file contents
+ * @param string $data file contents
  * @return string
  * @codeCoverageIgnore
  */
@@ -679,7 +681,7 @@ function vpl_encode_binary($filename, &$data) {
  * Return data decoded from base64
  *
  * @param string $filename
- * @param string &$data file contents
+ * @param string $data file contents
  * @return string
  * @codeCoverageIgnore
  */
@@ -730,7 +732,7 @@ function vpl_is_valid_file_name($name) {
 /**
  * Truncate string to the limit passed
  *
- * @param string &$string
+ * @param string $string
  * @param int $limit
  * @codeCoverageIgnore
  */
@@ -779,7 +781,6 @@ function vpl_bash_export($var, $value) {
  *
  * Return content of vars ready to HTML
  *
- * @param mixed $var variable to dump
  * @return string HTML ready content of var_dump
  * @codeCoverageIgnore
  */
@@ -795,7 +796,7 @@ function vpl_s() {
 /**
  * Truncate string fields of the VPL record instance
  *
- * @param $instance object with the record
+ * @param object $instance object with the record
  * @codeCoverageIgnore
  */
 function vpl_truncate_vpl($instance) {
@@ -866,7 +867,8 @@ function vpl_check_network($networks, $ip = false) {
 /**
  * Get awesome icon for action
  *
- * @param String $id
+ * @param string $str name of the icon
+ * @param string $classes additional classes to add to the icon
  * @return string
  * @codeCoverageIgnore
  */
@@ -931,9 +933,9 @@ function vpl_get_picture_fields(): string {
  * Return array of override objects for a vpl activity.
  * Asigned override as agregate in fields userids and groupids.
  *
- * @param $overrides
- * @param $asignedoverrides
- * @return array
+ * @param array $overrides array of override objects
+ * @param array $asignedoverrides array of asigned override objects
+ * @return array of override objects with userids and groupids fields
  * @codeCoverageIgnore
  */
 function vpl_agregate_overrides($overrides, $asignedoverrides): array {
@@ -966,8 +968,8 @@ function vpl_agregate_overrides($overrides, $asignedoverrides): array {
  * Return array of override objects for a vpl activity.
  * Asigned override as agregate userids and groupids.
  *
- * @param $vplid
- * @return array
+ * @param int $vplid VPL ID to get overrides for.
+ * @return array of override objects
  * @codeCoverageIgnore
  */
 function vpl_get_overrides($vplid): array {
@@ -988,8 +990,8 @@ function vpl_get_overrides($vplid): array {
  * Return array of override objects for a course.
  * Asigned override as agregate userids and groupids.
  *
- * @param $courseid
- * @return array
+ * @param int $courseid Course ID to get overrides for.
+ * @return array of override objects
  * @codeCoverageIgnore
  */
 function vpl_get_overrides_incourse($courseid): array {

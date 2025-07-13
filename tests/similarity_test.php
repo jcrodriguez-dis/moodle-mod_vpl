@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php');
@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php')
  * @group mod_vpl_similarity
  * @group mod_vpl_similarity_preprocess
  */
-class similarity_test extends base_test {
+final class similarity_test extends base_fixture {
 
     /**
      * Method to create test fixture

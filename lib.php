@@ -315,7 +315,7 @@ function vpl_update_instance_event($instance): void {
 /**
  * Updates a vpl instance
  *
- * @param object from the form in mod.html
+ * @param object $instance from the form in mod.html
  * @return boolean True if updated, false if not found
  */
 function vpl_update_instance($instance) {
@@ -869,6 +869,9 @@ function vpl_extend_navigation_course(navigation_node $navigation, $course, $con
 /**
  * Checks if a scale is being used by a particular instance of VPL.
  *
+ * @param int $vplid VPL instance ID
+ * @param int $scaleid Scale ID
+ * @return boolean True if the scale is used by the VPL instance, false otherwise
  * @codeCoverageIgnore
  */
 function vpl_scale_used($vplid, $scaleid) {
@@ -884,7 +887,7 @@ function vpl_scale_used($vplid, $scaleid) {
  *
  * This is used to find out if scale used anywhere
  *
- * @param $scaleid int
+ * @param int $scaleid Scale ID
  * @return boolean True if the scale is used by any VPL
  * @codeCoverageIgnore
  */
@@ -991,9 +994,9 @@ function vpl_reset_instance_userdata($vplid) {
  * This function remove all submissions from the specified vpl instances
  * and clean up any related data.
  *
- * @param $vplselection string with partial SQL to select VPL related records of a course.
- * @param $vplids array of vpl ids of a course
- * @param $courseid int course id
+ * @param string $vplselection with partial SQL to select VPL related records of a course.
+ * @param array $vplids vpl ids of a course
+ * @param int $courseid course id
  * @return bool true if successful, false otherwise
  * @codeCoverageIgnore
  */
@@ -1019,8 +1022,8 @@ function vpl_reset_submissions($vplselection, $vplids, $courseid): bool {
  * This function will remove all overrides from the specified vpl instances
  * and clean up calendar events.
  *
- * @param $vplselection string with partial SQL to select VPL related records of a course.
- * @param $courseid int course id
+ * @param string $vplselection with partial SQL to select VPL related records of a course.
+ * @param int $courseid course id
  * @return bool true if successful, false otherwise
  * @codeCoverageIgnore
  */
@@ -1054,7 +1057,7 @@ function vpl_reset_overrides($vplselection, $courseid): bool {
  * This function remove all submissions from the specified vpl instance
  * and clean up any related data.
  *
- * @param $data stdClass the data submitted from the reset course.
+ * @param object $data the data submitted from the reset course.
  * @return array status array
  * @codeCoverageIgnore
  */
@@ -1180,7 +1183,7 @@ function vpl_reset_userdata($data) {
 /**
  * Add the form elements that control VPL for the course reset functionality.
  *
- * @param $mform moodleform
+ * @param moodleform $mform
  * @codeCoverageIgnore
  */
 function vpl_reset_course_form_definition($mform) {

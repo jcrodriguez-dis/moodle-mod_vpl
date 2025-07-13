@@ -35,9 +35,10 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 
 
 /**
+ * Base fixture for unit tests.
  * Code based on mod/assign/tests/base_test.php
  */
-class base_test extends \advanced_testcase {
+class base_fixture extends \advanced_testcase {
     /** @var number of students to create */
     const DEFAULT_STUDENT_COUNT = 7;
 
@@ -579,8 +580,6 @@ class base_test extends \advanced_testcase {
 
     /**
      * Test that we can create an instance of mod_vpl.
-     *
-     * @covers \mod_vpl\base_test
      */
     public function test_create_instance(): void {
         if (isset($this->course)) { // No fixture => don't check.
@@ -591,8 +590,8 @@ class base_test extends \advanced_testcase {
     /**
      * Call protected method of passed object
      *
-     * @param $obj object with protected methods
-     * @param $name name of the method
+     * @param object $obj with protected methods
+     * @param string $name name of the method
      * @param array $args list of parameters
      * @return mixed
      */

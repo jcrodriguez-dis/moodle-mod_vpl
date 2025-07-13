@@ -34,7 +34,7 @@ use mod_vpl\util\assertf;
 use Exception;
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer class.
@@ -45,7 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
  * @group mod_vpl_tokenizer_ext
  * @covers \mod_vpl\tokenizer\tokenizer
  */
-class tokenizer_test extends \advanced_testcase {
+final class tokenizer_test extends \advanced_testcase {
     /**
      * Location for all JSON files which would be tested.
      *

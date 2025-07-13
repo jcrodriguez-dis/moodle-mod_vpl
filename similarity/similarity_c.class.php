@@ -39,6 +39,9 @@ class vpl_similarity_c extends vpl_similarity_base {
 
     /**
      * Expands the operator in the array of tokens.
+     *
+     * @param array $array The array of tokens.
+     * @param int $from The index from which to expand the operator.
      */
     public static function expand_operator(&$array, &$from) {
         $last = count( $array ) - 1; // Array alredy with equal =.

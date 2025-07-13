@@ -35,7 +35,7 @@ require_once(dirname(__FILE__).'/../locallib.php');
  * @group mod_vpl
  * @covers \mod_vpl\util\phpconfig
  */
-class util_phpconfig_test extends \advanced_testcase {
+final class util_phpconfig_test extends \advanced_testcase {
     /**
      * Method to test function get_bytes(string $value): int
      */

@@ -27,21 +27,15 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 
 use mod_vpl\tokenizer\token;
 use mod_vpl\util\assertf;
 
 /**
- * Unit tests for \mod_vpl\tokenizer\tokenizer_base class.
- *
- * @group mod_vpl
- * @group mod_vpl_vplt
- * @group mod_vpl_tokenizer
- * @group mod_vpl_tokenizer_base
- * @covers \mod_vpl\tokenizer\tokenizer_base
+ * Class tokenizer fixture base.
  */
-class tokenizer_base_test extends \advanced_testcase {
+class tokenizer_base_fixture extends \advanced_testcase {
     /**
      * Test cases for tokenizer_base::remove_capturing_groups
      *

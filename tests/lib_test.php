@@ -32,7 +32,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
@@ -41,7 +41,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl
  * @group mod_vpl_lib
  */
-class lib_test extends base_test {
+final class lib_test extends base_fixture {
 
     /**
      * Method to create lib test fixture

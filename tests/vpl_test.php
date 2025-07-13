@@ -30,7 +30,7 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_test.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
@@ -39,7 +39,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl
  * @group mod_vpl_vpl
  */
-class vpl_test extends base_test {
+final class vpl_test extends base_fixture {
 
     /**
      * Method to create test fixture
@@ -111,7 +111,9 @@ class vpl_test extends base_test {
     }
 
     /**
-     * Internal method to test mod_vpl::get_students returns
+     * Internal method to test mod_vpl::get_students returns.
+     * @param array $users Array of users returned by mod_vpl::get_students
+     * @param array $expected Array of expected users.
      */
     public function internal_test_users($users, $expected) {
         $usersid = [];
