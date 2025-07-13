@@ -459,9 +459,7 @@ class mod_vpl_submission {
      *
      * @param object $info with grade and comments fields
      * @param bool $automatic if automatic grading (default false)
-     * @return bool true => OK
-     * @param bool $automatic if automatic grading (default false)
-     * @return bool true => OK
+     * @return bool true if set and false if not
      */
     public function set_grade($info, $automatic = false) {
         global $USER;
