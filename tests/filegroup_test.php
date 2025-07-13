@@ -94,6 +94,8 @@ final class filegroup_test extends \advanced_testcase {
      */
     protected function setUp(): void {
         global $CFG;
+        parent::setUp();
+        // Create the base directory for file group process tests.
         $this->basedir = $CFG->dataroot . '/vpl_data/gpt/';
 
         $this->gpempty = new \file_group_process($this->basedir . 'empty', 0, 0);

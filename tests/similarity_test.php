@@ -45,15 +45,7 @@ require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php')
  * @group mod_vpl_similarity
  * @group mod_vpl_similarity_preprocess
  */
-final class similarity_test extends base_fixture {
-
-    /**
-     * Method to create test fixture
-     */
-    protected function setUp(): void {
-        // No fixture.
-    }
-
+final class similarity_test extends \advanced_testcase {
     /**
      * Method to test vpl_similarity_preprocess::get_zip_filepath
      * @covers \vpl_similarity_preprocess::get_zip_filepath

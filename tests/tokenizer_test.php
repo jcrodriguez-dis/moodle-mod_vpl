@@ -168,6 +168,7 @@ final class tokenizer_test extends \advanced_testcase {
      */
     public static function tearDownAfterClass(): void {
         assertf::set_disable();
+        parent::tearDownAfterClass();
     }
     /**
      * Method to test tokenizer::discard_comments
