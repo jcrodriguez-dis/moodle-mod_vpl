@@ -387,7 +387,7 @@ void Evaluation::runTests() {
 	}
 	printf("Test cases: %lu\n", (unsigned long)testCases.size());
 	if (fatalErrors.size() > 0) {
-		printf("Fatal errors: tests not runned\n");
+		printf("Fatal errors: some tests not run\n");
 		return;
 	}
 	nfails = 0;
