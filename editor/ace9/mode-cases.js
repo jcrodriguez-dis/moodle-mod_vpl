@@ -8,83 +8,342 @@
 ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "ace/lib/oop", "ace/mode/text_highlight_rules" ],
         function(require, exports, module) {
             "use strict";
-            var rkey = function(key) {
-                return "^[ \\t]*" + key + "[ \\t]*=";
+            var regexParameter = function(parameter) {
+                return "^[ \\t]*(" + parameter + ")[ \\t]*=[ \\t]*";
             };
+            var regexParameters = function(parameters) {
+                return "^[ \\t]*(" + parameters.join("|") + ")[ \\t]*=[ \\t]*";
+            };
+            var regexPlaceHolders = function(placeHolders) {
+                var fullPlaceHolders = placeHolders.map(name => "<<<" + name + ">>>");
+                return "(" + fullPlaceHolders.join("|") + ")";
+            };
+            var lineParameters = [
+                "case",
+                "program to run",
+                "program arguments",
+                "expected exit code",
+                "variation",
+                "case title format",
+                "fail mark",
+                "pass mark",
+                "error mark",
+                "timeout mark",
+            ];
+            var lineParametersWithPlaceHolders = [
+                "case title format",
+            ];
+
+            var multiLineParameters = [
+                "input",
+            ];
+
+            var multiLineParametersWithPlaceHolders = [
+                "output",
+                "fail message",
+                "fail output message",
+                "pass message",
+                "timeout message",
+                "fail exit code message",
+                "final report message",
+            ];
+            var placeHolders = [
+                "case_id",
+                "case_title",
+                "test_result_mark",
+                "fail_mark",
+                "pass_mark",
+                "error_mark",
+                "timeout_mark",
+                "input",
+                "input_inline",
+                "check_type",
+                "expected_output",
+                "expected_output_inline",
+                "program_output",
+                "program_output_inline",
+                "expected_exit_code",
+                "exit_code",
+                "time_limit",
+                "num_tests",
+                "num_tests_run",
+                "num_tests_failed",
+                "num_tests_passed",
+                "num_tests_timeout",
+                "num_tests_error",
+                "grade_reduction",
+            ];
             var oop = require("../lib/oop");
             var TextHighlightRules = require("./text_highlight_rules").TextHighlightRules;
-            var endText = [{
-                token: "constant.string",
-                regex: ".*$",
-                next: "start"
-            }];
-            var endNumber = [{
-                token: "constant.numeric",
-                regex: "[ \\t]*[0-9]+[ \\t]*$",
-                next: "start"
-            }, {
-                token: "text",
-                regex: ".*$",
-                next: "start"
-            }];
-            var endNumberPercent = [{
-                token: "constant.numeric",
-                regex: "[ \\t]*[0-9]+\\.?[0-9]*%?[ \\t]*$",
-                next: "start"
-            }, {
-                token: "text",
-                regex: ".*$",
-                next: "start"
-            }];
-            var base = [{
-                caseInsensitive: true,
-                token: "keyword",
-                regex: '^[ \\t]*case[ \\t]*=$',
-                next: 'start'
-            }, {
-                caseInsensitive: true,
-                token: "keyword",
-                regex: rkey("case"),
-                next: endText
-            }, {
-                caseInsensitive: true,
-                token: "variable",
-                regex: rkey("fail message|program to run|program arguments|variation"),
-                next: endText
-            }, {
-                caseInsensitive: true,
-                token: "variable",
-                regex: rkey("(grade reduction)"),
-                next: endNumberPercent
-            }, {
-                caseInsensitive: true,
-                token: "variable",
-                regex: rkey("(expected exit code)"),
-                next: endNumber
-            }, {
-                caseInsensitive: true,
-                token: "variable",
-                regex: rkey("(input|output)"),
-                next: "endBlock"
-            }];
+            var lineTextValue = [{
+                    token: "string",
+                    regex: ".*$",
+                    next: "start",
+                },
+            ];
+
+            var lineTextValueWithPlaceHolders = [
+                {
+                    token: "string",
+                    regex: "[^<]+",
+                },
+                {
+                    token: "constant",
+                    regex: regexPlaceHolders(placeHolders),
+                },
+                {
+                    token: "string",
+                    regex: "<",
+                },
+            ];
+
+            var exitCodeValue = [
+                {
+                    token: "constant.numeric",
+                    regex: "[ \\t]*-?[0-9]+[ \\t]*$",
+                    next: "start",
+                },
+                {
+                    token: "invalid",
+                    regex: ".*$",
+                    next: "start",
+                },
+            ];
+            var gradeReductionValue = [
+                {
+                    token: "constant.numeric",
+                    regex: "[ \\t]*[0-9]+\\.?[0-9]*%?[ \\t]*$",
+                    next: "start",
+                },
+                {
+                    token: "invalid",
+                    regex: ".*$",
+                    next: "start",
+                },
+            ];
+            var floatValue = [
+                {
+                    token: "constant.numeric",
+                    regex: "[ \\t]*[0-9]+(:?\\.?[0-9]+)[ \\t]*$",
+                    next: "start",
+                },
+                {
+                    token: "invalid",
+                    regex: ".*$",
+                    next: "start",
+                },
+            ];
+            var lineEndParameter = [
+                {
+                    token: "string",
+                    onMatch: function(value, currentState, stack) {
+                        var result = /[ \\t]*([0-9a-zA-Z_]+)[ \\t]*$/.exec(value);
+                        stack.push("preHereDoc", result[1])
+                        return "string";
+                    },
+                    regex: "[ \\t]*([0-9a-zA-Z_]+)[ \\t]*$",
+                    next: "preHereDoc",
+                },
+                {
+                    token: "invalid",
+                    regex: ".*$",
+                    next: "start",
+                },
+            ]
+            var comment = {
+                    caseInsensitive: true,
+                    token: "comment",
+                    regex: "^[ \\t]*#.*$",
+                    next: "start",
+            };
+            var base = [
+                {
+                    caseInsensitive: true,
+                    token: "keyword",
+                    regex: regexParameter("case"),
+                    next: lineTextValue,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameter("multiline end"),
+                    next: lineEndParameter,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameter("grade reduction"),
+                    next: gradeReductionValue,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameter("expected exit code"),
+                    next: exitCodeValue,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameter("time limit"),
+                    next: floatValue,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameters(lineParameters),
+                    next: lineTextValue,
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameters(lineParametersWithPlaceHolders),
+                    next: "lineWithPlaceHolders",
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameters(multiLineParameters),
+                    next: "multiLine",
+                },
+                {
+                    caseInsensitive: true,
+                    token: "variable",
+                    regex: regexParameters(multiLineParametersWithPlaceHolders),
+                    next: "multilineWithPlaceHolders",
+                },
+            ];
 
             var CasesHighlightRules = function() {
-                this.createKeywordMapper({
-                    keyword: "|Variation =|Program arguments =" +
-                             "|Program to run =|Expected exit code =" +
-                             "|Fail message =|Grade reduction =" +
-                             "|Output =|Input =|Case ="},
-                    "identifier", 0);
+                var keywords = [].concat(
+                    lineParameters,
+                    lineParametersWithPlaceHolders,
+                    multiLineParameters,
+                    multiLineParametersWithPlaceHolders).map( name => name + " =");
+                keywords.push("multiline end =");
+                keywords.push("grade reduction =");
+                keywords.push("expected exit code =");
+                keywords.push("time limit =");
+                keywords.push("case =");
+                keywords.push("case title format =");
+                keywords.push("variation =");
+                keywords = keywords.concat(placeHolders.map(name => "<<<" + name + ">>>"));
+                this.createKeywordMapper({keyword: keywords.join("|")}, "identifier", 0);
                 this.$rules = {
-                    "start": [base, {
-                        token: "text",
-                        regex: ".*$",
-                        next: "start"
-                    }],
-                    "endBlock": [base, {
-                        token: "string",
-                        regex: ".*$"
-                    }]
+                    "start": [
+                        base,
+                        comment,
+                        {
+                            token: "text",
+                            regex: "[ \\t]*$",
+                            next: "start",
+                        },
+                        {
+                            token: "invalid",
+                            regex: ".*$",
+                            next: "start",
+                        }
+                    ],
+                    "lineWithPlaceHolders": [
+                        lineTextValueWithPlaceHolders,
+                        {
+                            token: "string",
+                            regex: ".*$",
+                            next: "start",
+                        },
+                    ],
+                    "multilineWithPlaceHolders": [
+                        base,
+                        lineTextValueWithPlaceHolders,
+                        {
+                            token: "string",
+                            regex: ".*$",
+                            next: "multilineWithPlaceHolders",
+                        },
+                    ],
+                    "multiLine": [
+                        base,
+                        {
+                            token: "string",
+                            regex: ".*$",
+                        },
+                    ],
+                    "preHereDoc": [
+                        {
+                            caseInsensitive: true,
+                            token: "variable",
+                            regex: regexParameters(multiLineParameters),
+                            next: "hereDoc",
+                        },
+                        {
+                            caseInsensitive: true,
+                            token: "variable",
+                            regex: regexParameters(multiLineParametersWithPlaceHolders),
+                            next: "hereDocWithPlaceHolders",
+                        },
+                        {
+                            token: "text",
+                            regex: "^[ \\t]*$",
+                            next: "preHereDoc",
+                        },
+                        {
+                            token: "invalid",
+                            regex: ".*$",
+                            next: "start",
+                        },
+                    ],
+                    "hereDoc": [
+                        {
+                            onMatch:  function(value, currentState, stack) {
+                                if (value === stack[1]) {
+                                    stack.shift();
+                                    stack.shift();
+                                    this.next = "start"
+                                    return "constant";
+                                }
+                                this.next = "hereDoc";
+                                return "string";
+                            },
+                            regex: ".*$",
+                            next: "start"
+                        }
+                    ],
+                    "hereDocWithPlaceHolders": [
+                        {
+                            token: "string",
+                            regex: "[^<]+$",
+                            next: "start",
+                            onMatch:  function(value, currentState, stack) {
+                                if (value === stack[1]) {
+                                    stack.shift();
+                                    stack.shift();
+                                    this.next = "start";
+                                    return "constant";
+                                }
+                                this.next = "hereDocWithPlaceHolders";
+                                return "string";
+                            },
+                        },
+                        {
+                            token: "string",
+                            regex: "[^<]+",
+                            next: "hereDocWithPlaceHolders",
+                        },
+                        {
+                            token: "constant",
+                            regex: regexPlaceHolders(placeHolders),
+                            next: "hereDocWithPlaceHolders",
+                        },
+                        {
+                            token: "string",
+                            regex: "<",
+                            next: "hereDocWithPlaceHolders",
+                        },
+                        {
+                            token: "string",
+                            regex: ".*$",
+                            next: "hereDocWithPlaceHolders",
+                        },
+                    ]
                 };
                 this.normalizeRules();
             };
