@@ -24,7 +24,6 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                 "program arguments",
                 "expected exit code",
                 "variation",
-                "case title format",
                 "fail mark",
                 "pass mark",
                 "error mark",
