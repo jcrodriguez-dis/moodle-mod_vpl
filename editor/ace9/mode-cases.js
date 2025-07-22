@@ -124,7 +124,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
             var floatValue = [
                 {
                     token: "constant.numeric",
-                    regex: "[ \\t]*[0-9]+(:?\\.?[0-9]+)[ \\t]*$",
+                    regex: "[ \\t]*[0-9]+(:?\\.[0-9]+)?[ \\t]*$",
                     next: "start",
                 },
                 {
