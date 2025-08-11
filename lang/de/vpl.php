@@ -69,7 +69,6 @@ $string['defaultexetime'] = 'Standard maximale Ausführungszeit';
 $string['defaultfilesize'] = 'Standard maximale Upload Dateigröße';
 $string['defaultresourcelimits'] = 'Standard maximaler Ressourcenverbrauch bei Ausführung';
 $string['delete'] = 'Löschen';
-$string['delete_file'] = 'Datei löschen';
 $string['delete_file_fq'] = "Datei '{\$a}' löschen?";
 $string['delete_file_q'] = 'Datei wirklich löschen?';
 $string['deleteallsubmissions'] = 'Alle Abgaben löschen';

@@ -67,7 +67,6 @@ $string['defaultexetime'] = 'Temps màxim d\'execució per defecte';
 $string['defaultfilesize'] = 'Mida màxima del fitxer penjat per defecte';
 $string['defaultresourcelimits'] = 'Límit de recursos en execució per defecte';
 $string['delete'] = 'Esborra';
-$string['delete_file'] = 'Esborra el fitxer';
 $string['delete_file_fq'] = "Esteu segur d'esborrar el fitxer '{\$a}'?";
 $string['delete_file_q'] = 'Voleu esborrar el fitxer?';
 $string['deleteallsubmissions'] = 'Elimina tots els lliuraments';

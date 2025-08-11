@@ -76,7 +76,6 @@ $string['defaultexetime'] = 'Máximo tempo de execução por padrão';
 $string['defaultfilesize'] = 'Máximo tamanho de cada arquivo de submissão por padrão';
 $string['defaultresourcelimits'] = 'Limite de recursos de execução por padrão';
 $string['delete'] = 'Apagar';
-$string['delete_file'] = 'Apagar arquivo';
 $string['delete_file_fq'] = "Confirma a deleção do arquivo?'{\$a}'?";
 $string['delete_file_q'] = 'Apagar o arquivo?';
 $string['deleteallsubmissions'] = 'Apagar todas as submissões';

@@ -59,7 +59,6 @@ $string['datesubmitted'] = 'Data dodana';
 $string['debug'] = 'Debuguj';
 $string['debugging'] = 'Debugowanie';
 $string['delete'] = 'Usuń';
-$string['delete_file'] = 'Usuń plik';
 $string['delete_file_fq'] = "usunąć plik '{\$a}'?";
 $string['delete_file_q'] = 'Usunąć plik?';
 $string['deleteallsubmissions'] = 'Usuń wszystkie złożenia';

@@ -66,7 +66,6 @@ $string['defaultexetime'] = 'デフォルトの実行時間の最大値';
 $string['defaultfilesize'] = 'デフォルトのアップロードファイルの最大値';
 $string['defaultresourcelimits'] = 'デフォルトの実行時資源の制限';
 $string['delete'] = '削除';
-$string['delete_file'] = 'ファイルの削除';
 $string['delete_file_fq'] = 'ファイル\'{$a}\'を削除しますか?';
 $string['delete_file_q'] = 'ファイルを削除しますか?';
 $string['deleteallsubmissions'] = 'すべての提出物を削除する';

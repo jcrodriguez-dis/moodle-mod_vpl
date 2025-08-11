@@ -66,7 +66,6 @@ $string['defaultexetime'] = 'Vaikimisi maksimaalne käivitamise aeg';
 $string['defaultfilesize'] = 'Vaikimisi maksimaalne üleslaetava faili suurus';
 $string['defaultresourcelimits'] = 'Vaikimisi ressursside piirangud';
 $string['delete'] = 'Kustuta';
-$string['delete_file'] = 'Kustuta fail';
 $string['delete_file_fq'] = "kustutada fail '{\$a}'?";
 $string['delete_file_q'] = 'Kustutada fail?';
 $string['deleteallsubmissions'] = 'Kustuta kõik esitused';
