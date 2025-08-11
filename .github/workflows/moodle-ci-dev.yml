@@ -8,7 +8,7 @@ jobs:
 
     services:
       postgres:
-        image: postgres:14
+        image: postgres:16
         env:
           POSTGRES_USER: 'postgres'
           POSTGRES_HOST_AUTH_METHOD: 'trust'
@@ -36,7 +36,7 @@ jobs:
 
     steps:
       - name: Check out repository code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           path: plugin
 
@@ -58,61 +58,60 @@ jobs:
           echo "NVM_DIR=$HOME/.nvm" >> $GITHUB_ENV
 
       - name: Install moodle-plugin-ci
-        run: |
-          moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
+        run: moodle-plugin-ci install --plugin ./plugin --db-host=127.0.0.1
         env:
           DB: ${{ matrix.database }}
           MOODLE_BRANCH: ${{ matrix.moodle-branch }}
+          # Uncomment this to run Behat tests using the Moodle App.
+          # MOODLE_APP: 'true'
 
       - name: PHP Lint
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
-
+  
       - name: PHP Mess Detector
-        continue-on-error: true # This step will show errors but will not fail
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpmd
 
       - name: Moodle Code Checker
-        continue-on-error: true # This step will show errors but will not fail
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpcs --max-warnings 0
 
       - name: Moodle PHPDoc Checker
-        continue-on-error: true # This step will show errors but will not fail
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpdoc --max-warnings 0
 
       - name: Validating
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci validate
 
       - name: Check upgrade savepoints
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci savepoints
 
       - name: Mustache Lint
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci mustache
 
       - name: Grunt
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci grunt --max-lint-warnings 0
 
       - name: PHPUnit tests
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpunit --fail-on-warning
 
       - name: Behat features
-        if: ${{ always() }}
+        id: behat
+        if: ${{ !cancelled() }}
         run: moodle-plugin-ci behat --profile chrome
-
+  
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
         if: ${{ always() }}
         run: |
           sudo apt-get update
           sudo apt-get install -y valgrind
-
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ always() }}
@@ -121,3 +120,14 @@ jobs:
       - name: Tests tester of automatic evaluation of students' programs
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
+
+      - name: Tests of evaluators subplugins
+        if: ${{ always() }}
+        run: |
+          cd ./plugin/evaluator
+          for evaluator in $(ls -d *); do
+            if [ -f "${evaluator}/tests/run_tests.sh" ]; then
+              chmod +x "./${evaluator}/tests/run_tests.sh"
+              "./${evaluator}/tests/run_tests.sh"
+            fi
+          done
