@@ -39,6 +39,7 @@ $string['internal_error'] = 'Internal test error';
 $string['no_test_cases'] = 'No test cases found in the cases file';
 $string['output_too_large'] = 'Program output too large ({$a}Kb)';
 $string['pluginname'] = 'GIOTES evaluator';
+$string['privacy:metadata'] = 'GIOTES evaluator does not store any personal data.';
 $string['program_terminated_by_signal'] = 'Program terminated by signal: {$a->signal} ({$a->signum})';
 $string['program_terminated_by_unknown_reason'] = 'Program terminated by unknown reason: {$a}';
 $string['stop_requested'] = 'Stop requested by the system';

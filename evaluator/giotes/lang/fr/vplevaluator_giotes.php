@@ -39,6 +39,7 @@ $string['internal_error'] = 'Erreur interne du test';
 $string['no_test_cases'] = 'Aucun cas de test trouvé dans le fichier de cas';
 $string['output_too_large'] = 'Sortie du programme trop volumineuse ({$a}Ko)';
 $string['pluginname'] = 'Évaluateur GIOTES';
+$string['privacy:metadata'] = 'L\'évaluateur GIOTES ne stocke aucune donnée personnelle.';
 $string['program_terminated_by_signal'] = 'Programme terminé par un signal : {$a->signal} ({$a->signum})';
 $string['program_terminated_by_unknown_reason'] = 'Programme terminé pour une raison inconnue : {$a}';
 $string['stop_requested'] = 'Arrêt demandé par le système';
