@@ -95,7 +95,7 @@ class vpl_editor_util {
         HTML;
         if ($CFG->debugdeveloper) {
             $html .= <<<"HTML"
-            <script>window.VPLDebugMode = true;</script>'
+            <script>window.VPLDebugMode = true;</script>
             HTML;
         }
         echo $html;
