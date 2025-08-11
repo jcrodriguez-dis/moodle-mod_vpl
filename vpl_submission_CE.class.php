@@ -130,6 +130,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         'vpl_debug.sh' => 'debug',
         'vpl_evaluate.sh' => 'evaluate',
         'vpl_test_evaluate.sh' => 'test_evaluate',
+        'vpl_evaluate.cases' => 'evaluate',
     ];
 
     /**

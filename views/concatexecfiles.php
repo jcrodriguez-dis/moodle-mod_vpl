@@ -55,6 +55,7 @@ $definedscripts = [
         'vpl_run.sh' => [ [ $id => $fgm->getfiledata('vpl_run.sh') ] ],
         'vpl_debug.sh' => [ [ $id => $fgm->getfiledata('vpl_debug.sh') ] ],
         'vpl_evaluate.sh' => [ [ $id => $fgm->getfiledata('vpl_evaluate.sh') ] ],
+        'vpl_evaluate.cases' => [ [ $id => $fgm->getfiledata('vpl_evaluate.cases') ] ],
 ];
 
 $currentinstance = $vplinstance;
@@ -81,19 +82,21 @@ $defaultscripts = [
         'vpl_run.sh' => mod_vpl_submission_CE::get_script('run', $pln, $data),
         'vpl_debug.sh' => mod_vpl_submission_CE::get_script('debug', $pln, $data),
         'vpl_evaluate.sh' => mod_vpl_submission_CE::get_script('evaluate', $pln, $data),
+        'vpl_evaluate.cases' => '',
 ];
 
 $finalscripts = [
         'vpl_run.sh' => [],
         'vpl_debug.sh' => [],
         'vpl_evaluate.sh' => [],
+        'vpl_evaluate.cases' => [],
 ];
 
 foreach ($defaultscripts as $filename => $defaultscript) {
     $concatenated = trim(implode('', array_column(array_map('array_values', array_reverse($definedscripts[$filename])), 0)));
     if ($concatenated > '') {
         // Use user-defined script (because user-defined script is not empty).
-        if (substr($concatenated, 0, 2) != '#!') { // Fixes script adding bash if no shebang.
+        if ($filename != 'vpl_evaluate.cases' && substr($concatenated, 0, 2) != '#!') { // Fixes script adding bash if no shebang.
             $finalscripts[$filename][] = [ -1 => "#!/bin/bash" ];
         }
         foreach (array_reverse($definedscripts[$filename]) as $scriptfragment) {
@@ -104,6 +107,9 @@ foreach ($defaultscripts as $filename => $defaultscript) {
             }
         }
     } else {
+        if ($filename == 'vpl_evaluate.cases') {
+            continue; // Do not add empty evaluate cases.
+        }
         // User-defined script is empty, so use the default one.
         $finalscripts[$filename][] = [ 0 => $defaultscript ];
     }
@@ -123,6 +129,9 @@ if (count($basedons) > 1) {
 }
 
 foreach ($finalscripts as $filename => $files) {
+    if (empty($files)) {
+        continue;
+    }
     $printer = vpl_sh_factory::get_object('ace');
     echo '<details open class="my-2"><summary>';
     echo html_writer::tag('h4', s($filename), [ 'class' => 'my-2 d-inline-block' ]);
