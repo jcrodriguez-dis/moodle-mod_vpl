@@ -14,6 +14,8 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
+use mod_h5pactivity\output\result\other;
+
 defined( 'MOODLE_INTERNAL' ) || die();
 require_once(dirname(__FILE__).'/locallib.php');
 require_once(dirname(__FILE__).'/views/sh_factory.class.php');
@@ -58,6 +60,9 @@ class file_group_process {
      * @return void
      */
     public static function write_list($filename, $list, $otherfln = false) {
+        if ( !function_exists('link') ) {
+            $otherfln = false; // If link() is not available, do not use other file.
+        }
         $data = '';
         foreach ($list as $info) {
             if ($info > '') {
@@ -177,6 +182,9 @@ class file_group_process {
      */
     public function addallfiles($files, $otherdir = false, $otherfln = false) {
         ignore_user_abort( true );
+        if ( !function_exists('link') ) {
+            $otherdir = false; // If link() is not available, do not use other dir.
+        }
         $filelist = $this->getFileList();
         $filehash = [];
         foreach ($filelist as $f) {
