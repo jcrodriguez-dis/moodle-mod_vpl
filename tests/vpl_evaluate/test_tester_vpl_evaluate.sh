@@ -7,6 +7,7 @@
 
 CHECK_MARK="✅";
 X_MARK="❌";
+export VPL_EVALUATION_SCRIPT=./vpl_evaluate.sh
 function writeHeading {
 	echo -e "\e[37;42m RUN \e[39;49m \e[34m$1\e[39m"
 }

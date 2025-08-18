@@ -644,8 +644,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $data->filestodelete[$filename] = 1;
             }
         }
+        if ($data->type == self::TTESTEVALUATE) {
+            $varsenv['VPL_EVALUATION_SCRIPT'] = "vpl_evaluate.sh";
+        }
         // If evaluating and evaluator => merge evaluator files and strings.
-        if ($data->type == self::TEVALUATE && !empty($data->evaluator)) {
+        if ($data->type >= self::TEVALUATE && !empty($data->evaluator)) {
             $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($data->evaluator);
             foreach ($evaluator->get_execution_files() as $filename => $filedata) {
                 $data->files[$filename] = $filedata;
@@ -657,7 +660,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             foreach ($evaluator->get_strings() as $varname => $value) {
                 $varsenv['VPLEVALUATOR_STR_' . $varname] = $value;
             }
-            $data->execute = $evaluator->get_execution_script();
+            if ($data->type == self::TTESTEVALUATE) {
+                $varsenv['VPL_EVALUATION_SCRIPT'] = $evaluator->get_execution_script();
+            } else {
+                $data->execute = $evaluator->get_execution_script();
+            }
         }
         // Add more environment variables to the environment script.
         foreach ($varsenv as $name => $value) {

@@ -118,13 +118,28 @@ function add_error {
 }
 
 function copy_configuration {
+	# $1 The test case directory
+	# Replicate evaluation environment in a test case
+	# Copy all except the .vpl_evaluation_tests directory
+	local savedir=$(pwd)
 	local envfile="$1/vpl_environment.sh"
-	cp -a $home_dir/* "$1"
+	cd "$homedir"
+	(
+		shopt -s dotglob nullglob
+		for item in *; do
+			if [ -f "$item" ]; then
+				cp -a "$item" "$1/"
+			elif [ "$item" != "$test_dir" ]; then
+				cp -a "$item" "$1/"
+			fi
+		done
+	)
 	rm "$1/vpl_test_evaluate.sh"
 	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$envfile"
 	[ ! -f "$envfile" ] && echo "#!/bin/bash" > "$envfile"
 	[ -n "$variation" ] && echo "export VPL_VARIATION=\"$variation\"" >> "$envfile"
 	chmod +x "$envfile"
+	cd "$savedir"
 }
 
 function compile_a_solution_test {
@@ -147,7 +162,7 @@ function compile_a_solution_test {
 		title="$title expected grade mark $test_mark"
 	fi
 	cd "$solution"
-	./vpl_evaluate.sh &> "$solution/$compilation_results"
+	./$VPL_EVALUATION_SCRIPT &> "$solution/$compilation_results"
 	# Check compilation results
 	if [ ! -x vpl_execution ] ; then
 		title="$title (Fail)"
@@ -366,4 +381,3 @@ fi
 SCRIPT_END
 
 chmod +x vpl_execution
-
