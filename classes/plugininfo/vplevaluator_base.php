@@ -107,7 +107,10 @@ class vplevaluator_base {
             include_once($stringsfilename);
             $modname = 'vplevaluator_' . $this->name;
             foreach (array_keys($string) as $key) {
-                $strlist[$key] = get_string($key, $modname);
+                // Ignore key with : => generate bad variable names.
+                if (strpos($key, ':') === false) {
+                    $strlist[$key] = get_string($key, $modname);
+                }
             }
         }
         return $strlist;
