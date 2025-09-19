@@ -76,11 +76,40 @@ class vplevaluator_base {
     public function get_help(): string {
         global $CFG;
         $help = '';
-        $helpfilename = $CFG->dirroot . "/mod/vpl/evaluator/{$this->name}/help.md";
-        if (file_exists($helpfilename)) {
-            $help = file_get_contents($helpfilename);
+        $helpfilenamebase = $CFG->dirroot . "/mod/vpl/evaluator/{$this->name}/lang";
+        foreach ([current_language(), 'en'] as $lang) {
+            $helpfilename = "{$helpfilenamebase}/{$lang}/help.md";
+            if (file_exists($helpfilename)) {
+                $help = file_get_contents($helpfilename);
+                break;
+            }
         }
         return $help;
+    }
+
+    /**
+     * Display evaluator name with help link.
+     * @param \mod_vpl $vpl VPL module instance
+     * @param bool $showlink whether to show the help link
+     * @return void
+     */
+    public function print_help($vpl, $showlink=true): void {
+        global $OUTPUT;
+        $help = $this->get_help();
+        if ($showlink) {
+            $modname = 'vplevaluator_' . $this->name;
+            $title = vpl_get_awesome_icon('advancedsettings');
+            $title .= get_string('pluginname', $modname);
+            if ($showlink && $help !== '') {
+                $url = new \moodle_url('/mod/vpl/views/evaluator_help.php', ['id' => $vpl->get_course_module()->id]);
+                $icon = $OUTPUT->pix_icon('help', get_string('help'));
+                $title .= \html_writer::link($url, $icon, ['target' => '_blank', 'class' => 'btn btn-link p-0']);
+            }
+            echo $title . '<br />';
+        } else if ($help !== '') {
+            echo format_text($this->get_help(), FORMAT_MARKDOWN, ['context' => $vpl->get_context()]);
+        }
+
     }
 
     /**
