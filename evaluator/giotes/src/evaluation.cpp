@@ -456,7 +456,6 @@ void Evaluation::outputEvaluation() {
 		}
 		outputVPLformat(report);
 	}
-	int passed = nruns - nerrors;
 	if ( nruns > 0 ) {
 		string finalReport = this->finalReportMessage;
 		Tools::replaceAll(finalReport, MessageMarks::num_tests, Tools::int2str(getNumTestCases(), 2));

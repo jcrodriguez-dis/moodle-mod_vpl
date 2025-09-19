@@ -94,7 +94,7 @@ public:
  */
 class ExactTextOutput:public OutputChecker{
 	string cleanText;
-	bool startWithAsterix;
+	bool startWithAsterisk;
 	bool isAlpha(char c);
 
 public:

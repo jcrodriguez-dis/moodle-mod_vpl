@@ -261,6 +261,38 @@ string Tools::trim(const string &text) {
 		return text.substr(begin, (end - begin) + 1);
 	return "";
 }
+
+string Tools::unescapeString(const string &text) {
+	string res;
+	int len = text.size();
+	res.reserve(len);
+	for (int i = 0; i < len; i++) {
+		char c = text[i];
+		if (c == '\\' && i + 1 < len) {
+			i++;
+			switch (text[i]) {
+				case 'n':
+					res += '\n';
+					break;
+				case 't':
+					res += '\t';
+					break;
+				case 'r':
+					res += '\r';
+					break;
+				case '\\':
+					res += '\\';
+					break;
+				default:
+					res += c;
+					res += text[i];
+			}
+		} else {
+			res += c;
+		}
+	}
+	return res;
+}
 /**
  * @brief Check and modify text value to avoid patterns <<<chars>>>.
  * 

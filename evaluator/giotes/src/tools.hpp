@@ -44,6 +44,7 @@ public:
     static string removeFirstSpace(const string &text);
     static string trimRight(const string &text);
     static string trim(const string &text);
+    static string unescapeString(const string &text);
     static void replaceAll(string &text, const string &oldValue, const string &newValue);
     static void replaceAllML(string &text, const string &oldValue, const string &newValue);
     static void replaceAllIL(string &text, const string &oldValue, const string &newValue);

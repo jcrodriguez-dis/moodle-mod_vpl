@@ -238,10 +238,10 @@ bool ExactTextOutput::isAlpha(char c){
 ExactTextOutput::ExactTextOutput(const string &text):OutputChecker(text){
 	string clean = Tools::trim(text);
 	if(clean.size() > 2 && clean[0] == '*') {
-		startWithAsterix = true;
+		startWithAsterisk = true;
 		cleanText = clean.substr(2, clean.size() - 3);
 	}else{
-		startWithAsterix = false;
+		startWithAsterisk = false;
 		cleanText = clean.substr(1,clean.size()-2);
 	}
 }
@@ -276,7 +276,7 @@ bool ExactTextOutput::match(const string& output){
 			cleanOutput = cleanOutput.substr(0, cleanOutput.size()-1);
 		}
 	}
-	if (startWithAsterix && cleanText.size() < cleanOutput.size()) {
+	if (startWithAsterisk && cleanText.size() < cleanOutput.size()) {
 		size_t start = cleanOutput.size() - cleanText.size();
 		return cleanText == cleanOutput.substr(start, cleanText.size());
 	} else {
@@ -312,7 +312,9 @@ RegularExpressionOutput::RegularExpressionOutput(const string &text, const strin
 	size_t pos = 1;
 	flagI = false;
 	flagM = false;
-	string clean = Tools::trim(text);
+	// Cleans the text: trims and unescapes converting \n, \t, \r, \", \', \\... to real characters
+	string clean = Tools::unescapeString(Tools::trim(text));
+	// Extracts the regex between the first pair of '/' and the flags after the second '/'
 	pos = clean.size() - 1;
 	while (clean[pos] != '/' && pos > 0) {
 		pos--;
