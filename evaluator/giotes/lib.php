@@ -53,12 +53,4 @@ class giotes extends \mod_vpl\plugininfo\vplevaluator_base {
     public function get_test_files(): array {
         return ['vpl_evaluate.cases' => file_get_contents(__DIR__ . '/src/vpl_evaluate.cases')];
     }
-
-    /**
-     * Returns the help for the evaluator in MD format
-     */
-    public function get_help(): string {
-        return "";
-    }
-
 }
