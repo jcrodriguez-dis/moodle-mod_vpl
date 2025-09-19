@@ -103,7 +103,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                     next: "start",
                 },
                 {
-                    token: "invalid",
+                    token: "invalid.illegal",
                     regex: ".*$",
                     next: "start",
                 },
@@ -115,7 +115,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                     next: "start",
                 },
                 {
-                    token: "invalid",
+                    token: "invalid.illegal",
                     regex: ".*$",
                     next: "start",
                 },
@@ -127,7 +127,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                     next: "start",
                 },
                 {
-                    token: "invalid",
+                    token: "invalid.illegal",
                     regex: ".*$",
                     next: "start",
                 },
@@ -144,7 +144,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                     next: "preHereDoc",
                 },
                 {
-                    token: "invalid",
+                    token: "invalid.illegal",
                     regex: ".*$",
                     next: "start",
                 },
@@ -237,7 +237,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                             next: "start",
                         },
                         {
-                            token: "invalid",
+                            token: "invalid.illegal",
                             regex: ".*$",
                             next: "start",
                         }
@@ -285,7 +285,7 @@ ace.define("ace/mode/cases_highlight_rules", [ "require", "exports", "module", "
                             next: "preHereDoc",
                         },
                         {
-                            token: "invalid",
+                            token: "invalid.illegal",
                             regex: ".*$",
                             next: "start",
                         },
