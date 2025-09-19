@@ -59,7 +59,7 @@ vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_header( get_string( 'testcases', VPL ) );
 $vpl->print_heading_with_help( 'testcases' );
-
+\mod_vpl\plugininfo\vplevaluator::print_evaluator_help($vpl);
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $USER->id);
