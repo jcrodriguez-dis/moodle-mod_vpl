@@ -41,8 +41,8 @@ Output = 7
 Output = "The result is 7"
 ```
 
-Upload this file as **Test cases** in the VPL activity.
-GIOTES will execute the learner’s program, feed it the input `3 4`, compare the output with both expected possibilities, and grade automatically.
+In a VPL activity, select GIOTES as the evaluator and enable automatic evaluation in Execution options. Upload this file as **Test cases**.
+When the student or the teacher use the evaluate action GIOTES will execute the learner’s program, feed it the input `3 4`, compare the output with both expected possibilities, and grade automatically.
 
 ---
 
@@ -51,18 +51,20 @@ GIOTES will execute the learner’s program, feed it the input `3 4`, compare th
 The **GIOTES language** defines how test cases are written, organized, and interpreted.
 It is a lightweight, plain-text format designed to be **human-readable** for teachers and **machine-readable** for the evaluator.
 Using simple `statement = value` rules, you can describe program inputs, expected outputs, time limits, grading rules, and report customization.
-This section explains the **structure**, **parameters**, and **placeholders** available in `vpl_evaluate.cases` files, with examples showing how to build reliable and flexible test definitions.
+This section explains the **structure**, **statements**, and **placeholders** available in `vpl_evaluate.cases` files, with examples showing how to build reliable and flexible test definitions.
 
 ### 📦 General structure of test definitions (`vpl_evaluate.cases`)
 
-The file may start with an optional **global defaults** section.
-Then comes a sequence of **test case** definitions starting with `case =`.
-All settings inside a case override the global defaults, except for `output =`, which **adds** additional passing possibilities.
+The `vpl_evaluate.cases` file may contain:
 
-*Format*
+* **Global defaults** (optional) — apply to all cases unless overridden.
+* **Case blocks** — each begins with `case =` and describes a test case.  
+    All settings inside a case override the global defaults, except for `output =`, which **adds** additional passing possibilities.
+
+*Format overview*
 
 ```text
-  ├─── 📦 General Options and Defaults  (global scope, optional)
+  ├─── 📦 General statements and Defaults  (global scope, optional)
   │    • Set before the first 'case =' block.
   │    • Define default values for all cases.
   │    • Common examples:
@@ -99,11 +101,11 @@ All settings inside a case override the global defaults, except for `output =`, 
 * Each `case =` block can locally override global defaults.
 * Each `output =` adds a **new** passing criterion (it does **not** replace previous ones).
 * Cases are evaluated sequentially, in the written order.
-* If an option is repeated, the **last** value wins (except for `output =`).
+* If an statement is repeated, the **last** value wins (except for `output =`).
 
 ---
 
-#### ⚙️ Basic parameters
+#### ⚙️ Basic statements
 
 * **Case =** one line with the case description (**required**)
 
@@ -134,13 +136,13 @@ There are different output types; the type is **inferred from the value’s form
 
 *If the `output` value is …*
 
-* **Only numbers** → Then "**numbers**" check apply. “To use this check type, ensure that you write only numbers, with nothing else. Numbers can be integers, or float in dot or scientific notation.
-  When checking, non-numeric characters in the program output are ignored. For floating-point numbers, equality is determined using relative tolerance: `abs((expected - actual) / expected) < 0.0001`. For integers, exact equality is required. For integer defined in the "output=" statement expect interger in the program output. For float defined in the "output=" statement expect float or interger in the program output.
+* **Only numbers** → Then the "**numbers**" check applies. “To use this check type, ensure that you write only numbers, with nothing else. Numbers can be integers, or float in dot or scientific notation.
+  When checking, non-numeric characters in the program output are ignored. For floating-point numbers, equality is determined using relative tolerance: `abs((expected - actual) / expected) < 0.0001` if expected == 0 then `abs(actual) < 0.0001` is used. Note that tolerance at this moment is a fixed value. For integers, exact equality is required. For integer defined in the "output=" statement expect integer in the program output. For float defined in the "output=" statement expect float or integer in the program output.
 
   Example:
   >`Output = 2 3.00001`
 
-  *Matches:*
+  ✅ *Matches:*
 
   * `Result is 2 and 3`
   * `Result is:`  
@@ -150,7 +152,7 @@ There are different output types; the type is **inferred from the value’s form
   * `2 - 3`
   * `2 3`
 
-  *Does **not** match:*
+  ❌ *Does **not** match:*
 
   * `Result is 1, 2 and 3`
   * `2.0 3`
@@ -158,18 +160,18 @@ There are different output types; the type is **inferred from the value’s form
   * `Result is 2, 3 and 4`  
       `2 3`
 
-* **Text in double quotes** → Then "**exact text**" check apply.
-  If expected text do not end with new line, a trailing newline in the program output end is accepted, but trailing spaces are not.
+* **Text in double quotes** → Then the "**exact text**" check applies.
+  If the expected text does not end with new line, a trailing newline in the program output end is accepted, but trailing spaces are not.
 
   Example:  
   > `Output = "All·right"`
 
-  *Matches:*
+  ✅ *Matches:*
 
   * `All·right`  
   * `All·right↵`
 
-  *Does **not** match:*
+  ❌ *Does **not** match:*
   
   * `all·right`
   * `all·right·`
@@ -178,12 +180,12 @@ There are different output types; the type is **inferred from the value’s form
 
   Note that in these examples "·" means a space and "↵" a new line.
 
-* **Plain text** → If the value does not match any other check type, then "**text**" word-by-word check apply, GIOTES ignores punctuation, case, and line breaks, and matches the last sequence of words. This check type aims to be flexible with student output while still remaining testable.
+* **Plain text** → If the value does not match any other check type, then the "**text**" word-by-word check applies, GIOTES ignores punctuation, case, and line breaks, and matches the last sequence of words. This check type aims to be flexible with student output while still remaining testable.
 
   Example:
   >`Output = All right with 10 points`
 
-  *Matches:*
+  ✅ *Matches:*
 
   * `All right with 10 points.`
   * `My answer is: All right with 10 points.`
@@ -192,29 +194,34 @@ There are different output types; the type is **inferred from the value’s form
   * `  ALL "right" with ===>>>`  
       `  -10- points`
 
-  *Does **not** match:*
+  ❌ *Does **not** match:*
 
   * `All right with 11 points`
   * `All right with 10 point`
   * `All right with points: 10`
   * `All right with 10 points, what else`
 
-* **`/regex/[flags]`** → If output match this format then POSIX-C "**regular expression**" apply (note: POSIX syntax differs from PCRE).
-  Flags: `i` (case-insensitive) and `m` (multi-line: a correct **line** is enough to pass).
+* **`/regex/[flags]`** → If output match this format then POSIX-C extended "**regular expression**" check applies (note: POSIX syntax differs from PCRE).
+
+  Flags:
+
+  * `i` → case-insensitive
+  * `m` → multi-line (a correct **line** is enough to pass)
+
   Use escapes `\n`, `\r`, `\t`, and `\\` for newline, carriage return, tab, and backslash.
-  Use `^` and `$` for full-line matches.
+  Use `^` and `$` for full-content (or full-line with `m` flag) matches.
 
   Example:
-  >`Output = /^(regex|no *regex|1{3,20})\n?$/im`
+  >`Output = /^(regex|no +regex|1{3,20})\n?$/i`
 
-  *Matches:*
+  ✅ *Matches:*
 
   * `regeX`
   * `no     regex`
-  * `1111`
+  * `1111↵`
   * `11111111111111111`
 
-  *Does **not** match:*
+  ❌ *Does **not** match:*
 
   * `egex`
   * `noregex`
@@ -223,12 +230,12 @@ There are different output types; the type is **inferred from the value’s form
       `no regex`
       `regex`
 
-* **Wildcard `*`** for **numbers** and **exact text** check types you can use a star wildcard — If the value starts with `*`, the case passes when the **end** of the program output matches. Note that **text** checks the output since it already behaves like a start wildcard; for **regular expressions**, you can use ".*" as wildcard inside the regular expresion.
+* **Wildcard `*`** for **numbers** and **exact text** check types you can use a starting wildcard — If the value starts with `*`, the case passes when the **end** of the program output matches. Note that **text** checks the output since it already behaves like a start wildcard; for **regular expressions**, you can use ".*" as wildcard inside the regular expression.
 
   Example:
   >`Output = * 2 3.00001`
 
-  *Matches:*
+  ✅ *Matches:*
 
   * `Result is 2 and 3`
   * `Result is:`  
@@ -237,7 +244,7 @@ There are different output types; the type is **inferred from the value’s form
       `3`
   * `0 1 2 2 2 3.00001`
 
-  *Does **not** match:*
+  ❌ *Does **not** match:*
 
   * `Result is 2, 3 and 4`
   * `Result is 2, 3`  
@@ -246,7 +253,7 @@ There are different output types; the type is **inferred from the value’s form
 
 ---
 
-#### ➕ Parameters to add pass conditions and penalties
+#### ➕ Statements to add pass conditions and penalties
 
 * **Grade reduction =** *value* | *percent%* — Overrides the default penalty `grade_range / number_of_cases`.
 
@@ -281,23 +288,23 @@ There are different output types; the type is **inferred from the value’s form
     | **Exit code negative (match)**     | ✅             | ❌              |
     | **Exit code negative (no match)**  | ❌             | ❌              |
 
-Note: Program exit codes themselves cannot be negative; a negative value here is only used to indicate a change in behavior.
+Note: Program exit codes themselves cannot be negative; a negative value here is only used to indicate the "AND" behavior.
 
 ---
 
-#### 🧩 Other control parameters
+#### 🧩 Other control statements
 
-* **Program to run =** *path* — Replaces the student executable with the program at *path*.
+* **Program to run =** *path* — Replaces the executable to test by the program at *path*.
 
   Example:
   >`Program to run = /usr/bin/cat`
 
-* **Program args =** *arg1 arg2 …* — Arguments passed to the student program (or to **Program to run** if set).
+* **Program args =** *arg1 arg2 …* — Arguments passed to the executable to test (or to **Program to run** if set).
 
   Example:
   >`Program args = output.txt`
 
-* **Variation =** *variation\_id* — The case is considered only if the environment variable `VPL_VARIATION` equals *variation\_id*.
+* **Variation =** *variation\_id* — The case is considered only if the environment variable `VPL_VARIATION` equals *variation\_id* (case-insesitive).
   Otherwise, it is treated as if it does not exist.
 
   Example:
@@ -305,9 +312,9 @@ Note: Program exit codes themselves cannot be negative; a negative value here is
 
 ---
 
-#### 🖋️ Parameters to customize the report
+#### 🖋️ Statements to customize the report
 
-These options are commonly set **globally** at the start of the file to standardize the report.
+These statements are commonly set **globally** at the start of the file to standardize the report.
 They can also be set **per case** to customize individual cases.
 
 * **Fail message =** and **Fail output message =** — Custom text shown when the case fails (can span lines).
@@ -357,8 +364,8 @@ They can also be set **per case** to customize individual cases.
   Example:
   >`Case title format = Prueba <<<case_id>>>/<<<num_tests>>>: <<<case_title>>> <<<test_result_mark>>>`
 
-* **Multiline end =** *TOKEN* — The **next** multiline option expands until a line that exactly equals *TOKEN*. 
-  This allows you include lines that would otherwise be parsed as options. This options applies only for the next one.
+* **Multiline end =** *TOKEN* — The **next** multiline value statement expands until a line that exactly equals *TOKEN*. 
+  This allows you include lines that would otherwise be parsed as new statements. This behavior applies only for the next statement.
 
   Example:
 
