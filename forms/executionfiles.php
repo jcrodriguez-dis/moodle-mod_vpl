@@ -59,7 +59,7 @@ vpl_editor_util::generate_requires($vpl, $options);
 $vpl->print_header( get_string( 'executionfiles', VPL ) );
 $vpl->print_heading_with_help( 'executionfiles' );
 
-\mod_vpl\plugininfo\vplevaluator::print_evaluator_help($vpl);
+echo \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help($vpl);
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $USER->id);

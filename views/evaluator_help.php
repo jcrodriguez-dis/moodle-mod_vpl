@@ -31,8 +31,15 @@ global $PAGE, $OUTPUT;
 require_login();
 
 $id = required_param( 'id', PARAM_INT );
+$evaluatorname = required_param('evaluator', PARAM_ALPHANUMEXT);
 $vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/evaluator_help.php', [ 'id' => $id ] );
+$vpl->prepare_page( 'views/evaluator_help.php', [ 'id' => $id , 'evaluator' => $evaluatorname ] );
 $vpl->print_header( get_string( 'help') );
-\mod_vpl\plugininfo\vplevaluator::print_evaluator_help($vpl, false);
+$vpl->require_capability( VPL_MANAGE_CAPABILITY );
+try {
+    $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
+    echo $evaluator->get_printable_help($vpl, false);
+} catch ( \moodle_exception $e ) {
+    echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+}
 $vpl->print_footer();

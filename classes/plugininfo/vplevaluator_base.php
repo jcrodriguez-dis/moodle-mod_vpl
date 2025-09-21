@@ -88,12 +88,12 @@ class vplevaluator_base {
     }
 
     /**
-     * Display evaluator name with help link.
+     * Get printable evaluator name with help link or help documentation.
      * @param \mod_vpl $vpl VPL module instance
-     * @param bool $showlink whether to show the help link
-     * @return void
+     * @param bool $showlink whether to show the help link or documentation
+     * @return string HTML formatted string
      */
-    public function print_help($vpl, $showlink=true): void {
+    public function get_printable_help($vpl, $showlink=true): string {
         global $OUTPUT;
         $help = $this->get_help();
         if ($showlink) {
@@ -101,13 +101,15 @@ class vplevaluator_base {
             $title = vpl_get_awesome_icon('advancedsettings');
             $title .= get_string('pluginname', $modname);
             if ($showlink && $help !== '') {
-                $url = new \moodle_url('/mod/vpl/views/evaluator_help.php', ['id' => $vpl->get_course_module()->id]);
+                $parms = ['id' => $vpl->get_course_module()->id, 'evaluator' => $this->name];
+                $url = new \moodle_url('/mod/vpl/views/evaluator_help.php', $parms);
                 $icon = $OUTPUT->pix_icon('help', get_string('help'));
-                $title .= \html_writer::link($url, $icon, ['target' => '_blank', 'class' => 'btn btn-link p-0']);
+                $attr = ['target' => '_blank', 'class' => 'btn btn-link p-0', 'title' => get_string('help') ];
+                $title = \html_writer::link($url, $title . $icon, $attr);
             }
-            echo $title . '<br />';
+            return $title . '<br />';
         } else if ($help !== '') {
-            echo format_text($this->get_help(), FORMAT_MARKDOWN, ['context' => $vpl->get_context()]);
+            return format_text($this->get_help(), FORMAT_MARKDOWN, ['context' => $vpl->get_context()]);
         }
 
     }

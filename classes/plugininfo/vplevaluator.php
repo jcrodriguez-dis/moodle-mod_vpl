@@ -137,23 +137,23 @@ class vplevaluator extends base {
     }
 
     /**
-     * Print evaluator plugin information.
+     * Get printable evaluator plugin information.
      * @param $vpl mod_vpl instance of the vpl activity.
      * @param $showlink whether to show the help link or the help text.
-     * @return void
+     * @return string HTML formatted string
      */
-    public static function print_evaluator_help($vpl, $showlink = true): void {
+    public static function get_printable_evaluator_help($vpl, $showlink = true): string {
         global $OUTPUT;
         $evaluatorname = $vpl->get_effective_setting('evaluator');
-        if (empty($evaluatorname)) {
-            return;
+        if (empty($evaluatorname) || !$vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+            return '';
         }
-        $vpl->require_capability( VPL_MANAGE_CAPABILITY );
         try {
             $evaluator = self::get_evaluator($evaluatorname);
-            $evaluator->print_help($vpl, $showlink);
+            return $evaluator->get_printable_help($vpl, $showlink);
         } catch (\Exception $e) {
-            echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
         }
+        return '';
     }
 }

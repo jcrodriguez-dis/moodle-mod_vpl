@@ -172,6 +172,69 @@ class mod_vpl_executionoptions_form extends moodleform {
     }
 
     /**
+     * Returns a list of evaluators available for the VPL instance and their help links.
+     *
+     * @param mod_vpl $vpl The VPL instance.
+     * @return array An associative array of evaluators with their help links.
+     */
+    protected static function get_evaluatorhelp_list($vpl) {
+        $evaluators = \mod_vpl\plugininfo\vplevaluator::get_enabled_plugins();
+        $evaluatorshelplist = ['' => ''];
+        foreach ($evaluators as $evaluatorname) {
+            $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
+            $evaluatorshelplist[$evaluatorname] = $evaluator->get_printable_help($vpl);
+        }
+        return $evaluatorshelplist;
+    }
+
+    /**
+     * Generate JavaScript code to show evaluator help based on selection.
+     * This method creates a JavaScript function that updates the help section
+     * when the evaluator selection changes.
+     * @param mod_vpl $vpl The VPL instance.
+     * @return string JavaScript code as a string.
+     */
+
+    public static function get_evaluatorhelp_js($vpl) {
+        $evaluatorshelplist = self::get_evaluatorhelp_list($vpl);
+        return "(function() {
+            var htmlMap = " . json_encode($evaluatorshelplist) . ";
+            function updateEvaluatorHelp() {
+                var evaluatorSelect = document.getElementById('id_evaluator');
+                var evaluatorHelpLink = document.getElementById('id_evaluatorhelplink');
+                if (!evaluatorSelect || !evaluatorHelpLink) {
+                    return;
+                }
+                try {
+                    var val = evaluatorSelect.value;
+                    var html = htmlMap[val] || '';
+                    evaluatorHelpLink.innerHTML = html;
+                    if (html === '') {
+                        evaluatorHelpLink.style.display = 'none';
+                    } else {
+                        evaluatorHelpLink.style.display = '';
+                    }
+                } catch (e) {
+                    console.error('Error updating evaluator help:', e);
+                }
+            }
+            function initEvaluatorHelp() {
+                var evaluatorSelect = document.getElementById('id_evaluator');
+                if (evaluatorSelect) {
+                    evaluatorSelect.addEventListener('change', updateEvaluatorHelp);
+                    updateEvaluatorHelp(); // Trigger initial update
+                }
+            }
+            // Wait for page load before setting up event listeners
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initEvaluatorHelp);
+            } else {
+                initEvaluatorHelp();
+            }
+        })();";
+    }
+
+    /**
      * Returns a list of evaluators available for the VPL instance.
      *
      * This method retrieves the list of enabled evaluators and formats them
@@ -245,7 +308,8 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addElement( 'select', 'evaluator', $strevaluator, $this->get_evaluatorlist());
         $mform->setDefault( 'evaluator', $instance->evaluator );
         $mform->addHelpButton('evaluator', 'evaluator', VPL);
-
+        $mform->addElement('static', 'evaluatorhelplink', '', '<span id="id_evaluatorhelplink"></span>');
+        $mform->hideIf('evaluatorhelplink', 'evaluator', 'eq', '');
         $strrunmode = get_string( 'run_mode', VPL );
         $runmodelist = $this->get_run_modelist();
         $mform->addElement( 'select', 'run_mode', $strrunmode, $runmodelist );
@@ -282,8 +346,10 @@ require_login();
 $id = required_param( 'id', PARAM_INT );
 $vpl = new mod_vpl( $id );
 $vpl->prepare_page( 'forms/executionoptions.php', [ 'id' => $id ] );
-vpl_include_jsfile( 'hideshow.js' );
 $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+
+vpl_include_jsfile( 'hideshow.js' );
+echo vpl_include_js( mod_vpl_executionoptions_form::get_evaluatorhelp_js($vpl));
 // Display page.
 $vpl->print_header( get_string( 'execution', VPL ) );
 $vpl->print_heading_with_help( 'executionoptions' );
