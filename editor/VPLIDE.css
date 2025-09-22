@@ -231,7 +231,7 @@ img.vpl_ide_file {
 }
 
 .vpl_ide_results pre {
-    line-height: 100%;
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     white-space: pre;
     word-break: normal;
     word-wrap: normal;
@@ -278,7 +278,7 @@ img.vpl_ide_file {
 .ui-widget.vpl_ide_accordion_c_execution,
 .vpl_ide_accordion_c_compilation,
 .vpl_ide_accordion_c_execution {
-    font-family:
+    font: 1em/1
         'Monaco',
         'Menlo',
         'Ubuntu Mono',
@@ -374,14 +374,14 @@ img.vpl_ide_file {
 /*Resolve problem with essential theme*/
 pre.vpl_terminal * {
     border: 0;
-    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    font: 1em/1 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
     margin: 0;
     padding: 0;
 }
 
 pre.vpl_terminal {
     display: inline-block;
-    font: 1em/1.2 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    font: 1em/1 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
     font-size: 12px;
     padding: 2px;
 }
