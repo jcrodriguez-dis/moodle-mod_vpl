@@ -53,11 +53,7 @@ try {
     $actiondata = json_decode(file_get_contents( 'php://input' ), null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     switch ($action) {
         case 'save' :
-            $filename = 'vpl_evaluate.cases';
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
-            if (count( $postfiles ) != 1 || ! isset( $postfiles[$filename] )) {
-                throw new Exception( get_string( 'incorrect_file_name', VPL ) );
-            }
             $fgm = $vpl->get_execution_fgm();
             $result->response->requestsconfirmation = false;
             $oldversion = $fgm->getversion();
@@ -67,16 +63,39 @@ try {
                 $result->response->version = $oldversion;
                 break;
             }
-            $fgm->addFile( $filename, $postfiles[$filename] );
+            foreach ($postfiles as $filename => $content) {
+                if (!vpl_is_valid_path_name($filename)) {
+                    throw new Exception( get_string( 'error:invalidfile', VPL, $filename ) );
+                }
+                if ($content > '') {
+                    $fgm->addFile( $filename, $content);
+                }
+            }
             $result->response->version = $fgm->getversion();
             $vpl->update();
             break;
         case 'load' :
             $result->response = mod_vpl_edit::load($vpl, $USER->id);
-            $filename = 'vpl_evaluate.cases';
+            $testfiles = ['vpl_evaluate.cases' => ''];
+            $evaluatorname = $vpl->get_effective_setting('evaluator');
+            if ($evaluatorname) {
+                try {
+                    $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
+                    $testfiles = $evaluator->get_test_files();
+                } catch (Exception $e) {
+                    $testfiles = [];
+                }
+            }
             $fgm = $vpl->get_execution_fgm();
             $files = [];
-            $files[$filename] = $fgm->getfiledata($filename);
+            foreach ($testfiles as $filename => $content) {
+                $savedcontent = $fgm->getfiledata($filename);
+                if ($savedcontent > '') {
+                    $files[$filename] = $savedcontent;
+                } else {
+                    $files[$filename] = $content;
+                }
+            }
             $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;

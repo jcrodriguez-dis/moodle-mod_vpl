@@ -55,12 +55,18 @@ $options['maxfiles'] = 1;
 $options['saved'] = true;
 $options['readOnlyFiles'] = [];
 
+$evaluatorname = $vpl->get_effective_setting('evaluator');
+if (!empty($evaluatorname)) {
+    $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
+    $options['maxfiles'] = count($evaluator->get_test_files());
+}
+
 vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_header( get_string( 'testcases', VPL ) );
 $vpl->print_heading_with_help( 'testcases' );
 
-echo \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help($vpl);
+echo \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help_link($vpl);
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $USER->id);
