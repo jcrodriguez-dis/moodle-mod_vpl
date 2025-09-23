@@ -285,7 +285,7 @@ class mod_vpl_submission {
             if (!isset(self::$gradecache[$vplid])) {
                 self::$gradecache[$vplid] = [];
             }
-            if ($grades) {
+            if (@is_array($grades->items[0]->grades)) {
                 self::$gradecache[$vplid] += $grades->items[0]->grades;
             }
         }
