@@ -238,13 +238,24 @@ class file_group_process {
     public function getfilelistname() {
         return $this->filelistname;
     }
+
+    /**
+     * Cache for file list
+     * @var array|null
+     */
+    protected $cachefilelist = null;
+
     /**
      * Get list of files
      *
-     * @return array
+     * @return array List of file names
      */
     public function getfilelist() {
-        return self::read_list($this->filelistname);
+        if ($this->cachefilelist !== null) {
+            return $this->cachefilelist;
+        }
+        $this->cachefilelist = self::read_list($this->filelistname);
+        return $this->cachefilelist;
     }
 
     /**
@@ -274,6 +285,7 @@ class file_group_process {
      */
     public function setfilelist($filelist, $otherfln = false) {
         self::write_list($this->filelistname, $filelist, $otherfln );
+        $this->cachefilelist = $filelist;
     }
 
     /**
