@@ -177,12 +177,12 @@ class mod_vpl_executionoptions_form extends moodleform {
      * @param mod_vpl $vpl The VPL instance.
      * @return array An associative array of evaluators with their help links.
      */
-    protected static function get_evaluatorhelp_list($vpl) {
+    protected static function get_evaluator_help_list($vpl) {
         $evaluators = \mod_vpl\plugininfo\vplevaluator::get_enabled_plugins();
         $evaluatorshelplist = ['' => ''];
         foreach ($evaluators as $evaluatorname) {
-            $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
-            $evaluatorshelplist[$evaluatorname] = $evaluator->get_printable_help($vpl);
+            $link = \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help_link($vpl, $evaluatorname, true);
+            $evaluatorshelplist[$evaluatorname]  = $link;
         }
         return $evaluatorshelplist;
     }
@@ -196,7 +196,7 @@ class mod_vpl_executionoptions_form extends moodleform {
      */
 
     public static function get_evaluatorhelp_js($vpl) {
-        $evaluatorshelplist = self::get_evaluatorhelp_list($vpl);
+        $evaluatorshelplist = self::get_evaluator_help_list($vpl);
         return "(function() {
             var htmlMap = " . json_encode($evaluatorshelplist) . ";
             function updateEvaluatorHelp() {

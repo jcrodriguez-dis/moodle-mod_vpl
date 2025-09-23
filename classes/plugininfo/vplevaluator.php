@@ -139,18 +139,44 @@ class vplevaluator extends base {
     /**
      * Get printable evaluator plugin information.
      * @param $vpl mod_vpl instance of the vpl activity.
-     * @param $showlink whether to show the help link or the help text.
+     * @param $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
      * @return string HTML formatted string
      */
-    public static function get_printable_evaluator_help($vpl, $showlink = true): string {
+    public static function get_printable_evaluator_help($vpl, $evaluatorname = ''): string {
         global $OUTPUT;
-        $evaluatorname = $vpl->get_effective_setting('evaluator');
+        if (empty($evaluatorname)) {
+            $evaluatorname = $vpl->get_effective_setting('evaluator');
+        }
         if (empty($evaluatorname) || !$vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
             return '';
         }
         try {
             $evaluator = self::get_evaluator($evaluatorname);
             return $evaluator->get_printable_help($vpl, $showlink);
+        } catch (\Exception $e) {
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+        }
+        return '';
+    }
+
+    /**
+     * Get printable evaluator plugin information.
+     * @param $vpl mod_vpl instance of the vpl activity.
+     * @param $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
+     * @param $ifhelp if true return '' if no help available
+     * @return string HTML formatted string
+     */
+    public static function get_printable_evaluator_help_link($vpl, $evaluatorname = '', $ifhelp = false): string {
+        global $OUTPUT;
+        if (empty($evaluatorname)) {
+            $evaluatorname = $vpl->get_effective_setting('evaluator');
+        }
+        if (empty($evaluatorname) || !$vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+            return '';
+        }
+        try {
+            $evaluator = self::get_evaluator($evaluatorname);
+            return $evaluator->get_printable_help_link($vpl, $ifhelp);
         } catch (\Exception $e) {
             return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
         }
