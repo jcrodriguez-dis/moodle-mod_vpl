@@ -19,19 +19,17 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery'], function($) {
-    return {
-        setup: function() {
-            var updateHeaders = function(submitType) {
-                var archive = submitType == 'archive';
-                $('#id_headersubmitarchive').toggle(archive).toggleClass('collapsed', !archive);
-                $('#id_headersubmitfiles').toggle(!archive).toggleClass('collapsed', archive);
-            };
-            var $select = $('select[name="submitmethod"]');
-            $select.change(function() {
-                updateHeaders($select.val());
-            });
-            updateHeaders($select.val());
-        }
+import $ from 'jquery';
+
+export const setup = () => {
+    var updateHeaders = function(submitType) {
+        var archive = submitType == 'archive';
+        $('#id_headersubmitarchive').toggle(archive).toggleClass('collapsed', !archive);
+        $('#id_headersubmitfiles').toggle(!archive).toggleClass('collapsed', archive);
     };
-});
+    var $select = $('select[name="submitmethod"]');
+    $select.change(function() {
+        updateHeaders($select.val());
+    });
+    updateHeaders($select.val());
+};

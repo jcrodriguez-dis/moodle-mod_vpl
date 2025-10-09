@@ -24,294 +24,289 @@
 /* globals RFB */
 /* globals Util */
 
-define(
-    [
-        'jquery',
-        'jqueryui',
-        'mod_vpl/vplutil',
-        'mod_vpl/vplui',
-        'mod_vpl/vplclipboard',
-        'core/log'
-    ],
-    function($, jqui, VPLUtil, VPLUI, VPLClipboard, console) {
-        var VPLVNCClient = function(VNCDialogId, str) {
-            window.INCLUDE_URI = VPLUtil.options.scriptPath + "/noVNC/include/";
-            if (typeof Util == 'undefined') {
-                VPLUtil.loadScript(['/noVNC/include/util.js'],
-                    function() {
-                        VPLUtil.log('/noVNC/include/util.js loaded', true);
-                        Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
+import $ from 'jquery';
+import {VPLUtil} from 'mod_vpl/vplutil';
+import {VPLUI} from 'mod_vpl/vplui';
+import {VPLClipboard} from 'mod_vpl/vplclipboard';
+import console from 'core/log';
+
+export class VPLVNCClient {
+    constructor(VNCDialogId, str) {
+        window.INCLUDE_URI = VPLUtil.options.scriptPath + "/noVNC/include/";
+        if (typeof Util == 'undefined') {
+            VPLUtil.loadScript(['/noVNC/include/util.js'],
+                function () {
+                    VPLUtil.log('/noVNC/include/util.js loaded', true);
+                    Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
                         "keysymdef.js", "keyboard.js", "input.js", "display.js",
                         "jsunzip.js", "rfb.js", "keysym.js"]);
-                    }
-                );
-            }
-            var self = this;
-            var rfb;
-            var title = '';
-            var message = '';
-            var lastState = '';
-            var VNCDialog = $('#' + VNCDialogId);
-            var canvas = $('#' + VNCDialogId + " canvas");
-            var onCloseAction = VPLUtil.doNothing;
-            var clipboard;
-            var needResize = true;
-            var titleText;
-            var inputarea = window.document.createElement('input');
-            inputarea.style.position = 'absolute';
-            inputarea.style.left = '0px';
-            inputarea.style.top = '-10000px';
-            inputarea.style.width = '1em';
-            inputarea.style.height = '1ex';
-            inputarea.style.opacity = '0';
-            inputarea.style.backgroundColor = 'transparent';
-            inputarea.style.borderStyle = 'none';
-            inputarea.style.outlineStyle = 'none';
-            inputarea.autocapitalize = 'off';
-            inputarea.autocomplete = 'off';
-            inputarea.autocorrect = 'off';
-            inputarea.wrap = 'off';
-            inputarea.spellcheck = 'false';
-            VNCDialog.append(inputarea);
-            /**
-             * Event handler of keyboard button.
-             */
-            function keyboardButton() {
-                if ($(inputarea).is(':focus')) {
-                    inputarea.blur();
-                } else {
-                    inputarea.focus();
                 }
+            );
+        }
+        var self = this;
+        var rfb;
+        var title = '';
+        var message = '';
+        var lastState = '';
+        var VNCDialog = $('#' + VNCDialogId);
+        var canvas = $('#' + VNCDialogId + " canvas");
+        var onCloseAction = VPLUtil.doNothing;
+        var clipboard;
+        var needResize = true;
+        var titleText;
+        var inputarea = window.document.createElement('input');
+        inputarea.style.position = 'absolute';
+        inputarea.style.left = '0px';
+        inputarea.style.top = '-10000px';
+        inputarea.style.width = '1em';
+        inputarea.style.height = '1ex';
+        inputarea.style.opacity = '0';
+        inputarea.style.backgroundColor = 'transparent';
+        inputarea.style.borderStyle = 'none';
+        inputarea.style.outlineStyle = 'none';
+        inputarea.autocapitalize = 'off';
+        inputarea.autocomplete = 'off';
+        inputarea.autocorrect = 'off';
+        inputarea.wrap = 'off';
+        inputarea.spellcheck = 'false';
+        VNCDialog.append(inputarea);
+        /**
+         * Event handler of keyboard button.
+         */
+        function keyboardButton() {
+            if ($(inputarea).is(':focus')) {
+                inputarea.blur();
+            } else {
+                inputarea.focus();
             }
-            /**
-             * Event handler of paste button at clipboard.
-             */
-            function pasteClipboard() {
-                if (self.isConnected()) {
-                    rfb.clipboardPasteFrom(clipboard.getEntry2());
-                }
+        }
+        /**
+         * Event handler of paste button at clipboard.
+         */
+        function pasteClipboard() {
+            if (self.isConnected()) {
+                rfb.clipboardPasteFrom(clipboard.getEntry2());
             }
-            /**
-             * Event handler of paste button at clipboard.
-             *
-             * @param {object} rfb vnc client object
-             * @param {string} text Text received
-             */
-            function receiveClipboard(rfb, text) {
-                clipboard.setEntry1(text);
+        }
+        /**
+         * Event handler of paste button at clipboard.
+         *
+         * @param {object} rfb vnc client object
+         * @param {string} text Text received
+         */
+        function receiveClipboard(rfb, text) {
+            clipboard.setEntry1(text);
+        }
+        /**
+         * Event handler of clipboard button.
+         */
+        function openClipboard() {
+            clipboard.show();
+        }
+        /**
+         * Inform rfb of focus received.
+         */
+        function getFocus() {
+            if (self.isConnected()) {
+                rfb.get_keyboard().set_focused(true);
             }
-            /**
-             * Event handler of clipboard button.
-             */
-            function openClipboard() {
-                clipboard.show();
+        }
+        /**
+         * Inform rfb of focus lost.
+         */
+        function lostFocus() {
+            if (self.isConnected()) {
+                rfb.get_keyboard().set_focused(false);
             }
-            /**
-             * Inform rfb of focus received.
-             */
-            function getFocus() {
-                if (self.isConnected()) {
-                    rfb.get_keyboard().set_focused(true);
-                }
+        }
+        /**
+         * Tries to do a copy.
+         */
+        function copyAction() {
+            clipboard.setEntry1(clipboard.getEntry1());
+            document.execCommand('copy');
+        }
+        var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
+        var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
+        clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
+            lostFocus);
+        canvas.on('click', function (e) {
+            if (e.target == canvas[0]) {
+                getFocus();
+            } else {
+                lostFocus();
             }
-            /**
-             * Inform rfb of focus lost.
-             */
-            function lostFocus() {
-                if (self.isConnected()) {
-                    rfb.get_keyboard().set_focused(false);
-                }
+        });
+        this.displayResize = function () {
+            if (self.isConnected()) {
+                var w = VNCDialog.width();
+                var h = VNCDialog.height();
+                self.setCanvasSize(w, h);
+                rfb.get_display().viewportChange(0, 0, w, h);
             }
-            /**
-             * Tries to do a copy.
-             */
-            function copyAction() {
-                clipboard.setEntry1(clipboard.getEntry1());
-                document.execCommand('copy');
+        };
+        /**
+         * Event handler that limit the size of the vnc client windows.
+         *
+         */
+        function controlDialogSize() {
+            // Resize if dialog is large than screen.
+            var bw = $('html').width();
+            var bh = $(window).height();
+            if (VNCDialog.width() > bw) {
+                needResize = true;
+                VNCDialog.dialog("option", "width", bw);
             }
-            var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
-            var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
-            clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
-                    lostFocus);
-            canvas.on('click', function(e) {
-                if (e.target == canvas[0]) {
-                    getFocus();
-                } else {
-                    lostFocus();
-                }
-            });
-            this.displayResize = function() { // TODO hot screen resize.
-                if (self.isConnected()) {
+            if (VNCDialog.parent().height() > bh) {
+                needResize = true;
+                VNCDialog.dialog("option", "height", bh - VNCDialog.prev().outerHeight());
+            }
+        }
+        VNCDialog.dialog({
+            closeOnEscape: false,
+            autoOpen: false,
+            modal: true,
+            width: 'auto',
+            height: 'auto',
+            classes: {
+                "ui-dialog": 'vpl_ide vpl_vnc',
+            },
+            create: function () {
+                titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
+                    keyboardButton]);
+            },
+            dragStop: controlDialogSize,
+            focus: getFocus,
+            open: controlDialogSize,
+            beforeClose: function () {
+                if (needResize) {
                     var w = VNCDialog.width();
                     var h = VNCDialog.height();
+                    needResize = false;
                     self.setCanvasSize(w, h);
-                    rfb.get_display().viewportChange(0, 0, w, h);
                 }
-            };
-            /**
-             * Event handler that limit the size of the vnc client windows.
-             *
-             */
-            function controlDialogSize() {
-                // Resize if dialog is large than screen.
-                var bw = $('html').width();
-                var bh = $(window).height();
-                if (VNCDialog.width() > bw) {
-                    needResize = true;
-                    VNCDialog.dialog("option", "width", bw);
-                }
-                if (VNCDialog.parent().height() > bh) {
-                    needResize = true;
-                    VNCDialog.dialog("option", "height", bh - VNCDialog.prev().outerHeight());
-                }
+            },
+            close: function () {
+                self.disconnect();
+            },
+            resizeStop: function () {
+                controlDialogSize();
+                needResize = true;
             }
-            VNCDialog.dialog({
-                closeOnEscape: false,
-                autoOpen: false,
-                modal: true,
-                width: 'auto',
-                height: 'auto',
-                classes: {
-                    "ui-dialog":  'vpl_ide vpl_vnc',
-                },
-                create: function() {
-                    titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
-                            keyboardButton]);
-                },
-                dragStop: controlDialogSize,
-                focus: getFocus,
-                open: controlDialogSize,
-                beforeClose: function() {
-                    if (needResize) {
-                        var w = VNCDialog.width();
-                        var h = VNCDialog.height();
-                        needResize = false;
-                        self.setCanvasSize(w, h);
-                    }
-                },
-                close: function() {
-                    self.disconnect();
-                },
-                resizeStop: function() {
-                    controlDialogSize();
-                    needResize = true;
-                }
-            });
-            VNCDialog.css("padding", "1px");
-            VNCDialog.parent().css('z-index', 2000);
-            this.updateTitle = function() {
-                var text = title;
-                if (message !== '') {
-                    text += ' (' + message + ')';
-                }
-                titleText.text(str('console') + ": " + text);
-            };
-            this.setTitle = function(t) {
-                title = t;
-                this.updateTitle();
-            };
-            this.setMessage = function(t) {
-                message = t;
-                this.updateTitle();
-            };
-            /**
-             * Event handler to show vnc client state in windows title.
-             *
-             * @param {object} rfb vnc client
-             * @param {string} state Name of the state
-             * @param {string} oldstate Name of the old state. Not used
-             * @param {string} msg State detail message
-             */
-            function updateState(rfb, state, oldstate, msg) {
-                lastState = state;
-                switch (state) {
-                    case "normal":
-                        self.setMessage('');
-                        self.setTitle(str('connected'));
-                        break;
-                    case "disconnect":
-                    case "disconnected":
-                        self.setTitle(str('connection_closed'));
-                        break;
-                    case "failed":
-                        self.setTitle(str('connection_fail'));
-                        console.log("VNC client: " + msg);
-                        break;
-                    default:
-                        self.setMessage('');
-                        self.setTitle(str('connecting'));
-                }
+        });
+        VNCDialog.css("padding", "1px");
+        VNCDialog.parent().css('z-index', 2000);
+        this.updateTitle = function () {
+            var text = title;
+            if (message !== '') {
+                text += ' (' + message + ')';
             }
-
-            this.connect = function(secure, host, port, password, path, onClose) {
-                clipboard.setEntry1('');
-                onCloseAction = onClose;
-                self.show();
-                var target = $('#' + VNCDialogId + " canvas")[0];
-                if (!rfb) {
-                    rfb = new RFB({
-                        'target': target,
-                        'encrypt': secure,
-                        'repeaterID': '',
-                        'true_color': true,
-                        'local_cursor': true,
-                        'shared': false,
-                        'view_only': false,
-                        'onUpdateState': updateState,
-                        'onPasswordRequired': null,
-                        'onClipboard': receiveClipboard
-                    });
-                    rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
-                }
-                if (!port) {
-                    port = secure ? 443 : 80;
-                }
-                rfb.connect(host, port, password, path);
-            };
-            this.isOpen = function() {
-                return VNCDialog.dialog("isOpen");
-            };
-            this.close = function() {
-                VNCDialog.dialog("close");
-            };
-            this.isConnected = function() {
-                return rfb && lastState != 'disconnected';
-            };
-            this.disconnect = function() {
-                if (rfb) {
-                    rfb.disconnect();
-                }
-                onCloseAction();
-                clipboard.hide();
-            };
-            /**
-             * Round a number to event and not less than 100.
-             *
-             * @param {number} v value to round
-             *
-             * @returns {int}
-             */
-            function round(v) {
-                if (v < 100) {
-                    v = 100;
-                }
-                return Math.floor(v / 2) * 2;
-            }
-            this.getCanvasSize = function() {
-                return canvas.width() + "x" + canvas.height();
-            };
-
-            this.setCanvasSize = function(w, h) {
-                canvas.width(round(w));
-                canvas.height(round(h));
-            };
-            this.show = function() {
-                VNCDialog.dialog('open');
-                VNCDialog.width('auto');
-                VNCDialog.height('auto');
-            };
-            self.setCanvasSize($(window).width() - 150, $(window).height() - 150);
+            titleText.text(str('console') + ": " + text);
         };
-        return VPLVNCClient;
+        this.setTitle = function (t) {
+            title = t;
+            this.updateTitle();
+        };
+        this.setMessage = function (t) {
+            message = t;
+            this.updateTitle();
+        };
+        /**
+         * Event handler to show vnc client state in windows title.
+         *
+         * @param {object} rfb vnc client
+         * @param {string} state Name of the state
+         * @param {string} oldstate Name of the old state. Not used
+         * @param {string} msg State detail message
+         */
+        function updateState(rfb, state, oldstate, msg) {
+            lastState = state;
+            switch (state) {
+                case "normal":
+                    self.setMessage('');
+                    self.setTitle(str('connected'));
+                    break;
+                case "disconnect":
+                case "disconnected":
+                    self.setTitle(str('connection_closed'));
+                    break;
+                case "failed":
+                    self.setTitle(str('connection_fail'));
+                    console.log("VNC client: " + msg);
+                    break;
+                default:
+                    self.setMessage('');
+                    self.setTitle(str('connecting'));
+            }
+        }
+
+        this.connect = function (secure, host, port, password, path, onClose) {
+            clipboard.setEntry1('');
+            onCloseAction = onClose;
+            self.show();
+            var target = $('#' + VNCDialogId + " canvas")[0];
+            if (!rfb) {
+                rfb = new RFB({
+                    'target': target,
+                    'encrypt': secure,
+                    'repeaterID': '',
+                    'true_color': true,
+                    'local_cursor': true,
+                    'shared': false,
+                    'view_only': false,
+                    'onUpdateState': updateState,
+                    'onPasswordRequired': null,
+                    'onClipboard': receiveClipboard
+                });
+                rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
+            }
+            if (!port) {
+                port = secure ? 443 : 80;
+            }
+            rfb.connect(host, port, password, path);
+        };
+        this.isOpen = function () {
+            return VNCDialog.dialog("isOpen");
+        };
+        this.close = function () {
+            VNCDialog.dialog("close");
+        };
+        this.isConnected = function () {
+            return rfb && lastState != 'disconnected';
+        };
+        this.disconnect = function () {
+            if (rfb) {
+                rfb.disconnect();
+            }
+            onCloseAction();
+            clipboard.hide();
+        };
+        /**
+         * Round a number to event and not less than 100.
+         *
+         * @param {number} v value to round
+         *
+         * @returns {int}
+         */
+        function round(v) {
+            if (v < 100) {
+                v = 100;
+            }
+            return Math.floor(v / 2) * 2;
+        }
+        this.getCanvasSize = function () {
+            return canvas.width() + "x" + canvas.height();
+        };
+
+        this.setCanvasSize = function (w, h) {
+            canvas.width(round(w));
+            canvas.height(round(h));
+        };
+        this.show = function () {
+            VNCDialog.dialog('open');
+            VNCDialog.width('auto');
+            VNCDialog.height('auto');
+        };
+        self.setCanvasSize($(window).width() - 150, $(window).height() - 150);
     }
-);
+}
