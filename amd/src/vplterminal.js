@@ -131,9 +131,9 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             ws.onclose = function() {
                 self.setTitle(str('connection_closed'));
                 terminal.blur();
-                self.stopBlinking();
                 onClose();
                 ws.stopOutput = true;
+                self.stopBlinking();
             };
         } else {
             terminal.write('WebSocket not available: Upgrade your browser');
@@ -153,6 +153,10 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             ws.writeIt();
             ws.close();
             self.setTitle(str('connection_closed'));
+            terminal.blur();
+            self.stopBlinking();
+            onCloseAction();
+            ws.stopOutput = true;
         }
     };
     this.connectLocal = function(onClose, onData) {
@@ -216,12 +220,12 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         return ws && ws.readyState != ws.CLOSED;
     };
     this.disconnect = function() {
+        self.stopBlinking();
         if (ws && ws.readyState == ws.OPEN) {
             onCloseAction();
             if (ws) {
                 ws.close();
             }
-            self.stopBlinking();
         }
     };
     var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
@@ -272,8 +276,11 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         open: controlDialogSize,
         focus: function() {
             controlDialogSize();
-            terminal.focus();
-            self.startBlinking();
+            if (self.isConnected()) {
+                self.startBlinking();
+            } else {
+                self.stopBlinking();
+            }
         },
         classes: {
             "ui-dialog":  'vpl_ide vpl_vnc',
@@ -293,6 +300,8 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                     }]);
         },
         close: function() {
+            terminal.blur();
+            self.stopBlinking();
             self.closeDialog();
         },
         resizeStop: function() {

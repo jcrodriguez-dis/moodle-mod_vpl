@@ -21,8 +21,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* globals RFB */
-/* globals Util */
+/* glob als RFB */
+/* glob als Util */
 
 import $ from 'jquery';
 import {VPLUtil} from 'mod_vpl/vplutil';
@@ -32,54 +32,17 @@ import console from 'core/log';
 
 export class VPLVNCClient {
     constructor(VNCDialogId, str) {
-        window.INCLUDE_URI = VPLUtil.options.scriptPath + "/noVNC/include/";
-        if (typeof Util == 'undefined') {
-            VPLUtil.loadScript(['/noVNC/include/util.js'],
-                function () {
-                    VPLUtil.log('/noVNC/include/util.js loaded', true);
-                    Util.load_scripts(["webutil.js", "base64.js", "websock.js", "des.js",
-                        "keysymdef.js", "keyboard.js", "input.js", "display.js",
-                        "jsunzip.js", "rfb.js", "keysym.js"]);
-                }
-            );
-        }
         var self = this;
         var rfb;
         var title = '';
         var message = '';
         var lastState = '';
         var VNCDialog = $('#' + VNCDialogId);
-        var canvas = $('#' + VNCDialogId + " canvas");
+        var canvas = $('#' + VNCDialogId + " div");
         var onCloseAction = VPLUtil.doNothing;
         var clipboard;
         var needResize = true;
         var titleText;
-        var inputarea = window.document.createElement('input');
-        inputarea.style.position = 'absolute';
-        inputarea.style.left = '0px';
-        inputarea.style.top = '-10000px';
-        inputarea.style.width = '1em';
-        inputarea.style.height = '1ex';
-        inputarea.style.opacity = '0';
-        inputarea.style.backgroundColor = 'transparent';
-        inputarea.style.borderStyle = 'none';
-        inputarea.style.outlineStyle = 'none';
-        inputarea.autocapitalize = 'off';
-        inputarea.autocomplete = 'off';
-        inputarea.autocorrect = 'off';
-        inputarea.wrap = 'off';
-        inputarea.spellcheck = 'false';
-        VNCDialog.append(inputarea);
-        /**
-         * Event handler of keyboard button.
-         */
-        function keyboardButton() {
-            if ($(inputarea).is(':focus')) {
-                inputarea.blur();
-            } else {
-                inputarea.focus();
-            }
-        }
         /**
          * Event handler of paste button at clipboard.
          */
@@ -108,7 +71,7 @@ export class VPLVNCClient {
          */
         function getFocus() {
             if (self.isConnected()) {
-                rfb.get_keyboard().set_focused(true);
+                //rfb.get_keyboard().set_focused(true);
             }
         }
         /**
@@ -116,7 +79,7 @@ export class VPLVNCClient {
          */
         function lostFocus() {
             if (self.isConnected()) {
-                rfb.get_keyboard().set_focused(false);
+                //rfb.get_keyboard().set_focused(false);
             }
         }
         /**
@@ -142,7 +105,7 @@ export class VPLVNCClient {
                 var w = VNCDialog.width();
                 var h = VNCDialog.height();
                 self.setCanvasSize(w, h);
-                rfb.get_display().viewportChange(0, 0, w, h);
+                //rfb.get_display().viewportChange(0, 0, w, h);
             }
         };
         /**
@@ -172,8 +135,7 @@ export class VPLVNCClient {
                 "ui-dialog": 'vpl_ide vpl_vnc',
             },
             create: function () {
-                titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard,
-                    keyboardButton]);
+                titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard]);
             },
             dragStop: controlDialogSize,
             focus: getFocus,
@@ -194,8 +156,10 @@ export class VPLVNCClient {
                 needResize = true;
             }
         });
+
         VNCDialog.css("padding", "1px");
         VNCDialog.parent().css('z-index', 2000);
+
         this.updateTitle = function () {
             var text = title;
             if (message !== '') {
@@ -212,27 +176,86 @@ export class VPLVNCClient {
             this.updateTitle();
         };
         /**
+         * Event handler for the VNC connection established.
+         * @param {*} event
+         */
+        function connectHandler(event) {
+            updateState('normal', event);
+        }
+        /**
+         * Event handler for the VNC connection closed.
+         * @param {*} event
+         */
+        function disconnectHandler(event) {
+            updateState('disconnect', event);
+        }
+        /**
+         * Event handler for the VNC server verification.
+         * @param {*} event
+         */
+        function serververificationHandler(event) {
+            VPLUtil.log('VNC server verification ' + event.detail.status);
+        }
+        /**
+         * Event handler for the VNC credentials required.
+         * @param {*} event
+         */
+        function credentialsrequiredHandler(event) {
+            VPLUtil.log('VNC credentials required ' + event.detail.status);
+        }
+        /**
+         * Event handler for the VNC security failure.
+         * @param {*} event
+         */
+        function securityfailureHandler(event) {
+            updateState('failed', event);
+            VPLUtil.log('VNC security failure ' + event.detail.status);
+        }
+        /**
+         * Event handler for the VNC clipping viewport.
+         * @param {*} event
+         */
+        function clippingviewportHandler(event) {
+            VPLUtil.log('VNC clipping viewport ' + event.detail.status);
+        }
+        /**
+         * Event handler for the VNC capabilities.
+         * @param {*} event
+         */
+        function capabilitiesHandler(event) {
+            VPLUtil.log('VNC capabilities ' + event.detail.status);
+        }
+        /**
+         * Event handler for the VNC desktop name.
+         * @param {*} event
+         */
+        function desktopnameHandler(event) {
+            VPLUtil.log('VNC desktop name ' + event.detail.status);
+            self.setTitle(event.detail.name);
+        }
+
+        /**
          * Event handler to show vnc client state in windows title.
          *
-         * @param {object} rfb vnc client
-         * @param {string} state Name of the state
-         * @param {string} oldstate Name of the old state. Not used
-         * @param {string} msg State detail message
+         * @param {string} newstate Name of the new state
+         * @param {Event} event Event that produce the state change
          */
-        function updateState(rfb, state, oldstate, msg) {
-            lastState = state;
-            switch (state) {
+        function updateState(newstate, event) {
+            switch (newstate) {
                 case "normal":
+                    lastState = 'normal';
                     self.setMessage('');
                     self.setTitle(str('connected'));
                     break;
                 case "disconnect":
                 case "disconnected":
+                    lastState = 'disconnected';
                     self.setTitle(str('connection_closed'));
                     break;
                 case "failed":
+                    lastState = 'disconnected';
                     self.setTitle(str('connection_fail'));
-                    console.log("VNC client: " + msg);
+                    console.log("VNC client: " + event.detail.status);
                     break;
                 default:
                     self.setMessage('');
@@ -241,29 +264,51 @@ export class VPLVNCClient {
         }
 
         this.connect = function (secure, host, port, password, path, onClose) {
-            clipboard.setEntry1('');
-            onCloseAction = onClose;
-            self.show();
-            var target = $('#' + VNCDialogId + " canvas")[0];
-            if (!rfb) {
-                rfb = new RFB({
-                    'target': target,
-                    'encrypt': secure,
-                    'repeaterID': '',
-                    'true_color': true,
-                    'local_cursor': true,
-                    'shared': false,
-                    'view_only': false,
-                    'onUpdateState': updateState,
-                    'onPasswordRequired': null,
-                    'onClipboard': receiveClipboard
-                });
-                rfb.set_local_cursor(rfb.get_display().get_cursor_uri());
-            }
-            if (!port) {
-                port = secure ? 443 : 80;
-            }
-            rfb.connect(host, port, password, path);
+            VPLUtil.loadModule('noVNC/core/rfb', 'RFB')
+                .then(function (RFB) {
+                if (!port) {
+                    port = secure ? 443 : 80;
+                }
+                clipboard.setEntry1('');
+                onCloseAction = onClose;
+                if (rfb) {
+                    rfb.disconnect();
+                    rfb = null;
+                }
+                canvas.html('');
+                self.show();
+                var target = canvas[0];
+                var url = (secure ? 'wss' : 'ws') + '://' + host + ':' + port + '/' +path;
+                rfb = new RFB(target, url, {
+                        'encrypt': secure,
+                        'repeaterID': '',
+                        'true_color': true,
+                        'local_cursor': true,
+                        'shared': false,
+                        'view_only': false,
+                        'credentials': { 'password': password }
+                    });
+                rfb.addEventListener("connect", connectHandler);
+                rfb.addEventListener("disconnect", disconnectHandler);
+                rfb.addEventListener("serververification", serververificationHandler);
+                rfb.addEventListener("credentialsrequired", credentialsrequiredHandler);
+                rfb.addEventListener("securityfailure", securityfailureHandler);
+                rfb.addEventListener("clippingviewport", clippingviewportHandler);
+                rfb.addEventListener("capabilities", capabilitiesHandler);
+                rfb.addEventListener("clipboard", receiveClipboard);
+                rfb.addEventListener("bell", () => {console.log('\x07Bell received');});
+                rfb.addEventListener("desktopname", desktopnameHandler);
+                rfb.clipViewport = true;
+                rfb.scaleViewport = false;
+                rfb.resizeSession = true;
+                //b.qualityLevel = parseInt(getSetting('quality'));
+                //b.compressionLevel = parseInt(getSetting('compression'));
+                rfb.showDotCursor = true;
+            }).catch(function (error) {
+                console.error('Failed to load RFB module:', error);
+                self.setTitle(str('connection_fail'));
+                self.show();
+            });
         };
         this.isOpen = function () {
             return VNCDialog.dialog("isOpen");

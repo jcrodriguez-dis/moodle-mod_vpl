@@ -297,9 +297,7 @@ class vpl_editor_util {
         <textarea class="vpl_clipboard_entry2"></textarea>
     </div>
     <div id="vpl_dialog_vnc" style="display: none;">
-        <canvas class="vpl_noVNC_canvas">
-                Canvas not supported.
-         </canvas>
+        <div></div>
     </div>
 </div>
 HTML;

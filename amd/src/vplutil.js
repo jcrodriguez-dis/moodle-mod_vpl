@@ -861,6 +861,62 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
         return scriptsLoaded[scriptURL] == 2;
     };
 })();
+
+VPLUtil.loadModule = function(module, variable) {
+    return new Promise(function(resolve, reject) {
+        if (typeof window[variable] !== 'undefined') {
+            VPLUtil.log('Module ' + module + ' already loaded');
+            resolve(window[variable]);
+            return;
+        }
+        var ntimedout = 0;
+        const timeoutInterval = 250;
+        const maxTimeouts = 10 * 4; // 10 seconds
+        var resolved = false;
+        var moduleURL = url.relativeUrl('/mod/vpl/amd/src/lib/' + module + '.js');
+        var code = 'window.' + variable + ' = (await import(\'' + moduleURL + '\')).default;';
+        var script = document.createElement('script');
+        script.type = 'module';
+        script.onload = () => {
+            VPLUtil.log('Module ' + module + ' loaded');
+            if (!resolved) {
+                resolved = true;
+                resolve(window[variable]);
+            }
+        };
+        script.onerror = () => {
+            VPLUtil.log('Module ' + module + ' failed to load');
+            if (!resolved) {
+                resolved = true;
+                reject();
+            }
+        };
+        script.innerHTML = code;
+        document.head.appendChild(script);
+        /**
+         * Check if the module is loaded
+         */
+        function checkLoaded() {
+            if (resolved) {
+                return;
+            }
+            if (typeof window[variable] !== 'undefined') {
+                VPLUtil.log('Module ' + module + ' loaded after check ' + ntimedout * timeoutInterval + 'ms');
+                resolved = true;
+                resolve(window[variable]);
+            } else if (ntimedout < maxTimeouts) {
+                ntimedout++;
+                setTimeout(checkLoaded, timeoutInterval);
+            } else {
+                VPLUtil.log('Module ' + module + ' not loaded after check ' + ntimedout * timeoutInterval + 'ms');
+                resolved = true;
+                reject();
+            }
+        }
+        setTimeout(checkLoaded, timeoutInterval);
+    });
+};
+
 (function() {
     var files = [];
     var results = [];

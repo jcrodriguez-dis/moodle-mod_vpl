@@ -298,11 +298,6 @@ img.vpl_ide_file {
 .vpl_vnc .ui-dialog-content {
     padding: 0;
 }
-.vpl_noVNC_canvas {
-    cursor: none;
-    height: 600px;
-    width: 800px;
-}
 
 .vpl_vnc .ui-button-text-only .ui-button-text {
     padding: 0.15em;
