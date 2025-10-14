@@ -68,18 +68,19 @@ export class VPLVNCClient {
          * Event handler of paste button at clipboard.
          */
         function pasteClipboard() {
+            VPLUtil.log('Pasting clipboard');
             if (self.isConnected()) {
-                rfb.clipboardPasteFrom(clipboard.getEntry2());
+                const text = clipboard.getEntry2();
+                rfb.clipboardPasteFrom(text);
             }
         }
         /**
          * Event handler of paste button at clipboard.
-         *
-         * @param {object} rfb vnc client object
-         * @param {string} text Text received
+         * @param {Event} event
          */
-        function receiveClipboard(rfb, text) {
-            clipboard.setEntry1(text);
+        function receiveClipboard(event) {
+            VPLUtil.log('Receiving clipboard');
+            clipboard.setEntry1(event.detail.text);
         }
         /**
          * Event handler of clipboard button.
