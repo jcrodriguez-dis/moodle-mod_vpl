@@ -21,9 +21,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/* glob als RFB */
-/* glob als Util */
-
 import $ from 'jquery';
 import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
@@ -36,13 +33,37 @@ export class VPLVNCClient {
         var rfb;
         var title = '';
         var message = '';
-        var lastState = '';
+        var lastState = 'disconnected';
+        var lastCanvas = null;
         var VNCDialog = $('#' + VNCDialogId);
         var canvas = $('#' + VNCDialogId + " div");
         var onCloseAction = VPLUtil.doNothing;
         var clipboard;
         var needResize = true;
         var titleText;
+        /**
+         * Add input for activating virtual keyboard
+         */
+        function addVirtualKeyboardInput() {
+            var inputarea = window.document.createElement('input');
+            inputarea.style.position = 'absolute';
+            inputarea.style.left = '0px';
+            inputarea.style.top = '-10000px';
+            inputarea.style.width = '1em';
+            inputarea.style.height = '1ex';
+            inputarea.style.opacity = '0';
+            inputarea.style.backgroundColor = 'transparent';
+            inputarea.style.borderStyle = 'none';
+            inputarea.style.outlineStyle = 'none';
+            inputarea.autocapitalize = 'off';
+            inputarea.autocomplete = 'off';
+            inputarea.autocorrect = 'off';
+            inputarea.wrap = 'off';
+            inputarea.spellcheck = 'false';
+            VNCDialog.append(inputarea);
+        }
+        addVirtualKeyboardInput();
+
         /**
          * Event handler of paste button at clipboard.
          */
@@ -101,13 +122,19 @@ export class VPLVNCClient {
             }
         });
         this.displayResize = function () {
-            if (self.isConnected()) {
-                var w = VNCDialog.width();
-                var h = VNCDialog.height();
-                self.setCanvasSize(w, h);
-                //rfb.get_display().viewportChange(0, 0, w, h);
-            }
+            var w = round(VNCDialog.width());
+            var h = round(VNCDialog.parent().height() - VNCDialog.prev().outerHeight());
+            self.setCanvasSize(w, h);
         };
+
+        /**
+         * Event handler for the VNC dialog open event.
+         */
+        function openHandler() {
+            self.restoreLastCanvas();
+            controlDialogSize();
+        }
+
         /**
          * Event handler that limit the size of the vnc client windows.
          *
@@ -135,17 +162,17 @@ export class VPLVNCClient {
                 "ui-dialog": 'vpl_ide vpl_vnc',
             },
             create: function () {
-                titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic', ['clipboard', 'keyboard'], [openClipboard]);
+                titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic',
+                                              ['clipboard', 'keyboard'],
+                                              [openClipboard, getFocus]);
             },
             dragStop: controlDialogSize,
             focus: getFocus,
-            open: controlDialogSize,
+            open: openHandler,
             beforeClose: function () {
                 if (needResize) {
-                    var w = VNCDialog.width();
-                    var h = VNCDialog.height();
                     needResize = false;
-                    self.setCanvasSize(w, h);
+                    self.displayResize();
                 }
             },
             close: function () {
@@ -175,20 +202,38 @@ export class VPLVNCClient {
             message = t;
             this.updateTitle();
         };
+        this.saveLastCanvas = function () {
+            if (self.isConnected()) {
+                lastCanvas = rfb.toDataURL();
+            }
+        };
+        this.restoreLastCanvas = function () {
+            if (lastCanvas && lastState === 'disconnected') {
+                var img = document.createElement('img');
+                img.src = lastCanvas;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                canvas.html('');
+                canvas.append(img);
+                lastCanvas = null;
+            }
+        };
         /**
          * Event handler for the VNC connection established.
          * @param {*} event
          */
         function connectHandler(event) {
-            updateState('normal', event);
+            updateState('connected', event);
         }
         /**
          * Event handler for the VNC connection closed.
          * @param {*} event
          */
         function disconnectHandler(event) {
+            self.saveLastCanvas();
             updateState('disconnect', event);
         }
+
         /**
          * Event handler for the VNC server verification.
          * @param {*} event
@@ -242,8 +287,9 @@ export class VPLVNCClient {
          */
         function updateState(newstate, event) {
             switch (newstate) {
-                case "normal":
-                    lastState = 'normal';
+                case "connected":
+                    lastState = 'connected';
+                    self.displayResize();
                     self.setMessage('');
                     self.setTitle(str('connected'));
                     break;
@@ -251,6 +297,7 @@ export class VPLVNCClient {
                 case "disconnected":
                     lastState = 'disconnected';
                     self.setTitle(str('connection_closed'));
+                    self.restoreLastCanvas();
                     break;
                 case "failed":
                     lastState = 'disconnected';
@@ -272,11 +319,15 @@ export class VPLVNCClient {
                 clipboard.setEntry1('');
                 onCloseAction = onClose;
                 if (rfb) {
-                    rfb.disconnect();
+                    if (lastState !== 'disconnected') {
+                        rfb.disconnect();
+                    }
                     rfb = null;
                 }
                 canvas.html('');
                 self.show();
+                lastState = 'connecting';
+                self.setTitle(str('connecting'));
                 var target = canvas[0];
                 var url = (secure ? 'wss' : 'ws') + '://' + host + ':' + port + '/' +path;
                 rfb = new RFB(target, url, {
@@ -301,8 +352,8 @@ export class VPLVNCClient {
                 rfb.clipViewport = true;
                 rfb.scaleViewport = false;
                 rfb.resizeSession = true;
-                //b.qualityLevel = parseInt(getSetting('quality'));
-                //b.compressionLevel = parseInt(getSetting('compression'));
+                rfb.qualityLevel = 6;
+                rfb.compressionLevel = 2;
                 rfb.showDotCursor = true;
             }).catch(function (error) {
                 console.error('Failed to load RFB module:', error);
@@ -320,17 +371,16 @@ export class VPLVNCClient {
             return rfb && lastState != 'disconnected';
         };
         this.disconnect = function () {
-            if (rfb) {
+            if (this.isConnected()) {
+                self.saveLastCanvas();
                 rfb.disconnect();
             }
             onCloseAction();
             clipboard.hide();
         };
         /**
-         * Round a number to event and not less than 100.
-         *
+         * Round a number to even and not less than 100.
          * @param {number} v value to round
-         *
          * @returns {int}
          */
         function round(v) {
@@ -344,8 +394,15 @@ export class VPLVNCClient {
         };
 
         this.setCanvasSize = function (w, h) {
-            canvas.width(round(w));
-            canvas.height(round(h));
+            w = round(w);
+            h = round(h);
+            canvas.width(w);
+            canvas.height(h);
+            var inner = canvas.find('canvas');
+            if (inner.length > 0) {
+                inner.width(w);
+                inner.height(h);
+            }
         };
         this.show = function () {
             VNCDialog.dialog('open');
