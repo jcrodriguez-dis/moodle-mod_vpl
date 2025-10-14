@@ -45,6 +45,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     var clipboardData = '';
 
     var terminal;
+    var fitAddon;
     var terminalTag = $('#' + terminalId);
     this.updateTitle = function() {
         var text = title;
@@ -107,6 +108,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                 ws.close();
             }
             clipboardData = '';
+            self.startBlinking();
             self.setMessage('');
             self.setTitle(str('connecting'));
             ws = new WebSocket(server);
@@ -131,9 +133,9 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             ws.onclose = function() {
                 self.setTitle(str('connection_closed'));
                 terminal.blur();
+                self.stopBlinking();
                 onClose();
                 ws.stopOutput = true;
-                self.stopBlinking();
             };
         } else {
             terminal.write('WebSocket not available: Upgrade your browser');
@@ -154,10 +156,10 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             ws.close();
             self.setTitle(str('connection_closed'));
             terminal.blur();
-            self.stopBlinking();
             onCloseAction();
             ws.stopOutput = true;
         }
+        self.stopBlinking();
     };
     this.connectLocal = function(onClose, onData) {
         onCloseAction = onClose;
@@ -169,6 +171,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         clipboardData = '';
         self.setMessage('');
         self.setTitle(str('running'));
+        self.startBlinking();
         ws = {};
         ws.onData = onData;
         ws.writeBuffer = '';
@@ -213,20 +216,20 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         return tdialog.dialog("isOpen");
     };
     this.close = function() {
-        self.stopBlinking();
         tdialog.dialog("close");
+        self.stopBlinking();
     };
     this.isConnected = function() {
         return ws && ws.readyState != ws.CLOSED;
     };
     this.disconnect = function() {
-        self.stopBlinking();
         if (ws && ws.readyState == ws.OPEN) {
             onCloseAction();
             if (ws) {
                 ws.close();
             }
         }
+        self.stopBlinking();
     };
     var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
     var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
@@ -265,6 +268,11 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         if (tdialog.parent().height() > bh) {
             tdialog.dialog("option", "height", bh - tdialog.prev().outerHeight());
         }
+        const margin = 13;
+        terminalTag.width(tdialog.width() - margin);
+        terminalTag.height(tdialog.height() - margin);
+        fitAddon.fit();
+        terminal.focus();
     }
     tdialog.dialog({
         closeOnEscape: false,
@@ -276,11 +284,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         open: controlDialogSize,
         focus: function() {
             controlDialogSize();
-            if (self.isConnected()) {
-                self.startBlinking();
-            } else {
-                self.stopBlinking();
-            }
+            terminal.focus();
         },
         classes: {
             "ui-dialog":  'vpl_ide vpl_vnc',
@@ -300,7 +304,6 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                     }]);
         },
         close: function() {
-            terminal.blur();
             self.stopBlinking();
             self.closeDialog();
         },
@@ -308,8 +311,8 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             tdialog.width(tdialog.parent().width());
             tdialog.height(tdialog.parent().height() - tdialog.prev().outerHeight());
             controlDialogSize();
+            fitAddon.fit();
             terminal.focus();
-            self.startBlinking();
         }
     });
     this.setFontSize = function(size) {
@@ -323,12 +326,13 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     this.show = function() {
         tdialog.dialog('open');
         terminal.focus();
-        self.startBlinking();
     };
     this.startBlinking = function() {
+        VPLUtil.log("Terminal: cursor start blinking");
         terminal.options.cursorBlink = true;
     };
     this.stopBlinking = function() {
+        VPLUtil.log("Terminal: cursor stop blinking");
         terminal.options.cursorBlink = false;
     };
     this.init = async function() {
@@ -339,10 +343,12 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         link.href = libpath + 'xterm.css';
         document.head.appendChild(link);
         const xterm = await import(libpath + 'xterm.js');
+        const xtermFit = await import(libpath + 'addon-fit/addon-fit.js');
         terminal = new xterm.Terminal( {
-                    cols: 80,
-                    rows: 24
+                    scrollback: 5000,
                 });
+        fitAddon = new xtermFit.FitAddon();
+        terminal.loadAddon(fitAddon);
         self.stopBlinking();
         terminal.onData(function(data) {
             if (ws && ws.readyState == ws.OPEN) {
@@ -350,6 +356,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             }
         });
         terminal.open(terminalTag[0]);
+        fitAddon.fit();
         terminal.reset();
     };
     this.init();
