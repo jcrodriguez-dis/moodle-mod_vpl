@@ -1,6 +1,17 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
+        <location>amd/src/lib/noVNC</location>
+        <name>noVNC: VNC client web application</name>
+        <license>MPL</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>amd/src/lib/xterm</location>
+        <name>Xterm.js - An xterm emulator web application</name>
+        <license>MIT</license>
+    </library>
+    <library>
         <location>editor/ace9</location>
         <name>ACE (Ajax.org Cloud9 Editor)</name>
         <version>1.4.12</version>

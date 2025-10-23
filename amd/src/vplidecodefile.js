@@ -215,8 +215,8 @@ export const codeExtension = function() {
     this.open = function() {
         this.showFileName();
         if (typeof ace === 'undefined') {
-            VPLUtil.loadScript(['/ace9/ace.js',
-                '/ace9/ext-language_tools.js'],
+            VPLUtil.loadScript(['/../amd/src/lib/ace/ace.js',
+                '/../amd/src/lib/ace/ext-language_tools.js'],
                 function() {
                     self.open();
                 });
@@ -229,7 +229,7 @@ export const codeExtension = function() {
         var tid = this.getTId();
         // Workaround to remove jquery-ui theme background color.
         $(tid).removeClass('ui-widget-content ui-tabs-panel');
-        ace.require("ext/language_tools");
+        ace.require("ace/ext/language_tools");
         editor = ace.edit("vpl_file" + this.getId());
         session = editor.getSession();
         editor.setOptions({
