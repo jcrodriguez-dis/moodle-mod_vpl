@@ -12,6 +12,13 @@
         <license>MIT</license>
     </library>
     <library>
+        <location>amd/src/lib/ace</location>
+        <name>Ace (Ajax.org Cloud9 Editor)</name>
+        <version>1.43.4</version>
+        <license>BSD</license>
+        <licenseversion>3</licenseversion>
+    </library>
+    <library>
         <location>editor/ace9</location>
         <name>ACE (Ajax.org Cloud9 Editor)</name>
         <version>1.4.12</version>
