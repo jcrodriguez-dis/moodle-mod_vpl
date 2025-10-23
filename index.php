@@ -114,6 +114,121 @@ function get_select_detailedmore($urlbase, $value = '0') {
     return $select;
 }
 
+/**
+ * Returns array of course modules of VPL activities in the order they appears in the course.
+ * @param stdClass $course Course object.
+ * @return array Array of VPL activities.
+ */
+function get_vpl_activities($course) {
+    $modinfo = get_fast_modinfo($course);
+    $cms = $modinfo->get_cms();
+    $cmssubsections = [];
+    $cmsinsubsections = [];
+    foreach ($cms as $cm) {
+        // Check if is VPL are insubsection
+        if ( $cm->modname == 'vpl' ) {
+            $section = $cm->sectionnum;
+            $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
+            if ( method_exists($sectioninfo, 'get_component_instance') ) {
+                // Check if is a subsection
+                $delegate = $sectioninfo->get_component_instance();
+                if ($delegate) {
+                    // Add activity to subsection list
+                    if (!isset($cmssubsections[$section])) {
+                        $cmssubsections[$section] = [];
+                    }
+                    $cmssubsections[$section][] = $cm;
+                    $cmsinsubsections[$cm->id] = true;
+                }
+            }
+        }
+    }
+    $activities = [];
+    foreach ($cms as $cm) {
+        if ( isset($cmsinsubsections[$cm->id]) ) {
+            continue;
+        }
+        if ($cm->modname == 'vpl') {
+            $activities[] = $cm;
+        }
+        if ( $cm->modname == 'subsection'){
+            $delegate = $cm->get_delegated_section_info();
+            if ($delegate) {
+                $section = $delegate->sectionnum;
+                if (isset($cmssubsections[$section])) {
+                    // Add activity of current subsection
+                    foreach ($cmssubsections[$section] as $subcm) {
+                        $activities[] = $subcm;
+                    }
+                }
+            }
+        }
+    }
+    return $activities;
+}
+
+/**
+ * Returns array of course modules of VPL activities selected by section or subsection.
+ * @param stdClass $course Course object.
+ * @return array Array of VPL activities.
+ */
+function get_vpl_activities_in_section($course, $cms, $sectionnum) {
+    $modinfo = get_fast_modinfo($course);
+    $activities = [];
+    foreach ($cms as $cm) {
+        $section = $cm->sectionnum;
+        if ($section == $sectionnum) {
+            $activities[] = $cm;
+        } else {
+            $name = get_section_name($course->id, $section);
+            $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
+            if ( method_exists($sectioninfo, 'get_component_instance') ) {
+                // Check if is a subsection and get parent
+                $delegate = $sectioninfo->get_component_instance();
+                if ($delegate) {
+                    $parent = $delegate->get_parent_section();
+                    if ($parent->section == $sectionnum) {
+                        $activities[] = $cm;
+                    }
+                }
+            }
+        }
+    }
+    return $activities;
+}
+
+
+/**
+ * Returns array of sections names indexed by section number.
+ * @param stdClass $course Course object.
+ * @param array $vpls_activities Array of course module of VPL activities.
+ * @return array Array of section names indexed by section number.
+ */
+function get_sections_names_by_sectionnum($course, $vpls_activities) {
+    $modinfo = get_fast_modinfo($course);
+    $sectionnames = [];
+    foreach ($vpls_activities as $activity) {
+        if ( $activity->modname == 'vpl' ) {
+            $section = $activity->sectionnum;
+            if ( isset( $sectionnames[$section] ) ) {
+                //continue;
+            }
+            $name = get_section_name($course->id, $section);
+            $sectioninfo = $modinfo->get_section_info($section, MUST_EXIST);
+            if ( method_exists($sectioninfo, 'get_component_instance') ) {
+                // Check if is a subsection and get parent
+                $delegate = $sectioninfo->get_component_instance();
+                if ($delegate) {
+                    $parent = $delegate->get_parent_section();
+                    $name = get_section_name($course->id, $parent->section) . ' / ' . $name;
+                }
+            }
+            $sectionnames[$section] = $name;
+        }
+    }
+    return $sectionnames;
+}
+
 global $USER, $DB, $PAGE, $OUTPUT;
 
 $id = required_param( 'id', PARAM_INT ); // Course id.
@@ -163,33 +278,24 @@ $urlparms = [
 ];
 
 $urlbase = new moodle_url( '/mod/vpl/index.php', $urlparms);
-
-if (method_exists('course_modinfo', 'get_array_of_activities')) { // TODO remove is not needed.
-    $activities = course_modinfo::get_array_of_activities($course, true);
-} else {
-    $activities = get_array_of_activities($course->id);
-}
-
-$sectionnames = [];
-foreach ($activities as $activity) {
-    if ( $activity->mod == 'vpl' ) {
-        $section = $activity->section;
-        $sectionnames[$section] = get_section_name($course->id, $section);
-    }
-}
-
-echo $OUTPUT->render( get_select_section_filter($urlbase, $sectionnames, $sectionfilter) );
+$vpls_activities = get_vpl_activities( $course );
+$sectionnamesbysectionnum = get_sections_names_by_sectionnum($course, $vpls_activities);
+echo $OUTPUT->render( get_select_section_filter($urlbase, $sectionnamesbysectionnum, $sectionfilter) );
 $urlbase->params($urlparms);
 echo $OUTPUT->render( get_select_instance_filter($urlbase, $instancefilter) );
 $urlbase->params($urlparms);
 echo $OUTPUT->render( get_select_detailedmore($urlbase, $detailedmore) );
 
-$ovpls = get_all_instances_in_course( VPL, $course );
+if ( $sectionfilter != 'all' ) {
+    // Get vpls in section or subsection.
+    $vpls_activities = get_vpl_activities_in_section($course, $vpls_activities, $sectionfilter);
+}
 $timenow = time();
 $vpls = [];
+$cms = [];
 // Get and select vpls to show.
-foreach ($ovpls as $ovpl) {
-    $vpl = new mod_vpl( false, $ovpl->id );
+foreach ($vpls_activities as $cm) {
+    $vpl = new mod_vpl($cm->id );
     $instance = $vpl->get_instance();
     if ($vpl->is_visible()) {
         $add = false;
@@ -237,19 +343,8 @@ foreach ($ovpls as $ovpl) {
                 }
         }
         if ($add) {
-            $add = false;
-            if ( $sectionfilter == 'all' ) {
-                $add = true;
-            } else {
-                $cmid = $vpl->get_course_module()->id;
-                if ( ! empty($activities[$cmid])) {
-                    $inssection = $activities[$cmid]->section;
-                    $add = $sectionfilter == "$inssection";
-                }
-            }
-        }
-        if ($add) {
             $vpls[] = $vpl;
+            $cms[$cm->id] = $cm;
         }
     }
 }
@@ -332,15 +427,11 @@ foreach ($vpls as $vpl) {
     $instance = $vpl->get_instance();
     $cmid = $vpl->get_course_module()->id;
     $url = vpl_rel_url( 'view.php', 'id', $cmid );
-    $sectionname = '';
-    $section = '';
-    if ( ! empty($activities[$cmid])) {
-        $section = $activities[$cmid]->section;
-        $sectionname = $sectionnames[$section];
-    }
+    $sectionnum = $cms[$cmid]->sectionnum;
+    $sectionname = $sectionnamesbysectionnum[$sectionnum];
     $row = [
             count( $table->data ) + 1,
-            "<a href='$baseurlsection#section-$section'>{$sectionname}</a>",
+            "<a href='$baseurlsection#section-$sectionnum'>{$sectionname}</a>",
             "<a href='$url'>{$vpl->get_printable_name()}</a>",
     ];
     if ($startdate) {
