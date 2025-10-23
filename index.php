@@ -169,9 +169,11 @@ function get_vpl_activities($course) {
 }
 
 /**
- * Returns array of course modules of VPL activities selected by section or subsection.
+ * Returns VPL activities course modules selected by section number that includes subsections.
  * @param stdClass $course Course object.
- * @return array Array of VPL activities.
+ * @param array $cms Array of course modules of VPL activities.
+ * @param int $sectionnum Section number.
+ * @return array $cms Array of course modules of VPL activities.
  */
 function get_vpl_activities_in_section($course, $cms, $sectionnum) {
     $modinfo = get_fast_modinfo($course);

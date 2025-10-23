@@ -138,8 +138,8 @@ class vplevaluator extends base {
 
     /**
      * Get printable evaluator plugin information.
-     * @param $vpl mod_vpl instance of the vpl activity.
-     * @param $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
+     * @param \mod_vpl $vpl instance of the vpl activity.
+     * @param string $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
      * @return string HTML formatted string
      */
     public static function get_printable_evaluator_help($vpl, $evaluatorname = ''): string {
@@ -161,9 +161,9 @@ class vplevaluator extends base {
 
     /**
      * Get printable evaluator plugin information.
-     * @param $vpl mod_vpl instance of the vpl activity.
-     * @param $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
-     * @param $ifhelp if true return '' if no help available
+     * @param \mod_vpl $vpl instance of the vpl activity.
+     * @param string $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
+     * @param bool $ifhelp if true return '' if no help available
      * @return string HTML formatted string
      */
     public static function get_printable_evaluator_help_link($vpl, $evaluatorname = '', $ifhelp = false): string {
