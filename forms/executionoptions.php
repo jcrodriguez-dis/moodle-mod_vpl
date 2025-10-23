@@ -194,7 +194,6 @@ class mod_vpl_executionoptions_form extends moodleform {
      * @param mod_vpl $vpl The VPL instance.
      * @return string JavaScript code as a string.
      */
-
     public static function get_evaluatorhelp_js($vpl) {
         $evaluatorshelplist = self::get_evaluator_help_list($vpl);
         return "(function() {
