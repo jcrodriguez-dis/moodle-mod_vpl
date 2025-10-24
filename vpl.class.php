@@ -1706,9 +1706,8 @@ class mod_vpl {
                 } else {
                     $user = self::get_db_record( 'user', $userid);
                     $strname = $this->is_group_activity() ? 'group' : 'user';
-                    $text = get_string($strname);
+                    $text = get_string($strname) . ' ' . $this->fullname($user, false);
                     $icon = vpl_get_awesome_icon($strname);
-                    $text .= $this->fullname($user, false);
                     $url = $PAGE->url->out( false, [ 'userid' => $USER->id ] );
                     // Add button to return to own activity.
                     // This is a simili-link because it is located inside an <a> tag, and we cannot put an <a> tag within another.
