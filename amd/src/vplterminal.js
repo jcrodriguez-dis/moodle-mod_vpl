@@ -41,9 +41,8 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     var tIde = $('#vplide');
     var titleText = '';
     var clipboard = null;
-    var cliboardMaxsize = 64000;
+    var clipboardMaxsize = 64000;
     var clipboardData = '';
-
     var terminal;
     var fitAddon;
     var terminalTag = $('#' + terminalId);
@@ -68,8 +67,8 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
      */
     function receiveClipboard(data) {
         clipboardData += data;
-        if (clipboardData.length > cliboardMaxsize) {
-            var from = clipboardData.length - cliboardMaxsize / 2;
+        if (clipboardData.length > clipboardMaxsize) {
+            var from = clipboardData.length - clipboardMaxsize / 2;
             clipboardData = clipboardData.substr(from);
         }
     }
@@ -223,13 +222,11 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         return ws && ws.readyState != ws.CLOSED;
     };
     this.disconnect = function() {
-        if (ws && ws.readyState == ws.OPEN) {
+        if (this.isConnected()) {
             onCloseAction();
-            if (ws) {
-                ws.close();
-            }
+            ws.close();
+            this.stopBlinking();
         }
-        self.stopBlinking();
     };
     var HTMLUpdateClipboard = VPLUI.genIcon('copy', 'sw') + ' ' + str('copy');
     var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
@@ -295,7 +292,6 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                     [openClipboard,
                     function() {
                         terminal.focus();
-                        self.startBlinking();
                     },
                     function() {
                         // Cycle themes from 0 to NTHEMES-1.
@@ -328,16 +324,20 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         terminal.focus();
     };
     this.startBlinking = function() {
-        VPLUtil.log("Terminal: cursor start blinking");
-        terminal.options.cursorBlink = true;
+        if (!terminal.options.cursorBlink) {
+            VPLUtil.log("Terminal: cursor start blinking");
+            terminal.options.cursorBlink = true;
+        }
     };
     this.stopBlinking = function() {
-        VPLUtil.log("Terminal: cursor stop blinking");
-        terminal.options.cursorBlink = false;
+        if (terminal.options.cursorBlink) {
+            VPLUtil.log("Terminal: cursor stop blinking");
+            terminal.options.cursorBlink = false;
+        }
     };
     this.init = async function() {
         // Load xterm.js library
-        const libpath = url.relativeUrl('/mod/vpl/amd/src/lib/xterm/');
+        const libpath = url.relativeUrl('/mod/vpl/thirdpartylibs/xterm/');
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = libpath + 'xterm.css';

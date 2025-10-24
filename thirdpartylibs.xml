@@ -1,18 +1,18 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>amd/src/lib/noVNC</location>
+        <location>thirdpartylibs/noVNC</location>
         <name>noVNC: VNC client web application</name>
         <license>MPL</license>
         <licenseversion>2.0</licenseversion>
     </library>
     <library>
-        <location>amd/src/lib/xterm</location>
+        <location>thirdpartylibs/xterm</location>
         <name>Xterm.js - An xterm emulator web application</name>
         <license>MIT</license>
     </library>
     <library>
-        <location>amd/src/lib/ace</location>
+        <location>thirdpartylibs/ace</location>
         <name>Ace (Ajax.org Cloud9 Editor)</name>
         <version>1.43.4</version>
         <license>BSD</license>

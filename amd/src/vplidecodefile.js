@@ -215,8 +215,8 @@ export const codeExtension = function() {
     this.open = function() {
         this.showFileName();
         if (typeof ace === 'undefined') {
-            VPLUtil.loadScript(['/../amd/src/lib/ace/ace.js',
-                '/../amd/src/lib/ace/ext-language_tools.js'],
+            VPLUtil.loadScript(['/../thirdpartylibs/ace/ace.js',
+                '/../thirdpartylibs/ace/ext-language_tools.js'],
                 function() {
                     self.open();
                 });

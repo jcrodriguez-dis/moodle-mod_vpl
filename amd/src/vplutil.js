@@ -873,7 +873,7 @@ VPLUtil.loadModule = function(module, variable) {
         const timeoutInterval = 250;
         const maxTimeouts = 10 * 4; // 10 seconds
         var resolved = false;
-        var moduleURL = url.relativeUrl('/mod/vpl/amd/src/lib/' + module + '.js');
+        var moduleURL = url.relativeUrl('/mod/vpl/thirdpartylibs/' + module + '.js');
         var code = 'window.' + variable + ' = (await import(\'' + moduleURL + '\')).default;';
         var script = document.createElement('script');
         script.type = 'module';
