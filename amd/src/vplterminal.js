@@ -322,6 +322,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     this.show = function() {
         tdialog.dialog('open');
         terminal.focus();
+        fitAddon.fit();
     };
     this.startBlinking = function() {
         if (!terminal.options.cursorBlink) {
@@ -356,7 +357,6 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             }
         });
         terminal.open(terminalTag[0]);
-        fitAddon.fit();
         terminal.reset();
     };
     this.init();
