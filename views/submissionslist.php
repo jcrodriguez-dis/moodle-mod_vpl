@@ -392,7 +392,7 @@ $sortdir = vpl_get_set_session_var( 'subsortdir', 3, 'sortdir' );
 $tilast = optional_param('tilast', '', PARAM_TEXT);
 $tifirst = optional_param('tifirst', '', PARAM_TEXT);
 $page = optional_param('page', 0, PARAM_INT);
-$tperpage = optional_param('tperpage', 30, PARAM_INT);
+$tperpage = vpl_get_set_session_var('tperpage', 30);
 $subselection = vpl_get_set_session_var( 'subselection', 'allsubmissions', 'selection' );
 $download = optional_param('download', '', PARAM_ALPHA);
 
