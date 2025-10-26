@@ -23,285 +23,280 @@
 
 /* globals ace */
 
-define(
-    [
-        'jquery',
-        'mod_vpl/vplutil',
-        'mod_vpl/vplui',
-    ],
-    function($, VPLUtil, VPLUI) {
-        return function() {
-            var self = this;
-            var editor = null;
-            var session = null;
-            var readOnly = self.getFileManager().readOnly;
-            var getOldContent = this.getContent;
-            this.getContent = function() {
-                if (!this.isOpen()) {
-                    return getOldContent.call(this);
-                }
-                return editor.getValue();
-            };
-            var setOldContent = this.setContent;
-            this.setContent = function(c) {
-                setOldContent.call(this, c);
-                if (this.isOpen()) {
-                    editor.setValue(c);
-                }
-            };
-            var oldDestroy = this.destroy;
-            this.destroy = function() {
-                if (this.isOpen()) {
-                    editor.destroy();
-                }
-                oldDestroy.call(this);
-            };
-            this.setFontSize = function(size) {
-                if (this.isOpen()) {
-                    editor.setFontSize(size);
-                }
-            };
-            var oldAdjustSize = this.adjustSize;
-            this.adjustSize = function() {
-                if (oldAdjustSize.call(this)) {
-                    editor.resize(true);
-                    return true;
-                }
-                return false;
-            };
-            this.gotoLine = function(line) {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.gotoLine(line, 0);
-                editor.scrollToLine(line, true);
-                editor.focus();
-                this.updateStatus();
-            };
-            this.setReadOnly = function(s) {
-                readOnly = s;
-                if (this.isOpen()) {
-                    editor.setReadOnly(s);
-                }
-            };
-            this.isReadOnly = function() {
-                return readOnly;
-            };
-            this.focus = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                var tid = this.getTId();
-                // Workaround to remove JQwery-UI background color.
-                $(tid).removeClass('ui-widget-content ui-tabs-panel');
-                editor.focus();
-                this.updateStatus();
-            };
-            this.blur = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.blur();
-            };
-            this.undo = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.undo();
-                editor.focus();
-            };
-            this.redo = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.redo();
-                editor.focus();
-            };
-            this.selectAll = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.selectAll();
-                editor.focus();
-            };
-            this.hasUndo = function() {
-                if (!this.isOpen()) {
-                    return false;
-                }
-                return session.getUndoManager().hasUndo();
-            };
-            this.hasRedo = function() {
-                if (!this.isOpen()) {
-                    return false;
-                }
-                return session.getUndoManager().hasRedo();
-            };
-            this.hasSelectAll = VPLUtil.returnTrue;
-            this.hasFind = VPLUtil.returnTrue;
-            this.hasFindReplace = VPLUtil.returnTrue;
-            this.hasNext = VPLUtil.returnTrue;
-            this.find = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.execCommand('find');
-            };
-            this.replace = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.execCommand('replace');
-            };
-            this.next = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.execCommand('findnext');
-            };
-            this.getAnnotations = function() {
-                if (!this.isOpen()) {
-                    return [];
-                }
-                return session.getAnnotations();
-            };
-            this.setAnnotations = function(a) {
-                if (!this.isOpen()) {
-                    return false;
-                }
-                return session.setAnnotations(a);
-            };
-            this.clearAnnotations = function() {
-                if (!this.isOpen()) {
-                    return false;
-                }
-                return session.clearAnnotations();
-            };
-            this.langSelection = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                var filenamepath = this.getFileName();
-                var lang = VPLUtil.langType(filenamepath);
-                session.setMode("ace/mode/" + lang);
-                session.setTabSize(4);
-                session.setUseSoftTabs(!VPLUtil.useHardTabs(filenamepath));
-                this.setLang(lang);
-            };
-            this.getEditor = function() {
-                if (!this.isOpen()) {
-                    return false;
-                }
-                return editor;
-            };
-            this.setTheme = function(theme) {
-                if (!this.isOpen()) {
-                    return;
-                }
-                editor.setTheme("ace/theme/" + theme);
-            };
-            this.updateStatus = function() {
-                if (!this.isOpen()) {
-                    return;
-                }
-                var text = '';
-                var pos = editor.getCursorPosition();
-                var fullname = this.getFileName();
-                var name = VPLUtil.getFileName(fullname);
-                if (fullname.length > 20 || name != fullname) {
-                    text = fullname + ' ';
-                }
-                text += "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
-                text += " " + VPLUtil.langName(name);
-                VPLUI.showIDEStatus(text);
-            };
+import $ from 'jquery';
+import {VPLUtil} from 'mod_vpl/vplutil';
+import {VPLUI} from 'mod_vpl/vplui';
 
-            this.open = function() {
-                this.showFileName();
-                if (typeof ace === 'undefined') {
-                    VPLUtil.loadScript(['/ace9/ace.js',
-                        '/ace9/ext-language_tools.js'],
-                        function() {
-                            self.open();
-                        });
-                    return false;
-                }
-                if (this.isOpen()) {
-                    return editor;
-                }
-                var fileManager = this.getFileManager();
-                var tid = this.getTId();
-                // Workaround to remove jquery-ui theme background color.
-                $(tid).removeClass('ui-widget-content ui-tabs-panel');
-                ace.require("ext/language_tools");
-                editor = ace.edit("vpl_file" + this.getId());
-                session = editor.getSession();
-                editor.setOptions({
-                    enableBasicAutocompletion: true,
-                    enableSnippets: true,
+export const codeExtension = function() {
+    var self = this;
+    var editor = null;
+    var session = null;
+    var readOnly = self.getFileManager().readOnly;
+    var getOldContent = this.getContent;
+    this.getContent = function() {
+        if (!this.isOpen()) {
+            return getOldContent.call(this);
+        }
+        return editor.getValue();
+    };
+    var setOldContent = this.setContent;
+    this.setContent = function(c) {
+        setOldContent.call(this, c);
+        if (this.isOpen()) {
+            editor.setValue(c);
+        }
+    };
+    var oldDestroy = this.destroy;
+    this.destroy = function() {
+        if (this.isOpen()) {
+            editor.destroy();
+        }
+        oldDestroy.call(this);
+    };
+    this.setFontSize = function(size) {
+        if (this.isOpen()) {
+            editor.setFontSize(size);
+        }
+    };
+    var oldAdjustSize = this.adjustSize;
+    this.adjustSize = function() {
+        if (oldAdjustSize.call(this)) {
+            editor.resize(true);
+            return true;
+        }
+        return false;
+    };
+    this.gotoLine = function(line) {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.gotoLine(line, 0);
+        editor.scrollToLine(line, true);
+        editor.focus();
+        this.updateStatus();
+    };
+    this.setReadOnly = function(s) {
+        readOnly = s;
+        if (this.isOpen()) {
+            editor.setReadOnly(s);
+        }
+    };
+    this.isReadOnly = function() {
+        return readOnly;
+    };
+    this.focus = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        var tid = this.getTId();
+        // Workaround to remove JQwery-UI background color.
+        $(tid).removeClass('ui-widget-content ui-tabs-panel');
+        editor.focus();
+        this.updateStatus();
+    };
+    this.blur = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.blur();
+    };
+    this.undo = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.undo();
+        editor.focus();
+    };
+    this.redo = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.redo();
+        editor.focus();
+    };
+    this.selectAll = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.selectAll();
+        editor.focus();
+    };
+    this.hasUndo = function() {
+        if (!this.isOpen()) {
+            return false;
+        }
+        return session.getUndoManager().hasUndo();
+    };
+    this.hasRedo = function() {
+        if (!this.isOpen()) {
+            return false;
+        }
+        return session.getUndoManager().hasRedo();
+    };
+    this.hasSelectAll = VPLUtil.returnTrue;
+    this.hasFind = VPLUtil.returnTrue;
+    this.hasFindReplace = VPLUtil.returnTrue;
+    this.hasNext = VPLUtil.returnTrue;
+    this.find = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.execCommand('find');
+    };
+    this.replace = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.execCommand('replace');
+    };
+    this.next = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.execCommand('findnext');
+    };
+    this.getAnnotations = function() {
+        if (!this.isOpen()) {
+            return [];
+        }
+        return session.getAnnotations();
+    };
+    this.setAnnotations = function(a) {
+        if (!this.isOpen()) {
+            return false;
+        }
+        return session.setAnnotations(a);
+    };
+    this.clearAnnotations = function() {
+        if (!this.isOpen()) {
+            return false;
+        }
+        return session.clearAnnotations();
+    };
+    this.langSelection = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        var filenamepath = this.getFileName();
+        var lang = VPLUtil.langType(filenamepath);
+        session.setMode("ace/mode/" + lang);
+        session.setTabSize(4);
+        session.setUseSoftTabs(!VPLUtil.useHardTabs(filenamepath));
+        this.setLang(lang);
+    };
+    this.getEditor = function() {
+        if (!this.isOpen()) {
+            return false;
+        }
+        return editor;
+    };
+    this.setTheme = function(theme) {
+        if (!this.isOpen()) {
+            return;
+        }
+        editor.setTheme("ace/theme/" + theme);
+    };
+    this.updateStatus = function() {
+        if (!this.isOpen()) {
+            return;
+        }
+        var text = '';
+        var pos = editor.getCursorPosition();
+        var fullname = this.getFileName();
+        var name = VPLUtil.getFileName(fullname);
+        if (fullname.length > 20 || name != fullname) {
+            text = fullname + ' ';
+        }
+        text += "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
+        text += " " + VPLUtil.langName(name);
+        VPLUI.showIDEStatus(text);
+    };
+
+    this.open = function() {
+        this.showFileName();
+        if (typeof ace === 'undefined') {
+            VPLUtil.loadScript(['/../thirdpartylibs/ace/ace.js',
+                '/../thirdpartylibs/ace/ext-language_tools.js'],
+                function() {
+                    self.open();
                 });
-                editor.setValue(this.getContent());
-                editor.setFontSize(fileManager.getFontSize());
-                editor.setTheme("ace/theme/" + fileManager.getTheme());
-                editor.$blockScrolling = Infinity;
-                editor.gotoLine(1, 0);
-                editor.setReadOnly(readOnly);
-                // Avoid undo of editor initial content.
-                session.setUndoManager(new ace.UndoManager());
-                this.setOpen(true);
-                this.langSelection();
-                // Code to control Paste and drop under restricted editing.
-                editor.execCommand('replace');
-                var addEventDrop = function() {
-                    var tag = $(tid + ' div.ace_search');
-                    if (tag.length) {
-                        tag.on('drop', fileManager.dropHandler);
-                        var button = $('.ace_searchbtn_close');
-                        button.trigger('click');
-                    } else {
-                        setTimeout(addEventDrop, 50);
-                    }
-                };
-                editor.on('change', function() {
-                    self.change();
-                });
-                session.selection.on('changeCursor', function() {
-                    self.updateStatus();
-                });
-                // Try to grant dropHandler installation.
-                setTimeout(addEventDrop, 5);
-                // Save previous onPaste and change for a new one.
-                var prevOnPaste = editor.onPaste;
-                editor.onPaste = function(s) {
-                    if (fileManager.restrictedEdit) {
-                        editor.insert(fileManager.getClipboard());
-                    } else {
-                        prevOnPaste.call(editor, s);
-                    }
-                };
-                // Control copy and cut (yes cut also use this) for localClipboard.
-                editor.on('copy', function(t) {
-                    fileManager.setClipboard(t.text);
-                });
-                $(tid).on('paste', '*', fileManager.restrictedPaste);
-                $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
-                $(tid + ' div.ace_content').on('dragover', fileManager.dragoverHandler);
-                // Workaround to avoid hidden first line in editor.
-                $(tid).find('div.ace_scroller').css('position', 'static');
-                this.adjustSize();
-                $(tid).find('div.ace_scroller').css('position', 'absolute');
-                this.updateStatus();
-                return editor;
-            };
-            this.close = function() {
-                this.setOpen(false);
-                if (editor === null) {
-                    return;
-                }
-                this.setContent(editor.getValue());
-                editor.destroy();
-                editor = null;
-                session = null;
-            };
+            return false;
+        }
+        if (this.isOpen()) {
+            return editor;
+        }
+        var fileManager = this.getFileManager();
+        var tid = this.getTId();
+        // Workaround to remove jquery-ui theme background color.
+        $(tid).removeClass('ui-widget-content ui-tabs-panel');
+        ace.require("ace/ext/language_tools");
+        editor = ace.edit("vpl_file" + this.getId());
+        session = editor.getSession();
+        editor.setOptions({
+            enableBasicAutocompletion: true,
+            enableSnippets: true,
+        });
+        editor.setValue(this.getContent());
+        editor.setFontSize(fileManager.getFontSize());
+        editor.setTheme("ace/theme/" + fileManager.getTheme());
+        editor.$blockScrolling = Infinity;
+        editor.gotoLine(1, 0);
+        editor.setReadOnly(readOnly);
+        // Avoid undo of editor initial content.
+        session.setUndoManager(new ace.UndoManager());
+        this.setOpen(true);
+        this.langSelection();
+        // Code to control Paste and drop under restricted editing.
+        editor.execCommand('replace');
+        var addEventDrop = function() {
+            var tag = $(tid + ' div.ace_search');
+            if (tag.length) {
+                tag.on('drop', fileManager.dropHandler);
+                var button = $('.ace_searchbtn_close');
+                button.trigger('click');
+            } else {
+                setTimeout(addEventDrop, 50);
+            }
         };
-    }
-);
+        editor.on('change', function() {
+            self.change();
+        });
+        session.selection.on('changeCursor', function() {
+            self.updateStatus();
+        });
+        // Try to grant dropHandler installation.
+        setTimeout(addEventDrop, 5);
+        // Save previous onPaste and change for a new one.
+        var prevOnPaste = editor.onPaste;
+        editor.onPaste = function(s) {
+            if (fileManager.restrictedEdit) {
+                editor.insert(fileManager.getClipboard());
+            } else {
+                prevOnPaste.call(editor, s);
+            }
+        };
+        // Control copy and cut (yes cut also use this) for localClipboard.
+        editor.on('copy', function(t) {
+            fileManager.setClipboard(t.text);
+        });
+        $(tid).on('paste', '*', fileManager.restrictedPaste);
+        $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
+        $(tid + ' div.ace_content').on('dragover', fileManager.dragoverHandler);
+        // Workaround to avoid hidden first line in editor.
+        $(tid).find('div.ace_scroller').css('position', 'static');
+        this.adjustSize();
+        $(tid).find('div.ace_scroller').css('position', 'absolute');
+        this.updateStatus();
+        return editor;
+    };
+    this.close = function() {
+        this.setOpen(false);
+        if (editor === null) {
+            return;
+        }
+        this.setContent(editor.getValue());
+        editor.destroy();
+        editor = null;
+        session = null;
+    };
+};
