@@ -80,7 +80,9 @@ $vpl->print_name();
 
 echo $OUTPUT->box_start();
 $vpl->print_submissions_status();
-$vpl->print_submission_period( $userid );
+if (empty( $vpl->get_course()->showactivitydates)) {
+    $vpl->print_submission_period( $userid );
+}
 $vpl->print_submission_restriction( $userid );
 $vpl->print_variation( $userid );
 $vpl->print_fulldescription();
