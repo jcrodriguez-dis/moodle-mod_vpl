@@ -524,7 +524,7 @@ $string['stop'] = 'Stop';
 $string['submission'] = 'Submission';
 $string['submissionperiod'] = 'Submission period';
 $string['submissionrestrictions'] = 'Submission restrictions';
-$string['submissions'] = 'Submissions list';
+$string['submissions'] = 'Submissions';
 $string['submissions_graded_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
 $string['submissions_graded_overview_help'] = '[students or grupos count]<br>
  / [submissions count] (% of students or groups with submissions)<br>
