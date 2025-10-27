@@ -1923,7 +1923,7 @@ class mod_vpl {
         $isgrader = $this->has_capability( VPL_GRADE_CAPABILITY );
         if ($isgrader) {
             echo vpl_get_awesome_icon('submissions');
-            echo $this->get_submissions_status() . '<br>';
+            echo $this->str_submissions_status() . '<br>';
         }
     }
 
@@ -2320,14 +2320,18 @@ class mod_vpl {
     }
 
     /**
-     * Get HTML with submissions status from parameters or calculated.
+     * Get submissions status from parameters or calculated.
      * @param int $nstudents Number of students or groups. If null, it will be calculated.
      * @param int $nsubmissions Number of submissions.
      * @param int $ngraded Number of graded submissions.
-     * @return string HTML
+     * @return object with nstudents, nsubmissions and ngraded
      */
     public function get_submissions_status($nstudents=null, $nsubmissions=0, $ngraded=0) {
         global $PAGE;
+        $result = new stdClass();
+        $result->nstudents = $nstudents;
+        $result->nsubmissions = $nsubmissions;
+        $result->ngraded = $ngraded;
         if ($nstudents === null) {
             if ($this->is_group_activity()) {
                 $groupingid = $this->get_course_module()->groupingid;
@@ -2339,33 +2343,49 @@ class mod_vpl {
             }
             $submissions = $this->all_last_user_submission('s.dategraded, s.userid, s.groupid');
             $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
-            $nstudents = count($allstudents);
-            $nsubmissions = count($submissions);
+            $result->nstudents = count($allstudents);
+            $result->nsubmissions = count($submissions);
         }
-        if ($nstudents == 0) {
+        if ($this->get_grade() != 0 && $result->nsubmissions != 0) {
+            $result->ngraded = $this->number_of_graded_submissions($submissions);
+        }
+        return $result;
+    }
+
+    /**
+     * Get HTML string with submissions status.
+     * @param int $nstudents Number of students or groups. If null, it will be calculated.
+     * @param int $nsubmissions Number of submissions.
+     * @param int $ngraded Number of graded submissions.
+     * @return string HTML
+     */
+    public function str_submissions_status($nstudents=null, $nsubmissions=0, $ngraded=0) {
+        global $PAGE;
+        $status = $this->get_submissions_status($nstudents, $nsubmissions, $ngraded);
+        if ($status->nstudents == 0) {
             $nsubmissionspc = '-';
         } else {
-            $nsubmissionspc = round(100 * $nsubmissions / $nstudents, 2);
+            $nsubmissionspc = round(100 * $status->nsubmissions / $status->nstudents, 2);
         }
         $data = new stdClass();
         $urlbase = '/mod/vpl/views/submissionslist.php';
         $params = ['id' => $this->cm->id, 'selection' => 'all'];
         $data->name = get_string($this->is_group_activity() ? 'groups' : 'students');
-        $data->ugcount = html_writer::link(new moodle_url($urlbase, $params), $nstudents);
+        $data->ugcount = html_writer::link(new moodle_url($urlbase, $params), $status->nstudents);
         $params['selection'] = 'allsubmissions';
-        $data->subcount = html_writer::link(new moodle_url($urlbase, $params), $nsubmissions);
+        $data->subcount = html_writer::link(new moodle_url($urlbase, $params), $status->nsubmissions);
         $data->subpercent = $nsubmissionspc;
         if ($this->get_grade() != 0) {
-            if ($nsubmissions == 0) {
+            if ($status->nsubmissions == 0) {
                 $ngraded = 0;
                 $ngradedpc = '-';
                 $nnotgraded = 0;
                 $nnotgradedpc = '-';
             } else {
-                $ngraded = $this->number_of_graded_submissions($submissions);
-                $ngradedpc = round(100 * $ngraded / $nsubmissions, 2);
-                $nnotgraded = $nsubmissions - $ngraded;
-                $nnotgradedpc = round(100 * $nnotgraded / $nsubmissions, 2);
+                $ngraded = $status->ngraded;
+                $ngradedpc = round(100 * $ngraded / $status->nsubmissions, 2);
+                $nnotgraded = $status->nsubmissions - $ngraded;
+                $nnotgradedpc = round(100 * $nnotgraded / $status->nsubmissions, 2);
             }
             $params['selection'] = 'graded';
             $data->gradedcount = html_writer::link(new moodle_url($urlbase, $params), $ngraded);
