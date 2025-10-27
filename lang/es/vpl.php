@@ -404,8 +404,10 @@ $string['submissions_graded_overview_help'] = '[Número de estudiantes o grupos]
  / [Entregas] (% de estudiantes o grupos con entrega)<br>
  / [Entregas evaluadas] (% de entregas evaluadas)<br>
  - [Entregas no evaluadas] (% de entregas no evaluadas)';
+$string['submissions_graded_overview_short'] = '{$a->gradedcount} de {$a->subcount}';
 $string['submissions_overview_help'] = '[Número de estudiantes o grupos] / [Número de entregas] (% de estudiantes o grupos con entrega)';
 $string['submissionselection'] = 'Selección de entregas';
+$string['submissions_overview_short'] = '{$a->subcount} de {$a->ugcount}';
 $string['submissionslist'] = 'Lista de entregas';
 $string['submissionview'] = 'Ver entrega';
 $string['submittedby'] = 'Entregada por {$a}';

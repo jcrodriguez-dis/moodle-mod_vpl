@@ -345,7 +345,7 @@ $string['new_file_name'] = 'New file name';
 $string['next'] = 'Next';
 $string['nojailavailable'] = 'No execution server available';
 $string['noright'] = 'You don\'t have right to access';
-$string['nosubmission'] = 'No submission available';
+$string['nosubmission'] = 'No submission';
 $string['nosuchsubmission'] = 'No such submission';
 $string['notexecuted'] = 'Not executed';
 $string['notgraded'] = 'Not graded';
@@ -530,8 +530,10 @@ $string['submissions_graded_overview_help'] = '[students or grupos count]<br>
  / [submissions count] (% of students or groups with submissions)<br>
  / [graded count] (% of submissions graded)<br>
  - [not graded count] (% of submissions not graded)';
+$string['submissions_graded_overview_short'] = '{$a->gradedcount} of {$a->subcount}';
 $string['submissions_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
 $string['submissions_overview_help'] = 'students or grupos count / submissions count (% of students or groups with submissions)';
+$string['submissions_overview_short'] = '{$a->subcount} of {$a->ugcount}';
 $string['submissionselection'] = 'Submission selection';
 $string['submissionslist'] = 'Submissions list';
 $string['submissionview'] = 'Submission view';
