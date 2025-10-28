@@ -23,25 +23,25 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 global $PAGE, $OUTPUT;
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/show_webservice.php', [ 'id' => $id ] );
-$vpl->require_capability( VPL_VIEW_CAPABILITY );
+$id = required_param('id', PARAM_INT);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('views/show_webservice.php', [ 'id' => $id ]);
+$vpl->require_capability(VPL_VIEW_CAPABILITY);
 $vpl->restrictions_check();
 if (! $vpl->is_visible()) {
     notice(get_string('notavailable'));
 }
-\mod_vpl\event\vpl_security_webservice::log( $vpl );
+\mod_vpl\event\vpl_security_webservice::log($vpl);
 $PAGE->requires->css(new moodle_url('/mod/vpl/css/webservice.css'));
 $vpl->print_header(get_string('webservice', VPL));
-$vpl->print_view_tabs( 'view.php' );
+$vpl->print_view_tabs('view.php');
 echo $OUTPUT->heading_with_help($vpl->get_printable_name() . ' - ' . get_string('webservice', VPL), 'webservice', VPL, '', '', 1);
 echo $OUTPUT->box_start('mb-3');
 

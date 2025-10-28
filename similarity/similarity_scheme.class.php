@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_base.class.php');
+require_once(dirname(__FILE__) . '/similarity_base.class.php');
 
 /**
  * Scheme language similarity class
@@ -56,6 +56,6 @@ class vpl_similarity_scheme extends vpl_similarity_base {
      * Returns the tokenizer for the scheme language.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'scheme' );
+        return vpl_tokenizer_factory::get('scheme');
     }
 }

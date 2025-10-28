@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 /**
  * Class to show a status box
@@ -55,8 +55,8 @@ class vpl_status_box {
         global $OUTPUT;
         $this->id = 'vpl_sb_' . (self::$lastid + 1);
         $this->starttime = time();
-        self::$lastid ++;
-        echo $OUTPUT->box( $text, '', $this->id );
+        self::$lastid++;
+        echo $OUTPUT->box($text, '', $this->id);
     }
 
     /**
@@ -68,9 +68,9 @@ class vpl_status_box {
         $javascript = 'window.document.getElementById(\'';
         $javascript .= $this->id;
         $javascript .= '\').innerHTML =\'';
-        $javascript .= addslashes( $text );
+        $javascript .= addslashes($text);
         $javascript .= '\';';
-        echo vpl_include_js( $javascript );
+        echo vpl_include_js($javascript);
         @ob_flush();
         flush();
     }
@@ -82,7 +82,7 @@ class vpl_status_box {
         $javascript = 'window.document.getElementById(\'';
         $javascript .= $this->id;
         $javascript .= '\').style.display=\'none\';';
-        echo vpl_include_js( $javascript );
+        echo vpl_include_js($javascript);
         @ob_flush();
         flush();
     }
@@ -117,7 +117,7 @@ class vpl_progress_bar extends vpl_status_box {
      * @param int $max maximum value (default 100)
      */
     public function __construct($text = '', $min = 0, $max = 100) {
-        parent::__construct( $text );
+        parent::__construct($text);
         $this->text = $text;
         $this->min = $min;
         $this->max = $max;
@@ -130,8 +130,8 @@ class vpl_progress_bar extends vpl_status_box {
      * @param int $value current value
      */
     public function set_value($value) {
-        if (is_string( $value )) {
-            $this->print_text( $this->text . ' (' . $value . ')' );
+        if (is_string($value)) {
+            $this->print_text($this->text . ' (' . $value . ')');
             return;
         }
         $currenttime = time();
@@ -142,12 +142,12 @@ class vpl_progress_bar extends vpl_status_box {
             }
             $this->lasttime = $currenttime;
             if ($percent == 100) {
-                $text = $this->text . ' (' . sprintf( "%5.1f", $percent ) . '%)';
-                $text .= ' ' . get_string( 'numseconds', '', $currenttime - $this->starttime );
+                $text = $this->text . ' (' . sprintf("%5.1f", $percent) . '%)';
+                $text .= ' ' . get_string('numseconds', '', $currenttime - $this->starttime);
                 $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
-                $this->print_text( $text );
+                $this->print_text($text);
             } else {
-                $this->print_text( $this->text . ' (' . sprintf( "%5.1f", $percent ) . '%)' );
+                $this->print_text($this->text . ' (' . sprintf("%5.1f", $percent) . '%)');
             }
         }
     }

@@ -118,9 +118,11 @@ class base_fixture extends \advanced_testcase {
         }
         $teacherrole = $DB->get_record('role', ['shortname' => 'teacher']);
         foreach ($this->teachers as $i => $teacher) {
-            $this->getDataGenerator()->enrol_user($teacher->id,
-                    $this->course->id,
-                    $teacherrole->id);
+            $this->getDataGenerator()->enrol_user(
+                $teacher->id,
+                $this->course->id,
+                $teacherrole->id
+            );
         }
         foreach ($this->teachers as $i => $teacher) {
             groups_add_member($this->groups[2], $teacher);
@@ -128,9 +130,11 @@ class base_fixture extends \advanced_testcase {
 
         $editingteacherrole = $DB->get_record('role', ['shortname' => 'editingteacher']);
         foreach ($this->editingteachers as $i => $editingteacher) {
-            $this->getDataGenerator()->enrol_user($editingteacher->id,
-                    $this->course->id,
-                    $editingteacherrole->id);
+            $this->getDataGenerator()->enrol_user(
+                $editingteacher->id,
+                $this->course->id,
+                $editingteacherrole->id
+            );
         }
         foreach ($this->editingteachers as $i => $editingteacher) {
             groups_add_member($this->groups[3], $editingteacher);
@@ -138,9 +142,11 @@ class base_fixture extends \advanced_testcase {
 
         $studentrole = $DB->get_record('role', ['shortname' => 'student']);
         foreach ($this->students as $student) {
-            $this->getDataGenerator()->enrol_user($student->id,
-                    $this->course->id,
-                    $studentrole->id);
+            $this->getDataGenerator()->enrol_user(
+                $student->id,
+                $this->course->id,
+                $studentrole->id
+            );
         }
         $usernum = 0;
         foreach ($this->students as $student) {
@@ -151,11 +157,11 @@ class base_fixture extends \advanced_testcase {
         }
         $groupnum = 0;
         foreach ($this->groups as $group) {
-            if ($groupnum < 2 ) {
+            if ($groupnum < 2) {
                 $parm = ['groupingid' => $this->groupings[0]->id, 'groupid' => $group->id];
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
-            if ($groupnum > 0 ) {
+            if ($groupnum > 0) {
                 $parm = ['groupingid' => $this->groupings[1]->id, 'groupid' => $group->id];
                 $this->getDataGenerator()->create_grouping_group($parm);
             }
@@ -314,7 +320,7 @@ class base_fixture extends \advanced_testcase {
         $files = ['a.c' => "int main(){\nprintf(\"Hola\");\n}"];
         $error = '';
         $submissionid = $this->vplonefile->add_submission($userid, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
     }
@@ -346,7 +352,7 @@ class base_fixture extends \advanced_testcase {
         ];
         $error = '';
         $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
         // Add other submission.
@@ -358,7 +364,7 @@ class base_fixture extends \advanced_testcase {
                 'b.h' => "#define MV 5\n",
         ];
         $submissionid = $this->vplmultifile->add_submission($userid, $files, '', $error);
-        if ($submissionid == false || $error != '' ) {
+        if ($submissionid == false || $error != '') {
             $this->fail($error);
         }
     }
@@ -389,7 +395,7 @@ class base_fixture extends \advanced_testcase {
                 'identification' => '' . $i,
                 'description' => 'variation ' . $i,
             ];
-            $DB->insert_record( VPL_VARIATIONS, $parms);
+            $DB->insert_record(VPL_VARIATIONS, $parms);
         }
         // Add a submission.
         $this->setUser($this->students[0]);
@@ -401,7 +407,7 @@ class base_fixture extends \advanced_testcase {
         ];
         $error = '';
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
         // Add other submission.
@@ -414,7 +420,7 @@ class base_fixture extends \advanced_testcase {
         ];
         $error = '';
         $submissionid = $this->vplvariations->add_submission($userid, $files, '', $error);
-        if ($submissionid == false || $error != '' ) {
+        if ($submissionid == false || $error != '') {
             $this->fail($error);
         }
     }
@@ -457,7 +463,7 @@ class base_fixture extends \advanced_testcase {
         $override->duedate = $baseduedate + DAYSECS;
         $override->freeevaluations = 10;
         $override->reductionbyevaluation = 1;
-        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $override->id = $DB->insert_record(VPL_OVERRIDES, $override);
         $assignedoverride = new stdClass();
         $assignedoverride->vpl = $override->vpl;
         $assignedoverride->override = $override->id;
@@ -465,7 +471,7 @@ class base_fixture extends \advanced_testcase {
         foreach ($userids as $userid) {
             $assignedoverride->userid = $userid;
             $assignedoverride->groupid = null;
-            $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+            $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $assignedoverride);
         }
         $override->userids = implode(',', $userids);
         $override->groupids = null;
@@ -477,18 +483,18 @@ class base_fixture extends \advanced_testcase {
         $override->duedate = $baseduedate + 2 * DAYSECS;
         $override->freeevaluations = null;
         $override->reductionbyevaluation = null;
-        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $override->id = $DB->insert_record(VPL_OVERRIDES, $override);
         $assignedoverride = new stdClass();
         $assignedoverride->vpl = $override->vpl;
         $assignedoverride->override = $override->id;
         $assignedoverride->userid = $this->students[3]->id;
         $assignedoverride->groupid = null;
-        $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $assignedoverride);
         $groupids = [$this->groups[2]->id, $this->groups[3]->id];
         foreach ($groupids as $groupid) {
             $assignedoverride->userid = null;
             $assignedoverride->groupid = $groupid;
-            $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+            $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $assignedoverride);
         }
         $override->userids = $this->students[3]->id;
         $override->groupids = implode(',', $groupids);
@@ -501,13 +507,13 @@ class base_fixture extends \advanced_testcase {
         $override->duedate = 0;
         $override->freeevaluations = null;
         $override->reductionbyevaluation = null;
-        $override->id = $DB->insert_record( VPL_OVERRIDES, $override );
+        $override->id = $DB->insert_record(VPL_OVERRIDES, $override);
         $assignedoverride = new stdClass();
         $assignedoverride->vpl = $override->vpl;
         $assignedoverride->override = $override->id;
         $assignedoverride->userid = $this->teachers[1]->id;
         $assignedoverride->groupid = null;
-        $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $assignedoverride );
+        $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $assignedoverride);
         $override->userids = $this->teachers[1]->id;
         $override->groupids = null;
         $this->vploverrides->update_override_calendar_events($override);
@@ -544,7 +550,7 @@ class base_fixture extends \advanced_testcase {
         ];
         $error = '';
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
         // Add other submission.
@@ -557,7 +563,7 @@ class base_fixture extends \advanced_testcase {
         ];
         $error = '';
         $submissionid = $this->vplteamwork->add_submission($userid, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
     }
@@ -568,7 +574,7 @@ class base_fixture extends \advanced_testcase {
      * @param array $params Array of parameters to pass to the generator
      * @return testable_vpl Testable wrapper around the mod_vpl class.
      */
-    protected function create_instance($params=[]) {
+    protected function create_instance($params = []) {
         $generator = $this->getDataGenerator()->get_plugin_generator('mod_vpl');
         if (!isset($params['course'])) {
             $params['course'] = $this->course->id;
@@ -608,7 +614,6 @@ class base_fixture extends \advanced_testcase {
  * This derived class of mod_vpl exposes protected methods as public to test it.
  */
 class testable_vpl extends \mod_vpl {
-
 }
 
 /**

@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
 
 /**
  * HTML language tokenizer class
@@ -79,7 +79,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
      * @param int $state The current state of the tokenizer.
      */
     protected function add_pending(&$rawpending, $state) {
-        $pending = strtolower( $rawpending );
+        $pending = strtolower($rawpending);
         $rawpending = '';
         if ($state == self::IN_TAGATTRVALUE) {
             return;
@@ -87,7 +87,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         if ($state == self::IN_TAGEND) {
             $pending .= '/';
         }
-        $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, $pending, $this->linenumber);
     }
 
     /**
@@ -100,11 +100,11 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
         $previous = '';
         $endstring = '';
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -113,32 +113,32 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
                 $next = '';
             }
             if ($previous == self::LF) {
-                $this->linenumber ++;
+                $this->linenumber++;
             }
             if ($current == self::CR) {
                 if ($next == self::LF) {
                     continue;
                 } else {
-                    $this->linenumber ++;
+                    $this->linenumber++;
                     $current = self::LF;
                 }
             }
             switch ($state) {
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     // Check end of comment.
-                    if ($current == '>' && $i > 6 && substr( $filedata, $i - 2, 2 ) == '--') {
+                    if ($current == '>' && $i > 6 && substr($filedata, $i - 2, 2) == '--') {
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     // Check end of string.
                     if ($current == $endstring) {
                         $state = self::IN_TAGATTRNAME;
                     }
                     break;
-                case self::REGULAR :
+                case self::REGULAR:
                     if ($current == '<') {
-                        if ($next == '!' && $i + 3 < $l && substr( $filedata, $i + 2, 2 ) == '--') {
+                        if ($next == '!' && $i + 3 < $l && substr($filedata, $i + 2, 2) == '--') {
                             $state = self::IN_COMMENT;
                             $i += 3;
                         } else {
@@ -146,28 +146,28 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
                         }
                     }
                     break;
-                case self::IN_TAGEND :
-                case self::IN_TAGNAME :
+                case self::IN_TAGEND:
+                case self::IN_TAGNAME:
                     if ($current == '/') {
                         $state = self::IN_TAGEND;
                         break;
                     }
-                    if (ctype_alpha( $current )) {
+                    if (ctype_alpha($current)) {
                         $pending .= $current;
                     } else if ($pending > '') {
-                        $this->add_pending( $pending, $state );
+                        $this->add_pending($pending, $state);
                         $state = self::IN_TAGATTRNAME;
-                        $i --;
+                        $i--;
                     }
                     break;
-                case self::IN_TAGATTRNAME :
-                case self::IN_TAGATTRVALUE :
-                    if (ctype_alnum( $current ) || strpos( '-_$', $current ) !== false) {
+                case self::IN_TAGATTRNAME:
+                case self::IN_TAGATTRVALUE:
+                    if (ctype_alnum($current) || strpos('-_$', $current) !== false) {
                         $pending .= $current;
                     } else if ($pending > '') {
-                        $this->add_pending( $pending, $state );
+                        $this->add_pending($pending, $state);
                         $state = self::IN_TAGATTRNAME;
-                        $i --;
+                        $i--;
                     }
                     if ($current == '"' || $current == "'") {
                         $state = self::IN_STRING;

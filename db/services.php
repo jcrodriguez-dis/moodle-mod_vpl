@@ -29,7 +29,7 @@
  * @var array $services
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
+defined('MOODLE_INTERNAL') || die();
 
 $functions = [
         'mod_vpl_info' => [

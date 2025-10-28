@@ -45,7 +45,7 @@ class vpl_sh_factory {
     public static function include_js() {
         global $PAGE;
         global $CFG;
-        if ( ! self::$loaded ) {
+        if (! self::$loaded) {
             $opt = new stdClass();
             $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
@@ -83,8 +83,8 @@ class vpl_sh_factory {
      * @return vpl_sh_base object to show the file
      */
     public static function get_object($type) {
-        if (! isset( self::$cache[$type] )) {
-            require_once(dirname( __FILE__ ) . '/sh_' . $type . '.class.php');
+        if (! isset(self::$cache[$type])) {
+            require_once(dirname(__FILE__) . '/sh_' . $type . '.class.php');
             $class = 'vpl_sh_' . $type;
             self::$cache[$type] = new $class();
         }
@@ -98,13 +98,13 @@ class vpl_sh_factory {
      * @return vpl_sh_base object to show the file
      */
     public static function get_sh($filename) {
-        if (vpl_is_binary( $filename )) {
-            if (vpl_is_image( $filename )) {
-                return self::get_object( 'image' );
+        if (vpl_is_binary($filename)) {
+            if (vpl_is_image($filename)) {
+                return self::get_object('image');
             } else {
-                return self::get_object( 'binary' );
+                return self::get_object('binary');
             }
         }
-        return self::get_object( 'ace' );
+        return self::get_object('ace');
     }
 }

@@ -24,14 +24,13 @@
 namespace mod_vpl\event;
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a variation is deleted.
  * This class is used to log the event when a variation is deleted from the VPL module.
  */
 class variation_deleted extends variation_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -50,6 +49,6 @@ class variation_deleted extends variation_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'deleted' );
+        return $this->get_description_mod('deleted');
     }
 }

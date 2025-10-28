@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
 
 /**
  * M (Octave) programing language tokenizer class
@@ -90,7 +90,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
      * @return bool True if the text is a valid identifier, false otherwise.
      */
     protected function is_indentifier($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
@@ -104,11 +104,11 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
      * @return bool True if the text is a number, false otherwise.
      */
     protected function is_number($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
-        if ($first == '.' && strlen( $text ) > 1) {
+        if ($first == '.' && strlen($text) > 1) {
             $first = $text[1];
         }
         return $first >= '0' && $first <= '9';
@@ -124,22 +124,22 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
             $pending = '';
             return;
         }
-        if ($this->is_indentifier( $pending )) {
-            if (isset( $this->reserved[$pending] )) {
+        if ($this->is_indentifier($pending)) {
+            if (isset($this->reserved[$pending])) {
                 $type = vpl_token_type::RESERVED;
             } else {
                 $type = vpl_token_type::IDENTIFIER;
             }
         } else {
-            if ($this->is_number( $pending ) || $pending == '""' || $pending == "''") {
+            if ($this->is_number($pending) || $pending == '""' || $pending == "''") {
                 $type = vpl_token_type::LITERAL;
-            } else if (strpos( '()[]{};', $pending ) === false) {
+            } else if (strpos('()[]{};', $pending) === false) {
                 $type = vpl_token_type::OPERATOR;
             } else {
                 $type = vpl_token_type::OTHER;
             }
         }
-        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -271,12 +271,12 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         $state = self::REGULAR;
         $pending = '';
         $lastnospace = self::LF;
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         if ($l) {
-            $this->linenumber ++;
+            $this->linenumber++;
         }
         $current = self::LF;
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -291,48 +291,50 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     $current = self::LF;
                 }
             }
-            if (! ctype_space( $previous ) || $previous == self::LF) { // Keep last char.
+            if (! ctype_space($previous) || $previous == self::LF) { // Keep last char.
                 $lastnospace = $previous;
             }
             switch ($state) {
-                case self::IN_LINECOMMENT :
+                case self::IN_LINECOMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $pending = '';
-                        $this->linenumber ++;
+                        $this->linenumber++;
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $pending = '';
-                        $this->linenumber ++;
+                        $this->linenumber++;
                     } else if ($current == '%' && $next == '}') {
                         $pending = '';
-                        $i ++;
+                        $i++;
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     // Check end of string.
                     if ($current == $this->stringdelimiter && $next == $this->stringdelimiter) {
-                        $i ++;
+                        $i++;
                     } else if ($this->stringdelimiter == '"' && $current == '\\') {
-                        $i ++;
+                        $i++;
                     } else if ($this->stringdelimiter == $current) {
                         $lastnospace = $current;
                         $pending = '';
                         $state = self::REGULAR;
                     } else if ($current == self::LF) {
                         $pending = '';
-                        $this->linenumber ++;
+                        $this->linenumber++;
                     }
                     break;
-                case self::IN_NUMBER :
+                case self::IN_NUMBER:
                     // Bug fixed 'e' => 'E'd by Lang Michael: michael.lang.ima10@fh-joanneum.at.
-                    if (($current >= '0' && $current <= '9') ||
-                    $current == '.' || $current == 'E' || $current == 'e') {
+                    if (
+                        ($current >= '0' && $current <= '9') ||
+                        $current == '.' || $current == 'E' || $current == 'e'
+                    ) {
                         $pending .= $current;
                         break;
                     }
@@ -340,55 +342,59 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending( $pending );
+                    $this->add_pending($pending);
                     $state = self::REGULAR;
                     // Process current as REGULAR.
-                case self::REGULAR :
+                case self::REGULAR:
                     if ($current == '%') {
                         if ($next == '{') {
                             $state = self::IN_COMMENT;
                         } else {
                             $state = self::IN_LINECOMMENT;
                         }
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break 2;
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
                         $this->stringdelimiter = '"';
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending = '""';
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
-                    } else if ($current == "'" && ($lastnospace == self::LF
-                            || $lastnospace == '' || strpos( "[,;'(=", $lastnospace ) !== false)) {
+                    } else if (
+                        $current == "'" && ($lastnospace == self::LF
+                            || $lastnospace == '' || strpos("[,;'(=", $lastnospace) !== false)
+                    ) {
                         $state = self::IN_STRING;
                         $this->stringdelimiter = "'";
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending = "''";
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
-                    } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier( $pending )) {
+                    } else if ($current >= '0' && $current <= '9' && ! $this->is_indentifier($pending)) {
                         $state = self::IN_NUMBER;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending = $current;
                         break;
                     }
-                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
-                            || $current == '_' || ord( $current ) > 127) {
+                    if (
+                        ($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                            || $current == '_' || ord($current) > 127
+                    ) {
                         $pending .= $current;
                     } else {
                         // TODO check level without { }.
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         if ($current == self::LF) {
-                            $this->linenumber ++;
+                            $this->linenumber++;
                         } else {
-                            $this->add_pending( $current );
+                            $this->add_pending($current);
                         }
                     }
             }
         }
 
-        $this->add_pending( $pending );
+        $this->add_pending($pending);
         $this->compact_operators();
     }
 
@@ -413,7 +419,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
                     $current->value .= $next->value;
                     $next = false;
                 }
-                if (strpos( ')]}', $current->value ) === false) {
+                if (strpos(')]}', $current->value) === false) {
                     $correct[] = $current;
                 }
             }

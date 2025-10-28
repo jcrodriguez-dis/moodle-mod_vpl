@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_editor_util {
-
     /**
      * @var bool $jquerynoload Flag to indicate if jQuery and jQuery UI libraries have been loaded.
      */
@@ -50,7 +49,7 @@ class vpl_editor_util {
     public static function generate_requires_evaluation() {
         global $PAGE;
         self::generate_jquery();
-        $PAGE->requires->css( new moodle_url( '/mod/vpl/editor/VPLIDE.css' ) );
+        $PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
     }
 
     /**
@@ -64,7 +63,7 @@ class vpl_editor_util {
         global $CFG;
         $plugincfg = get_config('mod_vpl');
         $tagid = 'vplide';
-        if ( isset($plugincfg->editor_theme) ) {
+        if (isset($plugincfg->editor_theme)) {
             $options['theme'] = $plugincfg->editor_theme;
         } else {
             $options['theme'] = 'chrome';
@@ -424,16 +423,16 @@ HTML;
         ];
         $list = [];
         foreach ($vplwords as $word) {
-            $list[$word] = get_string( $word, VPL );
+            $list[$word] = get_string($word, VPL);
         }
         foreach ($words as $word) {
-            $list[$word] = get_string( $word );
+            $list[$word] = get_string($word);
         }
-        $list['close'] = get_string( 'closebuttontitle' );
-        $list['more'] = get_string( 'showmore', 'form' );
-        $list['less'] = get_string( 'showless', 'form' );
-        $list['fontsize'] = get_string( 'fontsize', 'editor' );
-        $list['theme'] = get_string( 'theme' );
+        $list['close'] = get_string('closebuttontitle');
+        $list['more'] = get_string('showmore', 'form');
+        $list['less'] = get_string('showless', 'form');
+        $list['fontsize'] = get_string('fontsize', 'editor');
+        $list['theme'] = get_string('theme');
         return $list;
     }
 
@@ -448,7 +447,7 @@ HTML;
         $options = [];
         $options['ajaxurl'] = $ajaxurl;
         $options['nexturl'] = $nexturl;
-        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options] );
+        $PAGE->requires->js_call_amd('mod_vpl/evaluationmonitor', 'init', [$options]);
     }
 
     /**

@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a variation is updated.
  * This class is used to log the event when a variation configuration is updated.
  */
 class vpl_variation_updated extends vpl_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -48,6 +47,6 @@ class vpl_variation_updated extends vpl_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'variation config' );
+        return $this->get_description_mod('variation config');
     }
 }

@@ -23,11 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
+defined('MOODLE_INTERNAL') || die();
 global $CFG;
-require_once($CFG->libdir.'/formslib.php');
-require_once($CFG->libdir.'/gradelib.php');
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once($CFG->libdir . '/formslib.php');
+require_once($CFG->libdir . '/gradelib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 /**
  * Form to grade a VPL submission.
@@ -53,10 +53,10 @@ class mod_vpl_grade_form extends moodleform {
      * @param mod_vpl $vpl The VPL instance.
      * @param mod_vpl_submission $submission The submission to grade.
      */
-    public function __construct($page, & $vpl, & $submission) {
+    public function __construct($page, &$vpl, &$submission) {
         $this->vpl = & $vpl;
         $this->submission = & $submission;
-        parent::__construct( $page );
+        parent::__construct($page);
     }
 
     /**
@@ -65,24 +65,24 @@ class mod_vpl_grade_form extends moodleform {
     protected function definition() {
         global $CFG, $OUTPUT, $PAGE;
         $mform = & $this->_form;
-        $id = required_param( 'id', PARAM_INT );
-        $userid = optional_param( 'userid', null, PARAM_INT );
-        $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
-        $mform->addElement('hidden', 'id', $id );
-        $mform->setType( 'id', PARAM_INT );
-        $mform->addElement('hidden', 'userid', $userid );
-        $mform->setType( 'userid', PARAM_INT );
-        $submissionid = optional_param( 'submissionid', false, PARAM_INT );
+        $id = required_param('id', PARAM_INT);
+        $userid = optional_param('userid', null, PARAM_INT);
+        $inpopup = optional_param('inpopup', 0, PARAM_INT);
+        $mform->addElement('hidden', 'id', $id);
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('hidden', 'userid', $userid);
+        $mform->setType('userid', PARAM_INT);
+        $submissionid = optional_param('submissionid', false, PARAM_INT);
         if ($submissionid !== false) {
-            $mform->addElement('hidden', 'submissionid', $submissionid );
-            $mform->setType('submissionid', PARAM_INT );
-            $islastsubmission = $this->vpl->last_user_submission( $userid )->id == $submissionid;
+            $mform->addElement('hidden', 'submissionid', $submissionid);
+            $mform->setType('submissionid', PARAM_INT);
+            $islastsubmission = $this->vpl->last_user_submission($userid)->id == $submissionid;
         } else {
             $islastsubmission = true;
         }
 
-        $mform->addElement('hidden', 'inpopup', $inpopup );
-        $mform->setType( 'inpopup', PARAM_INT );
+        $mform->addElement('hidden', 'inpopup', $inpopup);
+        $mform->setType('inpopup', PARAM_INT);
         $vplinstance = $this->vpl->get_instance();
         $grade = $this->vpl->get_grade();
         // TODO Show others evaluation.
@@ -98,18 +98,23 @@ class mod_vpl_grade_form extends moodleform {
             $gridscore = $gradinginstance->get_controller()->get_min_max_score()['maxscore'];
 
             $mform->addElement('header', 'hAdvancedGrading', get_string('gradingmanagement', 'grading'));
-            $mform->addElement('grading',
-                    'advancedgrading',
-                    '',
-                    [ 'gradinginstance' => $gradinginstance ]);
+            $mform->addElement(
+                'grading',
+                'advancedgrading',
+                '',
+                [ 'gradinginstance' => $gradinginstance ]
+            );
             $mform->addElement('hidden', 'advancedgradinginstanceid', $gradinginstance->get_id());
             $mform->setType('advancedgradinginstanceid', PARAM_INT);
             // Numeric grade.
             if ($grade > 0) {
                 // Button to merge advanced grading grid points with grade.
                 $group = [];
-                $group[] =& $mform->createElement('button', null, get_string( 'merge', VPL ),
-                        [
+                $group[] =& $mform->createElement(
+                    'button',
+                    null,
+                    get_string('merge', VPL),
+                    [
                                 'data-role' => 'mergegrade',
                                 'data-maxgrade' => $grade,
                                 'data-currentgrade' => $graderaw,
@@ -121,24 +126,28 @@ class mod_vpl_grade_form extends moodleform {
                 $mform->addGroup($group);
             }
         }
-        $mform->addElement('header', 'hGrade', get_string( vpl_get_gradenoun_str() ) );
+        $mform->addElement('header', 'hGrade', get_string(vpl_get_gradenoun_str()));
         $mform->setExpanded('hGrade');
 
         $buttonarray = [];
         if ($grade != 0) {
             if ($grade > 0) {
-                $buttonarray[] =& $mform->createElement('text', 'grade', '', 'size="6"' );
-                $mform->setType( 'grade', PARAM_FLOAT );
+                $buttonarray[] =& $mform->createElement('text', 'grade', '', 'size="6"');
+                $mform->setType('grade', PARAM_FLOAT);
             } else {
-                $buttonarray[] =& $mform->createElement('select', 'grade', '',
-                        [ get_string('nograde') ] + make_grades_menu($grade));
+                $buttonarray[] =& $mform->createElement(
+                    'select',
+                    'grade',
+                    '',
+                    [ get_string('nograde') ] + make_grades_menu($grade)
+                );
             }
         }
-        $buttonarray[] =& $mform->createElement('submit', 'save', get_string( 'dograde', VPL ) );
+        $buttonarray[] =& $mform->createElement('submit', 'save', get_string('dograde', VPL));
         if ($inpopup) {
-            $buttonarray[] =& $mform->createElement('submit', 'savenext', get_string( 'gradeandnext', VPL ) );
+            $buttonarray[] =& $mform->createElement('submit', 'savenext', get_string('gradeandnext', VPL));
         }
-        $buttonarray[] =& $mform->createElement('submit', 'removegrade', get_string( 'removegrade', VPL ) );
+        $buttonarray[] =& $mform->createElement('submit', 'removegrade', get_string('removegrade', VPL));
         // Tranfer files to teacher's work area.
         $url = new moodle_url('/mod/vpl/forms/edit.php', [ 'id' => $id, 'userid' => $userid, 'privatecopy' => 1 ]);
         if (!$islastsubmission) {
@@ -158,35 +167,42 @@ class mod_vpl_grade_form extends moodleform {
         // Numeric grade.
         if ($grade > 0) {
             // Link to recalculate numeric grade from comments.
-            $buttonarray[] =& $mform->createElement('button', null, get_string( 'calculate', VPL ),
-                    [ 'data-role' => 'calculategrade', 'data-maxgrade' => $grade ]
+            $buttonarray[] =& $mform->createElement(
+                'button',
+                null,
+                get_string('calculate', VPL),
+                [ 'data-role' => 'calculategrade', 'data-maxgrade' => $grade ]
             );
             $buttonarray[] =& $mform->createElement('html', $OUTPUT->help_icon('calculate', VPL));
         }
-        $mform->addGroup($buttonarray, 'buttonar', get_string( vpl_get_gradenoun_str() ), '', false);
+        $mform->addGroup($buttonarray, 'buttonar', get_string(vpl_get_gradenoun_str()), '', false);
 
         if ($grade != 0) {
-            $mform->addElement('textarea', 'comments', get_string( 'comments', VPL ), 'rows="18" cols="70"' );
+            $mform->addElement('textarea', 'comments', get_string('comments', VPL), 'rows="18" cols="70"');
         }
 
-        if (! empty( $CFG->enableoutcomes )) {
-            $gradinginfo = grade_get_grades( $this->vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid );
-            if (! empty( $gradinginfo->outcomes )) {
+        if (! empty($CFG->enableoutcomes)) {
+            $gradinginfo = grade_get_grades($this->vpl->get_course()->id, 'mod', 'vpl', $vplinstance->id, $userid);
+            if (! empty($gradinginfo->outcomes)) {
                 $mform->addElement('header', 'hOutcomes', get_string('outcomes', 'grades'));
                 $mform->setExpanded('hOutcomes');
                 foreach ($gradinginfo->outcomes as $oid => $outcome) {
-                    $mform->addElement('select', 'outcome_grade_' . $oid, s( $outcome->name ),
-                            [ get_string('nooutcome', 'grades') ] + make_grades_menu(- $outcome->scaleid));
+                    $mform->addElement(
+                        'select',
+                        'outcome_grade_' . $oid,
+                        s($outcome->name),
+                        [ get_string('nooutcome', 'grades') ] + make_grades_menu(- $outcome->scaleid)
+                    );
                 }
             }
         }
 
-        $mform->addElement('header', 'hImport', get_string('import') );
+        $mform->addElement('header', 'hImport', get_string('import'));
 
         // Find last graded submission and last manually graded submission.
         $prevsubmanuallygraded = null;
         $prevsubgraded = null;
-        $submissionslist = $this->vpl->user_submissions( $userid );
+        $submissionslist = $this->vpl->user_submissions($userid);
         foreach ($submissionslist as $submission) {
             if ($submission->id == $this->submission->get_instance()->id) {
                 continue;
@@ -207,10 +223,26 @@ class mod_vpl_grade_form extends moodleform {
 
         $mform->setExpanded('hImport', $prevsubmanuallygraded !== null || ($prevsubgraded !== null && !$thissubisgraded));
 
-        self::add_import_from_submission_button($mform, $id, $userid, 'importlastgradedsub',
-                get_string('importgrade', VPL), get_string('importfromlastgradedsub', VPL), $prevsubgraded, $gradinginstance);
-        self::add_import_from_submission_button($mform, $id, $userid, 'importlastmgradedsub',
-                '', get_string('importfromlastmgradedsub', VPL), $prevsubmanuallygraded, $gradinginstance);
+        self::add_import_from_submission_button(
+            $mform,
+            $id,
+            $userid,
+            'importlastgradedsub',
+            get_string('importgrade', VPL),
+            get_string('importfromlastgradedsub', VPL),
+            $prevsubgraded,
+            $gradinginstance
+        );
+        self::add_import_from_submission_button(
+            $mform,
+            $id,
+            $userid,
+            'importlastmgradedsub',
+            '',
+            get_string('importfromlastmgradedsub', VPL),
+            $prevsubmanuallygraded,
+            $gradinginstance
+        );
 
         $mform->addHelpButton('importlastgradedsub', 'importgrade', VPL);
 
@@ -254,7 +286,7 @@ class mod_vpl_grade_form extends moodleform {
         $attributes = [];
 
         if ($subinstance !== null) {
-            $submission = new mod_vpl_submission( $this->vpl, $subinstance );
+            $submission = new mod_vpl_submission($this->vpl, $subinstance);
             $canimport = $submission->is_graded();
         } else {
             $canimport = false;
@@ -273,8 +305,10 @@ class mod_vpl_grade_form extends moodleform {
             $advgradinginstance = $submission->get_grading_instance();
             if ($gradingmethod !== null && $advgradinginstance) {
                 $advgradinginstanceid = $advgradinginstance->get_id();
-                $advgradingdata = array_values($DB->get_records('gradingform_' . $gradingmethod . '_fillings',
-                        [ 'instanceid' => $advgradinginstanceid ]));
+                $advgradingdata = array_values($DB->get_records(
+                    'gradingform_' . $gradingmethod . '_fillings',
+                    [ 'instanceid' => $advgradinginstanceid ]
+                ));
             } else {
                 $advgradingdata = [];
             }
@@ -283,10 +317,10 @@ class mod_vpl_grade_form extends moodleform {
             $attributes['data-comments'] = $comments;
             $attributes['data-advgrading'] = json_encode($advgradingdata);
 
-            $subhref = vpl_mod_href( 'forms/gradesubmission.php', 'id', $id, 'userid', $userid, 'submissionid', $subinstance->id );
+            $subhref = vpl_mod_href('forms/gradesubmission.php', 'id', $id, 'userid', $userid, 'submissionid', $subinstance->id);
             $gradingdetails = new stdClass();
             $gradingdetails->date = userdate($subinstance->dategraded);
-            $gradingdetails->gradername = fullname(mod_vpl_submission::get_grader( $subinstance->grader ));
+            $gradingdetails->gradername = fullname(mod_vpl_submission::get_grader($subinstance->grader));
             $subinfo = '<a href="' . $subhref . '">' . get_string('gradedonby', VPL, $gradingdetails) . '</a>';
         } else {
             $attributes['disabled'] = 'disabled';
@@ -296,5 +330,4 @@ class mod_vpl_grade_form extends moodleform {
         $group[] =& $mform->createElement('html', $subinfo);
         $mform->addGroup($group, $name, $title);
     }
-
 }

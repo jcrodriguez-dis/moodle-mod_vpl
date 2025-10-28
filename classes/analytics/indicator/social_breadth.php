@@ -37,7 +37,6 @@ namespace mod_vpl\analytics\indicator;
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class social_breadth extends activity_base {
-
     /**
      * Returns the name of the indicator.
      *

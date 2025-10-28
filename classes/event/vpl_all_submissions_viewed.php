@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when all submissions are viewed.
  * This class is used to log the event when all submissions of a VPL activity are viewed.
  */
 class vpl_all_submissions_viewed extends vpl_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -49,6 +48,6 @@ class vpl_all_submissions_viewed extends vpl_base {
      * This method is used to provide a human-readable description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'all submissions' );
+        return $this->get_description_mod('all submissions');
     }
 }

@@ -27,7 +27,7 @@ namespace mod_vpl;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 /**
  * Unit tests for \mod_vpl\util\lock class.
@@ -35,7 +35,6 @@ require_once(dirname(__FILE__).'/../locallib.php');
  * @covers \mod_vpl\util\lock
  */
 final class util_lock_test extends \advanced_testcase {
-
     /**
      * Base directory for test locks
      *

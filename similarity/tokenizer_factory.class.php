@@ -18,7 +18,7 @@ use mod_vpl\tokenizer\tokenizer_factory;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
 
 /**
  * Tokenizer factory class
@@ -29,5 +29,4 @@ require_once(dirname(__FILE__).'/tokenizer_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_tokenizer_factory extends tokenizer_factory {
-
 }

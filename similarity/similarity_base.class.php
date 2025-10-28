@@ -27,16 +27,15 @@ use mod_vpl\similarity\similarity_base;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_factory.class.php');
-require_once(dirname(__FILE__).'/similarity_sources.class.php');
-require_once(dirname(__FILE__).'/../views/status_box.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_factory.class.php');
+require_once(dirname(__FILE__) . '/similarity_sources.class.php');
+require_once(dirname(__FILE__) . '/../views/status_box.class.php');
 
 /**
  * Similarity preprocesing information of a file
  * from any source (directory, zip file or vpl activity)
  */
 abstract class vpl_similarity_base extends similarity_base {
-
 }
 
 /**
@@ -44,53 +43,52 @@ abstract class vpl_similarity_base extends similarity_base {
  * It is used to display the similarity results in the VPL activity.
  */
 class vpl_files_pair {
-
     /**
      * Static variable to generate the unique identifier for each file pair.
      * It is incremented each time a new file pair is created.
      *
      * @var int
      */
-    static protected $idcounter = 0;
+    protected static $idcounter = 0;
 
     /**
      * Minimum similarity scores for the first metric.
      * This is used to filter out pairs with low similarity.
      * @var float
      */
-    static protected $mins1 = 100;
+    protected static $mins1 = 100;
 
     /**
      * Minimum similarity scores for the second metric.
      * This is used to filter out pairs with low similarity.
      * @var float
      */
-    static protected $mins2 = 100;
+    protected static $mins2 = 100;
 
     /**
      * Minimum similarity scores for the third metric.
      * This is used to filter out pairs with low similarity.
      * @var float
      */
-    static protected $mins3 = 100;
+    protected static $mins3 = 100;
 
     /**
      * Minimum similarity scores for the first metric.
      * @var float
      */
-    static protected $maxs1 = 100;
+    protected static $maxs1 = 100;
 
     /**
      * Maximum similarity scores for the second metric.
      * @var float
      */
-    static protected $maxs2 = 100;
+    protected static $maxs2 = 100;
 
     /**
      * Maximum similarity scores for the third metric.
      * @var float
      */
-    static protected $maxs3 = 100;
+    protected static $maxs3 = 100;
 
     /**
      * The first file in the pair.
@@ -196,7 +194,7 @@ class vpl_files_pair {
         $this->s1 = $s1;
         $this->s2 = $s2;
         $this->s3 = $s3;
-        $this->id = self::$idcounter ++;
+        $this->id = self::$idcounter++;
         $this->clusternumber = 0;
     }
 
@@ -256,24 +254,24 @@ class vpl_files_pair {
      */
     public function get_link() {
         global $OUTPUT;
-        $text = '<span class="vpl_sim' . ( int ) $this->get_level1() . '">';
-        $text .= ( int ) $this->s1;
+        $text = '<span class="vpl_sim' . (int) $this->get_level1() . '">';
+        $text .= (int) $this->s1;
         $text .= '</span>';
         $text .= '|';
-        $text .= '<span class="vpl_sim' . ( int ) $this->get_level2() . '">';
-        $text .= ( int ) $this->s2;
+        $text .= '<span class="vpl_sim' . (int) $this->get_level2() . '">';
+        $text .= (int) $this->s2;
         $text .= '</span>';
         $text .= '|';
-        $text .= '<span class="vpl_sim' . ( int ) $this->get_level3() . '">';
-        $text .= ( int ) $this->s3;
+        $text .= '<span class="vpl_sim' . (int) $this->get_level3() . '">';
+        $text .= (int) $this->s3;
         $text .= '</span>';
         if ($this->first->can_access() && $this->second->can_access()) {
-            $url = vpl_mod_href( 'similarity/diff.php' );
-            foreach ($this->first->link_parms( '1' ) as $parm => $value) {
-                $url = vpl_url_add_param( $url, $parm, $value );
+            $url = vpl_mod_href('similarity/diff.php');
+            foreach ($this->first->link_parms('1') as $parm => $value) {
+                $url = vpl_url_add_param($url, $parm, $value);
             }
-            foreach ($this->second->link_parms( '2' ) as $parm => $value) {
-                $url = vpl_url_add_param( $url, $parm, $value );
+            foreach ($this->second->link_parms('2') as $parm => $value) {
+                $url = vpl_url_add_param($url, $parm, $value);
             }
             $options = [
                 'height' => 800,
@@ -285,15 +283,15 @@ class vpl_files_pair {
                 'status' => 0,
                 'toolbar' => 0,
             ];
-            $action = new popup_action( 'click', $url, 'viewdiff' . $this->id, $options );
-            $html = $OUTPUT->action_link( $url, $text, $action );
+            $action = new popup_action('click', $url, 'viewdiff' . $this->id, $options);
+            $html = $OUTPUT->action_link($url, $text, $action);
         } else {
             $html = $text;
         }
         $html .= $this->s1 >= self::$mins1 ? '*' : '';
         $html .= $this->s2 >= self::$mins2 ? '*' : '';
         $html .= $this->s3 >= self::$mins3 ? '*' : '';
-        $html = '<div class="vpl_sim' . ( int ) $this->get_level() . '">' . $html . '</div>';
+        $html = '<div class="vpl_sim' . (int) $this->get_level() . '">' . $html . '</div>';
         return $html;
     }
 
@@ -306,10 +304,10 @@ class vpl_files_pair {
      * @return float The normalized level, capped at 11.
      */
     public static function normalize_level($value, $min, $max) {
-        if (abs( $max - $min ) < 0.001) {
+        if (abs($max - $min) < 0.001) {
             return 0;
         }
-        return min( (1.0 - (($value - $min) / ($max - $min))) * 11, 11 );
+        return min((1.0 - (($value - $min) / ($max - $min))) * 11, 11);
     }
 
     /**
@@ -319,8 +317,8 @@ class vpl_files_pair {
      * @return int The normalized level of similarity for the first metric.
      */
     public function get_level1() {
-        if (! isset( $this->level1 )) {
-            $this->level1 = ( int ) self::normalize_level( $this->s1, self::$mins1, self::$maxs1 );
+        if (! isset($this->level1)) {
+            $this->level1 = (int) self::normalize_level($this->s1, self::$mins1, self::$maxs1);
         }
         return $this->level1;
     }
@@ -332,8 +330,8 @@ class vpl_files_pair {
      * @return int The normalized level of similarity for the second metric.
      */
     public function get_level2() {
-        if (! isset( $this->level2 )) {
-            $this->level2 = ( int ) self::normalize_level( $this->s2, self::$mins2, self::$maxs2 );
+        if (! isset($this->level2)) {
+            $this->level2 = (int) self::normalize_level($this->s2, self::$mins2, self::$maxs2);
         }
         return $this->level2;
     }
@@ -345,8 +343,8 @@ class vpl_files_pair {
      * @return int The normalized level of similarity for the third metric.
      */
     public function get_level3() {
-        if (! isset( $this->level3 )) {
-            $this->level3 = ( int ) self::normalize_level( $this->s3, self::$mins3, self::$maxs3 );
+        if (! isset($this->level3)) {
+            $this->level3 = (int) self::normalize_level($this->s3, self::$mins3, self::$maxs3);
         }
         return $this->level3;
     }
@@ -358,11 +356,11 @@ class vpl_files_pair {
      * @return int The minimum level of similarity, capped at 11.
      */
     public function get_level() {
-        if (! isset( $this->level )) {
+        if (! isset($this->level)) {
             $level1 = $this->get_level1();
             $level2 = $this->get_level2();
             $level3 = $this->get_level3();
-            $this->level = min( $level1, $level2, $level3, 11 );
+            $this->level = min($level1, $level2, $level3, 11);
         }
         return $this->level;
     }
@@ -394,7 +392,6 @@ class vpl_files_pair {
  * Utility class to get list of preprocessed files
  */
 class vpl_similarity {
-
     /**
      * Get the selected files based on their similarity scores.
      *
@@ -415,60 +412,60 @@ class vpl_similarity {
         $maxlevel2 = 100;
         $maxlevel3 = 100;
         $selected = [];
-        $jlimit = count( $files );
+        $jlimit = count($files);
         if ($jlimit < $slimit) {
             $slimit = $jlimit;
         }
-        $spb->set_max( $slimit );
-        for ($i = 0; $i < $slimit; $i ++) { // Search similarity with.
-            $spb->set_value( $i + 1 );
+        $spb->set_max($slimit);
+        for ($i = 0; $i < $slimit; $i++) { // Search similarity with.
+            $spb->set_value($i + 1);
             $current = $files[$i];
             $currenttype = $current->get_type();
             $userid = $current->get_userid();
-            for ($j = $i + 1; $j < $jlimit; $j ++) { // Compare with all others.
+            for ($j = $i + 1; $j < $jlimit; $j++) { // Compare with all others.
                 $other = $files[$j];
                 // If not the same language then skip.
                 if ($currenttype != $other->get_type() || ($userid != '' && $userid == $other->get_userid())) {
                     continue;
                 }
                 // Calculate metrics.
-                $s1 = $current->similarity1( $other );
-                $s2 = $current->similarity2( $other );
-                $s3 = $current->similarity3( $other );
+                $s1 = $current->similarity1($other);
+                $s2 = $current->similarity2($other);
+                $s3 = $current->similarity3($other);
                 if ($s1 >= $minlevel1 || $s2 >= $minlevel2 || $s3 >= $minlevel3) {
-                    $case = new vpl_files_pair( $files[$i], $files[$j], $s1, $s2, $s3 );
-                    $maxlevel1 = max( $s1, $maxlevel1 );
-                    $maxlevel2 = max( $s2, $maxlevel2 );
-                    $maxlevel3 = max( $s3, $maxlevel3 );
+                    $case = new vpl_files_pair($files[$i], $files[$j], $s1, $s2, $s3);
+                    $maxlevel1 = max($s1, $maxlevel1);
+                    $maxlevel2 = max($s2, $maxlevel2);
+                    $maxlevel3 = max($s3, $maxlevel3);
                     if ($s1 >= $minlevel1) {
                         $vs1[] = $case;
-                        if (count( $vs1 ) > 2 * $maxselected) {
-                            self::filter_selected( $vs1, $maxselected, $minlevel1, 1 );
+                        if (count($vs1) > 2 * $maxselected) {
+                            self::filter_selected($vs1, $maxselected, $minlevel1, 1);
                         }
                     }
                     if ($s2 >= $minlevel2) {
                         $vs2[] = $case;
-                        if (count( $vs2 ) > 2 * $maxselected) {
-                            self::filter_selected( $vs2, $maxselected, $minlevel2, 2 );
+                        if (count($vs2) > 2 * $maxselected) {
+                            self::filter_selected($vs2, $maxselected, $minlevel2, 2);
                         }
                     }
                     if ($s3 >= $minlevel3) {
                         $vs3[] = $case;
-                        if (count( $vs3 ) > 2 * $maxselected) {
-                            self::filter_selected( $vs3, $maxselected, $minlevel3, 3 );
+                        if (count($vs3) > 2 * $maxselected) {
+                            self::filter_selected($vs3, $maxselected, $minlevel3, 3);
                         }
                     }
                 }
             }
         }
-        self::filter_selected( $vs1, $maxselected, $minlevel1, 1, true );
-        self::filter_selected( $vs2, $maxselected, $minlevel2, 2, true );
-        self::filter_selected( $vs3, $maxselected, $minlevel3, 3, true );
-        vpl_files_pair::set_mins( $minlevel1, $minlevel2, $minlevel3 );
-        vpl_files_pair::set_maxs( $maxlevel1, $maxlevel2, $maxlevel3 );
+        self::filter_selected($vs1, $maxselected, $minlevel1, 1, true);
+        self::filter_selected($vs2, $maxselected, $minlevel2, 2, true);
+        self::filter_selected($vs3, $maxselected, $minlevel3, 3, true);
+        vpl_files_pair::set_mins($minlevel1, $minlevel2, $minlevel3);
+        vpl_files_pair::set_maxs($maxlevel1, $maxlevel2, $maxlevel3);
         // Merge vs1, vs2 and vs3.
-        $max = count( $vs1 );
-        for ($i = 0; $i < $max; $i ++) {
+        $max = count($vs1);
+        for ($i = 0; $i < $max; $i++) {
             if (! $vs1[$i]->selected) {
                 $selected[] = $vs1[$i];
                 $vs1[$i]->selected = true;
@@ -490,7 +487,7 @@ class vpl_similarity {
      * This is used to sort the files based on their similarity scores.
      * @var vpl_similarity|null
      */
-    static protected $corder = null;
+    protected static $corder = null;
 
     /**
      * Filter the selected files based on the maximum number of selections allowed.
@@ -502,19 +499,21 @@ class vpl_similarity {
      * @param bool $last Whether to apply the filter to the last element.
      */
     public static function filter_selected(&$vec, $maxselected, &$minlevel, $sid, $last = false) {
-        if (count( $vec ) > $maxselected || ($last && count( $vec ) > 0)) {
+        if (count($vec) > $maxselected || ($last && count($vec) > 0)) {
             if (self::$corder === null) {
                 self::$corder = new vpl_similarity();
             }
-            if (! usort( $vec, [
+            if (
+                ! usort($vec, [
                 self::$corder,
                 'cmp_selected' . $sid,
-            ] )) {
-                debugging( 'usort error' );
+                ])
+            ) {
+                debugging('usort error');
             }
             $field = 's' . $sid;
-            $vec = array_slice( $vec, 0, $maxselected );
-            $minlevel = $vec[count( $vec ) - 1]->$field;
+            $vec = array_slice($vec, 0, $maxselected);
+            $minlevel = $vec[count($vec) - 1]->$field;
         }
     }
 

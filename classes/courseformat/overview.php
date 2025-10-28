@@ -57,7 +57,7 @@ class overview extends \core_courseformat\activityoverviewbase {
         /** @var \core\output\renderer_helper $rendererhelper the renderer helper */
         protected readonly \core\output\renderer_helper $rendererhelper,
     ) {
-        require_once(dirname(__FILE__).'/../../locallib.php');
+        require_once(dirname(__FILE__) . '/../../locallib.php');
         parent::__construct($cm);
         $this->vpl = new \mod_vpl($this->cm->id);
     }
@@ -82,8 +82,10 @@ class overview extends \core_courseformat\activityoverviewbase {
 
     #[\Override]
     public function get_actions_overview(): ?overviewitem {
-        if ($this->vpl->has_capability(VPL_GRADE_CAPABILITY) ||
-                $this->vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
+        if (
+            $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ||
+                $this->vpl->has_capability(VPL_MANAGE_CAPABILITY)
+        ) {
             $status = $this->get_submissions_status();
             $needgrading = $status->subcount - $status->gradedcount;
             if ($this->vpl->get_grade() != 0 && $needgrading > 0) {
@@ -103,8 +105,10 @@ class overview extends \core_courseformat\activityoverviewbase {
                     alertlabel: $alertlabel,
                 );
             }
-        } else if ($this->vpl->has_capability(VPL_SUBMIT_CAPABILITY) &&
-                $this->vpl->is_submit_able()) {
+        } else if (
+            $this->vpl->has_capability(VPL_SUBMIT_CAPABILITY) &&
+                $this->vpl->is_submit_able()
+        ) {
             $name = get_string('submit');
             $content = new action_link(
                 url: new url('/mod/vpl/forms/edit.php', ['id' => $this->cm->id]),
@@ -127,8 +131,10 @@ class overview extends \core_courseformat\activityoverviewbase {
         $submissionstatusoverview = null;
         $submissionsoverview = null;
         $gradedsubmissionsoverview = null;
-        if ($this->vpl->has_capability(VPL_GRADE_CAPABILITY) ||
-                $this->vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
+        if (
+            $this->vpl->has_capability(VPL_GRADE_CAPABILITY) ||
+                $this->vpl->has_capability(VPL_MANAGE_CAPABILITY)
+        ) {
             $status = $this->get_submissions_status();
             $content = new action_link(
                 url: new url('/mod/vpl/views/submissionslist.php', ['id' => $this->cm->id]),
@@ -155,15 +161,17 @@ class overview extends \core_courseformat\activityoverviewbase {
                 );
             }
         } else {
-            if ($this->vpl->has_capability(VPL_SUBMIT_CAPABILITY) &&
-                    $this->vpl->is_visible()) {
+            if (
+                $this->vpl->has_capability(VPL_SUBMIT_CAPABILITY) &&
+                    $this->vpl->is_visible()
+            ) {
                 $userstatus = $this->vpl->last_user_submission($USER->id);
                 if (!$userstatus) {
                     $content = get_string('nosubmission', 'mod_vpl');
                     $status = 0;
                 } else {
                     $status = $userstatus->datesubmitted;
-                    $content =  new action_link(
+                    $content = new action_link(
                         url: new url('/mod/vpl/forms/submissionview.php', ['id' => $this->cm->id, 'userid' => $USER->id]),
                         text: userdate($userstatus->datesubmitted),
                     );

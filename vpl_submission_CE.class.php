@@ -24,10 +24,10 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/../../lib/gradelib.php');
-require_once(dirname(__FILE__).'/vpl_submission.class.php');
-require_once(dirname(__FILE__).'/jail/jailserver_manager.class.php');
-require_once(dirname(__FILE__).'/jail/running_processes.class.php');
+require_once(dirname(__FILE__) . '/../../lib/gradelib.php');
+require_once(dirname(__FILE__) . '/vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/jail/jailserver_manager.class.php');
+require_once(dirname(__FILE__) . '/jail/running_processes.class.php');
 
 /**
  * Class mod_vpl_submission_CE
@@ -214,7 +214,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             }
         }
         foreach ($filelist as $checkfilename) {
-            $ext = pathinfo( $checkfilename, PATHINFO_EXTENSION );
+            $ext = pathinfo($checkfilename, PATHINFO_EXTENSION);
             if (isset(self::$languageext[$ext])) {
                 return self::$languageext[$ext];
             }
@@ -234,20 +234,20 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     public static function get_script($action, $detectedpln, $data) {
         $basepath = vpl_get_scripts_dir() . '/';
         $field = $action . 'script';
-        if ( isset($data->$field) &&  $data->$field > '' ) {
+        if (isset($data->$field) &&  $data->$field > '') {
             $pln = $data->$field;
         } else {
             $pln = $detectedpln;
         }
         $filename = $basepath . $pln . '_' . $action . '.sh';
         if (file_exists($filename)) {
-            return file_get_contents( $filename );
+            return file_get_contents($filename);
         } else {
             $filename = $basepath . 'default' . '_' . $action . '.sh';
-            if (file_exists( $filename )) {
-                return file_get_contents( $filename );
+            if (file_exists($filename)) {
+                return file_get_contents($filename);
             } else {
-                return file_get_contents( $basepath . 'default.sh' );
+                return file_get_contents($basepath . 'default.sh');
             }
         }
     }
@@ -271,23 +271,25 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($type >= 2) {
             $ret['vpl_evaluate.sh'] = self::get_script('evaluate', $detectedpln, $data);
             $dirpath = vpl_get_scripts_dir();
-            $ret['vpl_evaluate.cpp'] = file_get_contents( $dirpath . '/vpl_evaluate.cpp' );
+            $ret['vpl_evaluate.cpp'] = file_get_contents($dirpath . '/vpl_evaluate.cpp');
         }
         if ($type == 3) {
             $ret['vpl_test_evaluate.sh'] = self::get_script('test_evaluate', $detectedpln, $data);
         }
         if ($detectedpln == 'all' && $vpl->has_capability(VPL_MANAGE_CAPABILITY)) { // Test all scripts.
             $dirpath = vpl_get_scripts_dir();
-            if (file_exists( $dirpath )) {
-                $dirlst = opendir( $dirpath );
-                while ( false !== ($filename = readdir( $dirlst )) ) {
+            if (file_exists($dirpath)) {
+                $dirlst = opendir($dirpath);
+                while (false !== ($filename = readdir($dirlst))) {
                     if ($filename == "." || $filename == "..") {
                         continue;
                     }
-                    if (substr( $filename, - 7 ) == '_run.sh' ||
-                        substr( $filename, - 9 ) == '_hello.sh' ||
-                        substr( $filename, - 9 ) == '_debug.sh' ) {
-                        $ret[$filename] = file_get_contents( $dirpath . '/' .$filename );
+                    if (
+                        substr($filename, - 7) == '_run.sh' ||
+                        substr($filename, - 9) == '_hello.sh' ||
+                        substr($filename, - 9) == '_debug.sh'
+                    ) {
+                        $ret[$filename] = file_get_contents($dirpath . '/' . $filename);
                     }
                 }
                 closedir($dirlst);
@@ -380,29 +382,29 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if (! empty($vplinstance->jailservers)) {
             $data->jailservers = $vplinstance->jailservers . "\n" . $data->jailservers;
         }
-        if ( ! empty($vplinstance->runscript) ) {
+        if (! empty($vplinstance->runscript)) {
             $data->runscript = $vplinstance->runscript;
         }
-        if ( ! empty($vplinstance->debugscript) ) {
+        if (! empty($vplinstance->debugscript)) {
             $data->debugscript = $vplinstance->debugscript;
         }
-        if ( ! empty($vplinstance->evaluator) ) {
+        if (! empty($vplinstance->evaluator)) {
             $data->evaluator = $vplinstance->evaluator;
         }
-        if ( ! empty($vplinstance->run_mode) ) {
+        if (! empty($vplinstance->run_mode)) {
             $data->run_mode = $vplinstance->run_mode;
         }
-        if ( ! empty($vplinstance->evaluation_mode) ) {
+        if (! empty($vplinstance->evaluation_mode)) {
             $data->evaluation_mode = $vplinstance->evaluation_mode;
         }
         if ($finalchecks) { // Final checks.
             $data->activityid = $vplinstance->id;
             $data->type = $type;
             // Limit resources to minimum.
-            $data->maxtime = min($data->maxtime, (int) $plugincfg->maxexetime );
-            $data->maxfilesize = min($data->maxfilesize, (int) $plugincfg->maxexefilesize );
-            $data->maxmemory = min($data->maxmemory, (int) $plugincfg->maxexememory );
-            $data->maxprocesses = min($data->maxprocesses, (int) $plugincfg->maxexeprocesses );
+            $data->maxtime = min($data->maxtime, (int) $plugincfg->maxexetime);
+            $data->maxfilesize = min($data->maxfilesize, (int) $plugincfg->maxexefilesize);
+            $data->maxmemory = min($data->maxmemory, (int) $plugincfg->maxexememory);
+            $data->maxprocesses = min($data->maxprocesses, (int) $plugincfg->maxexeprocesses);
         }
         return $data;
     }
@@ -419,8 +421,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $submittedlist = $sfg->getFileList();
         // Add $submittedlist but removing the files overwrited by teacher's one.
         foreach ($submittedlist as $filename) {
-            if (! isset( $data->files[$filename] )) {
-                $data->files[$filename] = $sfg->getFileData( $filename );
+            if (! isset($data->files[$filename])) {
+                $data->files[$filename] = $sfg->getFileData($filename);
             }
         }
         // Get programming language.
@@ -686,11 +688,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Add script file with VPL environment information and set LC_ALL.
         $data->files['vpl_environment.sh'] = $enviromentcontent;
         // Add common script.
-        $data->files['common_script.sh'] = file_get_contents( vpl_get_scripts_dir() . '/common_script.sh');
+        $data->files['common_script.sh'] = file_get_contents(vpl_get_scripts_dir() . '/common_script.sh');
         // Add new script for evaluation mode test_in_gui if needed.
         if (isset($varsenv['VPL_EVALUATION_MODE']) &&  $varsenv['VPL_EVALUATION_MODE'] == '2') {
             $filename = vpl_get_scripts_dir() . '/default_evaluate_textingui.sh';
-            $data->files['default_evaluate_textingui.sh'] = file_get_contents( $filename);
+            $data->files['default_evaluate_textingui.sh'] = file_get_contents($filename);
         }
         return $data;
     }
@@ -708,7 +710,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         foreach ($filelist as $filename) {
             $filenames .= $filename . "\n";
             $bashcode .= vpl_bash_export('VPL_SUBFILE' . $num, $filename);
-            $num ++;
+            $num++;
         }
         $bashcode .= 'export VPL_SUBFILES="' . $filenames . "\"\n";
         return $bashcode;
@@ -756,7 +758,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public static function jailaction($vpl, $server, $action, $data) {
         $plugin = new stdClass();
-        require(dirname( __FILE__ ) . '/version.php');
+        require(dirname(__FILE__) . '/version.php');
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
         $request = vpl_jailserver_manager::get_action_request($action, $data);
@@ -766,9 +768,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($response === false) {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             if ($manager) {
-                throw new Exception(get_string( 'serverexecutionerror', VPL) . "\n" . $error );
+                throw new Exception(get_string('serverexecutionerror', VPL) . "\n" . $error);
             }
-            throw new Exception(get_string( 'serverexecutionerror', VPL));
+            throw new Exception(get_string('serverexecutionerror', VPL));
         }
         return $response;
     }
@@ -786,13 +788,13 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $server = vpl_jailserver_manager::get_server($maxmemory, $localservers, $error);
         if ($server == '') {
             $manager = $this->vpl->has_capability(VPL_MANAGE_CAPABILITY);
-            $men = get_string( 'nojailavailable', VPL );
+            $men = get_string('nojailavailable', VPL);
             if ($manager) {
                 $men .= ": " . $error;
             }
-            throw new Exception( $men );
+            throw new Exception($men);
         }
-        return self::jailaction($this->vpl, $server, 'request', $data );
+        return self::jailaction($this->vpl, $server, 'request', $data);
     }
     /**
      * Request an action of run, debug, evaluate and test_evaluate on VPL instance and submission.
@@ -804,7 +806,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     public function jailreaction($action, $processinfo = false) {
         if ($processinfo === false) {
             $vplid = $this->vpl->get_instance()->id;
-            $processinfo = vpl_running_processes::get_run( $this->get_instance()->userid, $vplid);
+            $processinfo = vpl_running_processes::get_run($this->get_instance()->userid, $vplid);
         }
         if ($processinfo === false) {
             return;
@@ -812,7 +814,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $server = $processinfo->server;
         $data = new stdClass();
         $data->adminticket = $processinfo->adminticket;
-        return self::jailaction($this->vpl, $server, $action, $data );
+        return self::jailaction($this->vpl, $server, $action, $data);
     }
 
     /**
@@ -829,8 +831,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data->filestodelete = [];
         }
         foreach ($files as $filename => $filedata) {
-            if (vpl_is_binary( $filename )) {
-                $encodefiles[$filename . '.b64'] = base64_encode( $filedata );
+            if (vpl_is_binary($filename)) {
+                $encodefiles[$filename . '.b64'] = base64_encode($filedata);
                 $fileencoding[$filename . '.b64'] = 1;
                 $data->filestodelete[$filename . '.b64'] = 1;
             } else {
@@ -854,7 +856,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Stop current task if one.
         global $DB;
         $this->cancelprocess();
-        $options = ( array ) $options;
+        $options = (array) $options;
         $plugincfg = get_config('mod_vpl');
         $data = $this->prepare_execution($type);
         $data->interactive = $type < self::TEVALUATE ? 1 : 0;
@@ -866,7 +868,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         ];
         $enviromentvars = '';
         foreach ($optionsvars as $option => $varname) {
-            if (isset( $options[$option] )) {
+            if (isset($options[$option])) {
                 $enviromentvars .= vpl_bash_export($varname, $options[$option]);
             }
         }
@@ -874,11 +876,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $localservers = $data->jailservers;
         $maxmemory = $data->maxmemory;
         // Remove jailservers field.
-        unset( $data->jailservers );
+        unset($data->jailservers);
         self::adaptbinaryfiles($data, $data->files);
         $jailserver = '';
-        $jailresponse = $this->jailrequestaction( $data, $maxmemory, $localservers, $jailserver );
-        $parsed = parse_url( $jailserver );
+        $jailresponse = $this->jailrequestaction($data, $maxmemory, $localservers, $jailserver);
+        $parsed = parse_url($jailserver);
         // Fix jail server port.
         $usinghttp = $parsed['scheme'] == 'http';
         $usinghttps = $parsed['scheme'] == 'https';
@@ -888,10 +890,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if (! isset($parsed['port']) && $usinghttps) {
             $parsed['port'] = 443;
         }
-        if (! isset($jailresponse['port'] )) { // Try to fix old jail servers that don't return port.
+        if (! isset($jailresponse['port'])) { // Try to fix old jail servers that don't return port.
             $jailresponse['port'] = $parsed['port'];
         }
-        if (! isset($jailresponse['secureport'] )) { // Try to fix old jail servers that don't return port.
+        if (! isset($jailresponse['secureport'])) { // Try to fix old jail servers that don't return port.
             $jailresponse['secureport'] = $parsed['port'];
         }
         $response = new stdClass();
@@ -901,7 +903,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $response->port = $usinghttp ? $parsed['port'] : $jailresponse['port'];
         $response->securePort = $usinghttps ? $parsed['port'] : $jailresponse['secureport'];
         $response->wsProtocol = $plugincfg->websocket_protocol;
-        $response->VNCpassword = substr( $jailresponse['executionticket'], 0, 8 );
+        $response->VNCpassword = substr($jailresponse['executionticket'], 0, 8);
         $instance = $this->get_instance();
         $process = new stdClass();
         $process->userid = $instance->userid;
@@ -912,9 +914,9 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $response->processid = vpl_running_processes::set($process);
         if ($type < 2) {
             if ($type == 0) {
-                $instance->run_count ++;
+                $instance->run_count++;
             } else {
-                $instance->debug_count ++;
+                $instance->debug_count++;
             }
             $DB->update_record(VPL_SUBMISSIONS, $instance);
         }
@@ -931,7 +933,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @param array $filestodelete List of files to delete in the running task
      * @return boolean True if updated
      */
-    public static function update($vpl, $userid, $processid, $files,  $filestodelete = []) {
+    public static function update($vpl, $userid, $processid, $files, $filestodelete = []) {
         $data = new stdClass();
         $data->files = $files;
         $vplid = $vpl->get_instance()->id;
@@ -948,8 +950,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         self::adaptbinaryfiles($data, $files);
         $data->adminticket = $processinfo->adminticket;
         try {
-            $response = self::jailaction($vpl, $server, 'update', $data );
-        } catch (\Throwable $e ) {
+            $response = self::jailaction($vpl, $server, 'update', $data);
+        } catch (\Throwable $e) {
             return false;
         }
         return $response['update'] > 0;
@@ -972,20 +974,20 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             throw new Exception(get_string('serverexecutionerror', VPL) . ' getresult no repsonse');
         }
         if ($response['interactive'] == 0 && $processinfo->type == 2) {
-            $this->saveCE( $response );
+            $this->saveCE($response);
             if ($response['executed'] > 0) {
                 // If automatic grading.
                 if ($this->vpl->get_instance()->automaticgrading) {
                     $data = new StdClass();
-                    $data->grade = $this->proposedGrade( $response['execution'] );
-                    $data->comments = $this->proposedComment( $response['execution'] );
-                    $this->set_grade($data, true );
+                    $data->grade = $this->proposedGrade($response['execution']);
+                    $data->comments = $this->proposedComment($response['execution']);
+                    $this->set_grade($data, true);
                 } else if ($this->get_instance()->dategraded > 0 && $this->get_instance()->grader == 0) {
                     $this->remove_grade();
                 }
             }
         }
-        return $this->get_CE_for_editor( $response );
+        return $this->get_CE_for_editor($response);
     }
     /**
      * Check if the process is running.
@@ -994,7 +996,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public function isrunning() {
         try {
-            $response = $this->jailreaction( 'running' );
+            $response = $this->jailreaction('running');
         } catch (\Throwable $e) {
             return false;
         }
@@ -1008,19 +1010,19 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $vplid = $this->vpl->get_instance()->id;
         $userid = $this->get_instance()->userid;
         if ($processid == -1) {
-            $processinfo = vpl_running_processes::get_run( $userid, $vplid);
+            $processinfo = vpl_running_processes::get_run($userid, $vplid);
         } else {
-            $processinfo = vpl_running_processes::get_by_id( $vplid, $userid, $processid );
+            $processinfo = vpl_running_processes::get_by_id($vplid, $userid, $processid);
         }
         if ($processinfo == false) { // No process to cancel.
             return;
         }
         try {
-            $this->jailreaction( 'stop', $processinfo );
-        } catch (\Throwable $e ) {
+            $this->jailreaction('stop', $processinfo);
+        } catch (\Throwable $e) {
             // No matter, consider that the process stopped.
-            debugging("Process in execution server not stopped or not found", DEBUG_DEVELOPER );
+            debugging("Process in execution server not stopped or not found", DEBUG_DEVELOPER);
         }
-        vpl_running_processes::delete( $userid, $vplid, $processinfo->adminticket);
+        vpl_running_processes::delete($userid, $vplid, $processinfo->adminticket);
     }
 }

@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
 
 /**
  * Prolog programing language tokenizer class
@@ -27,7 +27,6 @@ require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_tokenizer_prolog extends vpl_tokenizer_base {
-
     /**
      * @var array of reserved words in Prolog.
      */
@@ -50,9 +49,9 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
      * @param int $ini the initial index to start checking
      * @return bool true if there is a next open parenthesis, false otherwise
      */
-    protected function isnextopenparenthesis(& $s, $ini) {
-        $l = strlen( $s );
-        for ($i = $ini; $i < $l; $i ++) {
+    protected function isnextopenparenthesis(&$s, $ini) {
+        $l = strlen($s);
+        for ($i = $ini; $i < $l; $i++) {
             $c = $s[$i];
             if ($c == '(') {
                 return true;
@@ -82,21 +81,21 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
      * @param int|null $i the index in the source string (optional)
      */
     protected function add_pending(&$rest, &$s = null, $i = null) {
-        $rest = trim( $rest );
-        if (strlen( $rest ) == 0) {
+        $rest = trim($rest);
+        if (strlen($rest) == 0) {
             return;
         }
         $c = $rest[0];
-        if ($this->isidentifierchar( $c )) {
+        if ($this->isidentifierchar($c)) {
             if (($c >= 'A' && $c <= 'Z') || $c == '_') { // Variable.
-                $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, 'V', $this->linenumber );
+                $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, 'V', $this->linenumber);
             } else if (($c >= 'a' && $c <= 'z')) { // Literal.
-                if ($s != null && $this->isnextopenparenthesis( $s, $i ) || $rest == 'is') {
-                    $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, 'L', $this->linenumber );
+                if ($s != null && $this->isnextopenparenthesis($s, $i) || $rest == 'is') {
+                    $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, 'L', $this->linenumber);
                 }
             }
         } else {
-            $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, $rest, $this->linenumber );
+            $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, $rest, $this->linenumber);
         }
         $rest = '';
     }
@@ -145,9 +144,9 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $this->linenumber = 1;
         $state = self::IN_REGULAR;
         $pending = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
                 $next = $filedata[$i + 1];
@@ -162,35 +161,35 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                 }
             }
             switch ($state) {
-                case self::IN_REGULAR :
-                case self::IN_IDENTIFIER :
+                case self::IN_REGULAR:
+                case self::IN_IDENTIFIER:
                     if ($current == '/') {
                         if ($next == '*') { // Begin block comments.
                             $state = self::IN_COMMENT;
-                            $this->add_pending( $pending, $filedata, $i );
-                            $i ++;
+                            $this->add_pending($pending, $filedata, $i);
+                            $i++;
                             continue 2;
                         }
                         break;
                     } else if ($current == '%') { // Begin line comment.
-                        $this->add_pending( $pending, $filedata, $i );
+                        $this->add_pending($pending, $filedata, $i);
                         $state = self::IN_LINECOMMENT;
                         break;
                     } else if ($current == '"') {
-                        $this->add_pending( $pending, $filedata, $i );
+                        $this->add_pending($pending, $filedata, $i);
                         $state = self::IN_STRING;
                         break;
                     } else if ($current == "'") {
-                        $this->add_pending( $pending, $filedata, $i );
+                        $this->add_pending($pending, $filedata, $i);
                         $state = self::IN_CHAR;
                         break;
-                    } else if ($this->isidentifierchar( $current )) {
+                    } else if ($this->isidentifierchar($current)) {
                         if ($state == self::IN_REGULAR) {
-                            $this->add_pending( $pending, $filedata, $i );
+                            $this->add_pending($pending, $filedata, $i);
                             $state = self::IN_IDENTIFIER;
                         }
                     } else {
-                        $this->add_pending( $pending, $filedata, $i );
+                        $this->add_pending($pending, $filedata, $i);
                         if ($state == self::IN_IDENTIFIER) {
                             $state = self::IN_REGULAR;
                         }
@@ -199,13 +198,13 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                         }
                     }
                     break;
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     // Check end of block comment.
                     if ($current == '*') {
                         if ($next == '/') {
                             $state = self::IN_REGULAR;
                             $pending = '';
-                            $i ++;
+                            $i++;
                             continue 2;
                         }
                     }
@@ -213,7 +212,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                         continue 2;
                     }
                     break;
-                case self::IN_LINECOMMENT :
+                case self::IN_LINECOMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $pending = '';
@@ -221,8 +220,8 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                         continue 2;
                     }
                     break;
-                case self::IN_STRING :
-                case self::IN_CHAR :
+                case self::IN_STRING:
+                case self::IN_CHAR:
                     // Check end of string.
                     if ($state == self::IN_STRING && $current == '"') {
                         $pending = '';
@@ -241,7 +240,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
                     }
                     // Discard two backslash.
                     if ($current == '\\') {
-                        $i ++; // Skip next char.
+                        $i++; // Skip next char.
                         continue 2;
                     }
                     break;
@@ -262,9 +261,11 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                    && strpos( 'LV()[]{},.;', $current->value ) === false
-                    && strpos( 'LV()[]{},.;', $next->value ) === false) {
+                if (
+                    $current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
+                    && strpos('LV()[]{},.;', $current->value) === false
+                    && strpos('LV()[]{},.;', $next->value) === false
+                ) {
                     $current->value .= $next->value;
                     $next = false;
                 }

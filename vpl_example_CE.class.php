@@ -23,7 +23,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__).'/vpl_submission_CE.class.php');
+require_once(dirname(__FILE__) . '/vpl_submission_CE.class.php');
 
 /**
  * Class mod_vpl_example_CE

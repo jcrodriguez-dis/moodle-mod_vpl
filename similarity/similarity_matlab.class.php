@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_base.class.php');
+require_once(dirname(__FILE__) . '/similarity_base.class.php');
 
 /**
  * M (Octave) language similarity class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/similarity_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_similarity_matlab extends vpl_similarity_base {
-
     /**
      * Returns the type of similarity.
      *
@@ -48,23 +47,23 @@ class vpl_similarity_matlab extends vpl_similarity_base {
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
                 switch ($token->value) {
-                    case '[' :
+                    case '[':
                         // Only add ].
                         break;
-                    case '(' :
+                    case '(':
                         // Only add ).
                         break;
-                    case '{' :
+                    case '{':
                         break;
-                    case '<' : // Replace < by >.
+                    case '<': // Replace < by >.
                         $token->value = '>';
                         $ret[] = $token;
                         break;
-                    case '<=' : // Replace < by >.
+                    case '<=': // Replace < by >.
                         $token->value = '>=';
                         $ret[] = $token;
                         break;
-                    default :
+                    default:
                         $ret[] = $token;
                 }
             }
@@ -79,6 +78,6 @@ class vpl_similarity_matlab extends vpl_similarity_base {
      * @return vpl_tokenizer The tokenizer instance for Octave.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'matlab' );
+        return vpl_tokenizer_factory::get('matlab');
     }
 }

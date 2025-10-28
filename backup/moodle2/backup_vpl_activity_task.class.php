@@ -23,8 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined ( 'MOODLE_INTERNAL' ) || die ();
-require_once(dirname ( __FILE__ ) . '/backup_vpl_stepslib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/backup_vpl_stepslib.php');
 
 /**
  * VPL backup task class that provides all the settings and steps to perform it
@@ -35,7 +35,6 @@ require_once(dirname ( __FILE__ ) . '/backup_vpl_stepslib.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class backup_vpl_activity_task extends backup_activity_task {
-
     /**
      * No particular settings for this activity.
      */
@@ -46,7 +45,7 @@ class backup_vpl_activity_task extends backup_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        $this->add_step ( new backup_vpl_activity_structure_step ( 'vpl_structure', 'vpl.xml' ) );
+        $this->add_step(new backup_vpl_activity_structure_step('vpl_structure', 'vpl.xml'));
     }
 
     /**
@@ -58,15 +57,15 @@ class backup_vpl_activity_task extends backup_activity_task {
     public static function encode_content_links($content) {
         global $CFG;
 
-        $base = preg_quote ( $CFG->wwwroot, "/" );
+        $base = preg_quote($CFG->wwwroot, "/");
 
         // Link to the list of VPL instances.
         $search = "/(" . $base . "\/mod\/vpl\/index.php\?id\=)([0-9]+)/";
-        $content = preg_replace ( $search, '$@VPLINDEX*$2@$', $content );
+        $content = preg_replace($search, '$@VPLINDEX*$2@$', $content);
 
         // Link to VPL view by moduleid.
         $search = "/(" . $base . "\/mod\/vpl\/view.php\?id\=)([0-9]+)/";
-        $content = preg_replace ( $search, '$@VPLVIEWBYID*$2@$', $content );
+        $content = preg_replace($search, '$@VPLVIEWBYID*$2@$', $content);
 
         return $content;
     }

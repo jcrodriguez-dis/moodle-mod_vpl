@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_c.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_c.class.php');
 
 /**
  * Java programing language tokenizer class
@@ -27,11 +27,10 @@ require_once(dirname(__FILE__).'/tokenizer_c.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_tokenizer_java extends vpl_tokenizer_c {
-
     /**
      * @var array Reserved words for Java.
      */
-    static private $reservedjava = null;
+    private static $reservedjava = null;
 
     /**
      * Constructor.

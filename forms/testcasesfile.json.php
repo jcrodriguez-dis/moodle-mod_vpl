@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'AJAX_SCRIPT', true );
+define('AJAX_SCRIPT', true);
 
 require(__DIR__ . '/../../../config.php');
 
@@ -33,26 +33,26 @@ $result->success = true;
 $result->response = new stdClass();
 $result->error = '';
 try {
-    require_once(dirname( __FILE__ ) . '/../locallib.php');
-    require_once(dirname( __FILE__ ) . '/../vpl.class.php');
-    require_once(dirname( __FILE__ ) . '/edit.class.php');
+    require_once(dirname(__FILE__) . '/../locallib.php');
+    require_once(dirname(__FILE__) . '/../vpl.class.php');
+    require_once(dirname(__FILE__) . '/edit.class.php');
     if (! isloggedin()) {
-        throw new Exception( get_string( 'loggedinnot' ) );
+        throw new Exception(get_string('loggedinnot'));
     }
-    $id = required_param( 'id', PARAM_INT ); // Course id.
-    $action = required_param( 'action', PARAM_ALPHANUMEXT );
-    $vpl = new mod_vpl( $id );
+    $id = required_param('id', PARAM_INT); // Course id.
+    $action = required_param('action', PARAM_ALPHANUMEXT);
+    $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".
-    require_login( $vpl->get_course(), false );
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
-    $PAGE->set_url( new moodle_url( '/mod/vpl/forms/testcasesfile.json.php', [
+    require_login($vpl->get_course(), false);
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
+    $PAGE->set_url(new moodle_url('/mod/vpl/forms/testcasesfile.json.php', [
             'id' => $id,
             'action' => $action,
-    ] ) );
+    ]));
     echo $OUTPUT->header(); // Send headers.
-    $actiondata = json_decode(file_get_contents( 'php://input' ), null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    $actiondata = json_decode(file_get_contents('php://input'), null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     switch ($action) {
-        case 'save' :
+        case 'save':
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);
             $fgm = $vpl->get_execution_fgm();
             $result->response->requestsconfirmation = false;
@@ -65,16 +65,16 @@ try {
             }
             foreach ($postfiles as $filename => $content) {
                 if (!vpl_is_valid_path_name($filename)) {
-                    throw new Exception( get_string( 'error:invalidfile', VPL, $filename ) );
+                    throw new Exception(get_string('error:invalidfile', VPL, $filename));
                 }
                 if ($content > '') {
-                    $fgm->addFile( $filename, $content);
+                    $fgm->addFile($filename, $content);
                 }
             }
             $result->response->version = $fgm->getversion();
             $vpl->update();
             break;
-        case 'load' :
+        case 'load':
             $result->response = mod_vpl_edit::load($vpl, $USER->id);
             $testfiles = ['vpl_evaluate.cases' => ''];
             $evaluatorname = $vpl->get_effective_setting('evaluator');
@@ -99,12 +99,12 @@ try {
             $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;
-        default :
-            throw new Exception( 'ajax action error: ' + $action );
+        default:
+            throw new Exception('ajax action error: ' + $action);
     }
-} catch (\Throwable $e ) {
+} catch (\Throwable $e) {
     $result->success = false;
     $result->error = $e->getMessage();
 }
-echo json_encode( $result );
+echo json_encode($result);
 die();

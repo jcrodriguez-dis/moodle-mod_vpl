@@ -37,8 +37,10 @@ global $CFG;
 require_once("{$CFG->dirroot}/webservice/rest/locallib.php");
 
 if (!webservice_protocol_is_enabled('rest')) {
-    debugging('The server died because the web services or the REST protocol are not enable',
-        DEBUG_DEVELOPER);
+    debugging(
+        'The server died because the web services or the REST protocol are not enable',
+        DEBUG_DEVELOPER
+    );
     die;
 }
 // Modification by Juan Carlos Rodríguez del Pino date 20140601.

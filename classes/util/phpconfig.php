@@ -49,7 +49,7 @@ class phpconfig {
         if (preg_match($regexp, $value, $matches) == 1) {
             $number = (float) $matches[1];
             $unityvalue = self::BYTECONVERTER[$matches[2]];
-            if ( $number < PHP_INT_MAX / $unityvalue ) {
+            if ($number < PHP_INT_MAX / $unityvalue) {
                 $bytes = (int) ($number * $unityvalue);
             } else {
                 $bytes = PHP_INT_MAX;
@@ -99,7 +99,7 @@ class phpconfig {
     public static function increase_memory_limit(): void {
         gc_enable();
         $maxpost = self::get_post_max_size();
-        if ( $maxpost < PHP_INT_MAX / 3 ) {
+        if ($maxpost < PHP_INT_MAX / 3) {
             $bytes = $maxpost * 3;
         } else {
             $bytes = PHP_INT_MAX;

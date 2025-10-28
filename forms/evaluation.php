@@ -22,50 +22,50 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
-require_once(dirname(__FILE__).'/../editor/editor_utility.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__) . '/../editor/editor_utility.php');
 
 global $USER, $DB, $OUTPUT;
 
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$userid = optional_param( 'userid', false, PARAM_INT );
+$id = required_param('id', PARAM_INT);
+$userid = optional_param('userid', false, PARAM_INT);
 $parms = [ 'id' => $id ];
 if ($userid) {
     $parms['userid'] = $userid;
 }
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/evaluation.php',  $parms);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('forms/evaluation.php', $parms);
 if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // Evaluate own submission.
     $userid = $USER->id;
-    $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+    $vpl->require_capability(VPL_SUBMIT_CAPABILITY);
 } else { // Evaluate other user submission.
-    $vpl->require_capability( VPL_GRADE_CAPABILITY );
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
 }
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
 vpl_editor_util::generate_requires_evaluation();
 // Display page.
-$vpl->print_header( get_string( 'evaluation', VPL ) );
+$vpl->print_header(get_string('evaluation', VPL));
 flush();
 
-echo '<h2>' . s( get_string( 'evaluating', VPL ) ) . '</h2>';
-$user = $DB->get_record( 'user', [ 'id' => $userid ] );
-$text = ' ' . $vpl->user_picture( $user );
-$text .= ' ' . fullname( $user );
-echo $OUTPUT->box( $text );
+echo '<h2>' . s(get_string('evaluating', VPL)) . '</h2>';
+$user = $DB->get_record('user', [ 'id' => $userid ]);
+$text = ' ' . $vpl->user_picture($user);
+$text .= ' ' . fullname($user);
+echo $OUTPUT->box($text);
 $ajaxurl = "edit.json.php?id={$id}&userid={$userid}&action=";
-if (optional_param( 'grading', 0, PARAM_INT )) {
-    $inpopup = optional_param( 'inpopup', 0, PARAM_INT );
+if (optional_param('grading', 0, PARAM_INT)) {
+    $inpopup = optional_param('inpopup', 0, PARAM_INT);
     $nexturl = "../forms/gradesubmission.php?id={$id}&userid={$userid}&inpopup={$inpopup}";
 } else {
     $nexturl = "../forms/submissionview.php?id={$id}&userid={$userid}";
 }
 vpl_editor_util::print_js_i18n();
-vpl_editor_util::generate_evaluate_script( $ajaxurl, $nexturl );
+vpl_editor_util::generate_evaluate_script($ajaxurl, $nexturl);
 $vpl->print_footer();

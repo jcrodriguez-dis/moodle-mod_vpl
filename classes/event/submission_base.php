@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Base event class for VPL submission events.
  * This class is used to log events related to VPL submissions, such as creation, editing, and viewing.
  */
 class submission_base extends base {
-
     /**
      * Returns the mapping for object IDs.
      * This method is used to map the object IDs in the database to the event.
@@ -71,7 +70,7 @@ class submission_base extends base {
      * @return string The URL for viewing the submission.
      */
     public function get_url() {
-        return $this->get_url_base( 'forms/submissionview.php' );
+        return $this->get_url_base('forms/submissionview.php');
     }
 
     /**
@@ -84,7 +83,7 @@ class submission_base extends base {
     protected function get_description_mod($mod) {
         $desc = 'The user with id ' . $this->userid . ' ' . $this->action;
         $desc .= ' ' . $mod . ' VPL submission with id ' . $this->objectid;
-        if (isset( $this->relateduserid ) && $this->relateduserid > 0 && $this->relateduserid != $this->userid) {
+        if (isset($this->relateduserid) && $this->relateduserid > 0 && $this->relateduserid != $this->userid) {
             $desc .= ' of user with id ' . $this->relateduserid;
         }
         return $desc;
@@ -97,8 +96,8 @@ class submission_base extends base {
      * @param mixed $submission The submission object or an array of submission data.
      */
     public static function log($submission) {
-        if (is_array( $submission )) {
-            parent::log( $submission );
+        if (is_array($submission)) {
+            parent::log($submission);
         } else {
             global $USER;
             $subinstance = $submission->get_instance();
@@ -108,7 +107,7 @@ class submission_base extends base {
                     'context' => $vpl->get_context(),
                     'relateduserid' => ($USER->id != $subinstance->userid ? $subinstance->userid : null),
             ];
-            parent::log( $einfo );
+            parent::log($einfo);
         }
     }
 
@@ -119,6 +118,6 @@ class submission_base extends base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( '' );
+        return $this->get_description_mod('');
     }
 }

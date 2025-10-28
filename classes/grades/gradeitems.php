@@ -28,9 +28,9 @@ namespace mod_vpl\grades;
  * @copyright  2023 Astor Bizard
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-class gradeitems implements \core_grades\local\gradeitem\advancedgrading_mapping,
-                            \core_grades\local\gradeitem\itemnumber_mapping {
-
+class gradeitems implements
+    \core_grades\local\gradeitem\advancedgrading_mapping,
+    \core_grades\local\gradeitem\itemnumber_mapping {
     /**
      * Get the list of advanced grading item names for this component.
      *
@@ -48,5 +48,4 @@ class gradeitems implements \core_grades\local\gradeitem\advancedgrading_mapping
     public static function get_itemname_mapping_for_component(): array {
         return [0 => 'submissions'];
     }
-
 }

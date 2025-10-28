@@ -85,7 +85,7 @@ final class privacy_provider_test extends base_fixture {
         $files = ['a.c' => "int main(){\nprintf(\"editingteachers\");\n}"];
         $error = '';
         $submissionid = $this->vplonefile->add_submission($this->editingteachers[0]->id, $files, '', $error);
-        if ($submissionid == 0 || $error != '' ) {
+        if ($submissionid == 0 || $error != '') {
             $this->fail($error);
         }
 
@@ -164,7 +164,7 @@ final class privacy_provider_test extends base_fixture {
         $files = ['a.c' => "int main(){\nprintf(\"student4\");\n}"];
         $error = '';
         $submissionid1 = $this->vplonefile->add_submission($this->students[4]->id, $files, 'algo', $error);
-        if ($submissionid1 == 0 || $error != '' ) {
+        if ($submissionid1 == 0 || $error != '') {
             $this->fail($error);
         }
         $this->submission1 = new mod_vpl_submission_CE($this->vplonefile, $submissionid1);
@@ -172,7 +172,7 @@ final class privacy_provider_test extends base_fixture {
         $files = ['a.c' => "int main(){\nprintf(\"student4 second\");\n}"];
         $error = '';
         $submissionid2 = $this->vplonefile->add_submission($this->students[4]->id, $files, '', $error);
-        if ($submissionid2 == 0 || $error != '' ) {
+        if ($submissionid2 == 0 || $error != '') {
             $this->fail($error);
         }
         $this->submission2 = new mod_vpl_submission_CE($this->vplonefile, $submissionid2);
@@ -298,7 +298,7 @@ final class privacy_provider_test extends base_fixture {
                 'start_time' => time(),
                 'adminticket' => 'secret',
             ];
-            $DB->insert_record( VPL_RUNNING_PROCESSES, $parms);
+            $DB->insert_record(VPL_RUNNING_PROCESSES, $parms);
         }
         $context = $this->vplonefile->get_context();
         $approved = new \core_privacy\local\request\approved_contextlist($this->students[0], 'mod_vpl', [$context->id]);
@@ -384,7 +384,7 @@ final class privacy_provider_test extends base_fixture {
      */
     public function test_delete_data_for_user(): void {
         // The editingteacher0 graded the submission of student 1. editingteacher0 must goes first to simplify tests.
-        $users = [$this->editingteachers[0], $this->students[0], $this->students[1], $this->students[2],  $this->students[5]];
+        $users = [$this->editingteachers[0], $this->students[0], $this->students[1], $this->students[2], $this->students[5]];
         $usersvpls = [
             [$this->vplonefile, $this->vplteamwork],
             [$this->vplonefile, $this->vplmultifile, $this->vplvariations, $this->vplteamwork],
@@ -548,7 +548,6 @@ final class privacy_provider_test extends base_fixture {
             sort($a2);
             $this->assertEquals($a1, $a2);
         }
-
     }
 }
 

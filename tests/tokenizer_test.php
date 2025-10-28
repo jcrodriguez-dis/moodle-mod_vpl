@@ -377,7 +377,7 @@ final class tokenizer_test extends \advanced_testcase {
             $tokenizer->set_max_token_count($input['max_token_count']);
 
             $result = $tokenizer->get_line_tokens($input['value'], "", 0);
-            $info = $filename . "\n" . file_get_contents($filename) ."\n";
+            $info = $filename . "\n" . file_get_contents($filename) . "\n";
             $info .= "--Input---\n" . json_encode($input) . "\n";
             $info .= "--Result---\n" . json_encode($result) . "\n";
             $info .= "--Expected result---\n" . json_encode($expectedresult);

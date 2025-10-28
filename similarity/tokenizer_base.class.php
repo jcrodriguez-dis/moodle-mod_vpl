@@ -32,14 +32,12 @@ use mod_vpl\tokenizer\token_type;
  * Class for backward compatibility with old token types.
  */
 class vpl_token_type extends token_type {
-
 }
 
 /**
  * Class for backward compatibility with old token.
  */
 class vpl_token extends token {
-
 }
 
 /**

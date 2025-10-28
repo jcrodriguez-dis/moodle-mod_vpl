@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
 
 /**
  * ADA programing language tokenizer class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/tokenizer_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_tokenizer_ada extends vpl_tokenizer_base {
-
     /**
      * @var int REGULAR The state indicating that the tokenizer is currently processing regular code.
      */
@@ -81,7 +80,7 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
      * @return bool True if the text is a number, false otherwise.
      */
     protected function is_number($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
@@ -94,17 +93,17 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
      * @param string $rawpending The pending token to add.
      */
     protected function add_pending(&$rawpending) {
-        $pending = strtolower( $rawpending );
-        if (isset( self::$operators[$pending] )) {
+        $pending = strtolower($rawpending);
+        if (isset(self::$operators[$pending])) {
             $type = vpl_token_type::OPERATOR;
-        } else if (isset( $this->reserved[$pending] )) {
+        } else if (isset($this->reserved[$pending])) {
             $type = vpl_token_type::RESERVED;
-        } else if ($this->is_number( $pending )) {
+        } else if ($this->is_number($pending)) {
             $type = vpl_token_type::LITERAL;
         } else {
             $type = vpl_token_type::IDENTIFIER;
         }
-        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
         $rawpending = '';
     }
 
@@ -238,10 +237,10 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         $this->linenumber = 1;
         $state = self::REGULAR;
         $pending = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
         $previous = '';
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -250,37 +249,37 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                 $next = '';
             }
             if ($previous == self::LF) {
-                $this->linenumber ++;
+                $this->linenumber++;
             }
             if ($current == self::CR) {
                 if ($next == self::LF) {
                     continue;
                 } else {
-                    $this->linenumber ++;
+                    $this->linenumber++;
                     $current = self::LF;
                 }
             }
             switch ($state) {
-                case self::IN_LINECOMMENT :
+                case self::IN_LINECOMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     // Check end of string.
                     if ($current == '"') {
                         if ($next != '"') {
                             $state = self::REGULAR;
                             break;
                         } else {
-                            $i ++;
+                            $i++;
                             $current = ' ';
                             break;
                         }
                     }
                     break;
-                case self::IN_NUMBER :
+                case self::IN_NUMBER:
                     if (($current >= '0' && $current <= '9') || $current == '.' || $current == 'e' || $current == 'e') {
                         $pending .= $current;
                         break;
@@ -289,44 +288,44 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending( $pending );
+                    $this->add_pending($pending);
                     $state = self::REGULAR;
                     // Process current as REGULAR.
-                case self::REGULAR :
-                    if (strpos( " \n\r\t\v\f", $current ) !== false) { // A separator.
-                        $this->add_pending( $pending );
+                case self::REGULAR:
+                    if (strpos(" \n\r\t\v\f", $current) !== false) { // A separator.
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == '-') {
                         if ($next == '-') { // Begin line comment.
                             $state = self::IN_LINECOMMENT;
-                            $this->add_pending( $pending );
-                            $i ++;
+                            $this->add_pending($pending);
+                            $i++;
                             break;
                         }
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == "'") {
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         if ($i < ($l - 2) && $filedata[$i + 2] === "'") { // Char literal coding problem.
                             $i += 2;
                             break;
                         } // Not char literal then operator.
-                    } else if (strpos( "&'()*+,–./:;<=>|", $current ) !== false) { // A delimiter.
-                        $this->add_pending( $pending );
-                        $this->add_pending( $current );
+                    } else if (strpos("&'()*+,–./:;<=>|", $current) !== false) { // A delimiter.
+                        $this->add_pending($pending);
+                        $this->add_pending($current);
                         break;
                     } else if ($current >= '0' && $current <= '9') { // Start of number.
                         $state = self::IN_NUMBER;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending( $pending );
+                    $this->add_pending($pending);
             }
         }
-        $this->add_pending( $pending );
+        $this->add_pending($pending);
         $this->compact_operators();
     }
 
@@ -350,8 +349,10 @@ class vpl_tokenizer_ada extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
-                    && isset( $this->operators[$current->value . $next->value] )) {
+                if (
+                    $current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
+                    && isset($this->operators[$current->value . $next->value])
+                ) {
                     $current->value .= $next->value;
                     $next = false;
                 }

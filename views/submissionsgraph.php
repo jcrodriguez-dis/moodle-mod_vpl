@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/vpl_graph.class.php');
+require_once(dirname(__FILE__) . '/vpl_graph.class.php');
 
 /**
  * Draws the graph of userid submissions
@@ -38,30 +38,30 @@ function vpl_submissions_graph($vpl, $userid) {
     $subsn = [];
     $series = [];
     $names = [];
-    $submissionslist = $vpl->user_submissions( $userid );
-    if (count( $submissionslist ) > 0) {
-        $submissionslist = array_reverse( $submissionslist );
+    $submissionslist = $vpl->user_submissions($userid);
+    if (count($submissionslist) > 0) {
+        $submissionslist = array_reverse($submissionslist);
         // Create submissions object.
         $subs = [];
         foreach ($submissionslist as $submission) {
-            $subs[] = new mod_vpl_submission( $vpl, $submission );
+            $subs[] = new mod_vpl_submission($vpl, $submission);
         }
         foreach ($subs as $sub) {
             $filesarray = $sub->get_submitted_fgm()->getfilelist();
             foreach ($filesarray as $name) {
-                if (! in_array( $name, $names, true )) {
+                if (! in_array($name, $names, true)) {
                     $names[] = $name;
                     $series[$name] = [];
                 }
             }
         }
         // Initial value.
-        $subshowl = ( int ) (count( $subs ) / 20);
+        $subshowl = (int) (count($subs) / 20);
         if ($subshowl < 1) {
             $subshow = 1;
         } else {
             $subshow = 5;
-            while ( true ) {
+            while (true) {
                 if ($subshow >= $subshowl) {
                     break;
                 }
@@ -69,7 +69,7 @@ function vpl_submissions_graph($vpl, $userid) {
                 if ($subshow >= $subshowl) {
                     break;
                 }
-                $subshow = ( int ) (2.5 * $subshow);
+                $subshow = (int) (2.5 * $subshow);
                 if ($subshow >= $subshowl) {
                     break;
                 }
@@ -85,22 +85,21 @@ function vpl_submissions_graph($vpl, $userid) {
             $filesarray = $sub->get_submitted_files();
             $files = [];
             foreach ($filesarray as $name => $data) {
-                $size = strlen( $data );
+                $size = strlen($data);
                 $files[$name] = $size;
             }
             foreach ($names as $name) {
-                if (isset( $files[$name] )) {
+                if (isset($files[$name])) {
                     $series[$name][$nsub - 1] = $files[$name];
                 } else {
                     $series[$name][$nsub - 1] = null;
                 }
             }
-            $nsub ++;
+            $nsub++;
         }
     }
-    $user = $DB->get_record( 'user', [
+    $user = $DB->get_record('user', [
             'id' => $userid,
-    ] );
-    vpl_graph::draw( $vpl->get_printable_name() . ' - ' . $vpl->fullname( $user, false )
-                   , get_string( 'submissions', VPL ) , get_string( "sizeb" ), $subsn, $series, $names );
+    ]);
+    vpl_graph::draw($vpl->get_printable_name() . ' - ' . $vpl->fullname($user, false), get_string('submissions', VPL), get_string("sizeb"), $subsn, $series, $names);
 }

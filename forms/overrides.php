@@ -40,26 +40,30 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
     if ($editing == $overrideid) {
         vpl_include_jsfile('override.js');
         $save = '<a href="#" onclick="VPL.submitOverrideForms();">' .
-                    $OUTPUT->pix_icon( 'save', get_string('save'), 'mod_vpl' ) .
+                    $OUTPUT->pix_icon('save', get_string('save'), 'mod_vpl') .
                 '</a>';
         $cancel = '<a href="#" onclick="VPL.cancelOverrideForms();">' .
-                    $OUTPUT->pix_icon( 'cancel', get_string('cancel'), 'mod_vpl' ) .
+                    $OUTPUT->pix_icon('cancel', get_string('cancel'), 'mod_vpl') .
                 '</a>';
         return $save . $cancel;
     } else if ($editing === null) {
         $edit = '<a href="?id=' . $id . '&edit=' . $overrideid . '#scroll_point">' .
-                    $OUTPUT->pix_icon( 'editthis', get_string('edit'), 'mod_vpl' ) .
+                    $OUTPUT->pix_icon('editthis', get_string('edit'), 'mod_vpl') .
                 '</a>';
         $copy = '<a href="?id=' . $id . '&edit=0&copy=' . $overrideid . '#scroll_point">' .
-                    $OUTPUT->pix_icon( 'copy', get_string('copy'), 'mod_vpl' ) .
+                    $OUTPUT->pix_icon('copy', get_string('copy'), 'mod_vpl') .
                 '</a>';
         $deletebuttonid = 'delete_override_' . $overrideid;
         $delete = '<a id="' . $deletebuttonid . '" href="?id=' . $id . '&delete=' . $overrideid . '">' .
-                      $OUTPUT->pix_icon( 'delete', get_string('delete'), 'mod_vpl' ) .
+                      $OUTPUT->pix_icon('delete', get_string('delete'), 'mod_vpl') .
                   '</a>';
-        $PAGE->requires->event_handler('#' . $deletebuttonid, 'click', 'M.util.show_confirm_dialog',
-                ['message' => get_string('confirmoverridedeletion', VPL)]);
-        return $edit . $copy. $delete;
+        $PAGE->requires->event_handler(
+            '#' . $deletebuttonid,
+            'click',
+            'M.util.show_confirm_dialog',
+            ['message' => get_string('confirmoverridedeletion', VPL)]
+        );
+        return $edit . $copy . $delete;
     } else {
         return '';
     }
@@ -158,7 +162,7 @@ class vpl_override_options_form extends moodleform {
 
         foreach (['startdate', 'duedate'] as $datefield) {
             $mform->addElement('html', '<div class="override-option">');
-            $mform->addElement('checkbox', 'override_' . $datefield, get_string( $datefield, VPL ), get_string( 'override', VPL ));
+            $mform->addElement('checkbox', 'override_' . $datefield, get_string($datefield, VPL), get_string('override', VPL));
             $mform->addHelpButton('override_' . $datefield, 'override', VPL);
             $mform->addElement('date_time_selector', $datefield, null, ['optional' => true]);
             $mform->disabledIf($datefield, 'override_' . $datefield);
@@ -167,9 +171,9 @@ class vpl_override_options_form extends moodleform {
 
         $passwordfield = 'password';
         $mform->addElement('html', '<div class="override-option">');
-        $mform->addElement('checkbox', 'override_' . $passwordfield, get_string($passwordfield), get_string( 'override', VPL ));
+        $mform->addElement('checkbox', 'override_' . $passwordfield, get_string($passwordfield), get_string('override', VPL));
         $mform->addHelpButton('override_' . $passwordfield, 'override', VPL);
-        $mform->addElement( 'passwordunmask', $passwordfield, null, ['optional' => true]);
+        $mform->addElement('passwordunmask', $passwordfield, null, ['optional' => true]);
         $mform->setType($passwordfield, PARAM_TEXT);
         $mform->setDefault($passwordfield, '');
         $mform->disabledIf($passwordfield, 'override_' . $passwordfield);
@@ -177,7 +181,7 @@ class vpl_override_options_form extends moodleform {
 
         foreach (['reductionbyevaluation', 'freeevaluations'] as $textfield) {
             $mform->addElement('html', '<div class="override-option">');
-            $mform->addElement('checkbox', 'override_' . $textfield, get_string( $textfield, VPL ), get_string( 'override', VPL ));
+            $mform->addElement('checkbox', 'override_' . $textfield, get_string($textfield, VPL), get_string('override', VPL));
             $mform->addHelpButton('override_' . $textfield, 'override', VPL);
             $mform->addElement('text', $textfield, null);
             $mform->setType($textfield, PARAM_TEXT);
@@ -198,10 +202,10 @@ class vpl_override_options_form extends moodleform {
      * @param array $data The data array containing the field value.
      * @param array $errors The errors array to store validation errors.
      */
-    public static function validate($field, $pattern, $message, & $data, & $errors) {
-        $data[$field] = trim( $data[$field] );
+    public static function validate($field, $pattern, $message, &$data, &$errors) {
+        $data[$field] = trim($data[$field]);
         $res = preg_match($pattern, $data[$field]);
-        if ( $res == 0 || $res == false) {
+        if ($res == 0 || $res == false) {
             $errors[$field] = $message;
         }
     }
@@ -225,14 +229,14 @@ require_login();
 
 global $PAGE, $OUTPUT, $DB;
 
-$id = required_param( 'id', PARAM_INT );
+$id = required_param('id', PARAM_INT);
 $edit = optional_param('edit', null, PARAM_INT);
 $delete = optional_param('delete', null, PARAM_INT);
 $update = optional_param('update', null, PARAM_INT);
 $copyid = optional_param('copy', null, PARAM_INT);
-$vpl = new mod_vpl( $id );
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
-$vpl->prepare_page( 'forms/overrides.php', [ 'id' => $id ] );
+$vpl = new mod_vpl($id);
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
+$vpl->prepare_page('forms/overrides.php', [ 'id' => $id ]);
 
 $vplid = $vpl->get_instance()->id;
 $overrides = vpl_get_overrides($vplid);
@@ -253,11 +257,12 @@ if ($edit !== null || $update !== null) {
                 $alreadyassignedusers = array_merge($alreadyassignedusers, explode(',', $override->userids));
             }
         }
-        $availableusers = array_map('fullname',
-                array_filter(get_enrolled_users(context_module::instance($id)), function($user) use ($alreadyassignedusers) {
+        $availableusers = array_map(
+            'fullname',
+            array_filter(get_enrolled_users(context_module::instance($id)), function ($user) use ($alreadyassignedusers) {
                     return !in_array($user->id, $alreadyassignedusers);
-                }
-        ));
+            })
+        );
     } else {
         $availableusers = null;
     }
@@ -270,10 +275,10 @@ if ($edit !== null || $update !== null) {
                 $alreadyassignedgroups = array_merge($alreadyassignedgroups, explode(',', $override->groupids));
             }
         }
-        $availablegroups = array_filter($groups, function($group) use ($alreadyassignedgroups) {
+        $availablegroups = array_filter($groups, function ($group) use ($alreadyassignedgroups) {
             return !in_array($group->id, $alreadyassignedgroups);
         });
-        $availablegroups = array_map(function($group) {
+        $availablegroups = array_map(function ($group) {
             return $group->name;
         }, $availablegroups);
     } else {
@@ -296,8 +301,8 @@ if ($delete !== null) {
         // Delete associated calendar events.
         $vpl->update_override_calendar_events($override, null, true);
         // Delete the override.
-        $DB->delete_records( VPL_OVERRIDES, ['id' => $overrideid] );
-        $DB->delete_records( VPL_ASSIGNED_OVERRIDES, ['override' => $overrideid] );
+        $DB->delete_records(VPL_OVERRIDES, ['id' => $overrideid]);
+        $DB->delete_records(VPL_ASSIGNED_OVERRIDES, ['override' => $overrideid]);
         \mod_vpl\event\override_deleted::log($vpl, $overrideid);
     }
     // Properly reload the page.
@@ -328,7 +333,7 @@ if ($update !== null) {
         ];
         if ($update == 0) {
             // Create the override.
-            $newid = $DB->insert_record( VPL_OVERRIDES, $override );
+            $newid = $DB->insert_record(VPL_OVERRIDES, $override);
             $override->id = $newid;
             $oldoverride = null;
             \mod_vpl\event\override_created::log($vpl, $newid);
@@ -346,7 +351,7 @@ if ($update !== null) {
             } else {
                 $oldoverride = null;
             }
-            $DB->update_record( VPL_OVERRIDES, $override );
+            $DB->update_record(VPL_OVERRIDES, $override);
             \mod_vpl\event\override_updated::log($vpl, $update);
         }
 
@@ -375,11 +380,11 @@ if ($update !== null) {
                 if ($i == $n || ($j < $m && $old[$ids][$i] > $newids[$j])) {
                     // Insert new user/group.
                     $record[$key] = $newids[$j];
-                    $DB->insert_record( VPL_ASSIGNED_OVERRIDES, $record);
+                    $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $record);
                     $j++;
                 } else if ($j == $m || ($newids[$j] > $old[$ids][$i])) {
                     // Remove old user/group.
-                    $DB->delete_records( VPL_ASSIGNED_OVERRIDES, [
+                    $DB->delete_records(VPL_ASSIGNED_OVERRIDES, [
                             'vpl' => $override->vpl,
                             'override' => $override->id,
                             $key => $old[$ids][$i],
@@ -403,9 +408,9 @@ if ($update !== null) {
 }
 
 $PAGE->force_settings_menu();
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/overrides.css' ) );
-$vpl->print_header( get_string( 'overrides', VPL ) );
-$vpl->print_heading_with_help( 'overrides' );
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/overrides.css'));
+$vpl->print_header(get_string('overrides', VPL));
+$vpl->print_heading_with_help('overrides');
 echo $OUTPUT->box_start();
 
 $table = new html_table();
@@ -460,7 +465,7 @@ foreach ($overrides as $override) {
             $users = array_map('fullname', $DB->get_records_list('user', 'id', explode(',', $override->userids), 'id'));
         }
         if (!empty($override->groupids)) {
-            $users = array_merge($users, array_map(function($group) {
+            $users = array_merge($users, array_map(function ($group) {
                 return '<i class="fa fa-fw fa-group"></i>&nbsp;' . $group->name;
             }, $DB->get_records_list('groups', 'id', explode(',', $override->groupids), 'id')));
         }

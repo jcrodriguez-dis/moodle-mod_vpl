@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Base event class for variation-related events.
  * This class is used to log events related to variations in the VPL module.
  */
 class variation_base extends base {
-
     /**
      * Returns the object ID mapping for the event.
      * This method is used to define how the object ID associated with the event should be mapped.
@@ -86,7 +85,7 @@ class variation_base extends base {
             'relateduserid' => $userid,
             'other' => ['vplid' => $vplinstance->id],
         ];
-        parent::log( $info );
+        parent::log($info);
     }
 
     /**
@@ -96,7 +95,7 @@ class variation_base extends base {
      * @return string The URL for viewing the variation.
      */
     public function get_url() {
-        return $this->get_url_base( 'view.php' );
+        return $this->get_url_base('view.php');
     }
 
     /**

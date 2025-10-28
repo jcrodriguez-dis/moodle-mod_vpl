@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a submission is debugged.
  * This class is used to log the event when a submission is debugged in the VPL IDE.
  */
 class submission_debugged extends submission_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.

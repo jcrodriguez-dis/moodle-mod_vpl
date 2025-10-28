@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_c.class.php');
 
 /**
  * Python programing language tokenizer class
@@ -31,7 +31,6 @@ require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
  * @copyright authors
  */
 class vpl_tokenizer_python extends vpl_tokenizer_c {
-
     /**
      * @var array list of reserved words
      */
@@ -44,7 +43,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
      * @return bool true if the text is an identifier, false otherwise
      */
     protected function is_text($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
@@ -60,20 +59,20 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
             $pending = '';
             return;
         }
-        if ($this->is_indentifier( $pending )) {
-            if (isset( $this->reserved[$pending] )) {
+        if ($this->is_indentifier($pending)) {
+            if (isset($this->reserved[$pending])) {
                 $type = vpl_token_type::RESERVED;
             } else {
                 $type = vpl_token_type::IDENTIFIER;
             }
         } else {
-            if ($this->is_number( $pending ) || $this->is_text( $pending )) {
+            if ($this->is_number($pending) || $this->is_text($pending)) {
                 $type = vpl_token_type::LITERAL;
             } else {
                 $type = vpl_token_type::OPERATOR;
             }
         }
-        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -133,10 +132,10 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         $state = self::REGULAR;
         $pending = '';
         $firstnospace = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
         $previous = '';
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -151,13 +150,13 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
             }
             if ($previous == self::LF) {
                 $firstnospace = '';
-                $this->linenumber ++;
+                $this->linenumber++;
             }
             if ($current == self::CR) {
                 if ($next == self::LF) {
                     continue;
                 } else {
-                    $this->linenumber ++;
+                    $this->linenumber++;
                     $current = self::LF;
                 }
             }
@@ -167,7 +166,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                 }
             }
             switch ($state) {
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     // Check end of block comment.
                     if ($current == '"' && $next == '"' && $nextnext == '"') {
                         $i += 2;
@@ -175,13 +174,13 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                         break;
                     }
                     break;
-                case self::IN_LINECOMMENT :
+                case self::IN_LINECOMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     // Check end of string.
                     if ($current == '"' && $previous != '\\') {
                         $state = self::REGULAR;
@@ -192,7 +191,7 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                         $current = ' ';
                     }
                     break;
-                case self::IN_CHAR :
+                case self::IN_CHAR:
                     // Check end of char.
                     if ($current == '\'' && $previous != '\\') {
                         $pending .= '\'';
@@ -204,9 +203,11 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                         $current = ' ';
                     }
                     break;
-                case self::IN_NUMBER :
-                    if (($current >= '0' && $current <= '9') || $current == '.'
-                        || $current == 'E' || $current == 'e') {
+                case self::IN_NUMBER:
+                    if (
+                        ($current >= '0' && $current <= '9') || $current == '.'
+                        || $current == 'E' || $current == 'e'
+                    ) {
                         $pending .= $current;
                         break;
                     }
@@ -214,51 +215,53 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending( $pending );
+                    $this->add_pending($pending);
                     $state = self::REGULAR;
                     // Process current as REGULAR.
-                case self::REGULAR :
+                case self::REGULAR:
                     if ($current == '"' && $next == '"' && $nextnext == '"') {
                         // Begin block comments.
                         $state = self::IN_COMMENT;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $i += 2;
                         break;
                     } else if ($current == '#') {
                         // Begin line comment.
                         $state = self::IN_LINECOMMENT;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == "'") {
                         $state = self::IN_CHAR;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == '#' && $firstnospace == $current) {
                         $state = self::IN_MACRO;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current >= '0' && $current <= '9') {
                         $state = self::IN_NUMBER;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending = $current;
                         break;
                     }
-                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
-                        || $current == '_' || ord( $current ) > 127) {
+                    if (
+                        ($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                        || $current == '_' || ord($current) > 127
+                    ) {
                         $pending .= $current;
                     } else {
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         if ($current > ' ') {
-                            $this->add_pending( $current );
+                            $this->add_pending($current);
                         }
                     }
             }
         }
-        $this->add_pending( $pending );
+        $this->add_pending($pending);
         $this->compact_operators();
     }
 }

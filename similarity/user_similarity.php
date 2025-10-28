@@ -23,62 +23,64 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/similarity_factory.class.php');
-require_once(dirname(__FILE__).'/similarity_base.class.php');
-require_once(dirname(__FILE__).'/similarity_sources.class.php');
-require_once(dirname(__FILE__).'/similarity_form.class.php');
-require_once(dirname(__FILE__).'/clusters.class.php');
-require_once(dirname(__FILE__).'/../views/status_box.class.php');
-ini_set( 'memory_limit', '256M' );
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/similarity_factory.class.php');
+require_once(dirname(__FILE__) . '/similarity_base.class.php');
+require_once(dirname(__FILE__) . '/similarity_sources.class.php');
+require_once(dirname(__FILE__) . '/similarity_form.class.php');
+require_once(dirname(__FILE__) . '/clusters.class.php');
+require_once(dirname(__FILE__) . '/../views/status_box.class.php');
+ini_set('memory_limit', '256M');
 
 require_login();
 
 global $CFG, $DB, $PAGE, $OUTPUT;
 
-$id = required_param( 'id', PARAM_INT ); // Course id.
-$userid = required_param( 'userid', PARAM_INT );
+$id = required_param('id', PARAM_INT); // Course id.
+$userid = required_param('userid', PARAM_INT);
 $timelimit = 600; // Limit 10 minutes.
 // Check course existence.
-if (! $course = $DB->get_record( "course", [
+if (
+    ! $course = $DB->get_record("course", [
         'id' => $id,
-] )) {
+    ])
+) {
     throw new moodle_exception('invalidcourseid');
 }
-require_course_login( $course );
-$user = $DB->get_record( 'user', [
+require_course_login($course);
+$user = $DB->get_record('user', [
         'id' => $userid,
-] );
+]);
 if (! $user) {
     throw new moodle_exception('invalidcourseid');
 }
 
-$strtitle = get_string( 'listsimilarity', VPL );
-$PAGE->set_url( '/mod/vpl/similarity/user_similarity.php', [
+$strtitle = get_string('listsimilarity', VPL);
+$PAGE->set_url('/mod/vpl/similarity/user_similarity.php', [
         'id' => $id,
         'userid' => $userid,
-] );
-$PAGE->navbar->add( $strtitle );
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/similarity.css' ) );
-$PAGE->set_title( fullname( $user ) . ':' . $strtitle );
-$PAGE->set_heading( $course->fullname );
+]);
+$PAGE->navbar->add($strtitle);
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
+$PAGE->set_title(fullname($user) . ':' . $strtitle);
+$PAGE->set_heading($course->fullname);
 
 // Print header.
 echo $OUTPUT->header();
-echo $OUTPUT->heading( fullname( $user ) );
+echo $OUTPUT->heading(fullname($user));
 echo '<h2>' . $strtitle . '</h2>';
 
 // TODO creato own log type.
 
-$ovpls = get_all_instances_in_course( VPL, $course );
+$ovpls = get_all_instances_in_course(VPL, $course);
 $timenow = time();
 $vpls = [];
 // Get and select vpls to show.
 foreach ($ovpls as $ovpl) {
-    $vpl = new mod_vpl( false, $ovpl->id );
+    $vpl = new mod_vpl(false, $ovpl->id);
     if (! $vpl->has_capability(VPL_SIMILARITY_CAPABILITY)) {
         continue;
     }
@@ -88,8 +90,10 @@ foreach ($ovpls as $ovpl) {
         continue;
     }
     // Open and limited => NO.
-    if ($timenow >= $vpl->get_effective_setting('startdate', $user->id)
-        && $timenow <= $vpl->get_effective_setting('duedate', $user->id)) {
+    if (
+        $timenow >= $vpl->get_effective_setting('startdate', $user->id)
+        && $timenow <= $vpl->get_effective_setting('duedate', $user->id)
+    ) {
         continue;
     }
     // Can be graded => NO.
@@ -99,16 +103,16 @@ foreach ($ovpls as $ovpl) {
     $vpls[] = $vpl;
 }
 
-@set_time_limit( $timelimit );
+@set_time_limit($timelimit);
 // Prepare table construction.
-$firstname = get_string( 'firstname' );
-$lastname = get_string( 'lastname' );
+$firstname = get_string('firstname');
+$lastname = get_string('lastname');
 if ($CFG->fullnamedisplay == 'lastname firstname') {
     $name = $lastname . ' / ' . $firstname;
 } else {
     $name = $firstname . ' / ' . $lastname;
 }
-$with = get_string( 'similarto', VPL );
+$with = get_string('similarto', VPL);
 $table = new html_table();
 $table->head = [
         $name,
@@ -147,24 +151,24 @@ $outputsize = [
 $bars = [];
 $relatedusers = [];
 foreach ($vpls as $vpl) {
-    vpl_files_pair::set_mins( 100, 100, 100 );
-    vpl_files_pair::set_maxs( 100, 100, 100 );
+    vpl_files_pair::set_mins(100, 100, 100);
+    vpl_files_pair::set_maxs(100, 100, 100);
     $simil = [];
-    vpl_similarity_preprocess::user_activity( $simil, $vpl, $userid );
-    $nuserfiles = count( $simil );
+    vpl_similarity_preprocess::user_activity($simil, $vpl, $userid);
+    $nuserfiles = count($simil);
     if ($nuserfiles > 0) {
-        $activityloadbox = new vpl_progress_bar( s( $vpl->get_printable_name() ) );
+        $activityloadbox = new vpl_progress_bar(s($vpl->get_printable_name()));
         $bars[] = $activityloadbox;
-        vpl_similarity_preprocess::activity( $simil, $vpl, [], true, false, $activityloadbox );
-        $searchprogression = new vpl_progress_bar( get_string( 'similarity', VPL ) );
+        vpl_similarity_preprocess::activity($simil, $vpl, [], true, false, $activityloadbox);
+        $searchprogression = new vpl_progress_bar(get_string('similarity', VPL));
         $bars[] = $searchprogression;
-        if ($nuserfiles >= count( $outputsize )) {
+        if ($nuserfiles >= count($outputsize)) {
             $noutput = 4;
         } else {
             $noutput = $outputsize[$nuserfiles];
         }
-        $selected = vpl_similarity::get_selected( $simil, $noutput, $nuserfiles, $searchprogression );
-        if (count( $selected ) > 0) {
+        $selected = vpl_similarity::get_selected($simil, $noutput, $nuserfiles, $searchprogression);
+        if (count($selected) > 0) {
             $table->data[] = [
                     $vpl->get_printable_name(),
                     '',
@@ -177,10 +181,10 @@ foreach ($vpls as $vpl) {
                         $case->second->show_info(),
                 ];
                 $other = $case->second->get_userid();
-                if (! isset( $relatedusers[$other] )) {
+                if (! isset($relatedusers[$other])) {
                     $relatedusers[$other] = 1;
                 } else {
-                    $relatedusers[$other] ++;
+                    $relatedusers[$other]++;
                 }
             }
         }
@@ -190,13 +194,13 @@ foreach ($vpls as $vpl) {
 foreach ($bars as $bar) {
     $bar->hide();
 }
-if (count( $table->data )) {
-    echo html_writer::table( $table );
+if (count($table->data)) {
+    echo html_writer::table($table);
 } else {
-    vpl_notice( get_string( 'noresults' ) );
+    vpl_notice(get_string('noresults'));
 }
-if (count( $relatedusers ) > 0) {
-    arsort( $relatedusers );
+if (count($relatedusers) > 0) {
+    arsort($relatedusers);
     $table = new html_table();
     $table->head = [
             '#',
@@ -211,14 +215,14 @@ if (count( $relatedusers ) > 0) {
         if ($rel < 2) {
             break;
         }
-        $otheruser = $DB->get_record( 'user', [
+        $otheruser = $DB->get_record('user', [
                 'id' => $otheruserid,
-        ] );
+        ]);
         $table->data[] = [
                 $rel,
-                $vpl->user_fullname_picture( $otheruser ),
+                $vpl->user_fullname_picture($otheruser),
         ];
     }
-    echo html_writer::table( $table );
+    echo html_writer::table($table);
 }
 echo $OUTPUT->footer();

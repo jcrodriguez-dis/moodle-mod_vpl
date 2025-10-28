@@ -29,7 +29,6 @@ namespace mod_vpl\tokenizer;
  * but it has many useful tools used by tokenizers.
  */
 class tokenizer_base {
-
     /**
      * @var array $states List of states for current tokenizer
      * This is used to store the rules for each state.

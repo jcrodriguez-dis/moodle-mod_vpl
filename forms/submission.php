@@ -23,66 +23,69 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/submission_form.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/submission_form.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
 global $USER;
 
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$userid = optional_param( 'userid', false, PARAM_INT );
-$vpl = new mod_vpl( $id );
+$id = required_param('id', PARAM_INT);
+$userid = optional_param('userid', false, PARAM_INT);
+$vpl = new mod_vpl($id);
 if ($userid) {
-    $vpl->prepare_page( 'forms/submission.php', [
+    $vpl->prepare_page('forms/submission.php', [
             'id' => $id,
             'userid' => $userid,
-    ] );
+    ]);
 } else {
-    $vpl->prepare_page( 'forms/submission.php', [
+    $vpl->prepare_page('forms/submission.php', [
             'id' => $id,
-    ] );
+    ]);
 }
 if (! $vpl->is_submit_able()) {
-    vpl_redirect( '?id=' . $id, get_string( 'notavailable' ));
+    vpl_redirect('?id=' . $id, get_string('notavailable'));
 }
 if (! $userid || $userid == $USER->id) { // Make own submission.
     $userid = $USER->id;
     if ($vpl->get_instance()->restrictededitor) {
-        $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+        $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     }
-    $vpl->require_capability( VPL_SUBMIT_CAPABILITY );
+    $vpl->require_capability(VPL_SUBMIT_CAPABILITY);
     $vpl->restrictions_check();
 } else { // Make other user submission.
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 }
 $instance = $vpl->get_instance();
-$vpl->print_header( get_string( 'submission', VPL ) );
-$vpl->print_view_tabs( basename( __FILE__ ) );
-$mform = new mod_vpl_submission_form( 'submission.php', $vpl, $userid );
+$vpl->print_header(get_string('submission', VPL));
+$vpl->print_view_tabs(basename(__FILE__));
+$mform = new mod_vpl_submission_form('submission.php', $vpl, $userid);
 if ($mform->is_cancelled()) {
-    vpl_inmediate_redirect( vpl_mod_href( 'view.php', 'id', $id ) );
+    vpl_inmediate_redirect(vpl_mod_href('view.php', 'id', $id));
     die();
 }
 if ($fromform = $mform->get_data()) {
-    $rawpostsize = strlen( file_get_contents( "php://input" ) );
+    $rawpostsize = strlen(file_get_contents("php://input"));
     if ($_SERVER['CONTENT_LENGTH'] != $rawpostsize) {
         $error = "NOT SAVED (Http POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawpostsize)";
-        vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
-                    $error, 'error' );
+        vpl_redirect(
+            vpl_mod_href('forms/submission.php', 'id', $id, 'userid', $userid),
+            $error,
+            'error'
+        );
         die();
     }
     \mod_vpl\util\phpconfig::increase_memory_limit();
     $rfn = $vpl->get_required_fgm();
     $reqfiles = $rfn->getFileList();
     $files = [];
-    $prevsub = $vpl->last_user_submission( $userid );
+    $prevsub = $vpl->last_user_submission($userid);
     $firstsub = ($prevsub === false);
     if (!$firstsub) {
-        $prevsubfiles = (new mod_vpl_submission( $vpl, $prevsub ))->get_submitted_fgm()->getAllFiles();
+        $prevsubfiles = (new mod_vpl_submission($vpl, $prevsub))->get_submitted_fgm()->getAllFiles();
     }
     if ($fromform->submitmethod == 'archive') {
         if (!$firstsub && $fromform->archiveaction == 'replace') {
@@ -92,7 +95,7 @@ if ($fromform = $mform->get_data()) {
             }
         }
         // Open archive.
-        $zipname = $mform->save_temp_file( 'archive' );
+        $zipname = $mform->save_temp_file('archive');
         $zip = new ZipArchive();
         $zip->open($zipname);
         $subreqfiles = [];
@@ -105,10 +108,10 @@ if ($fromform = $mform->get_data()) {
             }
             $filecontent = file_get_contents('zip://' . $zipname . '#' . $filename);
             // Autodetect text file encode if not binary.
-            if (! vpl_is_binary( $filename )) {
-                $encoding = mb_detect_encoding( $filecontent, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true );
+            if (! vpl_is_binary($filename)) {
+                $encoding = mb_detect_encoding($filecontent, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true);
                 if ($encoding > '') { // If code detected.
-                    $filecontent = iconv( $encoding, 'UTF-8', $filecontent );
+                    $filecontent = iconv($encoding, 'UTF-8', $filecontent);
                 }
             } else {
                 if (in_array($filename . '.b64', $reqfiles)) {
@@ -134,25 +137,27 @@ if ($fromform = $mform->get_data()) {
         $zip->close();
         unlink($zipname);
     } else {
-        for ($i = 0; $i < $instance->maxfiles; $i ++) {
+        for ($i = 0; $i < $instance->maxfiles; $i++) {
             $field = 'file' . $i;
             if (!$firstsub && isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'keep') {
                 $filename = $fromform->{$field . 'name'};
                 $files[$filename] = $prevsubfiles[$filename];
             } else {
-                if (isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'replace'
-                    || !empty($fromform->{$field . 'rename'}) && !empty($fromform->{$field . 'name'})) {
+                if (
+                    isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'replace'
+                    || !empty($fromform->{$field . 'rename'}) && !empty($fromform->{$field . 'name'})
+                ) {
                     $name = $fromform->{$field . 'name'};
                 } else {
-                    $name = $mform->get_new_filename( $field );
+                    $name = $mform->get_new_filename($field);
                 }
-                $data = $mform->get_file_content( $field );
+                $data = $mform->get_file_content($field);
                 if ($data !== false && $name !== false) {
                     // Autodetect text file encode if not binary.
-                    if (! vpl_is_binary( $name )) {
-                        $encode = mb_detect_encoding( $data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true );
+                    if (! vpl_is_binary($name)) {
+                        $encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true);
                         if ($encode > '') { // If code detected.
-                            $data = iconv( $encode, 'UTF-8', $data );
+                            $data = iconv($encode, 'UTF-8', $data);
                         }
                         $files[$name] = $data;
                     } else {
@@ -167,23 +172,26 @@ if ($fromform = $mform->get_data()) {
         }
     }
     $errormessage = '';
-    if ($subid = $vpl->add_submission( $userid, $files, $fromform->comments, $errormessage )) {
-        \mod_vpl\event\submission_uploaded::log( [
+    if ($subid = $vpl->add_submission($userid, $files, $fromform->comments, $errormessage)) {
+        \mod_vpl\event\submission_uploaded::log([
                 'objectid' => $subid,
                 'context' => $vpl->get_context(),
                 'relateduserid' => ($USER->id != $userid ? $userid : null),
-        ] );
+        ]);
 
         // If evaluate on submission.
         if ($instance->evaluate && $instance->evaluateonsubmission) {
-            $redirecturl = vpl_mod_href( 'forms/evaluation.php', 'id', $id, 'userid', $userid );
+            $redirecturl = vpl_mod_href('forms/evaluation.php', 'id', $id, 'userid', $userid);
         } else {
-            $redirecturl = vpl_mod_href( 'forms/submissionview.php', 'id', $id, 'userid', $userid );
+            $redirecturl = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);
         }
-        vpl_redirect( $redirecturl, get_string( 'saved', VPL ));
+        vpl_redirect($redirecturl, get_string('saved', VPL));
     } else {
-        vpl_redirect( vpl_mod_href( 'forms/submission.php', 'id', $id, 'userid', $userid ),
-                get_string( 'notsaved', VPL ) . '<br>' . $errormessage, 'error');
+        vpl_redirect(
+            vpl_mod_href('forms/submission.php', 'id', $id, 'userid', $userid),
+            get_string('notsaved', VPL) . '<br>' . $errormessage,
+            'error'
+        );
     }
 }
 
@@ -191,6 +199,6 @@ if ($fromform = $mform->get_data()) {
 $data = new stdClass();
 $data->id = $id;
 $data->userid = $userid;
-$mform->set_data( $data );
+$mform->set_data($data);
 $mform->display();
 $vpl->print_footer();

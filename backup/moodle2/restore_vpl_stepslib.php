@@ -23,9 +23,9 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined ( 'MOODLE_INTERNAL' ) || die ();
+defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Provides support for restore VPL antivities in the moodle2 backup format
@@ -35,7 +35,6 @@ require_once(dirname(__FILE__).'/../../locallib.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class restore_vpl_activity_structure_step extends restore_activity_structure_step {
-
     /**
      * @var array of names of VPL basedon activities indexed by id of linked activities
      */
@@ -48,7 +47,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      * @return string name of basedon activity or empty string
      */
     public function get_baseon_name($data) {
-        if ( isset($this->basedonnames[$data->id]) ) {
+        if (isset($this->basedonnames[$data->id])) {
             return $this->basedonnames[$data->id];
         }
         return '';
@@ -63,9 +62,9 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     public function get_baseon_by_name($data) {
         global $DB;
         $basedonname = $this->get_baseon_name($data);
-        if ( $basedonname ) {
+        if ($basedonname) {
             $basedon = $DB->get_record('vpl', ['course' => $data->course, 'name' => $basedonname]);
-            if ( $basedon != false ) {
+            if ($basedon != false) {
                 return $basedon->id;
             }
         }
@@ -78,25 +77,25 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function define_structure() {
         $paths = [];
-        $userinfo = $this->get_setting_value ( 'userinfo' );
+        $userinfo = $this->get_setting_value('userinfo');
 
-        $paths[] = new restore_path_element ( 'vpl', '/activity/vpl' );
-        $paths[] = new restore_path_element ( 'required_file', '/activity/vpl/required_files/required_file' );
-        $paths[] = new restore_path_element ( 'execution_file', '/activity/vpl/execution_files/execution_file' );
-        $paths[] = new restore_path_element ( 'variation', '/activity/vpl/variations/variation' );
-        $paths[] = new restore_path_element ( 'override', '/activity/vpl/overrides/override' );
+        $paths[] = new restore_path_element('vpl', '/activity/vpl');
+        $paths[] = new restore_path_element('required_file', '/activity/vpl/required_files/required_file');
+        $paths[] = new restore_path_element('execution_file', '/activity/vpl/execution_files/execution_file');
+        $paths[] = new restore_path_element('variation', '/activity/vpl/variations/variation');
+        $paths[] = new restore_path_element('override', '/activity/vpl/overrides/override');
         if ($userinfo) {
-            $paths[] = new restore_path_element ( 'assigned_variation', '/activity/vpl/assigned_variations/assigned_variation' );
-            $paths[] = new restore_path_element ( 'assigned_override', '/activity/vpl/assigned_overrides/assigned_override' );
-            $paths[] = new restore_path_element ( 'submission', '/activity/vpl/submissions/submission' );
-            $paths[] = new restore_path_element (
-                    'submission_file',
-                    '/activity/vpl/submissions/submission/submission_files/submission_file'
+            $paths[] = new restore_path_element('assigned_variation', '/activity/vpl/assigned_variations/assigned_variation');
+            $paths[] = new restore_path_element('assigned_override', '/activity/vpl/assigned_overrides/assigned_override');
+            $paths[] = new restore_path_element('submission', '/activity/vpl/submissions/submission');
+            $paths[] = new restore_path_element(
+                'submission_file',
+                '/activity/vpl/submissions/submission/submission_files/submission_file'
             );
         }
 
         // Return the paths wrapped into standard activity structure.
-        return $this->prepare_activity_structure ( $paths );
+        return $this->prepare_activity_structure($paths);
     }
 
     /**
@@ -105,20 +104,20 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_vpl($data) {
         global $DB;
-        $data = ( object ) $data;
-        $data->course = $this->get_courseid ();
-        $data->startdate = $this->apply_date_offset ( $data->startdate );
-        $data->duedate = $this->apply_date_offset ( $data->duedate );
+        $data = (object) $data;
+        $data->course = $this->get_courseid();
+        $data->startdate = $this->apply_date_offset($data->startdate);
+        $data->duedate = $this->apply_date_offset($data->duedate);
         if ($data->grade < 0) {
-            $data->grade = - ($this->get_mappingid ( 'scale', - ($data->grade) ));
+            $data->grade = - ($this->get_mappingid('scale', - ($data->grade)));
         }
         // Insert the choice record.
-        $newitemid = $DB->insert_record ( 'vpl', $data );
+        $newitemid = $DB->insert_record('vpl', $data);
         // Immediately after inserting "activity" record, call this.
         if (isset($data->basedon) && $data->basedon > 0 && isset($data->basedonname)) {
             $this->basedonnames[$newitemid] = $data->basedonname;
         }
-        $this->apply_activity_instance ( $newitemid );
+        $this->apply_activity_instance($newitemid);
     }
 
     /**
@@ -127,17 +126,17 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      * @param string $path path to directory where to save file
      */
     private function process_groupfile($data, $path) {
-        $data = ( object ) $data;
+        $data = (object) $data;
         $filename = $data->name;
-        if ( isset($data->encoding) && ($data->encoding == 1) ) {
+        if (isset($data->encoding) && ($data->encoding == 1)) {
             $content = base64_decode($data->content);
-            if ( substr($filename, -4) === '.b64' ) { // For backware compatibility.
+            if (substr($filename, -4) === '.b64') { // For backware compatibility.
                 $filename = substr($filename, 0, strlen($filename) - 4);
             }
         } else {
             $content = $data->content;
         }
-        vpl_fwrite( $path . $filename, $content );
+        vpl_fwrite($path . $filename, $content);
     }
 
     /**
@@ -146,9 +145,9 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_required_file($data) {
         global $CFG;
-        $vplid = $this->get_new_parentid ( 'vpl' );
+        $vplid = $this->get_new_parentid('vpl');
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
-        $this->process_groupfile ( $data, $path );
+        $this->process_groupfile($data, $path);
     }
 
     /**
@@ -157,9 +156,9 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_execution_file($data) {
         global $CFG;
-        $vplid = $this->get_new_parentid ( 'vpl' );
+        $vplid = $this->get_new_parentid('vpl');
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
-        $this->process_groupfile ( $data, $path );
+        $this->process_groupfile($data, $path);
     }
 
     /**
@@ -169,9 +168,9 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     protected function process_variation($data) {
         global $DB;
 
-        $data = ( object ) $data;
-        $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $DB->insert_record ( 'vpl_variations', $data );
+        $data = (object) $data;
+        $data->vpl = $this->get_new_parentid('vpl');
+        $DB->insert_record('vpl_variations', $data);
     }
 
     /**
@@ -180,11 +179,11 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_assigned_variation($data) {
         global $DB;
-        $data = ( object ) $data;
-        $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $data->variation = $this->get_new_parentid ( 'vpl_variation' );
-        $data->userid = $this->get_mappingid ( 'user', $data->userid );
-        $DB->insert_record ( 'vpl_assigned_variations', $data );
+        $data = (object) $data;
+        $data->vpl = $this->get_new_parentid('vpl');
+        $data->variation = $this->get_new_parentid('vpl_variation');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        $DB->insert_record('vpl_assigned_variations', $data);
     }
 
     /**
@@ -193,11 +192,11 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_override($data) {
         global $DB;
-        $data = ( object ) $data;
-        $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $data->startdate = $this->apply_date_offset ( $data->startdate );
-        $data->duedate = $this->apply_date_offset ( $data->duedate );
-        $newid = $DB->insert_record ( 'vpl_overrides', $data );
+        $data = (object) $data;
+        $data->vpl = $this->get_new_parentid('vpl');
+        $data->startdate = $this->apply_date_offset($data->startdate);
+        $data->duedate = $this->apply_date_offset($data->duedate);
+        $newid = $DB->insert_record('vpl_overrides', $data);
         $this->set_mapping('override', $data->id, $newid); // Map new id to be used by process_assigned_override().
     }
 
@@ -207,14 +206,14 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_assigned_override($data) {
         global $DB;
-        $data = ( object ) $data;
+        $data = (object) $data;
         $newid = $this->get_mappingid('override', $data->override, null); // Fetch new override id.
         if ($newid !== null) {
-            $data->vpl = $this->get_new_parentid ( 'vpl' );
+            $data->vpl = $this->get_new_parentid('vpl');
             $data->override = $newid;
-            $data->userid = $this->get_mappingid ( 'user', $data->userid, null );
-            $data->groupid = $this->get_mappingid ( 'group', $data->groupid, null );
-            $DB->insert_record ( 'vpl_assigned_overrides', $data );
+            $data->userid = $this->get_mappingid('user', $data->userid, null);
+            $data->groupid = $this->get_mappingid('group', $data->groupid, null);
+            $DB->insert_record('vpl_assigned_overrides', $data);
         }
     }
 
@@ -224,14 +223,14 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
      */
     protected function process_submission($data) {
         global $DB;
-        $data = ( object ) $data;
+        $data = (object) $data;
         $oldid = $data->id;
-        $data->vpl = $this->get_new_parentid ( 'vpl' );
-        $data->userid = $this->get_mappingid ( 'user', $data->userid );
-        $data->grader = $this->get_mappingid ( 'user', $data->grader );
-        $data->groupid = $this->get_mappingid ( 'group', $data->groupid );
-        $newitemid = $DB->insert_record ( 'vpl_submissions', $data );
-        $this->set_mapping ( 'submission', $oldid, $newitemid );
+        $data->vpl = $this->get_new_parentid('vpl');
+        $data->userid = $this->get_mappingid('user', $data->userid);
+        $data->grader = $this->get_mappingid('user', $data->grader);
+        $data->groupid = $this->get_mappingid('group', $data->groupid);
+        $newitemid = $DB->insert_record('vpl_submissions', $data);
+        $this->set_mapping('submission', $oldid, $newitemid);
     }
 
     /**
@@ -243,21 +242,21 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         global $DB;
         global $CFG;
         static $sub = false;
-        $vplid = $this->get_new_parentid ( 'vpl' );
-        $subid = $this->get_new_parentid ( 'submission' );
+        $vplid = $this->get_new_parentid('vpl');
+        $subid = $this->get_new_parentid('submission');
         if ($sub === false || $sub->id != $subid) {
-            $sub = $DB->get_record ( 'vpl_submissions', [
+            $sub = $DB->get_record('vpl_submissions', [
                     'id' => $subid,
-            ], 'id,userid,vpl' );
+            ], 'id,userid,vpl');
         }
         if ($sub === false) {
-            throw new Exception ( 'Submission record not found ' . $subid );
+            throw new Exception('Submission record not found ' . $subid);
         }
         if ($vplid != $sub->vpl) {
-            throw new Exception ( 'Submission record vplid inconsistence' );
+            throw new Exception('Submission record vplid inconsistence');
         }
         $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $sub->userid . '/' . $subid . '/';
-        $this->process_groupfile ( $data, $path );
+        $this->process_groupfile($data, $path);
     }
 
     /**

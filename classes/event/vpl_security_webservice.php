@@ -24,21 +24,20 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a security-related action is attempted.
  * This class is used to log the event when a webservice tries to perform an action that is forbidden.
  */
 class vpl_security_webservice extends vpl_security {
-
     /**
      * Returns the event description.
      * This method is used to provide a human-readable description of the event.
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'webservice acccess' );
+        return $this->get_description_mod('webservice acccess');
     }
 }

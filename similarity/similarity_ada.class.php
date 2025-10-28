@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_base.class.php');
+require_once(dirname(__FILE__) . '/similarity_base.class.php');
 
 /**
  * Ada language similarity class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/similarity_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_similarity_ada extends vpl_similarity_base {
-
     /**
      * Returns the type of similarity.
      *
@@ -52,40 +51,40 @@ class vpl_similarity_ada extends vpl_similarity_base {
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
                 switch ($token->value) {
-                    case '[' :
+                    case '[':
                         // Only add ].
                         break;
-                    case '(' :
+                    case '(':
                         // Only add ).
-                        $bracketlevel ++;
+                        $bracketlevel++;
                         break;
-                    case '{' :
+                    case '{':
                         // Only add }.
                         break;
-                    case ')' :
-                        $bracketlevel --;
+                    case ')':
+                        $bracketlevel--;
                         $ret[] = $token;
                         break;
-                    case ';' :
+                    case ';':
                         $ret[] = $token;
                         // End of identifier list declaration?
                         if ($identifierlist) {
                             if ($identifierdefpos > 0) {
-                                $rep = array_slice( $ret, $identifierdefpos );
-                                for ($i = 0; $i < $nidentifiers; $i ++) {
+                                $rep = array_slice($ret, $identifierdefpos);
+                                for ($i = 0; $i < $nidentifiers; $i++) {
                                     foreach ($rep as $data) {
                                         $ret[] = $data;
                                     }
                                 }
                             } else {
-                                for ($i = 0; $i < $nidentifiers; $i ++) {
+                                for ($i = 0; $i < $nidentifiers; $i++) {
                                     $ret[] = $token;
                                 }
                             }
                         }
                         $identifierlist = false;
                         break;
-                    case ',' :
+                    case ',':
                         // Posible identifier list.
                         if ($bracketlevel == 0) {
                             if ($identifierlist) {
@@ -93,19 +92,19 @@ class vpl_similarity_ada extends vpl_similarity_base {
                                 $identifierdefpos = 0;
                                 $nidentifiers = 1;
                             } else {
-                                $nidentifiers ++;
+                                $nidentifiers++;
                             }
                         } else {
                             $ret[] = $token;
                         }
                         break;
-                    case ':' :
+                    case ':':
                         if ($identifierlist) {
-                            $identifierdefpos = count( $ret );
+                            $identifierdefpos = count($ret);
                         }
                         $ret[] = $token;
                         break;
-                    default :
+                    default:
                         $ret[] = $token;
                 }
             }
@@ -117,6 +116,6 @@ class vpl_similarity_ada extends vpl_similarity_base {
      * Returns the tokenizer for the Ada language.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'ada' );
+        return vpl_tokenizer_factory::get('ada');
     }
 }

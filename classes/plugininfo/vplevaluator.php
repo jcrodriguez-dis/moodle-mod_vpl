@@ -147,7 +147,7 @@ class vplevaluator extends base {
         if (empty($evaluatorname)) {
             $evaluatorname = $vpl->get_effective_setting('evaluator');
         }
-        if (empty($evaluatorname) || !$vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+        if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
             return '';
         }
         try {
@@ -171,7 +171,7 @@ class vplevaluator extends base {
         if (empty($evaluatorname)) {
             $evaluatorname = $vpl->get_effective_setting('evaluator');
         }
-        if (empty($evaluatorname) || !$vpl->has_capability( VPL_MANAGE_CAPABILITY )) {
+        if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
             return '';
         }
         try {

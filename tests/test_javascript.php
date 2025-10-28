@@ -23,17 +23,17 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname( __FILE__ ) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
 $PAGE->requires->js_call_amd('mod_vpl/jstests-lazy', 'start');
-$course = $DB->get_record( "course", [ 'id' => $COURSE->id ] );
+$course = $DB->get_record("course", [ 'id' => $COURSE->id ]);
 
-require_course_login( $course );
+require_course_login($course);
 
 $title = 'VPL JavaScript Tests';
 $PAGE->set_url('/mod/vpl/tests/test_javascript.php');
-$PAGE->set_title( $title );
-$PAGE->set_heading( $title );
+$PAGE->set_title($title);
+$PAGE->set_heading($title);
 echo $OUTPUT->header();
 echo "<div id='test_results'></div>";
 echo $OUTPUT->footer();

@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_c.class.php');
+require_once(dirname(__FILE__) . '/similarity_c.class.php');
 
 /**
  * C++ language similarity class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/similarity_c.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_similarity_cpp extends vpl_similarity_c {
-
     /**
      * Returns the type of similarity.
      *
@@ -43,6 +42,6 @@ class vpl_similarity_cpp extends vpl_similarity_c {
      * @return vpl_tokenizer The tokenizer instance for C++.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'cpp' );
+        return vpl_tokenizer_factory::get('cpp');
     }
 }

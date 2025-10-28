@@ -16,8 +16,8 @@
 
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Class for logging of watermark report view events
@@ -28,7 +28,6 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_watermark_report_viewed extends vpl_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -46,6 +45,6 @@ class vpl_watermark_report_viewed extends vpl_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'watermarks report' );
+        return $this->get_description_mod('watermarks report');
     }
 }

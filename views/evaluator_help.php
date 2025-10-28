@@ -23,23 +23,23 @@
  * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 global $PAGE, $OUTPUT;
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
+$id = required_param('id', PARAM_INT);
 $evaluatorname = required_param('evaluator', PARAM_ALPHANUMEXT);
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/evaluator_help.php', [ 'id' => $id , 'evaluator' => $evaluatorname ] );
-$vpl->print_header( get_string( 'help') );
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('views/evaluator_help.php', [ 'id' => $id, 'evaluator' => $evaluatorname ]);
+$vpl->print_header(get_string('help'));
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
 try {
     $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
     echo $evaluator->get_printable_help($vpl, false);
-} catch ( \moodle_exception $e ) {
+} catch (\moodle_exception $e) {
     echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
 }
 $vpl->print_footer();

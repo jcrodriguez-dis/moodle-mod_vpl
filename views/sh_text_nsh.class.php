@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
+require_once(dirname(__FILE__) . '/sh_base.class.php');
 
 /**
  * Class to show a text/code whitout sh
@@ -39,13 +39,13 @@ class vpl_sh_text_nsh extends vpl_sh_base {
      * @param string $data content of the file to show
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s( $name ) . '</h4>';
+        echo "<h4>" . s($name) . '</h4>';
         echo '<pre class="vpl_sh vpl_g">';
         $lines = preg_split("/\r\n|\n|\r/", $data);
         $nl = 1;
         foreach ($lines as $line) {
             printf("%4d  ", $nl);
-            echo s($line).'<br>';
+            echo s($line) . '<br>';
             $nl++;
         }
         echo '</pre>';

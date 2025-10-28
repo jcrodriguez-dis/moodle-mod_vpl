@@ -23,8 +23,8 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * The base class for VPL overrides events.
@@ -73,7 +73,7 @@ class override_base extends base {
                     'other' => ['vplid' => $vplinstance->id],
             ];
         }
-        parent::log( $info );
+        parent::log($info);
     }
     /**
      * Get the URL for the override.
@@ -81,7 +81,7 @@ class override_base extends base {
      * @return \moodle_url The URL object.
      */
     public function get_url() {
-        return $this->get_url_base( 'view.php' );
+        return $this->get_url_base('view.php');
     }
     /**
      * Get the description of the override event for a specific action.

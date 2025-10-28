@@ -28,15 +28,15 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/workinggraph.php');
 require_login();
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/activityworkinggraph.php', [
+$id = required_param('id', PARAM_INT);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('views/activityworkinggraph.php', [
         'id' => $id,
-] );
+]);
 
-$vpl->require_capability( VPL_GRADE_CAPABILITY );
+$vpl->require_capability(VPL_GRADE_CAPABILITY);
 
-$vpl->print_header( get_string( 'timespent', VPL ) );
-$vpl->print_heading_with_help( 'timespent' );
+$vpl->print_header(get_string('timespent', VPL));
+$vpl->print_heading_with_help('timespent');
 vpl_working_periods_graph($vpl);
 $vpl->print_footer_simple();

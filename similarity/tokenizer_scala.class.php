@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_c.class.php');
 
 /**
  * Scala programing language tokenizer class
@@ -30,7 +30,6 @@ require_once(dirname( __FILE__ ) . '/tokenizer_c.class.php');
  * @copyright authors
  */
 class vpl_tokenizer_scala extends vpl_tokenizer_c {
-
     /**
      * @var array list of reserved words
      */
@@ -108,10 +107,10 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
         $state = self::REGULAR;
         $pending = '';
         $firstnospace = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
         $previous = '';
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -121,13 +120,13 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
             }
             if ($previous == self::LF) {
                 $firstnospace = '';
-                $this->linenumber ++;
+                $this->linenumber++;
             }
             if ($current == self::CR) {
                 if ($next == self::LF) {
                     continue;
                 } else {
-                    $this->linenumber ++;
+                    $this->linenumber++;
                     $current = self::LF;
                 }
             }
@@ -137,23 +136,23 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                 }
             }
             switch ($state) {
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     // Check end of block comment.
                     if ($current == '*') {
                         if ($next == '/') {
-                            $i ++;
+                            $i++;
                             $state = self::REGULAR;
                             break;
                         }
                     }
                     break;
-                case self::IN_LINECOMMENT :
+                case self::IN_LINECOMMENT:
                     // Check end of comment.
                     if ($current == self::LF) {
                         $state = self::REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     // Check end of string.
                     if ($current == '"' && $previous != '\\') {
                         $state = self::REGULAR;
@@ -164,7 +163,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                         $current = ' ';
                     }
                     break;
-                case self::IN_CHAR :
+                case self::IN_CHAR:
                     // Check end of char.
                     if ($current == '\'' && $previous != '\\') {
                         $pending .= '\'';
@@ -176,7 +175,7 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                         $current = ' ';
                     }
                     break;
-                case self::IN_NUMBER :
+                case self::IN_NUMBER:
                     if (($current >= '0' && $current <= '9') || $current == '.' || $current == 'E' || $current == 'e') {
                         $pending .= $current;
                         break;
@@ -185,49 +184,51 @@ class vpl_tokenizer_scala extends vpl_tokenizer_c {
                         $pending .= $current;
                         break;
                     }
-                    $this->add_pending( $pending );
+                    $this->add_pending($pending);
                     $state = self::REGULAR;
                     // Process current as regular.
-                case self::REGULAR :
+                case self::REGULAR:
                     if ($current == '/') {
                         if ($next == '*') { // Begin block comments.
                             $state = self::IN_COMMENT;
-                            $this->add_pending( $pending );
-                            $i ++;
+                            $this->add_pending($pending);
+                            $i++;
                             break;
                         }
                         if ($next == '/') { // Begin line comment.
                             $state = self::IN_LINECOMMENT;
-                            $this->add_pending( $pending );
-                            $i ++;
+                            $this->add_pending($pending);
+                            $i++;
                             break;
                         }
                     } else if ($current == '"') {
                         $state = self::IN_STRING;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current == "'") {
                         $state = self::IN_CHAR;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         break;
                     } else if ($current >= '0' && $current <= '9') {
                         $state = self::IN_NUMBER;
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         $pending = $current;
                         break;
                     }
-                    if (($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
-                        || $current == '_' || ord( $current ) > 127) {
+                    if (
+                        ($current >= 'a' && $current <= 'z') || ($current >= 'A' && $current <= 'Z')
+                        || $current == '_' || ord($current) > 127
+                    ) {
                         $pending .= $current;
                     } else {
-                        $this->add_pending( $pending );
+                        $this->add_pending($pending);
                         if ($current > ' ') {
-                            $this->add_pending( $current );
+                            $this->add_pending($current);
                         }
                     }
             }
         }
-        $this->add_pending( $pending );
+        $this->add_pending($pending);
         $this->compact_operators();
     }
 }

@@ -80,20 +80,20 @@ class cron_task extends \core\task\scheduled_task {
                           and startdate >= ?
                           and (duedate > startdate or duedate = 0)';
         $parms = [$now + self::STARTDATE_RANGE, $now];
-        $vpls = $DB->get_records_sql( $sql, $parms );
+        $vpls = $DB->get_records_sql($sql, $parms);
         foreach ($vpls as $instance) {
-            if (! instance_is_visible( VPL, $instance )) {
-                $vpl = new \mod_vpl( null, $instance->id );
+            if (! instance_is_visible(VPL, $instance)) {
+                $vpl = new \mod_vpl(null, $instance->id);
                 if ($this->verbose) {
-                    echo 'Setting visible "' . s( $vpl->get_printable_name() ) . '"' . "\n";
+                    echo 'Setting visible "' . s($vpl->get_printable_name()) . '"' . "\n";
                 }
                 $cm = $vpl->get_course_module();
-                set_coursemodule_visible( $cm->id, true );
+                set_coursemodule_visible($cm->id, true);
                 $rebuilds[$cm->course] = $cm->course;
             }
         }
         foreach ($rebuilds as $courseid) {
-            rebuild_course_cache( $courseid );
+            rebuild_course_cache($courseid);
         }
     }
 

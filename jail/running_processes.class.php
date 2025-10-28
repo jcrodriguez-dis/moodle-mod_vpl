@@ -25,13 +25,12 @@
 
 
 defined('MOODLE_INTERNAL') || die();
-require_once( __DIR__ . '/jailserver_manager.class.php');
+require_once(__DIR__ . '/jailserver_manager.class.php');
 
 /**
  * Class that manages the persistence of running processes.
  */
 class vpl_running_processes {
-
     /**
      * @var string TABLE Name of the table running_processes in the database.
      */
@@ -49,11 +48,11 @@ class vpl_running_processes {
         global $DB;
         $select = 'userid = :userid AND type <> 4';
         $params = ['userid' => $userid];
-        if ( $vplid !== null ) {
+        if ($vplid !== null) {
             $params['vpl'] = $vplid;
             $select .= ' AND vpl = :vpl';
         }
-        if ( $adminticket !== null ) {
+        if ($adminticket !== null) {
             $params['adminticket'] = $adminticket;
             $select .= ' AND adminticket = :adminticket';
         }
@@ -72,7 +71,7 @@ class vpl_running_processes {
         if ($vplid !== null) {
             $params['vpl'] = $vplid;
         }
-        return $DB->get_records( self::TABLE, $params );
+        return $DB->get_records(self::TABLE, $params);
     }
 
     /**
@@ -85,7 +84,7 @@ class vpl_running_processes {
     public static function get_by_id(int $vplid, int $userid, int $id) {
         global $DB;
         $params = ['id' => $id, 'vpl' => $vplid, 'userid' => $userid];
-        return $DB->get_record( self::TABLE, $params );
+        return $DB->get_record(self::TABLE, $params);
     }
 
     /**
@@ -97,8 +96,8 @@ class vpl_running_processes {
     public static function set(object $data) {
         global $DB;
         $data->start_time = time();
-        vpl_truncate_running_processes( $data );
-        return $DB->insert_record( self::TABLE, $data );
+        vpl_truncate_running_processes($data);
+        return $DB->insert_record(self::TABLE, $data);
     }
 
     /**
@@ -114,7 +113,7 @@ class vpl_running_processes {
         if ($adminticket !== null) {
             $parms['adminticket'] = $adminticket;
         }
-        $DB->delete_records( self::TABLE, $parms );
+        $DB->delete_records(self::TABLE, $parms);
     }
     /**
      * Returns records of processes registered in a course
@@ -127,7 +126,7 @@ class vpl_running_processes {
         $sql .= ' INNER JOIN {vpl} ON {vpl_running_processes}.vpl = {vpl}.id';
         $sql .= ' WHERE {vpl}.course = ?;';
         $param = [ $courseid ];
-        return $DB->get_records_sql( $sql, $param );
+        return $DB->get_records_sql($sql, $param);
     }
 
     /**
@@ -140,14 +139,14 @@ class vpl_running_processes {
         $timelimit = time() - $timeout;
         $sql = 'SELECT * FROM {vpl_running_processes} WHERE start_time < ?';
         $param = [ $timelimit ];
-        $oldprocesses = $DB->get_records_sql( $sql, $param, 0, 20);
+        $oldprocesses = $DB->get_records_sql($sql, $param, 0, 20);
         foreach ($oldprocesses as $processinfo) {
             $server = $processinfo->server;
             $data = new stdClass();
             $data->adminticket = $processinfo->adminticket;
-            $request = vpl_jailserver_manager::get_action_request( 'stop', $data);
+            $request = vpl_jailserver_manager::get_action_request('stop', $data);
             $error = '';
-            vpl_jailserver_manager::get_response( $server, $request, $error );
+            vpl_jailserver_manager::get_response($server, $request, $error);
             $DB->delete_records(self::TABLE, ['id' => $processinfo->id]);
         }
     }

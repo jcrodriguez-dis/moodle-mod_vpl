@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_base.class.php');
+require_once(dirname(__FILE__) . '/similarity_base.class.php');
 
 /**
  * C language similarity class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/similarity_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_similarity_c extends vpl_similarity_base {
-
     /**
      * Returns the type of similarity.
      *
@@ -44,11 +43,11 @@ class vpl_similarity_c extends vpl_similarity_base {
      * @param int $from The index from which to expand the operator.
      */
     public static function expand_operator(&$array, &$from) {
-        $last = count( $array ) - 1; // Array alredy with equal =.
-        for ($i = $from; $i < $last; $i ++) { // Replicate from last instruction to =.
+        $last = count($array) - 1; // Array alredy with equal =.
+        for ($i = $from; $i < $last; $i++) { // Replicate from last instruction to =.
             $array[] = $array[$i];
         }
-        $from = count( $array ) + 1;
+        $from = count($array) + 1;
     }
 
     /**
@@ -62,7 +61,7 @@ class vpl_similarity_c extends vpl_similarity_base {
         $openbrace = false;
         $nsemicolon = 0;
         $ret = [];
-        $prev = new vpl_token( vpl_token_type::IDENTIFIER, '', 0 );
+        $prev = new vpl_token(vpl_token_type::IDENTIFIER, '', 0);
         foreach ($tokens as $token) {
             if ($token->type == vpl_token_type::OPERATOR) {
                 // Operator ++ and -- .
@@ -70,75 +69,75 @@ class vpl_similarity_c extends vpl_similarity_base {
                 // Changes (*p). and p-> .
                 // Operators +=, -=, *=, etc.
                 switch ($token->value) {
-                    case '[' :
+                    case '[':
                         // Only add ].
                         break;
-                    case '(' :
+                    case '(':
                         // Only add ).
                         break;
-                    case '{' :
+                    case '{':
                         // Only add }.
-                        $posiniinst = count( $ret );
+                        $posiniinst = count($ret);
                         $nsemicolon = 0;
                         $openbrace = true;
                         break;
-                    case '}' :
+                    case '}':
                         // Remove unneeded {}.
                         if (! ($openbrace && $nsemicolon < 2)) {
                             $ret[] = $token;
                         }
                         $openbrace = false;
-                        $posiniinst = count( $ret );
+                        $posiniinst = count($ret);
                         break;
-                    case ';' :
+                    case ';':
                         // Count semicolon after a {.
-                        $nsemicolon ++;
+                        $nsemicolon++;
                         $ret[] = $token;
-                        $posiniinst = count( $ret );
+                        $posiniinst = count($ret);
                         break;
-                    case '++' :
+                    case '++':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '+';
                         $ret[] = $token;
                         break;
-                    case '--' :
+                    case '--':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '-';
                         $ret[] = $token;
                         break;
-                    case '+=' :
+                    case '+=':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '+';
                         $ret[] = $token;
                         break;
-                    case '-=' :
+                    case '-=':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '-';
                         $ret[] = $token;
                         break;
-                    case '*=' :
+                    case '*=':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '*';
                         $ret[] = $token;
                         break;
-                    case '/=' :
+                    case '/=':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '/';
                         $ret[] = $token;
                         break;
-                    case '%=' :
+                    case '%=':
                         $ret[] = self::clone_token($token, '=');
-                        self::expand_operator( $ret, $posiniinst );
+                        self::expand_operator($ret, $posiniinst);
                         $token->value = '%';
                         $ret[] = $token;
                         break;
-                    case '->' : // Replace "->" by "*( ).".
+                    case '->': // Replace "->" by "*( ).".
                         if ($prev->value == 'this') {
                             break;
                         }
@@ -148,11 +147,11 @@ class vpl_similarity_c extends vpl_similarity_base {
                         $token->value = '.';
                         $ret[] = $token;
                         break;
-                    case '::' :
+                    case '::':
                         break;
-                    case ':' :
-                        $posiniinst = count( $ret );
-                    default :
+                    case ':':
+                        $posiniinst = count($ret);
+                    default:
                         $ret[] = $token;
                 }
                 $prev = $token;
@@ -168,6 +167,6 @@ class vpl_similarity_c extends vpl_similarity_base {
      * @return vpl_tokenizer The tokenizer instance for C.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'c' );
+        return vpl_tokenizer_factory::get('c');
     }
 }

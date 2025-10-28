@@ -22,8 +22,8 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../vpl.class.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../vpl.class.php');
 
 /**
  * Povide backup of group of files
@@ -42,11 +42,11 @@ class backup_nested_filegroup extends backup_nested_element {
      * @throws Exception
      */
     private function load_file($base, $filename) {
-        $data = file_get_contents( $base . $filename );
+        $data = file_get_contents($base . $filename);
         $info = new stdClass();
-        if ( vpl_is_binary($filename, $data) ) {
+        if (vpl_is_binary($filename, $data)) {
             $info->name = $filename . '.b64'; // For backward compatibility.
-            $info->content = base64_encode( $data );
+            $info->content = base64_encode($data);
             $info->encoding = 1;
         } else {
             $info->name = $filename;
@@ -73,22 +73,22 @@ class backup_nested_filegroup extends backup_nested_element {
                 'grade_comments.txt',
         ];
         foreach ($extrafiles as $file) {
-            if (file_exists( $base . $file )) {
+            if (file_exists($base . $file)) {
                 $files[] = $this->load_file($base, $file);
             }
         }
         $dirpath = $base . $dirname;
-        if (file_exists( $dirpath )) {
-            $dirlst = opendir( $dirpath );
-            while ( false !== ($filename = readdir( $dirlst )) ) {
+        if (file_exists($dirpath)) {
+            $dirlst = opendir($dirpath);
+            while (false !== ($filename = readdir($dirlst))) {
                 if ($filename == "." || $filename == "..") {
                     continue;
                 }
                 $files[] = $this->load_file($base, $dirname . '/' . $filename);
             }
-            closedir( $dirlst );
+            closedir($dirlst);
         }
-        return new backup_array_iterator( $files );
+        return new backup_array_iterator($files);
     }
 
     /**
@@ -101,24 +101,24 @@ class backup_nested_filegroup extends backup_nested_element {
         global $CFG;
 
         switch ($this->get_name()) {
-            case 'required_file' :
-                $vplid = $this->find_first_parent_by_name( 'id' )->get_value();
+            case 'required_file':
+                $vplid = $this->find_first_parent_by_name('id')->get_value();
                 $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
-                return $this->get_files( $path, 'required_files' );
-            case 'execution_file' :
-                $vplid = $this->find_first_parent_by_name( 'id' )->get_value();
+                return $this->get_files($path, 'required_files');
+            case 'execution_file':
+                $vplid = $this->find_first_parent_by_name('id')->get_value();
                 $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
-                return $this->get_files( $path, 'execution_files' );
+                return $this->get_files($path, 'execution_files');
                 break;
-            case 'submission_file' :
-                $vplid = $this->find_first_parent_by_name( 'vpl' )->get_value();
-                $subid = $this->find_first_parent_by_name( 'id' )->get_value();
-                $userid = $this->find_first_parent_by_name( 'userid' )->get_value();
+            case 'submission_file':
+                $vplid = $this->find_first_parent_by_name('vpl')->get_value();
+                $subid = $this->find_first_parent_by_name('id')->get_value();
+                $userid = $this->find_first_parent_by_name('userid')->get_value();
                 $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $userid . '/' . $subid . '/';
-                return $this->get_files( $path, 'submittedfiles' );
+                return $this->get_files($path, 'submittedfiles');
                 break;
-            default :
-                throw new Exception( 'Type of element error for backup_nested_group' );
+            default:
+                throw new Exception('Type of element error for backup_nested_group');
         }
     }
 }
@@ -132,7 +132,6 @@ class backup_nested_filegroup extends backup_nested_element {
  * @see backup_activity_structure_step
  */
 class backup_vpl_activity_structure_step extends backup_activity_structure_step {
-
     /**
      * @var array VPL table fields list
      */
@@ -245,50 +244,54 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
     protected function define_structure() {
 
         // To know if we are including userinfo.
-        $userinfo = $this->get_setting_value( 'userinfo' );
+        $userinfo = $this->get_setting_value('userinfo');
 
         // Define each element separated.
 
         $idfield = ['id'];
         $filefields = ['name', 'content', 'encoding'];
-        $vpl = new backup_nested_element( 'vpl', $idfield, $this->vplfields);
-        $requiredfiles = new backup_nested_element( 'required_files' );
-        $requiredfile = new backup_nested_filegroup( 'required_file', $idfield,  $filefields);
-        $executionfiles = new backup_nested_element( 'execution_files' );
-        $executionfile = new backup_nested_filegroup( 'execution_file', $idfield,  $filefields);
-        $variations = new backup_nested_element( 'variations' );
-        $variation = new backup_nested_element( 'variation', $idfield, $this->variationfields );
-        $asignedvariations = new backup_nested_element( 'asigned_variations' );
-        $asignedvariation = new backup_nested_element( 'asigned_variation',
-                $idfield,
-                $this->asivariationfields );
-        $overrides = new backup_nested_element( 'overrides' );
-        $override = new backup_nested_element( 'override', $idfield, $this->overridefields );
-        $assignedoverrides = new backup_nested_element( 'assigned_overrides' );
-        $assignedoverride = new backup_nested_element( 'assigned_override',
-                $idfield,
-                $this->assioverridefields );
-        $submissions = new backup_nested_element( 'submissions' );
-        $submission = new backup_nested_element( 'submission', $idfield, $this->submissionfields );
-        $submissionfiles = new backup_nested_element( 'submission_files' );
-        $submissionfile = new backup_nested_filegroup( 'submission_file', $idfield,  $filefields);
+        $vpl = new backup_nested_element('vpl', $idfield, $this->vplfields);
+        $requiredfiles = new backup_nested_element('required_files');
+        $requiredfile = new backup_nested_filegroup('required_file', $idfield, $filefields);
+        $executionfiles = new backup_nested_element('execution_files');
+        $executionfile = new backup_nested_filegroup('execution_file', $idfield, $filefields);
+        $variations = new backup_nested_element('variations');
+        $variation = new backup_nested_element('variation', $idfield, $this->variationfields);
+        $asignedvariations = new backup_nested_element('asigned_variations');
+        $asignedvariation = new backup_nested_element(
+            'asigned_variation',
+            $idfield,
+            $this->asivariationfields
+        );
+        $overrides = new backup_nested_element('overrides');
+        $override = new backup_nested_element('override', $idfield, $this->overridefields);
+        $assignedoverrides = new backup_nested_element('assigned_overrides');
+        $assignedoverride = new backup_nested_element(
+            'assigned_override',
+            $idfield,
+            $this->assioverridefields
+        );
+        $submissions = new backup_nested_element('submissions');
+        $submission = new backup_nested_element('submission', $idfield, $this->submissionfields);
+        $submissionfiles = new backup_nested_element('submission_files');
+        $submissionfile = new backup_nested_filegroup('submission_file', $idfield, $filefields);
         // Build the tree.
-        $vpl->add_child( $requiredfiles );
-        $vpl->add_child( $executionfiles );
-        $vpl->add_child( $variations );
-        $vpl->add_child( $overrides );
-        $vpl->add_child( $assignedoverrides );
-        $vpl->add_child( $submissions );
-        $requiredfiles->add_child( $requiredfile );
-        $executionfiles->add_child( $executionfile );
-        $variations->add_child( $variation );
-        $variation->add_child( $asignedvariations );
-        $asignedvariations->add_child( $asignedvariation );
-        $overrides->add_child( $override );
-        $assignedoverrides->add_child( $assignedoverride );
-        $submissions->add_child( $submission );
-        $submission->add_child( $submissionfiles );
-        $submissionfiles->add_child( $submissionfile );
+        $vpl->add_child($requiredfiles);
+        $vpl->add_child($executionfiles);
+        $vpl->add_child($variations);
+        $vpl->add_child($overrides);
+        $vpl->add_child($assignedoverrides);
+        $vpl->add_child($submissions);
+        $requiredfiles->add_child($requiredfile);
+        $executionfiles->add_child($executionfile);
+        $variations->add_child($variation);
+        $variation->add_child($asignedvariations);
+        $asignedvariations->add_child($asignedvariation);
+        $overrides->add_child($override);
+        $assignedoverrides->add_child($assignedoverride);
+        $submissions->add_child($submission);
+        $submission->add_child($submissionfiles);
+        $submissionfiles->add_child($submissionfile);
         // Define sources.
         // VPL record with basedonname field.
         $parmvplid = [ 'vpl' => backup::VAR_ACTIVITYID ];
@@ -296,12 +299,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $query .= ' LEFT join {vpl} o';
         $query .= '   ON s.basedon = o.id';
         $query .= '   WHERE s.id = ?';
-        $vpl->set_source_sql( $query, [ backup::VAR_ACTIVITYID ] );
-        $variation->set_source_table( 'vpl_variations', $parmvplid );
-        $override->set_source_table( 'vpl_overrides', $parmvplid );
+        $vpl->set_source_sql($query, [ backup::VAR_ACTIVITYID ]);
+        $variation->set_source_table('vpl_variations', $parmvplid);
+        $override->set_source_table('vpl_overrides', $parmvplid);
         if ($userinfo) {
-            $asignedvariation->set_source_table( 'vpl_assigned_variations', $parmvplid );
-            $assignedoverride->set_source_table( 'vpl_assigned_overrides', $parmvplid );
+            $asignedvariation->set_source_table('vpl_assigned_variations', $parmvplid);
+            $assignedoverride->set_source_table('vpl_assigned_overrides', $parmvplid);
             /*
              * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
              * $submission->set_source_table('vpl_submissions', $parmvplid);
@@ -311,20 +314,20 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
             $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
             $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
             $query .= ' on ls.maxid = s.id ORDER BY s.id';
-            $submission->set_source_sql( $query, [ backup::VAR_ACTIVITYID ] );
+            $submission->set_source_sql($query, [ backup::VAR_ACTIVITYID ]);
         }
 
         // Define id annotations.
-        $vpl->annotate_ids( 'scale', 'grade' );
-        $vpl->annotate_ids( 'vpl', 'basedon' );
-        $asignedvariation->annotate_ids( 'user', 'userid' );
-        $assignedoverride->annotate_ids( 'user', 'userid' );
-        $assignedoverride->annotate_ids( 'group', 'groupid' );
-        $submission->annotate_ids( 'user', 'userid' );
-        $submission->annotate_ids( 'user', 'grader' );
-        $submission->annotate_ids( 'group', 'groupid' );
+        $vpl->annotate_ids('scale', 'grade');
+        $vpl->annotate_ids('vpl', 'basedon');
+        $asignedvariation->annotate_ids('user', 'userid');
+        $assignedoverride->annotate_ids('user', 'userid');
+        $assignedoverride->annotate_ids('group', 'groupid');
+        $submission->annotate_ids('user', 'userid');
+        $submission->annotate_ids('user', 'grader');
+        $submission->annotate_ids('group', 'groupid');
         // Define file annotations.
-        $vpl->annotate_files( 'mod_vpl', 'intro', null );
-        return $this->prepare_activity_structure( $vpl );
+        $vpl->annotate_files('mod_vpl', 'intro', null);
+        return $this->prepare_activity_structure($vpl);
     }
 }

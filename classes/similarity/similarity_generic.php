@@ -31,7 +31,6 @@ use mod_vpl\tokenizer\tokenizer_factory;
  * @codeCoverageIgnore
  */
 class similarity_generic extends similarity_base {
-
     /**
      * @var int $lasttypenumber Last type number assigned to a tokenizer dynamicaly.
      * This is used to ensure that each tokenizer class has a unique type number.

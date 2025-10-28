@@ -51,7 +51,7 @@ class lock {
      */
     public function __construct($dir, $timeout = 5) {
         global $CFG;
-        if ( ! file_exists ($dir) ) {
+        if (! file_exists($dir)) {
             mkdir($dir, $CFG->directorypermissions, true);
         }
         $this->lockfile = $dir . self::filename();
@@ -62,14 +62,14 @@ class lock {
             $fp = false;
             if (! file_exists($this->lockfile)) {
                 $fp = fopen($this->lockfile, 'x');
-                if ( $fp !== false ) { // Locked by me.
+                if ($fp !== false) { // Locked by me.
                     fclose($fp);
                     break;
                 }
             }
-            if ( $fp === false ) { // Locked by other.
+            if ($fp === false) { // Locked by other.
                 $time = filectime($this->lockfile);
-                if ( $time !== false && $time != $ctime) { // First time or locker changed.
+                if ($time !== false && $time != $ctime) { // First time or locker changed.
                     $ctime = $time;
                     $start = time();
                 }
@@ -77,7 +77,7 @@ class lock {
                 if ($start + $timeout < time()) { // Lock timeout => removed.
                     if (file_exists($this->lockfile)) {
                         unlink($this->lockfile);
-                        $ntries ++;
+                        $ntries++;
                     } else {
                         continue;
                     }

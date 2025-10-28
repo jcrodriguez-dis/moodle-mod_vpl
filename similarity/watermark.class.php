@@ -23,7 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_watermark {
-
     /**
      * Start mark of userid as watermarks.
      * @var string
@@ -57,11 +56,11 @@ class vpl_watermark {
      * @return string encoded watermark with spaces and tabs
      */
     private static function encode($wm) {
-        $wm = ( int ) $wm;
+        $wm = (int) $wm;
         $ret = '';
-        while ( $wm > 0 ) {
+        while ($wm > 0) {
             $ret = self::$encoder[$wm % 7] . $ret;
-            $wm = ( int ) ($wm / 7);
+            $wm = (int) ($wm / 7);
         }
         return $ret;
     }
@@ -74,9 +73,9 @@ class vpl_watermark {
      */
     private static function decode($wm) {
         $ret = 0;
-        $digits = explode( "\t", $wm );
+        $digits = explode("\t", $wm);
         foreach ($digits as $digit) {
-            $ret = ($ret * 7) + strlen( $digit );
+            $ret = ($ret * 7) + strlen($digit);
         }
         return $ret;
     }
@@ -88,10 +87,10 @@ class vpl_watermark {
      * @return string with spaces and tabs
      */
     private static function genwm($userid) {
-        $userid = ( int ) $userid;
+        $userid = (int) $userid;
         // Add CRC.
         $useridcrc = ($userid * 10) + (($userid + 7) % 10);
-        return self::PRE . self::encode( $useridcrc ) . self::POST;
+        return self::PRE . self::encode($useridcrc) . self::POST;
     }
 
     /**
@@ -101,17 +100,17 @@ class vpl_watermark {
      * @return int userid found in watermark
      */
     public static function getwm($data) {
-        $nl = vpl_detect_newline( $data );
-        $lines = explode( $nl, $data );
+        $nl = vpl_detect_newline($data);
+        $lines = explode($nl, $data);
         foreach ($lines as $line) {
-            $pospre = strpos( $line, self::PRE );
+            $pospre = strpos($line, self::PRE);
             if ($pospre !== false) {
-                $start = $pospre + strlen( self::POST );
-                $pospost = strrpos( $line, self::POST );
+                $start = $pospre + strlen(self::POST);
+                $pospost = strrpos($line, self::POST);
                 if ($pospost !== false && ($start < $pospost)) {
-                    $wm = substr( $line, $start, $pospost - $start );
-                    $useridcrc = self::decode( $wm );
-                    $userid = ( int ) ($useridcrc / 10);
+                    $wm = substr($line, $start, $pospost - $start);
+                    $useridcrc = self::decode($wm);
+                    $userid = (int) ($useridcrc / 10);
                     // Check CRC.
                     if (($userid + 7) % 10 == $useridcrc % 10) {
                         // TODO return an array of userids?.
@@ -131,8 +130,8 @@ class vpl_watermark {
      * @return int userid found in watermark
      */
     public static function getfilewm($filename) {
-        if (file_exists( $filename )) {
-            return self::getwm( file_get_contents( $filename ) );
+        if (file_exists($filename)) {
+            return self::getwm(file_get_contents($filename));
         }
         return false;
     }
@@ -146,26 +145,26 @@ class vpl_watermark {
      */
     public static function addwm_c($data, $userid) {
         // Check if need water mark.
-        if (self::getwm( $data ) == false) {
-            $wm = self::genwm( $userid );
-            $nl = vpl_detect_newline( $data );
-            $lines = explode( $nl, $data );
+        if (self::getwm($data) == false) {
+            $wm = self::genwm($userid);
+            $nl = vpl_detect_newline($data);
+            $lines = explode($nl, $data);
             $countnwm = 0;
             $wmadded = 0;
             foreach ($lines as &$line) {
                 if ($countnwm > 35) { // If 35 lines without wm try to add one.
-                    $lclean = rtrim( $line );
-                    $l = strlen( $lclean );
+                    $lclean = rtrim($line);
+                    $l = strlen($lclean);
                     if ($l > 0 && ($lclean[$l - 1] == '}' || $lclean[$l - 1] == '{')) {
                         $line = $lclean . $wm;
-                        $wmadded ++;
+                        $wmadded++;
                         $countnwm = 0;
                     }
                 }
-                $countnwm ++;
+                $countnwm++;
             }
             if ($wmadded) {
-                $data = implode( $nl, $lines );
+                $data = implode($nl, $lines);
             }
             if ($countnwm > 25) { // If last 25 lines without wm add last.
                 $data .= $wm . $nl;
@@ -183,9 +182,9 @@ class vpl_watermark {
      */
     public static function addwm_generic($data, $userid) {
         // Check if need water mark.
-        if (self::getwm( $data ) == false) {
-            $wm = self::genwm( $userid );
-            $nl = vpl_detect_newline( $data );
+        if (self::getwm($data) == false) {
+            $wm = self::genwm($userid);
+            $nl = vpl_detect_newline($data);
             $data .= $wm . $nl;
         }
         return $data;
@@ -200,11 +199,13 @@ class vpl_watermark {
      * @return data with watermark added
      */
     public static function addwm(&$data, $filename, $userid) {
-        if (strlen( $data ) > 500) {
-            $ext = pathinfo( $filename, PATHINFO_EXTENSION );
-            if ($ext == 'c' || $ext == 'h' || $ext = 'hxx' || $ext == 'cpp'
-                || $ext == 'cc' || $ext = 'C' || $ext == 'java' || $ext == 'js') {
-                return self::addwm_c( $data, $userid );
+        if (strlen($data) > 500) {
+            $ext = pathinfo($filename, PATHINFO_EXTENSION);
+            if (
+                $ext == 'c' || $ext == 'h' || $ext = 'hxx' || $ext == 'cpp'
+                || $ext == 'cc' || $ext = 'C' || $ext == 'java' || $ext == 'js'
+            ) {
+                return self::addwm_c($data, $userid);
             }
             // TODO add generic for other files type "self::addwm_generic($data,$userid);".
         }

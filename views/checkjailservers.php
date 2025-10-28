@@ -23,10 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../jail/jailserver_manager.class.php');
-require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../jail/jailserver_manager.class.php');
+require_once(dirname(__FILE__) . '/../jail/running_processes.class.php');
 
 /**
  * Get the list of jail servers from the current VPL activity
@@ -40,16 +40,16 @@ require_once(dirname(__FILE__).'/../jail/running_processes.class.php');
 function get_currentjailservers($vpl, &$already = []) {
     $serverlist = '';
     $vplinstance = $vpl->get_instance();
-    if (isset( $already[$vplinstance->id] )) {
+    if (isset($already[$vplinstance->id])) {
         throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
     }
-    $call = count( $already );
+    $call = count($already);
     $already[$vplinstance->id] = true;
     if ($vplinstance->basedon) {
-        $basedon = new mod_vpl( null, $vplinstance->basedon );
-        $serverlist = get_currentjailservers( $basedon, $already );
+        $basedon = new mod_vpl(null, $vplinstance->basedon);
+        $serverlist = get_currentjailservers($basedon, $already);
     }
-    if ( $vplinstance->jailservers > '') {
+    if ($vplinstance->jailservers > '') {
         $serverlist = $vplinstance->jailservers . "\n" . $serverlist;
     }
     return $serverlist;
@@ -63,10 +63,10 @@ function get_currentjailservers($vpl, &$already = []) {
  * @return string URL without path
  */
 function remove_path($url) {
-    $path = parse_url( $url, PHP_URL_PATH );
+    $path = parse_url($url, PHP_URL_PATH);
     if ($path > '/') {
         $lenpath = strlen($path);
-        $url = substr_replace( $url, '/*****', -$lenpath, $lenpath);
+        $url = substr_replace($url, '/*****', -$lenpath, $lenpath);
     }
     return $url;
 }
@@ -74,28 +74,28 @@ function remove_path($url) {
 global $PAGE, $COURSE, $COURSE, $DB;
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'views/checkjailservers.php', [
+$id = required_param('id', PARAM_INT);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('views/checkjailservers.php', [
         'id' => $id,
-] );
+]);
 
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
 // Display page.
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/checkjailservers.css' ) );
-$vpl->print_header( get_string( 'check_jail_servers', VPL ) );
-$vpl->print_heading_with_help( 'check_jail_servers' );
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/checkjailservers.css'));
+$vpl->print_header(get_string('check_jail_servers', VPL));
+$vpl->print_heading_with_help('check_jail_servers');
 
-\mod_vpl\event\vpl_jail_servers_tested::log( $vpl );
-$servers = vpl_jailserver_manager::check_servers( get_currentjailservers($vpl) );
+\mod_vpl\event\vpl_jail_servers_tested::log($vpl);
+$servers = vpl_jailserver_manager::check_servers(get_currentjailservers($vpl));
 $serverstable = new html_table();
 $serverstable->head = [
         '#',
-        get_string( 'server', VPL ),
-        get_string( 'currentstatus', VPL ),
-        get_string( 'lasterror', VPL ),
-        get_string( 'lasterrordate', VPL ),
-        get_string( 'totalnumberoferrors', VPL ),
+        get_string('server', VPL),
+        get_string('currentstatus', VPL),
+        get_string('lasterror', VPL),
+        get_string('lasterrordate', VPL),
+        get_string('totalnumberoferrors', VPL),
 ];
 $serverstable->align = [
         'right',
@@ -107,18 +107,18 @@ $serverstable->align = [
 ];
 
 $plugin = new stdClass();
-require_once(dirname( __FILE__ ) . '/../version.php');
+require_once(dirname(__FILE__) . '/../version.php');
 $pluginversion = $plugin->version;
 
 $serverstable->data = [];
 $num = 0;
 foreach ($servers as $server) {
     $serverurl = remove_path($server->server);
-    if (vpl_jailserver_manager::is_private_host( $serverurl )) {
+    if (vpl_jailserver_manager::is_private_host($serverurl)) {
         $message = 'WARNING: not accessible from the internet';
         $serverurl = s($serverurl) . '<br>' . s($message);
     }
-    $num ++;
+    $num++;
     if ($server->offline) {
         $status = '<div class="vpl_server_failed">' . $server->current_status . '</div>';
     } else {
@@ -129,18 +129,18 @@ foreach ($servers as $server) {
             $serverurl,
             $status,
             $server->laststrerror,
-            $server->lastfail > 0 ? userdate( $server->lastfail ) : '',
+            $server->lastfail > 0 ? userdate($server->lastfail) : '',
             $server->nfails,
     ];
 }
 $processestable = new html_table();
 $processestable->head = [
         '#',
-        get_string( 'user' ),
-        get_string( 'activity' ),
-        get_string( 'server', VPL ),
-        get_string( 'startingfrom' ),
-        get_string( 'status' ),
+        get_string('user'),
+        get_string('activity'),
+        get_string('server', VPL),
+        get_string('startingfrom'),
+        get_string('status'),
 ];
 $processestable->align = [
         'right',
@@ -160,21 +160,21 @@ foreach ($processes as $process) {
     $data->pluginversion = $pluginversion;
     $request = vpl_jailserver_manager::get_action_request('running', $data);
     $error = '';
-    $response = vpl_jailserver_manager::get_response( $process->server, $request, $error );
+    $response = vpl_jailserver_manager::get_response($process->server, $request, $error);
     if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
         // Removes zombi tasks.
         vpl_running_processes::delete($process->userid, $process->vpl, $process->adminticket);
     }
     $status = '';
-    if ( isset($response['running']) && $response['running'] == 1) {
+    if (isset($response['running']) && $response['running'] == 1) {
         $status = get_string('running', VPL);
     }
-    $serverurl = remove_path( $process->server );
-    $num ++;
+    $serverurl = remove_path($process->server);
+    $num++;
     $vpl = new mod_vpl(false, $process->vpl);
-    $user = $DB->get_record( 'user', [
+    $user = $DB->get_record('user', [
             'id' => $process->userid,
-    ] );
+    ]);
     $processestable->data[] = [
             $num,
             $vpl->fullname($user),
@@ -185,9 +185,9 @@ foreach ($processes as $process) {
     ];
 }
 
-echo html_writer::table( $serverstable );
-if ( count($processestable->data) > 0 ) {
-    echo html_writer::table( $processestable );
+echo html_writer::table($serverstable);
+if (count($processestable->data) > 0) {
+    echo html_writer::table($processestable);
 }
 
 $vpl->print_footer();

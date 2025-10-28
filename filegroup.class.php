@@ -16,10 +16,10 @@
 
 use mod_h5pactivity\output\result\other;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname(__FILE__).'/locallib.php');
-require_once(dirname(__FILE__).'/views/sh_factory.class.php');
-require_once(dirname(__FILE__).'/similarity/watermark.class.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/locallib.php');
+require_once(dirname(__FILE__) . '/views/sh_factory.class.php');
+require_once(dirname(__FILE__) . '/similarity/watermark.class.php');
 
 /**
  * Class to manage a group of files
@@ -60,7 +60,7 @@ class file_group_process {
      * @return void
      */
     public static function write_list($filename, $list, $otherfln = false) {
-        if ( !function_exists('link') ) {
+        if (!function_exists('link')) {
             $otherfln = false; // If link() is not available, do not use other file.
         }
         $data = '';
@@ -73,12 +73,14 @@ class file_group_process {
             }
         }
         // Try to reuse other file.
-        if ($otherfln != false && is_file( $otherfln )
-            && file_get_contents( $otherfln ) === $data
-            && link( $otherfln, $filename) ) {
+        if (
+            $otherfln != false && is_file($otherfln)
+            && file_get_contents($otherfln) === $data
+            && link($otherfln, $filename)
+        ) {
             return;
         }
-        vpl_fwrite( $filename, $data );
+        vpl_fwrite($filename, $data);
     }
 
     /**
@@ -89,11 +91,11 @@ class file_group_process {
      */
     public static function read_list($filename) {
         $ret = [];
-        if (is_file( $filename )) {
-            $data = file_get_contents( $filename );
+        if (is_file($filename)) {
+            $data = file_get_contents($filename);
             if ($data > '') {
-                $nl = vpl_detect_newline( $data );
-                $ret = explode( $nl, $data );
+                $nl = vpl_detect_newline($data);
+                $ret = explode($nl, $data);
             }
         }
         return $ret;
@@ -146,15 +148,15 @@ class file_group_process {
      * @return bool true if the file was added or modified, false if the file could not be added
      */
     public function addfile($filename, $data = null) {
-        if (! vpl_is_valid_path_name( $filename )) {
+        if (! vpl_is_valid_path_name($filename)) {
             return false;
         }
-        ignore_user_abort( true );
+        ignore_user_abort(true);
         $filelist = $this->getFileList();
-        $path = $this->dir . '/' . self::encodeFileName( $filename );
+        $path = $this->dir . '/' . self::encodeFileName($filename);
         if (array_search($filename, $filelist) !== false) {
             if ($data !== null) {
-                vpl_fwrite( $path, $data );
+                vpl_fwrite($path, $data);
             } else {
                 if (is_file($path)) {
                     unlink($path);
@@ -162,13 +164,13 @@ class file_group_process {
             }
             return true;
         }
-        if (count( $filelist ) >= $this->maxnumfiles) {
+        if (count($filelist) >= $this->maxnumfiles) {
             return false;
         }
         $filelist[] = $filename;
-        $this->setFileList( $filelist );
+        $this->setFileList($filelist);
         if ($data !== null) {
-            vpl_fwrite( $path, $data );
+            vpl_fwrite($path, $data);
         }
         return true;
     }
@@ -181,8 +183,8 @@ class file_group_process {
      * @param string $otherfln If not false, use this file name to save the list.
      */
     public function addallfiles($files, $otherdir = false, $otherfln = false) {
-        ignore_user_abort( true );
-        if ( !function_exists('link') ) {
+        ignore_user_abort(true);
+        if (!function_exists('link')) {
             $otherdir = false; // If link() is not available, do not use other dir.
         }
         $filelist = $this->getFileList();
@@ -192,25 +194,27 @@ class file_group_process {
         }
         vpl_create_dir($this->dir);
         foreach ($files as $filename => $data) {
-            if ( !isset($filehash[$filename]) ) {
+            if (!isset($filehash[$filename])) {
                 $filelist[] = $filename;
             }
             if ($data === null) {
                 $data = '';
             }
-            $fnencode = self::encodeFileName( $filename );
+            $fnencode = self::encodeFileName($filename);
             $path = $this->dir . '/' . $fnencode;
-            if ( $otherdir != false ) {
+            if ($otherdir != false) {
                 $otherpath = $otherdir . $fnencode;
-                if (file_exists( $otherpath)
-                        && $data == file_get_contents( $otherpath )
-                        && link($otherpath, $path) ) {
+                if (
+                    file_exists($otherpath)
+                        && $data == file_get_contents($otherpath)
+                        && link($otherpath, $path)
+                ) {
                     continue;
                 }
             }
-            vpl_fwrite( $path, $data );
+            vpl_fwrite($path, $data);
         }
-        $this->setFileList( $filelist, $otherfln);
+        $this->setFileList($filelist, $otherfln);
     }
 
     /**
@@ -219,15 +223,15 @@ class file_group_process {
      * @return void
      */
     public function deleteallfiles() {
-        ignore_user_abort( true );
+        ignore_user_abort(true);
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
-            if (is_file( $fullname )) {
-                unlink( $fullname );
+            $fullname = $this->dir . '/' . self::encodeFileName($filename);
+            if (is_file($fullname)) {
+                unlink($fullname);
             }
         }
-        $this->setFileList( [] );
+        $this->setFileList([]);
     }
 
     /**
@@ -267,9 +271,9 @@ class file_group_process {
         $files = [];
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
-            if (is_file( $fullname )) {
-                 $files[$filename] = file_get_contents( $fullname );
+            $fullname = $this->dir . '/' . self::encodeFileName($filename);
+            if (is_file($fullname)) {
+                 $files[$filename] = file_get_contents($fullname);
             } else {
                  $files[$filename] = '';
             }
@@ -284,7 +288,7 @@ class file_group_process {
      * @param bool $otherfln If true, use the other file name to save the list.
      */
     public function setfilelist($filelist, $otherfln = false) {
-        self::write_list($this->filelistname, $filelist, $otherfln );
+        self::write_list($this->filelistname, $filelist, $otherfln);
         $this->cachefilelist = $filelist;
     }
 
@@ -295,7 +299,7 @@ class file_group_process {
      * @return string comment for the file
      */
     public function getfilecomment($num) {
-        return get_string( 'file' ) . ' ' . ($num + 1);
+        return get_string('file') . ' ' . ($num + 1);
     }
 
     /**
@@ -305,29 +309,29 @@ class file_group_process {
      * @return string file data or empty string if file does not exist
      */
     public function getfiledata($mix) {
-        if (is_int( $mix )) {
+        if (is_int($mix)) {
             $num = $mix;
             $filelist = $this->getFileList();
-            if ($num >= 0 && $num < count( $filelist )) {
-                $filename = $this->dir . '/' . self::encodeFileName( $filelist[$num] );
-                if (is_file( $filename )) {
-                    return file_get_contents( $filename );
+            if ($num >= 0 && $num < count($filelist)) {
+                $filename = $this->dir . '/' . self::encodeFileName($filelist[$num]);
+                if (is_file($filename)) {
+                    return file_get_contents($filename);
                 } else {
                     return '';
                 }
             }
-        } else if (is_string( $mix )) {
+        } else if (is_string($mix)) {
             $filelist = $this->getFileList();
-            if (array_search( $mix, $filelist ) !== false) {
-                $fullfilename = $this->dir . '/' . self::encodeFileName( $mix );
-                if (is_file( $fullfilename )) {
-                    return file_get_contents( $fullfilename );
+            if (array_search($mix, $filelist) !== false) {
+                $fullfilename = $this->dir . '/' . self::encodeFileName($mix);
+                if (is_file($fullfilename)) {
+                    return file_get_contents($fullfilename);
                 } else {
                     return '';
                 }
             }
         }
-        debugging( "File not found $mix", DEBUG_DEVELOPER );
+        debugging("File not found $mix", DEBUG_DEVELOPER);
         return '';
     }
 
@@ -339,9 +343,9 @@ class file_group_process {
     public function is_populated() {
         $filelist = $this->getFileList();
         foreach ($filelist as $filename) {
-            $fullname = $this->dir . '/' . self::encodeFileName( $filename );
-            if (is_file( $fullname )) {
-                $info = stat( $fullname );
+            $fullname = $this->dir . '/' . self::encodeFileName($filename);
+            if (is_file($fullname)) {
+                $info = stat($fullname);
                 if ($info['size'] > 0) {
                     return true;
                 }
@@ -356,7 +360,7 @@ class file_group_process {
      * @return int Version number based on the last modification time of the directory
      */
     public function getversion() {
-        if (file_exists( $this->dir )) {
+        if (file_exists($this->dir)) {
             $info = stat($this->dir);
             if ($info !== false) {
                 return $info['mtime'];
@@ -371,22 +375,22 @@ class file_group_process {
     /**
      * @var int $outputtextsize Total size of text files shown.
      */
-    static protected $outputtextsize = 0;
+    protected static $outputtextsize = 0;
 
     /**
      * @var int $outputbinarysize Total size of binary files shown.
      */
-    static protected $outputbinarysize = 0;
+    protected static $outputbinarysize = 0;
 
     /**
      * @var int $outputtextlimit Limit of total size of text files shown.
      */
-    static protected $outputtextlimit = 100000;
+    protected static $outputtextlimit = 100000;
 
     /**
      * @var int $outputbinarylimit Limit of total size of binary files shown.
      */
-    static protected $outputbinarylimit = 10000000;
+    protected static $outputbinarylimit = 10000000;
     /**
      * Print the files in the group.
      *
@@ -397,29 +401,29 @@ class file_group_process {
         $showbinary = self::$outputbinarysize < self::$outputbinarylimit;
         $showcode = self::$outputtextsize < self::$outputtextlimit;
         foreach ($filenames as $name) {
-            if (is_file( $this->dir . '/' . self::encodeFileName( $name ) )) {
-                if ( vpl_is_binary($name) ) {
+            if (is_file($this->dir . '/' . self::encodeFileName($name))) {
+                if (vpl_is_binary($name)) {
                     if ($showbinary) {
-                        $printer = vpl_sh_factory::get_sh( $name );
-                        $data = $this->getFileData( $name );
-                        $printer->print_file( $name, $data );
+                        $printer = vpl_sh_factory::get_sh($name);
+                        $data = $this->getFileData($name);
+                        $printer->print_file($name, $data);
                         self::$outputbinarysize += strlen($data);
                     } else {
-                        echo '<h4>' . s( $name ) . '</h4>';
+                        echo '<h4>' . s($name) . '</h4>';
                         echo "[...]";
                     }
                 } else {
                     if ($showcode) {
-                        $printer = vpl_sh_factory::get_sh( $name );
+                        $printer = vpl_sh_factory::get_sh($name);
                     } else {
                         $printer = vpl_sh_factory::get_object('text_nsh');
                     }
-                    $data = $this->getFileData( $name );
-                    $printer->print_file( $name, $data );
+                    $data = $this->getFileData($name);
+                    $printer->print_file($name, $data);
                     self::$outputtextsize += strlen($data);
                 }
             } else if ($ifnoexist) {
-                echo '<h4>' . s( $name ) . '</h4>';
+                echo '<h4>' . s($name) . '</h4>';
             }
         }
         vpl_sh_factory::syntaxhighlight();
@@ -435,19 +439,19 @@ class file_group_process {
         global $USER;
         $zip = new ZipArchive();
         $dir = $CFG->dataroot . '/temp/vpl';
-        if (! file_exists($dir) ) {
+        if (! file_exists($dir)) {
             mkdir($dir, $CFG->directorypermissions, true);
         }
-        $zipfilename = tempnam( $dir, 'zip' );
+        $zipfilename = tempnam($dir, 'zip');
         $filelist = $this->getFileList();
         if (count($filelist) > 0) {
-            if ($zip->open( $zipfilename, ZipArchive::OVERWRITE ) === true) {
+            if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
                 foreach ($filelist as $filename) {
-                    $data = $this->getFileData( $filename );
+                    $data = $this->getFileData($filename);
                     if ($watermark) {
-                        $data = vpl_watermark::addwm( $data, $filename, $USER->id );
+                        $data = vpl_watermark::addwm($data, $filename, $USER->id);
                     }
-                    $zip->addFromString( $filename, $data );
+                    $zip->addFromString($filename, $data);
                 }
                 $zip->close();
             } else {

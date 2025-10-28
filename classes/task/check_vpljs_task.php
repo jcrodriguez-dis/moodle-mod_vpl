@@ -34,7 +34,6 @@ require_once($CFG->dirroot . '/message/lib.php');
  * The task check for outdated VPL Jail Server reporting to the site administrator.
  */
 class check_vpljs_task extends \core\task\scheduled_task {
-
     /**
      * @var string VPL Table name.
      */

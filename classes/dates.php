@@ -35,7 +35,6 @@ use core\activity_dates;
  * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 class dates extends activity_dates {
-
     /** @var int $duedate the cached activity due date */
     private int $duedate;
 
@@ -45,7 +44,7 @@ class dates extends activity_dates {
      * @return array
      */
     protected function get_dates(): array {
-        require_once(dirname(__FILE__).'/../locallib.php');
+        require_once(dirname(__FILE__) . '/../locallib.php');
 
         $this->duedate = 0;
         $vpl = new \mod_vpl($this->cm->id);

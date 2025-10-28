@@ -16,11 +16,11 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/similarity_factory.class.php');
-require_once(dirname(__FILE__).'/similarity_sources.class.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/similarity_factory.class.php');
+require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 
 /**
  * Class to show two files diff
@@ -39,11 +39,11 @@ class vpl_diff {
      */
     public static function removealphanum($line) {
         $ret = '';
-        $l = strlen( $line );
+        $l = strlen($line);
         // Parse line to remove alphanum chars.
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $c = $line[$i];
-            if (! ctype_alnum( $c ) && $c != ' ') {
+            if (! ctype_alnum($c) && $c != ' ') {
                 $ret .= $c;
             }
         }
@@ -61,35 +61,35 @@ class vpl_diff {
         // TODO Refactor.
         // This is a bad solution that must be rebuild to consider diferent languages.
         // Compare trimed text.
-        $line1 = trim( $line1 );
-        $line2 = trim( $line2 );
+        $line1 = trim($line1);
+        $line2 = trim($line2);
         if ($line1 == $line2) {
-            if (strlen( $line1 ) > 0) {
+            if (strlen($line1) > 0) {
                 return 3;
             } else {
                 return 1;
             }
         }
         // Compare filtered text (removing alphanum).
-        $ran1 = self::removealphanum( $line1 );
-        $limit = strlen( $ran1 );
+        $ran1 = self::removealphanum($line1);
+        $limit = strlen($ran1);
         if ($limit > 0) {
             if ($limit > 3) {
                 $limit = 3;
             }
-            if (strncmp( $ran1, self::removealphanum( $line2 ), $limit ) == 0) {
+            if (strncmp($ran1, self::removealphanum($line2), $limit) == 0) {
                 return 2;
             }
         }
         // Compare start of line.
         $l = 4;
-        if ($l > strlen( $line1 )) {
-            $l = strlen( $line1 );
+        if ($l > strlen($line1)) {
+            $l = strlen($line1);
         }
-        if ($l > strlen( $line2 )) {
-            $l = strlen( $line2 );
+        if ($l > strlen($line2)) {
+            $l = strlen($line2);
         }
-        for ($i = 0; $i < $l; ++ $i) {
+        for ($i = 0; $i < $l; ++$i) {
             if ($line1[$i] != $line2[$i]) {
                 break;
             }
@@ -124,18 +124,18 @@ class vpl_diff {
      */
     public static function initauxiliarmatrices(&$matrix, &$prev, $nl1, $nl2) {
         // Set the matrix[0..nl1+1][0..nl2+1] to 0.
-        $row = array_pad( [], $nl2 + 1, 0 );
-        $matrix = array_pad( [], $nl1 + 1, $row );
+        $row = array_pad([], $nl2 + 1, 0);
+        $matrix = array_pad([], $nl1 + 1, $row);
         // Set the prev matrix [0..nl1+1][0..nl2+1] to 0.
         $prev = $matrix;
 
         // Update first column.
-        for ($i = 0; $i <= $nl1; $i ++) {
+        for ($i = 0; $i <= $nl1; $i++) {
             $matrix[$i][0] = 0;
             $prev[$i][0] = - 1;
         }
         // Update first row.
-        for ($j = 1; $j <= $nl2; $j ++) {
+        for ($j = 1; $j <= $nl2; $j++) {
             $matrix[0][$j] = 0;
             $prev[0][$j] = 1;
         }
@@ -163,20 +163,20 @@ class vpl_diff {
     public static function calculatediff($lines1, $lines2) {
         $nmatrixlimit = 1000 * 1000; // Matrix size limit.
         $ret = [];
-        $nl1 = count( $lines1 );
-        $nl2 = count( $lines2 );
+        $nl1 = count($lines1);
+        $nl2 = count($lines2);
         if ($nl1 == 0 && $nl2 == 0) {
             return false;
         }
         if ($nl1 == 0) { // There is no first file.
             foreach ($lines2 as $pos => $line) {
-                $ret[] = self::newlineinfo( '>', 0, $pos + 1 );
+                $ret[] = self::newlineinfo('>', 0, $pos + 1);
             }
             return $ret;
         }
         if ($nl2 == 0) { // There is no second file.
             foreach ($lines1 as $pos => $line) {
-                $ret[] = self::newlineinfo( '<', $pos + 1 );
+                $ret[] = self::newlineinfo('<', $pos + 1);
             }
             return $ret;
         }
@@ -185,18 +185,18 @@ class vpl_diff {
             for ($i = 1; $i <= $mnl; $i++) {
                 $l1 = $i > $nl1 ? 0 : $i;
                 $l2 = $i > $nl2 ? 0 : $i;
-                $ret[] = self::newlineinfo( '#', $l1, $l2);
+                $ret[] = self::newlineinfo('#', $l1, $l2);
             }
             return $ret;
         }
         $matrix = [];
         $prev = [];
-        self::initauxiliarmatrices( $matrix, $prev, $nl1, $nl2 );
+        self::initauxiliarmatrices($matrix, $prev, $nl1, $nl2);
 
         // Matrix processing.
-        for ($i = 1; $i <= $nl1; $i ++) {
+        for ($i = 1; $i <= $nl1; $i++) {
             $line = $lines1[$i - 1];
-            for ($j = 1; $j <= $nl2; $j ++) {
+            for ($j = 1; $j <= $nl2; $j++) {
                 if ($matrix[$i][$j - 1] > $matrix[$i - 1][$j]) {
                     $max = $matrix[$i][$j - 1];
                     $best = 1;
@@ -204,7 +204,7 @@ class vpl_diff {
                     $max = $matrix[$i - 1][$j];
                     $best = - 1;
                 }
-                $prize = self::diffline( $line, $lines2[$j - 1] );
+                $prize = self::diffline($line, $lines2[$j - 1]);
                 if ($matrix[$i - 1][$j - 1] + $prize >= $max) {
                     $max = $matrix[$i - 1][$j - 1] + $prize;
                     $best = 0;
@@ -219,26 +219,26 @@ class vpl_diff {
         $pairs = [];
         $pi = $nl1;
         $pj = $nl2;
-        while ( (! ($pi == 0 && $pj == 0)) && $limit > 0 ) {
+        while ((! ($pi == 0 && $pj == 0)) && $limit > 0) {
             $pair = new stdClass();
             $pair->i = $pi;
             $pair->j = $pj;
             $pairs[] = $pair;
             $p = $prev[$pi][$pj];
             if ($p == 0) {
-                $pi --;
-                $pj --;
+                $pi--;
+                $pj--;
             } else if ($p == - 1) {
-                $pi --;
+                $pi--;
             } else if ($p == 1) {
-                $pj --;
+                $pj--;
             } else {
                 throw new Exception('Calculating diff');
             }
-            $limit --;
+            $limit--;
         }
 
-        krsort( $pairs );
+        krsort($pairs);
         $prevpair = new stdClass();
         $prevpair->i = 0;
         $prevpair->j = 0;
@@ -247,20 +247,20 @@ class vpl_diff {
                 $l1 = $lines1[$pair->i - 1];
                 $l2 = $lines2[$pair->j - 1];
                 if ($l1 == $l2) { // Equals.
-                    $ret[] = self::newlineinfo( '=', $pair->i, $pair->j );
-                } else if ( self::similine($l1, $l2, '/\s/')) {
-                    $ret[] = self::newlineinfo( '1', $pair->i, $pair->j );
-                } else if ( self::similine($l1, $l2, '/(\s|[0-9]|[a-z])/i')) {
-                    $ret[] = self::newlineinfo( '2', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo('=', $pair->i, $pair->j);
+                } else if (self::similine($l1, $l2, '/\s/')) {
+                    $ret[] = self::newlineinfo('1', $pair->i, $pair->j);
+                } else if (self::similine($l1, $l2, '/(\s|[0-9]|[a-z])/i')) {
+                    $ret[] = self::newlineinfo('2', $pair->i, $pair->j);
                 } else {
-                    $ret[] = self::newlineinfo( '#', $pair->i, $pair->j );
+                    $ret[] = self::newlineinfo('#', $pair->i, $pair->j);
                 }
             } else if ($pair->i == $prevpair->i + 1) { // Removed next line.
-                $ret[] = self::newlineinfo( '<', $pair->i, false );
+                $ret[] = self::newlineinfo('<', $pair->i, false);
             } else if ($pair->j == $prevpair->j + 1) { // Added one line.
-                $ret[] = self::newlineinfo( '>', false, $pair->j );
+                $ret[] = self::newlineinfo('>', false, $pair->j);
             } else {
-                debugging( "Internal error " . s( $pair ) . " " . s( $prevpair) );
+                debugging("Internal error " . s($pair) . " " . s($prevpair));
             }
             $prevpair = $pair;
         }
@@ -279,12 +279,12 @@ class vpl_diff {
      */
     public static function show($filename1, $data1, $htmlheader1, $filename2, $data2, $htmlheader2) {
         // Get file lines.
-        $nl = vpl_detect_newline( $data1 );
-        $lines1 = explode( $nl, $data1 );
-        $nl = vpl_detect_newline( $data2 );
-        $lines2 = explode( $nl, $data2 );
+        $nl = vpl_detect_newline($data1);
+        $lines1 = explode($nl, $data1);
+        $nl = vpl_detect_newline($data2);
+        $lines2 = explode($nl, $data2);
         // Get dif as an array of info.
-        $diff = self::calculatediff( $lines1, $lines2 );
+        $diff = self::calculatediff($lines1, $lines2);
         if ($diff === false) {
             return;
         }
@@ -310,7 +310,7 @@ class vpl_diff {
                 $datal1 .= sprintf("%4d\n", $line->ln1);
                 $data1 .= $lines1[$line->ln1 - 1] . "\n";
             } else {
-                if ( $data1 == '' ) {
+                if ($data1 == '') {
                     $data1 .= $emptyline;
                     $datal1 .= $emptyline;
                 }
@@ -321,7 +321,7 @@ class vpl_diff {
                 $datal2 .= sprintf("%4d\n", $line->ln2);
                 $data2 .= $lines2[$line->ln2 - 1] . "\n";
             } else {
-                if ( $data2 == '' ) {
+                if ($data2 == '') {
                     $data2 .= $emptyline;
                     $datal2 .= $emptyline;
                 }
@@ -342,26 +342,26 @@ class vpl_diff {
         echo '<div style="clear:both;"></div>';
         // Files.
         echo '<div style="float:left; text-align: right; width: 3em">';
-        $shower = vpl_sh_factory::get_sh( 'a.txt' );
-        $shower->print_file( 'a.txt', $datal1, false, count($diff) + 1, false );
+        $shower = vpl_sh_factory::get_sh('a.txt');
+        $shower->print_file('a.txt', $datal1, false, count($diff) + 1, false);
         echo '</div>';
         echo '<div style="float:left; width: 390px; overflow:auto">';
-        $shower = vpl_sh_factory::get_sh( $filename1 );
-        $shower->print_file( $filename1, $data1, false, count($diff) + 1, false );
+        $shower = vpl_sh_factory::get_sh($filename1);
+        $shower->print_file($filename1, $data1, false, count($diff) + 1, false);
         echo '</div>';
 
         echo '<div style="float:left; width: 3em">';
-        $shower = vpl_sh_factory::get_sh( 'b.txt' );
-        $shower->print_file( 'b.txt', $diffl, false, count($diff) + 1, false );
+        $shower = vpl_sh_factory::get_sh('b.txt');
+        $shower->print_file('b.txt', $diffl, false, count($diff) + 1, false);
         echo '</div>';
 
         echo '<div style="float:left; text-align: right; width: 3em">';
-        $shower = vpl_sh_factory::get_sh( 'b.txt' );
-        $shower->print_file( 'b.txt', $datal2, false, count($diff) + 1, false );
+        $shower = vpl_sh_factory::get_sh('b.txt');
+        $shower->print_file('b.txt', $datal2, false, count($diff) + 1, false);
         echo '</div>';
         echo '<div style="float:left; width: 390px; overflow:auto">';
-        $shower = vpl_sh_factory::get_sh( $filename2 );
-        $shower->print_file( $filename2, $data2, false, count($diff) + 1, false );
+        $shower = vpl_sh_factory::get_sh($filename2);
+        $shower->print_file($filename2, $data2, false, count($diff) + 1, false);
         echo '</div>';
 
         echo '</div>';
@@ -383,54 +383,54 @@ class vpl_diff {
         $htmlheader = '';
         $filename = '';
         $data = '';
-        $type = required_param( 'type' . $f, PARAM_INT );
+        $type = required_param('type' . $f, PARAM_INT);
         if ($type == 1) {
-            $subid = required_param( 'subid' . $f, PARAM_INT );
-            $filename = required_param( 'filename' . $f, PARAM_TEXT );
-            $subinstance = $DB->get_record( 'vpl_submissions', [
+            $subid = required_param('subid' . $f, PARAM_INT);
+            $filename = required_param('filename' . $f, PARAM_TEXT);
+            $subinstance = $DB->get_record('vpl_submissions', [
                     'id' => $subid,
-            ] );
+            ]);
             if ($subinstance !== false) {
-                $vpl = new mod_vpl( false, $subinstance->vpl );
-                $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
-                $submission = new mod_vpl_submission( $vpl, $subinstance );
-                $user = $DB->get_record( 'user', [
+                $vpl = new mod_vpl(false, $subinstance->vpl);
+                $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+                $submission = new mod_vpl_submission($vpl, $subinstance);
+                $user = $DB->get_record('user', [
                         'id' => $subinstance->userid,
-                ] );
+                ]);
                 if ($user) {
-                    $link = vpl_mod_href( '/forms/submissionview.php', 'id', $vpl->get_course_module()->id
-                                          , 'userid', $subinstance->userid );
+                    $link = vpl_mod_href('/forms/submissionview.php', 'id', $vpl->get_course_module()->id, 'userid', $subinstance->userid);
                     $htmlheader .= '<a href="' . $link . '">';
                 }
-                $htmlheader .= s( $filename ) . ' ';
+                $htmlheader .= s($filename) . ' ';
                 if ($user) {
                     $htmlheader .= '</a>';
-                    $htmlheader .= $vpl->user_fullname_picture( $user );
+                    $htmlheader .= $vpl->user_fullname_picture($user);
                 }
                 $fg = $submission->get_submitted_fgm();
-                $data = $fg->getFileData( $filename );
-                \mod_vpl\event\vpl_diff_viewed::log( $submission );
+                $data = $fg->getFileData($filename);
+                \mod_vpl\event\vpl_diff_viewed::log($submission);
             }
         } else if ($type == 3) {
             $data = '';
-            $vplid = required_param( 'vplid' . $f, PARAM_INT );
-            $vpl = new mod_vpl( false, $vplid );
-            $vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
-            $zipname = required_param( 'zipfile' . $f, PARAM_RAW );
-            $filename = required_param( 'filename' . $f, PARAM_RAW );
-            $htmlheader .= $filename . ' ' . optional_param( 'username' . $f, '', PARAM_TEXT );
-            $ext = strtoupper( pathinfo( $zipname, PATHINFO_EXTENSION ) );
+            $vplid = required_param('vplid' . $f, PARAM_INT);
+            $vpl = new mod_vpl(false, $vplid);
+            $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+            $zipname = required_param('zipfile' . $f, PARAM_RAW);
+            $filename = required_param('filename' . $f, PARAM_RAW);
+            $htmlheader .= $filename . ' ' . optional_param('username' . $f, '', PARAM_TEXT);
+            $ext = strtoupper(pathinfo($zipname, PATHINFO_EXTENSION));
             if ($ext != 'ZIP') {
-                throw new moodle_exception( 'wrongzipfilename' );
+                throw new moodle_exception('wrongzipfilename');
             }
             $zip = new ZipArchive();
-            $zipfilename = vpl_similarity_preprocess::get_zip_filepath( $vplid, $zipname );
-            if ($zip->open( $zipfilename ) === true) {
-                $data = $zip->getFromName( $filename );
+            $zipfilename = vpl_similarity_preprocess::get_zip_filepath($vplid, $zipname);
+            if ($zip->open($zipfilename) === true) {
+                $data = $zip->getFromName($filename);
                 $zip->close();
             }
         } else {
-            throw new moodle_exception('invalidnum');;
+            throw new moodle_exception('invalidnum');
+            ;
         }
     }
 }

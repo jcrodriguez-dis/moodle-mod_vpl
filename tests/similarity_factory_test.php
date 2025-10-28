@@ -141,7 +141,7 @@ final class similarity_factory_test extends \advanced_testcase {
      * @param string $namelang The name of the language for the similarity class
      * @param int|null $similaritytype If not null, checks for specific similarity type
      */
-    private function check_similarity($similarityclass, $namelang, $similaritytype=null) {
+    private function check_similarity($similarityclass, $namelang, $similaritytype = null) {
         $this->assertTrue(isset($similarityclass) === true);
 
         $similarityclasses = [

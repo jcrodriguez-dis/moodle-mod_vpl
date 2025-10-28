@@ -23,7 +23,7 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'AJAX_SCRIPT', true );
+define('AJAX_SCRIPT', true);
 
 require(__DIR__ . '/../../../config.php');
 $result = (object)[];
@@ -32,20 +32,20 @@ $result->error = '';
 $result->preferences = (object)[];
 try {
     require_login();
-    $rawdata = file_get_contents( "php://input" );
-    $actiondata = json_decode( $rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE );
-    if ( isset($actiondata->fontSize) ) {
+    $rawdata = file_get_contents("php://input");
+    $actiondata = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    if (isset($actiondata->fontSize)) {
         $fontsize = (int) $actiondata->fontSize;
         $fontsize = min(max(1, $actiondata->fontSize), 48);
         set_user_preference('vpl_editor_fontsize', $fontsize);
         $result->success = true;
     }
-    if ( isset($actiondata->aceTheme) ) {
+    if (isset($actiondata->aceTheme)) {
         $theme = substr($actiondata->aceTheme, 0, 50);
         set_user_preference('vpl_acetheme', $theme);
         $result->success = true;
     }
-    if ( isset($actiondata->terminalTheme) ) {
+    if (isset($actiondata->terminalTheme)) {
         $terminaltheme = substr($actiondata->terminalTheme, 0, 10);
         set_user_preference('vpl_terminaltheme', $terminaltheme);
         $result->success = true;
@@ -56,8 +56,8 @@ try {
         $result->preferences->terminalTheme = (int)  get_user_preferences('vpl_terminaltheme', 0);
         $result->success = true;
     }
-} catch (\Throwable $e ) {
+} catch (\Throwable $e) {
     $result->error = $e->getMessage();
 }
-echo json_encode( $result );
+echo json_encode($result);
 die();

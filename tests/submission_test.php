@@ -43,7 +43,6 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl_submission
  */
 final class submission_test extends base_fixture {
-
     /**
      * Method to create test fixture
      */

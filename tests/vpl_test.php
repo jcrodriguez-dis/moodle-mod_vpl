@@ -40,7 +40,6 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl_vpl
  */
 final class vpl_test extends base_fixture {
-
     /**
      * Method to create test fixture
      */
@@ -69,7 +68,7 @@ final class vpl_test extends base_fixture {
             $instance = $vpl->get_instance();
             $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
             $res = $DB->get_record(VPL, ['id' => $instance->id]);
-            $this->assertFalse( $res, $instance->name);
+            $this->assertFalse($res, $instance->name);
             $tables = [
                 VPL_SUBMISSIONS,
                 VPL_VARIATIONS,
@@ -81,10 +80,10 @@ final class vpl_test extends base_fixture {
             $parms = ['vpl' => $instance->id];
             foreach ($tables as $table) {
                 $res = $DB->get_records($table, $parms);
-                $this->assertCount( 0, $res, $instance->name);
+                $this->assertCount(0, $res, $instance->name);
             }
             $sparms = ['modulename' => VPL, 'instance' => $instance->id ];
-            $event = $DB->get_record('event', $sparms );
+            $event = $DB->get_record('event', $sparms);
             $this->assertFalse($event, $instance->name);
             $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
             // Test rest of the instances not affected.
@@ -93,10 +92,10 @@ final class vpl_test extends base_fixture {
                 $instance = $other->get_instance();
                 $directory = $CFG->dataroot . '/vpl_data/' . $instance->id;
                 $res = $DB->get_record(VPL, ['id' => $instance->id]);
-                $this->assertNotEmpty( $res, $instance->name);
+                $this->assertNotEmpty($res, $instance->name);
                 $subsexpected = $submissions[$instance->id];
                 $subsresult = $other->all_last_user_submission();
-                $this->assertEquals( $subsexpected, $subsresult, $instance->name);
+                $this->assertEquals($subsexpected, $subsresult, $instance->name);
                 if (count($subsexpected) > 0) {
                     $this->assertTrue(file_exists($directory) && is_dir($directory), $instance->name);
                     foreach ($subsexpected as $sub) {
@@ -196,9 +195,9 @@ final class vpl_test extends base_fixture {
         $user = $this->students[0];
         foreach (['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'] as $field) {
             $this->assertEquals(
-                    $instance->$field,
-                    $vpl->get_effective_setting($field, $user->id),
-                    $instance->name . ': ' . $user->username . ' ' . $field
+                $instance->$field,
+                $vpl->get_effective_setting($field, $user->id),
+                $instance->name . ': ' . $user->username . ' ' . $field
             );
         }
 
@@ -206,15 +205,15 @@ final class vpl_test extends base_fixture {
         foreach ([$this->students[1], $this->students[2]] as $user) {
             foreach (['startdate', 'reductionbyevaluation', 'freeevaluations'] as $field) {
                 $this->assertNotEquals(
-                        $instance->$field,
-                        $vpl->get_effective_setting($field, $user->id),
-                        $instance->name . ': ' . $user->username . ' ' . $field
+                    $instance->$field,
+                    $vpl->get_effective_setting($field, $user->id),
+                    $instance->name . ': ' . $user->username . ' ' . $field
                 );
             }
             $this->assertEquals(
-                    $baseduedate + DAYSECS,
-                    $vpl->get_effective_setting('duedate', $user->id),
-                    $instance->name . ': ' . $user->username . ' duedate'
+                $baseduedate + DAYSECS,
+                $vpl->get_effective_setting('duedate', $user->id),
+                $instance->name . ': ' . $user->username . ' duedate'
             );
         }
 
@@ -222,15 +221,15 @@ final class vpl_test extends base_fixture {
         foreach ([$this->students[3], $this->teachers[0], $this->editingteachers[0]] as $user) {
             foreach (['startdate', 'reductionbyevaluation', 'freeevaluations'] as $field) {
                 $this->assertEquals(
-                        $instance->$field,
-                        $vpl->get_effective_setting($field, $user->id),
-                        $instance->name . ': ' . $user->username . ' ' . $field
+                    $instance->$field,
+                    $vpl->get_effective_setting($field, $user->id),
+                    $instance->name . ': ' . $user->username . ' ' . $field
                 );
             }
             $this->assertEquals(
-                    $baseduedate + 2 * DAYSECS,
-                    $vpl->get_effective_setting('duedate', $user->id),
-                    $instance->name . ': ' . $user->username . ' duedate'
+                $baseduedate + 2 * DAYSECS,
+                $vpl->get_effective_setting('duedate', $user->id),
+                $instance->name . ': ' . $user->username . ' duedate'
             );
         }
 
@@ -238,15 +237,15 @@ final class vpl_test extends base_fixture {
         $user = $this->teachers[1];
         foreach (['startdate', 'reductionbyevaluation', 'freeevaluations'] as $field) {
             $this->assertEquals(
-                    $instance->$field,
-                    $vpl->get_effective_setting($field, $user->id),
-                    $instance->name . ': ' . $user->username . ' ' . $field
+                $instance->$field,
+                $vpl->get_effective_setting($field, $user->id),
+                $instance->name . ': ' . $user->username . ' ' . $field
             );
         }
         $this->assertEquals(
-                0,
-                $vpl->get_effective_setting('duedate', $user->id),
-                $instance->name . ': ' . $user->username . ' duedate'
+            0,
+            $vpl->get_effective_setting('duedate', $user->id),
+            $instance->name . ': ' . $user->username . ' duedate'
         );
 
         // Check for any other vpl that settings are not overriden.
@@ -258,9 +257,9 @@ final class vpl_test extends base_fixture {
             foreach ($this->users as $user) {
                 foreach (['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations'] as $field) {
                     $this->assertEquals(
-                            $instance->$field,
-                            $vpl->get_effective_setting($field, $user->id),
-                            $instance->name. ': ' . $user->username . ' ' . $field
+                        $instance->$field,
+                        $vpl->get_effective_setting($field, $user->id),
+                        $instance->name . ': ' . $user->username . ' ' . $field
                     );
                 }
             }
@@ -282,99 +281,103 @@ final class vpl_test extends base_fixture {
 
         // Check that student 0 has default duedate event.
         $user = $this->students[0];
-        $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
-                function($event) use ($instance) {
-                    return $event->modulename == VPL && $event->instance == $instance->id;
-                }
+        $userevents = array_filter(
+            calendar_get_events($start, $end, $user->id, false, $instance->course),
+            function ($event) use ($instance) {
+                return $event->modulename == VPL && $event->instance == $instance->id;
+            }
         );
         $this->assertCount(
-                1,
-                $userevents,
-                $instance->name . ': events for ' . $user->username
+            1,
+            $userevents,
+            $instance->name . ': events for ' . $user->username
         );
         $this->assertEquals(
-                $baseduedate,
-                reset($userevents)->timestart,
-                $instance->name . ': event for ' . $user->username
+            $baseduedate,
+            reset($userevents)->timestart,
+            $instance->name . ': event for ' . $user->username
         );
 
         // Check that student 1 and student 2 have due date postponed by 1 day event.
         foreach ([$this->students[1], $this->students[2]] as $user) {
-            $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
-                    function($event) use ($instance) {
-                        return $event->modulename == VPL && $event->instance == $instance->id
-                        && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
-                    }
+            $userevents = array_filter(
+                calendar_get_events($start, $end, $user->id, false, $instance->course),
+                function ($event) use ($instance) {
+                    return $event->modulename == VPL && $event->instance == $instance->id
+                    && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                }
             );
             $this->assertCount(
-                    1,
-                    $userevents,
-                    $instance->name . ': events for ' . $user->username
+                1,
+                $userevents,
+                $instance->name . ': events for ' . $user->username
             );
             $this->assertEquals(
-                    $baseduedate + DAYSECS,
-                    reset($userevents)->timestart,
-                    $instance->name . ': event for ' . $user->username
+                $baseduedate + DAYSECS,
+                reset($userevents)->timestart,
+                $instance->name . ': event for ' . $user->username
             );
         }
 
         // Check that student 3 has due date postponed by 2 days (user) event.
         $user = $this->students[3];
-        $userevents = array_filter(calendar_get_events($start, $end, $user->id, false, $instance->course),
-                function($event) use ($instance) {
-                    return $event->modulename == VPL && $event->instance == $instance->id
-                    && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
-                }
+        $userevents = array_filter(
+            calendar_get_events($start, $end, $user->id, false, $instance->course),
+            function ($event) use ($instance) {
+                return $event->modulename == VPL && $event->instance == $instance->id
+                && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+            }
         );
         $this->assertCount(
-                1,
-                $userevents,
-                $instance->name . ': events for ' . $user->username
+            1,
+            $userevents,
+            $instance->name . ': events for ' . $user->username
         );
         $this->assertEquals(
-                $baseduedate + 2 * DAYSECS,
-                reset($userevents)->timestart,
-                $instance->name . ': event for ' . $user->username
+            $baseduedate + 2 * DAYSECS,
+            reset($userevents)->timestart,
+            $instance->name . ': event for ' . $user->username
         );
 
         // Check that teacher 0 and editing teacher 0 have due date postponed by 2 days (group) event.
         foreach ([$this->groups[2], $this->groups[3]] as $group) {
-            $groupevents = array_filter(calendar_get_events($start, $end, false, $group->id, $instance->course),
-                    function($event) use ($instance) {
-                        return $event->modulename == VPL && $event->instance == $instance->id
-                        && $event->priority !== null && $event->priority > CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
-                    }
+            $groupevents = array_filter(
+                calendar_get_events($start, $end, false, $group->id, $instance->course),
+                function ($event) use ($instance) {
+                    return $event->modulename == VPL && $event->instance == $instance->id
+                    && $event->priority !== null && $event->priority > CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+                }
             );
             $this->assertCount(
-                    1,
-                    $groupevents,
-                    $instance->name . ': events for ' . $group->name
+                1,
+                $groupevents,
+                $instance->name . ': events for ' . $group->name
             );
             $this->assertEquals(
-                    $baseduedate + 2 * DAYSECS,
-                    reset($groupevents)->timestart,
-                    $instance->name . ': event for ' . $group->name
+                $baseduedate + 2 * DAYSECS,
+                reset($groupevents)->timestart,
+                $instance->name . ': event for ' . $group->name
             );
         }
 
         // Check that teacher 1 has due date event disabled.
         $user = $this->teachers[1];
-        $userevents = array_filter(calendar_get_events(0, $end, $user->id, false, $instance->course),
-                function($event) use ($instance) {
-                    return $event->modulename == VPL && $event->instance == $instance->id
-                    && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
-                }
+        $userevents = array_filter(
+            calendar_get_events(0, $end, $user->id, false, $instance->course),
+            function ($event) use ($instance) {
+                return $event->modulename == VPL && $event->instance == $instance->id
+                && $event->priority !== null && $event->priority == CALENDAR_EVENT_USER_OVERRIDE_PRIORITY;
+            }
         );
         $this->assertCount(
-                1,
-                $userevents,
-                $instance->name . ': events for ' . $user->username
+            1,
+            $userevents,
+            $instance->name . ': events for ' . $user->username
         );
         $this->assertEquals(
-                0,
-                reset($userevents)->timestart,
-                $instance->name . ': event for ' . $user->username
+            0,
+            reset($userevents)->timestart,
+            $instance->name . ': event for ' . $user->username
         );
     }
-
 }

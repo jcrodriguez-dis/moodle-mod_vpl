@@ -36,7 +36,6 @@ namespace mod_vpl\analytics\indicator;
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class cognitive_depth extends activity_base {
-
     /**
      * Returns the name of the indicator.
      *
@@ -88,5 +87,4 @@ class cognitive_depth extends activity_base {
     protected function feedback_replied(\cm_info $cm, $contextid, $userid, $after = false) {
         return false;
     }
-
 }

@@ -25,7 +25,6 @@ namespace mod_vpl\plugininfo;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class vplevaluator_base {
-
     /**
      * Name of the evaluator.
      * @var string

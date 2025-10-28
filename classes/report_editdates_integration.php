@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die;
 
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 /**
  * Class for integrating VPL with the report_editdates module.
@@ -52,13 +52,17 @@ class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_ex
 
         return [
                 'startdate' => new \report_editdates_date_setting(
-                        get_string('startdate', VPL),
-                        $vplinstance->startdate,
-                        self::DATETIME, true),
+                    get_string('startdate', VPL),
+                    $vplinstance->startdate,
+                    self::DATETIME,
+                    true
+                ),
                 'duedate' => new \report_editdates_date_setting(
-                        get_string('duedate', VPL),
-                        $vplinstance->duedate,
-                        self::DATETIME, true),
+                    get_string('duedate', VPL),
+                    $vplinstance->duedate,
+                    self::DATETIME,
+                    true
+                ),
         ];
     }
 
@@ -70,8 +74,10 @@ class mod_vpl_report_editdates_integration extends \report_editdates_mod_date_ex
      * @return string|null Error message if validation fails, null otherwise.
      */
     public function validate_dates(\cm_info $cm, array $dates) {
-        if ($dates['startdate'] && $dates['duedate']
-                && $dates['duedate'] < $dates['startdate']) {
+        if (
+            $dates['startdate'] && $dates['duedate']
+                && $dates['duedate'] < $dates['startdate']
+        ) {
             return get_string('duedatevalidation', 'assign');
         }
     }

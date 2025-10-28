@@ -238,7 +238,7 @@ final class filegroup_test extends \advanced_testcase {
     private function internal_test_one_addfile($fg, $fn, $data, $added) {
         $res = $fg->addfile($fn, $data);
         $this->assertEquals($added, $res);
-        if ( $added ) {
+        if ($added) {
             if ($data !== null) {
                 $this->assertEquals($data, $fg->getfiledata($fn));
             } else {
@@ -332,7 +332,7 @@ final class filegroup_test extends \advanced_testcase {
         foreach ($fgdata as $fn => $fd) {
             $this->assertEquals($fd, $fg->getfiledata($i));
             $this->assertEquals($fd, $fg->getfiledata($fn));
-            $i ++;
+            $i++;
         }
     }
 
@@ -397,11 +397,11 @@ final class filegroup_test extends \advanced_testcase {
         $this->assertTrue($zipfilename !== false);
         $this->assertFileExists($zipfilename);
         $zip = new \ZipArchive();
-        $result = $zip->open( $zipfilename );
+        $result = $zip->open($zipfilename);
         $this->assertTrue($result, "Error code: $result  status: {$zip->getStatusString()}");
         $zipfiles = [];
-        for ($i = 0; $i < $zip->numFiles; $i ++) {
-            $zipfiles[$zip->getNameIndex( $i )] = $zip->getFromIndex( $i );
+        for ($i = 0; $i < $zip->numFiles; $i++) {
+            $zipfiles[$zip->getNameIndex($i)] = $zip->getFromIndex($i);
         }
         $this->assertTrue($zip->close());
         $this->assertTrue(unlink($zipfilename));
