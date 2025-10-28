@@ -281,12 +281,19 @@ var VPLIDE = function(rootId, options) {
         };
         /**
          * Checks if name is included in current files names
+         * Optionly ignores a position
          * @param {string} name Name of file
+         * @param {number} posIgnore Position to ignore in the check
          * @returns {boolean} if found or not found
          */
-        function fileNameIncluded(name) {
+        function fileNameIncluded(name, posIgnore) {
+            // Adding '/' allows to check for directories too.
+            // E.g. 'file' matches 'file/abc' but not 'file2/file'.
             var checkName = name.toLowerCase() + '/';
             for (var i = 0; i < files.length; i++) {
+                if (i === posIgnore) {
+                    continue;
+                }
                 var nameMod = files[i].getFileName().toLowerCase() + '/';
                 // Check for name as directory existent.
                 if (nameMod.indexOf(checkName) === 0 || checkName.indexOf(nameMod) === 0) {
@@ -511,7 +518,7 @@ var VPLIDE = function(rootId, options) {
                     return true; // Equals name file.
                 }
                 if (!VPLUtil.validPath(newname) ||
-                        fileNameIncluded(newname) ||
+                        fileNameIncluded(newname, pos) ||
                         twoBlockly(oldname, newname)) {
                     throw str('incorrect_file_name');
                 }
