@@ -61,6 +61,12 @@ class overview extends \core_courseformat\activityoverviewbase {
         parent::__construct($cm);
         $this->vpl = new \mod_vpl($this->cm->id);
     }
+
+    /**
+     * Get submissions status.
+     *
+     * @return \stdClass
+     */
     public function get_submissions_status(): \stdClass {
         if (!isset($this->submissionsstatus)) {
             $this->submissionsstatus = $this->vpl->get_submissions_status();
