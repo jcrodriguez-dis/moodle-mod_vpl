@@ -29,7 +29,6 @@ import url from 'core/url';
 import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
 import {VPLClipboard} from 'mod_vpl/vplclipboard';
-//import { Terminal } from 'mod_vpl/lib/xterm/xterm';
 const NTHEMES = 5;
 export const VPLTerminal = function(dialogId, terminalId, str) {
     var self = this;
@@ -345,7 +344,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         document.head.appendChild(link);
         const xterm = await import(libpath + 'xterm.js');
         const xtermFit = await import(libpath + 'addon-fit/addon-fit.js');
-        terminal = new xterm.Terminal( {
+        terminal = new xterm.Terminal({
                     scrollback: 5000,
                 });
         fitAddon = new xtermFit.FitAddon();

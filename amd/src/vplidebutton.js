@@ -33,10 +33,10 @@ export class VPLIDEButtons {
         var self = this;
         var buttons = {};
 
-        this.notAdded = function (buttonName) {
+        this.notAdded = function(buttonName) {
             return !buttons[buttonName];
         };
-        this.setText = function (buttonName, icon, title) {
+        this.setText = function(buttonName, icon, title) {
             if (self.notAdded(buttonName)) {
                 return;
             }
@@ -57,7 +57,7 @@ export class VPLIDEButtons {
             $('#vpl_ide_' + buttonName).attr('title', title);
             $('#vpl_ide_' + buttonName + ' i').replaceWith(VPLUI.genIcon(icon));
         };
-        this.setExtracontent = function (buttonName, html) {
+        this.setExtracontent = function(buttonName, html) {
             if (self.notAdded(buttonName)) {
                 return;
             }
@@ -68,7 +68,7 @@ export class VPLIDEButtons {
             }
             btag.find('.' + cl).html(html);
         };
-        this.add = function (button) {
+        this.add = function(button) {
             if (typeof button === 'string') {
                 var name = button;
                 button = {
@@ -115,7 +115,7 @@ export class VPLIDEButtons {
                 button.key = button.bindKey[platform];
             }
         };
-        this.getHTML = function (buttonName) {
+        this.getHTML = function(buttonName) {
             if (self.notAdded(buttonName)) {
                 return '';
             } else {
@@ -130,7 +130,7 @@ export class VPLIDEButtons {
             }
         };
 
-        this.enable = function (buttonName, active) {
+        this.enable = function(buttonName, active) {
             if (self.notAdded(buttonName)) {
                 return;
             }
@@ -143,30 +143,30 @@ export class VPLIDEButtons {
                 bw.removeClass('ui-button-disabled ui-state-disabled');
             }
         };
-        this.setAction = function (buttonName, action) {
+        this.setAction = function(buttonName, action) {
             if (self.notAdded(buttonName)) {
                 return;
             }
             buttons[buttonName].originalAction = action;
-            buttons[buttonName].action = function () {
+            buttons[buttonName].action = function() {
                 if (buttons[buttonName].active) {
                     action();
                 }
             };
         };
-        this.getAction = function (buttonName) {
+        this.getAction = function(buttonName) {
             if (self.notAdded(buttonName)) {
                 return VPLUtil.doNothing;
             }
             return buttons[buttonName].action;
         };
-        this.launchAction = function (buttonName) {
+        this.launchAction = function(buttonName) {
             if (self.notAdded(buttonName)) {
                 return;
             }
             buttons[buttonName].originalAction();
         };
-        this.setGetkeys = function (editor) {
+        this.setGetkeys = function(editor) {
             if (!editor) {
                 return;
             }
@@ -188,7 +188,7 @@ export class VPLIDEButtons {
                 }
             }
         };
-        this.getShortcuts = function (editor) {
+        this.getShortcuts = function(editor) {
             var html = '<ul>';
             for (var buttonName in buttons) {
                 if (buttons[buttonName].hasOwnProperty('key')) {
@@ -217,7 +217,7 @@ export class VPLIDEButtons {
             }
             return html;
         };
-        $(menuElement).on("click", "a", function (event) {
+        $(menuElement).on("click", "a", function(event) {
             if ($(this).data("vpl-active")) {
                 var actionid = $(this).attr('id');
                 if (typeof actionid === 'string' && actionid.startsWith('vpl_ide_')) {
@@ -242,7 +242,7 @@ export class VPLIDEButtons {
             return false;
         });
 
-        $('body').on('keydown', function (event) {
+        $('body').on('keydown', function(event) {
             var check = false;
             var strkey = '';
             if (event.shiftKey) {
@@ -285,11 +285,11 @@ export class VPLIDEButtons {
             }
             return true;
         });
-        this.multiple = function (v, m) {
+        this.multiple = function(v, m) {
             return v - (v % m);
         };
 
-        (function () {
+        (function() {
             var start = 0;
             var lastLap = 0;
             var interval = false;
@@ -301,7 +301,7 @@ export class VPLIDEButtons {
             var precision = 5;
             var checkt = 1000;
             var timeLeft = 0;
-            var updatePrecision = function (timeLeft) {
+            var updatePrecision = function(timeLeft) {
                 precision = 5;
                 checkt = 1000;
                 if (timeLeft > hour) {
@@ -312,7 +312,7 @@ export class VPLIDEButtons {
                     checkt = 5 * 5000;
                 }
             };
-            var updateTimeLeft = function () {
+            var updateTimeLeft = function() {
                 var now = self.multiple(VPLUtil.getCurrentTime(), precision);
                 if (now === lastLap || element === null) {
                     return;
@@ -339,12 +339,12 @@ export class VPLIDEButtons {
                 element.removeClass(cssclasses);
                 element.addClass(cssclass);
             };
-            self.toggleTimeLeft = function () {
+            self.toggleTimeLeft = function() {
                 show = !show;
                 lastLap = 0;
                 updateTimeLeft();
             };
-            self.setTimeLeft = function (options) {
+            self.setTimeLeft = function(options) {
                 element = $('#vpl_ide_timeleft');
                 if (interval !== false) {
                     clearInterval(interval);
@@ -357,7 +357,7 @@ export class VPLIDEButtons {
                     timeLeft = self.multiple(timeLeft, precision);
                     start = self.multiple(VPLUtil.getCurrentTime(), precision);
                     lastLap = start - precision;
-                    setTimeout(function () {
+                    setTimeout(function() {
                         interval = setInterval(updateTimeLeft, checkt);
                     }, sync * 1000);
                     $('#vpl_ide_timeleft').show();

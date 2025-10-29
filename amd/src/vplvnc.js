@@ -93,7 +93,7 @@ export class VPLVNCClient {
          */
         function getFocus() {
             if (self.isConnected()) {
-                //rfb.get_keyboard().set_focused(true);
+                // Removed: rfb.get_keyboard().set_focused(true);
             }
         }
         /**
@@ -101,7 +101,7 @@ export class VPLVNCClient {
          */
         function lostFocus() {
             if (self.isConnected()) {
-                //rfb.get_keyboard().set_focused(false);
+                // Removed: rfb.get_keyboard().set_focused(false);
             }
         }
         /**
@@ -115,14 +115,14 @@ export class VPLVNCClient {
         var HTMLPaste = VPLUI.genIcon('paste', 'sw') + ' ' + str('paste');
         clipboard = new VPLClipboard('vpl_dialog_vnc_clipboard', HTMLUpdateClipboard, copyAction, HTMLPaste, pasteClipboard,
             lostFocus);
-        canvas.on('click', function (e) {
+        canvas.on('click', function(e) {
             if (e.target == canvas[0]) {
                 getFocus();
             } else {
                 lostFocus();
             }
         });
-        this.displayResize = function () {
+        this.displayResize = function() {
             var w = round(VNCDialog.width());
             var h = round(VNCDialog.parent().height() - VNCDialog.prev().outerHeight());
             self.setCanvasSize(w, h);
@@ -162,7 +162,7 @@ export class VPLVNCClient {
             classes: {
                 "ui-dialog": 'vpl_ide vpl_vnc',
             },
-            create: function () {
+            create: function() {
                 titleText = VPLUI.setTitleBar(VNCDialog, 'vnc', 'graphic',
                                               ['clipboard', 'keyboard'],
                                               [openClipboard, getFocus]);
@@ -170,16 +170,16 @@ export class VPLVNCClient {
             dragStop: controlDialogSize,
             focus: getFocus,
             open: openHandler,
-            beforeClose: function () {
+            beforeClose: function() {
                 if (needResize) {
                     needResize = false;
                     self.displayResize();
                 }
             },
-            close: function () {
+            close: function() {
                 self.disconnect();
             },
-            resizeStop: function () {
+            resizeStop: function() {
                 controlDialogSize();
                 needResize = true;
             }
@@ -188,27 +188,27 @@ export class VPLVNCClient {
         VNCDialog.css("padding", "1px");
         VNCDialog.parent().css('z-index', 2000);
 
-        this.updateTitle = function () {
+        this.updateTitle = function() {
             var text = title;
             if (message !== '') {
                 text += ' (' + message + ')';
             }
             titleText.text(str('console') + ": " + text);
         };
-        this.setTitle = function (t) {
+        this.setTitle = function(t) {
             title = t;
             this.updateTitle();
         };
-        this.setMessage = function (t) {
+        this.setMessage = function(t) {
             message = t;
             this.updateTitle();
         };
-        this.saveLastCanvas = function () {
+        this.saveLastCanvas = function() {
             if (self.isConnected()) {
                 lastCanvas = rfb.toDataURL();
             }
         };
-        this.restoreLastCanvas = function () {
+        this.restoreLastCanvas = function() {
             if (lastCanvas && lastState === 'disconnected') {
                 var img = document.createElement('img');
                 img.src = lastCanvas;
@@ -311,9 +311,9 @@ export class VPLVNCClient {
             }
         }
 
-        this.connect = function (secure, host, port, password, path, onClose) {
+        this.connect = function(secure, host, port, password, path, onClose) {
             VPLUtil.loadModule('noVNC/core/rfb', 'RFB')
-                .then(function (RFB) {
+                .then(function(RFB) {
                 if (!port) {
                     port = secure ? 443 : 80;
                 }
@@ -330,7 +330,7 @@ export class VPLVNCClient {
                 lastState = 'connecting';
                 self.setTitle(str('connecting'));
                 var target = canvas[0];
-                var url = (secure ? 'wss' : 'ws') + '://' + host + ':' + port + '/' +path;
+                var url = (secure ? 'wss' : 'ws') + '://' + host + ':' + port + '/' + path;
                 rfb = new RFB(target, url, {
                         'encrypt': secure,
                         'repeaterID': '',
@@ -338,7 +338,7 @@ export class VPLVNCClient {
                         'local_cursor': true,
                         'shared': false,
                         'view_only': false,
-                        'credentials': { 'password': password }
+                        'credentials': {'password': password}
                     });
                 rfb.addEventListener("connect", connectHandler);
                 rfb.addEventListener("disconnect", disconnectHandler);
@@ -348,7 +348,7 @@ export class VPLVNCClient {
                 rfb.addEventListener("clippingviewport", clippingviewportHandler);
                 rfb.addEventListener("capabilities", capabilitiesHandler);
                 rfb.addEventListener("clipboard", receiveClipboard);
-                rfb.addEventListener("bell", () => {console.log('\x07Bell received');});
+                rfb.addEventListener("bell", () => console.log('\x07Bell received'));
                 rfb.addEventListener("desktopname", desktopnameHandler);
                 rfb.clipViewport = true;
                 rfb.scaleViewport = false;
@@ -356,22 +356,22 @@ export class VPLVNCClient {
                 rfb.qualityLevel = 6;
                 rfb.compressionLevel = 2;
                 rfb.showDotCursor = true;
-            }).catch(function (error) {
+            }).catch(function(error) {
                 console.error('Failed to load RFB module:', error);
                 self.setTitle(str('connection_fail'));
                 self.show();
             });
         };
-        this.isOpen = function () {
+        this.isOpen = function() {
             return VNCDialog.dialog("isOpen");
         };
-        this.close = function () {
+        this.close = function() {
             VNCDialog.dialog("close");
         };
-        this.isConnected = function () {
+        this.isConnected = function() {
             return rfb && lastState != 'disconnected';
         };
-        this.disconnect = function () {
+        this.disconnect = function() {
             if (this.isConnected()) {
                 self.saveLastCanvas();
                 rfb.disconnect();
@@ -390,11 +390,11 @@ export class VPLVNCClient {
             }
             return Math.floor(v / 2) * 2;
         }
-        this.getCanvasSize = function () {
+        this.getCanvasSize = function() {
             return canvas.width() + "x" + canvas.height();
         };
 
-        this.setCanvasSize = function (w, h) {
+        this.setCanvasSize = function(w, h) {
             w = round(w);
             h = round(h);
             canvas.width(w);
@@ -405,7 +405,7 @@ export class VPLVNCClient {
                 inner.height(h);
             }
         };
-        this.show = function () {
+        this.show = function() {
             VNCDialog.dialog('open');
             VNCDialog.width('auto');
             VNCDialog.height('auto');

@@ -57,23 +57,23 @@ export class VPLClipboard {
         if (onFocus) {
             tdialog.on("click", onFocus);
         }
-        this.show = function () {
+        this.show = function() {
             tdialog.dialog('open');
         };
-        this.hide = function () {
+        this.hide = function() {
             tdialog.dialog('close');
         };
-        this.setEntry1 = function (v) {
+        this.setEntry1 = function(v) {
             entry1.val(v);
             entry1.select();
         };
-        this.getEntry1 = function () {
+        this.getEntry1 = function() {
             return entry1.val();
         };
-        this.setEntry2 = function (v) {
+        this.setEntry2 = function(v) {
             entry2.val(v);
         };
-        this.getEntry2 = function () {
+        this.getEntry2 = function() {
             return entry2.val();
         };
         var titleTag = tdialog.siblings().find('.ui-dialog-title');
