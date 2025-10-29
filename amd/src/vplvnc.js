@@ -356,10 +356,12 @@ export class VPLVNCClient {
                 rfb.qualityLevel = 6;
                 rfb.compressionLevel = 2;
                 rfb.showDotCursor = true;
+                return true;
             }).catch(function(error) {
                 console.error('Failed to load RFB module:', error);
                 self.setTitle(str('connection_fail'));
                 self.show();
+                return false;
             });
         };
         this.isOpen = function() {
