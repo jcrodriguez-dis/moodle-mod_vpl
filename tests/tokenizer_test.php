@@ -31,8 +31,8 @@ use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\tokenizer\token_type;
 use mod_vpl\tokenizer\tokenizer_factory;
 use mod_vpl\util\assertf;
-use mod_vpl\tests\tokenizer\testable_tokenizer;
-use mod_vpl\tests\tokenizer\testable_tokenizer_base;
+use mod_vpl\tests\testable_tokenizer;
+use mod_vpl\tests\testable_tokenizer_base;
 use Exception;
 
 global $CFG;

@@ -42,7 +42,8 @@ class tokenizer_similarity_utils {
      * @return array List of available tokenizer languages.
      */
     public static function get_tokenizer_langs(): array {
-        $dir = dirname(__FILE__) . '/../similarity/tokenizer_rules';
+        global $CFG;
+        $dir = $CFG->dirroot . '/mod/vpl/similarity/tokenizer_rules';
         $scanarr = scandir($dir);
         $filesarr = array_diff($scanarr, ['.', '..']);
 
