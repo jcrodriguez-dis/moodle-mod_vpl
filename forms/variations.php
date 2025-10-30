@@ -23,94 +23,15 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+use mod_vpl\variation\form;
+use mod_vpl\variation\option_form;
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 global $CFG, $DB;
 require_once($CFG->libdir . '/formslib.php');
 
-/**
- * Class to define variation activation and variation title form
- */
-class mod_vpl_variation_option_form extends moodleform {
-    /**
-     * Defines the form elements of variation title and activation
-     */
-    protected function definition() {
-        $mform = & $this->_form;
-        $mform->addElement('header', 'variation_options', get_string('variation_options', VPL));
-        $mform->addElement('selectyesno', 'usevariations', get_string('usevariations', VPL));
-        $mform->addElement('text', 'variationtitle', get_string('variationtitle', VPL), [
-                'size' => 60,
-        ]);
-        $mform->setType('variationtitle', PARAM_TEXT);
-        $buttongroup = [];
-        $buttongroup[] = $mform->createElement('submit', 'save', get_string('save', VPL));
-        $buttongroup[] = $mform->createElement('submit', 'cancel', get_string('cancel'));
-        $mform->addGroup($buttongroup);
-    }
-}
-
-/**
- * Class to define variation add and edit form
- */
-class mod_vpl_variation_form extends moodleform {
-    /**
-     * @var int $varid the id of the variation to edit, -1 for new variation
-     */
-    protected $varid;
-
-    /**
-     * @var int $number Number of the variation in the page
-     */
-    protected $number;
-    /**
-     * Constructor
-     * @param object $page the page where the form will be displayed
-     * @param int $number the number of the variation in the page
-     * @param int $varid the id of the variation to edit, -1 for new variation
-     */
-    public function __construct($page, $number = 0, $varid = 0) {
-        $this->number = $number;
-        $this->varid = $varid;
-        parent::__construct($page);
-    }
-
-    /**
-     * Defines the form elements
-     */
-    protected function definition() {
-        $mform = & $this->_form;
-        if ($this->number > 0) {
-            $title = get_string('variation_n', VPL, "{$this->number}");
-        } else {
-            $title = get_string('add');
-        }
-        $mform->addElement('header', 'variation', $title);
-        $mform->addElement('hidden', 'varid', $this->varid);
-        $mform->setType('varid', PARAM_INT);
-
-        $mform->addElement('text', 'identification', get_string('varidentification', VPL), [
-                'size' => '20',
-        ]);
-        $mform->setDefault('identification', '');
-        $mform->setType('identification', PARAM_RAW);
-        $fieldname = 'description'; // Allows multile editors in page.
-        $mform->addElement('editor', $fieldname, get_string('description', VPL));
-        $mform->setType($fieldname, PARAM_RAW);
-        $mform->setDefault($fieldname, '');
-
-        $buttongroup = [];
-        $buttongroup[] = $mform->createElement('submit', 'save', get_string('save', VPL));
-        $buttongroup[] = $mform->createElement('submit', 'cancel', get_string('cancel'));
-        if ($this->number > 0) {
-            $menssage = addslashes(get_string('delete'));
-            $onclick = 'onclick="return confirm(\'' . $menssage . '\')"';
-            $buttongroup[] = $mform->createElement('submit', 'delete', get_string('delete'), $onclick);
-        }
-        $mform->addGroup($buttongroup);
-    }
-}
 /**
  * Returns HTML of a variation in the variation page
  *
@@ -201,7 +122,7 @@ $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 $href = vpl_mod_href('forms/variations.php', 'id', $id);
 $vpl->print_header(get_string('variations', VPL));
 $vpl->print_heading_with_help('variations');
-$form = new mod_vpl_variation_option_form($href);
+$form = new option_form($href);
 // Generate default form and check for action.
 if ($varid == -13) { // No variation, basic form.
     if ($canceled) {
@@ -220,7 +141,7 @@ if ($varid == -13) { // No variation, basic form.
         print_basic_html($form, $vpl);
     }
 } else if ($varid == -1) { // Add new variation.
-    $mform = new mod_vpl_variation_form($href, 0, -1);
+    $mform = new form($href, 0, -1);
     $fromform = $mform->get_data();
     if ($fromform) {
         if ($canceled) {
@@ -244,7 +165,7 @@ if ($varid == -13) { // No variation, basic form.
     }
 } else {
     $number = optional_param('number', 0, PARAM_INT);
-    $mform = new mod_vpl_variation_form($href, $number, $varid);
+    $mform = new form($href, $number, $varid);
     $fromform = $mform->get_data();
     if ($fromform) {
         if ($canceled) {
