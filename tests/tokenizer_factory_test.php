@@ -27,7 +27,6 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/tokenizer_factory.class.php');
 
 use Exception;
@@ -35,6 +34,7 @@ use Exception;
 use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer_factory;
 use vpl_tokenizer_factory;
+use mod_vpl\tests\tokenizer_similarity_utils;
 
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer_factory class.

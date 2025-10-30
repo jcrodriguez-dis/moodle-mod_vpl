@@ -30,8 +30,9 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for cron_task class.

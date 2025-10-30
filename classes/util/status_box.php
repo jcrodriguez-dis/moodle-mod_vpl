@@ -23,8 +23,10 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+namespace mod_vpl\util;
+
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Class to show a status box
@@ -32,7 +34,7 @@ require_once(dirname(__FILE__) . '/../locallib.php');
  * This class is used to show a status box with a text.
  * It can be used to show the status of a process.
  */
-class vpl_status_box {
+class status_box {
     /**
      * @var int last id used for the box
      * This is used to generate unique ids for each box.
@@ -85,79 +87,5 @@ class vpl_status_box {
         echo vpl_include_js($javascript);
         @ob_flush();
         flush();
-    }
-}
-
-/**
- * Class to show a progress bar in a box
- */
-class vpl_progress_bar extends vpl_status_box {
-    /**
-     * @var int minimum value
-     */
-    protected $min;
-    /**
-     * @var int maximum value
-     */
-    protected $max;
-    /**
-     * @var int last time the progress bar was updated
-     */
-    protected $lasttime;
-    /**
-     * @var string text to show in the progress bar
-     */
-    protected $text;
-
-    /**
-     * Constructor
-     *
-     * @param string $text text to show in the progress bar
-     * @param int $min minimum value (default 0)
-     * @param int $max maximum value (default 100)
-     */
-    public function __construct($text = '', $min = 0, $max = 100) {
-        parent::__construct($text);
-        $this->text = $text;
-        $this->min = $min;
-        $this->max = $max;
-        $this->lasttime = 0;
-    }
-
-    /**
-     * Set the value of the progress bar
-     *
-     * @param int $value current value
-     */
-    public function set_value($value) {
-        if (is_string($value)) {
-            $this->print_text($this->text . ' (' . $value . ')');
-            return;
-        }
-        $currenttime = time();
-        $percent = ((($value - $this->min) * 100) / ($this->max - $this->min));
-        if ($this->lasttime != $currenttime || $percent >= 100) {
-            if ($percent > 100) {
-                $percent = 100;
-            }
-            $this->lasttime = $currenttime;
-            if ($percent == 100) {
-                $text = $this->text . ' (' . sprintf("%5.1f", $percent) . '%)';
-                $text .= ' ' . get_string('numseconds', '', $currenttime - $this->starttime);
-                $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
-                $this->print_text($text);
-            } else {
-                $this->print_text($this->text . ' (' . sprintf("%5.1f", $percent) . '%)');
-            }
-        }
-    }
-
-    /**
-     * Set the maximum value
-     *
-     * @param int $max maximum value
-     */
-    public function set_max($max) {
-        $this->max = $max;
     }
 }

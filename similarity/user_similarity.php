@@ -32,7 +32,6 @@ require_once(dirname(__FILE__) . '/similarity_base.class.php');
 require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 require_once(dirname(__FILE__) . '/clusters.class.php');
-require_once(dirname(__FILE__) . '/../views/status_box.class.php');
 ini_set('memory_limit', '256M');
 
 require_login();
@@ -157,10 +156,10 @@ foreach ($vpls as $vpl) {
     vpl_similarity_preprocess::user_activity($simil, $vpl, $userid);
     $nuserfiles = count($simil);
     if ($nuserfiles > 0) {
-        $activityloadbox = new vpl_progress_bar(s($vpl->get_printable_name()));
+        $activityloadbox = new \mod_vpl\util\progress_bar(s($vpl->get_printable_name()));
         $bars[] = $activityloadbox;
         vpl_similarity_preprocess::activity($simil, $vpl, [], true, false, $activityloadbox);
-        $searchprogression = new vpl_progress_bar(get_string('similarity', VPL));
+        $searchprogression = new \mod_vpl\util\progress_bar(get_string('similarity', VPL));
         $bars[] = $searchprogression;
         if ($nuserfiles >= count($outputsize)) {
             $noutput = 4;

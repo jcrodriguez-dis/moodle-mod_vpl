@@ -28,9 +28,11 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
+
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for vpl_running_processes class.

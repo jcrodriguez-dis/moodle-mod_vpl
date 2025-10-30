@@ -32,7 +32,6 @@ require_once(dirname(__FILE__) . '/similarity_base.class.php');
 require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 require_once(dirname(__FILE__) . '/clusters.class.php');
-require_once(dirname(__FILE__) . '/../views/status_box.class.php');
 ini_set('memory_limit', '256M');
 
 require_login();
@@ -81,14 +80,14 @@ $usernumber = 0;
 $simil = [];
 // Preprocess current VPL instance.
 @set_time_limit($timelimit);
-$activityloadbox = new vpl_progress_bar(s($vpl->get_printable_name()));
+$activityloadbox = new \mod_vpl\util\progress_bar(s($vpl->get_printable_name()));
 vpl_similarity_preprocess::activity($simil, $vpl, $filesselected, $allfiles, $joinedfiles, $activityloadbox);
 $il = count($simil);
 // Preprocess other VPL instance.
 if (isset($fromform->scanactivity) && $fromform->scanactivity > 0) {
     @set_time_limit($timelimit);
     $othervpl = new mod_vpl($fromform->scanactivity);
-    $otheractivityloadbox = new vpl_progress_bar(s($othervpl->get_printable_name()));
+    $otheractivityloadbox = new \mod_vpl\util\progress_bar(s($othervpl->get_printable_name()));
     vpl_similarity_preprocess::activity($simil, $othervpl, $filesselected, $allfiles, $joinedfiles, $otheractivityloadbox);
 }
 // Preprocess files in a ZIP file.
@@ -96,7 +95,7 @@ $name = $form->get_new_filename('scanzipfile0');
 $userdata = $form->get_file_content('scanzipfile0');
 if ($userdata !== false && $name !== false) {
     @set_time_limit($timelimit);
-    $ziploadbox0 = new vpl_progress_bar(s($name));
+    $ziploadbox0 = new \mod_vpl\util\progress_bar(s($name));
     vpl_similarity_preprocess::zip($simil, $name, $userdata, $vpl, $filesselected, $allfiles, $joinedfiles, $ziploadbox0);
 }
 
@@ -105,7 +104,7 @@ if (isset($fromform->searchotherfiles)) {
     $il = count($simil);
 }
 @set_time_limit($timelimit);
-$searchprogression = new vpl_progress_bar(get_string('similarity', VPL));
+$searchprogression = new \mod_vpl\util\progress_bar(get_string('similarity', VPL));
 $selected = vpl_similarity::get_selected($simil, $fromform->maxoutput, $il, $searchprogression);
 $extinfo = false; // Use true to show internal data.
 
