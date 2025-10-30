@@ -394,11 +394,11 @@ class vpl_diff {
                 $vpl = new mod_vpl(false, $subinstance->vpl);
                 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
                 $submission = new mod_vpl_submission($vpl, $subinstance);
-                $user = $DB->get_record('user', [
-                        'id' => $subinstance->userid,
-                ]);
+                $userid = $subinstance->userid;
+                $user = $DB->get_record('user', ['id' => $userid]);
                 if ($user) {
-                    $link = vpl_mod_href('/forms/submissionview.php', 'id', $vpl->get_course_module()->id, 'userid', $subinstance->userid);
+                    $cmid = $vpl->get_course_module()->id;
+                    $link = vpl_mod_href('/forms/submissionview.php', 'id', $cmid, 'userid', $userid);
                     $htmlheader .= '<a href="' . $link . '">';
                 }
                 $htmlheader .= s($filename) . ' ';
@@ -430,7 +430,6 @@ class vpl_diff {
             }
         } else {
             throw new moodle_exception('invalidnum');
-            ;
         }
     }
 }

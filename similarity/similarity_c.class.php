@@ -151,6 +151,7 @@ class vpl_similarity_c extends vpl_similarity_base {
                         break;
                     case ':':
                         $posiniinst = count($ret);
+                        // No break.
                     default:
                         $ret[] = $token;
                 }

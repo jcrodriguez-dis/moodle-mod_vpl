@@ -349,11 +349,13 @@ class mod_vpl_submission {
             return false;
         }
         if (! empty($CFG->enableoutcomes)) {
+            $courseid = $this->vpl->get_course()->id;
+            $vplid = $this->vpl->get_instance()->id;
             foreach ($usersid as $userid) {
-                $gradinginfo = grade_get_grades($this->vpl->get_course()->id, 'mod', 'vpl', $this->vpl->get_instance()->id, $userid);
+                $gradinginfo = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $userid);
                 if (! empty($gradinginfo->outcomes)) {
                     $outcomes = array_fill_keys(array_keys($gradinginfo->outcomes), null);
-                    grade_update_outcomes('mod/vpl', $this->vpl->get_course()->id, 'mod', VPL, $this->vpl->get_instance()->id, $userid, $outcomes);
+                    grade_update_outcomes('mod/vpl', $courseid, 'mod', VPL, $vplid, $userid, $outcomes);
                 }
             }
         }
@@ -534,8 +536,10 @@ class mod_vpl_submission {
             }
         }
         if (! empty($CFG->enableoutcomes)) {
+            $vplid = $this->vpl->get_instance()->id;
+            $courseid = $this->vpl->get_course()->id;
             foreach ($usersid as $userid) {
-                $gradinginfo = grade_get_grades($this->vpl->get_course()->id, 'mod', 'vpl', $this->vpl->get_instance()->id, $userid);
+                $gradinginfo = grade_get_grades($courseid, 'mod', 'vpl', $vplid, $userid);
                 if (! empty($gradinginfo->outcomes)) {
                     $outcomes = [];
                     foreach (array_keys($gradinginfo->outcomes) as $oid) {
@@ -546,7 +550,7 @@ class mod_vpl_submission {
                             $outcomes[$oid] = null;
                         }
                     }
-                    $ret = grade_update_outcomes('mod/vpl', $this->vpl->get_course()->id, 'mod', VPL, $this->vpl->get_instance()->id, $userid, $outcomes);
+                    $ret = grade_update_outcomes('mod/vpl', $courseid, 'mod', VPL, $vplid, $userid, $outcomes);
                     if (! $ret) {
                         return false;
                     }
@@ -866,7 +870,9 @@ class mod_vpl_submission {
                 if (! function_exists('grade_get_grades')) {
                     require_once($CFG->libdir . '/gradelib.php');
                 }
-                $gradinginfo = grade_get_grades($this->vpl->get_course()->id, 'mod', 'vpl', $this->vpl->get_instance()->id, $this->instance->userid);
+                $vplid = $this->vpl->get_instance()->id;
+                $userid = $this->instance->userid;
+                $gradinginfo = grade_get_grades($this->vpl->get_course()->id, 'mod', 'vpl', $vplid, $userid);
                 if (! empty($gradinginfo->outcomes)) {
                     $ret .= '<b>' . get_string('outcomes', 'core_grades') . '</b>:<br>';
                     $ret .= '<ul class="m-b-0">';

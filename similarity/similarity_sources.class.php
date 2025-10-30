@@ -377,7 +377,7 @@ class vpl_similarity_preprocess {
      * Preprocesses a submission, returning processed files
      *
      * @param object $fgm Object to manage the file of a submission
-     * @param array $filesselected List of files to processes
+     * @param array $selectedfiles List of files to processes
      * @param boolean $allfiles If true preprocess all files
      * @param boolean $joinedfiles If true join files as one
      * @param object $vpl Activity to process (optional)
@@ -385,14 +385,22 @@ class vpl_similarity_preprocess {
      * @param array $toremove Array with filenames as keys to remove from comparation (optional)
      * @return array Asociative array with file name as key and simil object as value
      */
-    public static function proccess_files($fgm, $filesselected, $allfiles, $joinedfiles, $vpl = false, $subinstance = false, $toremove = []) {
+    public static function proccess_files(
+        $fgm,
+        $selectedfiles,
+        $allfiles,
+        $joinedfiles,
+        $vpl = false,
+        $subinstance = false,
+        $toremove = []
+    ) {
         $files = [];
         $filelist = $fgm->getFileList();
         $simjf = false;
         $from = null;
         $joinedfilesdata = '';
         foreach ($filelist as $filename) {
-            if (! isset($filesselected[basename($filename)]) && ! $allfiles) {
+            if (! isset($selectedfiles[basename($filename)]) && ! $allfiles) {
                 continue;
             }
             $sim = vpl_similarity_factory::get($filename);
@@ -439,13 +447,13 @@ class vpl_similarity_preprocess {
      *
      * @param array& $simil $simil Input/output array that saves the new files found to process
      * @param object $vpl Activity to process
-     * @param array $filesselected Files to process
+     * @param array $selectedfiles Files to process
      * @param bool $allfiles If true process all files
      * @param bool $joinedfiles If true process files as a joined file
      * @param object $spb Progress bar to show activity load
      * @return void
      */
-    public static function activity(&$simil, $vpl, $filesselected, $allfiles, $joinedfiles, $spb) {
+    public static function activity(&$simil, $vpl, $selectedfiles, $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
         $cm = $vpl->get_course_module();
         $groupmode = groups_get_activity_groupmode($cm);
@@ -467,7 +475,7 @@ class vpl_similarity_preprocess {
         $submissions = $vpl->all_last_user_submission();
         // Get initial content files.
         $reqf = $vpl->get_required_fgm();
-        $toremove = self::proccess_files($reqf, $filesselected, $allfiles, $joinedfiles);
+        $toremove = self::proccess_files($reqf, $selectedfiles, $allfiles, $joinedfiles);
 
         $spb->set_max(count($list));
         $i = 0;
@@ -478,7 +486,7 @@ class vpl_similarity_preprocess {
                 $subinstance = $submissions[$user->id];
                 $submission = new mod_vpl_submission($vpl, $subinstance);
                 $subf = $submission->get_submitted_fgm();
-                $files = self::proccess_files($subf, $filesselected, $allfiles, $joinedfiles, $vpl, $subinstance, $toremove);
+                $files = self::proccess_files($subf, $selectedfiles, $allfiles, $joinedfiles, $vpl, $subinstance, $toremove);
                 foreach ($files as $file) {
                     $simil[] = $file;
                 }
@@ -564,13 +572,13 @@ class vpl_similarity_preprocess {
      * @param string $zipname Zip file name
      * @param string $zipdata Zip file content
      * @param object $vpl Current VPL activity
-     * @param array $filesselected Files to process
+     * @param array $selectedfiles Files to process
      * @param bool $allfiles If true process all files.
      * @param bool $joinedfiles If true process files as a joined file
      * @param object $spb Progress bar to show Zip file load
      * @return void
      */
-    public static function zip(&$simil, $zipname, $zipdata, $vpl, $filesselected, $allfiles, $joinedfiles, $spb) {
+    public static function zip(&$simil, $zipname, $zipdata, $vpl, $selectedfiles, $allfiles, $joinedfiles, $spb) {
         $ext = strtoupper(pathinfo($zipname, PATHINFO_EXTENSION));
         if ($ext != 'ZIP') {
             throw new moodle_exception('wrongzipfilename');
@@ -592,7 +600,7 @@ class vpl_similarity_preprocess {
                 if ($data) {
                     // TODO remove if no GAP file.
                     vpl_file_from_zipfile::process_gap_userfile($filename);
-                    if (! isset($filesselected[basename($filename)]) && ! $allfiles) {
+                    if (! isset($selectedfiles[basename($filename)]) && ! $allfiles) {
                         continue;
                     }
                     $sim = vpl_similarity_factory::get($filename);

@@ -116,6 +116,7 @@ class vpl_similarity_java extends vpl_similarity_c {
                         if ($prev->value == 'this') {
                             break;
                         }
+                        // No break.
                     case '::':
                         break;
                     default:

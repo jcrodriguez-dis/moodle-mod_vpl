@@ -149,7 +149,8 @@ class vpl_similarity_form extends moodleform {
         }
         $mform->addElement('checkbox', 'joinedfiles', get_string('joinedfiles', VPL));
         $mform->addElement('header', 'headerothersources', get_string('othersources', VPL));
-        $mform->addElement('select', 'scanactivity', get_string('scanactivity', VPL), $this->list_activities($this->vpl->get_instance()->id));
+        $listactivities = $this->list_activities($this->vpl->get_instance()->id);
+        $mform->addElement('select', 'scanactivity', get_string('scanactivity', VPL), $listactivities);
         $mform->addElement('filepicker', 'scanzipfile0', get_string('scanzipfile', VPL));
         $mform->addElement('checkbox', 'searchotherfiles', get_string('scanother', VPL));
         $mform->setDefault('searchotherfiles', false);

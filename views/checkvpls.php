@@ -149,8 +149,9 @@ foreach ($ovpls as $ovpl) {
                 $vpl->update_group_v32();
             }
         }
+        $cmid = $vpl->get_course_module()->id;
         echo '<h5>';
-        echo '<a href="/mod/vpl/view.php?id=' . $vpl->get_course_module()->id . '" class="text-' . $level . '">' . s($title) . '</a>';
+        echo '<a href="/mod/vpl/view.php?id=' . $cmid . '" class="text-' . $level . '">' . s($title) . '</a>';
         echo ' <i class="icon fa fa-' . $icon . ' text-' . $level . ' fa-fw "></i>';
         echo '</h5>';
         if ($text > '') {

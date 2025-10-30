@@ -35,11 +35,15 @@ use core_privacy\local\request\writer;
 use core_privacy\local\request\content_writer;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\user_preference_provider;
+use core_privacy\local\metadata\provider as metadata_provider;
+
 
 /**
  * VPL provider class
  */
-class provider implements \core_privacy\local\request\core_userlist_provider, \core_privacy\local\metadata\provider, \core_privacy\local\request\user_preference_provider {
+class provider implements core_userlist_provider, metadata_provider, user_preference_provider {
     /**
      * Return the fields and user preferences which are considered personal data.
      *

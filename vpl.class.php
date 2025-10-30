@@ -1751,6 +1751,7 @@ class mod_vpl {
                     );
                     return;
                 }
+                // No break.
             case 'submission.php':
             case 'edit.php':
             case 'submissionview.php':

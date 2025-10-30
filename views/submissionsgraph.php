@@ -101,5 +101,7 @@ function vpl_submissions_graph($vpl, $userid) {
     $user = $DB->get_record('user', [
             'id' => $userid,
     ]);
-    vpl_graph::draw($vpl->get_printable_name() . ' - ' . $vpl->fullname($user, false), get_string('submissions', VPL), get_string("sizeb"), $subsn, $series, $names);
+    $vplandusername = $vpl->get_printable_name() . ' - ' . $vpl->fullname($user, false);
+    $strsubmissions = get_string('submissions', 'mod_vpl');
+    vpl_graph::draw($vplandusername, $strsubmissions, get_string("sizeb"), $subsn, $series, $names);
 }
