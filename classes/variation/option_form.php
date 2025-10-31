@@ -25,9 +25,10 @@
 
 namespace mod_vpl\variation;
 
+defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 
-require_once($CFG->dirroot . '/config.php');
 require_once($CFG->libdir . '/formslib.php');
 
 /**
