@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/similarity_base.class.php');
+use mod_vpl\similarity\similarity_base;
 
 /**
  * HTML similarity class
@@ -26,7 +26,7 @@ require_once(dirname(__FILE__) . '/similarity_base.class.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-class vpl_similarity_html extends vpl_similarity_base {
+class vpl_similarity_html extends similarity_base {
     /**
      * Returns the type of similarity.
      *

@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/similarity_base.class.php');
+use mod_vpl\similarity\similarity_base;
 
 /**
  * Python language similarity class
@@ -29,7 +29,7 @@ require_once(dirname(__FILE__) . '/similarity_base.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  * @copyright all authors
  */
-class vpl_similarity_python extends vpl_similarity_base {
+class vpl_similarity_python extends similarity_base {
     /**
      * Returns the type of similarity.
      *

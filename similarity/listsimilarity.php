@@ -28,10 +28,12 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 require_once(dirname(__FILE__) . '/similarity_factory.class.php');
-require_once(dirname(__FILE__) . '/similarity_base.class.php');
 require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 require_once(dirname(__FILE__) . '/clusters.class.php');
+
+use mod_vpl\similarity\utility;
+
 ini_set('memory_limit', '256M');
 
 require_login();
@@ -105,7 +107,7 @@ if (isset($fromform->searchotherfiles)) {
 }
 @set_time_limit($timelimit);
 $searchprogression = new \mod_vpl\util\progress_bar(get_string('similarity', VPL));
-$selected = vpl_similarity::get_selected($simil, $fromform->maxoutput, $il, $searchprogression);
+$selected = utility::get_selected($simil, $fromform->maxoutput, $il, $searchprogression);
 $extinfo = false; // Use true to show internal data.
 
 $cm = $vpl->get_course_module();

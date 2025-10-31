@@ -23,12 +23,14 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
+use mod_vpl\similarity\file_pair;
+use mod_vpl\similarity\utility;
+
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 require_once(dirname(__FILE__) . '/similarity_factory.class.php');
-require_once(dirname(__FILE__) . '/similarity_base.class.php');
 require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 require_once(dirname(__FILE__) . '/clusters.class.php');
@@ -150,8 +152,8 @@ $outputsize = [
 $bars = [];
 $relatedusers = [];
 foreach ($vpls as $vpl) {
-    vpl_files_pair::set_mins(100, 100, 100);
-    vpl_files_pair::set_maxs(100, 100, 100);
+    file_pair::set_mins(100, 100, 100);
+    file_pair::set_maxs(100, 100, 100);
     $simil = [];
     vpl_similarity_preprocess::user_activity($simil, $vpl, $userid);
     $nuserfiles = count($simil);
@@ -166,7 +168,7 @@ foreach ($vpls as $vpl) {
         } else {
             $noutput = $outputsize[$nuserfiles];
         }
-        $selected = vpl_similarity::get_selected($simil, $noutput, $nuserfiles, $searchprogression);
+        $selected = utility::get_selected($simil, $noutput, $nuserfiles, $searchprogression);
         if (count($selected) > 0) {
             $table->data[] = [
                     $vpl->get_printable_name(),

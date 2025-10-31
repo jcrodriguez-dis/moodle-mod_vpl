@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/similarity_base.class.php');
+use mod_vpl\similarity\file_pair;
 
 /**
  * Class to find and show clusters of similar files
@@ -276,7 +276,7 @@ class vpl_clusters {
                     $s1 = $files[$i]->similarity1($files[$j]);
                     $s2 = $files[$i]->similarity2($files[$j]);
                     $s3 = $files[$i]->similarity3($files[$j]);
-                    $matrix[$i][$j] = new vpl_files_pair($files[$i], $files[$j], $s1, $s2, $s3);
+                    $matrix[$i][$j] = new file_pair($files[$i], $files[$j], $s1, $s2, $s3);
                     $matrix[$j][$i] = $matrix[$i][$j];
                 }
             }
