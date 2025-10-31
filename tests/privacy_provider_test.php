@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for mod/vpl/lib.php.
+ * Unit tests for mod_vpl/privacy/provider.
  *
  * @package mod_vpl
  * @copyright  Juan Carlos Rodríguez-del-Pino
@@ -25,14 +25,6 @@
 
 namespace mod_vpl;
 
-use stdClass;
-use mod_vpl_submission;
-use mod_vpl_submission_CE;
-use core_privacy\local\request\contextlist;
-use core_privacy\local\request\transform;
-use core_privacy\local\request\writer;
-use core_privacy\local\request\userlist;
-
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
@@ -41,7 +33,15 @@ require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 
+use core_privacy\local\request\contextlist;
+use core_privacy\local\request\transform;
+use core_privacy\local\request\writer;
+use core_privacy\local\request\userlist;
 use mod_vpl\tests\base_fixture;
+use mod_vpl\tests\testable_provider;
+use stdClass;
+use mod_vpl_submission;
+use mod_vpl_submission_CE;
 
 /**
  * Unit tests for \mod_vpl\privacy\provider class.
@@ -549,29 +549,5 @@ final class privacy_provider_test extends base_fixture {
             sort($a2);
             $this->assertEquals($a1, $a2);
         }
-    }
-}
-
-/**
- * Class to use instead of \mod_vpl\privacy\provider.
- * This derived class of \mod_vpl\privacy\provider expose protected methods
- * as public to test it.
- */
-class testable_provider extends \mod_vpl\privacy\provider {
-    /**
-     * This variable is used to remove codecheck warning.
-     * It is not used in this class.
-     * @var bool
-     */
-    private static $nothing = false;
-    /**
-     * Method to expose get_user_preferences.
-     *
-     * @param int $userid The user id.
-     * @return array The user preferences.
-     */
-    public static function get_user_preferences(int $userid): array {
-        self::$nothing = true; // Removes codecheck warning.
-        return parent::get_user_preferences($userid);
     }
 }
