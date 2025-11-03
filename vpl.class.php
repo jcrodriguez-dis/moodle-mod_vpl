@@ -2287,9 +2287,9 @@ class mod_vpl {
             $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
             $result->ugcount = count($allstudents);
             $result->subcount = count($submissions);
-        }
-        if ($this->get_grade() != 0 && $result->subcount != 0) {
-            $result->gradedcount = $this->number_of_graded_submissions($submissions);
+            if ($this->get_grade() != 0 && $result->subcount != 0) {
+                $result->gradedcount = $this->number_of_graded_submissions($submissions);
+            }
         }
         return $result;
     }

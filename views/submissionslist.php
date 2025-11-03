@@ -782,7 +782,7 @@ foreach ($alldata as $data) {
 }
 
 if (! $downloading) {
-    $nstudents = count($alldata);
+    $nstudents = count($allstudents);
     $vpl->print_submissions_status($nstudents, $nsubmissions, $ngraded);
     echo '<div class="d-flex flex-row flex-wrap justify-content-between">';
     // Print groups menu.
