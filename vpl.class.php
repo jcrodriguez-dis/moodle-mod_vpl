@@ -1852,11 +1852,11 @@ class mod_vpl {
     /**
      * Show vpl submission status if user is grader.
      */
-    public function print_submissions_status() {
+    public function print_submissions_status($nstudents = null, $nsubmissions = 0, $ngraded = 0) {
         $isgrader = $this->has_capability(VPL_GRADE_CAPABILITY);
         if ($isgrader) {
             echo vpl_get_awesome_icon('submissions');
-            echo $this->str_submissions_status() . '<br>';
+            echo $this->str_submissions_status($nstudents, $nsubmissions, $ngraded) . '<br>';
         }
     }
 
