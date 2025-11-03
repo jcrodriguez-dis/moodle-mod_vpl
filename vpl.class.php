@@ -1851,6 +1851,10 @@ class mod_vpl {
 
     /**
      * Show vpl submission status if user is grader.
+     * From parameters if supplied or calculated if not.
+     * @param int $nstudents Number of students
+     * @param int $nsubmissions Number of submissions
+     * @param int $ngraded Number of graded submissions
      */
     public function print_submissions_status($nstudents = null, $nsubmissions = 0, $ngraded = 0) {
         $isgrader = $this->has_capability(VPL_GRADE_CAPABILITY);
