@@ -17,6 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * Prolog programing language tokenizer class
@@ -88,14 +90,14 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         $c = $rest[0];
         if ($this->isidentifierchar($c)) {
             if (($c >= 'A' && $c <= 'Z') || $c == '_') { // Variable.
-                $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, 'V', $this->linenumber);
+                $this->tokens[] = new token(token_type::OPERATOR, 'V', $this->linenumber);
             } else if (($c >= 'a' && $c <= 'z')) { // Literal.
                 if ($s != null && $this->isnextopenparenthesis($s, $i) || $rest == 'is') {
-                    $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, 'L', $this->linenumber);
+                    $this->tokens[] = new token(token_type::OPERATOR, 'L', $this->linenumber);
                 }
             }
         } else {
-            $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, $rest, $this->linenumber);
+            $this->tokens[] = new token(token_type::OPERATOR, $rest, $this->linenumber);
         }
         $rest = '';
     }
@@ -262,7 +264,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
         foreach ($this->tokens as &$next) {
             if ($current) {
                 if (
-                    $current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR
+                    $current->type == token_type::OPERATOR && $next->type == token_type::OPERATOR
                     && strpos('LV()[]{},.;', $current->value) === false
                     && strpos('LV()[]{},.;', $next->value) === false
                 ) {
@@ -282,7 +284,7 @@ class vpl_tokenizer_prolog extends vpl_tokenizer_base {
     /**
      * Get the list of tokens found in the file.
      *
-     * @return vpl_token[] the list of tokens
+     * @return token[] the list of tokens
      */
     public function get_tokens() {
         return $this->tokens;

@@ -17,6 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * HTML language tokenizer class
@@ -87,7 +89,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
         if ($state == self::IN_TAGEND) {
             $pending .= '/';
         }
-        $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, $pending, $this->linenumber);
+        $this->tokens[] = new token(token_type::OPERATOR, $pending, $this->linenumber);
     }
 
     /**
@@ -187,7 +189,7 @@ class vpl_tokenizer_html extends vpl_tokenizer_base {
     /**
      * Get the list of tokens.
      *
-     * @return vpl_token[] List of tokens.
+     * @return token[] List of tokens.
      */
     public function get_tokens() {
         return $this->tokens;

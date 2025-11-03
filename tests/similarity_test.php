@@ -15,66 +15,56 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for classes at /mod/vpl/similarity/similarity_sources.class.php
+ * Unit tests for \mod_vpl\similarity\preprocess class.
  *
  * @package mod_vpl
  * @copyright Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 namespace mod_vpl;
 
-use vpl_similarity_preprocess;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/lib.php');
-require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
-require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php');
+use mod_vpl\similarity\preprocess;
 
 
 /**
- * Unit tests for vpl_similarity_preprocess class.
+ * Unit tests for \mod_vpl\similarity\preprocess class.
  * @group mod_vpl
  * @group mod_vpl_vplt
  * @group mod_vpl_similarity
- * @group mod_vpl_similarity_preprocess
+ * @group mod_\mod_vpl\similarity\preprocess
  */
 final class similarity_test extends \advanced_testcase {
     /**
-     * Method to test vpl_similarity_preprocess::get_zip_filepath
-     * @covers \vpl_similarity_preprocess::get_zip_filepath
+     * Method to test \mod_vpl\similarity\preprocess::get_zip_filepath
+     * @covers \\mod_vpl\similarity\preprocess::get_zip_filepath
      */
     public function test_get_zip_filepath(): void {
         global $CFG;
         $base = $CFG->dataroot . '/temp/vpl_zip/';
-        $expet = $base . '2_z1';
-        $res = vpl_similarity_preprocess::get_zip_filepath(2, 'z1');
-        $this->assertEquals($expet, $res);
-        $expet = $base . '456_z1.algo';
-        $res = vpl_similarity_preprocess::get_zip_filepath(456, 'z1.algo');
-        $this->assertEquals($expet, $res);
-        $expet = $base . '45633_z1.algo';
-        $res = vpl_similarity_preprocess::get_zip_filepath(45633, '/valor/h.33/nada/z1.algo');
-        $this->assertEquals($expet, $res);
+        $expect = $base . '2_z1';
+        $res = \mod_vpl\similarity\preprocess::get_zip_filepath(2, 'z1');
+        $this->assertEquals($expect, $res);
+        $expect = $base . '456_z1.algo';
+        $res = \mod_vpl\similarity\preprocess::get_zip_filepath(456, 'z1.algo');
+        $this->assertEquals($expect, $res);
+        $expect = $base . '45633_z1.algo';
+        $res = \mod_vpl\similarity\preprocess::get_zip_filepath(45633, '/valor/h.33/nada/z1.algo');
+        $this->assertEquals($expect, $res);
     }
 
     /**
-     * Method to test vpl_similarity_preprocess::create_zip_file
-     * @covers \vpl_similarity_preprocess::create_zip_file
+     * Method to test \mod_vpl\similarity\preprocess::create_zip_file
+     * @covers \\mod_vpl\similarity\preprocess::create_zip_file
      */
     public function test_create_zip_file(): void {
-        $path = vpl_similarity_preprocess::get_zip_filepath(434, '/asg/z1');
-        vpl_similarity_preprocess::create_zip_file(434, '/asg/z1', 'contents');
+        $path = \mod_vpl\similarity\preprocess::get_zip_filepath(434, '/asg/z1');
+        \mod_vpl\similarity\preprocess::create_zip_file(434, '/asg/z1', 'contents');
         $this->assertTrue(is_readable($path), $path);
         $contents = file_get_contents($path);
         $this->assertEquals($contents, 'contents');
-        $path = vpl_similarity_preprocess::get_zip_filepath(0, '1');
-        vpl_similarity_preprocess::create_zip_file(0, '1', 'contenido');
+        $path = \mod_vpl\similarity\preprocess::get_zip_filepath(0, '1');
+        \mod_vpl\similarity\preprocess::create_zip_file(0, '1', 'contenido');
         $this->assertTrue(is_readable($path), $path);
         $contents = file_get_contents($path);
         $this->assertEquals($contents, 'contenido');

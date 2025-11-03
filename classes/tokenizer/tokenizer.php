@@ -142,7 +142,7 @@ class tokenizer extends tokenizer_base {
     /**
      * @var array $availabletokens Available names for tokens based on TextMate and ACE editor.
      *
-     * Each token must be declared as one of the vpl_token_type avaiable types
+     * Each token must be declared as one of the token_type available types
      * in order to be compatible for similarity classes.
      *
      * It is important to notice that if one token's name has not a valid type,

@@ -23,107 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/**
- * Module instance files
- * path= vpl_data/vpl_instance#
- * General info
- * path/required_files.lst
- * path/required_files/
- * path/execution_files.lst
- * path/execution_files/
- * path/execution_files/vpl_run.sh
- * path/execution_files/vpl_debug.sh
- * path/execution_files/vpl_evaluate.sh
- *  * Submission info
- * path/usersdata/userid#/submissionid#/submittedfiles/
- * path/usersdata/userid#/submissionid#/submittedfiles.lst
- * path/usersdata/userid#/submissionid#/grade_comments.txt
- * path/usersdata/userid#/submissionid#/teachertest.txt
- * path/usersdata/userid#/submissionid#/studenttest.txt
- */
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__) . '/filegroup.class.php');
 require_once(dirname(__FILE__) . '/lib.php');
-
-/**
- * Class file_group_process
- *
- * Manage file groups for VPL activities.
- *
- * @package mod_vpl
- */
-class file_group_execution extends file_group_process {
-    /**
-     * Name of fixed file names
-     *
-     * @var string[]
-     */
-    protected static $basefiles = [
-            'vpl_run.sh',
-            'vpl_debug.sh',
-            'vpl_evaluate.sh',
-            'vpl_evaluate.cases',
-    ];
-
-    /**
-     * Number of $basefiles elements
-     *
-     * @var int
-     */
-    protected static $numbasefiles;
-
-    /**
-     * Constructor
-     *
-     * @param string $dir
-     */
-    public function __construct($dir) {
-        self::$numbasefiles = count(self::$basefiles);
-        parent::__construct($dir, 1000, self::$numbasefiles);
-    }
-
-    /**
-     * Get list of files
-     *
-     * @return string[]
-     */
-    public function getfilelist() {
-        return array_values(array_unique(array_merge(self::$basefiles, parent::getfilelist())));
-    }
-
-    /**
-     * Get the file comment by number
-     *
-     * @param int $num
-     * @return string
-     */
-    public function getfilecomment($num) {
-        if ($num < self::$numbasefiles) {
-            return get_string(self::$basefiles[$num], VPL);
-        } else {
-            return get_string('file') . ' ' . ($num + 1 - self::$numbasefiles);
-        }
-    }
-
-    /**
-     * Get list of files to keep when running
-     *
-     * @return string[]
-     */
-    public function getfilekeeplist() {
-        return file_group_process::read_list($this->filelistname . '.keep');
-    }
-
-    /**
-     * Set the file list to keep when running
-     *
-     * @param string[] $filelist
-     */
-    public function setfilekeeplist($filelist) {
-        file_group_process::write_list($this->filelistname . '.keep', $filelist);
-    }
-}
+use mod_vpl\util\file_group;
+use mod_vpl\util\file_group_execution;
 
 /**
  * Class mod_vpl
@@ -424,7 +328,7 @@ class mod_vpl {
      */
     public function get_required_fgm() {
         if (! $this->requiredfgm) {
-            $this->requiredfgm = new file_group_process($this->get_required_files_directory(), $this->instance->maxfiles);
+            $this->requiredfgm = new file_group($this->get_required_files_directory(), $this->instance->maxfiles);
         }
         return $this->requiredfgm;
     }

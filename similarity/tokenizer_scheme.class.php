@@ -26,6 +26,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * Class to tokenize Scheme programs
@@ -152,7 +154,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
      * Add a parenthesis to the list of tokens
      */
     protected function add_parenthesis() {
-        $this->tokens[] = new vpl_token(vpl_token_type::OPERATOR, '(', $this->linenumber);
+        $this->tokens[] = new token(token_type::OPERATOR, '(', $this->linenumber);
     }
 
     /**
@@ -165,7 +167,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             $pending = '';
             return;
         }
-        $this->tokens[] = new vpl_token(vpl_token_type::LITERAL, $pending, $this->linenumber);
+        $this->tokens[] = new token(token_type::LITERAL, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -180,11 +182,11 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             return;
         }
         if (isset($this->reserved[$pending])) {
-            $type = vpl_token_type::OPERATOR;
+            $type = token_type::OPERATOR;
         } else {
-            $type = vpl_token_type::IDENTIFIER;
+            $type = token_type::IDENTIFIER;
         }
-        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
+        $this->tokens[] = new token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -290,7 +292,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     /**
      * Get the tokens found in the file
      *
-     * @return array of vpl_token objects
+     * @return array of token objects
      */
     public function get_tokens() {
         return $this->tokens;

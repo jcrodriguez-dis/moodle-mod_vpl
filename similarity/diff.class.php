@@ -20,7 +20,6 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 require_once(dirname(__FILE__) . '/similarity_factory.class.php');
-require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 
 /**
  * Class to show two files diff
@@ -423,7 +422,7 @@ class vpl_diff {
                 throw new moodle_exception('wrongzipfilename');
             }
             $zip = new ZipArchive();
-            $zipfilename = vpl_similarity_preprocess::get_zip_filepath($vplid, $zipname);
+            $zipfilename = \mod_vpl\similarity\preprocess::get_zip_filepath($vplid, $zipname);
             if ($zip->open($zipfilename) === true) {
                 $data = $zip->getFromName($filename);
                 $zip->close();

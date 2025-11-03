@@ -22,10 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 namespace mod_vpl\tests;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Class to use instead of \mod_vpl\privacy\provider.

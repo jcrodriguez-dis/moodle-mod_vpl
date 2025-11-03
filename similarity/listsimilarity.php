@@ -28,7 +28,6 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 require_once(dirname(__FILE__) . '/similarity_factory.class.php');
-require_once(dirname(__FILE__) . '/similarity_sources.class.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 require_once(dirname(__FILE__) . '/clusters.class.php');
 
@@ -83,14 +82,14 @@ $simil = [];
 // Preprocess current VPL instance.
 @set_time_limit($timelimit);
 $activityloadbox = new \mod_vpl\util\progress_bar(s($vpl->get_printable_name()));
-vpl_similarity_preprocess::activity($simil, $vpl, $filesselected, $allfiles, $joinedfiles, $activityloadbox);
+\mod_vpl\similarity\preprocess::activity($simil, $vpl, $filesselected, $allfiles, $joinedfiles, $activityloadbox);
 $il = count($simil);
 // Preprocess other VPL instance.
 if (isset($fromform->scanactivity) && $fromform->scanactivity > 0) {
     @set_time_limit($timelimit);
     $othervpl = new mod_vpl($fromform->scanactivity);
     $otheractivityloadbox = new \mod_vpl\util\progress_bar(s($othervpl->get_printable_name()));
-    vpl_similarity_preprocess::activity($simil, $othervpl, $filesselected, $allfiles, $joinedfiles, $otheractivityloadbox);
+    \mod_vpl\similarity\preprocess::activity($simil, $othervpl, $filesselected, $allfiles, $joinedfiles, $otheractivityloadbox);
 }
 // Preprocess files in a ZIP file.
 $name = $form->get_new_filename('scanzipfile0');
@@ -98,7 +97,7 @@ $userdata = $form->get_file_content('scanzipfile0');
 if ($userdata !== false && $name !== false) {
     @set_time_limit($timelimit);
     $ziploadbox0 = new \mod_vpl\util\progress_bar(s($name));
-    vpl_similarity_preprocess::zip($simil, $name, $userdata, $vpl, $filesselected, $allfiles, $joinedfiles, $ziploadbox0);
+    \mod_vpl\similarity\preprocess::zip($simil, $name, $userdata, $vpl, $filesselected, $allfiles, $joinedfiles, $ziploadbox0);
 }
 
 // Search similarity in other files after current VPL instance.

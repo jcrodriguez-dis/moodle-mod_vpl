@@ -14,13 +14,6 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use mod_h5pactivity\output\result\other;
-
-defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__) . '/locallib.php');
-require_once(dirname(__FILE__) . '/views/sh_factory.class.php');
-require_once(dirname(__FILE__) . '/similarity/watermark.class.php');
-
 /**
  * Class to manage a group of files
  *
@@ -29,7 +22,21 @@ require_once(dirname(__FILE__) . '/similarity/watermark.class.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-class file_group_process {
+namespace mod_vpl\util;
+
+defined('MOODLE_INTERNAL') || die();
+
+global $CFG;
+require_once($CFG->dirroot . '/mod/vpl/locallib.php');
+require_once($CFG->dirroot . '/mod/vpl/views/sh_factory.class.php');
+require_once($CFG->dirroot . '/mod/vpl/similarity/watermark.class.php');
+
+/**
+ * Class file_group
+ * Manage a group of files for VPL activities.
+ * Limits minimum and maximum number of files and keeps file order.
+ */
+class file_group {
     /**
      * @var string $filelistname Name of file list
      */
@@ -404,7 +411,7 @@ class file_group_process {
             if (is_file($this->dir . '/' . self::encodeFileName($name))) {
                 if (vpl_is_binary($name)) {
                     if ($showbinary) {
-                        $printer = vpl_sh_factory::get_sh($name);
+                        $printer = \vpl_sh_factory::get_sh($name);
                         $data = $this->getFileData($name);
                         $printer->print_file($name, $data);
                         self::$outputbinarysize += strlen($data);
@@ -414,9 +421,9 @@ class file_group_process {
                     }
                 } else {
                     if ($showcode) {
-                        $printer = vpl_sh_factory::get_sh($name);
+                        $printer = \vpl_sh_factory::get_sh($name);
                     } else {
-                        $printer = vpl_sh_factory::get_object('text_nsh');
+                        $printer = \vpl_sh_factory::get_object('text_nsh');
                     }
                     $data = $this->getFileData($name);
                     $printer->print_file($name, $data);
@@ -426,7 +433,7 @@ class file_group_process {
                 echo '<h4>' . s($name) . '</h4>';
             }
         }
-        vpl_sh_factory::syntaxhighlight();
+        \vpl_sh_factory::syntaxhighlight();
     }
 
     /**
@@ -437,7 +444,7 @@ class file_group_process {
     public function generate_zip_file(bool $watermark = false) {
         global $CFG;
         global $USER;
-        $zip = new ZipArchive();
+        $zip = new \ZipArchive();
         $dir = $CFG->dataroot . '/temp/vpl';
         if (! file_exists($dir)) {
             mkdir($dir, $CFG->directorypermissions, true);
@@ -445,11 +452,11 @@ class file_group_process {
         $zipfilename = tempnam($dir, 'zip');
         $filelist = $this->getFileList();
         if (count($filelist) > 0) {
-            if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
+            if ($zip->open($zipfilename, \ZipArchive::OVERWRITE) === true) {
                 foreach ($filelist as $filename) {
                     $data = $this->getFileData($filename);
                     if ($watermark) {
-                        $data = vpl_watermark::addwm($data, $filename, $USER->id);
+                        $data = \vpl_watermark::addwm($data, $filename, $USER->id);
                     }
                     $zip->addFromString($filename, $data);
                 }

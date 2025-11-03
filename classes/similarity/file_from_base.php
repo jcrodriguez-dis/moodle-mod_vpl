@@ -14,19 +14,41 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-use mod_vpl\tokenizer\tokenizer_factory;
-
-defined('MOODLE_INTERNAL') || die();
-
-require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
-
 /**
- * Tokenizer factory class
+ * Classes to manage file from difrerent soruces
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2015 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-class vpl_tokenizer_factory extends tokenizer_factory {
+namespace mod_vpl\similarity;
+
+/**
+ * Class to represent files from any source.
+ */
+class file_from_base {
+    /**
+     * Returns the file information.
+     * @return string HTML string with the file information.
+     */
+    public function show_info() {
+        return '';
+    }
+
+    /**
+     * Returns if the file can be accessed.
+     * @return bool True if the file can be accessed, false otherwise.
+     */
+    public function can_access() {
+        return false;
+    }
+
+    /**
+     * Returns the user ID of the file.
+     * @return string The user ID associated with the file.
+     */
+    public function get_userid() {
+        return '';
+    }
 }

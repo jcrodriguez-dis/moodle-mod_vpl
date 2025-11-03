@@ -17,6 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * M (Octave) programing language tokenizer class
@@ -126,20 +128,20 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         }
         if ($this->is_indentifier($pending)) {
             if (isset($this->reserved[$pending])) {
-                $type = vpl_token_type::RESERVED;
+                $type = token_type::RESERVED;
             } else {
-                $type = vpl_token_type::IDENTIFIER;
+                $type = token_type::IDENTIFIER;
             }
         } else {
             if ($this->is_number($pending) || $pending == '""' || $pending == "''") {
-                $type = vpl_token_type::LITERAL;
+                $type = token_type::LITERAL;
             } else if (strpos('()[]{};', $pending) === false) {
-                $type = vpl_token_type::OPERATOR;
+                $type = token_type::OPERATOR;
             } else {
-                $type = vpl_token_type::OTHER;
+                $type = token_type::OTHER;
             }
         }
-        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
+        $this->tokens[] = new token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -401,7 +403,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
     /**
      * Get the list of tokens.
      *
-     * @return vpl_token[] List of tokens.
+     * @return token[] List of tokens.
      */
     public function get_tokens() {
         return $this->tokens;
@@ -415,7 +417,7 @@ class vpl_tokenizer_matlab extends vpl_tokenizer_base {
         $current = false;
         foreach ($this->tokens as &$next) {
             if ($current) {
-                if ($current->type == vpl_token_type::OPERATOR && $next->type == vpl_token_type::OPERATOR) {
+                if ($current->type == token_type::OPERATOR && $next->type == token_type::OPERATOR) {
                     $current->value .= $next->value;
                     $next = false;
                 }

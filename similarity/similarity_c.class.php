@@ -14,9 +14,10 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 use mod_vpl\similarity\similarity_base;
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
+use mod_vpl\tokenizer\tokenizer_factory;
 
 /**
  * C language similarity class
@@ -61,9 +62,9 @@ class vpl_similarity_c extends similarity_base {
         $openbrace = false;
         $nsemicolon = 0;
         $ret = [];
-        $prev = new vpl_token(vpl_token_type::IDENTIFIER, '', 0);
+        $prev = new token(token_type::IDENTIFIER, '', 0);
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::OPERATOR) {
+            if ($token->type == token_type::OPERATOR) {
                 // Operator ++ and -- .
                 // Operator ::
                 // Changes (*p). and p-> .
@@ -168,6 +169,6 @@ class vpl_similarity_c extends similarity_base {
      * @return vpl_tokenizer The tokenizer instance for C.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get('c');
+        return tokenizer_factory::get('c');
     }
 }

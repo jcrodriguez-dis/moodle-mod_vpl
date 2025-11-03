@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Unit tests for class file_group_process mod/vpl/filegroup.class.php
+ * Unit tests for class file_group mod/vpl/filegroup.class.php
  *
  * @package mod_vpl
  * @copyright Juan Carlos Rodríguez-del-Pino
@@ -31,15 +31,14 @@ global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/filegroup.class.php');
 
 /**
- * Unit tests for file_group_process class.
+ * Unit tests for \mod\util\file_group class.
  *
  * @group mod_vpl
- * @covers \mod_vpl\file_group_process
+ * @covers \mod_vpl\util\file_group
  */
-final class filegroup_test extends \advanced_testcase {
+final class file_group_test extends \advanced_testcase {
     /**
      * Base directory for file group process tests.
      * @var string
@@ -48,25 +47,25 @@ final class filegroup_test extends \advanced_testcase {
 
     /**
      * Fixture for file group with no files.
-     * @var \file_group_process
+     * @var \mod_vpl\util\file_group
      */
     protected $gpempty = null;
 
     /**
      * Fixture for file group with no files.
-     * @var \file_group_process
+     * @var \mod_vpl\util\file_group
      */
     protected $gponefile = null;
 
     /**
      * Fixture for with more than one file.
-     * @var \file_group_process
+     * @var \mod_vpl\util\file_group
      */
     protected $gpfiles = null;
 
     /**
      * Fixture for file group with directories.
-     * @var \file_group_process
+     * @var \mod_vpl\util\file_group
      */
     protected $gpdirectory = null;
 
@@ -97,10 +96,10 @@ final class filegroup_test extends \advanced_testcase {
         // Create the base directory for file group process tests.
         $this->basedir = $CFG->dataroot . '/vpl_data/gpt/';
 
-        $this->gpempty = new \file_group_process($this->basedir . 'empty', 0, 0);
-        $this->gponefile = new \file_group_process($this->basedir . 'onefile', 1, 1);
-        $this->gpfiles = new \file_group_process($this->basedir . 'files');
-        $this->gpdirectory = new \file_group_process($this->basedir . 'directory', 100, 4);
+        $this->gpempty = new \mod_vpl\util\file_group($this->basedir . 'empty', 0, 0);
+        $this->gponefile = new \mod_vpl\util\file_group($this->basedir . 'onefile', 1, 1);
+        $this->gpfiles = new \mod_vpl\util\file_group($this->basedir . 'files');
+        $this->gpdirectory = new \mod_vpl\util\file_group($this->basedir . 'directory', 100, 4);
 
         $this->gponefilecontents = ['one file.txt' => "One file contents"];
         $this->gponefile->addallfiles($this->gponefilecontents);
@@ -133,11 +132,11 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::addallfiles with other dir
+     * Method to test \mod\util\file_group::addallfiles with other dir
      */
     public function test_addallfiles(): void {
-        $otherempty = new \file_group_process($this->basedir . 'emptyother', 0, 0);
-        $otherfiles = new \file_group_process($this->basedir . 'filesother');
+        $otherempty = new \mod_vpl\util\file_group($this->basedir . 'emptyother', 0, 0);
+        $otherfiles = new \mod_vpl\util\file_group($this->basedir . 'filesother');
         $otherempty->addallfiles([], $this->basedir . 'empty');
         $this->assertEquals([], $otherempty->getallfiles());
         $otherempty->addallfiles([], $this->basedir . 'files');
@@ -153,7 +152,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::get_maxnumfiles
+     * Method to test \mod\util\file_group::get_maxnumfiles
      */
     public function test_get_maxnumfiles(): void {
         $this->assertEquals(0, $this->gpempty->get_maxnumfiles());
@@ -163,7 +162,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::get_numstaticfiles
+     * Method to test \mod\util\file_group::get_numstaticfiles
      */
     public function test_get_numstaticfiles(): void {
         $this->assertEquals(0, $this->gpempty->get_numstaticfiles());
@@ -173,63 +172,63 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::read_list
+     * Method to test \mod\util\file_group::read_list
      */
     public function test_read_list(): void {
         $filelist = [];
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpempty->getfilelistname()));
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpempty->getfilelistname()));
         $filelist = ['one file.txt'];
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gponefile->getfilelistname()));
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gponefile->getfilelistname()));
         $filelist = ['first file.txt', 'Second file.txt', 'Third file.txt'];
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpfiles->getfilelistname()));
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpfiles->getfilelistname()));
         $filelist = ['a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
                 'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt', ];
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpdirectory->getfilelistname()));
     }
 
     /**
-     * Method to test file_group_process::write_list
+     * Method to test \mod\util\file_group::write_list
      */
     public function test_write_list(): void {
         $filelist = ['algo.txt'];
-        \file_group_process::write_list($this->gpempty->getfilelistname(), $filelist);
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpempty->getfilelistname()));
+        \mod_vpl\util\file_group::write_list($this->gpempty->getfilelistname(), $filelist);
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpempty->getfilelistname()));
         $filelist = [];
-        \file_group_process::write_list($this->gponefile->getfilelistname(), $filelist);
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gponefile->getfilelistname()));
+        \mod_vpl\util\file_group::write_list($this->gponefile->getfilelistname(), $filelist);
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gponefile->getfilelistname()));
         $filelist = ['first file.txt', 'Second file.txt', 'Third file.txt', 'first file1.txt',
                           'Second file1.txt', 'Third file1.txt', ];
-        \file_group_process::write_list($this->gpfiles->getfilelistname(), $filelist);
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpfiles->getfilelistname()));
+        \mod_vpl\util\file_group::write_list($this->gpfiles->getfilelistname(), $filelist);
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpfiles->getfilelistname()));
         $filelist = ['a sub dir/first file.txt', 'a sub dir/Second file.txt',
                 'b/c/d/Third file.txt', 'b/c/d/Fourth file.txt',
                 'Other file.txt', 'b/Other file.txt', 'b/c/Other file.txt', ];
-        \file_group_process::write_list($this->gpdirectory->getfilelistname(), $filelist);
-        $this->assertEquals($filelist, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
+        \mod_vpl\util\file_group::write_list($this->gpdirectory->getfilelistname(), $filelist);
+        $this->assertEquals($filelist, \mod_vpl\util\file_group::read_list($this->gpdirectory->getfilelistname()));
         $other = [
                 'aaa/bb/ccc/first file.txt',
                 'aaa/bb/Second file.txt',
                 'aaaThird file.txt',
         ];
-        \file_group_process::write_list($this->gpdirectory->getfilelistname(), $other);
-        $this->assertEquals($other, \file_group_process::read_list($this->gpdirectory->getfilelistname()));
+        \mod_vpl\util\file_group::write_list($this->gpdirectory->getfilelistname(), $other);
+        $this->assertEquals($other, \mod_vpl\util\file_group::read_list($this->gpdirectory->getfilelistname()));
     }
 
     /**
-     * Method to test file_group_process::encodefilename
+     * Method to test \mod\util\file_group::encodefilename
      */
     public function test_encodefilename(): void {
-        $this->assertEquals('a.b.c', \file_group_process::encodefilename('a.b.c'));
-        $this->assertEquals('a=b=c.d', \file_group_process::encodefilename('a/b/c.d'));
+        $this->assertEquals('a.b.c', \mod_vpl\util\file_group::encodefilename('a.b.c'));
+        $this->assertEquals('a=b=c.d', \mod_vpl\util\file_group::encodefilename('a/b/c.d'));
     }
 
     /**
-     * Helper method to test file_group_process::addfile
+     * Helper method to test \mod\util\file_group::addfile
      * This method is used to test if the file group can add files correctly.
      * It checks if the file group can add a file with data and if it returns the expected result.
      *
-     * @param \file_group_process $fg The file group process instance to test.
+     * @param \mod_vpl\util\file_group $fg The file group process instance to test.
      * @param string $fn The filename to add.
      * @param string|null $data The data to add to the file, or null for an empty file.
      * @param bool $added Expected result of the add operation.
@@ -248,7 +247,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::addfile.
+     * Method to test \mod\util\file_group::addfile.
      */
     public function test_addfile(): void {
         $this->internal_test_one_addfile($this->gpempty, 'a', '', false);
@@ -271,7 +270,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::getallfiles.
+     * Method to test \mod\util\file_group::getallfiles.
      */
     public function test_getallfiles(): void {
         $this->assertEquals([], $this->gpempty->getallfiles());
@@ -281,7 +280,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::deleteallfiles.
+     * Method to test \mod\util\file_group::deleteallfiles.
      */
     public function test_deleteallfiles(): void {
         $this->gpempty->deleteallfiles();
@@ -295,7 +294,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::getfilelist
+     * Method to test \mod\util\file_group::getfilelist
      */
     public function test_getfilelist(): void {
         $filelist = [];
@@ -311,7 +310,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::getfilecomment
+     * Method to test \mod\util\file_group::getfilecomment
      */
     public function test_getfilecomment(): void {
         $expected = get_string('file') . ' 4';
@@ -319,11 +318,11 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Helper method to test file_group_process::getfiledata
+     * Helper method to test \mod\util\file_group::getfiledata
      * This method is used to test if the file group can retrieve file data correctly.
      * It checks if the file group can get file data by index and by filename.
      *
-     * @param \file_group_process $fg The file group process instance to test.
+     * @param \mod_vpl\util\file_group $fg The file group process instance to test.
      * @param array $fgdata The expected file data indexed by filename.
      */
     private function internal_test_one_getfiledata($fg, $fgdata): void {
@@ -336,7 +335,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::getfiledata
+     * Method to test \mod\util\file_group::getfiledata
      */
     public function test_getfiledata(): void {
         $this->internal_test_one_getfiledata($this->gponefile, $this->gponefilecontents);
@@ -345,11 +344,11 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Helper method to test file_group_process::is_populated
+     * Helper method to test \mod\util\file_group::is_populated
      * This method is used to test if the file group is populated with files.
      * It checks if the file group has files and if they are added correctly.
      *
-     * @param \file_group_process $fg The file group process instance to test.
+     * @param \mod_vpl\util\file_group $fg The file group process instance to test.
      */
     private function internal_test_one_is_populated($fg): void {
         $fnl = $fg->getfilelist();
@@ -365,7 +364,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::is_populated
+     * Method to test \mod\util\file_group::is_populated
      */
     public function test_is_populated(): void {
         $this->internal_test_one_is_populated($this->gpempty);
@@ -375,7 +374,7 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Method to test file_group_process::getversion
+     * Method to test \mod\util\file_group::getversion
      */
     public function test_getversion(): void {
         $this->assertTrue($this->gpempty->getversion() === 0);
@@ -387,11 +386,11 @@ final class filegroup_test extends \advanced_testcase {
     }
 
     /**
-     * Test one file_group_process::generate_zip_file
-     * @param file_group_process $fgp
+     * Test one \mod\util\file_group::generate_zip_file
+     * @param \mod\util\file_group $fgp
      * @param array $expectedfiles
      */
-    protected function internal_test_generate_zip_file(\file_group_process $fgp, array $expectedfiles) {
+    protected function internal_test_generate_zip_file(\mod_vpl\util\file_group $fgp, array $expectedfiles) {
         $zipfilename = $fgp->generate_zip_file();
         $this->assertTrue($zipfilename !== false);
         $this->assertFileExists($zipfilename);
@@ -407,7 +406,7 @@ final class filegroup_test extends \advanced_testcase {
         $this->assertEquals($expectedfiles, $zipfiles);
     }
     /**
-     * Method to test file_group_process::generate_zip_file
+     * Method to test \mod\util\file_group::generate_zip_file
      */
     public function test_generate_zip_file(): void {
         $this->internal_test_generate_zip_file($this->gpempty, []);

@@ -14,9 +14,9 @@
 // You should have received a copy of the GNU General Public License
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
-defined('MOODLE_INTERNAL') || die();
-
 use mod_vpl\similarity\similarity_base;
+use mod_vpl\tokenizer\token_type;
+use mod_vpl\tokenizer\tokenizer_factory;
 
 /**
  * Ada language similarity class
@@ -49,7 +49,7 @@ class vpl_similarity_ada extends similarity_base {
         $bracketlevel = 0;
         $ret = [];
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::OPERATOR) {
+            if ($token->type == token_type::OPERATOR) {
                 switch ($token->value) {
                     case '[':
                         // Only add ].
@@ -116,6 +116,6 @@ class vpl_similarity_ada extends similarity_base {
      * Returns the tokenizer for the Ada language.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get('ada');
+        return tokenizer_factory::get('ada');
     }
 }

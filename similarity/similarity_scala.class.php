@@ -17,6 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/similarity_c.class.php');
+use mod_vpl\tokenizer\tokenizer_factory;
 
 /**
  * Scala language similarity class
@@ -43,6 +44,6 @@ class vpl_similarity_scala extends vpl_similarity_c {
      * Returns the tokenizer for the Scala language.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get('scala');
+        return tokenizer_factory::get('scala');
     }
 }

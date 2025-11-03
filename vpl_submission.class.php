@@ -38,6 +38,7 @@ global $CFG;
 require_once(dirname(__FILE__) . '/vpl.class.php');
 require_once(dirname(__FILE__) . '/views/sh_factory.class.php');
 require_once($CFG->dirroot . '/grade/grading/lib.php');
+use mod_vpl\util\file_group;
 
 /**
  * Compare two filenames by length
@@ -166,7 +167,7 @@ class mod_vpl_submission {
      */
     public function get_submitted_fgm() {
         if (! $this->submittedfgm) {
-            $this->submittedfgm = new file_group_process($this->get_submission_directory());
+            $this->submittedfgm = new file_group($this->get_submission_directory());
         }
         return $this->submittedfgm;
     }

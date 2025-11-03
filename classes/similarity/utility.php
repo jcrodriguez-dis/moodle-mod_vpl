@@ -22,14 +22,7 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-
 namespace mod_vpl\similarity;
-
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/similarity/tokenizer_factory.class.php');
-require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_sources.class.php');
 
 /**
  * Utility class to get list of preprocessed files

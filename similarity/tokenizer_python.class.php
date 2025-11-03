@@ -17,6 +17,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 require_once(dirname(__FILE__) . '/tokenizer_c.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * Python programing language tokenizer class
@@ -61,18 +63,18 @@ class vpl_tokenizer_python extends vpl_tokenizer_c {
         }
         if ($this->is_indentifier($pending)) {
             if (isset($this->reserved[$pending])) {
-                $type = vpl_token_type::RESERVED;
+                $type = token_type::RESERVED;
             } else {
-                $type = vpl_token_type::IDENTIFIER;
+                $type = token_type::IDENTIFIER;
             }
         } else {
             if ($this->is_number($pending) || $this->is_text($pending)) {
-                $type = vpl_token_type::LITERAL;
+                $type = token_type::LITERAL;
             } else {
-                $type = vpl_token_type::OPERATOR;
+                $type = token_type::OPERATOR;
             }
         }
-        $this->tokens[] = new vpl_token($type, $pending, $this->linenumber);
+        $this->tokens[] = new token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
