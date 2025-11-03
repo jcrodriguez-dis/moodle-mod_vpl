@@ -24,13 +24,7 @@
  */
 namespace mod_vpl;
 
-defined('MOODLE_INTERNAL') || die();
-
-global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/similarity/tokenizer_factory.class.php');
-
 use Exception;
-
 use mod_vpl\util\assertf;
 use mod_vpl\tokenizer\tokenizer_factory;
 use mod_vpl\tests\tokenizer_similarity_utils;
