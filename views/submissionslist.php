@@ -610,6 +610,9 @@ $usernumber = 0;
 $gradersdata = []; // Number of revisions made by teacher.
 $nextids = []; // Information to get next user in list.
 $lastid = 0; // Last id for next.
+// Counters for submissions and graded status.
+$nsubmissions = 0;
+$ngraded = 0;
 foreach ($alldata as $data) {
     $actions = new action_menu();
     if ($vpl->is_group_activity()) {
@@ -638,6 +641,7 @@ foreach ($alldata as $data) {
         $grader = '';
         $gradedon = '';
     } else {
+        $nsubmissions++;
         $submission = $data->submission;
         $subinstance = $submission->get_instance();
         $hrefview = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1);
@@ -659,6 +663,7 @@ foreach ($alldata as $data) {
             $evaluateusers[] = $user;
         }
         if ($subinstance->dategraded > 0) {
+            $ngraded++;
             $text = $submission->get_grade_core();
             // Add proposed grade diff.
             $result = $submission->getCE();
@@ -777,12 +782,10 @@ foreach ($alldata as $data) {
 }
 
 if (! $downloading) {
-    // Menu for groups.
-    $nstudets = count($allstudents);
-    $nsubmissions = count($submissions);
-    $ngraded = $vpl->number_of_graded_submissions($submissions);
-    $vpl->print_submissions_status();
+    $nstudents = count($alldata);
+    $vpl->print_submissions_status($nstudents, $nsubmissions, $ngraded);
     echo '<div class="d-flex flex-row flex-wrap justify-content-between">';
+    // Print groups menu.
     if ($groupmode && ! $vpl->is_group_activity()) {
         groups_print_activity_menu($cm, $groupsurl);
     }
@@ -814,6 +817,7 @@ if (! $downloading) {
             3 => $urlbase . '3',
             4 => $urlbase . '4',
     ];
+    // Print evaluation selection.
     $urlsel = new url_select([
             $urls[2] => get_string('notexecuted', VPL),
             $urls[3] => get_string('notgraded', VPL),
