@@ -28,7 +28,7 @@ defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-use core\output\actions\popup_action;
+use popup_action;
 
 /**
  * Class to hold a pair of files and their similarity metrics.
