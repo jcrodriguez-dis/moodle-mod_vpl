@@ -935,15 +935,9 @@ class mod_vpl_submission {
                 ]);
             if ($user) {
                 $userinfo = $OUTPUT->user_picture($user) . ' '  . fullname($user);
-                echo get_string('submittedby', VPL, $userinfo);
+                echo get_string('submittedby', VPL, $userinfo) . '<br>';
             }
             $users = $this->vpl->get_group_members($this->instance->groupid);
-            foreach ($users as $u) {
-                if ($u->id != $userid) {
-                    echo '<br>';
-                    break;
-                }
-            }
             $needbr = false;
             foreach ($users as $u) {
                 if ($u->id != $userid) {
