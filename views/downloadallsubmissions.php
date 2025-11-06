@@ -60,18 +60,18 @@ function vpl_user_zip_dirname($name) {
  * Adds new files to the zip file.
  * Returns bytes archived
  *
- * @param ZipArchive         $zip        Object that represents a zip file.
- * @param string             $sourcedir  Source directory name
- * @param string             $zipdirname Zip directory name
- * @param file_group_process $fgm        Object that manages group of files
- * @param string             $ziperrors  Output message if error
+ * @param ZipArchive $zip        Object that represents a zip file.
+ * @param string     $sourcedir  Source directory name
+ * @param string     $zipdirname Zip directory name
+ * @param file_group $fgm        Object that manages group of files
+ * @param string     $ziperrors  Output message if error
  *
  * @return int Bytes archived
  */
 function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {
     $total = 0;
     foreach ($fgm->getFileList() as $filename) {
-        $source = file_group_process::encodeFileName($filename);
+        $source = file_group::encodeFileName($filename);
         $filepathorigen = $sourcedir . $source;
         $filepathtarget = $zipdirname . $filename;
         if (! file_exists($filepathorigen)) {
