@@ -1,6 +1,7 @@
 ## GIOTES MANUAL
 
-GIOTES stands for General Input/Output Test Evaluation System.
+**GIOTES** (General Input/Output Test Evaluation System) is an evaluator subplugin for **VPL** designed to replace **BIOTES**, the default evaluator.
+This system allows teachers to automatically assess students’ programs by defining test cases that specify the program’s input and the expected output.
 
 ### ❓ What is GIOTES?
 

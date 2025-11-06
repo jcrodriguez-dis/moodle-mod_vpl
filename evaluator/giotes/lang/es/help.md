@@ -1,6 +1,7 @@
 ## MANUAL DE GIOTES
 
-GIOTES significa Sistema General de Evaluación de Pruebas de Entrada/Salida.
+**GIOTES** (General Input/Output Test Evaluation System) es un subplugin evaluador para **VPL** diseñado para reemplazar a **BIOTES**, el evaluador predeterminado.
+Este sistema permite a los docentes evaluar automáticamente los programas de los estudiantes definiendo casos de prueba que especifican la entrada del programa y la salida esperada.
 
 ### ❓ ¿Qué es GIOTES?
 
