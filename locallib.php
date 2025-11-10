@@ -643,6 +643,18 @@ function vpl_is_image($filename) {
 }
 
 /**
+ * Get if filename has audio extension
+ *
+ * @param string $filename
+ * @return boolean
+ * @codeCoverageIgnore
+ */
+function vpl_is_audio($filename) {
+    $audioext = 'wav|aiff|pcm|mp3|aac|ogg|wma|m4a|flac|alac|ape|wv|amr';
+    return preg_match('/^(' . $audioext . ')$/i', vpl_fileextension($filename)) == 1;
+}
+
+/**
  * Get if filename has binary extension or binary data
  *
  * @param string $filename
@@ -651,7 +663,7 @@ function vpl_is_image($filename) {
  * @codeCoverageIgnore
  */
 function vpl_is_binary($filename, &$data = false) {
-    if (vpl_is_image($filename)) {
+    if (vpl_is_image($filename) || vpl_is_audio($filename)) {
         return true;
     }
     $fileext = 'zip|jar|pdf|tar|bin|7z|arj|deb|gzip|';
