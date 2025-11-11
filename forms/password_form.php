@@ -23,11 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
+defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class to define the password form for VPL
@@ -45,9 +45,9 @@ class mod_vpl_password_form extends moodleform {
      * @param moodle_page $page The page where the form will be displayed.
      * @param mod_vpl $vpl The VPL instance.
      */
-    public function __construct($page, & $vpl) {
+    public function __construct($page, &$vpl) {
         $this->vpl = & $vpl;
-        parent::__construct( $page );
+        parent::__construct($page);
     }
 
     /**
@@ -55,9 +55,9 @@ class mod_vpl_password_form extends moodleform {
      */
     protected function definition() {
         $mform = & $this->_form;
-        $mform->addElement( 'header', 'headerpassword', get_string( 'requiredpassword', VPL ) );
-        $mform->addElement( 'hidden', 'id', required_param( 'id', PARAM_INT ) );
-        $mform->setType( 'id', PARAM_INT );
+        $mform->addElement('header', 'headerpassword', get_string('requiredpassword', VPL));
+        $mform->addElement('hidden', 'id', required_param('id', PARAM_INT));
+        $mform->setType('id', PARAM_INT);
         $parms = [
                 'userid',
                 'submissionid',
@@ -66,15 +66,15 @@ class mod_vpl_password_form extends moodleform {
                 'privatecopy',
         ];
         foreach ($parms as $parm) {
-            $value = optional_param( $parm, - 1, PARAM_INT );
+            $value = optional_param($parm, - 1, PARAM_INT);
             if ($value >= 0) {
-                $mform->addElement( 'hidden', $parm, $value );
-                $mform->setType( $parm, PARAM_INT );
+                $mform->addElement('hidden', $parm, $value);
+                $mform->setType($parm, PARAM_INT);
             }
         }
-        $mform->addElement( 'passwordunmask', 'password', get_string( 'password' ) );
-        $mform->setType( 'password', PARAM_TEXT );
-        $mform->setDefault( 'password', '' );
+        $mform->addElement('passwordunmask', 'password', get_string('password'));
+        $mform->setType('password', PARAM_TEXT);
+        $mform->setDefault('password', '');
         $this->add_action_buttons(false, get_string('continue'));
     }
 }

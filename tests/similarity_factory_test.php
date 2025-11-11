@@ -27,11 +27,12 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/similarity/similarity_factory.class.php');
 
 use mod_vpl\similarity\similarity_factory;
 use vpl_similarity_factory;
+use mod_vpl\tests\testable_similarity_factory;
+
 
 /**
  * Unit tests for \mod_vpl\similarity\similarity_factory class.
@@ -141,7 +142,7 @@ final class similarity_factory_test extends \advanced_testcase {
      * @param string $namelang The name of the language for the similarity class
      * @param int|null $similaritytype If not null, checks for specific similarity type
      */
-    private function check_similarity($similarityclass, $namelang, $similaritytype=null) {
+    private function check_similarity($similarityclass, $namelang, $similaritytype = null) {
         $this->assertTrue(isset($similarityclass) === true);
 
         $similarityclasses = [

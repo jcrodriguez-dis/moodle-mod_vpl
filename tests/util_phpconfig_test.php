@@ -27,7 +27,7 @@ namespace mod_vpl;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../locallib.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
 
 /**
  * Unit tests for the \mod_vpl\util\phpconfig class.
@@ -48,9 +48,8 @@ final class util_phpconfig_test extends \advanced_testcase {
             [1024 * 1024 * 1024, '  1G'],
         ];
         foreach ($cases as $case) {
-            $this->assertEquals( $case[0], \mod_vpl\util\phpconfig::get_bytes($case[1]), $case[1]);
+            $this->assertEquals($case[0], \mod_vpl\util\phpconfig::get_bytes($case[1]), $case[1]);
         }
-
     }
     /**
      * Method to test function get_post_max_size(): int
@@ -65,7 +64,7 @@ final class util_phpconfig_test extends \advanced_testcase {
             [1024 * 1024 * 1024, '  1G'],
         ];
         foreach ($cases as $case) {
-            $this->assertEquals( $case[0], \mod_vpl\util\phpconfig::get_post_max_size_internal($case[1]), $case[1]);
+            $this->assertEquals($case[0], \mod_vpl\util\phpconfig::get_post_max_size_internal($case[1]), $case[1]);
         }
         if (PHP_INT_SIZE == 4) {
             $this->assertEquals(PHP_INT_MAX, \mod_vpl\util\phpconfig::get_post_max_size_internal('  1999999 G'));
@@ -86,6 +85,6 @@ final class util_phpconfig_test extends \advanced_testcase {
         \mod_vpl\util\phpconfig::increase_memory_limit();
         $memorylimit = \mod_vpl\util\phpconfig::get_bytes(ini_get('memory_limit'));
         $memoryused = memory_get_usage();
-        $this->assertTrue($maxpost * 3 <= max($memorylimit, $memoryused) );
+        $this->assertTrue($maxpost * 3 <= max($memorylimit, $memoryused));
     }
 }

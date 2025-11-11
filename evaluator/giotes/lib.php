@@ -25,7 +25,6 @@ namespace mod_vpl\evaluator;
  * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 class giotes extends \mod_vpl\plugininfo\vplevaluator_base {
-
     /**
      * Files to add to the execution files.
      * Commonly include at least the file 'vpl_evaluate.sh'

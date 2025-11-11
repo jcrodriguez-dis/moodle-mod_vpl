@@ -35,7 +35,6 @@ use mod_vpl\util\assertf;
  * @codeCoverageIgnore
  */
 class tokenizer_factory {
-
     /**
      * @var array $tkloaded Array of loaded tokenizers
      * This is used to avoid loading the same tokenizer multiple times.
@@ -49,7 +48,7 @@ class tokenizer_factory {
      * @param bool $newtokenizer Use new tokenizer by default
      * @return ?tokenizer|?vpl_tokenizer
      */
-    public static function get(string $namelang, bool $newtokenizer=true) {
+    public static function get(string $namelang, bool $newtokenizer = true) {
         if ($newtokenizer) { // Get required type (new/old).
             $tokenizer = self::get_object($namelang);
         } else {

@@ -34,7 +34,6 @@ use mod_vpl\tokenizer\token;
  * @codeCoverageIgnore
  */
 abstract class similarity_base {
-
     /**
      * @var object $from Source of the content to parse.
      * This is used to store the origin of the content, such as a file or a directory.
@@ -86,7 +85,7 @@ abstract class similarity_base {
     /**
      * @var array $valueconverter Array to convert string operators to numbers.
      */
-    static protected $valueconverter = [];
+    protected static $valueconverter = [];
 
     /**
      * Get value id for a given value.
@@ -139,7 +138,6 @@ abstract class similarity_base {
      * @param array $tokens tokens to normalize
      */
     public function sintax_normalize(&$tokens) {
-
     }
 
     /**
@@ -184,14 +182,14 @@ abstract class similarity_base {
         foreach ($tokens as $token) {
             if ($token->type == token_type::OPERATOR) {
                 // Calculate hashes table.
-                for ($i = 0; $i < self::HASH_SIZE - 1; $i ++) {
+                for ($i = 0; $i < self::HASH_SIZE - 1; $i++) {
                     $last[$i] = $last[$i + 1];
                 }
 
                 $last[self::HASH_SIZE - 1] = $token->value;
                 $item = '';
 
-                for ($i = 0; $i < self::HASH_SIZE; $i ++) {
+                for ($i = 0; $i < self::HASH_SIZE; $i++) {
                     $item .= $last[$i];
                 }
 
@@ -203,13 +201,13 @@ abstract class similarity_base {
                     $this->hashes[$hash] = 1;
                 }
 
-                $this->sizeh ++;
+                $this->sizeh++;
 
                 // Get operator id.
                 $vid = self::get_value_id($token->value);
 
                 if (isset($this->vecfrec[$vid])) {
-                    $this->vecfrec[$vid] ++;
+                    $this->vecfrec[$vid]++;
                 } else {
                     $this->vecfrec[$vid] = 1;
                 }
@@ -220,13 +218,13 @@ abstract class similarity_base {
 
         if ($toremove != null) {
             foreach ($toremove->vecfrec as $id => $frec) {
-                if (isset( $this->vecfrec[$id] )) {
+                if (isset($this->vecfrec[$id])) {
                     $this->vecfrec[$id] = $this->vecfrec[$id] > $frec ? $this->vecfrec[$id] - $frec : 0;
                 }
             }
 
             foreach ($toremove->hashes as $id => $frec) {
-                if (isset( $this->hashes[$id] )) {
+                if (isset($this->hashes[$id])) {
                     $this->hashes[$id] = $this->hashes[$id] > $frec ? $this->hashes[$id] - $frec : 0;
                 }
             }

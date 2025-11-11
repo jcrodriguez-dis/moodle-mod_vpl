@@ -23,18 +23,18 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname( __FILE__ ) . '/../../../config.php');
-require_once(dirname( __FILE__ ) . '/../locallib.php');
-require_once(dirname( __FILE__ ) . '/../vpl.class.php');
-require_once(dirname( __FILE__ ) . '/../editor/editor_utility.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../editor/editor_utility.php');
 
 require_login();
-$id = required_param( 'id', PARAM_INT );
+$id = required_param('id', PARAM_INT);
 
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionfiles.php', [ 'id' => $id ] );
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('forms/executionfiles.php', [ 'id' => $id ]);
 
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
 $fgp = $vpl->get_required_fgm();
 
 $options = [];
@@ -56,10 +56,10 @@ $options['readOnlyFiles'] = [];
 
 vpl_editor_util::generate_requires($vpl, $options);
 
-$vpl->print_header( get_string( 'executionfiles', VPL ) );
-$vpl->print_heading_with_help( 'executionfiles' );
+$vpl->print_header(get_string('executionfiles', VPL));
+$vpl->print_heading_with_help('executionfiles');
 
-\mod_vpl\plugininfo\vplevaluator::print_evaluator_help($vpl);
+echo \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help_link($vpl);
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $USER->id);

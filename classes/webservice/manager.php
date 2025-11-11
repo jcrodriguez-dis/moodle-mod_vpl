@@ -37,7 +37,6 @@ use webservice, moodle_url, html_writer;
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class manager {
-
     /**
      * @var int LOCAL scope for the webservice.
      */
@@ -105,23 +104,23 @@ class manager {
         if (!self::service_is_available()) {
             return '';
         }
-        $tokenrecord = $DB->get_record( 'external_tokens', [
+        $tokenrecord = $DB->get_record('external_tokens', [
                 'userid' => $USER->id,
                 'externalserviceid' => self::get_service()->id,
                 'tokentype' => EXTERNAL_TOKEN_PERMANENT,
-        ] );
-        if (! empty( $tokenrecord ) && $tokenrecord->validuntil > 0 && $tokenrecord->validuntil < $now) {
-            unset( $tokenrecord ); // Will be deleted before creating a new one.
+        ]);
+        if (! empty($tokenrecord) && $tokenrecord->validuntil > 0 && $tokenrecord->validuntil < $now) {
+            unset($tokenrecord); // Will be deleted before creating a new one.
         }
-        if (empty( $tokenrecord )) {
+        if (empty($tokenrecord)) {
             $webservice = new webservice();
             $webservice->generate_user_ws_tokens($USER->id);
-            $tokenrecord = $DB->get_record( 'external_tokens', [
+            $tokenrecord = $DB->get_record('external_tokens', [
                     'userid' => $USER->id,
                     'externalserviceid' => self::get_service()->id,
                     'tokentype' => EXTERNAL_TOKEN_PERMANENT,
-            ] );
-            if (empty( $tokenrecord )) {
+            ]);
+            if (empty($tokenrecord)) {
                 return '';
             }
         }
@@ -143,13 +142,13 @@ class manager {
         }
         // If such a token already exists and is still valid, use it.
         $contextid = $this->vpl->get_context()->id;
-        $tokens = $DB->get_records( 'external_tokens', [
+        $tokens = $DB->get_records('external_tokens', [
                 'tokentype' => EXTERNAL_TOKEN_EMBEDDED,
                 'userid' => $userid,
                 'externalserviceid' => self::get_service()->id,
                 'sid' => session_id(),
                 'contextid' => $contextid,
-        ] );
+        ]);
         foreach ($tokens as $token) {
             if ($token->validuntil == 0 || $token->validuntil > time()) {
                 return $token->token;

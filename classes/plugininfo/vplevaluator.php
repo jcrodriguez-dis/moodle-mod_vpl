@@ -137,23 +137,49 @@ class vplevaluator extends base {
     }
 
     /**
-     * Print evaluator plugin information.
-     * @param $vpl mod_vpl instance of the vpl activity.
-     * @param $showlink whether to show the help link or the help text.
-     * @return void
+     * Get printable evaluator plugin information.
+     * @param \mod_vpl $vpl instance of the vpl activity.
+     * @param string $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
+     * @return string HTML formatted string
      */
-    public static function print_evaluator_help($vpl, $showlink = true): void {
+    public static function get_printable_evaluator_help($vpl, $evaluatorname = ''): string {
         global $OUTPUT;
-        $evaluatorname = $vpl->get_effective_setting('evaluator');
         if (empty($evaluatorname)) {
-            return;
+            $evaluatorname = $vpl->get_effective_setting('evaluator');
         }
-        $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+        if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
+            return '';
+        }
         try {
             $evaluator = self::get_evaluator($evaluatorname);
-            $evaluator->print_help($vpl, $showlink);
+            return $evaluator->get_printable_help($vpl, $showlink);
         } catch (\Exception $e) {
-            echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
         }
+        return '';
+    }
+
+    /**
+     * Get printable evaluator plugin information.
+     * @param \mod_vpl $vpl instance of the vpl activity.
+     * @param string $evaluatorname name of the evaluator name '' for effective evaluator from $vpl.
+     * @param bool $ifhelp if true return '' if no help available
+     * @return string HTML formatted string
+     */
+    public static function get_printable_evaluator_help_link($vpl, $evaluatorname = '', $ifhelp = false): string {
+        global $OUTPUT;
+        if (empty($evaluatorname)) {
+            $evaluatorname = $vpl->get_effective_setting('evaluator');
+        }
+        if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
+            return '';
+        }
+        try {
+            $evaluator = self::get_evaluator($evaluatorname);
+            return $evaluator->get_printable_help_link($vpl, $ifhelp);
+        } catch (\Exception $e) {
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+        }
+        return '';
     }
 }

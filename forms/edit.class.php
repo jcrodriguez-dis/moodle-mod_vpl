@@ -23,11 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
-require_once(dirname(__FILE__).'/../vpl_example_CE.class.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__) . '/../vpl_example_CE.class.php');
 
 /**
  * Class to manage edition/execution operations
@@ -44,11 +44,11 @@ class mod_vpl_edit {
      * @param array $postfiles atributes encoding, name and contents
      * @return array contents indexed by filenames
      */
-    public static function filesfromide(& $postfiles) {
+    public static function filesfromide(&$postfiles) {
         $files = [];
         foreach ($postfiles as $file) {
-            if ( $file->encoding == 1 ) {
-                $files[$file->name] = base64_decode( $file->contents );
+            if ($file->encoding == 1) {
+                $files[$file->name] = base64_decode($file->contents);
             } else {
                 $files[$file->name] = $file->contents;
             }
@@ -62,13 +62,13 @@ class mod_vpl_edit {
      * @param string[string] $from contents indexed by filenames
      * @return array of stdClass
      */
-    public static function filestoide(& $from) {
+    public static function filestoide(&$from) {
         $files = [];
         foreach ($from as $name => $data) {
             $file = new stdClass();
             $file->name = $name;
-            if ( vpl_is_binary($name, $data) ) {
-                $file->contents = base64_encode( $data );
+            if (vpl_is_binary($name, $data)) {
+                $file->contents = base64_encode($data);
                 $file->encoding = 1;
             } else {
                 $file->contents = $data;
@@ -84,7 +84,7 @@ class mod_vpl_edit {
      * @param string[string] $arrayfiles files internal format
      * @return string[][]
      */
-    public static function files2object(& $arrayfiles) {
+    public static function files2object(&$arrayfiles) {
         $files = [];
         foreach ($arrayfiles as $name => $data) {
             $file = [
@@ -107,13 +107,13 @@ class mod_vpl_edit {
      * @throws Exception
      * @return int saved record id
      */
-    public static function save(mod_vpl $vpl, int $userid, array & $files, string $comments='', int $version = -1) {
+    public static function save(mod_vpl $vpl, int $userid, array &$files, string $comments = '', int $version = -1) {
         global $USER;
         $response = new stdClass();
         $response->requestsconfirmation = false;
         $response->saved = false;
         if ($version != -1) {
-            $lastsub = $vpl->last_user_submission( $userid );
+            $lastsub = $vpl->last_user_submission($userid);
             if ($lastsub && $lastsub->id != $version) {
                 $response->requestsconfirmation = true;
                 $response->question = get_string('replacenewer', VPL);
@@ -128,17 +128,17 @@ class mod_vpl_edit {
             }
         }
         $errormessage = '';
-        if ($subid = $vpl->add_submission( $userid, $files, $comments, $errormessage )) {
-            \mod_vpl\event\submission_uploaded::log( [
+        if ($subid = $vpl->add_submission($userid, $files, $comments, $errormessage)) {
+            \mod_vpl\event\submission_uploaded::log([
                     'objectid' => $subid,
                     'context' => $vpl->get_context(),
                     'relateduserid' => ($USER->id != $userid ? $userid : null),
-            ] );
+            ]);
             $response->version = $subid;
             $response->saved = true;
             return $response;
         } else {
-            throw new Exception( get_string( 'notsaved', VPL ) . ': ' . $errormessage );
+            throw new Exception(get_string('notsaved', VPL) . ': ' . $errormessage);
         }
     }
     /**
@@ -152,7 +152,7 @@ class mod_vpl_edit {
      * @throws Exception
      * @return boolean True if updated
      */
-    public static function update(mod_vpl $vpl, int $userid, int $processid, array & $files, $filestodelete = []) {
+    public static function update(mod_vpl $vpl, int $userid, int $processid, array &$files, $filestodelete = []) {
         return mod_vpl_submission_CE::update($vpl, $userid, $processid, $files, $filestodelete);
     }
 
@@ -174,17 +174,17 @@ class mod_vpl_edit {
      * @param Object $compilationexecution
      * @return string[string]
      */
-    public static function get_submitted_files($vpl, $userid, & $compilationexecution) {
+    public static function get_submitted_files($vpl, $userid, &$compilationexecution) {
         $compilationexecution = false;
-        $lastsub = $vpl->last_user_submission( $userid );
+        $lastsub = $vpl->last_user_submission($userid);
         if ($lastsub) {
-            $submission = new mod_vpl_submission( $vpl, $lastsub );
+            $submission = new mod_vpl_submission($vpl, $lastsub);
             $fgp = $submission->get_submitted_fgm();
             $files = $fgp->getallfiles();
             $compilationexecution = $submission->get_CE_for_editor();
             $compilationexecution->comments = $submission->get_instance()->comments;
         } else {
-            $files = self::get_requested_files( $vpl );
+            $files = self::get_requested_files($vpl);
             $compilationexecution = new stdClass();
             $compilationexecution->comments = '';
             $compilationexecution->nevaluations = 0;
@@ -208,22 +208,22 @@ class mod_vpl_edit {
         $response->comments = '';
         $response->compilationexecution = false;
         $vplinstance = $vpl->get_instance();
-        if ( $submissionid !== false ) {
+        if ($submissionid !== false) {
             // Security checks.
             $parms = ['id' => $submissionid, 'vpl' => $vplinstance->id];
-            $vpl->require_capability( VPL_GRADE_CAPABILITY );
+            $vpl->require_capability(VPL_GRADE_CAPABILITY);
             $res = $DB->get_records('vpl_submissions', $parms);
-            if ( count($res) == 1 ) {
+            if (count($res) == 1) {
                  $subreg = $res[$submissionid];
             } else {
                  $subreg = false;
             }
         } else {
-            $subreg = $vpl->last_user_submission( $userid );
+            $subreg = $vpl->last_user_submission($userid);
         }
-        $response->files = self::get_requested_files( $vpl );
+        $response->files = self::get_requested_files($vpl);
         if ($subreg) {
-            $submission = new mod_vpl_submission( $vpl, $subreg );
+            $submission = new mod_vpl_submission($vpl, $subreg);
             $fgp = $submission->get_submitted_fgm();
             $response->version = $subreg->id;
             $response->comments = $subreg->comments;
@@ -254,19 +254,19 @@ class mod_vpl_edit {
         $example = $vpl->get_instance()->example;
         $lastsub = $vpl->last_user_submission($userid);
         if (! $lastsub && ! $example && $action != 'test_evaluate') {
-            throw new Exception( get_string( 'nosubmission', VPL ) );
+            throw new Exception(get_string('nosubmission', VPL));
         }
         if ($example || ! $lastsub) {
-            $submission = new mod_vpl_example_CE( $vpl );
+            $submission = new mod_vpl_example_CE($vpl);
         } else {
-            $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
         }
         $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
         $traslate = ['run' => 'run', 'debug' => 'debugged',
                      'evaluate' => 'evaluated', 'test_evaluate' => 'evaluated', ];
         $eventclass = '\mod_vpl\event\submission_' . $traslate[$action];
-        $eventclass::log( $submission );
-        return $submission->run( $code[$action], $options );
+        $eventclass::log($submission);
+        return $submission->run($code[$action], $options);
     }
 
     /**
@@ -281,12 +281,12 @@ class mod_vpl_edit {
         if ($processid == -1) { // To keep previous behaviour.
             $processinfo = vpl_running_processes::get_run($userid, $vpl->get_instance()->id);
             if ($processinfo == false) { // No process to cancel.
-                throw new Exception( get_string('serverexecutionerror', VPL) . ' No process to cancel');
+                throw new Exception(get_string('serverexecutionerror', VPL) . ' No process to cancel');
             } else {
                 $processid = $processinfo->id;
             }
         }
-        $lastsub = $vpl->last_user_submission( $userid );
+        $lastsub = $vpl->last_user_submission($userid);
         if (! $lastsub) {
             $submission = new mod_vpl_example_CE($vpl);
         } else {
@@ -304,12 +304,12 @@ class mod_vpl_edit {
      */
     public static function cancel($vpl, $userid, int $processid) {
         $example = $vpl->get_instance()->example;
-        $lastsub = $vpl->last_user_submission( $userid );
+        $lastsub = $vpl->last_user_submission($userid);
         try {
             if ($example || ! $lastsub) {
-                $submission = new mod_vpl_example_CE( $vpl );
+                $submission = new mod_vpl_example_CE($vpl);
             } else {
-                $submission = new mod_vpl_submission_CE( $vpl, $lastsub );
+                $submission = new mod_vpl_submission_CE($vpl, $lastsub);
             }
             $submission->cancelProcess($processid);
         } catch (\Throwable $e) {
@@ -330,11 +330,11 @@ class mod_vpl_edit {
                 $data = new \stdClass();
                 $data->adminticket = $process->adminticket;
                 $request = vpl_jailserver_manager::get_action_request('stop', $data);
-                vpl_jailserver_manager::get_response( $data->server, $request, $error );
+                vpl_jailserver_manager::get_response($data->server, $request, $error);
             } catch (\Throwable $e) {
-                debugging( "Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER );
+                debugging("Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER);
             }
-            vpl_running_processes::delete( $userid, $vplid, $process->adminticket);
+            vpl_running_processes::delete($userid, $vplid, $process->adminticket);
         }
     }
 
@@ -355,14 +355,14 @@ class mod_vpl_edit {
         $maxmemory = 2000 * 1000 * 1000;
         $localservers = $vpl->get_instance()->jailservers;
         $error = '';
-        $server = vpl_jailserver_manager::get_server( $maxmemory, $localservers, $error );
+        $server = vpl_jailserver_manager::get_server($maxmemory, $localservers, $error);
         if ($server == '') {
-            $manager = $vpl->has_capability( VPL_MANAGE_CAPABILITY );
-            $men = get_string( 'nojailavailable', VPL );
+            $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+            $men = get_string('nojailavailable', VPL);
             if ($manager) {
                 $men .= ": " . $error;
             }
-            throw new Exception( $men );
+            throw new Exception($men);
         }
         $data = new stdClass();
         mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
@@ -378,7 +378,7 @@ DIRECTRUNCODE;
         $data->fileencoding[$executefilename] = 0;
         $data->execute = $executefilename;
         $plugin = new stdClass();
-        require(dirname( __FILE__ ) . '/../version.php');
+        require(dirname(__FILE__) . '/../version.php');
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
         $data->interactive = 1;
@@ -389,15 +389,15 @@ DIRECTRUNCODE;
         $data->maxprocesses = 10000;
         $request = vpl_jailserver_manager::get_action_request('directrun', $data);
         $error = '';
-        $jailresponse = vpl_jailserver_manager::get_response( $server, $request, $error );
+        $jailresponse = vpl_jailserver_manager::get_response($server, $request, $error);
         if ($jailresponse === false) {
-            $manager = $vpl->has_capability( VPL_MANAGE_CAPABILITY );
+            $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             if ($manager) {
-                throw new Exception( get_string( 'serverexecutionerror', VPL ) . "\n" . $error . ' ' . $server . ' ' . $request );
+                throw new Exception(get_string('serverexecutionerror', VPL) . "\n" . $error . ' ' . $server . ' ' . $request);
             }
-            throw new Exception( get_string( 'serverexecutionerror', VPL ) );
+            throw new Exception(get_string('serverexecutionerror', VPL));
         }
-        $parsed = parse_url( $server );
+        $parsed = parse_url($server);
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
@@ -413,7 +413,7 @@ DIRECTRUNCODE;
         $process->adminticket = $jailresponse['adminticket'];
         $process->server = $server;
         $process->type = 4;
-        $response->processid = vpl_running_processes::set( $process );
+        $response->processid = vpl_running_processes::set($process);
         return $response;
     }
 }

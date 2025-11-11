@@ -27,7 +27,7 @@
 
 require_once(__DIR__ . '/../../../../lib/behat/behat_base.php');
 
-use Behat\Mink\Exception\ExpectationException as ExpectationException;
+use Behat\Mink\Exception\ExpectationException;
 
 /**
  * VPL activity definitions.
@@ -38,7 +38,6 @@ use Behat\Mink\Exception\ExpectationException as ExpectationException;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class behat_mod_vpl extends behat_base {
-
     /**
      * Click on any element
      *
@@ -72,7 +71,7 @@ class behat_mod_vpl extends behat_base {
      * @return string
      */
     protected function generate_drop_file($filename, $contents, $target) {
-        $ext = pathinfo( $filename, PATHINFO_EXTENSION );
+        $ext = pathinfo($filename, PATHINFO_EXTENSION);
         $binarytypes = ['application/zip' => 'zip',
                             'application/pdf' => 'pdf',
                             'image/png' => 'png',
@@ -80,7 +79,7 @@ class behat_mod_vpl extends behat_base {
                          ];
         $type = array_search($ext, $binarytypes);
         $script = "(function() {";
-        if ( $type === false ) {
+        if ($type === false) {
             $type = 'plain/text';
             $contentsesc = addcslashes($contents, "\\\"'\r\n\t\f");
             // Testing framework does not accept heredoc syntax.
@@ -148,13 +147,17 @@ class behat_mod_vpl extends behat_base {
         $files = preg_split("/[|]/", $filenames);
         foreach ($files as $filename) {
             if ($filename == '') {
-                throw new ExpectationException('Bad format for file names "' . $filenames. '"',
-                    $this->getSession());
+                throw new ExpectationException(
+                    'Bad format for file names "' . $filenames . '"',
+                    $this->getSession()
+                );
             }
-            $contents = file_get_contents(__DIR__ ."/datafiles/" . $filename);
+            $contents = file_get_contents(__DIR__ . "/datafiles/" . $filename);
             if ($contents === false) {
-                throw new ExpectationException('The file "' . $filename. '" cannot be read',
-                    $this->getSession());
+                throw new ExpectationException(
+                    'The file "' . $filename . '" cannot be read',
+                    $this->getSession()
+                );
             }
             $scriptfile = $this->generate_drop_file($filename, $contents, 'file');
             $script .= "$scriptfile; filelist.push(file);";

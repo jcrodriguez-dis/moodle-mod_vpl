@@ -24,57 +24,57 @@
  */
 
 require_once(__DIR__ . '/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission.class.php');
-require_once(dirname(__FILE__).'/../views/sh_factory.class.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
+require_once(dirname(__FILE__) . '/../views/sh_factory.class.php');
 
 global $DB, $USER, $PAGE;
 
 require_login();
-$id = required_param( 'id', PARAM_INT );
-$userid = optional_param( 'userid', false, PARAM_INT );
+$id = required_param('id', PARAM_INT);
+$userid = optional_param('userid', false, PARAM_INT);
 
-$vpl = new mod_vpl( $id );
+$vpl = new mod_vpl($id);
 if ($userid) {
-    $vpl->prepare_page( 'forms/submissionview.php', [
+    $vpl->prepare_page('forms/submissionview.php', [
             'id' => $id,
             'userid' => $userid,
-    ] );
+    ]);
 } else {
-    $vpl->prepare_page( 'forms/submissionview.php', [
+    $vpl->prepare_page('forms/submissionview.php', [
             'id' => $id,
-    ] );
+    ]);
 }
 if (! $vpl->is_visible()) {
-    \mod_vpl\event\vpl_security::log( $vpl );
-    vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
+    \mod_vpl\event\vpl_security::log($vpl);
+    vpl_redirect('?id=' . $id, get_string('notavailable'));
 }
 
-$submissionid = optional_param( 'submissionid', false, PARAM_INT );
+$submissionid = optional_param('submissionid', false, PARAM_INT);
 // Read records.
 if ($userid && $userid != $USER->id) {
     // Grader.
-    $vpl->require_capability( VPL_GRADE_CAPABILITY );
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
     if ($submissionid) {
-        $subinstance = $DB->get_record( 'vpl_submissions', [
+        $subinstance = $DB->get_record('vpl_submissions', [
             'id' => $submissionid,
             'vpl' => $vpl->get_instance()->id,
-        ] );
+        ]);
     } else {
-        $subinstance = $vpl->last_user_submission( $userid );
+        $subinstance = $vpl->last_user_submission($userid);
     }
 } else {
     // View own submission.
-    $vpl->require_capability( VPL_VIEW_CAPABILITY );
+    $vpl->require_capability(VPL_VIEW_CAPABILITY);
     $userid = $USER->id;
-    if ($submissionid && $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
-        $subinstance = $DB->get_record( 'vpl_submissions', [
+    if ($submissionid && $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+        $subinstance = $DB->get_record('vpl_submissions', [
             'id' => $submissionid,
             'vpl' => $vpl->get_instance()->id,
-        ] );
+        ]);
     } else {
-        $subinstance = $vpl->last_user_submission( $userid );
+        $subinstance = $vpl->last_user_submission($userid);
     }
 }
 
@@ -85,16 +85,18 @@ if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
 
-$PAGE->requires->css( new moodle_url( '/mod/vpl/css/sh.css' ) );
+$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 
 // Print header.
-$vpl->print_header( get_string( 'submissionview', VPL ) );
-$vpl->print_view_tabs( basename( __FILE__ ) );
+$vpl->print_header(get_string('submissionview', VPL));
+$vpl->print_view_tabs(basename(__FILE__));
 
 // Check consistence.
 if (! $subinstance) {
-    vpl_redirect(vpl_mod_href( 'view.php', 'id', $id, 'userid', $userid ),
-                 get_string( 'nosubmission', VPL ));
+    vpl_redirect(
+        vpl_mod_href('view.php', 'id', $id, 'userid', $userid),
+        get_string('nosubmission', VPL)
+    );
 }
 
 $submissionid = $subinstance->id;
@@ -105,15 +107,15 @@ if ($vpl->get_instance()->id != $subinstance->vpl) {
 
 // Display submission.
 
-$submission = new mod_vpl_submission( $vpl, $subinstance );
+$submission = new mod_vpl_submission($vpl, $subinstance);
 
-if ($vpl->get_visiblegrade() || $vpl->has_capability( VPL_GRADE_CAPABILITY )) {
+if ($vpl->get_visiblegrade() || $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
     if ($submission->is_graded()) {
         echo '<h2>' . get_string(vpl_get_gradenoun_str()) . '</h2>';
-        $submission->print_grade( true );
+        $submission->print_grade(true);
         \mod_vpl\event\submission_grade_viewed::log($submission);
     }
 }
 $submission->print_submission();
 $vpl->print_footer();
-\mod_vpl\event\submission_viewed::log( $submission );
+\mod_vpl\event\submission_viewed::log($submission);

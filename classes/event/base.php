@@ -24,8 +24,8 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * The base abstract class for VPL events.
@@ -48,7 +48,7 @@ abstract class base extends \core\event\base {
         if (($this->relateduserid) && $this->relateduserid != $this->userid) {
             $parms['userid'] = $this->relateduserid;
         }
-        return new \moodle_url( '/mod/vpl/' . $script, $parms );
+        return new \moodle_url('/mod/vpl/' . $script, $parms);
     }
     /**
      * Get the event description.
@@ -72,7 +72,7 @@ abstract class base extends \core\event\base {
      * @param array $eventinfo The event information.
      */
     public static function log($eventinfo) {
-        $event = self::create( $eventinfo );
+        $event = self::create($eventinfo);
         $event->trigger();
     }
 }

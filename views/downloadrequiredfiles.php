@@ -23,24 +23,24 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'NO_DEBUG_DISPLAY', true );
+define('NO_DEBUG_DISPLAY', true);
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
 
 require_login();
-$id = required_param( 'id', PARAM_INT );
+$id = required_param('id', PARAM_INT);
 try {
-    $vpl = new mod_vpl( $id );
+    $vpl = new mod_vpl($id);
     $vpl->restrictions_check();
     if (! $vpl->is_visible()) {
-        vpl_redirect( '?id=' . $id, get_string( 'notavailable' ) );
+        vpl_redirect('?id=' . $id, get_string('notavailable'));
     } else {
         $filegroup = $vpl->get_required_fgm();
-        $filegroup->download_files( $vpl->get_name() );
+        $filegroup->download_files($vpl->get_name());
     }
     die();
 } catch (\Throwable $e) {
-    vpl_redirect('?id=' . $id, $e->getMessage(), 'error' );
+    vpl_redirect('?id=' . $id, $e->getMessage(), 'error');
 }

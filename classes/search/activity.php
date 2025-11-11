@@ -33,7 +33,6 @@ require_once(__DIR__ . '../../../vpl.class.php');
  * Class for support searching the VPL activity information (name and description).
  */
 class activity extends \core_search\base_activity {
-
     /**
      * Returns false.
      *
@@ -61,10 +60,12 @@ class activity extends \core_search\base_activity {
             return \core_search\manager::ACCESS_DENIED;
         }
 
-        if ($vpl->pass_network_check() &&
+        if (
+            $vpl->pass_network_check() &&
                 $vpl->pass_password_check() &&
                 $vpl->pass_seb_check() &&
-                $vpl->is_visible()) {
+                $vpl->is_visible()
+        ) {
             return \core_search\manager::ACCESS_GRANTED;
         }
         return \core_search\manager::ACCESS_DENIED;

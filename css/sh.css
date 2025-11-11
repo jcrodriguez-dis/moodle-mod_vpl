@@ -9,9 +9,8 @@
 
 .vpl_g,
 .vpl_g * {
-    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     font-size: 12px;
-    line-height: normal;
     white-space: pre;
     word-wrap: normal;
 }
@@ -19,4 +18,8 @@
 .vpl_show_hide_content {
     margin-left: 10px;
     white-space: pre-line;
+}
+
+.vpl_show_hide_content pre {
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
 }

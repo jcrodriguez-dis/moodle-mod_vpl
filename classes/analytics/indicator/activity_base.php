@@ -36,7 +36,6 @@ namespace mod_vpl\analytics\indicator;
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 abstract class activity_base extends \core_analytics\local\indicator\community_of_inquiry_activity {
-
     /**
      * return the list of events of feedback viewed
      *
@@ -71,5 +70,4 @@ abstract class activity_base extends \core_analytics\local\indicator\community_o
     protected function get_timeclose_field() {
         return 'duedate';
     }
-
 }

@@ -23,11 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
 global $CFG;
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class to define the form for setting execution limits in VPL
@@ -49,7 +49,7 @@ class mod_vpl_executionlimits_form extends moodleform {
      */
     public function __construct($page, $vpl) {
         $this->vpl = $vpl;
-        parent::__construct( $page );
+        parent::__construct($page);
     }
 
     /**
@@ -60,35 +60,41 @@ class mod_vpl_executionlimits_form extends moodleform {
         $mform = & $this->_form;
         $id = $this->vpl->get_course_module()->id;
         $instance = $this->vpl->get_instance();
-        $mform->addElement( 'hidden', 'id', $id );
-        $mform->setType( 'id', PARAM_INT );
-        $mform->addElement( 'header', 'header_execution_limits', get_string( 'resourcelimits', VPL ) );
+        $mform->addElement('hidden', 'id', $id);
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('header', 'header_execution_limits', get_string('resourcelimits', VPL));
 
         $settings = [
-                'exetime' => vpl_get_select_time( ( int ) $plugincfg->maxexetime ),
-                'exememory' => vpl_get_select_sizes( 16 * 1024 * 1024, ( int ) $plugincfg->maxexememory ),
-                'exefilesize' => vpl_get_select_sizes( 1024 * 256, ( int ) $plugincfg->maxexefilesize ),
+                'exetime' => vpl_get_select_time((int) $plugincfg->maxexetime),
+                'exememory' => vpl_get_select_sizes(16 * 1024 * 1024, (int) $plugincfg->maxexememory),
+                'exefilesize' => vpl_get_select_sizes(1024 * 256, (int) $plugincfg->maxexefilesize),
         ];
         foreach ($settings as $name => $options) {
             $inheritedlimit = $this->vpl->get_closest_set_field_in_base_chain('max' . $name, 0);
             $defaultvaluestring = trim($options[vpl_get_array_key($options, $inheritedlimit ?: $plugincfg->{'default' . $name})]);
             $strname = $inheritedlimit ? 'inheritvalue' : 'defaultvalue';
             $defaultvaluestring = get_string($strname, VPL, $defaultvaluestring);
-            self::add_resource_limit_select($mform, 'max' . $name, get_string( 'max' . $name, VPL ),
-                    $options, $defaultvaluestring, $instance->{'max' . $name});
+            self::add_resource_limit_select(
+                $mform,
+                'max' . $name,
+                get_string('max' . $name, VPL),
+                $options,
+                $defaultvaluestring,
+                $instance->{'max' . $name}
+            );
         }
 
-        $mform->addElement( 'text', 'maxexeprocesses', get_string( 'maxexeprocesses', VPL ) );
-        $mform->setType( 'maxexeprocesses', PARAM_INT );
+        $mform->addElement('text', 'maxexeprocesses', get_string('maxexeprocesses', VPL));
+        $mform->setType('maxexeprocesses', PARAM_INT);
         if ($instance->maxexeprocesses) {
-            $mform->setDefault( 'maxexeprocesses', $instance->maxexeprocesses );
+            $mform->setDefault('maxexeprocesses', $instance->maxexeprocesses);
         }
         $inheritedmax = $this->vpl->get_closest_set_field_in_base_chain('maxexeprocesses', 0);
         $strname = $inheritedmax ? 'inheritvalue' : 'defaultvalue';
         $defaultvalue = $inheritedmax ? $inheritedmax : $plugincfg->defaultexeprocesses;
-        $mform->addElement( 'static', 'maxexeprocesses_default', '', get_string( $strname, VPL, $defaultvalue ) );
+        $mform->addElement('static', 'maxexeprocesses_default', '', get_string($strname, VPL, $defaultvalue));
 
-        $mform->addElement( 'submit', 'savelimitoptions', get_string( 'saveoptions', VPL ) );
+        $mform->addElement('submit', 'savelimitoptions', get_string('saveoptions', VPL));
     }
 
     /**
@@ -103,44 +109,43 @@ class mod_vpl_executionlimits_form extends moodleform {
      */
     private static function add_resource_limit_select($mform, $name, $label, $selectoptions, $defaultvaluestring, $currentvalue) {
         $selectoptions[0] = $defaultvaluestring;
-        $mform->addElement( 'select', $name, $label, $selectoptions );
-        $mform->setType( $name, PARAM_INT );
+        $mform->addElement('select', $name, $label, $selectoptions);
+        $mform->setType($name, PARAM_INT);
         if ($currentvalue) {
-            $mform->setDefault( $name, $currentvalue );
+            $mform->setDefault($name, $currentvalue);
         }
     }
-
 }
 
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionlimits.php', [
+$id = required_param('id', PARAM_INT);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('forms/executionlimits.php', [
         'id' => $id,
-] );
-vpl_include_jsfile( 'hideshow.js' );
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
+]);
+vpl_include_jsfile('hideshow.js');
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
 // Display page.
-$vpl->print_header( get_string( 'resourcelimits', VPL ) );
-$vpl->print_heading_with_help( 'resourcelimits' );
+$vpl->print_header(get_string('resourcelimits', VPL));
+$vpl->print_heading_with_help('resourcelimits');
 
-$mform = new mod_vpl_executionlimits_form( 'executionlimits.php', $vpl );
+$mform = new mod_vpl_executionlimits_form('executionlimits.php', $vpl);
 if ($fromform = $mform->get_data()) {
-    if (isset( $fromform->savelimitoptions )) {
+    if (isset($fromform->savelimitoptions)) {
         $instance = $vpl->get_instance();
-        \mod_vpl\event\vpl_execution_limits_updated::log( $vpl );
+        \mod_vpl\event\vpl_execution_limits_updated::log($vpl);
         $instance->maxexetime = $fromform->maxexetime;
         $instance->maxexememory = $fromform->maxexememory;
         $instance->maxexefilesize = $fromform->maxexefilesize;
         $instance->maxexeprocesses = $fromform->maxexeprocesses;
-        if ( $vpl->update() ) {
-            vpl_notice( get_string( 'optionssaved', VPL ) );
+        if ($vpl->update()) {
+            vpl_notice(get_string('optionssaved', VPL));
         } else {
-            vpl_notice( get_string( 'optionsnotsaved', VPL ), 'error' );
+            vpl_notice(get_string('optionsnotsaved', VPL), 'error');
         }
     }
 }
-\mod_vpl\event\vpl_execution_limits_viewed::log( $vpl );
+\mod_vpl\event\vpl_execution_limits_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();

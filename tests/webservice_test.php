@@ -34,9 +34,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for VPL webservice.
@@ -54,28 +55,28 @@ final class webservice_test extends base_fixture {
      * @return string JSON response or error message
      */
     private function vpl_call_service($url, $fun, $request = '') {
-        if (! function_exists( 'curl_init' )) {
+        if (! function_exists('curl_init')) {
             return 'PHP cURL requiered';
         }
         $plugincfg = get_config('mod_vpl');
         $ch = curl_init();
-        curl_setopt( $ch, CURLOPT_URL, $url . $fun );
-        curl_setopt( $ch, CURLOPT_RETURNTRANSFER, true );
-        curl_setopt( $ch, CURLOPT_POST, 1 );
-        curl_setopt( $ch, CURLOPT_HTTPHEADER, ['Content-type: text/urlencode;charset=UTF-8']);
-        curl_setopt( $ch, CURLOPT_POSTFIELDS, $request );
-        curl_setopt( $ch, CURLOPT_CONNECTTIMEOUT, 5 );
-        if ( @$plugincfg->acceptcertificates ) {
-            curl_setopt( $ch, CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt($ch, CURLOPT_URL, $url . $fun);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-type: text/urlencode;charset=UTF-8']);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
+        if (@$plugincfg->acceptcertificates) {
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
         }
-        $rawresponse = curl_exec( $ch );
-        echo "Raw " . $url. " response " . $rawresponse . "\n";
+        $rawresponse = curl_exec($ch);
+        echo "Raw " . $url . " response " . $rawresponse . "\n";
         if ($rawresponse === false) {
-            $error = 'request failed: ' . s( curl_error( $ch ) );
-            curl_close( $ch );
+            $error = 'request failed: ' . s(curl_error($ch));
+            curl_close($ch);
             return $error;
         } else {
-            curl_close( $ch );
+            curl_close($ch);
             return json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
         }
     }
@@ -88,7 +89,7 @@ final class webservice_test extends base_fixture {
         parent::setUp();
         $this->setupinstances();
         $CFG->enablewebservices = true;
-        $DB->insert_record( 'external_services', [
+        $DB->insert_record('external_services', [
                 'name' => 'mod_vpl',
                 'restrictedusers' => 0,
                 'timecreated' => time(),
@@ -96,7 +97,7 @@ final class webservice_test extends base_fixture {
                 'shortname' => 'mod_vpl_edit',
                 'enabled' => 1,
                 'downloadfiles' => 0,
-        ] );
+        ]);
         $esid = $DB->get_record('external_services', ['name' => 'mod_vpl'])->id;
         $functionnames = ['mod_vpl_evaluate',
                                'mod_vpl_get_result',
@@ -105,9 +106,9 @@ final class webservice_test extends base_fixture {
                                'mod_vpl_save',
         ];
         foreach ($functionnames as $fn) {
-            $DB->insert_record( 'external_services_functions', [
+            $DB->insert_record('external_services_functions', [
                 'externalserviceid' => $esid,
-                'functionname' => $fn, ] );
+                'functionname' => $fn, ]);
         }
         $this->setUser($this->students[1]);
     }
@@ -126,12 +127,12 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_token(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         foreach ($this->vpls as $vpl) {
             $man = new manager($vpl);
-            $this->assertTrue($man->get_temporary_embedded_token() > "" );
+            $this->assertTrue($man->get_temporary_embedded_token() > "");
         }
     }
 
@@ -158,7 +159,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_info(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         foreach ($this->users as $user) {
@@ -194,7 +195,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_info_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $ok = false;
@@ -226,7 +227,7 @@ final class webservice_test extends base_fixture {
         }
         // The info if not is_visible().
         try {
-            set_coursemodule_visible($notvisible->get_course_module()->id, false );
+            set_coursemodule_visible($notvisible->get_course_module()->id, false);
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::info($notvisible->get_course_module()->id, '');
             $this->fail('Exception expected if not visible');
@@ -249,9 +250,16 @@ final class webservice_test extends base_fixture {
      * @param string $password Password for the VPL instance, empty by default
      * @param int $userid User ID to open the submission for, -1 for current user, -1 by default
      */
-    private function internal_test_vpl_webservice_open($id, $files = [],
-            $compilation ='', $evaluation = '',
-            $grade ='', $comments = '', $password = '', $userid = -1) {
+    private function internal_test_vpl_webservice_open(
+        $id,
+        $files = [],
+        $compilation = '',
+        $evaluation = '',
+        $grade = '',
+        $comments = '',
+        $password = '',
+        $userid = -1
+    ) {
         $res = mod_vpl_webservice::open($id, $password, $userid);
         $this->internal_test_files($files, $res['files']);
         $this->assertEquals($compilation, $res['compilation']);
@@ -266,7 +274,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_open(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
@@ -310,14 +318,14 @@ final class webservice_test extends base_fixture {
         $guser1 = $this->students[1]->groupassigned;
         foreach ($this->students as $user) {
             $this->setUser($user);
-            if ( $guser0 == $user->groupassigned ) {
+            if ($guser0 == $user->groupassigned) {
                 $files = [
                     'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                     'b.h' => "#define MV 8\n",
                 ];
                 $this->internal_test_vpl_webservice_open($id, $files);
-            } else if ( $guser1 == $user->groupassigned) {
+            } else if ($guser1 == $user->groupassigned) {
                 $files = [
                     'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                     'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
@@ -365,14 +373,14 @@ final class webservice_test extends base_fixture {
             $guser0 = $this->students[0]->groupassigned;
             $guser1 = $this->students[1]->groupassigned;
             foreach ($this->students as $user) {
-                if ( $guser0 == $user->groupassigned ) {
+                if ($guser0 == $user->groupassigned) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola5\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
                         'b.h' => "#define MV 8\n",
                     ];
                     $this->internal_test_vpl_webservice_open($id, $files, '', '', '', '', '', $user->id);
-                } else if ( $guser1 == $user->groupassigned) {
+                } else if ($guser1 == $user->groupassigned) {
                     $files = [
                         'a.c' => "int main(){\nprintf(\"Hola6\");\n}",
                         'b.c' => "inf f(int n){\n if (n<1) return 1;\n else return n+f(n-1);\n}\n",
@@ -394,7 +402,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_open_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $ok = false;
@@ -426,7 +434,7 @@ final class webservice_test extends base_fixture {
         }
         // The info if not is_visible().
         try {
-            set_coursemodule_visible($notvisible->get_course_module()->id, false );
+            set_coursemodule_visible($notvisible->get_course_module()->id, false);
             get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
             mod_vpl_webservice::open($notvisible->get_course_module()->id, '', -1);
             $this->fail('Exception expected if not visible');
@@ -446,13 +454,13 @@ final class webservice_test extends base_fixture {
      * @param int $userid User ID to save the submission for, -1 for current user
      * @param bool $submitedby If true, add a comment indicating who submitted the files
      */
-    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1, $submitedby=false) {
+    private function internal_test_vpl_webservice_save($id, $files = [], $password = '', $userid = -1, $submitedby = false) {
         global $USER;
         $filesarray = [];
         foreach ($files as $name => $data) {
             $file = [];
             $file['name'] = $name;
-            if ( vpl_is_binary($name)) {
+            if (vpl_is_binary($name)) {
                 $file['encoding'] = 1;
                 $file['data'] = base64_encode($data);
             } else {
@@ -480,7 +488,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_save(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
@@ -488,7 +496,7 @@ final class webservice_test extends base_fixture {
         $password = $this->vpldefault->get_instance()->password;
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
-            if ( $this->vpldefault->is_submit_able() ) {
+            if ($this->vpldefault->is_submit_able()) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
                 } catch (\Throwable $e) {
@@ -528,7 +536,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_save_binary(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
@@ -541,7 +549,7 @@ final class webservice_test extends base_fixture {
         $password = $this->vpldefault->get_instance()->password;
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
-            if ( $this->vpldefault->is_submit_able() ) {
+            if ($this->vpldefault->is_submit_able()) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
                 } catch (\Throwable $e) {
@@ -559,7 +567,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_save_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $ok = false;
@@ -600,8 +608,9 @@ final class webservice_test extends base_fixture {
         }
         // The info if not is_visible().
         try {
-            set_coursemodule_visible($notvisible->get_course_module()->id, false );
-            get_fast_modinfo($notvisible->get_course_module()->course, 0, true);;
+            set_coursemodule_visible($notvisible->get_course_module()->id, false);
+            get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
+            ;
             mod_vpl_webservice::save($notvisible->get_course_module()->id, $files, '');
             $this->fail('Exception expected if not visible');
         } catch (\Throwable $e) {
@@ -641,7 +650,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_evaluate(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
@@ -654,7 +663,7 @@ final class webservice_test extends base_fixture {
             set_config('use_xmlrpc', $xmlrpc, 'mod_vpl');
             foreach ($this->students as $user) {
                 $this->setUser($user);
-                if ( $this->vpldefault->is_submit_able() ) {
+                if ($this->vpldefault->is_submit_able()) {
                     try {
                         $this->internal_test_vpl_webservice_save($id, $files, $password);
                         mod_vpl_webservice::evaluate($id, $password);
@@ -690,7 +699,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_evaluate_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $ok = false;
@@ -736,7 +745,7 @@ final class webservice_test extends base_fixture {
         // The info if not is_visible().
         $parms = ['name' => 'Not visible', 'evaluate' => 1];
         $notvisible = $this->create_instance($parms);
-        set_coursemodule_visible($notvisible->get_course_module()->id, false );
+        set_coursemodule_visible($notvisible->get_course_module()->id, false);
         get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
         try {
             mod_vpl_webservice::evaluate($notvisible->get_course_module()->id, '');
@@ -791,7 +800,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_get_result(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
@@ -802,7 +811,7 @@ final class webservice_test extends base_fixture {
         $this->assertTrue($added);
         foreach ($this->students as $user) {
             $this->setUser($user);
-            if ( $this->vpldefault->is_submit_able() ) {
+            if ($this->vpldefault->is_submit_able()) {
                 try {
                     $this->internal_test_vpl_webservice_save($id, $files, $password);
                     mod_vpl_webservice::evaluate($id, $password);
@@ -823,7 +832,7 @@ final class webservice_test extends base_fixture {
     public function test_vpl_webservice_get_result_exceptions(): void {
         global $CFG;
         require_once($CFG->dirroot . '/mod/vpl/externallib.php');
-        if ( ! manager::service_is_available()) {
+        if (! manager::service_is_available()) {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $ok = false;
@@ -869,7 +878,7 @@ final class webservice_test extends base_fixture {
         // The info if not is_visible().
         $parms = ['name' => 'Not visible', 'evaluate' => 1];
         $notvisible = $this->create_instance($parms);
-        set_coursemodule_visible($notvisible->get_course_module()->id, false );
+        set_coursemodule_visible($notvisible->get_course_module()->id, false);
         get_fast_modinfo($notvisible->get_course_module()->course, 0, true);
         try {
             mod_vpl_webservice::get_result($notvisible->get_course_module()->id, '');

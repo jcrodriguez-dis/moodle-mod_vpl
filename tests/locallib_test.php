@@ -57,17 +57,17 @@ final class locallib_test extends \advanced_testcase {
         $this->assertFalse(file_exists($testdir) && is_dir($testdir));
         // Dir complex.
         mkdir($testdir . '/a1/b1/c1', 0777, true);
-        file_put_contents ($testdir . '/a1/b1/c1/t1', $text);
+        file_put_contents($testdir . '/a1/b1/c1/t1', $text);
         mkdir($testdir . '/a1/b1/c2', 0777, true);
-        file_put_contents ($testdir . '/a1/b1/t1', $text);
-        file_put_contents ($testdir . '/a1/b1/t2', $text);
+        file_put_contents($testdir . '/a1/b1/t1', $text);
+        file_put_contents($testdir . '/a1/b1/t2', $text);
         mkdir($testdir . '/a1/b2/c1', 0777, true);
-        file_put_contents ($testdir . '/a1/b2/t1', $text);
+        file_put_contents($testdir . '/a1/b2/t1', $text);
         mkdir($testdir . '/a1/b3', 0777, true);
-        file_put_contents ($testdir . '/a1/t1', $text);
+        file_put_contents($testdir . '/a1/t1', $text);
         $this->assertTrue(is_writable($testdir) && is_dir($testdir));
         vpl_delete_dir($testdir);
-        $this->assertFalse(file_exists($testdir) && is_dir($testdir),  $testdir);
+        $this->assertFalse(file_exists($testdir) && is_dir($testdir), $testdir);
     }
 
     /**
@@ -85,10 +85,10 @@ final class locallib_test extends \advanced_testcase {
             $this->expectedNotice();
         };
         $fp = vpl_fopen($fpath);
-        $this->assertNotNull( $fp );
+        $this->assertNotNull($fp);
         fwrite($fp, $text);
         fclose($fp);
-        $this->assertEquals( $text, file_get_contents($fpath) );
+        $this->assertEquals($text, file_get_contents($fpath));
     }
 
     /**
@@ -100,10 +100,10 @@ final class locallib_test extends \advanced_testcase {
         global $CFG;
         $testdir = $CFG->dataroot . '/temp/vpl_test/tmp';
         $text = 'Any thing is ok! 뭐든 괜찮아!';
-        $this->internal_test_vpl_fopen( '/a1/b1/c1' );
-        $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb' );
-        $this->internal_test_vpl_fopen( '/aaaaaaaaaaaaaaaa.bbb', 'Other text');
-        $this->internal_test_vpl_fopen( '/nf.bbb', $text );
+        $this->internal_test_vpl_fopen('/a1/b1/c1');
+        $this->internal_test_vpl_fopen('/aaaaaaaaaaaaaaaa.bbb');
+        $this->internal_test_vpl_fopen('/aaaaaaaaaaaaaaaa.bbb', 'Other text');
+        $this->internal_test_vpl_fopen('/nf.bbb', $text);
         $fpath = $testdir . '/nf.bbb';
         chmod($fpath, 0000);
         try {
@@ -183,9 +183,9 @@ final class locallib_test extends \advanced_testcase {
         mkdir($testdir, 0777, true);
         $fpath = $testdir . '/a1/b1/c1';
         vpl_fwrite($fpath, $text);
-        $this->assertEquals( $text, file_get_contents($fpath) );
+        $this->assertEquals($text, file_get_contents($fpath));
         vpl_fwrite($fpath, $otext);
-        $this->assertEquals( $otext, file_get_contents($fpath) );
+        $this->assertEquals($otext, file_get_contents($fpath));
         // Tests if the File System honor chmod.
         chmod($fpath, 0000);
         try {
@@ -200,13 +200,13 @@ final class locallib_test extends \advanced_testcase {
         chmod($fpath, 0777);
         $fpath = $testdir . '/aaaaaaaaaaaaaaaa.bbb';
         vpl_fwrite($fpath, $text);
-        $this->assertEquals( $text, file_get_contents($fpath) );
+        $this->assertEquals($text, file_get_contents($fpath));
         $fpath = $testdir . '/aaaaaaaaaaaaaaaa.bbb';
         vpl_fwrite($fpath, '');
-        $this->assertEquals( '', file_get_contents($fpath) );
+        $this->assertEquals('', file_get_contents($fpath));
         $fpath = $testdir . '/nf.bbb';
         vpl_fwrite($fpath, '');
-        $this->assertEquals( '', file_get_contents($fpath) );
+        $this->assertEquals('', file_get_contents($fpath));
         $bads = ['/a1/..', '/a1/.', '/', '/a1', '/a1/b1'];
         foreach ($bads as $bad) {
             $fpath = $testdir . $bad;
@@ -246,12 +246,12 @@ final class locallib_test extends \advanced_testcase {
         global $SESSION;
         $nosession = false;
         $nopost = false;
-        if ( !isset ($SESSION) ) {
+        if (!isset($SESSION)) {
             $nosession = true;
         } else {
             $sessionsave = $SESSION;
         }
-        if ( !isset ($_POST) ) {
+        if (!isset($_POST)) {
             $nopost = true;
         } else {
             $postsave = $_POST;
@@ -266,12 +266,12 @@ final class locallib_test extends \advanced_testcase {
         $this->assertEquals('testdata 4', vpl_get_set_session_var('testvpl4', 'nada'));
         $_POST['testvpl5'] = 'algo 5';
         $this->assertEquals('algo 5', vpl_get_set_session_var('testvpl5', 'nada'));
-        if ( $nopost) {
+        if ($nopost) {
             unset($_POST);
         } else {
             $_POST = $postsave;
         }
-        if ( $nosession ) {
+        if ($nosession) {
             unset($SESSION);
         } else {
             $SESSION = $sessionsave;

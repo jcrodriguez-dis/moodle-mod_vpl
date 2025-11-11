@@ -35,14 +35,15 @@ use core_privacy\local\request\writer;
 use core_privacy\local\request\content_writer;
 use core_privacy\local\request\userlist;
 use core_privacy\local\request\approved_userlist;
+use core_privacy\local\request\core_userlist_provider;
+use core_privacy\local\request\user_preference_provider;
+use core_privacy\local\metadata\provider as metadata_provider;
+
 
 /**
  * VPL provider class
  */
-class provider implements \core_privacy\local\metadata\provider,
-                          \core_privacy\local\request\user_preference_provider,
-                          \core_privacy\local\request\core_userlist_provider {
-
+class provider implements core_userlist_provider, metadata_provider, user_preference_provider {
     /**
      * Return the fields and user preferences which are considered personal data.
      *
@@ -214,9 +215,9 @@ class provider implements \core_privacy\local\metadata\provider,
             $subcontext = [ get_string('privacy:submissionpath', 'vpl', $subcontextsecuence++) ];
             $submission = new \mod_vpl_submission_CE($vpl, $submissioninstance);
             $nograder = $submissioninstance->userid == $userid;
-            if ( $submissioninstance->dategraded > 0) {
+            if ($submissioninstance->dategraded > 0) {
                 $submissioninstance->gradercomments = $submission->get_grade_comments($nograder);
-                if ( $nograder ) {
+                if ($nograder) {
                     unset($submissioninstance->grader);
                 } else {
                     unset($submissioninstance->userid);
@@ -318,12 +319,12 @@ class provider implements \core_privacy\local\metadata\provider,
         // Delete submissions.
         $DB->delete_records_list('vpl_submissions', 'id', $submissionids);
         foreach (array_keys($vplids) as $vplid) {
-            fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata/' . $userid );
+            fulldelete($CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $userid);
         }
 
         // Change grader to 0.
         if (count($evaluationids) > 0) {
-            list($insql, $inparams) = $DB->get_in_or_equal($evaluationids);
+            [$insql, $inparams] = $DB->get_in_or_equal($evaluationids);
             $sql = "UPDATE {vpl_submissions}
                        SET grader = 0
                      WHERE id $insql";
@@ -422,7 +423,7 @@ class provider implements \core_privacy\local\metadata\provider,
             'vplid' => $vplid,
         ];
         // Get sql partial where of users ids.
-        list($userssql, $usersparams) = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
+        [$userssql, $usersparams] = $DB->get_in_or_equal($userids, SQL_PARAMS_NAMED);
 
         // Delete selected submissions.
         $sql = "DELETE
@@ -430,7 +431,7 @@ class provider implements \core_privacy\local\metadata\provider,
                  WHERE vpl = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
         foreach ($userids as $userid) {
-            fulldelete( $CFG->dataroot . '/vpl_data/'. $vplid . '/usersdata/' . $userid );
+            fulldelete($CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $userid);
         }
         // Anonymizes graders identification.
         $sql = "UPDATE {vpl_submissions}
@@ -625,7 +626,7 @@ class provider implements \core_privacy\local\metadata\provider,
     protected static function get_vpl_submissions_by_contextlist($contextlist, $userid) {
         global $DB;
         // Get sql partial where of contexts.
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $params = [
             'contextmodule' => CONTEXT_MODULE,
@@ -654,7 +655,7 @@ class provider implements \core_privacy\local\metadata\provider,
     protected static function delete_assigned_variations_by_contextlist($contextlist, $userid) {
         global $DB;
         // Get sql partial where of contexts.
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $params = [
             'contextmodule' => CONTEXT_MODULE,
@@ -684,7 +685,7 @@ class provider implements \core_privacy\local\metadata\provider,
     protected static function delete_assigned_overrides_by_contextlist($contextlist, $userid) {
         global $DB;
         // Get sql partial where of contexts.
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $params = [
             'contextmodule' => CONTEXT_MODULE,
@@ -714,7 +715,7 @@ class provider implements \core_privacy\local\metadata\provider,
     protected static function delete_running_processes_by_contextlist($contextlist, $userid) {
         global $DB;
         // Get sql partial where of contexts.
-        list($contextsql, $contextparams) = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
 
         $params = [
             'contextmodule' => CONTEXT_MODULE,
@@ -858,7 +859,7 @@ class provider implements \core_privacy\local\metadata\provider,
      * @return object Formatted vpl output object for exporting.
      */
     protected static function get_vpl_output($vpldata) {
-        $vpl = new \stdClass;
+        $vpl = new \stdClass();
         $fields = ['id', 'course', 'name', 'shortdescription'];
         $datefields = ['startdate', 'duedate'];
         self::copy_fields($vpldata, $vpl, $fields);
@@ -867,7 +868,7 @@ class provider implements \core_privacy\local\metadata\provider,
                 $vpl->grade = get_string('grademax', 'core_grades')
                 . ': ' . format_float($vpldata->grade, 5, true, true);
             } else {
-                $vpl->grade = get_string( 'typescale', 'core_grades' );
+                $vpl->grade = get_string('typescale', 'core_grades');
             }
             if ($vpldata->reductionbyevaluation != 0) { // If penalizaions for automatic evaluation requests.
                 $vpl->reductionbyevaluation = $vpldata->reductionbyevaluation;

@@ -25,5 +25,5 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024012400;
+$plugin->version   = 2025092100;
 $plugin->component = 'vplevaluator_giotes';

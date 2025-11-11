@@ -45,7 +45,6 @@ return new class extends phpunit_coverage_info {
         'lib.php',
         'locallib.php',
         'filegroup.class.php',
-        'similarity/similarity_sources.class.php',
         'jail/running_processes.class.php',
         'vpl.class.php',
     ];

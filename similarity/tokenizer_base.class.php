@@ -23,24 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined('MOODLE_INTERNAL') || die();
-
 use mod_vpl\tokenizer\token;
 use mod_vpl\tokenizer\token_type;
-
-/**
- * Class for backward compatibility with old token types.
- */
-class vpl_token_type extends token_type {
-
-}
-
-/**
- * Class for backward compatibility with old token.
- */
-class vpl_token extends token {
-
-}
 
 /**
  * Base class for tokenizers in VPL.

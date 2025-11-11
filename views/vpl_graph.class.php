@@ -57,7 +57,7 @@ class vpl_graph {
         $chart->get_xaxis(0, true)->set_label($xlabel);
         $chart->get_yaxis(0, true)->set_label($ylabel);
         $chart->get_xaxis(0, true)->set_labels($xdata);
-        if ( $legends == false) {
+        if ($legends == false) {
             $serie = new \core\chart_series($ylabel, $ydata);
             $chart->add_series($serie);
         } else {

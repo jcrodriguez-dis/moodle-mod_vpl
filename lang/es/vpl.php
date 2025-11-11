@@ -298,8 +298,8 @@ $string['privacy:metadata:vpl_submissions:dategraded'] = 'Fecha y hora de la eva
 $string['privacy:metadata:vpl_submissions:datesubmitted'] = 'Fecha y hora de la entrega';
 $string['privacy:metadata:vpl_submissions:debug_count'] = 'Número de veces que se ha depurado la entrega';
 $string['privacy:metadata:vpl_submissions:grade'] = 'La nota obtenida en esta entrega. Esta nota puede no coincidir con la que aparece en el libro de calificaciones';
-$string['privacy:metadata:vpl_submissions:graderid'] = 'DB id del usuario que evaluó esta entrega';
 $string['privacy:metadata:vpl_submissions:gradercomments'] = 'Comentarios del evaluador sobre esta entrega';
+$string['privacy:metadata:vpl_submissions:graderid'] = 'DB id del usuario que evaluó esta entrega';
 $string['privacy:metadata:vpl_submissions:groupid'] = 'Identificador del grupo al que pertenece el usuario que realizó la entrega';
 $string['privacy:metadata:vpl_submissions:nevaluations'] = 'Número de evaluaciones automáticas pedidas por el estudiante';
 $string['privacy:metadata:vpl_submissions:run_count'] = 'Número de veces que se ha ejecutado la entrega';
@@ -404,7 +404,9 @@ $string['submissions_graded_overview_help'] = '[Número de estudiantes o grupos]
  / [Entregas] (% de estudiantes o grupos con entrega)<br>
  / [Entregas evaluadas] (% de entregas evaluadas)<br>
  - [Entregas no evaluadas] (% de entregas no evaluadas)';
+$string['submissions_graded_overview_short'] = '{$a->gradedcount} de {$a->subcount}';
 $string['submissions_overview_help'] = '[Número de estudiantes o grupos] / [Número de entregas] (% de estudiantes o grupos con entrega)';
+$string['submissions_overview_short'] = '{$a->subcount} de {$a->ugcount}';
 $string['submissionselection'] = 'Selección de entregas';
 $string['submissionslist'] = 'Lista de entregas';
 $string['submissionview'] = 'Ver entrega';

@@ -25,5 +25,4 @@ use mod_vpl\similarity\similarity_factory;
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_similarity_factory extends similarity_factory {
-
 }

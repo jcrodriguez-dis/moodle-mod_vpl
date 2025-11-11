@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Base event class for VPL events.
  * This class is used to log events related to VPL instances, such as viewing or modifying them.
  */
 class vpl_base extends base {
-
     /**
      * Returns the object ID mapping for this event.
      * This method is used to define how the object ID associated with the event should be mapped.
@@ -74,14 +73,14 @@ class vpl_base extends base {
      * @param \mod_vpl|array $vpl The VPL instance to log.
      */
     public static function log($vpl) {
-        if (is_array( $vpl )) {
-            parent::log( $vpl );
+        if (is_array($vpl)) {
+            parent::log($vpl);
         } else {
             $einfo = [
                     'objectid' => $vpl->get_instance()->id,
                     'context' => $vpl->get_context(),
             ];
-            parent::log( $einfo );
+            parent::log($einfo);
         }
     }
 
@@ -92,7 +91,7 @@ class vpl_base extends base {
      * @return \moodle_url The URL associated with this event.
      */
     public function get_url() {
-        return $this->get_url_base( 'view.php' );
+        return $this->get_url_base('view.php');
     }
 
     /**

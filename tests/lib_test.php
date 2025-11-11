@@ -32,9 +32,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for mod/vpl/lib.php functions.
@@ -42,7 +43,6 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl_lib
  */
 final class lib_test extends base_fixture {
-
     /**
      * Method to create lib test fixture
      */
@@ -65,7 +65,7 @@ final class lib_test extends base_fixture {
                     $this->assertTrue(vpl_grade_item_update($instance) == 0, $instance->name);
                 }
                 $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
-                if ( count($grades->items) > 0 ) {
+                if (count($grades->items) > 0) {
                     $gradeinfo = null;
                     foreach ($grades->items as $gi) {
                         $gradeinfo = $gi;
@@ -185,7 +185,7 @@ final class lib_test extends base_fixture {
         foreach ($this->vpls as $vpl) {
             $instance = $vpl->get_instance();
             $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
-            if ( count($grades->items) > 0 ) {
+            if (count($grades->items) > 0) {
                 vpl_delete_grade_item($instance);
                 $grades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
                 $gradeinfo = null;
@@ -208,20 +208,24 @@ final class lib_test extends base_fixture {
             $instance = $vpl->get_instance();
             $instance->instance = $instance->id;
             $sparms = ['modulename' => VPL, 'instance' => $instance->id, 'priority' => null ];
-            $event = $DB->get_record( 'event', $sparms );
-            $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
+            $event = $DB->get_record('event', $sparms);
+            $this->assertTrue(
+                ($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
-                    $instance->name);
+                $instance->name
+            );
             $instance->duedate = time() + 1000;
             vpl_update_instance($instance);
             $sparms = ['modulename' => VPL, 'instance' => $instance->id, 'priority' => null ];
-            $event = $DB->get_record( 'event', $sparms );
-            $this->assertTrue(($event != false && $instance->duedate == $event->timestart) ||
+            $event = $DB->get_record('event', $sparms);
+            $this->assertTrue(
+                ($event != false && $instance->duedate == $event->timestart) ||
                     ($event == false && $instance->duedate == 0),
-                    $instance->name);
+                $instance->name
+            );
             $instance->duedate = 0;
             vpl_update_instance($instance);
-            $event = $DB->get_record( 'event', $sparms );
+            $event = $DB->get_record('event', $sparms);
             $this->assertFalse($event, $instance->name);
         }
     }
@@ -241,7 +245,7 @@ final class lib_test extends base_fixture {
                 $instance->grade = $grade;
                 vpl_update_instance($instance);
                 $getgrades = grade_get_grades($vpl->get_course()->id, 'mod', 'vpl', $instance->id);
-                if ( count($getgrades->items) > 0 ) {
+                if (count($getgrades->items) > 0) {
                     $gradeinfo = null;
                     foreach ($getgrades->items as $gi) {
                         $gradeinfo = $gi;
@@ -279,7 +283,7 @@ final class lib_test extends base_fixture {
             vpl_delete_instance($instance->id);
 
             $res = $DB->count_records(VPL, ['id' => $instance->id]);
-            $this->assertEquals( 0, $res, $instance->name);
+            $this->assertEquals(0, $res, $instance->name);
 
             $tables = [
                     VPL_SUBMISSIONS,
@@ -292,11 +296,11 @@ final class lib_test extends base_fixture {
             $parms = ['vpl' => $instance->id];
             foreach ($tables as $table) {
                 $res = $DB->count_records($table, $parms);
-                $this->assertEquals( 0, $res, $instance->name);
+                $this->assertEquals(0, $res, $instance->name);
             }
 
             $sparms = ['modulename' => VPL, 'instance' => $instance->id ];
-            $res = $DB->count_records('event', $sparms );
+            $res = $DB->count_records('event', $sparms);
             $this->assertEquals($res, 0, $instance->name);
 
             $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
@@ -357,8 +361,7 @@ final class lib_test extends base_fixture {
                         $grade->datesubmitted = $sub->datesubmitted;
                         $grades[$grade->userid] = $grade;
                     }
-                    grade_update( 'mod/vpl', $instance->course, 'mod', VPL, $instance->id
-                            , 0, null, $grades );
+                    grade_update('mod/vpl', $instance->course, 'mod', VPL, $instance->id, 0, null, $grades);
                 }
             }
             // Test vpl_reset_gradebook.
@@ -403,7 +406,7 @@ final class lib_test extends base_fixture {
             $parms = [ 'vpl' => $instance->id];
             $count = $DB->count_records(VPL_ASSIGNED_OVERRIDES, $parms);
             $this->assertEquals(0, $count, $instance->name);
-            $directory = $CFG->dataroot . '/vpl_data/'. $instance->id . '/usersdata';
+            $directory = $CFG->dataroot . '/vpl_data/' . $instance->id . '/usersdata';
             $this->assertFalse(file_exists($directory) && is_dir($directory), $instance->name);
         }
     }

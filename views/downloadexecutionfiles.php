@@ -23,20 +23,20 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'NO_DEBUG_DISPLAY', true );
+define('NO_DEBUG_DISPLAY', true);
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
 
 try {
     require_login();
-    $id = required_param( 'id', PARAM_INT );
-    $vpl = new mod_vpl( $id );
-    $vpl->require_capability( VPL_MANAGE_CAPABILITY );
+    $id = required_param('id', PARAM_INT);
+    $vpl = new mod_vpl($id);
+    $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $filegroup = $vpl->get_execution_fgm();
-    $filegroup->download_files( $vpl->get_name() );
+    $filegroup->download_files($vpl->get_name());
     die();
 } catch (\Throwable $e) {
-    vpl_redirect('', $e->getMessage(), 'error' );
+    vpl_redirect('', $e->getMessage(), 'error');
 }

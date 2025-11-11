@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when jail servers are tested.
  * This class is used to log the event when jail servers are tested.
  */
 class vpl_jail_servers_tested extends vpl_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -49,6 +48,6 @@ class vpl_jail_servers_tested extends vpl_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'jail servers' );
+        return $this->get_description_mod('jail servers');
     }
 }

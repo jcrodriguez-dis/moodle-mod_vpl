@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a security-related action is attempted.
  * This class is used to log the event when a user tries to perform an action that is forbidden.
  */
 class vpl_security extends vpl_base {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -49,6 +48,6 @@ class vpl_security extends vpl_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'view description' );
+        return $this->get_description_mod('view description');
     }
 }

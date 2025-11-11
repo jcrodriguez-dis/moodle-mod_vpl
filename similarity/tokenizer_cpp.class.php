@@ -16,7 +16,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/tokenizer_c.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_c.class.php');
 
 /**
  * C++ programing language tokenizer class
@@ -27,7 +27,6 @@ require_once(dirname(__FILE__).'/tokenizer_c.class.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_tokenizer_cpp extends vpl_tokenizer_c {
-
     /**
      * Constructor for the C++ tokenizer class.
      */
@@ -74,6 +73,6 @@ class vpl_tokenizer_cpp extends vpl_tokenizer_c {
                 'xor' => true,
                 'xor_eq' => true,
         ];
-        $this->reserved = array_merge( $this->reserved, $added );
+        $this->reserved = array_merge($this->reserved, $added);
     }
 }

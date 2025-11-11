@@ -24,7 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
-require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
+require_once(dirname(__FILE__) . '/sh_base.class.php');
 
 /**
  * Class to show an image
@@ -61,7 +61,7 @@ class vpl_sh_image extends vpl_sh_base {
      * @return string mime type of the file
      */
     public function get_mime($name) {
-        $ext = strtolower( vpl_fileextension( $name ) );
+        $ext = strtolower(vpl_fileextension($name));
         return $this->mime[$ext];
     }
 
@@ -72,11 +72,11 @@ class vpl_sh_image extends vpl_sh_base {
      * @param string $data content of the file to show
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s( $name ) . '</h4>';
+        echo "<h4>" . s($name) . '</h4>';
         echo '<div class="vpl_sh vpl_g">';
-        echo '<img src="data:image/' . $this->get_mime( $name ) . ';base64,';
-        echo base64_encode( $data );
-        echo '" alt="' . s( $name ) . '" />';
+        echo '<img src="data:image/' . $this->get_mime($name) . ';base64,';
+        echo base64_encode($data);
+        echo '" alt="' . s($name) . '" />';
         echo '</div>';
     }
 }

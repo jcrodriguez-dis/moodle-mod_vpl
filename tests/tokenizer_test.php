@@ -31,10 +31,11 @@ use mod_vpl\tokenizer\tokenizer;
 use mod_vpl\tokenizer\token_type;
 use mod_vpl\tokenizer\tokenizer_factory;
 use mod_vpl\util\assertf;
+use mod_vpl\tests\testable_tokenizer;
+use mod_vpl\tests\testable_tokenizer_base;
 use Exception;
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 
 /**
  * Unit tests for \mod_vpl\tokenizer\tokenizer class.
@@ -377,7 +378,7 @@ final class tokenizer_test extends \advanced_testcase {
             $tokenizer->set_max_token_count($input['max_token_count']);
 
             $result = $tokenizer->get_line_tokens($input['value'], "", 0);
-            $info = $filename . "\n" . file_get_contents($filename) ."\n";
+            $info = $filename . "\n" . file_get_contents($filename) . "\n";
             $info .= "--Input---\n" . json_encode($input) . "\n";
             $info .= "--Result---\n" . json_encode($result) . "\n";
             $info .= "--Expected result---\n" . json_encode($expectedresult);

@@ -30,14 +30,14 @@ class vpl_list_util {
      * The order of the fields matters, as it determines the priority of comparison.
      * For example, if 'duedate' is first, it will be compared before 'startdate'.
      */
-    static protected $fields;
+    protected static $fields;
 
     /**
      * @var int $ascending
      * Value to return when ascending or descending order.
      * -1 for ascending order, 1 for descending order.
      */
-    static protected $ascending;
+    protected static $ascending;
 
     /**
      * Compare two VPL instances for sorting.
@@ -100,7 +100,7 @@ class vpl_list_util {
                         'name',
                 ],
         ];
-        if (isset( $sortfields[$field] )) {
+        if (isset($sortfields[$field])) {
             self::$fields = $sortfields[$field];
         } else { // Unknow field.
             self::$fields = $sortfields['duedate'];
@@ -124,8 +124,8 @@ class vpl_list_util {
     public static function vpl_list_arrow($burl, $sort, $instanceselection, $selsort, $seldir) {
         global $OUTPUT;
         $newdir = 'down'; // Dir to go if clicked.
-        $url = vpl_url_add_param( $burl, 'sort', $sort );
-        $url = vpl_url_add_param( $url, 'selection', $instanceselection );
+        $url = vpl_url_add_param($burl, 'sort', $sort);
+        $url = vpl_url_add_param($url, 'selection', $instanceselection);
         if ($sort == $selsort) {
             $sortdir = $seldir;
             if ($sortdir == 'up') {
@@ -135,11 +135,11 @@ class vpl_list_util {
             } else { // Unknow sortdir.
                 $sortdir = 'down';
             }
-            $url = vpl_url_add_param( $url, 'sortdir', $newdir );
+            $url = vpl_url_add_param($url, 'sortdir', $newdir);
         } else {
             $sortdir = 'move';
         }
-        return '<a href="' . $url . '">' . ($OUTPUT->pix_icon( 't/' . $sortdir, get_string( $sortdir ) )) . '</a>';
+        return '<a href="' . $url . '">' . ($OUTPUT->pix_icon('t/' . $sortdir, get_string($sortdir))) . '</a>';
     }
 
     /**
@@ -151,12 +151,12 @@ class vpl_list_util {
      *               - 'graded': Number of graded submissions.
      */
     public static function count_graded($vpl) {
-        $subs = $vpl->all_last_user_submission( 's.dategraded, s.userid, s.groupid' );
+        $subs = $vpl->all_last_user_submission('s.dategraded, s.userid, s.groupid');
         $students = $vpl->get_students();
-        $subs = $vpl->filter_submissions_by_students( $subs, $students );
+        $subs = $vpl->filter_submissions_by_students($subs, $students);
         return [
-                'submissions' => count( $subs ),
-                'graded' => $vpl->number_of_graded_submissions( $subs ),
+                'submissions' => count($subs),
+                'graded' => $vpl->number_of_graded_submissions($subs),
         ];
     }
 }

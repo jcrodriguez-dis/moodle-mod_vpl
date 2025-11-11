@@ -33,9 +33,10 @@ defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 require_once($CFG->dirroot . '/mod/vpl/locallib.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for submission class.
@@ -43,7 +44,6 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
  * @group mod_vpl_submission
  */
 final class submission_test extends base_fixture {
-
     /**
      * Method to create test fixture
      */

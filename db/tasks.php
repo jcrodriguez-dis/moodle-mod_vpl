@@ -25,7 +25,7 @@
  * @var array $tasks
  */
 
-defined( 'MOODLE_INTERNAL' ) || die();
+defined('MOODLE_INTERNAL') || die();
 
 $tasks = [
     [

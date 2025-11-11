@@ -60,7 +60,7 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
     And I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
     When I follow "Submission view"
-    Then I should see "No submission available"
+    Then I should see "No submission"
     When I follow "Edit"
     Then I should see "new_file_name.c"
     And I should see "other new file.c"

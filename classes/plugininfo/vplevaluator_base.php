@@ -25,7 +25,6 @@ namespace mod_vpl\plugininfo;
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class vplevaluator_base {
-
     /**
      * Name of the evaluator.
      * @var string
@@ -88,28 +87,41 @@ class vplevaluator_base {
     }
 
     /**
-     * Display evaluator name with help link.
-     * @param \mod_vpl $vpl VPL module instance
-     * @param bool $showlink whether to show the help link
-     * @return void
+     * Get printable evaluator name with help link
+     *
+     * @param \mod_vpl $vpl VPL object class instance
+     * @param bool $ifhelp if true return '' if no help available
+     * @return string HTML formatted string
      */
-    public function print_help($vpl, $showlink=true): void {
+    public function get_printable_help_link($vpl, $ifhelp = false): string {
         global $OUTPUT;
         $help = $this->get_help();
-        if ($showlink) {
-            $modname = 'vplevaluator_' . $this->name;
-            $title = vpl_get_awesome_icon('advancedsettings');
-            $title .= get_string('pluginname', $modname);
-            if ($showlink && $help !== '') {
-                $url = new \moodle_url('/mod/vpl/views/evaluator_help.php', ['id' => $vpl->get_course_module()->id]);
-                $icon = $OUTPUT->pix_icon('help', get_string('help'));
-                $title .= \html_writer::link($url, $icon, ['target' => '_blank', 'class' => 'btn btn-link p-0']);
-            }
-            echo $title . '<br />';
-        } else if ($help !== '') {
-            echo format_text($this->get_help(), FORMAT_MARKDOWN, ['context' => $vpl->get_context()]);
+        if ($ifhelp && empty($help)) {
+            return '';
         }
+        $modname = 'vplevaluator_' . $this->name;
+        $title = vpl_get_awesome_icon('advancedsettings');
+        $title .= get_string('pluginname', $modname);
+        if ($help !== '') {
+            $parms = ['id' => $vpl->get_course_module()->id, 'evaluator' => $this->name];
+            $url = new \moodle_url('/mod/vpl/views/evaluator_help.php', $parms);
+            $icon = $OUTPUT->pix_icon('help', get_string('help'));
+            $attr = ['target' => '_blank', 'class' => 'btn btn-link p-0', 'title' => get_string('help') ];
+            $title = \html_writer::link($url, $title . $icon, $attr);
+        }
+        return $title . '<br />';
+    }
 
+    /**
+     * Get printable evaluator help documentation.
+     * @param \mod_vpl $vpl object class instance
+     * @return string HTML formatted string
+     */
+    public function get_printable_help($vpl): string {
+        if ($this->get_help() !== '') {
+            return format_text($this->get_help(), FORMAT_MARKDOWN, ['context' => $vpl->get_context()]);
+        }
+        return '';
     }
 
     /**

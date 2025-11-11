@@ -23,11 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
 global $CFG;
-require_once($CFG->libdir.'/formslib.php');
+require_once($CFG->libdir . '/formslib.php');
 
 /**
  * Class to define the form for setting execution options in VPL
@@ -52,7 +52,7 @@ class mod_vpl_executionoptions_form extends moodleform {
      */
     public function __construct($page, $vpl) {
         $this->vpl = $vpl;
-        parent::__construct( $page );
+        parent::__construct($page);
     }
 
     /**
@@ -67,12 +67,12 @@ class mod_vpl_executionoptions_form extends moodleform {
      */
     protected function get_scriptdescription($filename) {
         $data = file_get_contents($filename);
-        if ($data === false ) {
+        if ($data === false) {
             return '';
         }
         $matches = [];
         $result = preg_match('/@vpl_script_description (.*)$/im', $data, $matches);
-        if ( $result ) {
+        if ($result) {
             return ': ' . $matches[1];
         }
         return '';
@@ -94,9 +94,9 @@ class mod_vpl_executionoptions_form extends moodleform {
         $dirlist = scandir($dir);
         $list = [];
         foreach ($dirlist as $file) {
-            if ( substr($file, - $el) == $endwith) {
+            if (substr($file, - $el) == $endwith) {
                 $name = substr($file, 0, - $el);
-                if ( ! isset( $avoid[$name] ) ) {
+                if (! isset($avoid[$name])) {
                     $list[$name] = strtoupper($name) . $this->get_scriptdescription($dir . '/' . $file);
                 }
             }
@@ -172,6 +172,68 @@ class mod_vpl_executionoptions_form extends moodleform {
     }
 
     /**
+     * Returns a list of evaluators available for the VPL instance and their help links.
+     *
+     * @param mod_vpl $vpl The VPL instance.
+     * @return array An associative array of evaluators with their help links.
+     */
+    protected static function get_evaluator_help_list($vpl) {
+        $evaluators = \mod_vpl\plugininfo\vplevaluator::get_enabled_plugins();
+        $evaluatorshelplist = ['' => ''];
+        foreach ($evaluators as $evaluatorname) {
+            $link = \mod_vpl\plugininfo\vplevaluator::get_printable_evaluator_help_link($vpl, $evaluatorname, true);
+            $evaluatorshelplist[$evaluatorname]  = $link;
+        }
+        return $evaluatorshelplist;
+    }
+
+    /**
+     * Generate JavaScript code to show evaluator help based on selection.
+     * This method creates a JavaScript function that updates the help section
+     * when the evaluator selection changes.
+     * @param mod_vpl $vpl The VPL instance.
+     * @return string JavaScript code as a string.
+     */
+    public static function get_evaluatorhelp_js($vpl) {
+        $evaluatorshelplist = self::get_evaluator_help_list($vpl);
+        return "(function() {
+            var htmlMap = " . json_encode($evaluatorshelplist) . ";
+            function updateEvaluatorHelp() {
+                var evaluatorSelect = document.getElementById('id_evaluator');
+                var evaluatorHelpLink = document.getElementById('id_evaluatorhelplink');
+                if (!evaluatorSelect || !evaluatorHelpLink) {
+                    return;
+                }
+                try {
+                    var val = evaluatorSelect.value;
+                    var html = htmlMap[val] || '';
+                    evaluatorHelpLink.innerHTML = html;
+                    if (html === '') {
+                        evaluatorHelpLink.style.display = 'none';
+                    } else {
+                        evaluatorHelpLink.style.display = '';
+                    }
+                } catch (e) {
+                    console.error('Error updating evaluator help:', e);
+                }
+            }
+            function initEvaluatorHelp() {
+                var evaluatorSelect = document.getElementById('id_evaluator');
+                if (evaluatorSelect) {
+                    evaluatorSelect.addEventListener('change', updateEvaluatorHelp);
+                    updateEvaluatorHelp(); // Trigger initial update
+                }
+            }
+            // Wait for page load before setting up event listeners
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', initEvaluatorHelp);
+            } else {
+                initEvaluatorHelp();
+            }
+        })();";
+    }
+
+    /**
      * Returns a list of evaluators available for the VPL instance.
      *
      * This method retrieves the list of enabled evaluators and formats them
@@ -203,96 +265,99 @@ class mod_vpl_executionoptions_form extends moodleform {
     protected function definition() {
         $mform = & $this->_form;
         $id = $this->vpl->get_course_module()->id;
-        $mform->addElement( 'hidden', 'id', $id );
-        $mform->setType( 'id', PARAM_INT );
-        $mform->addElement( 'header', 'header_execution_options', get_string( 'executionoptions', VPL ) );
-        $strbasedon = get_string( 'basedon', VPL );
+        $mform->addElement('hidden', 'id', $id);
+        $mform->setType('id', PARAM_INT);
+        $mform->addElement('header', 'header_execution_options', get_string('executionoptions', VPL));
+        $strbasedon = get_string('basedon', VPL);
         $basedonlist = [];
         $basedonlist[0] = '';
         $courseid = $this->vpl->get_course()->id;
-        $listcm = get_coursemodules_in_course( VPL, $courseid );
+        $listcm = get_coursemodules_in_course(VPL, $courseid);
         $instance = $this->vpl->get_instance();
         $vplid = $instance->id;
         foreach ($listcm as $aux) {
             if ($aux->instance != $vplid) {
-                $vpl = new mod_vpl( $aux->id );
+                $vpl = new mod_vpl($aux->id);
                 $basedonlist[$aux->instance] = $vpl->get_printable_name();
             }
         }
-        asort( $basedonlist );
-        $basedonlist[0] = get_string( 'select' );
-        $mform->addElement( 'select', 'basedon', $strbasedon, $basedonlist );
-        $mform->setDefault( 'basedon', $instance->basedon );
-        $mform->addHelpButton( 'basedon', 'basedon', VPL );
+        asort($basedonlist);
+        $basedonlist[0] = get_string('select');
+        $mform->addElement('select', 'basedon', $strbasedon, $basedonlist);
+        $mform->setDefault('basedon', $instance->basedon);
+        $mform->addHelpButton('basedon', 'basedon', VPL);
 
         $inheritedrun = strtoupper($this->vpl->get_closest_set_field_in_base_chain('runscript', ''));
         $inheriteddebug = strtoupper($this->vpl->get_closest_set_field_in_base_chain('debugscript', ''));
         $strrundefault = $inheritedrun ? get_string('inheritvalue', VPL, $inheritedrun) : get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
         $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
-        $mform->addElement( 'select', 'runscript', $strrunscript, $runlist );
-        $mform->setDefault( 'runscript', $instance->runscript );
+        $mform->addElement('select', 'runscript', $strrunscript, $runlist);
+        $mform->setDefault('runscript', $instance->runscript);
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
         $strdebugdefault = $inheriteddebug ? get_string('inheritvalue', VPL, $inheriteddebug) : get_string('autodetect', VPL);
         $strdebugscript = get_string('debugscript', VPL);
         $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
-        $mform->addElement( 'select', 'debugscript', $strdebugscript, $debuglist );
-        $mform->setDefault( 'debugscript', $instance->debugscript );
+        $mform->addElement('select', 'debugscript', $strdebugscript, $debuglist);
+        $mform->setDefault('debugscript', $instance->debugscript);
         $mform->addHelpButton('debugscript', 'debugscript', VPL);
 
         $strevaluator = get_string('evaluator', VPL);
-        $mform->addElement( 'select', 'evaluator', $strevaluator, $this->get_evaluatorlist());
-        $mform->setDefault( 'evaluator', $instance->evaluator );
+        $mform->addElement('select', 'evaluator', $strevaluator, $this->get_evaluatorlist());
+        $mform->setDefault('evaluator', $instance->evaluator);
         $mform->addHelpButton('evaluator', 'evaluator', VPL);
-
-        $strrunmode = get_string( 'run_mode', VPL );
+        $mform->addElement('static', 'evaluatorhelplink', '', '<span id="id_evaluatorhelplink"></span>');
+        $mform->hideIf('evaluatorhelplink', 'evaluator', 'eq', '');
+        $strrunmode = get_string('run_mode', VPL);
         $runmodelist = $this->get_run_modelist();
-        $mform->addElement( 'select', 'run_mode', $strrunmode, $runmodelist );
-        $mform->setDefault( 'run_mode', $instance->run_mode );
+        $mform->addElement('select', 'run_mode', $strrunmode, $runmodelist);
+        $mform->setDefault('run_mode', $instance->run_mode);
         $mform->addHelpButton('run_mode', 'run_mode', VPL);
 
-        $strevaluatemode = get_string( 'evaluation_mode', VPL );
+        $strevaluatemode = get_string('evaluation_mode', VPL);
         $evaluatemodelist = $this->get_evaluation_modelist();
-        $mform->addElement( 'select', 'evaluation_mode', $strevaluatemode, $evaluatemodelist );
-        $mform->setDefault( 'evaluation_mode', $instance->evaluation_mode );
+        $mform->addElement('select', 'evaluation_mode', $strevaluatemode, $evaluatemodelist);
+        $mform->setDefault('evaluation_mode', $instance->evaluation_mode);
         $mform->addHelpButton('evaluation_mode', 'evaluation_mode', VPL);
 
-        $mform->addElement( 'selectyesno', 'run', get_string( 'run', VPL ) );
-        $mform->setDefault( 'run', $instance->run );
-        $mform->addElement( 'selectyesno', 'debug', get_string( 'debug', VPL ) );
-        $mform->setDefault( 'debug', $instance->debug );
-        $mform->addElement( 'selectyesno', 'evaluate', get_string( 'evaluate', VPL ) );
-        $mform->setDefault( 'evaluate', $instance->evaluate );
-        $mform->addElement( 'selectyesno', 'evaluateonsubmission', get_string( 'evaluateonsubmission', VPL ) );
-        $mform->setDefault( 'evaluateonsubmission', $instance->evaluateonsubmission );
-        $mform->disabledIf( 'evaluateonsubmission', 'evaluate', 'eq', 0 );
-        $mform->addHelpButton( 'evaluateonsubmission', 'evaluateonsubmission', VPL );
-        $mform->addElement( 'selectyesno', 'automaticgrading', get_string( 'automaticgrading', VPL ) );
-        $mform->setDefault( 'automaticgrading', $instance->automaticgrading );
-        $mform->disabledIf( 'automaticgrading', 'evaluate', 'eq', 0 );
-        $mform->addHelpButton( 'automaticgrading', 'automaticgrading', VPL );
+        $mform->addElement('selectyesno', 'run', get_string('run', VPL));
+        $mform->setDefault('run', $instance->run);
+        $mform->addElement('selectyesno', 'debug', get_string('debug', VPL));
+        $mform->setDefault('debug', $instance->debug);
+        $mform->addElement('selectyesno', 'evaluate', get_string('evaluate', VPL));
+        $mform->setDefault('evaluate', $instance->evaluate);
+        $mform->addElement('selectyesno', 'evaluateonsubmission', get_string('evaluateonsubmission', VPL));
+        $mform->setDefault('evaluateonsubmission', $instance->evaluateonsubmission);
+        $mform->disabledIf('evaluateonsubmission', 'evaluate', 'eq', 0);
+        $mform->addHelpButton('evaluateonsubmission', 'evaluateonsubmission', VPL);
+        $mform->addElement('selectyesno', 'automaticgrading', get_string('automaticgrading', VPL));
+        $mform->setDefault('automaticgrading', $instance->automaticgrading);
+        $mform->disabledIf('automaticgrading', 'evaluate', 'eq', 0);
+        $mform->addHelpButton('automaticgrading', 'automaticgrading', VPL);
 
-        $mform->addElement( 'submit', 'saveoptions', get_string( 'saveoptions', VPL ) );
+        $mform->addElement('submit', 'saveoptions', get_string('saveoptions', VPL));
     }
 }
 
 require_login();
 
-$id = required_param( 'id', PARAM_INT );
-$vpl = new mod_vpl( $id );
-$vpl->prepare_page( 'forms/executionoptions.php', [ 'id' => $id ] );
-vpl_include_jsfile( 'hideshow.js' );
-$vpl->require_capability( VPL_MANAGE_CAPABILITY );
-// Display page.
-$vpl->print_header( get_string( 'execution', VPL ) );
-$vpl->print_heading_with_help( 'executionoptions' );
+$id = required_param('id', PARAM_INT);
+$vpl = new mod_vpl($id);
+$vpl->prepare_page('forms/executionoptions.php', [ 'id' => $id ]);
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
 
-$mform = new mod_vpl_executionoptions_form( 'executionoptions.php', $vpl );
+vpl_include_jsfile('hideshow.js');
+echo vpl_include_js(mod_vpl_executionoptions_form::get_evaluatorhelp_js($vpl));
+// Display page.
+$vpl->print_header(get_string('execution', VPL));
+$vpl->print_heading_with_help('executionoptions');
+
+$mform = new mod_vpl_executionoptions_form('executionoptions.php', $vpl);
 if ($fromform = $mform->get_data()) {
-    if (isset( $fromform->saveoptions )) {
+    if (isset($fromform->saveoptions)) {
         $instance = $vpl->get_instance();
-        \mod_vpl\event\vpl_execution_options_updated::log( $vpl );
+        \mod_vpl\event\vpl_execution_options_updated::log($vpl);
         $instance->basedon = $fromform->basedon;
         $instance->runscript = $fromform->runscript;
         $instance->debugscript = $fromform->debugscript;
@@ -304,13 +369,13 @@ if ($fromform = $mform->get_data()) {
         $instance->evaluation_mode = $fromform->evaluation_mode;
         $instance->evaluateonsubmission = $fromform->evaluate && $fromform->evaluateonsubmission;
         $instance->automaticgrading = $fromform->evaluate && $fromform->automaticgrading;
-        if ( $vpl->update() ) {
-            vpl_notice( get_string( 'optionssaved', VPL ) );
+        if ($vpl->update()) {
+            vpl_notice(get_string('optionssaved', VPL));
         } else {
-            vpl_notice( get_string( 'optionsnotsaved', VPL ), 'error' );
+            vpl_notice(get_string('optionsnotsaved', VPL), 'error');
         }
     }
 }
-\mod_vpl\event\vpl_execution_options_viewed::log( $vpl );
+\mod_vpl\event\vpl_execution_options_viewed::log($vpl);
 $mform->display();
 $vpl->print_footer();

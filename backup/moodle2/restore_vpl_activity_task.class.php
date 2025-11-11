@@ -23,8 +23,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-defined ( 'MOODLE_INTERNAL' ) || die ();
-require_once(dirname( __FILE__ ) . '/restore_vpl_stepslib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/restore_vpl_stepslib.php');
 
 /**
  * Provides support for restore VPL antivities in the moodle2 backup format
@@ -50,8 +50,8 @@ class restore_vpl_activity_task extends restore_activity_task {
      * Define (add) particular steps this activity can have
      */
     protected function define_my_steps() {
-        $this->structurestep = new restore_vpl_activity_structure_step ( 'vpl_structure', 'vpl.xml' );
-        $this->add_step ( $this->structurestep );
+        $this->structurestep = new restore_vpl_activity_structure_step('vpl_structure', 'vpl.xml');
+        $this->add_step($this->structurestep);
     }
 
     /**
@@ -61,9 +61,9 @@ class restore_vpl_activity_task extends restore_activity_task {
     public static function define_decode_contents() {
         $contents = [];
 
-        $contents[] = new restore_decode_content ( 'vpl', [
+        $contents[] = new restore_decode_content('vpl', [
                 'intro',
-        ], 'vpl' );
+        ], 'vpl');
 
         return $contents;
     }
@@ -75,8 +75,8 @@ class restore_vpl_activity_task extends restore_activity_task {
     public static function define_decode_rules() {
         $rules = [];
 
-        $rules[] = new restore_decode_rule ( 'VPLVIEWBYID', '/mod/vpl/view.php?id=$1', 'course_module' );
-        $rules[] = new restore_decode_rule ( 'VPLINDEX', '/mod/vpl/index.php?id=$1', 'course' );
+        $rules[] = new restore_decode_rule('VPLVIEWBYID', '/mod/vpl/view.php?id=$1', 'course_module');
+        $rules[] = new restore_decode_rule('VPLINDEX', '/mod/vpl/index.php?id=$1', 'course');
 
         return $rules;
     }
@@ -115,21 +115,21 @@ class restore_vpl_activity_task extends restore_activity_task {
      */
     public function after_restore() {
         global $DB;
-        $id = $this->get_activityid ();
-        $data = $DB->get_record ( 'vpl', [
+        $id = $this->get_activityid();
+        $data = $DB->get_record('vpl', [
                 'id' => $id,
-        ] );
+        ]);
         if ($data != false && $data->basedon) {
-            $data->basedon = $this->structurestep->get_mappingid ( 'vpl', $data->basedon );
-            if ($data->basedon == false ) {
+            $data->basedon = $this->structurestep->get_mappingid('vpl', $data->basedon);
+            if ($data->basedon == false) {
                 $data->basedon = $this->structurestep->get_baseon_by_name($data);
             }
-            if ($data->basedon == false ) {
+            if ($data->basedon == false) {
                 $basedonname = $this->structurestep->get_baseon_name($data);
                 $error = get_string('basedon_missed', 'vpl', $basedonname);
                 $data->name .= " ($error)";
             }
-            $DB->update_record ( 'vpl', $data );
+            $DB->update_record('vpl', $data);
         }
     }
 }

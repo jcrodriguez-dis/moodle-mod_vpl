@@ -22,14 +22,14 @@
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-defined( 'MOODLE_INTERNAL' ) || die();
+defined('MOODLE_INTERNAL') || die();
 
 global $CFG, $DB;
 require_once($CFG->dirroot . '/mod/vpl/lib.php');
 $ret = true;
-$vpls = $DB->get_records( 'vpl', null, '', 'id' );
+$vpls = $DB->get_records('vpl', null, '', 'id');
 foreach ($vpls as $vplinstance) {
-    $ret = $ret && vpl_delete_instance( $vplinstance->id );
+    $ret = $ret && vpl_delete_instance($vplinstance->id);
 }
 if (! $ret) {
     throw new moodle_exception('error:uninstalling', 'mod_vpl');

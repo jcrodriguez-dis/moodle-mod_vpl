@@ -26,13 +26,12 @@
 namespace mod_vpl\util;
 
 defined('MOODLE_INTERNAL') || die;
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Class to hide & show any tag contents (div, span, pre, etc.).
  */
 class hide_show {
-
     /**
      * @var int Global counter of ids to get a unique id for each tag.
      */
@@ -59,11 +58,11 @@ class hide_show {
      */
     public function __construct($show = false) {
         if (self::$globalid == 0) {
-            echo vpl_include_jsfile( 'hideshow.js' );
+            echo vpl_include_jsfile('hideshow.js');
         }
         $this->id = self::$globalid;
         $this->show = $show;
-        self::$globalid ++;
+        self::$globalid++;
     }
     /**
      * Generate the hide/show button.

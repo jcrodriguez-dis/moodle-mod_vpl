@@ -26,14 +26,13 @@ namespace mod_vpl\event;
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/../../locallib.php');
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a submission grade is updated.
  * This class is used to log the event when a submission's grade is modified in the VPL module.
  */
 class submission_grade_updated extends submission_graded {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.

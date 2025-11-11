@@ -24,15 +24,14 @@
  */
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Event class for when a submission grade is viewed.
  * This class is used to log the event when a grade for a submission is viewed in the VPL module.
  */
 class submission_grade_viewed extends submission_graded {
-
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -51,6 +50,6 @@ class submission_grade_viewed extends submission_graded {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'grade' );
+        return $this->get_description_mod('grade');
     }
 }

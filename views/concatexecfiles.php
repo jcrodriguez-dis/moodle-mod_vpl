@@ -121,9 +121,11 @@ echo $OUTPUT->heading_with_help($pagetitle, 'concatenatedscripts', 'mod_vpl');
 if (count($basedons) > 1) {
     echo '<div class="text-center mx-2" style="width:max-content">
               <div>' . get_string('inheritancechain', 'mod_vpl') . '</div>' .
-              implode('<i class="fa fa-caret-up d-block"></i>', array_map(function($chainvpl) {
-                  return html_writer::link(new moodle_url('/mod/vpl/view.php?id=' . $chainvpl->get_course_module()->id),
-                          $chainvpl->get_printable_name());
+              implode('<i class="fa fa-caret-up d-block"></i>', array_map(function ($chainvpl) {
+                  return html_writer::link(
+                      new moodle_url('/mod/vpl/view.php?id=' . $chainvpl->get_course_module()->id),
+                      $chainvpl->get_printable_name()
+                  );
               }, array_reverse($basedons))) .
           '</div>';
 }

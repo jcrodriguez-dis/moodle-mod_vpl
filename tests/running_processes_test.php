@@ -28,9 +28,11 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
+
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
+
+use mod_vpl\tests\base_fixture;
 
 /**
  * Unit tests for vpl_running_processes class.
@@ -99,7 +101,8 @@ final class running_processes_test extends base_fixture {
         $this->otheruserrun->userid = $this->students[1]->id;
         $this->otheruserrun->adminticket = 'otheruserrun7';
         $this->othervplrun = clone $this->run;
-        $this->othervplrun->vpl = $this->vplonefile->get_instance()->id;;
+        $this->othervplrun->vpl = $this->vplonefile->get_instance()->id;
+        ;
         $this->othervplrun->adminticket = 'othervplrun7';
         $this->run->id = \vpl_running_processes::set($this->run);
         $this->debug->id = \vpl_running_processes::set($this->debug);

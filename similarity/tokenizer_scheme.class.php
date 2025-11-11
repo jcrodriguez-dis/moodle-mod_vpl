@@ -25,7 +25,9 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
+require_once(dirname(__FILE__) . '/tokenizer_base.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
 
 /**
  * Class to tokenize Scheme programs
@@ -34,7 +36,6 @@ require_once(dirname( __FILE__ ) . '/tokenizer_base.class.php');
  * tokenization for Scheme programming language.
  */
 class vpl_tokenizer_scheme extends vpl_tokenizer_base {
-
     /**
      * @var array list of reserved words
      */
@@ -108,8 +109,8 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
      * @param int $pos position in the string to check
      * @return bool true if the previous character is an open parenthesis, false otherwise
      */
-    protected function is_previous_open_parenthesis(& $string, $pos) {
-        for (; $pos >= 0; $pos --) {
+    protected function is_previous_open_parenthesis(&$string, $pos) {
+        for (; $pos >= 0; $pos--) {
             $char = $string[$pos];
             if ($char == '(') {
                 return true;
@@ -128,7 +129,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
      * @return bool true if it is an identifier, false otherwise
      */
     protected function is_indentifier($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
@@ -142,7 +143,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
      * @return bool true if it is a number, false otherwise
      */
     protected function is_number($text) {
-        if (strlen( $text ) == 0) {
+        if (strlen($text) == 0) {
             return false;
         }
         $first = $text[0];
@@ -153,7 +154,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
      * Add a parenthesis to the list of tokens
      */
     protected function add_parenthesis() {
-        $this->tokens[] = new vpl_token( vpl_token_type::OPERATOR, '(', $this->linenumber );
+        $this->tokens[] = new token(token_type::OPERATOR, '(', $this->linenumber);
     }
 
     /**
@@ -166,7 +167,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             $pending = '';
             return;
         }
-        $this->tokens[] = new vpl_token( vpl_token_type::LITERAL, $pending, $this->linenumber );
+        $this->tokens[] = new token(token_type::LITERAL, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -180,12 +181,12 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
             $pending = '';
             return;
         }
-        if (isset( $this->reserved[$pending] )) {
-            $type = vpl_token_type::OPERATOR;
+        if (isset($this->reserved[$pending])) {
+            $type = token_type::OPERATOR;
         } else {
-            $type = vpl_token_type::IDENTIFIER;
+            $type = token_type::IDENTIFIER;
         }
-        $this->tokens[] = new vpl_token( $type, $pending, $this->linenumber );
+        $this->tokens[] = new token($type, $pending, $this->linenumber);
         $pending = '';
     }
 
@@ -219,10 +220,10 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
         $this->linenumber = 1;
         $state = self::IN_REGULAR;
         $pending = '';
-        $l = strlen( $filedata );
+        $l = strlen($filedata);
         $current = '';
         $pospendig = 0;
-        for ($i = 0; $i < $l; $i ++) {
+        for ($i = 0; $i < $l; $i++) {
             $previous = $current;
             $current = $filedata[$i];
             if ($i < ($l - 1)) {
@@ -238,36 +239,38 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
                 }
             }
             switch ($state) {
-                case self::IN_COMMENT :
+                case self::IN_COMMENT:
                     if ($current == self::LF) {
                         $state = self::IN_REGULAR;
                     }
                     break;
-                case self::IN_STRING :
+                case self::IN_STRING:
                     if ($current == '"' && $previous != "\\") {
                         $state = self::IN_REGULAR;
                     }
                     break;
-                case self::IN_CHAR :
-                    if (! ctype_alpha( $current ) && $current != '-') {
+                case self::IN_CHAR:
+                    if (! ctype_alpha($current) && $current != '-') {
                         $state = self::IN_REGULAR;
-                        $i --;
+                        $i--;
                         break; // Reprocess current char.
                     }
                     break;
-                case self::IN_REGULAR :
-                    if (($current != ' ') && ($current != '(') && ($current != ')') && ($current != ';')
-                        && ($current != '"') && ($current != self::LF) && ($current != self::TAB)) {
+                case self::IN_REGULAR:
+                    if (
+                        ($current != ' ') && ($current != '(') && ($current != ')') && ($current != ';')
+                        && ($current != '"') && ($current != self::LF) && ($current != self::TAB)
+                    ) {
                         if ($pending == '') {
                             $pospendig = $i;
                         }
                         $pending .= $current;
                     } else {
-                        if (strlen( $pending )) {
-                            if ($this->is_previous_open_parenthesis( $filedata, $pospendig - 1 )) {
-                                $this->add_function_pending( $pending );
+                        if (strlen($pending)) {
+                            if ($this->is_previous_open_parenthesis($filedata, $pospendig - 1)) {
+                                $this->add_function_pending($pending);
                             } else {
-                                $this->add_parameter_pending( $pending );
+                                $this->add_parameter_pending($pending);
                             }
                         }
                         if ($current == '(') {
@@ -289,7 +292,7 @@ class vpl_tokenizer_scheme extends vpl_tokenizer_base {
     /**
      * Get the tokens found in the file
      *
-     * @return array of vpl_token objects
+     * @return array of token objects
      */
     public function get_tokens() {
         return $this->tokens;

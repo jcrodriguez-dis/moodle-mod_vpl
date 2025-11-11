@@ -29,7 +29,6 @@ namespace mod_vpl\event;
  * This class is used to log the event when a user checks all VPL activities in a course.
  */
 class vpl_checkvpls extends base {
-
     /**
      * Returns the legacy action for this event.
      * This method is used to define the legacy action that corresponds to this event.
@@ -72,7 +71,7 @@ class vpl_checkvpls extends base {
      */
     public function get_url() {
         $param = [ 'id' => $this->data['objectid'] ];
-        return new \moodle_url( 'mod/vpl/views/checkvpls.php',  $param);
+        return new \moodle_url('mod/vpl/views/checkvpls.php', $param);
     }
 
     /**

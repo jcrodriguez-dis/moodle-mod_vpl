@@ -70,7 +70,6 @@ define('TOKENIZER_ON_TEST', true);
  * @codeCoverageIgnore
  */
 class tokenizer extends tokenizer_base {
-
     /**
      * @var string $name Name of the tokenizer.
      * This is used to identify the tokenizer and to load the rules from the JSON file.
@@ -143,7 +142,7 @@ class tokenizer extends tokenizer_base {
     /**
      * @var array $availabletokens Available names for tokens based on TextMate and ACE editor.
      *
-     * Each token must be declared as one of the vpl_token_type avaiable types
+     * Each token must be declared as one of the token_type available types
      * in order to be compatible for similarity classes.
      *
      * It is important to notice that if one token's name has not a valid type,
@@ -272,16 +271,18 @@ class tokenizer extends tokenizer_base {
      * @param string $rulefilename JSON file with highlight rules
      * @param bool $setcheckrules true to set checkrules=true and false to define it based on $rulefilename
      */
-    public function __construct(string $rulefilename, bool $setcheckrules=false) {
+    public function __construct(string $rulefilename, bool $setcheckrules = false) {
         parent::__construct();
 
         assertf::assert(
-            file_exists($rulefilename), $rulefilename,
+            file_exists($rulefilename),
+            $rulefilename,
             'file ' . $rulefilename . ' must exist'
         );
 
         assertf::assert(
-            str_ends_with($rulefilename, '_tokenizer_rules.json'), $rulefilename,
+            str_ends_with($rulefilename, '_tokenizer_rules.json'),
+            $rulefilename,
             $rulefilename . ' must have suffix _tokenizer_rules.json'
         );
 
@@ -314,7 +315,7 @@ class tokenizer extends tokenizer_base {
      * @param int $maxtokencount natural number to set to $maxtokencount
      * @codeCoverageIgnore
      */
-    public function set_max_token_count(int $maxtokencount=0): void {
+    public function set_max_token_count(int $maxtokencount = 0): void {
         if ($maxtokencount >= 0) {
             $this->maxtokencount = $maxtokencount;
         }
@@ -327,7 +328,7 @@ class tokenizer extends tokenizer_base {
      * @param bool $isfile check if $data is filename
      * @return array
      */
-    public function parse(string $data, bool $isfile=true): array {
+    public function parse(string $data, bool $isfile = true): array {
         if ($isfile === true) {
             $tokens = $this->get_all_tokens_in_file($data);
         } else {
@@ -574,7 +575,7 @@ class tokenizer extends tokenizer_base {
 
                 if ($matchcount > 1) {
                     if (preg_match("/\\\(\d)/", $rule->regex) === 1) {
-                        $adjustedregex = preg_replace_callback("/\\\([0-9]+)/", function($value) use ($matchtotal) {
+                        $adjustedregex = preg_replace_callback("/\\\([0-9]+)/", function ($value) use ($matchtotal) {
                             return "\\" . (intval(substr($value[0], 1), 10) + $matchtotal + 1);
                         }, $rule->regex);
                     } else {
@@ -607,7 +608,7 @@ class tokenizer extends tokenizer_base {
      * @param token $token the token to add
      * @param bool $settrim whether to trim the token value before checking its length
      */
-    private static function add_token(array &$tokens, token $token, bool $settrim=false): void {
+    private static function add_token(array &$tokens, token $token, bool $settrim = false): void {
         if (isset($token->type)) {
             $cond = !$settrim ? strlen($token->value) >= 1 : strlen(trim($token->value)) >= 1;
 
@@ -653,12 +654,14 @@ class tokenizer extends tokenizer_base {
         if (isset($jsonobj->max_token_count)) {
             if ($this->checkrules === true) {
                 assertf::assert(
-                    is_numeric($jsonobj->max_token_count), $rulefilename,
+                    is_numeric($jsonobj->max_token_count),
+                    $rulefilename,
                     '"max_token_count" option must be numeric'
                 );
 
                 assertf::assert(
-                    $jsonobj->max_token_count >= 0, $rulefilename,
+                    $jsonobj->max_token_count >= 0,
+                    $rulefilename,
                     '"max_token_count" option must be a positive integer'
                 );
             }
@@ -683,7 +686,8 @@ class tokenizer extends tokenizer_base {
         if (isset($jsonobj->override_tokens)) {
             if ($this->checkrules === true) {
                 assertf::assert(
-                    is_object($jsonobj->override_tokens), $rulefilename,
+                    is_object($jsonobj->override_tokens),
+                    $rulefilename,
                     '"override_tokens" option must be an object'
                 );
             }
@@ -695,12 +699,14 @@ class tokenizer extends tokenizer_base {
                 if ($this->checkrules === true) {
                     assertf::assert(
                         !in_array($tokename, self::VPLTOKENTYPES),
-                        $rulefilename, $tokename . ' could not be overrided'
+                        $rulefilename,
+                        $tokename . ' could not be overrided'
                     );
 
                     assertf::assert(
                         isset($this->availabletokens[$strtokentype]) || strcmp($strtokentype, 'vpl_null') == 0,
-                        $rulefilename, $strtokentype . ' does not exist'
+                        $rulefilename,
+                        $strtokentype . ' does not exist'
                     );
                 }
 
@@ -737,7 +743,8 @@ class tokenizer extends tokenizer_base {
         if (isset($jsonobj->name)) {
             if ($this->checkrules === true) {
                 assertf::assert(
-                    is_string($jsonobj->name), $rulefilename,
+                    is_string($jsonobj->name),
+                    $rulefilename,
                     '"name" option must be a string'
                 );
             }
@@ -763,7 +770,8 @@ class tokenizer extends tokenizer_base {
             if ($this->checkrules === true) {
                 assertf::assert(
                     is_string($jsonobj->extension) || tokenizer_base::check_type($jsonobj->extension, "array_string") === true,
-                    $rulefilename, '"extension" option must be a string or an array of strings'
+                    $rulefilename,
+                    '"extension" option must be a string or an array of strings'
                 );
             }
 
@@ -801,7 +809,8 @@ class tokenizer extends tokenizer_base {
             $optionval = $jsonobj->check_rules;
 
             assertf::assert(
-                is_bool($optionval), $rulefilename,
+                is_bool($optionval),
+                $rulefilename,
                 '"check_rules" option must be a boolean'
             );
 
@@ -836,7 +845,8 @@ class tokenizer extends tokenizer_base {
 
             if ($this->checkrules == true) {
                 assertf::assert(
-                    file_exists($this->inheritrules), $rulefilename,
+                    file_exists($this->inheritrules),
+                    $rulefilename,
                     "inherit JSON file " . $this->inheritrules . ' does not exist'
                 );
             }
@@ -860,7 +870,8 @@ class tokenizer extends tokenizer_base {
 
         if ($this->checkrules == true) {
             assertf::assert(
-                is_object($jsonobj->states), $rulefilename,
+                is_object($jsonobj->states),
+                $rulefilename,
                 '"states" option must be an object'
             );
 

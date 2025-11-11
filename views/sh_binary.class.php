@@ -25,7 +25,7 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname ( __FILE__ ) . '/sh_base.class.php');
+require_once(dirname(__FILE__) . '/sh_base.class.php');
 
 /**
  * VPL Syntaxhighlighters for binary files
@@ -41,7 +41,7 @@ class vpl_sh_binary extends vpl_sh_base {
      * @return void
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s( $name ) . '</h4>';
-        echo get_string( 'binaryfile', VPL );
+        echo "<h4>" . s($name) . '</h4>';
+        echo get_string('binaryfile', VPL);
     }
 }

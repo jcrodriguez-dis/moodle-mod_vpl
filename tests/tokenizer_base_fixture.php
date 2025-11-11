@@ -27,10 +27,11 @@ namespace mod_vpl;
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
-require_once($CFG->dirroot . '/mod/vpl/tests/base_fixture.php');
 
 use mod_vpl\tokenizer\token;
 use mod_vpl\util\assertf;
+use mod_vpl\tests\testable_tokenizer_base;
+
 
 /**
  * Class tokenizer fixture base.

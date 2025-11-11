@@ -16,8 +16,8 @@
 
 namespace mod_vpl\event;
 
-defined( 'MOODLE_INTERNAL' ) || die();
-require_once(dirname( __FILE__ ) . '/../../locallib.php');
+defined('MOODLE_INTERNAL') || die();
+require_once(dirname(__FILE__) . '/../../locallib.php');
 
 /**
  * Class for logging of webservice token view events
@@ -28,7 +28,6 @@ require_once(dirname( __FILE__ ) . '/../../locallib.php');
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 class vpl_webservice_token_viewed extends vpl_base {
-
     /**
      * Initializes the event.
      */
@@ -43,6 +42,6 @@ class vpl_webservice_token_viewed extends vpl_base {
      * @return string The description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod( 'webservice token' );
+        return $this->get_description_mod('webservice token');
     }
 }

@@ -16,7 +16,10 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/similarity_c.class.php');
+require_once(dirname(__FILE__) . '/similarity_c.class.php');
+use mod_vpl\tokenizer\token;
+use mod_vpl\tokenizer\token_type;
+use mod_vpl\tokenizer\tokenizer_factory;
 
 /**
  * Java language similarity class
@@ -46,79 +49,80 @@ class vpl_similarity_java extends vpl_similarity_c {
         $openbrace = false;
         $nsemicolon = 0;
         $ret = [];
-        $prev = new vpl_token( vpl_token_type::IDENTIFIER, '', 0 );
+        $prev = new token(token_type::IDENTIFIER, '', 0);
         foreach ($tokens as $token) {
-            if ($token->type == vpl_token_type::OPERATOR) {
+            if ($token->type == token_type::OPERATOR) {
                 // Operators "++" and "--" .
                 // Operator "::" .
                 // Expresion "(*p)." and "p->" .
                 // Operators +=, -=, *=, etc.
                 switch ($token->value) {
-                    case '[' :
+                    case '[':
                         // Only add ].
                         break;
-                    case '(' :
+                    case '(':
                         // Only add ).
                         break;
-                    case '{' :
+                    case '{':
                         // Only add }.
                         $nsemicolon = 0;
                         $openbrace = true;
                         break;
-                    case '}' :
+                    case '}':
                         // Remove unneeded {}.
                         if (! ($openbrace && $nsemicolon < 2)) {
                             $ret[] = $token;
                         }
                         $openbrace = false;
                         break;
-                    case ';' :
+                    case ';':
                         // Count semicolon after a {.
-                        $nsemicolon ++;
+                        $nsemicolon++;
                         $ret[] = $token;
                         break;
-                    case '++' :
+                    case '++':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '+';
                         $ret[] = $token;
                         break;
-                    case '--' :
+                    case '--':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '-';
                         $ret[] = $token;
                         break;
-                    case '+=' :
+                    case '+=':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '+';
                         $ret[] = $token;
                         break;
-                    case '-=' :
+                    case '-=':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '-';
                         $ret[] = $token;
                         break;
-                    case '*=' :
+                    case '*=':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '*';
                         $ret[] = $token;
                         break;
-                    case '/=' :
+                    case '/=':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '/';
                         $ret[] = $token;
                         break;
-                    case '%=' :
+                    case '%=':
                         $ret[] = self::clone_token($token, '=');
                         $token->value = '%';
                         $ret[] = $token;
                         break;
-                    case '.' :
+                    case '.':
                         if ($prev->value == 'this') {
                             break;
                         }
-                    case '::' :
+                        // No break.
+                    case '::':
                         break;
-                    default :
+                    default:
                         $ret[] = $token;
                 }
                 $prev = $token;
@@ -134,6 +138,6 @@ class vpl_similarity_java extends vpl_similarity_c {
      * @return vpl_tokenizer The tokenizer instance for Java.
      */
     public function get_tokenizer() {
-        return vpl_tokenizer_factory::get( 'java' );
+        return tokenizer_factory::get('java');
     }
 }

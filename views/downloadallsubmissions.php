@@ -23,12 +23,13 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-define( 'NO_DEBUG_DISPLAY', true );
+define('NO_DEBUG_DISPLAY', true);
 
-require_once(dirname(__FILE__).'/../../../config.php');
-require_once(dirname(__FILE__).'/../locallib.php');
-require_once(dirname(__FILE__).'/../vpl.class.php');
-require_once(dirname(__FILE__).'/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__) . '/../../../config.php');
+require_once(dirname(__FILE__) . '/../locallib.php');
+require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
+use mod_vpl\util\file_group;
 
 global $CFG;
 
@@ -39,19 +40,19 @@ global $CFG;
  *
  * @return void
  */
-function vpl_user_zip_dirname( $name ) {
+function vpl_user_zip_dirname($name) {
     // Prepare name.
-    $name = trim( $name );
-    $name = str_replace( '?', '_', $name );
-    $name = str_replace( '.', '_', $name );
-    $name = str_replace( ',', '_', $name );
-    $name = str_replace( ':', '_', $name );
-    $name = str_replace( '*', '_', $name );
-    $name = str_replace( '\\', '_', $name );
-    $name = str_replace( '<', '_', $name );
-    $name = str_replace( '>', '_', $name );
-    $name = str_replace( '|', '_', $name );
-    $name = str_replace( '/', '_', $name );
+    $name = trim($name);
+    $name = str_replace('?', '_', $name);
+    $name = str_replace('.', '_', $name);
+    $name = str_replace(',', '_', $name);
+    $name = str_replace(':', '_', $name);
+    $name = str_replace('*', '_', $name);
+    $name = str_replace('\\', '_', $name);
+    $name = str_replace('<', '_', $name);
+    $name = str_replace('>', '_', $name);
+    $name = str_replace('|', '_', $name);
+    $name = str_replace('/', '_', $name);
     return $name;
 }
 
@@ -59,30 +60,30 @@ function vpl_user_zip_dirname( $name ) {
  * Adds new files to the zip file.
  * Returns bytes archived
  *
- * @param ZipArchive         $zip        Object that represents a zip file.
- * @param string             $sourcedir  Source directory name
- * @param string             $zipdirname Zip directory name
- * @param file_group_process $fgm        Object that manages group of files
- * @param string             $ziperrors  Output message if error
+ * @param ZipArchive $zip        Object that represents a zip file.
+ * @param string     $sourcedir  Source directory name
+ * @param string     $zipdirname Zip directory name
+ * @param file_group $fgm        Object that manages group of files
+ * @param string     $ziperrors  Output message if error
  *
  * @return int Bytes archived
  */
 function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) {
     $total = 0;
     foreach ($fgm->getFileList() as $filename) {
-        $source = file_group_process::encodeFileName( $filename );
+        $source = file_group::encodeFileName($filename);
         $filepathorigen = $sourcedir . $source;
         $filepathtarget = $zipdirname . $filename;
-        if ( ! file_exists($filepathorigen) ) {
-            $ziperrors .= 'Warning: file "'.$filepathorigen . "\" does not exists\n";
+        if (! file_exists($filepathorigen)) {
+            $ziperrors .= 'Warning: file "' . $filepathorigen . "\" does not exists\n";
             $zip->addFromString($filepathtarget, '');
             continue;
         }
         $data = file_get_contents($filepathorigen);
         $total += strlen($data);
-        if ( ! $zip->addFromString($filepathtarget, $data) ) {
-            $ziperrors .= 'File "'.$filepathorigen . '" in "' . $filepathtarget . '" ';
-            $ziperrors .= 'generate ' . $zip->getStatusString () ."\n";
+        if (! $zip->addFromString($filepathtarget, $data)) {
+            $ziperrors .= 'File "' . $filepathorigen . '" in "' . $filepathtarget . '" ';
+            $ziperrors .= 'generate ' . $zip->getStatusString() . "\n";
         }
     }
     return $total;
@@ -105,19 +106,21 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
     $cecg['gradecomments'] = $submission->get_grade_comments();
     $cecg['usercomments'] = $instance->comments;
     $cecg['grade'] = $instance->grade;
-    if ($cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
-        $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > '') {
-        if ( $cecg['compilation'] !== 0 ) {
-            $zip->addFromString( $zipdirname. 'compilation' . '.txt', $cecg['compilation']);
+    if (
+        $cecg['compilation'] !== 0 || $cecg['executed'] == 1 ||
+        $cecg['gradecomments'] . $cecg['usercomments'] . $cecg['grade'] > ''
+    ) {
+        if ($cecg['compilation'] !== 0) {
+            $zip->addFromString($zipdirname . 'compilation' . '.txt', $cecg['compilation']);
             $total += strlen($cecg['compilation']);
         }
-        if ( $cecg['executed'] == 1 ) {
-            $zip->addFromString( $zipdirname . 'execution' . '.txt', $cecg['execution']);
+        if ($cecg['executed'] == 1) {
+            $zip->addFromString($zipdirname . 'execution' . '.txt', $cecg['execution']);
             $total += strlen($cecg['execution']);
         }
         foreach (['gradecomments', 'usercomments', 'grade'] as $ele) {
-            if ( ! empty($cecg[$ele])) {
-                $zip->addFromString( $zipdirname . $ele . '.txt', $cecg[$ele]);
+            if (! empty($cecg[$ele])) {
+                $zip->addFromString($zipdirname . $ele . '.txt', $cecg[$ele]);
                 $total += strlen($cecg[$ele]);
             }
         }
@@ -126,24 +129,24 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
 }
 
 require_login();
-$id = required_param( 'id', PARAM_INT );
-$all = optional_param( 'all', 0, PARAM_INT );
+$id = required_param('id', PARAM_INT);
+$all = optional_param('all', 0, PARAM_INT);
 
 /**
  * @var int Size trigger to close the zip file and reopen it.
  */
 const SIZE_TRIGGER = 64 * 1024 * 1024; // 64Mb.
-$vpl = new mod_vpl( $id );
+$vpl = new mod_vpl($id);
 $cm = $vpl->get_course_module();
-$vpl->require_capability( VPL_SIMILARITY_CAPABILITY );
-\mod_vpl\event\vpl_all_submissions_downloaded::log( $vpl );
+$vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+\mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);
 // Get students.
-$currentgroup = groups_get_activity_group( $cm );
+$currentgroup = groups_get_activity_group($cm);
 $extraname = '';
 if (! $currentgroup) {
     $currentgroup = '';
 } else {
-    $extraname = ' ' . groups_get_group_name( $currentgroup );
+    $extraname = ' ' . groups_get_group_name($currentgroup);
 }
 if ($vpl->is_group_activity()) {
     $idfiels = 'groupid';
@@ -183,7 +186,7 @@ foreach ($list as $uginfo) {
     }
     $usersubmissions = [];
     foreach ($submissions[$uginfo->id] as $subinstance) {
-        $usersubmissions[] = new mod_vpl_submission_CE( $vpl, $subinstance );
+        $usersubmissions[] = new mod_vpl_submission_CE($vpl, $subinstance);
     }
     $data->submissions = $usersubmissions;
     $alldata[] = $data;
@@ -194,8 +197,8 @@ $dir = $CFG->dataroot . '/temp/vpl';
 if (! file_exists($dir)) {
     mkdir($dir, $CFG->directorypermissions, true);
 }
-$zipfilename = tempnam( $dir, 'zip' );
-if ( $zipfilename === false || ! file_exists($zipfilename) ) {
+$zipfilename = tempnam($dir, 'zip');
+if ($zipfilename === false || ! file_exists($zipfilename)) {
     throw new moodle_exception('cannotopenzip');
 }
 if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
@@ -207,12 +210,12 @@ if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
         $zipdirname = $user->lastname . ' ' . $user->firstname . ' ' . $user->id . ' ' . $user->username;
         $zipdirname = vpl_user_zip_dirname($zipdirname);
         // Create directory.
-        $zip->addEmptyDir( $zipdirname );
+        $zip->addEmptyDir($zipdirname);
         $zipdirname .= '/';
         foreach ($data->submissions as $submission) {
-            $nsubmissions ++;
-            $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted );
-            $zipsubdirname = $zipdirname. $date . '/';
+            $nsubmissions++;
+            $date = date("Y-m-d-H-i-s", $submission->get_instance()->datesubmitted);
+            $zipsubdirname = $zipdirname . $date . '/';
             $fgm = $submission->get_submitted_fgm();
             $sourcedir = $submission->get_submission_directory();
             $sizearchived += vpl_add_files_to_zip($zip, $sourcedir, $zipsubdirname, $fgm, $ziperrors);
@@ -231,8 +234,8 @@ if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
     $date = date(DATE_W3C);
     $nusers = count($alldata);
     $zip->addFromString('Report.txt', "Date: $date\nNumber of users: $nusers\nNumber of submissions: $nsubmissions");
-    if ( $ziperrors > '' ) {
-        $zip->addFromString( 'Errors.txt', $ziperrors );
+    if ($ziperrors > '') {
+        $zip->addFromString('Errors.txt', $ziperrors);
     }
     $zip->close();
     vpl_output_zip($zipfilename, $vpl->get_instance()->name . $extraname);

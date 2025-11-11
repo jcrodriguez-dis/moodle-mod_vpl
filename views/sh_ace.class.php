@@ -25,8 +25,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-require_once(dirname(__FILE__).'/sh_base.class.php');
-require_once(dirname(__FILE__).'/sh_factory.class.php');
+require_once(dirname(__FILE__) . '/sh_base.class.php');
+require_once(dirname(__FILE__) . '/sh_factory.class.php');
 
 /**
  * VPL Syntaxhighlighters for Ace editor
@@ -57,7 +57,7 @@ class vpl_sh_ace extends vpl_sh_base {
      * @return string unique id for the file
      */
     protected static function getid() {
-        self::$fid ++;
+        self::$fid++;
         return 'fileid' . self::$fid;
     }
 
@@ -73,25 +73,26 @@ class vpl_sh_ace extends vpl_sh_base {
      */
     public function print_file($filename, $filedata, $showln = true, $nl = 3000, $title = true) {
         global $PAGE;
-        if ( array_search($filename, self::$executionfiles) !== false &&
-             $filedata == '') {
+        if (
+            array_search($filename, self::$executionfiles) !== false &&
+             $filedata == ''
+        ) {
             return;
         }
         $tid = self::getid();
         $plugincfg = get_config('mod_vpl');
-        if ( isset($plugincfg->editor_theme) ) {
+        if (isset($plugincfg->editor_theme)) {
             $theme = $plugincfg->editor_theme;
         } else {
             $theme = 'chrome';
         }
-        if ( $title ) {
-            echo "<h4 id='$tid'>" . s( $filename ) . '</h4>';
+        if ($title) {
+            echo "<h4 id='$tid'>" . s($filename) . '</h4>';
         }
-        if ( $filedata > '' ) {
-
+        if ($filedata > '') {
             $code = '<pre ';
             $code .= " id='code$tid' style='display:none' >";
-            $code .= htmlentities( $filedata, ENT_NOQUOTES );
+            $code .= htmlentities($filedata, ENT_NOQUOTES);
             $code .= '</pre>';
             echo $code;
             $code = '<h4 ';
