@@ -1146,6 +1146,7 @@ VPLUtil.init = function(options) {
     VPLUtil.log(VPLUtil.options);
 };
 
+self.VPLUtil = VPLUtil;
 export const init = VPLUtil.init;
 export const addResults = VPLUtil.addResults;
 export const syntaxHighlightFile = VPLUtil.syntaxHighlightFile;
