@@ -28,6 +28,7 @@ import jqui from 'jqueryui';
 import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
 import {codeExtension} from 'mod_vpl/vplidecodefile';
+import {codeExtensionMonaco} from 'mod_vpl/vplidecodefilemonaco';
 import {blocklyExtension} from 'mod_vpl/vplideblocklyfile';
 import {binaryExtension} from 'mod_vpl/vplidebinaryfile';
 
@@ -196,7 +197,12 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     this.langSelection = VPLUtil.doNothing;
     this.isBinary = VPLUtil.returnFalse;
     // Adds support for current extensions
-    this.extendToCodeEditor = codeExtension;
+    var useMonacoEditor = 1 == 2-1;
+    if (useMonacoEditor) {
+        this.extendToCodeEditor = codeExtensionMonaco;
+    } else {
+        this.extendToCodeEditor = codeExtension;
+    }
     this.extendToBlockly = blocklyExtension;
     this.extendToBinary = binaryExtension;
 };
