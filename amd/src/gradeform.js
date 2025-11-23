@@ -160,11 +160,50 @@ function setupImportButtons() {
 }
 
 /**
- * Setup the grade form JS features.
+ * Setup the get grade comment list button.
+ * @param {Number} id The id of course module instance of the VPL activity.
  */
-export const setup = () => {
+export const setupGetGradeCommentList = (id) => {
+    $('#vpl_load_grading_help').on('click', function() {
+        var panel = $('#vpl_grading_help_panel');
+        // Remove the button.
+        $(this).remove();
+        // Show loading spinner.
+        const spinner = '<i class="icon fa fa-spinner fa-pulse fa-fw " aria-hidden="true"></i>';
+        panel.removeClass('d-none');
+        panel.addClass('flex-grow-1');
+        panel.html(M.util.get_string('loading', 'moodle') + ' ' + spinner);
+        $.ajax({
+            method: 'GET',
+            url: M.cfg.wwwroot + '/mod/vpl/forms/grading_help.php?id=' + id,
+            success: function(data) {
+                const textarea = $('#id_comments');
+                textarea.css('margin-right', '1em');
+                textarea.css('resize', 'both');
+                panel.css('overflow-y', 'scroll');
+                if (data.success) {
+                    panel.html(data.response);
+                } else {
+                    panel.html(data.error);
+                }
+                window.VPL.resizeSView();
+                setInterval(window.VPL.resizeSView, 5000);
+            },
+            error: function() {
+                panel.html(M.util.get_string('error', 'moodle'));
+            },
+        });
+    });
+};
+
+/**
+ * Setup the grade form JS features.
+ * @param {Number} id The id of course module instance of the VPL activity.
+ */
+export const setup = (id) => {
     setupGradeButtons();
     setupImportButtons();
+    setupGetGradeCommentList(id);
 };
 
 /**
@@ -206,8 +245,86 @@ export const updateSubmissionsList = (submissionID, gradeData, nexturl) => {
 export const highlightSubmission = (submissionID) => {
     if (opener !== null) {
         $(opener.document).find('.gd' + submissionID).css('color', 'black').css('backgroundColor', 'yellow');
-        window.onunload = function() {
+        window.addEventListener('pagehide', function() {
             $(opener.document).find('.gd' + submissionID).css('color', '').css('backgroundColor', '');
-        };
+        });
     }
 };
+
+(function() {
+    if (typeof window.VPL != 'object') {
+        window.VPL = {};
+    }
+    /**
+     * Add new comment to the textarea granding comments field.
+     *
+     * @param {string} comment Comment to add
+     */
+    window.VPL.addComment = function(comment) {
+        if (!comment) {
+            return;
+        }
+        const field = document.getElementById('id_comments');
+        if (!field) {
+            return;
+        }
+        // Comment content removing last (-number) if any.
+        const cleanComment = comment.replace(/\(\s*-\s*\d(\.\d+)?\s*\)\s*$/, '');
+        const formattedComment = '-' + comment + '\n';
+        const currentText = field.value;
+        // Prevent duplicates
+        const foundIndex = currentText.indexOf(cleanComment);
+        if (foundIndex !== -1) {
+            field.setSelectionRange(foundIndex, foundIndex + cleanComment.length);
+            field.scrollTop = field.scrollHeight * (foundIndex / currentText.length);
+            field.focus();
+            return;
+        }
+        // Get cursor position and selection
+        const endPos = field.selectionEnd;
+        let textToInsert = formattedComment;
+        // Find the position to insert the comment: at the end of the current line
+        const nextNewLine = currentText.indexOf('\n', endPos);
+        let insertpos;
+        if (nextNewLine === -1) {
+            insertpos = currentText.length;
+            if (insertpos > 0 && currentText.charAt(insertpos - 1) !== '\n') {
+                textToInsert = '\n' + textToInsert;
+            }
+        } else {
+            insertpos = nextNewLine + 1;
+        }
+
+        // Insert text and select it
+        field.setRangeText(textToInsert, insertpos, insertpos, 'select');
+        // Focus the field
+        field.focus();
+        field.dispatchEvent(new Event('input', { bubbles: true }));
+    };
+
+    /**
+     * Resize the grading help side view to match the comments textarea size.
+     */
+    window.VPL.resizeSView = function() {
+        const commentsView = window.document.getElementById('vpl_grading_help_panel');
+        const textarea = window.document.getElementById('id_comments');
+        if (commentsView && textarea) {
+            const parent = commentsView.parentElement;
+            const newHeight = textarea.offsetHeight;
+            if (newHeight != commentsHeight) {
+                commentsHeight = newHeight;
+                commentsView.style.height = commentsHeight + 'px';
+            }
+            const newWidth = parent.clientWidth - textarea.offsetWidth - 20;
+            if (newWidth > 200 && newWidth != commentsWidth) {
+                commentsWidth = newWidth;
+                commentsView.style.width = commentsWidth + 'px';
+            }
+        }
+    };
+
+    // Call resize when the window is resized.
+    var commentsHeight = 0;
+    var commentsWidth = 0;
+    window.addEventListener('resize', window.VPL.resizeSView);
+})();

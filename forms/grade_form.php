@@ -24,6 +24,7 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 require_once($CFG->libdir . '/gradelib.php');
@@ -175,10 +176,25 @@ class mod_vpl_grade_form extends moodleform {
             );
             $buttonarray[] =& $mform->createElement('html', $OUTPUT->help_icon('calculate', VPL));
         }
+        $loadgradinghelpbutton = '<button type="button" class="btn btn-secondary" id="vpl_load_grading_help">';
+        $loadgradinghelpbutton .= get_string('listofcomments', VPL);
+        $loadgradinghelpbutton .= '</button>';
+        $buttonarray[] =& $mform->createElement('html', $loadgradinghelpbutton);
         $mform->addGroup($buttonarray, 'buttonar', get_string(vpl_get_gradenoun_str()), '', false);
 
         if ($grade != 0) {
-            $mform->addElement('textarea', 'comments', get_string('comments', VPL), 'rows="18" cols="70"');
+            // Create the textarea element.
+            $textarea = $mform->createElement('textarea', 'comments', get_string('comments', VPL), 'rows="18" cols="70"');
+            $mform->setType('comments', PARAM_TEXT);
+            // Create the side panel with the grading help button.
+            $panelcontent = '<div id="vpl_grading_help_panel" class="d-none"></div>';
+            $sidepanel = $mform->createElement('html', $panelcontent);
+            // Group them together.
+            $group = [];
+            $group[] = $textarea;
+            $group[] = $sidepanel;
+
+            $mform->addGroup($group, 'comments_group', get_string('comments', VPL), ' ', false);
         }
 
         if (! empty($CFG->enableoutcomes)) {
@@ -246,7 +262,7 @@ class mod_vpl_grade_form extends moodleform {
 
         $mform->addHelpButton('importlastgradedsub', 'importgrade', VPL);
 
-        $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'setup');
+        $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'setup', [ $id ]);
     }
 
     /**
