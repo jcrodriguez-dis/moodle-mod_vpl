@@ -37,14 +37,14 @@ function get_grading_help($vpl) {
     $list = [];
     $submissions = $vpl->all_last_user_submission();
     foreach ($submissions as $submission) {
-        $sub = new mod_vpl_submission( $vpl, $submission );
-        $sub->filter_feedback( $list );
+        $sub = new mod_vpl_submission($vpl, $submission);
+        $sub->filter_feedback($list);
     }
     $all = [];
     foreach ($list as $text => $info) {
-        $astext = s( addslashes_js( $text ) );
+        $astext = s(addslashes_js($text));
         $html = '';
-        $html .= s( $text );
+        $html .= s($text);
         foreach (array_keys($info->grades) as $grade) {
             if ($grade >= 0) { // No grade.
                 $jscript = 'window.VPL.addComment(\'' . $astext . '\')';
@@ -55,17 +55,17 @@ function get_grading_help($vpl) {
             $html .= ' (' . $link . ')';
         }
         $html .= '<br>';
-        if (isset( $all[$info->count] )) {
+        if (isset($all[$info->count])) {
             $all[$info->count] .= '(' . $info->count . ') ' . $html;
         } else {
             $all[$info->count] = '(' . $info->count . ') ' . $html;
         }
     }
     // Sort comments by number of occurrences.
-    krsort( $all );
+    krsort($all);
 
     $html = $OUTPUT->box_start();
-    $html .= '<b>' . get_string( 'listofcomments', VPL ) . '</b><hr />';
+    $html .= '<b>' . get_string('listofcomments', VPL) . '</b><hr />';
     foreach ($all as $info) {
         $html .= $info;
     }
@@ -93,7 +93,6 @@ try {
     echo $OUTPUT->header(); // Send headers.
     $result->response = get_grading_help($vpl);
     $result->success = true;
-
 } catch (\Throwable $e) {
     $result->success = false;
     $result->error = $e->getMessage();
