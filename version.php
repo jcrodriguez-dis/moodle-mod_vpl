@@ -29,8 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2025111111;
+$plugin->version = 2025112512; // YYYYMMDDHH (year, month, day, hour).
 $plugin->requires = 2020061525.00; // Moodle 3.9!
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '4.4.0';
+$plugin->release = '4.4.1';
 $plugin->component = 'mod_vpl';
