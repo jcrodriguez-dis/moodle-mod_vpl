@@ -15,12 +15,12 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Grade form definition
+ * Backend script to get grading help information
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2025 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
- * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
+ * @author Juan Carlos Rodríguez-del-Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 
 define('AJAX_SCRIPT', true);
@@ -83,7 +83,7 @@ try {
     require_once(dirname(__FILE__) . '/../vpl.class.php');
     require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
     if (! isloggedin()) {
-            throw new Exception(get_string('loggedinnot'));
+        throw new Exception(get_string('loggedinnot'));
     }
     $id = required_param('id', PARAM_INT); // Course module id.
     $vpl = new mod_vpl($id);
