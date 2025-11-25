@@ -299,7 +299,7 @@ export const highlightSubmission = (submissionID) => {
         field.setRangeText(textToInsert, insertpos, insertpos, 'select');
         // Focus the field
         field.focus();
-        field.dispatchEvent(new Event('input', { bubbles: true }));
+        field.dispatchEvent(new Event('input', {bubbles: true}));
     };
 
     /**
