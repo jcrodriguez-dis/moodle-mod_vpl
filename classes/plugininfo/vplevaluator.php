@@ -169,7 +169,7 @@ class vplevaluator extends base {
     public static function get_printable_evaluator_help_link($vpl, $evaluatorname = '', $ifhelp = false): string {
         global $OUTPUT;
         if (empty($evaluatorname)) {
-            $evaluatorname = $vpl->get_effective_setting('evaluator');
+            $evaluatorname = $vpl->get_closest_set_field_in_base_chain('evaluator', $vpl->get_instance()->evaluator ?: 'biotes');
         }
         if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
             return '';
