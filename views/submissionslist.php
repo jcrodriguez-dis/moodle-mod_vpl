@@ -480,6 +480,9 @@ $submissionsnumber = $vpl->get_submissions_number();
 mod_vpl_submission::load_gradebook_grades($vpl);
 
 // Filter by evaluation and get all information.
+// Counters for submissions and graded status.
+$nsubmissions = 0;
+$ngraded = 0;
 $alldata = [];
 foreach ($filteredstudents as $uginfo) {
     $submission = null;
@@ -488,11 +491,13 @@ foreach ($filteredstudents as $uginfo) {
             continue;
         }
     } else {
+        $nsubmissions++;
         $subinstance = $submissions[$uginfo->id];
         $submission = new mod_vpl_submission_CE($vpl, $subinstance);
         $subid = $subinstance->id;
         $subinstance->gradesortable = null;
         if ($subinstance->dategraded > 0) {
+            $ngraded++;
             if ($subselection == 'notgraded') {
                 continue;
             }
@@ -610,9 +615,6 @@ $usernumber = 0;
 $gradersdata = []; // Number of revisions made by teacher.
 $nextids = []; // Information to get next user in list.
 $lastid = 0; // Last id for next.
-// Counters for submissions and graded status.
-$nsubmissions = 0;
-$ngraded = 0;
 foreach ($alldata as $data) {
     $actions = new action_menu();
     if ($vpl->is_group_activity()) {
@@ -641,7 +643,6 @@ foreach ($alldata as $data) {
         $grader = '';
         $gradedon = '';
     } else {
-        $nsubmissions++;
         $submission = $data->submission;
         $subinstance = $submission->get_instance();
         $hrefview = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1);
@@ -663,7 +664,6 @@ foreach ($alldata as $data) {
             $evaluateusers[] = $user;
         }
         if ($subinstance->dategraded > 0) {
-            $ngraded++;
             $text = $submission->get_grade_core();
             // Add proposed grade diff.
             $result = $submission->getCE();
