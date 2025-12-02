@@ -84,6 +84,11 @@ $defaultscripts = [
         'vpl_evaluate.sh' => mod_vpl_submission_CE::get_script('evaluate', $pln, $data),
         'vpl_evaluate.cases' => '',
 ];
+if (!empty($vplinstance->evaluator)) {
+    // Override default scripts with evaluator scripts.
+    $evaluator = mod_vpl\plugininfo\vplevaluator::get_evaluator($vplinstance->evaluator);
+    $defaultscripts = array_replace($defaultscripts, array_intersect_key($evaluator->get_execution_files(), $defaultscripts));
+}
 
 $finalscripts = [
         'vpl_run.sh' => [],
