@@ -111,10 +111,12 @@ class vplevaluator extends base {
     /**
      * Returns instance of a vplevaluator plugin.
      * @param string $name of plugin of type vplevaluator.
+     * @param \mod_vpl|null $vpl instance of the vpl activity or null.
+     * @param object|null $evaluationdata data used in evaluation or null.
      * @return \mod_vpl\plugininfo\vplevaluator_base
      * @throws \moodle_exception if the plugin is not found.
      */
-    public static function get_evaluator($name): \mod_vpl\plugininfo\vplevaluator_base {
+    public static function get_evaluator($name, $vpl = null, $evaluationdata = null): \mod_vpl\plugininfo\vplevaluator_base {
         $pluginfullname = self::PLUGIN_TYPE . "_{$name}";
         $classname = "\\mod_vpl\\evaluator\\{$name}";
         if (!class_exists($classname)) {
@@ -133,7 +135,7 @@ class vplevaluator extends base {
         if (!class_exists($classname)) {
             throw new \moodle_exception('error:invalidevaluator', 'vpl', '', $name);
         }
-        return new $classname($name);
+        return new $classname($name, $vpl, $evaluationdata);
     }
 
     /**
@@ -151,8 +153,8 @@ class vplevaluator extends base {
             return '';
         }
         try {
-            $evaluator = self::get_evaluator($evaluatorname);
-            return $evaluator->get_printable_help($vpl, $showlink);
+            $evaluator = self::get_evaluator($evaluatorname, $vpl);
+            return $evaluator->get_printable_help($vpl);
         } catch (\Exception $e) {
             return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
         }

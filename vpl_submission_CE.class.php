@@ -649,25 +649,31 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($data->type == self::TTESTEVALUATE) {
             $varsenv['VPL_EVALUATION_SCRIPT'] = "vpl_evaluate.sh";
         }
-        // If evaluating and evaluator => merge evaluator files and strings.
-        if ($data->type >= self::TEVALUATE && !empty($data->evaluator)) {
-            $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($data->evaluator);
-            foreach ($evaluator->get_execution_files() as $filename => $filedata) {
-                $data->files[$filename] = $filedata;
-                $data->filestodelete[$filename] = 1;
-            }
-            foreach ($evaluator->get_files_to_keep_when_running() as $filename) {
-                unset($data->filestodelete[$filename]);
-            }
-            foreach ($evaluator->get_strings() as $varname => $value) {
-                $varsenv['VPLEVALUATOR_STR_' . $varname] = $value;
-            }
-            if ($data->type == self::TTESTEVALUATE) {
-                $varsenv['VPL_EVALUATION_SCRIPT'] = $evaluator->get_execution_script();
-            } else {
-                $data->execute = $evaluator->get_execution_script();
+        if (!empty($data->evaluator)) {
+            $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($data->evaluator, $vpl, $data);
+            if ($data->type >= self::TEVALUATE && $evaluator !== null) {
+                foreach ($evaluator->get_execution_files() as $filename => $filedata) {
+                    $data->files[$filename] = $filedata;
+                    $data->filestodelete[$filename] = 1;
+                }
+                foreach ($evaluator->get_files_to_keep_when_running() as $filename) {
+                    unset($data->filestodelete[$filename]);
+                }
+                foreach ($evaluator->get_strings() as $varname => $value) {
+                    $varsenv['VPLEVALUATOR_STR_' . $varname] = $value;
+                }
+                if ($data->type == self::TTESTEVALUATE) {
+                    $varsenv['VPL_EVALUATION_SCRIPT'] = $evaluator->get_execution_script();
+                } else {
+                    $data->execute = $evaluator->get_execution_script();
+                }
+            } else if ($evaluator !== null) {
+                foreach ($evaluator->get_files_to_exclude_when_not_evaluating() as $filename) {
+                    unset($data->files[$filename]);
+                }
             }
         }
+        // If evaluating and evaluator => merge evaluator files and strings.
         // Add more environment variables to the environment script.
         foreach ($varsenv as $name => $value) {
             $enviromentcontent .= vpl_bash_export($name, $value);

@@ -21,7 +21,7 @@ namespace mod_vpl\plugininfo;
  * This class is used to define the interface for VPL evaluators.
  *
  * @package   mod_vpl
- * @copyright 2024 Juan Calos Rodriguez del Pino {@jc.rodriguezdelpino@ulpgc.es}
+ * @copyright 2024 Juan Carlos Rodriguez del Pino
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 class vplevaluator_base {
@@ -32,18 +32,35 @@ class vplevaluator_base {
     protected $name;
 
     /**
+     * VPL activity object.
+     * @var \mod_vpl
+     */
+    protected $vpl;
+
+    /**
+     * Data of current evaluation
+     * @var object|null
+     */
+    protected $evaluationdata;
+
+    /**
      * Constructor.
      * @param string $name of the evaluator.
+     * @param \mod_vpl $vpl VPL activity object.
+     * @param object|null $evaluationdata Evaluation data.
      */
-    public function __construct($name) {
+    public function __construct($name, $vpl = null, $evaluationdata = null) {
         $this->name = $name;
+        $this->vpl = $vpl;
+        $this->evaluationdata = $evaluationdata;
     }
+
     /**
      * Returns the files to add to the execution files.
      * Commonly include at least the file 'vpl_evaluate.sh',
      * if not default vpl_evaluate.sh is used.
      * This files contents the evaluation framework and how to run it.
-     * @return array of files file_name => contents
+     * @return array<string, string> Array of files [filename => content]
      */
     public function get_execution_files(): array {
         return [];
@@ -53,9 +70,12 @@ class vplevaluator_base {
      * Returns the path to the script to start the evaluation.
      * @return string path to the start script
      */
+    const DEFAULT_EXECUTION_SCRIPT = 'vpl_evaluate.sh';
+
     public function get_execution_script(): string {
-        return 'vpl_evaluate.sh';
+        return self::DEFAULT_EXECUTION_SCRIPT;
     }
+
     /**
      * Files to use as base for setting test cases
      * These files will be saved in the execution files section.
@@ -129,6 +149,16 @@ class vplevaluator_base {
      * @return array of file_names
      */
     public function get_files_to_keep_when_running(): array {
+        return [];
+    }
+
+    /**
+     * Return the files to exclude from send if not evaluating.
+     * Removing these files can improve security by preventing
+     * sensitive data from being sent to execution servers.
+     * @return array of file_names
+     */
+    public function get_files_to_exclude_when_not_evaluating(): array {
         return [];
     }
 

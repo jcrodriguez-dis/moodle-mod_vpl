@@ -37,8 +37,8 @@ $vpl->prepare_page('views/evaluator_help.php', [ 'id' => $id, 'evaluator' => $ev
 $vpl->print_header(get_string('help'));
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 try {
-    $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname);
-    echo $evaluator->get_printable_help($vpl, false);
+    $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname, $vpl);
+    echo $evaluator->get_printable_help($vpl);
 } catch (\moodle_exception $e) {
     echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
 }
