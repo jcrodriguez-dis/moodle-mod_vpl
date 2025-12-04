@@ -172,7 +172,7 @@ LANGUAGE = "es"
 
 **Descripción:** Número máximo de tokens que el modelo de IA puede generar en su respuesta.
 
-**Directrices:**
+**Recomendaciones:**
 
 | Modo | Valor Recomendado | Razón |
 |------|------------------|---------|
@@ -202,7 +202,7 @@ MAX_OUTPUT_TOKENS = 4 * 1024  # 4K
 * Se mantiene dentro de los límites de contexto del modelo
 * Trunca la entrada si se excede
 
-**Directrices:**
+**Recomendaciones:**
 
 | Tipo de Envío | Valor Recomendado |
 |----------------|------------------|
@@ -227,7 +227,7 @@ MAX_INPUT_LENGTH = 16 * 1024
 
 **Escala:** 0.0 (determinista) a 1.0 (muy creativo)
 
-**Directrices:**
+**Recomendaciones:**
 
 | Temperatura | Comportamiento | Usable en |
 |------------|----------|----------|
@@ -251,7 +251,7 @@ TEMPERATURE = 0.2
 
 **Descripción:** Tiempo máximo (en segundos) para esperar la respuesta de la API de IA.
 
-**Directrices:**
+**Recomendaciones:**
 
 | Escenario | Tiempo de Espera Recomendado |
 |----------|-------------------|
@@ -361,7 +361,7 @@ Los marcadores de posición usan el formato `<<<nombre_marcador>>>` y se reempla
 | `<<<grade_min>>>` | Calificación mínima (de la configuración de VPL) |
 | `<<<grade_max>>>` | Calificación máxima (de la configuración de VPL) |
 | `<<<rubric>>>` | Rúbrica de calificación (si se proporciona) |
-| `<<<files>>>` | Archivos de código enviados por el estudiante |
+| `<<<student_submission>>>` | Archivos de código enviados por el estudiante |
 | `<<<language>>>` | Idioma natural de respuesta |
 
 ### 💬 Comunidad

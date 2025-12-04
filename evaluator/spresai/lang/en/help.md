@@ -339,7 +339,7 @@ SPRESAI allows complete customization of AI prompts for each evaluation mode. Th
   ├── tip_prompt.txt         ← Tip mode user prompt
   ├── fix_prompt.txt         ← Fix mode user prompt
   ├── rubric_prompt.txt      ← rubric placeholder
-  └── assignment_prompt.txt   ← assignment placeholder override
+  └── assignment_prompt.txt  ← assignment placeholder override
   
 ```
 
@@ -364,7 +364,7 @@ Placeholders use the format `<<<placeholder_name>>>` and are replaced with actua
 | `<<<grade_min>>>` | Minimum grade (from VPL settings) |
 | `<<<grade_max>>>` | Maximum grade (from VPL settings) |
 | `<<<rubric>>>` | Grading rubric (if provided) |
-| `<<<files>>>` | Student's submitted code files |
+| `<<<student_submission>>>` | Student's submitted code files |
 | `<<<language>>>` | Answer natural language |
 
 ### 💬 Community

@@ -13,10 +13,8 @@
 API_KEY = "your api key here"
 
 # The AI model name to use in LiteLLM format: "provider/model"
-# Valid providers are: openai, anthropic, google, mistral, groq, cohere,
-#                      azure, openrouter, togetherai, deepinfra, huggingface
-
-MODEL_NAME = "groq/llama-3.3-70b-versatile"
+# Examples of valid model are: "openai/gpt-4", "anthropic/claude-v1", "google/vertex-ai"
+MODEL_NAME = ""
 
 # Mode of operation: "evaluate|explain|fix|tip" 
 MODE = "evaluate"

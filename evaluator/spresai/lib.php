@@ -54,6 +54,7 @@ class spresai extends \mod_vpl\plugininfo\vplevaluator_base {
             'explain_prompt.txt',
             'fix_prompt.txt',
             'tip_prompt.txt',
+            'student_submission_warning_prompt.txt',
         ];
         $base = __DIR__ . "/src";
         $files = [];
@@ -73,7 +74,8 @@ class spresai extends \mod_vpl\plugininfo\vplevaluator_base {
         $relativepath = 'spresai/assignment_prompt.txt';
         if (! $this->is_file_populated($relativepath) && $this->vpl !== null) {
             $assignment = $this->vpl->get_fulldescription_with_basedon();
-            $files[$relativepath] = format_text_email($assignment, FORMAT_HTML);
+            $assignmentnl = preg_replace('/<br\s*\/?>/i', "\n", $assignment);
+            $files[$relativepath] = strip_tags($assignmentnl);
         }
         // Include rubric prompt as empty file if not populated.
         $relativepath = 'spresai/rubric_prompt.txt';
@@ -108,6 +110,7 @@ class spresai extends \mod_vpl\plugininfo\vplevaluator_base {
             'spresai/tip_prompt.txt',
             'spresai/rubric_prompt.txt',
             'spresai/assignment_prompt.txt',
+            'spresai/student_submission_warning_prompt.txt',
         ];
     }
 

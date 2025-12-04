@@ -54,4 +54,4 @@ function assertErrors {
 writeHeading "Testing SPRESAI: plugin for evaluating student's submissions on VPL for Moodle"
 writeHeading "with AI models using LiteLLM"
 
-python3 test.py
+python3 spresai_test.py

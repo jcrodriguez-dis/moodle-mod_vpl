@@ -26,6 +26,7 @@ import os
 import re
 import sys
 import traceback
+import random
 from utils import get_language_name, get_string, I18nCode
 
 os.environ['NO_COLOR'] = '1'
@@ -33,6 +34,16 @@ os.environ['TERM'] = 'dumb'
 os.environ['ANSI_COLORS_DISABLED'] = '1'
 os.environ['FORCE_COLOR'] = '0'
 dist_dir = 'spresai'
+
+def end_app(exit_code=0):
+    """End app with cleaning up dist_dir."""
+    try:
+        if os.path.exists(dist_dir):
+            import shutil
+            shutil.rmtree(dist_dir)
+    except Exception as e:
+        print(f"Error removing directory {dist_dir}: {e}")
+    sys.exit(exit_code)
 
 def get_api_key_env_varname(model_name: str) -> str:
     """
@@ -82,14 +93,14 @@ def vpl_output_grade(gradestr):
 
 def vpl_output_error(message):
     vpl_output_answer(f"⛔ SPRESAI Error: {message}")
-    sys.exit(1)
+    end_app(1)
 
 def vpl_output_completion_error(message, type):
     print(message)
     traceback.print_exc(limit=0)
     vpl_output_error(get_string(I18nCode.STR_ERROR_CONTACT_MODEL).format(error=type))
 
-def consult(configuration):
+def consult(configuration, mode):
     retry = 3
     try:
         import litellm
@@ -112,7 +123,8 @@ def consult(configuration):
     litellm.drop_params = True
 
     api_key_name = get_api_key_env_varname(configuration["model"])
-    os.environ[api_key_name] = configuration["api_key"]
+    api_keys = configuration["api_key"]
+    random.shuffle(api_keys)
     system_prompt = configuration["system_prompt"]
     user_prompt = configuration["user_prompt"]
     
@@ -128,12 +140,19 @@ def consult(configuration):
     print("Max input length in chars:", configuration["max_input_length"])
     print("System prompt length in chars:", len(system_prompt))
     print("User prompt length in chars:", len(user_prompt))
+    if os.getenv("VPL_DEBUG", "0") == "1":
+        print("\n--- System Prompt ---\n")
+        print(system_prompt)
+        print("\n--- User Prompt ---\n")
+        print(user_prompt)
+        print("\n---------------------\n")
     
     for intent in range(1, retry + 1):
         try:
             print(f"Attempt {intent} to contact the model...")
 
             try:
+                os.environ[api_key_name] = api_keys[(intent - 1) % len(api_keys)]
                 response = litellm.completion(
                     model=configuration["model"],
                     messages=[
@@ -198,7 +217,7 @@ def consult(configuration):
             answer = response.choices[0].message.content
             grade = "0"
             
-            if configuration["mode"] == "evaluate":
+            if mode== "evaluate":
                 answerparts = re.split(r"^\s*FINAL GRADE:", answer, flags=re.MULTILINE)
                 answer = answerparts[0]
                 if len(answerparts) > 1:
@@ -215,11 +234,19 @@ def consult(configuration):
     vpl_output_error(get_string(I18nCode.STR_ERROR_UNKNOWN))
 
 def get_student_file(file_name):
-    file_size_limit = 10000
+    file_size_limit = 10 * 1024  # 10 KB
     with open(file_name, "r") as f:
         content = f.read()
     if len(content) > file_size_limit:
         content = "Ignored: File too long\n"
+    else:
+        lines = content.splitlines()
+        if len(lines) < 100:
+            lines_nl = [f"{nl:02}| {line}" for nl, line in enumerate(lines, start=1)]
+        else:
+            lines_nl = [f"{nl:03}| {line}" for nl, line in enumerate(lines, start=1)]
+        content = "\n".join(lines_nl)
+
     wrap = f"""
 ### file: {file_name}
 ```
@@ -229,7 +256,7 @@ def get_student_file(file_name):
 """
     return wrap
 
-def get_student_files():
+def get_student_submission():
     file_number_limit = 100
     files_content = ""
     for file_number in range(0, file_number_limit):
@@ -237,14 +264,14 @@ def get_student_files():
         if not file_name:
             break
         files_content += get_student_file(file_name)
-    return files_content
+    return get_prompt("student_submission_warning") + files_content
 
 def get_placeholders(configuration):
     rubric = get_prompt("rubric", "")
     if rubric.strip():
         rubric = "# RUBRIC\n" + rubric
     return {
-        "<<<files>>>": get_student_files(),
+        "<<<student_submission>>>": get_student_submission(),
         "<<<language>>>": get_language_name(configuration["language"]),
         "<<<assignment>>>": get_prompt("assignment"),
         "<<<grade_min>>>": os.getenv("VPL_GRADEMIN", "0"),
@@ -266,7 +293,6 @@ def get_prompt(prompt_type, default_prompt=None):
     if os.path.exists(filepath):
         with open(filepath, "r") as f:
             prompt = f.read().strip()
-        os.remove(filepath)
         return prompt
     else:
         if default_prompt is not None:
@@ -275,34 +301,43 @@ def get_prompt(prompt_type, default_prompt=None):
             vpl_output_error(get_string(I18nCode.STR_ERROR_PROMPT_FILE_NOT_FOUND).format(file=filepath))
 
 def main(configuration):
-    # Load prompts
-    mode = configuration["mode"]
-    if mode not in ["evaluate", "explain", "fix", "tip"]:
-        vpl_output_error(get_string(I18nCode.STR_ERROR_INVALID_MODE).format(mode=mode))
-    # Apply placeholders
-    placeholders = get_placeholders(configuration)
-    system_prompt = apply_placeholders(get_prompt("system"), placeholders)
-    user_prompt = apply_placeholders(get_prompt(mode), placeholders)
-    
-    # Update configuration
-    configuration["system_prompt"] = system_prompt
-    configuration["user_prompt"] = user_prompt
-    
-    # Consult the model
-    response = consult(configuration)
-    
-    # Output the response
-    vpl_output_answer(response[0])
-    if mode == "evaluate":
-        vpl_output_grade(response[1])
+    for mode in configuration["mode"]:
+        if mode not in ["evaluate", "explain", "fix", "tip"]:
+            vpl_output_error(get_string(I18nCode.STR_ERROR_INVALID_MODE).format(mode=mode))
+        # Apply placeholders
+        placeholders = get_placeholders(configuration)
+        system_prompt = apply_placeholders(get_prompt("system"), placeholders)
+        user_prompt = apply_placeholders(get_prompt(mode), placeholders)
+        
+        # Update configuration
+        configuration["system_prompt"] = system_prompt
+        configuration["user_prompt"] = user_prompt
+        
+        # Consult the model
+        response = consult(configuration, mode)
+        
+        # Output the response
+        vpl_output_answer(response[0])
+        if mode == "evaluate":
+            vpl_output_grade(response[1])
+
+def get_configuration_attribute_list(value, name):
+    if type(value) == str:
+        return [value.strip()]
+    elif type(value) == list and all(isinstance(key, str) for key in value):
+        return [key.strip() for key in value]
+    else:
+        message = f"{name} must be a string or list of strings" 
+        error = get_string(I18nCode.STR_ERROR_IMPORT_CONFIG).format(error=message)
+        vpl_output_error(error)
 
 def get_configuration():
     try:
         import config
         configuration = {}
-        configuration['api_key'] = str(config.API_KEY)
+        configuration['api_key'] = get_configuration_attribute_list(config.API_KEY, "API_KEY")
         configuration['model'] = str(config.MODEL_NAME)
-        configuration['mode'] = str(config.MODE)
+        configuration['mode'] = get_configuration_attribute_list(config.MODE, "MODE")
         configuration['language'] = str(config.LANGUAGE)
         if configuration['language'].lower() == "current":
             configuration['language'] = os.getenv("VPL_LANG", "en")
@@ -314,8 +349,8 @@ def get_configuration():
     
     except Exception as e:
         traceback.print_exc()
-        vpl_output_answer(get_string(I18nCode.STR_ERROR_IMPORT_CONFIG).format(error=str(e)))
-        sys.exit(1)
+        vpl_output_error(get_string(I18nCode.STR_ERROR_IMPORT_CONFIG).format(error=str(e)))
 
 if __name__ == "__main__":
     main(get_configuration())
+    end_app()
