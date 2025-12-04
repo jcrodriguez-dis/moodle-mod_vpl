@@ -21,7 +21,7 @@ function getClassFile {
 function hasMain {
 	local FILE=$(getClassFile "$1")
 	if [ -f "$FILE" ] ; then
-		cat -v "$FILE" | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+		cat -v "$FILE" | grep -E "\^A\^@\^Dmain\^A\^@" &> /dev/null
 	else
 		return 1
 	fi
@@ -91,7 +91,7 @@ if [ "$MAINCLASS" = "" ] ; then
 	done
 	# If no main and no test class then stop
 	if [ "$TESTCLASS" = "" ] ; then
-		echo "Class with \"public static void main(String[] arg)\" method not found"
+		echo "Class with \"public static void main()\" method not found"
 		exit 0
 	fi
 fi
