@@ -34,6 +34,7 @@ os.environ['TERM'] = 'dumb'
 os.environ['ANSI_COLORS_DISABLED'] = '1'
 os.environ['FORCE_COLOR'] = '0'
 dist_dir = 'spresai'
+config = None
 
 def end_app(exit_code=0):
     """End app with cleaning up dist_dir."""
@@ -238,7 +239,10 @@ def get_student_file(file_name):
     with open(file_name, "r") as f:
         content = f.read()
     if len(content) > file_size_limit:
-        content = "Ignored: File too long\n"
+        return f"""
+### file: {file_name}
+Ignored: File too long
+"""
     else:
         lines = content.splitlines()
         if len(lines) < 100:
@@ -247,14 +251,12 @@ def get_student_file(file_name):
             lines_nl = [f"{nl:03}| {line}" for nl, line in enumerate(lines, start=1)]
         content = "\n".join(lines_nl)
 
-    wrap = f"""
+    return f"""
 ### file: {file_name}
 ```
 {content}
 ```
-
 """
-    return wrap
 
 def get_student_submission():
     file_number_limit = 100
@@ -320,6 +322,7 @@ def main(configuration):
         vpl_output_answer(response[0])
         if mode == "evaluate":
             vpl_output_grade(response[1])
+    end_app(0)
 
 def get_configuration_attribute_list(value, name):
     if type(value) == str:
@@ -353,4 +356,3 @@ def get_configuration():
 
 if __name__ == "__main__":
     main(get_configuration())
-    end_app()

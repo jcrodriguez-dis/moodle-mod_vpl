@@ -119,7 +119,9 @@ LANGUAGE_NAMES = {
 }
 
 def get_language_name(locale_code):
-    normalized = locale_code.split('.')[0]
+    # Lowercase and extract the language part of the locale code (eg. en_US.UTF-8 -> en_us)
+    normalized = locale_code.lower().split('.')[0]
+    # Extract the language code before any underscore (e.g., en_us -> en)
     lang_code = normalized.split('_')[0]
     return LANGUAGE_NAMES.get(lang_code, "English")
 
