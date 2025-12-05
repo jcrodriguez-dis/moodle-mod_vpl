@@ -33,6 +33,6 @@ $string['error_invalid_mode'] = 'Modo inválido \'{$a->mode}\'. Debe ser uno de 
 $string['error_prompt_file_not_found'] = 'Archivo de prompt {$a->file} no encontrado y no se proporcionó prompt predeterminado.';
 $string['error_contact_model'] = 'Contactando con el modelo de IA: {$a->error}';
 $string['error_response_model'] = 'Respuesta del modelo: {$a->error}';
-$string['error_unknown'] = 'Ocurrió un error desconocido inesperado.';
+$string['error_unknown'] = 'Ocurrió un error desconocido e inesperado.';
 $string['pluginname'] = 'Evaluador SPRESAI';
 $string['privacy:metadata'] = 'El evaluador SPRESAI no almacena ningún dato personal.';

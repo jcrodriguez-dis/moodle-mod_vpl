@@ -27,31 +27,50 @@ export -f writeInfo
 export -f writeError
 export -f write
 
-function assertOutput {
-	grep -e "$1" "$VPLTESTOUTPUT" >/dev/null
-	[ $? -eq 0 ] && return 0
-	write
-	writeError "Not found: " "\"$1\" not found in output result"
-	exit 1
+function initTest {
+	mkdir "$TESTDIR"
+	mkdir "$TESTDIR/spresai"
+	cp "$ORIGINDIR/"*.py "$TESTDIR/spresai"
+	cp "$ORIGINDIR/"*.txt "$TESTDIR/spresai"
+	cp "$BASEDIR/"*.py "$TESTDIR/spresai"
+	cp "$ORIGINDIR/vpl_evaluate.sh" "$TESTDIR"
+	cp "$COMMONSCRIPTSDIR/common_script.sh" "$TESTDIR"
+	cat > "$TESTDIR/vpl_environment.sh" << ENDOFSCRIPT
+#!/bin/bash
+export VPL_GRADEMIN=0
+export VPL_GRADEMAX=10
+export VPL_MAXTIME=20
+export VPL_VARIATION=
+ENDOFSCRIPT
 }
 
-function assertOutputFalse {
-	grep -e "$1" "$VPLTESTOUTPUT" >/dev/null
-	[ $? -ne 0 ] && return 0
-	write
-	writeError "Found: " "\"$1\" found in output result"
-	exit 1
+function endTest {
+	rm -rf "$TESTDIR"
 }
 
-function assertErrors {
-	grep -e "$1" "$VPLTESTERRORS" >/dev/null
-	[ $? -eq 0 ] && return 0
-	write
-	writeError "Not found: " "\"$1\" not found in output errors (stderr)"
-	exit 1
+
+function runTest {
+	initTest
+	cd "$TESTDIR"
+	python3 spresai/spresai_test.py
+	local result=$?
+    cd ..
+	endTest
+	return $result
 }
+
+OLDDIR=$(pwd)
+BASEDIR="$(cd "$(dirname "$0")" && pwd)"
+cd "$BASEDIR"
+export ORIGINDIR="$BASEDIR/../src"
+export COMMONSCRIPTSDIR="$BASEDIR/../../../jail/default_scripts"
+export TESTDIR="vpl_test.test"
 
 writeHeading "Testing SPRESAI: plugin for evaluating student's submissions on VPL for Moodle"
 writeHeading "with AI models using LiteLLM"
 
-python3 spresai_test.py
+runTest
+
+finalResult=$?
+cd "$OLDDIR"
+exit $finalResult
