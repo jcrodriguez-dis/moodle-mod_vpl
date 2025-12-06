@@ -118,7 +118,11 @@ def consult(configuration, mode):
         )
     except ImportError:
         vpl_output_error(get_string(I18nCode.STR_ERROR_IMPORT_LITELLM))
-
+    try:
+        import importlib_metadata
+        print("LiteLLm version:", importlib_metadata.version("litellm"))
+    except:
+        print("LiteLLm version: Unknown")
     litellm.suppress_debug_info = True
     litellm.set_verbose = False
     litellm.drop_params = True
@@ -161,6 +165,7 @@ def consult(configuration, mode):
                         {"role": "user", "content": user_prompt}
                     ],
                     drop_params=True,
+                    stream=False,
                     temperature=configuration["temperature"],
                     max_tokens=configuration["max_output_tokens"],
                     timeout=configuration["api_timeout"]
