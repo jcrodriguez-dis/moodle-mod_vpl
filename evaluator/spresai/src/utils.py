@@ -155,7 +155,7 @@ I18N_CODE_STR_DEFAULT = {
     ),
     I18nCode.STR_ERROR_INVALID_MODE: StrCodeStrDefault(
         "error_invalid_mode",
-        "Invalid mode '{$a->mode}'. Must be one of 'evaluate', 'explain', 'fix', 'tip'."
+        "Invalid mode '{$a->mode}'. Must be one of 'evaluate', 'explain', 'fix', 'tip' or valid prompt file."
     ),
     I18nCode.STR_ERROR_PROMPT_FILE_NOT_FOUND: StrCodeStrDefault(
         "error_prompt_file_not_found",

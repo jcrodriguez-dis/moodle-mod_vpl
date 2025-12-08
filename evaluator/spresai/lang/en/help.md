@@ -29,7 +29,7 @@ The framework's goals are:
 2. **Select SPRESAI** as the evaluator in your VPL activity settings.
 3. **Enable automatic evaluation** in Execution options.
 4. **Configure the plugin** in the "test cases" page.
-5. **Set your AI model** in `config.py`.
+5. **Set your AI provider and model** in `config.py`.
 6. **Set your API key** in `config.py`.
 7. **Set your execution mode** (evaluate, explain, tip, or fix) in `config.py`.
 8. When students or teachers **evaluate submission**, SPRESAI will automatically process it using the configured AI model.
@@ -46,7 +46,7 @@ These parameters are **required** for SPRESAI to function.
 
 #### 🔑 **API_KEY**
 
-**Description:** The API key for your AI model provider.
+**Description:** The API key(s) for your AI model provider.
 
 **🚨 CRITICAL SECURITY WARNING:**
 
@@ -63,33 +63,86 @@ These parameters are **required** for SPRESAI to function.
  * Use separate keys for development and production.
  * Regularly rotate API keys.
 
+**Format:** Can be a single string or a list of strings (for load balancing or fallback).
+
 Example:
 
 ```python
+# Single API key
 API_KEY = "your-api-key-here"
+
+# Multiple API keys (load balanced randomly)
+API_KEY = [
+    "key-1-here",
+    "key-2-here",
+    "key-3-here"
+]
 ```
 
 ---
 
-#### 🤖 **PROVIDER/MODEL_NAME**
+#### 🤖 **PROVIDER**
 
+**Description:** The AI provider to use for evaluation.
 
-**Description:** Here you can set the provider and the AI model to use. SPRESAI uses LiteLLM and requires that you use the format: `provider/model-name`
-Thanks to LiteLLM, SPRESAI can use almost any public provider and model.
+**Supported providers:** SPRESAI uses LiteLLM and supports almost any public provider including:
+- `openai` - OpenAI (GPT models)
+- `anthropic` - Anthropic (Claude models)
+- `google` - Google (Gemini models)
+- `groq` - Groq (fast inference)
+- `mistral` - Mistral AI
+- `cohere` - Cohere
+- `replicate` - Replicate
+- `together_ai` - Together AI
+- `vertex_ai` - Google Vertex AI
+- `bedrock` - AWS Bedrock
+- `azure` - Azure OpenAI
+- And many more...
 
-**Tip:** Check [LiteLLM's provider documentation](https://docs.litellm.ai/docs/providers) for the complete list of supported providers and models.
+**Tip:** Check [LiteLLM's provider documentation](https://docs.litellm.ai/docs/providers) for the complete list of supported providers.
 
 Example:
 
 ```python
-MODEL_NAME = "groq/llama-3.3-70b-versatile"
+PROVIDER = "groq"
+```
+
+---
+
+#### 🎯 **MODEL**
+
+**Description:** The specific AI model to use from your chosen provider.
+
+**Examples by provider:**
+
+| Provider | Example Models |
+|----------|---------------|
+| `openai` | `gpt-4o`, `gpt-4o-mini`, `gpt-3.5-turbo` |
+| `anthropic` | `claude-3-5-sonnet-20241022`, `claude-3-opus-20240229` |
+| `google` | `gemini-1.5-pro`, `gemini-1.5-flash` |
+| `groq` | `llama-3.3-70b-versatile`, `mixtral-8x7b-32768` |
+| `mistral` | `mistral-large-latest`, `mistral-medium` |
+
+Example:
+
+```python
+MODEL = "llama-3.3-70b-versatile"
+```
+
+**Combined example:**
+
+```python
+PROVIDER = "groq"
+MODEL = "llama-3.3-70b-versatile"
 ```
 
 ---
 
 #### 🎯 **MODE**
 
-**Description:** Sets the operation mode for the evaluator.
+**Description:** Sets the operation mode(s) for the evaluator.
+
+**Format:** Can be a single string or a list of strings to run multiple modes sequentially.
 
 **Available modes:**
 
@@ -98,14 +151,14 @@ MODEL_NAME = "groq/llama-3.3-70b-versatile"
 | `evaluate` | Full evaluation with grade | Detailed assessment + numerical grade |
 | `explain` | Code explanation | Educational explanation of what the code does |
 | `tip` | Educational guidance | One helpful tip to improve the code |
-| `fix` | Single fix suggestion | One specific fix for the most important problem |
+| `fix` | Single fix suggestion | One specific fix for the first problem found |
 
 **Mode details:**
 
 **1. Evaluate mode** (`MODE = "evaluate"`)
 
 * Provides comprehensive code assessment generating a report and a grade.
-* The system get the assessment from the description in the activity.
+* The system gets the assessment from the description in the activity.
  You can also override the **assignment specification** by writing it in `spresai/assignment_prompt.txt` in the "execution files".
 * Teachers can write a rubric in the file `spresai/rubric_prompt.txt` in the "execution files" to better adjust the evaluation.
 
@@ -136,9 +189,16 @@ MODEL_NAME = "groq/llama-3.3-70b-versatile"
 Example:
 
 ```python
+# Single mode
 MODE = "evaluate"
+
+# Multiple modes (run sequentially)
+MODE = ["explain", "evaluate"]
 ```
 
+**Note:** When using multiple modes, each mode will run independently and produce separate outputs.
+
+---
 
 ### 🌐 Optional Configuration Parameters
 
@@ -243,7 +303,6 @@ MAX_INPUT_LENGTH = 16 * 1024
 ```python
 # Strict evaluation (recommended for grading)
 TEMPERATURE = 0.2
-
 ```
 
 **Recommendation:** Keep `TEMPERATURE` low (0.2-0.3) for consistent, reliable grading.
@@ -289,13 +348,16 @@ API_TIMEOUT = 60
 # 🚨 SECURITY: Protect this key! See documentation for security warnings.
 API_KEY = "sk-proj-abc123def456..."
 
-# AI Model Selection
-# Format: "provider/model-name"
-# Examples: "openai/gpt-4o", "anthropic/claude-3-5-sonnet-20241022", "groq/llama-3.3-70b-versatile"
-MODEL_NAME = "groq/llama-3.3-70b-versatile"
+# AI Provider
+# Options: "openai", "anthropic", "google", "groq", "mistral", etc.
+PROVIDER = "groq"
+
+# AI Model Name
+# Specific model from the provider
+MODEL = "llama-3.3-70b-versatile"
 
 # Evaluation Mode
-# Options: "evaluate" | "explain" | "tip" | "fix"
+# Options: "evaluate" | "explain" | "tip" | "fix" | list of modes
 MODE = "evaluate"
 
 ######### OPTIONAL CONFIGURATION PARAMETERS #########

@@ -12,11 +12,13 @@
 #   * Remove this file if you stop using the SPRESAI evaluator in this activity.
 API_KEY = "your api key here"
 
-# The AI model name to use in LiteLLM format: "provider/model"
-# Examples of valid model are: "openai/gpt-4", "anthropic/claude-v1", "google/vertex-ai"
-MODEL_NAME = ""
+# The AI provider name. Examples: "groq", "openai", "anthropic", "google", etc.
+PROVIDER = "openai"
 
-# Mode of operation: "evaluate|explain|fix|tip" 
+# The AI model name used by the provider. Examples: "gpt-4", "claude-v1", "vertex-ai"
+MODEL = "gpt-5.1"
+
+# Mode of operation: "evaluate|explain|fix|tip|*" 
 MODE = "evaluate"
 
 ######### OPTIONAL CONFIGURATION PARAMETERS #########

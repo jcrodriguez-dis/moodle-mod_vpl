@@ -29,7 +29,7 @@
 
 $string['error_import_config'] = 'Loading config.py file: {$a->error}';
 $string['error_import_litellm'] = 'Loading LiteLLM library: {$a->error}';
-$string['error_invalid_mode'] = 'Invalid mode \'{$a->mode}\'. Must be one of \'evaluate\', \'explain\', \'fix\', \'tip\'.';
+$string['error_invalid_mode'] = 'Invalid mode \'{$a->mode}\'. Must be one of \'evaluate\', \'explain\', \'fix\', \'tip\' or valid prompt file.';
 $string['error_prompt_file_not_found'] = 'Prompt file {$a->file} not found and no default prompt provided.';
 $string['error_contact_model'] = 'Contacting AI model: {$a->error}';
 $string['error_response_model'] = 'Response from model: {$a->error}';

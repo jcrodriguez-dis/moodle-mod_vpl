@@ -1,6 +1,6 @@
 ## MANUAL DE SPRESAI
 
-**SPRESAI** (Sistema de Revisión y Evaluación de Programación Estudiantil usando IA) es un subplugin evaluador para **VPL** que utiliza inteligencia artificial para la evaluación de código.
+**SPRESAI** (Student Programming Review & Evaluation System using AI) Sistema de Revisión y Evaluación de Programación Estudiantil usando IA es un subplugin evaluador para **VPL** que utiliza inteligencia artificial para la evaluación de código.
 Este sistema permite a los profesores evaluar automáticamente los programas de los estudiantes y proporcionar consejos útiles, correcciones de código o explicaciones detalladas usando modelos de IA.
 
 ⚠️ **Aviso Importante:** El uso de IA para la evaluación es inherentemente impreciso y debe usarse principalmente como una guía o generador de evaluaciones preliminares. Siempre revise las evaluaciones generadas por IA antes de finalizar las calificaciones.
@@ -29,7 +29,7 @@ Los objetivos del marco son:
 2. **Seleccione SPRESAI** como el evaluador en la configuración de su actividad VPL.
 3. **Habilite la evaluación automática** en las opciones de ejecución.
 4. **Configure el plugin** en la página de "casos de prueba".
-5. **Establezca su modelo de IA** en `config.py`.
+5. **Establezca su proveedor de IA y modelo** en `config.py`.
 6. **Establezca su clave API** en `config.py`.
 7. **Establezca su modo de ejecución** (evaluate, explain, tip o fix) en `config.py`.
 8. Cuando los estudiantes o profesores **evalúen envíos**, SPRESAI lo procesará automáticamente usando el modelo de IA configurado.
@@ -46,7 +46,7 @@ Estos parámetros son **requeridos** para que SPRESAI funcione.
 
 #### 🔑 **API_KEY**
 
-**Descripción:** La clave API para su proveedor de modelo de IA.
+**Descripción:** La(s) clave(s) API para su proveedor de modelo de IA.
 
 **🚨 ADVERTENCIA CRÍTICA DE SEGURIDAD:**
 
@@ -63,32 +63,86 @@ Estos parámetros son **requeridos** para que SPRESAI funcione.
  * Use claves separadas para desarrollo y producción.
  * Rote las claves API regularmente.
 
+**Formato:** Puede ser una cadena única o una lista de cadenas (para balanceo de carga o respaldo).
+
 Ejemplo:
 
 ```python
+# Clave API única
 API_KEY = "su-clave-api-aquí"
+
+# Múltiples claves API (balanceadas aleatoriamente)
+API_KEY = [
+    "clave-1-aquí",
+    "clave-2-aquí",
+    "clave-3-aquí"
+]
 ```
 
 ---
 
-#### 🤖 **PROVIDER/MODEL_NAME**
+#### 🤖 **PROVIDER**
 
-**Descripción:** Aquí puede establecer el proveedor y el modelo de IA a usar. SPRESAI usa LiteLLM y requiere que use el formato: `proveedor/nombre-modelo`
-Gracias a LiteLLM, SPRESAI puede usar casi cualquier proveedor y modelo público.
+**Descripción:** El proveedor de IA a usar para la evaluación.
 
-**Consejo:** Consulte la [documentación de proveedores de LiteLLM](https://docs.litellm.ai/docs/providers) para la lista completa de proveedores y modelos soportados.
+**Proveedores soportados:** SPRESAI usa LiteLLM y soporta casi cualquier proveedor público incluyendo:
+- `openai` - OpenAI (modelos GPT)
+- `anthropic` - Anthropic (modelos Claude)
+- `google` - Google (modelos Gemini)
+- `groq` - Groq (inferencia rápida)
+- `mistral` - Mistral AI
+- `cohere` - Cohere
+- `replicate` - Replicate
+- `together_ai` - Together AI
+- `vertex_ai` - Google Vertex AI
+- `bedrock` - AWS Bedrock
+- `azure` - Azure OpenAI
+- Y muchos más...
+
+**Consejo:** Consulte la [documentación de proveedores de LiteLLM](https://docs.litellm.ai/docs/providers) para la lista completa de proveedores soportados.
 
 Ejemplo:
 
 ```python
-MODEL_NAME = "groq/llama-3.3-70b-versatile"
+PROVIDER = "groq"
+```
+
+---
+
+#### 🎯 **MODEL**
+
+**Descripción:** El modelo de IA específico a usar del proveedor elegido.
+
+**Ejemplos por proveedor:**
+
+| Proveedor | Modelos de Ejemplo |
+|----------|---------------|
+| `openai` | `gpt-4o`, `gpt-4o-mini`, `gpt-3.5-turbo` |
+| `anthropic` | `claude-3-5-sonnet-20241022`, `claude-3-opus-20240229` |
+| `google` | `gemini-1.5-pro`, `gemini-1.5-flash` |
+| `groq` | `llama-3.3-70b-versatile`, `mixtral-8x7b-32768` |
+| `mistral` | `mistral-large-latest`, `mistral-medium` |
+
+Ejemplo:
+
+```python
+MODEL = "llama-3.3-70b-versatile"
+```
+
+**Ejemplo combinado:**
+
+```python
+PROVIDER = "groq"
+MODEL = "llama-3.3-70b-versatile"
 ```
 
 ---
 
 #### 🎯 **MODE**
 
-**Descripción:** Establece el modo de operación para el evaluador.
+**Descripción:** Establece el modo(s) de operación para el evaluador.
+
+**Formato:** Puede ser una cadena única o una lista de cadenas para ejecutar múltiples modos secuencialmente.
 
 **Modos disponibles:**
 
@@ -135,8 +189,16 @@ MODEL_NAME = "groq/llama-3.3-70b-versatile"
 Ejemplo:
 
 ```python
+# Modo único
 MODE = "evaluate"
+
+# Múltiples modos (ejecutados secuencialmente)
+MODE = ["explain", "evaluate"]
 ```
+
+**Nota:** Cuando se usan múltiples modos, cada modo se ejecutará independientemente y producirá salidas separadas.
+
+---
 
 ### 🌐 Parámetros de Configuración Opcionales
 
@@ -286,13 +348,16 @@ API_TIMEOUT = 60
 # 🚨 SEGURIDAD: ¡Proteja esta clave! Vea la documentación para advertencias de seguridad.
 API_KEY = "sk-proj-abc123def456..."
 
-# Selección de Modelo de IA
-# Formato: "proveedor/nombre-modelo"
-# Ejemplos: "openai/gpt-4o", "anthropic/claude-3-5-sonnet-20241022", "groq/llama-3.3-70b-versatile"
-MODEL_NAME = "groq/llama-3.3-70b-versatile"
+# Proveedor de IA
+# Opciones: "openai", "anthropic", "google", "groq", "mistral", etc.
+PROVIDER = "groq"
+
+# Nombre del Modelo de IA
+# Modelo específico del proveedor
+MODEL = "llama-3.3-70b-versatile"
 
 # Modo de Evaluación
-# Opciones: "evaluate" | "explain" | "tip" | "fix"
+# Opciones: "evaluate" | "explain" | "tip" | "fix" | lista de modos
 MODE = "evaluate"
 
 ######### PARÁMETROS DE CONFIGURACIÓN OPCIONALES #########

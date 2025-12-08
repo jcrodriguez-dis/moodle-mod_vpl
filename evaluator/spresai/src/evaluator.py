@@ -101,6 +101,40 @@ def vpl_output_completion_error(message, type):
     traceback.print_exc(limit=0)
     vpl_output_error(get_string(I18nCode.STR_ERROR_CONTACT_MODEL).format(error=type))
 
+def get_litellm_version():
+    try:
+        import importlib_metadata
+        return importlib_metadata.version("litellm")
+    except:
+        return "Unknown"
+
+def limit_input_length(prompt, max_length):
+    if len(prompt) <= max_length:
+        return prompt
+    else:
+        print(f"Input prompt length {len(prompt)} exceeds maximum configuration")
+        print(f"of {max_length} characters and will be truncated.")
+        return prompt[:max_length]
+
+def print_completion_data(configuration):
+    print("LiteLLm version:", get_litellm_version())
+    print("Mode:", configuration["mode"])
+    print("Provider:", configuration["provider"])
+    print("AI Model:", configuration["model"])
+    print("Temperature:", configuration["temperature"])
+    print("Max output tokens:", configuration["max_output_tokens"])
+    print("Max input length in chars:", configuration["max_input_length"])
+    print("System prompt length in chars:", len(configuration["system_prompt"]))
+    print("User prompt length in chars:", len(configuration["user_prompt"]))
+
+def print_prompts_debug(system_prompt, user_prompt):
+    if os.getenv("VPL_DEBUG", "0") == "1":
+        print("\n--- System Prompt ---\n")
+        print(system_prompt)
+        print("\n--- User Prompt ---\n")
+        print(user_prompt)
+        print("\n---------------------\n")
+
 def consult(configuration, mode):
     retry = 3
     try:
@@ -116,41 +150,20 @@ def consult(configuration, mode):
             ContentPolicyViolationError,
             APIError
         )
+        litellm.suppress_debug_info = True
+        litellm.set_verbose = False
+        litellm.drop_params = True
     except ImportError:
         vpl_output_error(get_string(I18nCode.STR_ERROR_IMPORT_LITELLM))
-    try:
-        import importlib_metadata
-        print("LiteLLm version:", importlib_metadata.version("litellm"))
-    except:
-        print("LiteLLm version: Unknown")
-    litellm.suppress_debug_info = True
-    litellm.set_verbose = False
-    litellm.drop_params = True
 
+    print_completion_data(configuration)
     api_key_name = get_api_key_env_varname(configuration["model"])
     api_keys = configuration["api_key"]
     random.shuffle(api_keys)
     system_prompt = configuration["system_prompt"]
-    user_prompt = configuration["user_prompt"]
-    
-    if len(user_prompt) > configuration["max_input_length"]:
-        user_prompt = user_prompt[:configuration["max_input_length"]]
-        print(f"Input prompt length {len(user_prompt)} exceeds maximum configuration")
-        print(f"of {configuration['max_input_length']} characters and was truncated.")
-    
-    print("Mode:", configuration["mode"])
-    print("AI Model:", configuration["model"])
-    print("Temperature:", configuration["temperature"])
-    print("Max output tokens:", configuration["max_output_tokens"])
-    print("Max input length in chars:", configuration["max_input_length"])
-    print("System prompt length in chars:", len(system_prompt))
-    print("User prompt length in chars:", len(user_prompt))
-    if os.getenv("VPL_DEBUG", "0") == "1":
-        print("\n--- System Prompt ---\n")
-        print(system_prompt)
-        print("\n--- User Prompt ---\n")
-        print(user_prompt)
-        print("\n---------------------\n")
+    user_prompt = limit_input_length(configuration["user_prompt"], configuration["max_input_length"])
+
+    print_prompts_debug(system_prompt, user_prompt)
     
     for intent in range(1, retry + 1):
         try:
@@ -159,7 +172,7 @@ def consult(configuration, mode):
             try:
                 os.environ[api_key_name] = api_keys[(intent - 1) % len(api_keys)]
                 response = litellm.completion(
-                    model=configuration["model"],
+                    model=f"{configuration['provider']}/{configuration['model']}",
                     messages=[
                         {"role": "system", "content": system_prompt},
                         {"role": "user", "content": user_prompt}
@@ -309,7 +322,7 @@ def get_prompt(prompt_type, default_prompt=None):
 
 def main(configuration):
     for mode in configuration["mode"]:
-        if mode not in ["evaluate", "explain", "fix", "tip"]:
+        if get_prompt(mode, True) is True:
             vpl_output_error(get_string(I18nCode.STR_ERROR_INVALID_MODE).format(mode=mode))
         # Apply placeholders
         placeholders = get_placeholders(configuration)
@@ -344,7 +357,8 @@ def get_configuration():
         import config
         configuration = {}
         configuration['api_key'] = get_configuration_attribute_list(config.API_KEY, "API_KEY")
-        configuration['model'] = str(config.MODEL_NAME)
+        configuration['provider'] = str(config.PROVIDER)
+        configuration['model'] = str(config.MODEL)
         configuration['mode'] = get_configuration_attribute_list(config.MODE, "MODE")
         configuration['language'] = str(config.LANGUAGE)
         if configuration['language'].lower() == "current":
