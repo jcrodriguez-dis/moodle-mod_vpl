@@ -39,6 +39,7 @@ use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\user_preference_provider;
 use core_privacy\local\metadata\provider as metadata_provider;
 
+require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
 
 /**
  * VPL provider class
