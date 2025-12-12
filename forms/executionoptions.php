@@ -26,6 +26,8 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
+
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -239,12 +241,13 @@ class mod_vpl_executionoptions_form extends moodleform {
      * This method retrieves the list of enabled evaluators and formats them
      * for selection in the form. It also handles inheritance from the closest
      * set field in the base chain.
+     * @param bool $customized Indicates if the evaluation script is customized.
      *
      * @return array An associative array of evaluators with their names.
      */
-    protected function get_evaluatorlist() {
+    protected function get_evaluatorlist($customized) {
         $evaluators = \mod_vpl\plugininfo\vplevaluator::get_enabled_plugins();
-        $evaluatorslist = ['' => get_string('default')];
+        $evaluatorslist = ['' => $customized ? get_string('customizedscript', VPL) : get_string('default')];
         foreach ($evaluators as $evaluator) {
             $evaluatorslist[$evaluator] = get_string('pluginname', "vplevaluator_{$evaluator}");
         }
@@ -286,25 +289,34 @@ class mod_vpl_executionoptions_form extends moodleform {
         $mform->addElement('select', 'basedon', $strbasedon, $basedonlist);
         $mform->setDefault('basedon', $instance->basedon);
         $mform->addHelpButton('basedon', 'basedon', VPL);
+        $customized = $this->vpl->get_customized_scripts();
 
-        $inheritedrun = strtoupper($this->vpl->get_closest_set_field_in_base_chain('runscript', ''));
-        $inheriteddebug = strtoupper($this->vpl->get_closest_set_field_in_base_chain('debugscript', ''));
-        $strrundefault = $inheritedrun ? get_string('inheritvalue', VPL, $inheritedrun) : get_string('autodetect', VPL);
         $strrunscript = get_string('runscript', VPL);
-        $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
+        $inheritedrun = strtoupper($this->vpl->get_closest_set_field_in_base_chain('runscript', ''));
+        $strrundefault = $inheritedrun ? get_string('inheritvalue', VPL, $inheritedrun) : get_string('autodetect', VPL);
+        if ($customized['run']) {
+            $runlist  = [$instance->runscript => get_string('customizedscript', VPL)];
+        } else {
+            $runlist = array_merge(['' => $strrundefault], $this->get_runlist());
+        }
         $mform->addElement('select', 'runscript', $strrunscript, $runlist);
         $mform->setDefault('runscript', $instance->runscript);
         $mform->addHelpButton('runscript', 'runscript', VPL);
 
+        $inheriteddebug = strtoupper($this->vpl->get_closest_set_field_in_base_chain('debugscript', ''));
         $strdebugdefault = $inheriteddebug ? get_string('inheritvalue', VPL, $inheriteddebug) : get_string('autodetect', VPL);
         $strdebugscript = get_string('debugscript', VPL);
-        $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
+        if ($customized['debug']) {
+            $debuglist  = [$instance->debugscript => get_string('customizedscript', VPL)];
+        } else {
+            $debuglist = array_merge(['' => $strdebugdefault], $this->get_debuglist());
+        }
         $mform->addElement('select', 'debugscript', $strdebugscript, $debuglist);
         $mform->setDefault('debugscript', $instance->debugscript);
         $mform->addHelpButton('debugscript', 'debugscript', VPL);
 
         $strevaluator = get_string('evaluator', VPL);
-        $mform->addElement('select', 'evaluator', $strevaluator, $this->get_evaluatorlist());
+        $mform->addElement('select', 'evaluator', $strevaluator, $this->get_evaluatorlist($customized['evaluate']));
         $mform->setDefault('evaluator', $instance->evaluator);
         $mform->addHelpButton('evaluator', 'evaluator', VPL);
         $mform->addElement('static', 'evaluatorhelplink', '', '<span id="id_evaluatorhelplink"></span>');
