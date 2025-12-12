@@ -422,7 +422,7 @@ class mod_vpl_submission {
             $value = format_float($value, 2, true, true);
         }
         $vplinstance = $this->vpl->get_instance();
-        $html = $this->vpl->str_restriction('finalreduction', $value);
+        $html = $this->vpl->str_setting('finalreduction', $value);
         $html .= ' [' . $this->instance->nevaluations;
         $html .= ' / ' . $vplinstance->freeevaluations;
         $html .= ' -' . $vplinstance->reductionbyevaluation . ']';
@@ -834,7 +834,7 @@ class mod_vpl_submission {
             $a->gradername = fullname($grader);
             $ret .= get_string('gradedonby', VPL, $a) . '<br>';
             if ($this->vpl->get_grade() != 0) {
-                $ret .= $this->vpl->str_restriction(vpl_get_gradenoun_str(), $this->get_grade_core(), false, 'core') . '<br>';
+                $ret .= $this->vpl->str_setting(vpl_get_gradenoun_str(), $this->get_grade_core(), false, 'core') . '<br>';
                 if ($detailed) {
                     $ret .= $this->get_detailed_grade();
                 }
