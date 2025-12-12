@@ -41,7 +41,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Associative array for detecting the programming language based on a file's extension
      * @var array
      */
-    private static $languageext = [
+    public const LANGUAGE_EXT = [
         'ada' => 'ada',
         'adb' => 'ada',
         'ads' => 'ada',
@@ -108,7 +108,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Associative array for detecting the build system based on the configuration file
      * @var array
      */
-    private static $languageconfig = [
+    public const LANGUAGE_CONFIG = [
         'Makefile' => 'make',
         'makefile' => 'make',
     ];
@@ -125,7 +125,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Associative array for detecting the action name based on the script name
      * @var array
      */
-    private static $scriptname = [
+    public const SCRIPT_NAME = [
         'vpl_run.sh' => 'run',
         'vpl_debug.sh' => 'debug',
         'vpl_evaluate.sh' => 'evaluate',
@@ -181,7 +181,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Associative array for getting the execution type based on the script name.
      * @var array
      */
-    private static $script2type = [
+    public const SCRIPT_TO_TYPE = [
         'vpl_run.sh' => self::TRUN,
         'vpl_debug.sh' => self::TDEBUG,
         'vpl_evaluate.sh' => self::TEVALUATE,
@@ -192,7 +192,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * Associative array for getting the script to use based on the execution type.
      * @var array
      */
-    private static $type2script = [
+    public const TYPE_TO_SCRIPT = [
         self::TRUN => 'vpl_run.sh',
         self::TDEBUG => 'vpl_debug.sh',
         self::TEVALUATE => 'vpl_evaluate.sh',
@@ -209,14 +209,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public static function get_pln($filelist) {
         foreach ($filelist as $checkfilename) {
-            if (isset(self::$languageconfig[$checkfilename])) {
-                return self::$languageconfig[$checkfilename];
+            if (isset(self::LANGUAGE_CONFIG[$checkfilename])) {
+                return self::LANGUAGE_CONFIG[$checkfilename];
             }
         }
         foreach ($filelist as $checkfilename) {
             $ext = pathinfo($checkfilename, PATHINFO_EXTENSION);
-            if (isset(self::$languageext[$ext])) {
-                return self::$languageext[$ext];
+            if (isset(self::LANGUAGE_EXT[$ext])) {
+                return self::LANGUAGE_EXT[$ext];
             }
         }
         return 'default';
@@ -332,7 +332,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data->evaluator = $vplinstance->evaluator;
             $data->run_mode = $vplinstance->run_mode;
             $data->evaluation_mode = $vplinstance->evaluation_mode;
-            $data->execute = self::$type2script[$type];
+            $data->execute = self::TYPE_TO_SCRIPT[$type];
         }
         // Execution files.
         $sfg = $vpl->get_execution_fgm();
@@ -349,11 +349,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 continue;
             }
             // Skip unneeded script.
-            if (isset(self::$script2type[$filename]) && self::$script2type[$filename] > $type) {
+            if (isset(self::SCRIPT_TO_TYPE[$filename]) && self::SCRIPT_TO_TYPE[$filename] > $type) {
                 continue;
             }
             // Concatene or replace based-on files.
-            if (isset($data->files[$filename]) && isset(self::$scriptname[$filename])) {
+            if (isset($data->files[$filename]) && isset(self::SCRIPT_NAME[$filename])) {
                 $data->files[$filename] .= "\n" . $sfg->getFileData($filename);
             } else {
                 $data->files[$filename] = $sfg->getFileData($filename);
@@ -438,6 +438,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         $data->userid = $this->get_instance()->userid;
         $data->groupid = $this->get_instance()->groupid;
+        $data->save_count = $this->get_instance()->save_count;
+        $data->run_count = $this->get_instance()->run_count;
+        $data->debug_count = $this->get_instance()->debug_count;
+        $data->evaluation_count = $this->get_instance()->nevaluations;
         $data->submittedlist = $submittedlist;
         return $data;
     }
@@ -560,6 +564,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $variables['VPL_LANG'] = vpl_get_lang();
         $variables['MOODLE_COURSE_ID'] = $vpl->get_course()->id;
         $variables['MOODLE_ACTIVITY_ID'] = $vpl->get_course_module()->id;
+        $variables['VPL_EXECUTION_TYPE'] = $data->type;
         if (isset($data->userid)) {
             $userid = $data->userid;
             $variables['MOODLE_USER_ID'] = $userid;
@@ -580,6 +585,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         }
         if ($data->type >= self::TEVALUATE) { // If evaluation then add information.
             $variables['VPL_EVALUATION_MODE'] = !empty($data->evaluation_mode) ? $data->evaluation_mode : '0';
+            $variables['VPL_EVALUATION_COUNT'] = $data->evaluation_count;
+            $variables['VPL_RUN_COUNT'] = $data->run_count;
+            $variables['VPL_DEBUG_COUNT'] = $data->debug_count;
+            $variables['VPL_SAVE_COUNT'] = $data->save_count;
             $variables['VPL_MAXTIME'] = $data->maxtime;
             $variables['VPL_MAXMEMORY'] = $data->maxmemory;
             $variables['VPL_MAXFILESIZE'] = $data->maxfilesize;
