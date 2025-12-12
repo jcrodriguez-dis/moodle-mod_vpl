@@ -232,6 +232,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return string script contents
      */
     public static function get_script($action, $detectedpln, $data) {
+        // Grant action validity for be part of a filename.
+        if (! in_array($action, ['run', 'debug', 'evaluate', 'test_evaluate'])) {
+            throw new coding_exception('Invalid action for get_script: ' . $action);
+        }
         $basepath = vpl_get_scripts_dir() . '/';
         $field = $action . 'script';
         if (isset($data->$field) &&  $data->$field > '') {
@@ -552,7 +556,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     }
 
     /**
-     * Get the anrry of environment variables to be used in the jail.
+     * Get the array of environment variables to be used in the jail.
      *
      * @param mod_vpl $vpl VPL activity instance.
      * @param object $data Data object containing execution information.
