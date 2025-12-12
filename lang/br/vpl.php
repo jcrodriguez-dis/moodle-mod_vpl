@@ -28,11 +28,7 @@ $string['VPL_COMPILATIONFAILED'] = 'A compilação ou preparação da execução
 $string['about'] = 'Sobre';
 $string['acceptcertificates'] = 'Aceitar certificados auto assinados';
 $string['acceptcertificates_description'] = 'Se seus servidores de execução NÃO estão usando certificados auto assinados desmarque';
-$string['acceptcertificatesnote'] = '<p>Você está usando uma conexão segura.<p/>
-<p>Para usar uma conexão encriptada com os servidores de execução, você deve aceitar seus certificados de segurança.</p>
-<p>Se não quiser aceitar os certificados ou tiver problemas com este processo, pode
-tentar usar uma conexão http (não encriptada) ou outro navegador.</p>
-<p>Por favor, clique nos seguintes links (servidor #) e aceite os certificados oferecidos.</p>';
+$string['acceptcertificatesnote'] = "<p><strong>Aviso:</strong> A conexão com o servidor de execução falhou devido a problemas de certificado.</p>\n<p>Seu navegador não confia no certificado do servidor de execução.</p>";
 $string['addfile'] = 'Adicionar arquivo';
 $string['advanced'] = 'Avançado';
 $string['allfiles'] = 'Todos os arquivos';
@@ -65,6 +61,7 @@ $string['console'] = 'Console';
 $string['copy'] = 'Copiar';
 $string['create_new_file'] = 'Cria um novo arquivo para editar';
 $string['currentstatus'] = 'Estado atual';
+$string['customizedscript'] = 'Script personalizado';
 $string['cut'] = 'Cortar';
 $string['datesubmitted'] = 'Submetido em';
 $string['debug'] = 'Depurar';

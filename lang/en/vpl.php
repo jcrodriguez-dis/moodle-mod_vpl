@@ -28,10 +28,8 @@ $string['VPL_COMPILATIONFAILED'] = 'The compilation or preparation of execution 
 $string['about'] = 'About';
 $string['acceptcertificates'] = 'Accept self signed certificates';
 $string['acceptcertificates_description'] = 'If the execution servers are not using self signed certificates uncheck this option';
-$string['acceptcertificatesnote'] = "<p>You are using an encrypted connection.<p/>
-<p>To use an encrypted connection with the execution servers it is required you accept its certificates.</p>
-<p>If you have problems with this process, you can try to use a http (unencrypted) connection or other browser.</p>
-<p>Please, click on the following links (server #) and accept the offered certificate.</p>";
+$string['acceptcertificatesnote'] = "<p><strong>Warning:</strong> Connection to execution server failed due to certificate issues.</p>
+<p>Your browser does not trust the execution server's certificate.</p>";
 $string['addfile'] = 'Add file';
 $string['addoverride'] = 'Add an override';
 $string['advanced'] = 'Advanced';
@@ -96,12 +94,13 @@ $string['create_new_file'] = 'Create a new file';
 $string['crontask'] = 'VPL background processing';
 $string['crontask_check_vpljs'] = 'Report VPL Jail Servers';
 $string['currentstatus'] = 'Current status';
+$string['customizedscript'] = 'Customized script';
 $string['cut'] = 'Cut';
 $string['datesubmitted'] = 'Date submitted';
 $string['debug'] = 'Debug';
 $string['debugging'] = 'Debugging';
 $string['debugscript'] = 'Debug script';
-$string['debugscript_help'] = 'Select the debug script to use in this activity';
+$string['debugscript_help'] = 'Select the debug script to use in this activity.<br>Customized indicates that the debug script has been set with a custom script.';
 $string['defaultevaluatescript'] = 'Default evaluation script';
 $string['defaultexefilesize'] = 'Maximum default execution file size';
 $string['defaultexememory'] = 'Maximum default memory used';
@@ -157,7 +156,7 @@ $string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
 <b>Text in GUI</b>: Evaluate program in GUI mode.<br>
 <b>Note</b>: Custom scripts can ignore this setting.<br>';
 $string['evaluator'] = 'Evaluator';
-$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for orginal BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.';
+$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for orginal BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.<br>Custom script indicate that the default script has been customized.<br>';
 $string['examples'] = 'Examples';
 $string['execution'] = 'Execution';
 $string['executionfiles'] = 'Execution files';
@@ -485,7 +484,7 @@ In this mode use @vpl_run_[text|gui|webapp|textingui]_mode inside comment at the
 Custom scripts can ignore this setting.<br>';
 $string['running'] = 'Running';
 $string['runscript'] = 'Run script';
-$string['runscript_help'] = 'Select the run script to use in this activity';
+$string['runscript_help'] = 'Select the run script to use in this activity.<br>Customized indicates that the run script has been set with a custom script.';
 $string['save'] = 'Save';
 $string['savecontinue'] = 'Save and continue';
 $string['saved'] = 'Saved';
@@ -548,21 +547,7 @@ $string['subplugintype_vplevaluator_plural'] = 'VPL submissions evaluators';
 $string['sureresetfiles'] = 'Do you want to lost all your work and reset the files to its original state?';
 $string['test'] = 'Test activity';
 $string['testcases'] = 'Test cases';
-$string['testcases_help'] = 'This feature allows to run the student program and check its output for a given input. To set up the evaluation cases you must populate the file &quot;vpl_evaluate.cases&quot;.<br>
-The file "vpl_evaluate.cases" has the following format:<br>
-<ul>
-<li> "<b>case </b>= Description of case": Set an start of test case definition.</li>
-<li> "<b>input </b>= text": can use several lines. Ends with other instruction.</li>
-<li> "<b>output </b>= text": can use several lines. Ends with other instruction. A case can have differents correct output. There are three types of output: numbers, text and exact text:
-<ul>
-<li> <b>number</b>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, other text are ignored. Floats are checked with tolerance</li>
-<li> <b>text</b>: defined as text without double quote. Only words are checked and the rest of chars are ignored, the comparation is case-insensitive </li>
-<li> <b>exact text</b>: defined as text into double quote. The exact match is used to test the output.</li>
-</ul>
-</li>
-<li> "<b>grade reduction</b> = [value|percentage%]" : By default an error reduces student\'s grade (starts with maxgrade) by (grade_range/number of cases) but with this instruction
-you can change the reduction value or percentage.</li>
-</ul>';
+$string['testcases_help'] = '<p>Here you configure the evaluator used for this activity.</p>';
 $string['text'] = 'Text';
 $string['timeleft'] = 'Time left';
 $string['timelimited'] = 'Time limited';

@@ -28,10 +28,7 @@ $string['VPL_COMPILATIONFAILED'] = 'La compilazione o la preparazione della esec
 $string['about'] = 'Informazioni su';
 $string['acceptcertificates'] = 'Accetta certificati autofirmati';
 $string['acceptcertificates_description'] = 'Se i server di esecuzione non stanno usando certificati autofirmati, disispunta questa opzione';
-$string['acceptcertificatesnote'] = '<p>Stai usando una connessione criptata.</p>
-<p>Per usare una connessione criptata con i server di esecuzione è richiesta l\'accettazione dei certificati.</p>
-<p>Se riscontri problemi con questo processo, puoi provare ad utilizzare una connessione http (non criptata) o un altro browser.</p>
-<p>Clicca sul link seguente (server #) e accetta i certificati proposti.</p>';
+$string['acceptcertificatesnote'] = "<p><strong>Avvertenza:</strong> La connessione al server di esecuzione non è riuscita a causa di problemi di certificato.</p>\n<p>Il tuo browser non si fida del certificato del server di esecuzione.</p>";
 $string['addfile'] = 'Aggiungi file';
 $string['advanced'] = 'Avanzate';
 $string['allfiles'] = 'Tutti i file';

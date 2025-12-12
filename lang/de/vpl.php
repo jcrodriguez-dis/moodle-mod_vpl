@@ -25,6 +25,9 @@
  */
 
 $string['VPL_COMPILATIONFAILED'] = 'Die Kompilierung oder Vorbereitung zur Ausführung ist fehlgeschlagen';
+$string['acceptcertificates'] = 'Selbstsignierte Zertifikate akzeptieren';
+$string['acceptcertificates_description'] = 'Wenn die Execution-Server keine selbstsignierten Zertifikate verwenden, deaktivieren Sie diese Option';
+$string['acceptcertificatesnote'] = "<p><strong>Warnung:</strong> Die Verbindung zum Execution-Server ist fehlgeschlagen, da ein Zertifikatproblem vorliegt.</p>\n<p>Ihr Browser vertraut dem Zertifikat des Execution-Servers nicht.</p>";
 $string['about'] = 'Über';
 $string['addfile'] = 'Datei hinzufügen';
 $string['advanced'] = 'Erweitert';
@@ -57,6 +60,7 @@ $string['copy'] = 'Kopieren';
 $string['copy_text'] = 'Ausgewählten Text in die Zwischenablage kopieren';
 $string['create_new_file'] = 'Neue Datei erstellen';
 $string['currentstatus'] = 'Aktueller Status';
+$string['customizedscript'] = 'Benutzerdefiniertes Skript';
 $string['cut'] = 'Ausschneiden';
 $string['cut_text'] = 'Ausgewählten Text in die Zwischenablage verschieben';
 $string['datesubmitted'] = 'Abgabedatum';

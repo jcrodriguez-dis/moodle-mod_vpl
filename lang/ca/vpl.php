@@ -25,6 +25,9 @@
 
 $string['VPL_COMPILATIONFAILED'] = 'La compilació o preparació de l\'execució ha fallat';
 $string['about'] = 'Quant a';
+$string['acceptcertificates'] = 'Acceptar certificats autofirmats';
+$string['acceptcertificates_description'] = 'Si els servidors d\'execució NO usen certificats autofirmats, desmarqueu aquesta opció';
+$string['acceptcertificatesnote'] = "<p><strong>Avís:</strong> La connexió al servidor d'execució ha fallat per problemes de certificat.</p>\n<p>El vostre navegador no confia en el certificat del servidor d'execució.</p>";
 $string['addfile'] = 'Afegeix fitxer';
 $string['advanced'] = 'avançat';
 $string['allfiles'] = 'Tots els fitxers';

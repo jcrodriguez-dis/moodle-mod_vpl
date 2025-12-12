@@ -28,10 +28,8 @@ $string['VPL_COMPILATIONFAILED'] = '编译或准备执行失败';
 $string['about'] = '关于';
 $string['acceptcertificates'] = '接受自签名证书';
 $string['acceptcertificates_description'] = '如果execution服务器不使用自签名证书, 请取消选中此选项';
-$string['acceptcertificatesnote'] = "<p>您正在使用加密连接。<p/>
-<p>要使用与execution服务器的加密连接, 必须接受其证书。</p>
-<p>如果这个过程有问题, 可以尝试使用http (未加密) 连接或其他浏览器。</p>
-<p>请单击以下链接 (服务器) 并接受提供的证书。</p>";
+$string['acceptcertificatesnote'] = "<p><strong>警告:</strong> 由于证书问题,与execution服务器的连接失败。</p>
+<p>您的浏览器不信任execution服务器的证书。</p>";
 $string['addfile'] = '添加文件';
 $string['advanced'] = '高级';
 $string['allfiles'] = '所有文件';
