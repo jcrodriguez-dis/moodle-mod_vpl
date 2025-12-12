@@ -1778,7 +1778,7 @@ class mod_vpl {
      * @param string $comp component for i18n, default mod_vpl
      * @return string HTML
      */
-    public function str_restriction($str, $value = null, $raw = false, $comp = 'mod_vpl') {
+    public function str_setting($str, $value = null, $raw = false, $comp = 'mod_vpl') {
         $html = '<b>';
         if ($raw) {
             $html .= s($str);
@@ -1802,9 +1802,9 @@ class mod_vpl {
      * @param string $comp component for i18n, default mod_vpl
      * @return string HTML
      */
-    public function str_restriction_with_icon($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
+    public function str_setting_with_icon($str, $value = null, $raw = false, $newline = true, $comp = 'mod_vpl') {
         $html = vpl_get_awesome_icon($str);
-        $html .= $this->str_restriction($str, $value, $raw, $comp);
+        $html .= $this->str_setting($str, $value, $raw, $comp);
         if ($newline) {
             $html .= '<br>';
         } else {
@@ -1836,7 +1836,7 @@ class mod_vpl {
             if ($startdate != $this->instance->startdate) {
                 $text .= $this->overriden_icon();
             }
-            $html .= $this->str_restriction_with_icon('startdate', $text);
+            $html .= $this->str_setting_with_icon('startdate', $text);
         }
         $duedate = $this->get_effective_setting('duedate', $userid);
         if ($duedate) {
@@ -1844,7 +1844,7 @@ class mod_vpl {
             if ($duedate != $this->instance->duedate) {
                 $text .= $this->overriden_icon();
             }
-            $html .= $this->str_restriction_with_icon('duedate', $text);
+            $html .= $this->str_setting_with_icon('duedate', $text);
         }
         return $html;
     }
@@ -1899,15 +1899,15 @@ class mod_vpl {
             $link .= '">';
             $link .= get_string('download', VPL);
             $link .= '</a>)';
-            $html .= $this->str_restriction_with_icon('requestedfiles', $text . $link);
+            $html .= $this->str_setting_with_icon('requestedfiles', $text . $link);
         }
         $instance = $this->get_instance();
         if (count($files) != $instance->maxfiles) {
-            $html .= $this->str_restriction_with_icon('maxfiles');
+            $html .= $this->str_setting_with_icon('maxfiles');
         }
         if ($instance->maxfilesize) {
             $mfs = $this->get_maxfilesize();
-            $html .= $this->str_restriction_with_icon('maxfilesize', vpl_conv_size_to_string($mfs));
+            $html .= $this->str_setting_with_icon('maxfilesize', vpl_conv_size_to_string($mfs));
         }
         $worktype = $instance->worktype;
         $values = [
@@ -1915,14 +1915,14 @@ class mod_vpl {
                 1 => vpl_get_awesome_icon('group') . ' ' . get_string('groupwork', VPL),
         ];
         if ($worktype) {
-            $html .= $this->str_restriction_with_icon('worktype', $values[$worktype] . ' ' . $this->fullname($USER));
+            $html .= $this->str_setting_with_icon('worktype', $values[$worktype] . ' ' . $this->fullname($USER));
         } else {
-            $html .= $this->str_restriction_with_icon('worktype', $values[$worktype]);
+            $html .= $this->str_setting_with_icon('worktype', $values[$worktype]);
         }
         $stryes = get_string('yes');
         $strno = get_string('no');
         if ($instance->example) {
-            $html .= $this->str_restriction_with_icon('isexample', $stryes);
+            $html .= $this->str_setting_with_icon('isexample', $stryes);
         }
         $strgradessettings = get_string('gradessettings', 'core_grades');
         if ($isgrader) {
@@ -1939,16 +1939,16 @@ class mod_vpl {
                 } else {
                     $info = get_string('typescale', 'core_grades');
                 }
-                $html .= $this->str_restriction_with_icon($strgradessettings, $info, true);
+                $html .= $this->str_setting_with_icon($strgradessettings, $info, true);
             } else {
-                $html .= $this->str_restriction_with_icon($strgradessettings, get_string('nograde'), true);
+                $html .= $this->str_setting_with_icon($strgradessettings, get_string('nograde'), true);
             }
         }
         $html .= $this->str_gradereduction($userid);
         if ($isgrader) {
             $password = trim($this->get_effective_setting('password'));
             if ($password) {
-                $html .= $this->str_restriction_with_icon('password', $stryes, false, false, 'moodle');
+                $html .= $this->str_setting_with_icon('password', $stryes, false, false, 'moodle');
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
                 $html .= $infohs->content_in_tag('span', s($password));
@@ -1958,24 +1958,24 @@ class mod_vpl {
                 $html .= "<br>\n";
             }
             if (trim($instance->requirednet) > '') {
-                $html .= $this->str_restriction_with_icon('requirednet', s($instance->requirednet));
+                $html .= $this->str_setting_with_icon('requirednet', s($instance->requirednet));
             }
             if ($instance->sebrequired > 0) {
-                $html .= $this->str_restriction_with_icon('sebrequired', $stryes);
+                $html .= $this->str_setting_with_icon('sebrequired', $stryes);
             }
             if (trim($instance->sebkeys) > '') {
-                $html .= $this->str_restriction_with_icon('sebkeys', $stryes, false, false);
+                $html .= $this->str_setting_with_icon('sebkeys', $stryes, false, false);
                 $infohs = new mod_vpl\util\hide_show();
                 $html .= $infohs->generate();
                 $html .= $infohs->content_in_tag('div', nl2br(s($instance->sebkeys)));
                 $html .= "<br>\n";
             }
             if ($instance->restrictededitor) {
-                $html .= $this->str_restriction_with_icon('restrictededitor', $stryes);
+                $html .= $this->str_setting_with_icon('restrictededitor', $stryes);
             }
             if (! $this->get_course_module()->visible) {
                 $html .= vpl_get_awesome_icon('hidden') . ' ';
-                $html .= $this->str_restriction_with_icon(get_string('visible'), $strno, true);
+                $html .= $this->str_setting_with_icon(get_string('visible'), $strno, true);
             }
             if ($instance->basedon) {
                 $basedon = new mod_vpl(null, $instance->basedon);
@@ -1984,47 +1984,87 @@ class mod_vpl {
                 $link .= '">';
                 $link .= $basedon->get_printable_name();
                 $link .= '</a>';
-                $html .= $this->str_restriction_with_icon('basedon', $link);
+                $html .= $this->str_setting_with_icon('basedon', $link);
             }
             $noyes = [
                     $strno,
                     $stryes,
             ];
-            $html .= $this->str_restriction_with_icon('run', $noyes[$instance->run], false, false);
-            if ($instance->runscript) {
-                $html .= $this->str_restriction_with_icon('runscript', strtoupper($instance->runscript), false, false);
+            $html .= $this->str_setting_with_icon('run', $noyes[$instance->run], false, false);
+            $customized = $this->get_customized_scripts();
+            if ($instance->run) {
+                if ($customized['run']) {
+                    $runscript = get_string('customizedscript', VPL);
+                } else {
+                    $runscript = $instance->runscript ? strtoupper($instance->runscript) : '';
+                    if (! $runscript) {
+                        $inheritedrun = $this->get_closest_set_field_in_base_chain('runscript', '');
+                        if ($inheritedrun) {
+                            $runscript = strtoupper($inheritedrun) . ' ' . get_string('inheritedfrombasedon', VPL);
+                        }
+                    }
+                }
+                if ($runscript) {
+                    $html .= $this->str_setting_with_icon('runscript', $runscript, false, false);
+                }
             }
             if ($instance->debug) {
-                $html .= $this->str_restriction_with_icon('debug', $noyes[1], false, false);
+                $html .= $this->str_setting_with_icon('debug', $noyes[1], false, false);
+                if ($customized['debug']) {
+                    $debugscript = get_string('customizedscript', VPL);
+                } else {
+                    $debugscript = $instance->debugscript ? strtoupper($instance->debugscript) : '';
+                    if (! $debugscript) {
+                        $inheriteddebug = $this->get_closest_set_field_in_base_chain('debugscript', '');
+                        if ($inheriteddebug) {
+                            $debugscript = strtoupper($inheriteddebug) . ' ' . get_string('inheritedfrombasedon', VPL);
+                        }
+                    }
+                }
+                if ($debugscript) {
+                    $html .= $this->str_setting_with_icon('debugscript', $debugscript, false, false);
+                }
             }
-            if ($instance->debugscript) {
-                $html .= $this->str_restriction_with_icon('debugscript', strtoupper($instance->debugscript), false, false);
-            }
-            $html .= $this->str_restriction_with_icon(
+            $html .= $this->str_setting_with_icon(
                 'evaluate',
                 $noyes[$instance->evaluate],
                 false,
-                ! ($instance->evaluate && $instance->evaluateonsubmission)
+                ! $instance->evaluate
             );
+            if($instance->evaluate) {
+                $evaluator = $instance->evaluator ? strtoupper($instance->evaluator) : '';
+                if (! $evaluator) {
+                    $inheritedevaluator = $this->get_closest_set_field_in_base_chain('evaluator', '');
+                    if ($inheritedevaluator) {
+                        $evaluator = strtoupper($inheritedevaluator) . ' ' . get_string('inheritedfrombasedon', VPL);
+                    }
+                }
+                if (! $evaluator && $customized['evaluate']) {
+                    $evaluator = get_string('customizedscript', VPL);
+                }
+                if ($evaluator) {
+                    $html .= $this->str_setting_with_icon('evaluator', $evaluator, false, ! ($instance->evaluate && $instance->evaluateonsubmission));
+                }
+            }
             if ($instance->evaluate && $instance->evaluateonsubmission) {
-                $html .= $this->str_restriction_with_icon('evaluateonsubmission', $noyes[1]);
+                $html .= $this->str_setting_with_icon('evaluateonsubmission', $noyes[1]);
             }
             if ($instance->automaticgrading) {
-                $html .= $this->str_restriction_with_icon('automaticgrading', $noyes[1], false, false);
+                $html .= $this->str_setting_with_icon('automaticgrading', $noyes[1], false, false);
             }
             if ($instance->maxexetime) {
-                $html .= $this->str_restriction_with_icon('maxexetime', $instance->maxexetime . ' s', false, false);
+                $html .= $this->str_setting_with_icon('maxexetime', $instance->maxexetime . ' s', false, false);
             }
             if ($instance->maxexememory) {
                 $size = vpl_conv_size_to_string($instance->maxexememory);
-                $html .= $this->str_restriction_with_icon('maxexememory', $size, false, false);
+                $html .= $this->str_setting_with_icon('maxexememory', $size, false, false);
             }
             if ($instance->maxexefilesize) {
                 $size = vpl_conv_size_to_string($instance->maxexefilesize);
-                $html .= $this->str_restriction_with_icon('maxexefilesize', $size, false, false);
+                $html .= $this->str_setting_with_icon('maxexefilesize', $size, false, false);
             }
             if ($instance->maxexeprocesses) {
-                $html .= $this->str_restriction_with_icon('maxexeprocesses', null, false, false);
+                $html .= $this->str_setting_with_icon('maxexeprocesses', null, false, false);
             }
         }
         return $html;
@@ -2059,13 +2099,13 @@ class mod_vpl {
         $html = '';
         $reductionbyevaluation = $this->get_effective_setting('reductionbyevaluation', $userid);
         if ($reductionbyevaluation > 0) {
-            $html .= $this->str_restriction('reductionbyevaluation', $reductionbyevaluation);
+            $html .= $this->str_setting('reductionbyevaluation', $reductionbyevaluation);
             if ($reductionbyevaluation != $this->instance->reductionbyevaluation) {
                 $html .= $this->overriden_icon();
             }
             $freeevaluations = $this->get_effective_setting('freeevaluations', $userid);
             if ($freeevaluations > 0) {
-                $html .= ' ' . $this->str_restriction('freeevaluations', $freeevaluations);
+                $html .= ' ' . $this->str_setting('freeevaluations', $freeevaluations);
                 if ($freeevaluations != $this->instance->freeevaluations) {
                     $html .= $this->overriden_icon();
                 }
@@ -2566,5 +2606,24 @@ class mod_vpl {
             }
         }
         return $default;
+    }
+
+    /**
+     * Get customized scripts
+     * Return an array saying if the run/debug or evaluated script is customized.
+     * In the current VPL instance or in any of its bases.
+     * @return array An associative array indicating customization status.
+     */
+    public function get_customized_scripts() {
+        require_once('vpl_submission_CE.class.php');
+        $customized = [];
+        $data = mod_vpl_submission_CE::prepare_execution_base($this, mod_vpl_submission_CE::TEVALUATE);
+        $customized['run'] = isset($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TRUN]]) &&
+             trim($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TRUN]]) != '';
+        $customized['debug'] = isset($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TDEBUG]]) &&
+             trim($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TDEBUG]]) != '';
+        $customized['evaluate'] = isset($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TEVALUATE]]) &&
+             trim($data->files[mod_vpl_submission_CE::TYPE_TO_SCRIPT[mod_vpl_submission_CE::TEVALUATE]]) != '';
+        return $customized;
     }
 }
