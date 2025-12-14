@@ -67,11 +67,15 @@ class vplevaluator_base {
     }
 
     /**
+     * Default script to start the evaluation.
+     * @var string
+     */
+    public const DEFAULT_EXECUTION_SCRIPT = 'vpl_evaluate.sh';
+
+    /**
      * Returns the path to the script to start the evaluation.
      * @return string path to the start script
      */
-    const DEFAULT_EXECUTION_SCRIPT = 'vpl_evaluate.sh';
-
     public function get_execution_script(): string {
         return self::DEFAULT_EXECUTION_SCRIPT;
     }

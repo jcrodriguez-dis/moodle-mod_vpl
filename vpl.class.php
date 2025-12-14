@@ -2031,7 +2031,7 @@ class mod_vpl {
                 false,
                 ! $instance->evaluate
             );
-            if($instance->evaluate) {
+            if ($instance->evaluate) {
                 $evaluator = $instance->evaluator ? strtoupper($instance->evaluator) : '';
                 if (! $evaluator) {
                     $inheritedevaluator = $this->get_closest_set_field_in_base_chain('evaluator', '');
@@ -2043,7 +2043,8 @@ class mod_vpl {
                     $evaluator = get_string('customizedscript', VPL);
                 }
                 if ($evaluator) {
-                    $html .= $this->str_setting_with_icon('evaluator', $evaluator, false, ! ($instance->evaluate && $instance->evaluateonsubmission));
+                    $addnewline = ! ($instance->evaluate && $instance->evaluateonsubmission);
+                    $html .= $this->str_setting_with_icon('evaluator', $evaluator, false, $addnewline);
                 }
             }
             if ($instance->evaluate && $instance->evaluateonsubmission) {

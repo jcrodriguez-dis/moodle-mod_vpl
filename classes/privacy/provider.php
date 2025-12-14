@@ -27,6 +27,8 @@
  */
 namespace mod_vpl\privacy;
 
+defined('MOODLE_INTERNAL') || die();
+
 use core_privacy\local\metadata\collection;
 use core_privacy\local\request\approved_contextlist;
 use core_privacy\local\request\contextlist;
@@ -39,7 +41,7 @@ use core_privacy\local\request\core_userlist_provider;
 use core_privacy\local\request\user_preference_provider;
 use core_privacy\local\metadata\provider as metadata_provider;
 
-require_once(dirname(__FILE__) . '/../vpl_submission_CE.class.php');
+require_once(dirname(__FILE__) . '/../../vpl_submission_CE.class.php');
 
 /**
  * VPL provider class
