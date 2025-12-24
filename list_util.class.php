@@ -102,7 +102,7 @@ class vpl_list_util {
         ];
         if (isset($sortfields[$field])) {
             self::$fields = $sortfields[$field];
-        } else { // Unknow field.
+        } else { // Unknown field.
             self::$fields = $sortfields['duedate'];
         }
         if ($ascending) {
@@ -132,7 +132,7 @@ class vpl_list_util {
                 $newdir = 'down';
             } else if ($sortdir == 'down') {
                 $newdir = 'up';
-            } else { // Unknow sortdir.
+            } else { // Unknown sortdir.
                 $sortdir = 'down';
             }
             $url = vpl_url_add_param($url, 'sortdir', $newdir);
