@@ -14,7 +14,7 @@ Un valor multilínea termina cuando aparece otra sentencia.
 Este comportamiento limita el contenido válido de los valores de las sentencias.
 El nombre de la sentencia **no distingue entre mayúsculas y minúsculas**.
 Un caso de prueba básico incluye un nombre de caso, la entrada que queremos proporcionar al programa del estudiante y la salida que esperamos de él.
-También se pueden configurar otros aspectos, como la penalización por fallos, el tiempo límite, etc.
+También se pueden configurar otros aspectos, como la penalización por fallos, código de salida esperado, etc.
 VPL ejecutará la evaluación utilizando los casos definidos en `vpl_evaluate.cases` y generará un informe con los casos fallidos y la calificación obtenida.
 
 ---

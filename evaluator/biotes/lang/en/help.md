@@ -13,7 +13,7 @@ A multiline value ends when another statement appears.
 Notice that this behavior limits the valid contents of the values of the statement.
 The statement name is case-insensitive.
 A basic test case definition includes a case name, the input we want to provide to the student's program, and the output we expect from it.
-We can also configure other stuff, such as the penalization for failed tests, timeout, etc.
+We can also configure other stuff, such as the penalization for failed tests, expected exit code, etc.
 VPL will run the evaluation using the test cases in `vpl_evaluate.cases` and generate a report of failed cases and the mark obtained.
 
 ---
