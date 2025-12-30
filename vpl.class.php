@@ -2031,21 +2031,19 @@ class mod_vpl {
                 false,
                 ! $instance->evaluate
             );
-            if ($instance->evaluate) {
-                $evaluator = $instance->evaluator ? strtoupper($instance->evaluator) : '';
-                if (! $evaluator) {
-                    $inheritedevaluator = $this->get_closest_set_field_in_base_chain('evaluator', '');
-                    if ($inheritedevaluator) {
-                        $evaluator = strtoupper($inheritedevaluator) . ' ' . get_string('inheritedfrombasedon', VPL);
-                    }
+            $evaluator = $instance->evaluator ? strtoupper($instance->evaluator) : '';
+            if (! $evaluator) {
+                $inheritedevaluator = $this->get_closest_set_field_in_base_chain('evaluator', '');
+                if ($inheritedevaluator) {
+                    $evaluator = strtoupper($inheritedevaluator) . ' ' . get_string('inheritedfrombasedon', VPL);
                 }
-                if (! $evaluator && $customized['evaluate']) {
-                    $evaluator = get_string('customizedscript', VPL);
-                }
-                if ($evaluator) {
-                    $addnewline = ! ($instance->evaluate && $instance->evaluateonsubmission);
-                    $html .= $this->str_setting_with_icon('evaluator', $evaluator, false, $addnewline);
-                }
+            }
+            if (! $evaluator && $customized['evaluate']) {
+                $evaluator = get_string('customizedscript', VPL);
+            }
+            if ($evaluator) {
+                $addnewline = ! ($instance->evaluate && $instance->evaluateonsubmission);
+                $html .= $this->str_setting_with_icon('evaluator', $evaluator, false, $addnewline);
             }
             if ($instance->evaluate && $instance->evaluateonsubmission) {
                 $html .= $this->str_setting_with_icon('evaluateonsubmission', $noyes[1]);
