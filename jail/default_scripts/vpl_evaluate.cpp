@@ -7,7 +7,6 @@
 
 #include <cstdlib>
 #include <cstdio>
-#include <climits>
 #include <limits>
 #include <errno.h>
 #include <sys/types.h>
@@ -23,7 +22,6 @@
 #include <sstream>
 #include <vector>
 #include <cmath>
-#include <execinfo.h>
 #include <regex.h>
 #include <termios.h>
 
