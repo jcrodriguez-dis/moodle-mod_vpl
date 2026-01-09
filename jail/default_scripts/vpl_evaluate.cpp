@@ -268,7 +268,7 @@ class TestCase {
 	string programOutputBefore, programOutputAfter, programInput;
 
 	void cutOutputTooLarge(string &output);
-	void readWrite(int fdread, int fdwrite);
+	void readWrite(int fdread, int fdwrite, int timeoutMs = 500);
 	void addOutput(const string &o, const string &actualCaseDescription);
 public:
 	static void setEnvironment(const char **environment);
@@ -1080,7 +1080,7 @@ void TestCase::cutOutputTooLarge(string &output) {
 	}
 }
 
-void TestCase::readWrite(int fdread, int fdwrite) {
+void TestCase::readWrite(int fdread, int fdwrite, int timeoutMs) {
 	const int MAX = 1024* 10 ;
 	// Buffer size to read
 	const int POLLREAD = POLLIN | POLLPRI;
@@ -1091,7 +1091,7 @@ void TestCase::readWrite(int fdread, int fdwrite) {
 	char buf[MAX];
 	devices[0].events = POLLREAD;
 	devices[1].events = POLLOUT;
-	int res = poll(devices, 2, 500);
+	int res = poll(devices, 2, timeoutMs);
 	if (res == -1) // Error
 		return;
 	if (res == 0) // Nothing to do
@@ -1472,7 +1472,12 @@ void TestCase::runTest(time_t timeout) {// Timeout in seconds
 		executionError = true;
 		strcpy(executionErrorReason, "waitpid error");
 	}
-	readWrite(fdmaster, fdmaster);
+	// While there is some output to read from program read it
+	int lastSizeReaded;
+	do {
+		lastSizeReaded = this->sizeReaded;
+		readWrite(fdmaster, -1, 10);
+	} while (lastSizeReaded != this->sizeReaded);
 	close(fdmaster);
 	correctExitCode = isExitCodeTested() && expectedExitCode == exitCode;
 	Tools::removeCRs(programOutputBefore);
