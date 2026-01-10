@@ -168,7 +168,7 @@ function vpl_rescale_activity_grades($course, $cm, $oldmin, $oldmax, $newmin, $n
     $sql = "
         UPDATE {vpl_submissions}
             SET grade = (((grade - :oldmin) * :scale) + :newmin)
-        WHERE vpl = :vplid and grade >= 0
+        WHERE vpl = :vplid and dategraded > 0
     ";
     $dbupdate = $DB->execute($sql, $params);
     if (!$dbupdate) {
