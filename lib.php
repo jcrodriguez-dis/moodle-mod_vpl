@@ -67,8 +67,16 @@ function vpl_grade_item_update($instance, $grades = null) {
         $grades = null;
     }
 
-    return grade_update('mod/vpl', $instance->course, 'mod', VPL,
-                        $instance->id, 0, $grades, $params);
+    return grade_update(
+        'mod/vpl',
+        $instance->course,
+        'mod',
+        VPL,
+        $instance->id,
+        0,
+        $grades,
+        $params
+    );
 }
 
 /**

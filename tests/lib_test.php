@@ -590,15 +590,15 @@ final class lib_test extends base_fixture {
         $course = $vpl->get_course();
         $cm = $vpl->get_course_module();
 
-        // 1. Test invalid parameters (scaling impossible).
-        // oldmax <= oldmin.
+        // Test invalid parameters (scaling impossible).
+        // For oldmax <= oldmin.
         $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 10, 10, 0, 100));
         $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 10, 0, 0, 100));
-        // newmax <= newmin.
+        // For newmax <= newmin.
         $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 0, 100, 10, 10));
         $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 0, 100, 10, 0));
 
-        // 2. Test valid scaling.
+        // Test valid scaling.
         // Setup a submission with a specific grade.
         $submissions = $vpl->all_last_user_submission();
         $this->assertNotEmpty($submissions);
@@ -634,4 +634,3 @@ final class lib_test extends base_fixture {
         $this->assertEqualsWithDelta(30.0, $updatedsub->grade, 0.00001);
     }
 }
-

@@ -780,10 +780,16 @@ class mod_vpl_submission {
      * @param bool $noformat If true then no format the text
      * @param bool $addlinks If true then add links to files
      * @param bool $folding If true then enable folding
-     * @return string
+     * @return string HTML processed comment
      */
-    public function get_processed_comment($title, $comment, $showempty = false, $noformat = false,
-                                          $addlinks = true, $folding = true) {
+    public function get_processed_comment(
+            $title,
+            $comment,
+            $showempty = false,
+            $noformat = false,
+            $addlinks = true,
+            $folding = true
+    ): string {
         global $PAGE;
         $ret = '';
         $tag = ($title == 'compilation' || $title == 'execution') ? 'pre' : 'div';
