@@ -191,7 +191,7 @@ VPLUtil.getFileName = function(path) {
     return dirs[dirs.length - 1];
 };
 VPLUtil.dataFromURLData = function(data) {
-    return data.substr(data.indexOf(',') + 1);
+    return data.substring(data.indexOf(',') + 1);
 };
 
 (function() {
@@ -230,10 +230,10 @@ VPLUtil.dataFromURLData = function(data) {
         var minutes = parseInt(timePending / minute);
         timePending -= minutes * minute;
         var seconds = parseInt(timePending);
-        res += ('00' + hours).substr(-2) + ':';
-        res += ('00' + minutes).substr(-2);
+        res += ('00' + hours).slice(-2) + ':';
+        res += ('00' + minutes).slice(-2);
         if (timeLeft < hour) {
-            res += ':' + ('00' + seconds).substr(-2);
+            res += ':' + ('00' + seconds).slice(-2);
         }
         return res;
     };
@@ -607,7 +607,7 @@ VPLUtil.directRun = function(URL, command, files) {
             log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);
         });
 };
-VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
+VPLUtil.processResult = function(text, filenames, sh, noFormat, addLinks, folding) {
     if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
         return '';
     }
@@ -622,7 +622,6 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
     var regtitgra = /\([-]?[\d]+[.]?[\d]*\)\s*$/;
     var regtit = /^-/;
     var regcas = /^\s*>/;
-    // TODO adds error? use first anotation for icon.
     var regError = new RegExp('\\[err\\]|error|' + escReg(VPLUtil.str('error')), 'i');
     var regWarning = new RegExp('\\[warn\\]|warning|note|' + escReg(VPLUtil.str('warning')), 'i');
     var regInformation = new RegExp('\\[info\\]|information', 'i');
@@ -632,8 +631,8 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
     var case_ = '';
     var lines = text.split(/\r\n|\n|\r/);
     var regFiles = [];
-    var lastAnotation = false;
-    var lastAnotationFile = false;
+    var lastAnnotation = false;
+    var lastAnnotationFile = false;
     var afterTitle = false;
     /**
      * Generate attribute href for the editor in sh
@@ -657,12 +656,15 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
         }
     })();
     /**
-     * Generate the file links in the comments to point to the files
+     * Generate the file links in the comments to point to the files and add annotations
      * @param {string} line Line to modify
      * @param {string} rawline Text to include in annotation
      * @returns {string} The line modified
      */
     function genFileLinks(line, rawline) {
+        if (!addLinks) {
+            return line;
+        }
         var used = false;
         for (var i = 0; i < regFiles.length; i++) {
             var reg = regFiles[i];
@@ -670,7 +672,7 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
             while ((match = reg.exec(line)) !== null) {
                 var anot = sh[i].getAnnotations();
                 // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
-                lastAnotationFile = i;
+                lastAnnotationFile = i;
                 used = true;
                 var type;
                 if (line.search(regError) > -1) {
@@ -682,13 +684,13 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
                 } else {
                     type = 'error';
                 }
-                lastAnotation = {
+                lastAnnotation = {
                     'row': (match[3] - 1),
                     'column': match[5],
                     'type': type,
                     'text': rawline,
                 };
-                anot.push(lastAnotation);
+                anot.push(lastAnnotation);
                 var fileName = filenames[i];
                 var href = getHref(i);
                 var lt = VPLUtil.sanitizeText(fileName);
@@ -697,12 +699,12 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
                 sh[i].setAnnotations(anot);
             }
         }
-        if (!used && lastAnotation) {
+        if (!used && lastAnnotation) {
             if (rawline !== '') {
-                lastAnotation.text += "\n" + rawline;
-                sh[lastAnotationFile].setAnnotations(sh[lastAnotationFile].getAnnotations());
+                lastAnnotation.text += "\n" + rawline;
+                sh[lastAnnotationFile].setAnnotations(sh[lastAnnotationFile].getAnnotations());
             } else {
-                lastAnotation = false;
+                lastAnnotation = false;
             }
         }
         return line;
@@ -713,11 +715,11 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
      * @returns {string} Line in HTML format
      */
     function getTitle(line) {
-        lastAnotation = false;
-        line = line.substr(1);
+        lastAnnotation = false;
+        line = line.substring(1);
         var end = regtitgra.exec(line);
         if (end !== null) {
-            line = line.substr(0, line.length - end[0].length);
+            line = line.substring(0, line.length - end[0].length);
         }
         var html = '';
         if (folding) {
@@ -732,7 +734,7 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
      * @returns {string}
      */
     function getComment() {
-        lastAnotation = false;
+        lastAnnotation = false;
         var ret = comment;
         comment = '';
         return ret;
@@ -758,7 +760,7 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
      * @returns {string}
      */
     function getCase() {
-        lastAnotation = false;
+        lastAnnotation = false;
         var ret = case_;
         case_ = '';
         return '<pre>' + ret + '</pre>';
@@ -795,7 +797,7 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat, folding) {
             if (state == 'comment') {
                 html += getComment();
             }
-            addCase(line.substr(match[0].length));
+            addCase(line.substring(match[0].length));
             state = 'case';
         } else {
             if (state == 'case') {
@@ -982,7 +984,7 @@ VPLUtil.loadModule = function(module, variable) {
             }
         }
         if (needAce && typeof ace === 'undefined') {
-            VPLUtil.loadScript(['/ace9/ace.js'],
+            VPLUtil.loadScript(['/../../thirdpartylibs/ace/ace.js'],
                 function() {
                     self.highlight();
                 });
@@ -1017,8 +1019,25 @@ VPLUtil.loadModule = function(module, variable) {
             sh.getAnnotations = function() {
                 return this.getSession().getAnnotations();
             };
+            sh.cleanAnnotations = function(annotations) {
+                // Prevent more than 5 annotations for line.
+                const MAX_ANNOTATIONS_PER_LINE = 5;
+                var counts = {};
+                var res = [];
+                for (var i = 0; i < annotations.length; i++) {
+                    var annot = annotations[i];
+                    if (typeof counts[annot.row] == 'undefined') {
+                        counts[annot.row] = 0;
+                    }
+                    if (counts[annot.row] < MAX_ANNOTATIONS_PER_LINE) {
+                        res.push(annot);
+                    }
+                    counts[annot.row]++;
+                }
+                return res;
+            };
             sh.setAnnotations = function(a) {
-                return this.getSession().setAnnotations(a);
+                return this.getSession().setAnnotations(this.cleanAnnotations(a));
             };
             sh.getTagId = function() {
                 return this.vplTagId;
@@ -1043,14 +1062,14 @@ VPLUtil.loadModule = function(module, variable) {
         var tag = document.getElementById(result.tagId);
         var text = tag.textContent || tag.innerText;
         tag.innerHTML = VPLUtil.processResult(text, this.shFileNames, this.shFiles,
-            result.noFormat, result.folding);
+            result.noFormat, result.addLinks, result.folding);
         VPLUtil.delay(result.tagId + ".next", function() {
             self.resultStep(pos + 1);
         });
     };
 
-    VPLUtil.addResults = function(tagId, noFormat, folding) {
-        results.push({'tagId': tagId, 'noFormat': noFormat, 'folding': folding});
+    VPLUtil.addResults = function(tagId, noFormat, addLinks, folding) {
+        results.push({'tagId': tagId, 'noFormat': noFormat, 'addLinks': addLinks, 'folding': folding});
     };
     VPLUtil.syntaxHighlightFile = function(tagId, fileName, theme, showln, nl) {
         files.push({

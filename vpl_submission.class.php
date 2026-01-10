@@ -23,16 +23,6 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-/**
- * Module instance files
- * path= vpl_data//vpl_instance#
- * Submission info
- * path/usersdata/userid#/submissionid#/submittedfiles.lst
- * path/usersdata/userid#/submissionid#/submittedfiles/
- * path/usersdata/userid#/submissionid#/grade_comments.txt
- * path/usersdata/userid#/submissionid#/teachertest.txt
- * path/usersdata/userid#/submissionid#/studenttest.txt
- */
 defined('MOODLE_INTERNAL') || die();
 global $CFG;
 require_once(dirname(__FILE__) . '/vpl.class.php');
@@ -786,18 +776,21 @@ class mod_vpl_submission {
      *
      * @param string $title Title to show
      * @param string $comment Content to process
-     * @param bool $empty Process empty comment
+     * @param bool $showempty Show empty comment
+     * @param bool $noformat If true then no format the text
+     * @param bool $addlinks If true then add links to files
+     * @param bool $folding If true then enable folding
      * @return string
      */
-    public function get_processed_comment($title, $comment, $empty = false) {
+    public function get_processed_comment($title, $comment, $showempty = false, $noformat = false, $addlinks = true, $folding = true) {
         global $PAGE;
         $ret = '';
         $tag = ($title == 'compilation' || $title == 'execution') ? 'pre' : 'div';
-        if (strlen($comment) > 0 || $empty) {
+        if (strlen($comment) > 0 || $showempty) {
             $div = new mod_vpl\util\hide_show(true);
             $ret = '<b>' . get_string($title, VPL) . $div->generate() . '</b><br>';
             $ret .= $div->content_in_tag($tag, format_text($comment, FORMAT_PLAIN));
-            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), false, true]);
+            $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), $noformat, $addlinks, $folding]);
         }
         return $ret;
     }
@@ -812,7 +805,7 @@ class mod_vpl_submission {
         global $PAGE;
         $ret = $this->reduce_grade_string() . '<br>';
         $feedback = $this->get_grade_comments($process);
-        $ret .= $this->get_processed_comment('gradercomments', $feedback);
+        $ret .= $this->get_processed_comment('gradercomments', $feedback, false, false, true, true);
         return $ret;
     }
 
@@ -968,13 +961,15 @@ class mod_vpl_submission {
         if ($ce['compilation'] === 0) {
             return '';
         }
+        $addlinks = ! $this->is_graded();
         $ret = '';
         $compilation = '';
         $execution = '';
         $grade = '';
         $this->get_ce_html($ce, $compilation, $execution, $grade, true, true);
         if (strlen($compilation) + strlen($execution) + strlen($grade) > 0) {
-            $div = new mod_vpl\util\hide_show(! $this->is_graded() || ! $this->vpl->get_visiblegrade());
+            
+            $div = new mod_vpl\util\hide_show(! $this->is_graded());
             $ret .= '<b>' . get_string('automaticevaluation', VPL) . $div->generate() . '</b>';
             $ret .= $div->begin('div');
             $ret .= $OUTPUT->box_start();
@@ -983,10 +978,10 @@ class mod_vpl_submission {
                 $ret .= $this->reduce_grade_string() . '<br>';
             }
             $compilation = $ce['compilation'];
-            $ret .= $this->get_processed_comment('compilation', $compilation);
+            $ret .= $this->get_processed_comment('compilation', $compilation, false, true, $addlinks, false);
             if (strlen($execution) > 0) {
                 $proposedcomments = $this->proposedcomment($ce['execution']);
-                $ret .= $this->get_processed_comment('comments', $proposedcomments, true);
+                $ret .= $this->get_processed_comment('comments', $proposedcomments, true, false, $addlinks, true);
             }
             $ret .= $OUTPUT->box_end();
             $ret .= $div->end();
