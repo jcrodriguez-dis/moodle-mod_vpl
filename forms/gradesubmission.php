@@ -116,7 +116,6 @@ if (
                     $gradedata->grade = get_string('nograde');
                     $gradedata->grader = '';
                     $gradedata->gradedon = '';
-                    $gradedata->comments = '';
                     $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'updateSubmissionsList', [ $submissionid, $gradedata, null ]);
                 }
                 vpl_redirect($link, get_string('graderemoved', VPL), 5);
@@ -161,7 +160,6 @@ if (
             $gradedata->grade = $submission->get_grade_core();
             $gradedata->grader = fullname($submission->get_grader($USER->id));
             $gradedata->gradedon = userdate($submission->get_instance()->dategraded);
-            $gradedata->comments = nl2br($submission->get_detailed_grade() . $submission->print_ce(true));
             if (isset($fromform->savenext)) {
                 $nexturl = $CFG->wwwroot . '/mod/vpl/forms/gradesubmission.php?id=' . $id . '&inpopup=1&userid=';
                 echo $OUTPUT->notification(get_string('gradesaved_redirect', VPL), 'success');

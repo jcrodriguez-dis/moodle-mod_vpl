@@ -210,7 +210,7 @@ export const setup = (id) => {
  * Update the submission list in the opener window with the new grade data.
  * If nexturl is given, go to the next submission after updating.
  * @param {Number} submissionID The submission being graded.
- * @param {Object} gradeData The new grade data.
+ * @param {Object} gradeData The new grade data. Fields: grade, grader, gradedon.
  * @param {String} nexturl URL of the next submission to be graded (if any).
  */
 export const updateSubmissionsList = (submissionID, gradeData, nexturl) => {
@@ -218,7 +218,6 @@ export const updateSubmissionsList = (submissionID, gradeData, nexturl) => {
         $(opener.document).find('#g' + submissionID).html(gradeData.grade);
         $(opener.document).find('#m' + submissionID).html(gradeData.grader);
         $(opener.document).find('#o' + submissionID).html(gradeData.gradedon);
-        $(opener.document).find('#c' + submissionID).html(gradeData.comments);
         $(opener.document).find('.gd' + submissionID).css('color', '').css('backgroundColor', '');
     }
     if (nexturl) {
