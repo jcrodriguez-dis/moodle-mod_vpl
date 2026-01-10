@@ -575,4 +575,63 @@ final class lib_test extends base_fixture {
             }
         }
     }
+
+    /**
+     * Method to test vpl_rescale_activity_grades() function.
+     * @covers \vpl_rescale_activity_grades
+     */
+    public function test_vpl_rescale_activity_grades(): void {
+        global $DB;
+        $this->setUser($this->editingteachers[0]);
+
+        // Use vplonefile which has 1 submission.
+        $vpl = $this->vplonefile;
+        $instance = $vpl->get_instance();
+        $course = $vpl->get_course();
+        $cm = $vpl->get_course_module();
+
+        // 1. Test invalid parameters (scaling impossible).
+        // oldmax <= oldmin.
+        $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 10, 10, 0, 100));
+        $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 10, 0, 0, 100));
+        // newmax <= newmin.
+        $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 0, 100, 10, 10));
+        $this->assertFalse(vpl_rescale_activity_grades($course, $cm, 0, 100, 10, 0));
+
+        // 2. Test valid scaling.
+        // Setup a submission with a specific grade.
+        $submissions = $vpl->all_last_user_submission();
+        $this->assertNotEmpty($submissions);
+        $sub = reset($submissions); // Get the first submission.
+
+        // Set initial grade = 50, range 0 to 100.
+        $sub->grade = 50.00000;
+        $sub->dategraded = time();
+        $DB->update_record(VPL_SUBMISSIONS, $sub);
+
+        // Perform rescaling: 0-100 -> 0-10.
+        // Scale = (10-0)/(100-0) = 0.1
+        // New grade = (50 - 0) * 0.1 + 0 = 5.
+        $result = vpl_rescale_activity_grades($course, $cm, 0, 100, 0, 10);
+        $this->assertTrue($result);
+
+        // Check the database.
+        $updatedsub = $DB->get_record(VPL_SUBMISSIONS, ['id' => $sub->id]);
+        $this->assertEqualsWithDelta(5.0, $updatedsub->grade, 0.00001);
+
+        // Another test with offset.
+        // Reset grade to 50, range 0-100.
+        $sub->grade = 50.00000;
+        $DB->update_record(VPL_SUBMISSIONS, $sub);
+
+        // Perform rescaling: 0-100 -> 10-50.
+        // Scale = (50-10)/(100-0) = 0.4
+        // New grade = (50 - 0) * 0.4 + 10 = 20 + 10 = 30.
+        $result = vpl_rescale_activity_grades($course, $cm, 0, 100, 10, 50);
+        $this->assertTrue($result);
+
+        $updatedsub = $DB->get_record(VPL_SUBMISSIONS, ['id' => $sub->id]);
+        $this->assertEqualsWithDelta(30.0, $updatedsub->grade, 0.00001);
+    }
 }
+
