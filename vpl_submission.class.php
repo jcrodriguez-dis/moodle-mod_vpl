@@ -789,7 +789,7 @@ class mod_vpl_submission {
         if (strlen($comment) > 0 || $showempty) {
             $div = new mod_vpl\util\hide_show(true);
             $ret = '<b>' . get_string($title, VPL) . $div->generate() . '</b><br>';
-            $ret .= $div->content_in_tag($tag, format_text($comment, FORMAT_PLAIN));
+            $ret .= $div->content_in_tag($tag, s($comment));
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'addResults', [$div->get_tag_id(), $noformat, $addlinks, $folding]);
         }
         return $ret;
