@@ -173,6 +173,13 @@ class vplevaluator extends base {
         if (empty($evaluatorname)) {
             $evaluatorname = $vpl->get_effective_setting('evaluator');
         }
+        // If no evaluator selected and no customized evaluator show BIOTES help link.
+        if (empty($evaluatorname)) {
+            $customized = $vpl->get_customized_scripts();
+            if (!$customized['evaluate']) {
+                $evaluatorname = 'biotes';
+            }
+        }
         if (empty($evaluatorname) || !$vpl->has_capability(VPL_MANAGE_CAPABILITY)) {
             return '';
         }
