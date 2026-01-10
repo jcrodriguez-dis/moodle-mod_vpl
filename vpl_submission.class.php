@@ -782,7 +782,8 @@ class mod_vpl_submission {
      * @param bool $folding If true then enable folding
      * @return string
      */
-    public function get_processed_comment($title, $comment, $showempty = false, $noformat = false, $addlinks = true, $folding = true) {
+    public function get_processed_comment($title, $comment, $showempty = false, $noformat = false,
+                                          $addlinks = true, $folding = true) {
         global $PAGE;
         $ret = '';
         $tag = ($title == 'compilation' || $title == 'execution') ? 'pre' : 'div';
@@ -968,7 +969,6 @@ class mod_vpl_submission {
         $grade = '';
         $this->get_ce_html($ce, $compilation, $execution, $grade, true, true);
         if (strlen($compilation) + strlen($execution) + strlen($grade) > 0) {
-            
             $div = new mod_vpl\util\hide_show(! $this->is_graded());
             $ret .= '<b>' . get_string('automaticevaluation', VPL) . $div->generate() . '</b>';
             $ret .= $div->begin('div');

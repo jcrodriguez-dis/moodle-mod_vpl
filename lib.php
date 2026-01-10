@@ -67,7 +67,7 @@ function vpl_grade_item_update($instance, $grades = null) {
         $grades = null;
     }
 
-    return grade_update('mod/vpl', $instance->course,'mod', VPL,
+    return grade_update('mod/vpl', $instance->course, 'mod', VPL,
                         $instance->id, 0, $grades, $params);
 }
 
@@ -140,8 +140,8 @@ function vpl_delete_grade_item($instance) {
 }
 
 /**
- * Rescale all grades for this activity.
- * 
+ * Callback to rescale all grades for this activity commonly due maxgrade change.
+ *
  * @param stdClass $course Course object
  * @param stdClass $cm Course module object
  * @param float $oldmin Old minimum grade
@@ -151,20 +151,19 @@ function vpl_delete_grade_item($instance) {
  * @return bool True if rescaled, false otherwise
  */
 function vpl_rescale_activity_grades($course, $cm, $oldmin, $oldmax, $newmin, $newmax) {
-    global $DB, $USER;
-    
+    global $DB;
     if ($oldmax <= $oldmin || $newmax <= $newmin) {
         // Grades cannot be scaled.
         return false;
     }
-    $vpl =  new mod_vpl($cm->id);
+    $vpl = new mod_vpl($cm->id);
     $scale = ($newmax - $newmin) / ($oldmax - $oldmin);
-    $params = array(
+    $params = [
         'oldmin' => $oldmin,
         'scale' => $scale,
         'newmin' => $newmin,
         'vplid' => $vpl->get_instance()->id,
-    );
+    ];
     $sql = "
         UPDATE {vpl_submissions}
             SET grade = (((grade - :oldmin) * :scale) + :newmin)

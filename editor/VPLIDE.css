@@ -278,7 +278,8 @@ img.vpl_ide_file {
 .ui-widget.vpl_ide_accordion_c_execution,
 .vpl_ide_accordion_c_compilation,
 .vpl_ide_accordion_c_execution {
-    font: 1em/1
+    font:
+        1em/1
         'Monaco',
         'Menlo',
         'Ubuntu Mono',
