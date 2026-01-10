@@ -68,7 +68,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         clipboardData += data;
         if (clipboardData.length > clipboardMaxsize) {
             var from = clipboardData.length - clipboardMaxsize / 2;
-            clipboardData = clipboardData.substr(from);
+            clipboardData = clipboardData.substring(from);
         }
     }
     /**
@@ -196,7 +196,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             if (text == '\u007f') {
                 if (ws.readBuffer.length > 0) {
                     self.writeLocal('\b \b');
-                    ws.readBuffer = ws.readBuffer.substr(0, ws.readBuffer.length - 1);
+                    ws.readBuffer = ws.readBuffer.substring(0, ws.readBuffer.length - 1);
                 }
             } else {
                 self.writeLocal(text);
@@ -204,8 +204,8 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             }
             var pos = ws.readBuffer.indexOf("\r");
             if (pos != -1) {
-                var data = ws.readBuffer.substr(0, pos);
-                ws.readBuffer = ws.readBuffer.substr(pos + 1);
+                var data = ws.readBuffer.substring(0, pos);
+                ws.readBuffer = ws.readBuffer.substring(pos + 1);
                 ws.onData(data);
             }
         };

@@ -596,7 +596,7 @@ var VPLIDE = function(rootId, options) {
                         if (files[i].getId() < this.minNumberOfFiles) { // Renaming required filename
                             throw str('incorrect_file_name');
                         }
-                        newFileNames[i] = newName + '/' + fileName.substr(oldNameLength);
+                        newFileNames[i] = newName + '/' + fileName.substring(oldNameLength);
                     }
                 }
                 if (this.directoryExists(newName)) { // Checks if the merge is possible (no repeated names)
@@ -1003,10 +1003,10 @@ var VPLIDE = function(rootId, options) {
             result.accordion("refresh");
             result.accordion('option', 'active', gradeShow ? 1 : 0);
             for (i = 0; i < files.length; i++) {
-                var anot = files[i].getAnnotations();
-                for (var j = 0; j < anot.length; j++) {
-                    if (go || anot[j].type == 'error') {
-                        fileManager.gotoFile(i, anot[j].row + 1);
+                var annotations = files[i].getAnnotations();
+                for (var j = 0; j < annotations.length; j++) {
+                    if (go || annotations[j].type == 'error') {
+                        fileManager.gotoFile(i, annotations[j].row + 1);
                         break;
                     }
                 }
