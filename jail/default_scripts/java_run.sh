@@ -20,8 +20,14 @@ function getClassFile {
 }
 function hasMain {
 	local FILE=$(getClassFile "$1")
+	local REGEX_HAS_MAIN
+	if [ "$JAVA_25" -eq "0" ] ; then
+		export REGEX_HAS_MAIN="\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)"
+	else
+		export REGEX_HAS_MAIN="\^A\^@\^Dmain\^A\^@"
+	fi
 	if [ -f "$FILE" ] ; then
-		cat -v "$FILE" | grep -E "\^A\^@\^Dmain\^A\^@\^V\(\[Ljava/lang/String;\)" &> /dev/null
+		cat -v "$FILE" | grep -E "$REGEX_HAS_MAIN" &> /dev/null
 	else
 		return 1
 	fi
@@ -38,6 +44,14 @@ fi
 
 check_program java
 
+# check java version is 25 or higher
+JAVA_VERSION=$(java -version 2>&1 | head -n 1 | awk -F[\".] '{print $2}')
+if [ "$JAVA_VERSION" -lt "25" ] ; then
+	export JAVA_25=0
+else
+	export JAVA_25=1
+
+fi
 JUNIT4=/usr/share/java/junit4.jar
 if [ -f $JUNIT4 ] ; then
 	CLASSPATH=$CLASSPATH:$JUNIT4
@@ -91,7 +105,11 @@ if [ "$MAINCLASS" = "" ] ; then
 	done
 	# If no main and no test class then stop
 	if [ "$TESTCLASS" = "" ] ; then
-		echo "Class with \"public static void main(String[] arg)\" method not found"
+		if [ "$JAVA_25" -eq "0" ] ; then
+			echo "Class with \"public static void main(String[] arg)\" method not found"
+		else
+			echo "\"void main\" method not found"
+		fi
 		exit 0
 	fi
 fi
