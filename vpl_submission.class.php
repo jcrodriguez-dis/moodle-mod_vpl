@@ -783,12 +783,12 @@ class mod_vpl_submission {
      * @return string HTML processed comment
      */
     public function get_processed_comment(
-            $title,
-            $comment,
-            $showempty = false,
-            $noformat = false,
-            $addlinks = true,
-            $folding = true
+        $title,
+        $comment,
+        $showempty = false,
+        $noformat = false,
+        $addlinks = true,
+        $folding = true
     ): string {
         global $PAGE;
         $ret = '';
