@@ -850,7 +850,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $data->filestodelete = [];
         }
         foreach ($files as $filename => $filedata) {
-            if (vpl_is_binary($filename)) {
+            if (vpl_is_binary($filename, $filedata)) {
                 $encodefiles[$filename . '.b64'] = base64_encode($filedata);
                 $fileencoding[$filename . '.b64'] = 1;
                 $data->filestodelete[$filename . '.b64'] = 1;

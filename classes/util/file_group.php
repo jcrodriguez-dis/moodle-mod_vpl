@@ -409,10 +409,10 @@ class file_group {
         $showcode = self::$outputtextsize < self::$outputtextlimit;
         foreach ($filenames as $name) {
             if (is_file($this->dir . '/' . self::encodeFileName($name))) {
-                if (vpl_is_binary($name)) {
+                $data = $this->getFileData($name);
+                if (vpl_is_binary($name, $data)) {
                     if ($showbinary) {
-                        $printer = \vpl_sh_factory::get_sh($name);
-                        $data = $this->getFileData($name);
+                        $printer = \vpl_sh_factory::get_sh($name, $data);
                         $printer->print_file($name, $data);
                         self::$outputbinarysize += strlen($data);
                     } else {
@@ -421,11 +421,10 @@ class file_group {
                     }
                 } else {
                     if ($showcode) {
-                        $printer = \vpl_sh_factory::get_sh($name);
+                        $printer = \vpl_sh_factory::get_sh($name, $data);
                     } else {
                         $printer = \vpl_sh_factory::get_object('text_nsh');
                     }
-                    $data = $this->getFileData($name);
                     $printer->print_file($name, $data);
                     self::$outputtextsize += strlen($data);
                 }

@@ -658,7 +658,7 @@ function vpl_is_audio($filename) {
  * Get if filename has binary extension or binary data
  *
  * @param string $filename
- * @param string $data file contents
+ * @param string $data file contents (optional)
  * @return bool
  * @codeCoverageIgnore
  */
@@ -671,10 +671,21 @@ function vpl_is_binary($filename, &$data = false) {
     if (preg_match('/^(' . $fileext . ')$/i', vpl_fileextension($filename)) == 1) {
         return true;
     }
-    if ($data === false) {
+    // Astor-Bizard: Check data for binary chars.
+    if (empty($data)) {
         return false;
     }
-    return mb_detect_encoding($data, 'UTF-8', true) != 'UTF-8';
+    static $textbytes = null;
+    if ($textbytes === null) {
+        $textbytes = array_flip(array_merge([ 7, 8, 9, 10, 12, 13, 27 ], range(0x20, 0x7e), range(0x80, 0xff)));
+    }
+    foreach (unpack('C*', substr($data, 0, 512)) as $byte) {
+        if (!isset($textbytes[$byte])) {
+            // Byte is not a standard text byte, file is likely binary.
+            return true;
+        }
+    }
+    return false;
 }
 
 /**

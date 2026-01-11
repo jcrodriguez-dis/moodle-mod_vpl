@@ -108,7 +108,7 @@ if ($fromform = $mform->get_data()) {
             }
             $filecontent = file_get_contents('zip://' . $zipname . '#' . $filename);
             // Autodetect text file encode if not binary.
-            if (! vpl_is_binary($filename)) {
+            if (! vpl_is_binary($filename, $filecontent)) {
                 $encoding = mb_detect_encoding($filecontent, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true);
                 if ($encoding > '') { // If code detected.
                     $filecontent = iconv($encoding, 'UTF-8', $filecontent);
@@ -154,7 +154,7 @@ if ($fromform = $mform->get_data()) {
                 $data = $mform->get_file_content($field);
                 if ($data !== false && $name !== false) {
                     // Autodetect text file encode if not binary.
-                    if (! vpl_is_binary($name)) {
+                    if (! vpl_is_binary($name, $data)) {
                         $encode = mb_detect_encoding($data, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true);
                         if ($encode > '') { // If code detected.
                             $data = iconv($encode, 'UTF-8', $data);
