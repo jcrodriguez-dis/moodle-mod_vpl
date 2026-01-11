@@ -22,4 +22,7 @@
 
 .vpl_show_hide_content pre {
     font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    overflow-y: hidden;
+    margin-bottom: 0;
+    padding-bottom: 1rem;
 }
