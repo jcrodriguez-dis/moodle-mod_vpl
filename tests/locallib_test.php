@@ -374,19 +374,16 @@ final class locallib_test extends \advanced_testcase {
         $this->assertTrue(vpl_is_binary('filename.jpg'));
         $this->assertTrue(vpl_is_binary('filename.png'));
         $this->assertTrue(vpl_is_binary('filename.ico'));
-        
         // Audio files should be binary.
         $this->assertTrue(vpl_is_binary('filename.wav'));
         $this->assertTrue(vpl_is_binary('filename.mp3'));
         $this->assertTrue(vpl_is_binary('filename.ogg'));
         $this->assertTrue(vpl_is_binary('filename.flac'));
-        
         // Video files should be binary.
         $this->assertTrue(vpl_is_binary('filename.mp4'));
         $this->assertTrue(vpl_is_binary('filename.avi'));
         $this->assertTrue(vpl_is_binary('filename.mkv'));
         $this->assertTrue(vpl_is_binary('filename.webm'));
-        
         // Other known binary extensions.
         $this->assertTrue(vpl_is_binary('filename.exe'));
         $this->assertTrue(vpl_is_binary('filename.zip'));
@@ -397,7 +394,6 @@ final class locallib_test extends \advanced_testcase {
         $this->assertTrue(vpl_is_binary('filename.o'));
         $this->assertTrue(vpl_is_binary('filename.so'));
         $this->assertTrue(vpl_is_binary('filename.dll'));
-        
         // Text files should not be binary (by extension).
         $this->assertFalse(vpl_is_binary('filename.txt'));
         $this->assertFalse(vpl_is_binary('filename.c'));
@@ -409,23 +405,18 @@ final class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_binary('filename.css'));
         $this->assertFalse(vpl_is_binary('filename.md'));
         $this->assertFalse(vpl_is_binary('Makefile'));
-        
         // Case insensitivity.
         $this->assertTrue(vpl_is_binary('filename.EXE'));
         $this->assertTrue(vpl_is_binary('filename.ZIP'));
         $this->assertTrue(vpl_is_binary('filename.Mp4'));
-        
         // Test with content - text content should not be binary.
         $textcontent = 'This is a simple text file content with normal characters.';
         $this->assertFalse(vpl_is_binary('unknown.xyz', $textcontent));
-        
         // Test with content - binary content should be detected.
         $binarycontent = "\x00\x01\x02\x03\x04\x05\x06\x89\xAB\xCD\xEF";
         $this->assertTrue(vpl_is_binary('unknown.xyz', $binarycontent));
-        
         // Known binary extension should override text content.
         $this->assertTrue(vpl_is_binary('filename.exe', $textcontent));
-        
         // Mixed content with some binary bytes.
         $mixedcontent = "Text content\x00\x01\x02with binary";
         $this->assertTrue(vpl_is_binary('unknown.xyz', $mixedcontent));
