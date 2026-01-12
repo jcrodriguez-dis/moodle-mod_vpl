@@ -102,6 +102,10 @@ class vpl_sh_factory {
         if (vpl_is_binary($filename, $data)) {
             if (vpl_is_image($filename)) {
                 return self::get_object('image');
+            } else if (vpl_is_audio($filename)) {
+                return self::get_object('audio');
+            } else if (vpl_is_video($filename)) {
+                return self::get_object('video');
             } else {
                 return self::get_object('binary');
             }
