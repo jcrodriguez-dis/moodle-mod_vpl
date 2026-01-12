@@ -39,11 +39,13 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     var opened = false;
     var langType = 'text';
     var self = this;
+    var binary = VPLUtil.isBinary(name, value);
     this.getContent = function() {
         return value;
     };
     this.setContent = function(c) {
         value = c;
+        binary = VPLUtil.isBinary(name, value);
     };
     this.getFileManager = function() {
         return fileManager;
@@ -112,6 +114,7 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
         if (!this.isOpen()) {
             return true;
         }
+        binary = VPLUtil.isBinary(name, value);
         this.showFileName();
         this.langSelection();
         return true;
@@ -167,6 +170,9 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
         }
         return false;
     };
+    this.isBinary = function() {
+        return binary;
+    };
     this.updateStatus = VPLUI.hideIDEStatus;
     this.gotoLine = VPLUtil.doNothing;
     this.setReadOnly = VPLUtil.doNothing;
@@ -194,7 +200,6 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     this.setTheme = VPLUtil.doNothing;
     this.clearAnnotations = VPLUtil.doNothing;
     this.langSelection = VPLUtil.doNothing;
-    this.isBinary = VPLUtil.returnFalse;
     // Adds support for current extensions
     this.extendToCodeEditor = codeExtension;
     this.extendToBlockly = blocklyExtension;

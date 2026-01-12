@@ -25,8 +25,26 @@ import $ from 'jquery';
 import {VPLUtil} from 'mod_vpl/vplutil';
 
 export const binaryExtension = function() {
+    var type2HTML = {
+        'img': '<img />',
+        'audio': '<audio controls></audio>',
+        'video': '<video controls></video>',
+        'binary': '<div></div>'
+    };
     this.isBinary = function() {
         return true;
+    };
+    this.getType = function() {
+        if (VPLUtil.isImage(this.getFileName())) {
+            return 'img';
+        }
+        if (VPLUtil.isAudio(this.getFileName())) {
+            return 'audio';
+        }
+        if (VPLUtil.isVideo(this.getFileName())) {
+            return 'video';
+        }
+        return 'binary';
     };
     var setOldContent = this.setContent;
     this.setContent = function(c) {
@@ -34,16 +52,10 @@ export const binaryExtension = function() {
         this.setModified();
         this.updateDataURL();
     };
-    this.updateDataURL = function() {
-        var fileName = this.getFileName();
-        var value = this.getContent();
+    this.updateDataURL = function(type, fileName, value) {
         var tid = this.getTId();
-        if (VPLUtil.isImage(fileName)) {
-            var prevalue = 'data:' + VPLUtil.getMIME(fileName) + ';base64,';
-            $(tid).find('img').attr('src', prevalue + value);
-        } else {
-            $(tid).find('img').attr('src', '');
-        }
+        var prevalue = 'data:' + VPLUtil.getMIME(fileName) + ';base64,';
+        $(tid).find(type).attr('src', prevalue + value);
     };
     this.adjustSize = function() {
         if (!this.isOpen()) {
@@ -64,14 +76,14 @@ export const binaryExtension = function() {
     };
     this.open = function() {
         this.showFileName();
-        var fileName = this.getFileName();
         var tid = this.getTId();
         this.setOpen(true);
-        if (VPLUtil.isImage(fileName)) {
-            $(tid).addClass('vpl_ide_img').append('<img />');
-            this.updateDataURL();
+        var type = this.getType();
+        $(tid).addClass('vpl_ide_' + type).append(type2HTML[type]);
+        if (type === 'binary') {
+            $(tid).find(type).text(VPLUtil.str('binaryfile') + ": '" + this.getFileName() + "'");
         } else {
-            $(tid).addClass('vpl_ide_binary').text(VPLUtil.str('binaryfile'));
+            this.updateDataURL(type, this.getFileName(), this.getContent());
         }
     };
     this.close = function() {

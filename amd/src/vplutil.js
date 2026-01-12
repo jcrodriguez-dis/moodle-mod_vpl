@@ -130,6 +130,8 @@ VPLUtil.String2ArrayBuffer = function(data) {
 (function() {
     var regExt = /\.([^.]*)$/;
     var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
+    var regAudio = /^(wav|aiff|pcm|mp3|aac|ogg|wma|m4a|flac|alac|ape|wv|amr)$/i;
+    var regVideo = /^(mp4|webm|ogg|ogv|avi|mov|wmv|flv|mkv|m4v|mpeg|mpg|3gp)$/i;
     var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt|exe|com)$/i;
     var regBlk = /^blockly[0123]?$/;
     VPLUtil.fileExtension = function(fileName) {
@@ -139,8 +141,44 @@ VPLUtil.String2ArrayBuffer = function(data) {
     VPLUtil.isImage = function(fileName) {
         return regImg.test(VPLUtil.fileExtension(fileName));
     };
-    VPLUtil.isBinary = function(fileName) {
-        return VPLUtil.isImage(fileName) || regBin.test(VPLUtil.fileExtension(fileName));
+    VPLUtil.isAudio = function(fileName) {
+        return regAudio.test(VPLUtil.fileExtension(fileName));
+    };
+    VPLUtil.isVideo = function(fileName) {
+        return regVideo.test(VPLUtil.fileExtension(fileName));
+    };
+    VPLUtil.isBinary = function(fileName, fileContents) {
+        // Check by extension first.
+        if (VPLUtil.isImage(fileName) || VPLUtil.isAudio(fileName) || VPLUtil.isVideo(fileName)
+            || regBin.test(VPLUtil.fileExtension(fileName))) {
+            return true;
+        }
+        // @Astor-Bizard binary file detection.
+        if (typeof fileContents === 'undefined' || !fileContents) {
+            return false;
+        }
+        var textBytes = [7, 8, 9, 10, 12, 13, 27]
+                        .concat([...Array(0x5f).keys()].map(i => i + 0x20)) // Include [0x20 -> 0x7e].
+                        .concat([...Array(0x80).keys()].map(i => i + 0x80)); // Include [0x80 -> 0xff].
+        textBytes = Object.entries(textBytes).reduce((obj, [key, value]) => ({...obj, [value]: key}), {});
+        var bytes = null;
+        if (fileContents instanceof Uint8Array) {
+            bytes = fileContents;
+        } else if (fileContents instanceof ArrayBuffer) {
+            bytes = new Uint8Array(fileContents);
+        } else if (fileContents instanceof String || typeof fileContents === 'string') {
+            bytes = (new TextEncoder()).encode(fileContents.substring(0, 512));
+        } else {
+            return false;
+        }
+        var sizechecked = Math.min(1024, bytes.length);
+        for (var i = 0; i < sizechecked; i++) {
+            if (!textBytes.hasOwnProperty(bytes[i])) {
+                // Byte is not a standard text byte, file is likely binary.
+                return true;
+            }
+        }
+        return false;
     };
     VPLUtil.isBlockly = function(fileName) {
         return regBlk.test(VPLUtil.fileExtension(fileName));
@@ -158,20 +196,6 @@ VPLUtil.String2ArrayBuffer = function(data) {
 })();
 VPLUtil.getCurrentTime = function() {
     return parseInt((new Date()).valueOf() / 1000);
-};
-VPLUtil.encodeBinary = function(name, data) {
-    if (!VPLUtil.isBinary(name)) {
-        return btoa(unescape(encodeURIComponent(data)));
-    }
-    return btoa(VPLUtil.ArrayBuffer2String(data));
-};
-
-VPLUtil.decodeBinary = function(name, data) {
-    var decoded = atob(data);
-    if (!VPLUtil.isBinary(name)) {
-        return decodeURIComponent(escape(decoded));
-    }
-    return VPLUtil.String2ArrayBuffer(decoded);
 };
 
 VPLUtil.validPath = function(path) {
@@ -201,7 +225,35 @@ VPLUtil.dataFromURLData = function(data) {
         'jpeg': 'image/jpeg',
         'png': 'image/png',
         'ico': 'image/vnd.microsoft.icon',
-        'pdf': 'application/pdf'
+        'pdf': 'application/pdf',
+        // Audio formats
+        'wav': 'audio/wav',
+        'aiff': 'audio/aiff',
+        'pcm': 'audio/pcm',
+        'mp3': 'audio/mpeg',
+        'aac': 'audio/aac',
+        'ogg': 'audio/ogg',
+        'oga': 'audio/ogg',
+        'wma': 'audio/x-ms-wma',
+        'm4a': 'audio/mp4',
+        'flac': 'audio/flac',
+        'alac': 'audio/alac',
+        'ape': 'audio/x-ape',
+        'wv': 'audio/x-wavpack',
+        'amr': 'audio/amr',
+        // Video formats
+        'mp4': 'video/mp4',
+        'webm': 'video/webm',
+        'ogv': 'video/ogg',
+        'avi': 'video/x-msvideo',
+        'mov': 'video/quicktime',
+        'wmv': 'video/x-ms-wmv',
+        'flv': 'video/x-flv',
+        'mkv': 'video/x-matroska',
+        'm4v': 'video/x-m4v',
+        'mpeg': 'video/mpeg',
+        'mpg': 'video/mpeg',
+        '3gp': 'video/3gpp'
     };
     VPLUtil.getMIME = function(fileName) {
         var ext = VPLUtil.fileExtension(fileName);
