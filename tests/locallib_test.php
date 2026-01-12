@@ -301,6 +301,128 @@ final class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Tests the function vpl_is_audio.
+     *
+     * @covers \vpl_is_audio
+     */
+    public function test_vpl_is_audio(): void {
+        $this->assertTrue(vpl_is_audio('filename.wav'));
+        $this->assertTrue(vpl_is_audio('filename.mp3'));
+        $this->assertTrue(vpl_is_audio('filename.aac'));
+        $this->assertTrue(vpl_is_audio('filename.ogg'));
+        $this->assertTrue(vpl_is_audio('filename.m4a'));
+        $this->assertTrue(vpl_is_audio('filename.flac'));
+        $this->assertTrue(vpl_is_audio('filename.wma'));
+        $this->assertTrue(vpl_is_audio('filename.aiff'));
+        $this->assertTrue(vpl_is_audio('filename.Mp3'));
+        $this->assertTrue(vpl_is_audio('filename.WAV'));
+        $this->assertTrue(vpl_is_audio('filename.FLAC'));
+        $this->assertTrue(vpl_is_audio('audio.pcm'));
+        $this->assertTrue(vpl_is_audio('audio.alac'));
+        $this->assertTrue(vpl_is_audio('audio.ape'));
+        $this->assertTrue(vpl_is_audio('audio.wv'));
+        $this->assertTrue(vpl_is_audio('audio.amr'));
+        $this->assertFalse(vpl_is_audio('filename.mp4'));
+        $this->assertFalse(vpl_is_audio('filename.pdf'));
+        $this->assertFalse(vpl_is_audio('filename.txt'));
+        $this->assertFalse(vpl_is_audio('filename.mp3.old'));
+        $this->assertFalse(vpl_is_audio('a.mp3/filename.pdf'));
+        $this->assertFalse(vpl_is_audio('a.wav/filename_mp3'));
+        $this->assertFalse(vpl_is_audio('a.ogg/mp3'));
+    }
+
+    /**
+     * Tests the function vpl_is_video.
+     *
+     * @covers \vpl_is_video
+     */
+    public function test_vpl_is_video(): void {
+        $this->assertTrue(vpl_is_video('filename.mp4'));
+        $this->assertTrue(vpl_is_video('filename.webm'));
+        $this->assertTrue(vpl_is_video('filename.ogv'));
+        $this->assertTrue(vpl_is_video('filename.avi'));
+        $this->assertTrue(vpl_is_video('filename.mov'));
+        $this->assertTrue(vpl_is_video('filename.wmv'));
+        $this->assertTrue(vpl_is_video('filename.flv'));
+        $this->assertTrue(vpl_is_video('filename.mkv'));
+        $this->assertTrue(vpl_is_video('filename.m4v'));
+        $this->assertTrue(vpl_is_video('filename.mpeg'));
+        $this->assertTrue(vpl_is_video('filename.mpg'));
+        $this->assertTrue(vpl_is_video('filename.3gp'));
+        $this->assertTrue(vpl_is_video('filename.Mp4'));
+        $this->assertTrue(vpl_is_video('filename.WEBM'));
+        $this->assertTrue(vpl_is_video('filename.AVI'));
+        $this->assertTrue(vpl_is_video('video.OGG'));
+        $this->assertFalse(vpl_is_video('filename.mp3'));
+        $this->assertFalse(vpl_is_video('filename.pdf'));
+        $this->assertFalse(vpl_is_video('filename.txt'));
+        $this->assertFalse(vpl_is_video('filename.jpg'));
+        $this->assertFalse(vpl_is_video('filename.mp4.old'));
+        $this->assertFalse(vpl_is_video('a.mp4/filename.pdf'));
+        $this->assertFalse(vpl_is_video('a.mov/filename_mp4'));
+        $this->assertFalse(vpl_is_video('a.avi/webm'));
+    }
+
+    /**
+     * Tests the function vpl_is_binary.
+     *
+     * @covers \vpl_is_binary
+     */
+    public function test_vpl_is_binary(): void {
+        // Image files should be binary.
+        $this->assertTrue(vpl_is_binary('filename.gif'));
+        $this->assertTrue(vpl_is_binary('filename.jpg'));
+        $this->assertTrue(vpl_is_binary('filename.png'));
+        $this->assertTrue(vpl_is_binary('filename.ico'));
+        // Audio files should be binary.
+        $this->assertTrue(vpl_is_binary('filename.wav'));
+        $this->assertTrue(vpl_is_binary('filename.mp3'));
+        $this->assertTrue(vpl_is_binary('filename.ogg'));
+        $this->assertTrue(vpl_is_binary('filename.flac'));
+        // Video files should be binary.
+        $this->assertTrue(vpl_is_binary('filename.mp4'));
+        $this->assertTrue(vpl_is_binary('filename.avi'));
+        $this->assertTrue(vpl_is_binary('filename.mkv'));
+        $this->assertTrue(vpl_is_binary('filename.webm'));
+        // Other known binary extensions.
+        $this->assertTrue(vpl_is_binary('filename.exe'));
+        $this->assertTrue(vpl_is_binary('filename.zip'));
+        $this->assertTrue(vpl_is_binary('filename.tar'));
+        $this->assertTrue(vpl_is_binary('filename.gz'));
+        $this->assertTrue(vpl_is_binary('filename.bin'));
+        $this->assertTrue(vpl_is_binary('filename.class'));
+        $this->assertTrue(vpl_is_binary('filename.o'));
+        $this->assertTrue(vpl_is_binary('filename.so'));
+        $this->assertTrue(vpl_is_binary('filename.dll'));
+        // Text files should not be binary (by extension).
+        $this->assertFalse(vpl_is_binary('filename.txt'));
+        $this->assertFalse(vpl_is_binary('filename.c'));
+        $this->assertFalse(vpl_is_binary('filename.cpp'));
+        $this->assertFalse(vpl_is_binary('filename.java'));
+        $this->assertFalse(vpl_is_binary('filename.py'));
+        $this->assertFalse(vpl_is_binary('filename.js'));
+        $this->assertFalse(vpl_is_binary('filename.html'));
+        $this->assertFalse(vpl_is_binary('filename.css'));
+        $this->assertFalse(vpl_is_binary('filename.md'));
+        $this->assertFalse(vpl_is_binary('Makefile'));
+        // Case insensitivity.
+        $this->assertTrue(vpl_is_binary('filename.EXE'));
+        $this->assertTrue(vpl_is_binary('filename.ZIP'));
+        $this->assertTrue(vpl_is_binary('filename.Mp4'));
+        // Test with content - text content should not be binary.
+        $textcontent = 'This is a simple text file content with normal characters.';
+        $this->assertFalse(vpl_is_binary('unknown.xyz', $textcontent));
+        // Test with content - binary content should be detected.
+        $binarycontent = "\x00\x01\x02\x03\x04\x05\x06\x89\xAB\xCD\xEF";
+        $this->assertTrue(vpl_is_binary('unknown.xyz', $binarycontent));
+        // Known binary extension should override text content.
+        $this->assertTrue(vpl_is_binary('filename.exe', $textcontent));
+        // Mixed content with some binary bytes.
+        $mixedcontent = "Text content\x00\x01\x02with binary";
+        $this->assertTrue(vpl_is_binary('unknown.xyz', $mixedcontent));
+    }
+
+    /**
      * Tests the function vpl_truncate_string.
      *
      * @covers \vpl_truncate_string

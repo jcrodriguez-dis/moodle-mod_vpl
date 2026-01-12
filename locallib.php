@@ -655,6 +655,18 @@ function vpl_is_audio($filename) {
 }
 
 /**
+ * Get if filename has video extension
+ *
+ * @param string $filename
+ * @return boolean
+ * @codeCoverageIgnore
+ */
+function vpl_is_video($filename) {
+    $videoext = 'mp4|avi|mov|wmv|flv|mkv|webm|mpeg|mpg|3gp|ogv';
+    return preg_match('/^(' . $videoext . ')$/i', vpl_fileextension($filename)) == 1;
+}
+
+/**
  * Get if filename has binary extension or binary data
  *
  * @param string $filename
@@ -663,9 +675,10 @@ function vpl_is_audio($filename) {
  * @codeCoverageIgnore
  */
 function vpl_is_binary($filename, &$data = false) {
-    if (vpl_is_image($filename) || vpl_is_audio($filename)) {
+    if (vpl_is_image($filename) || vpl_is_audio($filename) || vpl_is_video($filename)) {
         return true;
     }
+    // Check by extension first.
     $fileext = 'zip|jar|pdf|tar|bin|7z|arj|deb|gzip|';
     $fileext .= 'rar|rpm|dat|db|dll|rtf|doc|docx|odt|exe|com';
     if (preg_match('/^(' . $fileext . ')$/i', vpl_fileextension($filename)) == 1) {
@@ -675,11 +688,12 @@ function vpl_is_binary($filename, &$data = false) {
     if (empty($data)) {
         return false;
     }
+    static $sizechecked = 1024;
     static $textbytes = null;
     if ($textbytes === null) {
         $textbytes = array_flip(array_merge([ 7, 8, 9, 10, 12, 13, 27 ], range(0x20, 0x7e), range(0x80, 0xff)));
     }
-    foreach (unpack('C*', substr($data, 0, 512)) as $byte) {
+    foreach (unpack('C*', substr($data, 0, $sizechecked)) as $byte) {
         if (!isset($textbytes[$byte])) {
             // Byte is not a standard text byte, file is likely binary.
             return true;

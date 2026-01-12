@@ -199,8 +199,41 @@ div.vpl_ide_file.ui-tabs-panel {
 }
 
 .vpl_ide_img {
+    width: inherit;
     overflow: auto;
 }
+
+.vpl_ide_img img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    display: block;
+}
+
+.vpl_ide_audio {
+    width: auto;
+    display: block;
+}
+
+.vpl_ide_audio audio {
+    max-width: 100%;
+    display: block;
+}
+
+.vpl_ide_video {
+    width: inherit;
+    overflow: auto;
+}
+
+.vpl_ide_video video {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    display: block;
+}
+
 
 .vpl_ide_status {
     bottom: 2px;

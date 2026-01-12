@@ -122,7 +122,57 @@ tests.push({
             assert(!VPLUtil.isImage('a.c'), 'isImage');
         })();
         (function() {
+            assert(VPLUtil.isImage('a.png'), 'isImage');
+        })();
+        (function() {
             assert(!VPLUtil.isBinary('a.c'), 'isBinary');
+        })();
+        (function() {
+            assert(VPLUtil.isBinary('a.pdf'), 'isBinary');
+        })();
+        (function() {
+            assert(VPLUtil.isBinary('a.png'), 'isBinary');
+        })();
+        (function() {
+            // Test isBinary with text content
+            var textContent = 'int main() {\n    return 0;\n}';
+            assert(!VPLUtil.isBinary('test.unknown', textContent), 'isBinary with text content');
+        })();
+        (function() {
+            // Test isBinary with binary content (null byte)
+            var binaryContent = 'text\x00binary';
+            assert(VPLUtil.isBinary('test.unknown', binaryContent), 'isBinary with null byte');
+        })();
+        (function() {
+            // Test isBinary with Uint8Array text content
+            var encoder = new TextEncoder();
+            var textArray = encoder.encode('Hello World');
+            assert(!VPLUtil.isBinary('test.unknown', textArray), 'isBinary with Uint8Array text');
+        })();
+        (function() {
+            // Test isBinary with Uint8Array binary content
+            var binaryArray = new Uint8Array([0x00, 0x01, 0x02, 0x03]);
+            assert(VPLUtil.isBinary('test.unknown', binaryArray), 'isBinary with Uint8Array binary');
+        })();
+        (function() {
+            // Test isBinary with ArrayBuffer
+            var buffer = new ArrayBuffer(4);
+            var view = new Uint8Array(buffer);
+            view[0] = 72; // 'H'
+            view[1] = 105; // 'i'
+            view[2] = 33; // '!'
+            view[3] = 10; // '\n'
+            assert(!VPLUtil.isBinary('test.unknown', buffer), 'isBinary with ArrayBuffer text');
+        })();
+        (function() {
+            // Test isBinary with mixed content (mostly text with control chars)
+            var mixedContent = 'Some text\x05with control chars';
+            assert(VPLUtil.isBinary('test.unknown', mixedContent), 'isBinary with control chars');
+        })();
+        (function() {
+            // Test isBinary falls back to extension when no content provided
+            assert(VPLUtil.isBinary('test.pdf', undefined), 'isBinary extension fallback');
+            assert(!VPLUtil.isBinary('test.txt', undefined), 'isBinary extension fallback for text');
         })();
         (function() {
             assert(!VPLUtil.isBlockly('a.c'), 'isBlockly');

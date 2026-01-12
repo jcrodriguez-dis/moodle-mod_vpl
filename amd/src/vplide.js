@@ -514,17 +514,25 @@ var VPLIDE = function(rootId, options) {
                 if (files[pos].getId() < this.minNumberOfFiles) {
                     throw new Error("Internal error: Renaming requested filename");
                 }
+                // No change.
                 if (files[pos].getFileName() == newname) {
                     return true; // Equals name file.
                 }
+                // No valid new name.
                 if (!VPLUtil.validPath(newname) ||
                         fileNameIncluded(newname, pos) ||
                         twoBlockly(oldname, newname)) {
                     throw str('incorrect_file_name');
                 }
-                if (VPLUtil.isBinary(oldname) && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
+                // Binary files cannot change extension.
+                if (files[pos].isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
                     throw str('incorrect_file_name');
                 }
+                // Can not change from binary to text or viceversa.
+                if (files[pos].isBinary() != VPLUtil.isBinary(newname)) {
+                    throw str('incorrect_file_name');
+                }
+                // Can not change from blockly to text or viceversa.
                 if (VPLUtil.isBlockly(oldname) != VPLUtil.isBlockly(newname)) {
                     if (files[pos].getContent() > '') {
                         showMessage(str('delete_file_fq', oldname), {
