@@ -133,10 +133,7 @@ Feature: In a VPL activity, editing allows drop files
     Then I should see "new_file_name.c"
     # Drops multiple new files
     When I drop the files "files.zip|hello.adb" on "#vpl_tabs" in VPL
-    And I should see "logo.png"
-    And I should see "hello.c"
-    And I should see "hello.py"
-    And I should see "hello world.pdf"
+    And I should see "files.zip"
     And I should see "hello.adb"
     When I click on "#vpl_ide_save" in VPL
     # Sees files
@@ -144,12 +141,8 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "VPL activity testing" "link" in the "region-main" "region"
     Then I should see "Requested files"
     And I should see "new_file_name.c"
-    And I should see "logo.png"
-    And I should see "hello.py"
-    And I should see "hello.c"
-    And I should see "hello world.pdf"
-    And I should see "print(\"Hello from Python language!\")"
-    And I should see "print(7 * 43)"
+    And I should see "files.zip"
+    And I should see "Binary File"
     And I should see "hello.adb"
 
   @javascript
@@ -163,9 +156,10 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops multiple new files
-    When I drop the files "hello.c|files.zip" on "#vpl_tabs" in VPL
-    And I should see "logo.png"
+    When I drop the files "hello.c" on "#vpl_tabs" in VPL
+    When I drop the files "files.zip" on "#vpl_tabs" in VPL
     And I should see "hello.c"
+    And I should see "logo.png"
     And I should see "hello.py"
     And I should see "hello world.pdf"
     When I click on "#vpl_ide_save" in VPL
