@@ -81,7 +81,7 @@ export const binaryExtension = function() {
         var type = this.getType();
         $(tid).addClass('vpl_ide_' + type).append(type2HTML[type]);
         if (type === 'binary') {
-            $(tid).find(type).text(VPLUtil.str('binaryfile') + ": '" + this.getFileName() + "'");
+            $(tid).find('div').text(VPLUtil.str('binaryfile') + ": '" + this.getFileName() + "'");
         } else {
             this.updateDataURL(type, this.getFileName(), this.getContent());
         }
