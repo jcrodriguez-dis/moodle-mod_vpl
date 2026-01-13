@@ -130,8 +130,8 @@ VPLUtil.String2ArrayBuffer = function(data) {
 (function() {
     var regExt = /\.([^.]*)$/;
     var regImg = /^(gif|jpg|jpeg|png|ico)$/i;
-    var regAudio = /^(wav|aiff|pcm|mp3|aac|ogg|wma|m4a|flac|alac|ape|wv|amr)$/i;
-    var regVideo = /^(mp4|webm|ogg|ogv|avi|mov|wmv|flv|mkv|m4v|mpeg|mpg|3gp)$/i;
+    var regAudio = /^(wav|aiff|pcm|mp3|aac|ogg|oga|wma|m4a|flac|alac|ape|wv|amr)$/i;
+    var regVideo = /^(mp4|webm|ogv|avi|mov|wmv|flv|mkv|m4v|mpeg|mpg|3gp)$/i;
     var regBin = /^(zip|jar|pdf|tar|bin|7z|arj|deb|gzip|rar|rpm|dat|db|dll|rtf|doc|docx|odt|exe|com)$/i;
     var regBlk = /^blockly[0123]?$/;
     VPLUtil.fileExtension = function(fileName) {
@@ -232,8 +232,8 @@ VPLUtil.dataFromURLData = function(data) {
         'pcm': 'audio/pcm',
         'mp3': 'audio/mpeg',
         'aac': 'audio/aac',
-        'ogg': 'audio/ogg',
         'oga': 'audio/ogg',
+        'ogg': 'audio/ogg',
         'wma': 'audio/x-ms-wma',
         'm4a': 'audio/mp4',
         'flac': 'audio/flac',

@@ -650,7 +650,7 @@ function vpl_is_image($filename) {
  * @codeCoverageIgnore
  */
 function vpl_is_audio($filename) {
-    $audioext = 'wav|aiff|pcm|mp3|aac|ogg|wma|m4a|flac|alac|ape|wv|amr';
+    $audioext = 'wav|aiff|pcm|mp3|aac|ogg|oga|wma|m4a|flac|alac|ape|wv|amr';
     return preg_match('/^(' . $audioext . ')$/i', vpl_fileextension($filename)) == 1;
 }
 
@@ -662,7 +662,7 @@ function vpl_is_audio($filename) {
  * @codeCoverageIgnore
  */
 function vpl_is_video($filename) {
-    $videoext = 'mp4|avi|mov|wmv|flv|mkv|webm|mpeg|mpg|3gp|ogv';
+    $videoext = 'mp4|webm|ogv|avi|mov|wmv|flv|mkv|m4v|mpeg|mpg|3gp';
     return preg_match('/^(' . $videoext . ')$/i', vpl_fileextension($filename)) == 1;
 }
 

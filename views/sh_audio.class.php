@@ -52,6 +52,7 @@ class vpl_sh_audio extends vpl_sh_base {
                 'mp3' => 'mpeg',
                 'aac' => 'aac',
                 'ogg' => 'ogg',
+                'oga' => 'ogg',
                 'wma' => 'x-ms-wma',
                 'm4a' => 'mp4',
                 'flac' => 'flac',

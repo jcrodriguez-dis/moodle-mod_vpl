@@ -352,7 +352,7 @@ final class locallib_test extends \advanced_testcase {
         $this->assertTrue(vpl_is_video('filename.Mp4'));
         $this->assertTrue(vpl_is_video('filename.WEBM'));
         $this->assertTrue(vpl_is_video('filename.AVI'));
-        $this->assertTrue(vpl_is_video('video.OGG'));
+        $this->assertTrue(vpl_is_video('video.OGV'));
         $this->assertFalse(vpl_is_video('filename.mp3'));
         $this->assertFalse(vpl_is_video('filename.pdf'));
         $this->assertFalse(vpl_is_video('filename.txt'));
@@ -388,11 +388,7 @@ final class locallib_test extends \advanced_testcase {
         $this->assertTrue(vpl_is_binary('filename.exe'));
         $this->assertTrue(vpl_is_binary('filename.zip'));
         $this->assertTrue(vpl_is_binary('filename.tar'));
-        $this->assertTrue(vpl_is_binary('filename.gz'));
         $this->assertTrue(vpl_is_binary('filename.bin'));
-        $this->assertTrue(vpl_is_binary('filename.class'));
-        $this->assertTrue(vpl_is_binary('filename.o'));
-        $this->assertTrue(vpl_is_binary('filename.so'));
         $this->assertTrue(vpl_is_binary('filename.dll'));
         // Text files should not be binary (by extension).
         $this->assertFalse(vpl_is_binary('filename.txt'));

@@ -48,7 +48,6 @@ class vpl_sh_video extends vpl_sh_base {
         $this->mime = [
                 'mp4' => 'mp4',
                 'webm' => 'webm',
-                'ogg' => 'ogg',
                 'ogv' => 'ogg',
                 'avi' => 'x-msvideo',
                 'mov' => 'quicktime',
