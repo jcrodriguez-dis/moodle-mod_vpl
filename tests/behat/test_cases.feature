@@ -34,7 +34,7 @@ Feature: In a VPL activity, editing teacher changes test cases
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I click on "VPL activity name" "link" in the "region-main" "region"
-    When I navigate to "Test cases" in current page administration
+    When I navigate to "Tests configuration" in current page administration
     Then I should see "vpl_evaluate.cases"
     When I drop the file "vpl_evaluate.cases" contening "Case = test\n" on "#vpl_tabs" in VPL
     Then I should see "Case = test"
