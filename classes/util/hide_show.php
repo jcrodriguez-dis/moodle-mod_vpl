@@ -69,8 +69,8 @@ class hide_show {
      * @return string HTML
      */
     public function generate(): string {
-        $html = ' <a id="sht' . $this->id . '" class=""';
-        $html .= ' onclick="VPL.showHideDiv(' . $this->id . ');">';
+        $html = ' <a href="#" role="button" id="sht' . $this->id . '" class="vpl_show_hide_button"';
+        $html .= ' onclick="VPL.showHideDiv(' . $this->id . ');return false;">';
         $id = "id='vpl_shb{$this->id}h'";
         $title = get_string('hide');
         $icon = "class='icon fa fa-eye-slash'";
