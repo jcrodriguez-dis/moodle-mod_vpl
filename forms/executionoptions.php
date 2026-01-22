@@ -335,10 +335,13 @@ class mod_vpl_executionoptions_form extends moodleform {
 
         $mform->addElement('selectyesno', 'run', get_string('run', VPL));
         $mform->setDefault('run', $instance->run);
+        $mform->addHelpButton('run', 'run', VPL);
         $mform->addElement('selectyesno', 'debug', get_string('debug', VPL));
         $mform->setDefault('debug', $instance->debug);
+        $mform->addHelpButton('debug', 'debug', VPL);
         $mform->addElement('selectyesno', 'evaluate', get_string('evaluate', VPL));
         $mform->setDefault('evaluate', $instance->evaluate);
+        $mform->addHelpButton('evaluate', 'evaluate', VPL);
         $mform->addElement('selectyesno', 'evaluateonsubmission', get_string('evaluateonsubmission', VPL));
         $mform->setDefault('evaluateonsubmission', $instance->evaluateonsubmission);
         $mform->disabledIf('evaluateonsubmission', 'evaluate', 'eq', 0);
