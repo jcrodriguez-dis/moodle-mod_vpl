@@ -66,7 +66,7 @@ $string['calendardue'] = 'VPL submission is due';
 $string['calendarexpectedon'] = 'VPL submission expected';
 $string['changesNotSaved'] = 'Changes have not been saved';
 $string['check_jail_servers'] = 'Check execution servers';
-$string['check_jail_servers_help'] = "<p>This page check and show the status of execution servers used
+$string['check_jail_servers_help'] = "<p>This page checks and shows the status of execution servers used
 for this activity.</p>";
 $string['checkforcourse'] = 'Check for course {$a}';
 $string['checkgroups'] = 'Check groups consistency';
@@ -156,7 +156,7 @@ $string['evaluation_mode_help'] = 'Evaluation mode for this activity.<br>
 <b>Text in GUI</b>: Evaluate program in GUI mode.<br>
 <b>Note</b>: Custom scripts can ignore this setting.<br>';
 $string['evaluator'] = 'Evaluator';
-$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for orginal BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.<br>Custom script indicate that the default script has been customized.<br>';
+$string['evaluator_help'] = 'Select here the evaluator framework to use in this activity.<br>Use default for original BIOTES evaluator.<br>Use GIOTES for the new evaluator framework compatible with the default.<br>Custom script indicates that the default script has been customized.<br>';
 $string['examples'] = 'Examples';
 $string['execution'] = 'Execution';
 $string['executionfiles'] = 'Execution files';
@@ -172,10 +172,10 @@ $string['executionoptions_help'] = '<p>Various execution options are set in this
 <ul><li>Execution files (concatenating the predefined scripting files)</li>
 <li>Limits for the execution resources.</li>
 <li>Variations, that are concatenating to generate multivariations.</li>
-<li>Maximun length for each file to be uploaded with the submission</li>
+<li>Maximum length for each file to be uploaded with the submission</li>
 </ul>
 </li>
-<li><b>Run</b>, <b>Debug</b> and <b>Evalaute</b>: must be set to \'Yes\' if the corresponding action can be executed when editing the submission. This affects to the students only, users with  capability of grading can always execute these actions.</li>
+<li><b>Run</b>, <b>Debug</b> and <b>Evaluate</b>: must be set to \'Yes\' if the corresponding action can be executed when editing the submission. This affects to the students only, users with  capability of grading can always execute these actions.</li>
 <li><b>Evaluate upon files submission</b>: the submission is evaluated automatically when it is uploaded.</li>
 <li><b>Automatic grading</b>: if the evaluation result includes grading codes, they are used to set the grade automatically.</li>
 </ul>';
@@ -198,7 +198,7 @@ $string['finalreduction_help'] = '<b>FR [NE/FE R]</b><br>
 <b>FR</b> Final grade reduction.<br>
 <b>NE</b> Automatic evaluations requested by the student.<br>
 <b>FE</b> Free evaluations allowed.<br>
-<b>R</b> Grade reduction by evaluation. If it is a percent, it is apply over previous result.<br>';
+<b>R</b> Grade reduction by evaluation. If it is a percent, it is applied over previous result.<br>';
 $string['find'] = "Find";
 $string['find_replace'] = 'Find/Replace';
 $string['freeevaluations'] = 'Free evaluations';
@@ -233,13 +233,13 @@ $string['importfromlastmgradedsub'] = 'Import from last manually graded submissi
 $string['importgrade'] = 'Import grade and comments';
 $string['importgrade_help'] = 'Import grade, comments and (if applicable) advanced grading from a previously graded submission.<br>
 This action will only fill the form, no data will be submitted.';
-$string['inconsistentgroup'] = 'You are not member of only one group (0 o >1)';
+$string['inconsistentgroup'] = 'You are not member of only one group (0 or >1)';
 $string['incorrect_directory_name'] = 'Incorrect directory name';
 $string['incorrect_file_name'] = 'Incorrect file name';
 $string['indicator:cognitivedepth'] = 'VPL cognitive';
-$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in an VPL activity.';
+$string['indicator:cognitivedepth_help'] = 'This indicator is based on the cognitive depth reached by the student in a VPL activity.';
 $string['indicator:socialbreadth'] = 'VPL social';
-$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in an VPL activity.';
+$string['indicator:socialbreadth_help'] = 'This indicator is based on the social breadth reached by the student in a VPL activity.';
 $string['individualwork'] = 'Individual work';
 $string['inheritancechain'] = 'Inheritance chain:';
 $string['inheritvalue'] = 'Inherit ({$a})';
@@ -254,14 +254,14 @@ $string['joinedfiles'] = 'Joined selected files';
 $string['keepcurrentfile'] = 'Keep current file';
 $string['keepfiles'] = 'Files to keep when running';
 $string['keepfiles_help'] = '<p>Due to security issues, the files added as &quot;Execution files&quot; are deleted before running the file vpl_execution.</p>
-If any of those files is needed during the execution (by example, to be used as test data), it must be marked here.';
+If any of those files is needed during the execution (for example, to be used as test data), it must be marked here.';
 $string['keyboard'] = 'Keyboard';
 $string['lasterror'] = 'Last error info';
 $string['lasterrordate'] = 'Last error date';
 $string['listofcomments'] = 'List of comments';
 $string['lists'] = 'Lists';
 $string['listsimilarity'] = 'List of similarities found';
-$string['listwatermarks'] = 'Water marks list';
+$string['listwatermarks'] = 'Watermarks list';
 $string['load'] = 'Load';
 $string['loading'] = 'Loading';
 $string['local_jail_servers'] = 'Local execution servers';
@@ -269,7 +269,7 @@ $string['local_jail_servers_help'] = '<p>Here you can set the local execution se
 that are based on it.</p>
 <p>Enter the full URL of a server on each line. You can use blank lines
 and comments starting the line with "#".</p>
-<p>This activity will use as execution server list: the servers sets here
+<p>This activity will use as execution server list: the servers set here
 plus the server list set in the "based on" activity
 plus the list of common execution servers.
 If you want to prevent this activity and derived ones
@@ -297,7 +297,7 @@ $string['menukeepfiles'] = 'Files to keep';
 $string['menulocal_jail_servers'] = 'Local execution servers';
 $string['menuresourcelimits'] = 'Resources limits';
 $string['merge'] = 'Merge grade';
-$string['merge_help'] = 'Merge current proposed grade (from execution) and avdanced grading grid grade.
+$string['merge_help'] = 'Merge current proposed grade (from execution) and advanced grading grid grade.
 <p>
 This will set the grade to
 &lt;proposed&nbsp;grade&gt; - &lt;max&nbsp;grid&nbsp;points&gt; * (&lt;proposed&nbsp;grade&gt;/&lt;max&nbsp;vpl&nbsp;grade&gt;) + &lt;grid&nbsp;points&gt;.<br>
@@ -325,7 +325,7 @@ $string['messageprovider:bad_jailservers'] = 'Report VPL Jail Servers';
 $string['minsimlevel'] = 'Minimum similarity level to show';
 $string['moduleconfigtitle'] = 'VPL Module Config';
 $string['modulename'] = 'Virtual programming lab';
-$string['modulename_help'] = '<p>VPL is a activity module for Moodle that manage programming assignments and whose salient features are:
+$string['modulename_help'] = '<p>VPL is an activity module for Moodle that manages programming assignments and whose salient features are:
 </p>
 <ul>
 <li>Enable to edit the programs source code in the browser</li>
@@ -350,7 +350,7 @@ $string['notexecuted'] = 'Not executed';
 $string['notgraded'] = 'Not graded';
 $string['notsaved'] = 'Not saved';
 $string['novpls'] = 'No virtual programming lab defined';
-$string['nowatermark'] = 'Own water marks {$a}';
+$string['nowatermark'] = 'Own watermarks {$a}';
 $string['nsubmissions'] = '{$a} submissions';
 $string['numcluster'] = 'Cluster {$a}';
 $string['open'] = 'Open';
@@ -363,7 +363,7 @@ $string['origin'] = 'Origin';
 $string['othersources'] = 'Other sources to add to the scan';
 $string['outofmemory'] = 'Out of memory';
 $string['override'] = 'Override';
-$string['override_help'] = 'If "Override" is checked, this setting will be overriden with selected value for affected users.';
+$string['override_help'] = 'If "Override" is checked, this setting will be overridden with selected value for affected users.';
 $string['override_options'] = 'Override options';
 $string['override_users'] = 'Affected users';
 $string['override_users_help'] = 'One user/group can only be affected to one override set.<br>
@@ -371,14 +371,14 @@ If a user is affected to one set and one group he is a member of is affected to 
 If a user is a member of several groups affected to several sets, the first one in the table prevails.';
 $string['overridefor'] = '{$a->base} is due for {$a->for}';
 $string['overrideforgroup'] = '{$a->base} is due for members of {$a->for}';
-$string['overriden'] = 'Overriden';
+$string['overriden'] = 'Overridden';
 $string['overrides'] = 'Overrides';
-$string['overrides_help'] = 'A set of settings can be overriden for an activity. These settings will override activity settings for affected users and groups.';
+$string['overrides_help'] = 'A set of settings can be overridden for an activity. These settings will override activity settings for affected users and groups.';
 $string['paste'] = 'Paste';
 $string['pause'] = 'Pause';
 $string['pluginadministration'] = 'VPL administration';
 $string['pluginname'] = 'Virtual programming lab';
-$string['pluginnotfound'] = 'VPL subplugin not found or bad defined: {$a}';
+$string['pluginnotfound'] = 'VPL subplugin not found or incorrectly defined: {$a}';
 $string['previoussubmissionslist'] = 'Previous submissions list';
 $string['print'] = 'Print';
 $string['privacy:metadata:vpl'] = 'Information of the activity';
@@ -401,7 +401,7 @@ $string['privacy:metadata:vpl_assigned_variations:description'] = 'Description o
 $string['privacy:metadata:vpl_assigned_variations:userid'] = 'User DB id.';
 $string['privacy:metadata:vpl_assigned_variations:vplid'] = 'VPL DB id';
 $string['privacy:metadata:vpl_editor_fontsize'] = 'The user preference for the font size of the IDE';
-$string['privacy:metadata:vpl_running_processes'] = 'Information of user\'s running processes on this activity ';
+$string['privacy:metadata:vpl_running_processes'] = 'Information of user\'s running processes on this activity';
 $string['privacy:metadata:vpl_running_processes:server'] = 'Server that runs the task';
 $string['privacy:metadata:vpl_running_processes:starttime'] = 'Date the task starts running';
 $string['privacy:metadata:vpl_running_processes:userid'] = 'User DB id.';
@@ -410,7 +410,7 @@ $string['privacy:metadata:vpl_submissions'] = 'Information on the attempts/submi
 $string['privacy:metadata:vpl_submissions:dategraded'] = 'Date and time of the evaluation of the submission';
 $string['privacy:metadata:vpl_submissions:datesubmitted'] = 'Date and time of submission';
 $string['privacy:metadata:vpl_submissions:debug_count'] = 'Number of times the submission has been debugged';
-$string['privacy:metadata:vpl_submissions:grade'] = 'The mark for this submission. This value may no match the value in the grade book.';
+$string['privacy:metadata:vpl_submissions:grade'] = 'The mark for this submission. This value may not match the value in the grade book.';
 $string['privacy:metadata:vpl_submissions:gradercomments'] = 'Comments of the grader about this submission';
 $string['privacy:metadata:vpl_submissions:graderid'] = 'grader user DB id';
 $string['privacy:metadata:vpl_submissions:groupid'] = 'Group DB id';
@@ -435,12 +435,12 @@ $string['removeallsubmissions'] = 'Remove all submissions and grades';
 $string['removeallsubmissions_help'] = 'Remove all submissions and grades in all VPL activities in the selected course';
 $string['removebreakpoint'] = 'Remove breakpoint';
 $string['removegrade'] = 'Remove grade';
-$string['removegroupoverrides'] = 'Remove group asigned overrides';
-$string['removegroupoverrides_help'] = 'Remove all group asigned overrides, override definitions not deleted';
+$string['removegroupoverrides'] = 'Remove group assigned overrides';
+$string['removegroupoverrides_help'] = 'Remove all group assigned overrides, override definitions not deleted';
 $string['removeoverrides'] = 'Remove all overrides';
 $string['removeoverrides_help'] = 'Remove all overrides in all VPL activities in the selected course';
-$string['removeuseroverrides'] = 'Remove user asigned overrides';
-$string['removeuseroverrides_help'] = 'Remove all user asigned overrides, override definitions not deleted';
+$string['removeuseroverrides'] = 'Remove user assigned overrides';
+$string['removeuseroverrides_help'] = 'Remove all user assigned overrides, override definitions not deleted';
 $string['rename'] = 'Rename';
 $string['rename_directory'] = 'Rename directory';
 $string['rename_file'] = 'Rename file';
@@ -525,28 +525,28 @@ $string['submissionperiod'] = 'Submission period';
 $string['submissionrestrictions'] = 'Submission restrictions';
 $string['submissions'] = 'Submissions';
 $string['submissions_graded_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%) / {$a->gradedcount} ({$a->gradedpercent}%) - {$a->notgradedcount} ({$a->notgradedpercent}%)';
-$string['submissions_graded_overview_help'] = '[students or grupos count]<br>
+$string['submissions_graded_overview_help'] = '[students or groups count]<br>
  / [submissions count] (% of students or groups with submissions)<br>
  / [graded count] (% of submissions graded)<br>
  - [not graded count] (% of submissions not graded)';
 $string['submissions_graded_overview_short'] = '{$a->gradedcount} of {$a->subcount}';
 $string['submissions_overview'] = '<b>{$a->name}</b>: {$a->ugcount} / {$a->subcount} ({$a->subpercent}%)';
-$string['submissions_overview_help'] = 'students or grupos count / submissions count (% of students or groups with submissions)';
+$string['submissions_overview_help'] = 'students or groups count / submissions count (% of students or groups with submissions)';
 $string['submissions_overview_short'] = '{$a->subcount} of {$a->ugcount}';
 $string['submissionselection'] = 'Submission selection';
 $string['submissionslist'] = 'Submissions list';
 $string['submissionview'] = 'Submission view';
-$string['submitarchive'] = 'Submit archive';
-$string['submitfiles'] = 'Submit files';
+$string['submitarchive'] = 'Submit ZIP archive';
+$string['submitfiles'] = 'Submit files individually';
 $string['submitmethod'] = 'Submit method';
 $string['submittedby'] = 'Submitted by {$a}';
 $string['submittedon'] = 'Submitted on';
 $string['submittedonp'] = 'Submitted on {$a}';
 $string['subplugintype_vplevaluator'] = 'VPL submissions evaluator';
 $string['subplugintype_vplevaluator_plural'] = 'VPL submissions evaluators';
-$string['sureresetfiles'] = 'Do you want to lost all your work and reset the files to its original state?';
+$string['sureresetfiles'] = 'Do you want to lose all your work and reset the files to their original state?';
 $string['test'] = 'Test activity';
-$string['testcases'] = 'Test cases';
+$string['testcases'] = 'Test configurations';
 $string['testcases_help'] = '<p>Here you configure the evaluator used for this activity.</p>';
 $string['text'] = 'Text';
 $string['timeleft'] = 'Time left';
@@ -575,7 +575,7 @@ $string['variation_options'] = 'Variation options';
 $string['variations'] = 'Variations';
 $string['variations_help'] = '<p>A set of variations can be defined for an activity. These variations are randomly assigned to the students.</p>
 <p>Here you can indicate if this activity has variations, put a title for the set of variations, and to add the desired variations.</p>
-<p>Each variation has an identification code and a description. The identification code is used by the <b>vpl_enviroment.sh</b> file to pass
+<p>Each variation has an identification code and a description. The identification code is used by the <b>vpl_environment.sh</b> file to pass
 the variation assigned to each student to the script files. The description, formatted in HTML, is shown to the students that have assigned
 the corresponding variation.</p>';
 $string['variations_unused'] = 'This activity has variations, but are disabled';
