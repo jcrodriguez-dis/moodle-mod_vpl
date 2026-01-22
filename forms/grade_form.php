@@ -155,7 +155,7 @@ class mod_vpl_grade_form extends moodleform {
             $url->param('submissionid', $submissionid);
         }
         $buttonarray[] =& $mform->createElement('html', static::get_formgroup_button_link($url, 'copy', true));
-
+        $buttonarray[] =& $mform->createElement('html', $OUTPUT->help_icon('copy', VPL));
         if ($islastsubmission) {
             $url = new moodle_url('/mod/vpl/forms/evaluation.php', [
                     'id' => $id,
