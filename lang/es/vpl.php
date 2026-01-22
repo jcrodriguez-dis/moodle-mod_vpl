@@ -542,7 +542,7 @@ $string['subplugintype_vplevaluator'] = 'Evaluador de entregas para VPL';
 $string['subplugintype_vplevaluator_plural'] = 'Evaluadores de entregas para VPL';
 $string['sureresetfiles'] = '¿Quiere perder todo su trabajo y reestablecer los ficheros a su estado original?';
 $string['test'] = 'Probar actividad';
-$string['testcases'] = 'Casos de prueba';
+$string['testcases'] = 'Configuración de pruebas';
 $string['testcases_help'] = '<p>Para usar las caracteristicas de evaluación automática de programas de VPL debe rellenar el fichero "vpl_evaluate.cases".
 Este fichero tiene el siguiente formato:
 <ul>
