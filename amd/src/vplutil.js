@@ -659,6 +659,16 @@ VPLUtil.directRun = function(URL, command, files) {
             log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);
         });
 };
+/**
+ * Process the result text to generate HTML with links to files and folding
+ * @param {string} text Text to process
+ * @param {string} filenames Array of filenames to generate links
+ * @param {object} sh Array of ace editors corresponding to filenames
+ * @param {boolean} noFormat If true do not format the text
+ * @param {boolean} addLinks If true add links to files
+ * @param {boolean} folding If true add folding to titles
+ * @returns {string} HTML processed
+ */
 VPLUtil.processResult = function(text, filenames, sh, noFormat, addLinks, folding) {
     if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
         return '';
