@@ -11,12 +11,13 @@
 check_program awk
 if [ "$VPL_MAXTIME" = "" ] ; then
 	export VPL_MAXTIME=20
+	export VPL_USING_DEFAULT_TIME_LIMIT=1
 fi
 let VPL_MAXTIME=$VPL_MAXTIME+5;
-if [ "$VPL_GRADEMAX" == "" ] ; then
+if [ "$VPL_GRADEMAX" = "" ] ; then
 	export VPL_GRADEMIN=0
 	export VPL_GRADEMAX=10
-	echo "Note: Using default grade marks 0..10"
+	export VPL_USING_DEFAULT_GRADES=1
 fi
 
 # Globals vars and initial actions
@@ -188,14 +189,14 @@ function compile_solutions_tests {
 	# Find configuration errors
 	for solution in $solutions ; do
 		if [ ! -d "$solution" ] ; then
-			add_error "$bug_symbol Found a file instead of a solution diretory ($solution)."
+			add_error "$bug_symbol Found a file instead of a solution directory ($solution)."
 			rm "$solution"
 			continue
 		fi
 		if [[ $solution =~ $directory_format ]] ; then
 			[[ ${BASH_REMATCH[1]} = "pass" ]] && correct="$solution"
 		else
-			add_error "$bug_symbol Found a directory that does not match solution diretory format $directory_format ($solution)."
+			add_error "$bug_symbol Found a directory that does not match solution directory format $directory_format ($solution)."
 			rm -R "$solution"
 		fi
 	done
@@ -214,6 +215,8 @@ if [[ -d "$home_dir/$oldtest_dir" ]] ; then
 	echo "⭐⭐ COMPILATION REPORT ⭐⭐"  >> "$home_dir/$compilation_results"
 	echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"  >> "$home_dir/$compilation_results"
 	echo ""  >> "$home_dir/$compilation_results"
+	[ -n "$VPL_USING_DEFAULT_GRADES" ] && (echo "$star_symbol Using default grade marks 0..10" >> "$home_dir/$compilation_results")
+	[ -n "$VPL_USING_DEFAULT_TIME_LIMIT" ] && (echo "$star_symbol Using default time limit of 20 seconds" >> "$home_dir/$compilation_results")
 	echo "$star_symbol Using '$VPL_PLN' programming language (or custom code) to run solutions" >> "$home_dir/$compilation_results"
 	mv "$home_dir/$oldtest_dir" "$home_dir/$test_dir"
 	if [[ "$VPL_VARIATIONS" != "" ]] ; then
@@ -232,9 +235,10 @@ cp common_script.sh vpl_execution
 cat <<'SCRIPT_END' >>vpl_execution
 if [ "$VPL_MAXTIME" = "" ] ; then
 	export VPL_MAXTIME=20
+	echo "Note: Using default time limit of 20 seconds."
 fi
 let VPL_MAXTIME=$VPL_MAXTIME+5;
-if [ "$VPL_GRADEMAX" == "" ] ; then
+if [ "$VPL_GRADEMAX" = "" ] ; then
 	export VPL_GRADEMIN=0
 	export VPL_GRADEMAX=10
 	echo "Note: Using default grade marks 0..10"
@@ -275,17 +279,17 @@ function run_a_solution_test {
 	let ntest=$ntest+1
 	if [ -x vpl_execution ] ; then
 		[[ $variation != "" ]] && export VPL_VARIATION="$variation"
-		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION\"$variation\"" >> ./vpl_environment.sh
+		[[ -f ./vpl_environment.sh ]] && echo "export VPL_VARIATION=\"$variation\"" >> ./vpl_environment.sh
 		./vpl_execution  &> "$solution/$evaluation_results"
 	else
-		test_info="$bug_symbol Progran test for '$test_name' not generated. See compilation."
+		test_info="$bug_symbol Program test for '$test_name' not generated. See compilation."
 		echo "$test_info" > "$solution/$evaluation_results"
 	fi
 	# Check evaluation results
-	OP='=='
-	if [[ $test_mark == "" ]] ; then
+	local OP='=='
+	if [[ $test_mark = "" ]] ; then
 		test_mark=$VPL_GRADEMAX
-		if [[ $test_type == 'fail' ]] ; then
+		if [[ $test_type = 'fail' ]] ; then
 			OP='<'
 		fi
 	fi
@@ -332,7 +336,7 @@ function run_solutions_tests {
 	done
 }
 
-# If compilation erros stop
+# If compilation errors stop
 if [[ -s "$home_dir/$compilation_errors" ]] ; then
 	[ -s "$home_dir/$compilation_results" ] && echo_VPL_file "$home_dir/$compilation_results"
 	echo_VPL_file "$home_dir/$compilation_errors"
