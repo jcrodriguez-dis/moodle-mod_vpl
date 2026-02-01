@@ -344,43 +344,6 @@ function vpl_get_students($vpl) {
     }
 }
 
-/**
- * Filter students by initials
- * @param object $vpl mod_vpl
- * @param array $allstudents list of students
- * @return array of objects
- */
-function vpl_filter_by_initials($vpl, $allstudents) {
-    $tilast = optional_param('tilast', '', PARAM_TEXT);
-    $tifirst = optional_param('tifirst', '', PARAM_TEXT);
-    if ($vpl->is_group_activity()) {
-        if ($tilast > '') {
-            $newlist = [];
-            foreach ($allstudents as $group) {
-                if (strcasecmp(substr($group->name, 0, 1), $tilast) == 0) {
-                    $newlist[$group->id] = $group;
-                }
-            }
-            $allstudents = $newlist;
-        }
-    } else {
-        if ($tilast > '' || $tifirst > '') {
-            $newlist = [];
-            foreach ($allstudents as $user) {
-                if ($tilast > '' && strcasecmp(substr($user->lastname, 0, 1), $tilast) != 0) {
-                    continue;
-                }
-                if ($tifirst > '' && strcasecmp(substr($user->firstname, 0, 1), $tifirst) != 0) {
-                    continue;
-                }
-                $newlist[$user->id] = $user;
-            }
-            $allstudents = $newlist;
-        }
-    }
-    return $allstudents;
-}
-
 require_login();
 
 $id = required_param('id', PARAM_INT);
@@ -452,7 +415,7 @@ if (! $groupmode) {
 }
 
 $allstudents = vpl_get_students($vpl);
-$filteredstudents = vpl_filter_by_initials($vpl, $allstudents);
+$filteredstudents = vpl_filter_by_initials($vpl, $allstudents, $tifirst, $tilast);
 
 // Find if using variations.
 $vplinstance = $vpl->get_instance();

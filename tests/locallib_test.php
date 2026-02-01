@@ -480,4 +480,106 @@ final class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
     }
+
+    /**
+     * Test vpl_filter_groups_by_initials
+     *
+     * @covers ::vpl_filter_groups_by_initials
+     */
+    public function test_vpl_filter_groups_by_initials() {
+        $g1 = (object)['id' => 1, 'name' => 'Alpha'];
+        $g2 = (object)['id' => 2, 'name' => 'Beta'];
+        $g3 = (object)['id' => 3, 'name' => 'Gamma'];
+        $g4 = (object)['id' => 4, 'name' => 'Álvaro'];
+        $groups = [$g1, $g2, $g3, $g4];
+
+        // Test filter by empty initial
+        $res = vpl_filter_groups_by_initials($groups, '');
+        $this->assertCount(4, $res);
+
+        // Test filter by 'A'
+        $res = vpl_filter_groups_by_initials($groups, 'A');
+        $this->assertCount(2, $res); // Alpha, Álvaro
+
+        // Test filter by 'Á'
+        $res = vpl_filter_groups_by_initials($groups, 'Á');
+        $this->assertCount(1, $res); // Álvaro only, Alpha does not match strict accent
+
+        // Test filter by 'B'
+        $res = vpl_filter_groups_by_initials($groups, 'B');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Beta', reset($res)->name);
+
+        // Test filter by 'Z' (no match)
+        $res = vpl_filter_groups_by_initials($groups, 'Z');
+        $this->assertCount(0, $res);
+    }
+
+    /**
+     * Test vpl_filter_users_by_initials
+     *
+     * @covers ::vpl_filter_users_by_initials
+     */
+    public function test_vpl_filter_users_by_initials() {
+        $u1 = (object)['id' => 1, 'firstname' => 'Adam', 'lastname' => 'Smith'];
+        $u2 = (object)['id' => 2, 'firstname' => 'Bob', 'lastname' => 'Jones'];
+        $u3 = (object)['id' => 3, 'firstname' => 'Charlie', 'lastname' => 'Brown'];
+        $u4 = (object)['id' => 4, 'firstname' => 'Alice', 'lastname' => 'Smith'];
+        $u5 = (object)['id' => 5, 'firstname' => 'Óscar', 'lastname' => 'Úbbeda'];
+        $users = [$u1, $u2, $u3, $u4, $u5];
+
+        // Test filter by empty initials
+        $res = vpl_filter_users_by_initials($users, '', '');
+        $this->assertCount(5, $res);
+
+        // Test filter by last name 'S'
+        $res = vpl_filter_users_by_initials($users, 'S', '');
+        $this->assertCount(2, $res); // Adam Smith, Alice Smith
+        foreach ($res as $u) {
+            $this->assertEquals('Smith', $u->lastname);
+        }
+
+        // Test filter by first name 'A'
+        $res = vpl_filter_users_by_initials($users, '', 'A');
+        $this->assertCount(2, $res); // Adam Smith, Alice Smith
+
+        // Test filter by both 'S' and 'A'
+        $res = vpl_filter_users_by_initials($users, 'S', 'A');
+        $this->assertCount(2, $res); // Adam Smith, Alice Smith
+
+        // Test filter by 'J' lastname
+        $res = vpl_filter_users_by_initials($users, 'J', '');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Jones', reset($res)->lastname);
+
+        // Test filter by 'B' firstname
+        $res = vpl_filter_users_by_initials($users, '', 'B');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Bob', reset($res)->firstname);
+
+        // Test accented matching
+        // 'O' matches 'Óscar'
+        $res = vpl_filter_users_by_initials($users, '', 'O');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Óscar', reset($res)->firstname);
+
+        // 'Ó' matches 'Óscar'
+        $res = vpl_filter_users_by_initials($users, '', 'Ó');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Óscar', reset($res)->firstname);
+
+        // 'U' matches 'Úbbeda'
+        $res = vpl_filter_users_by_initials($users, 'U', '');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Úbbeda', reset($res)->lastname);
+
+        // 'Ú' matches 'Úbbeda'
+        $res = vpl_filter_users_by_initials($users, 'Ú', '');
+        $this->assertCount(1, $res);
+        $this->assertEquals('Úbbeda', reset($res)->lastname);
+        
+        // Test no match
+        $res = vpl_filter_users_by_initials($users, 'Z', 'Z');
+        $this->assertCount(0, $res);
+    }
 }

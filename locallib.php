@@ -1158,3 +1158,84 @@ function vpl_print_copyable_info($title, $displayedinfo, $copyinfo = null) {
     echo html_writer::div('<span style="user-select:none;">' . $title . ' </span>' .
             '<b>' . $displayedinfo . '</b>' . vpl_get_copytoclipboard_control($copyinfo));
 }
+
+/**
+ * Filter groups by name initial
+ * @param array $groups list of groups
+ * @param string $initial filter by group name initial
+ * @return array of objects
+ */
+function vpl_filter_groups_by_initials($groups, $initial) {
+    if ($initial > '') {
+        $initialnotaccent = core_text::specialtoascii($initial) == $initial;
+        $initial = core_text::strtoupper($initial);
+        $newlist = [];
+        foreach ($groups as $group) {
+            $iname = core_text::strtoupper(core_text::substr($group->name, 0, 1));
+            if ($initialnotaccent) {
+                $iname = core_text::specialtoascii($iname);
+            }
+            if ($initial == $iname) {
+                $newlist[$group->id] = $group;
+            }
+        }
+        return $newlist;
+    }
+    return $groups;
+}
+
+/**
+ * Filter users by first and last name initials
+ * @param array $users list of users
+ * @param string $tilast filter by last name initials
+ * @param string $tifirst filter by first name initials
+ * @return array of objects
+ */
+function vpl_filter_users_by_initials($users, $tilast, $tifirst) {
+    if ($tilast > '' || $tifirst > '') {
+        $tilastnotaccent = core_text::specialtoascii($tilast) == $tilast;
+        $tifirstnotaccent = core_text::specialtoascii($tifirst) == $tifirst;
+        $tilast = core_text::strtoupper($tilast);
+        $tifirst = core_text::strtoupper($tifirst);
+        $newlist = [];
+        foreach ($users as $user) {
+            if ($tilast > '') {
+                $ilastname = core_text::strtoupper(core_text::substr($user->lastname, 0, 1));
+                if ($tilastnotaccent) {
+                    $ilastname = core_text::specialtoascii($ilastname);
+                }
+                if ($tilast != $ilastname) {
+                    continue;
+                }
+            }
+            if ($tifirst > '') {
+                $ifirstname = core_text::strtoupper(core_text::substr($user->firstname, 0, 1));
+                if ($tifirstnotaccent) {
+                    $ifirstname = core_text::specialtoascii($ifirstname);
+                }
+                if ($tifirst != $ifirstname) {
+                    continue;
+                }
+            }
+            $newlist[$user->id] = $user;
+        }
+        return $newlist;
+    }
+    return $users;
+}
+
+/**
+ * Filter students or groups by initials
+ * @param object $vpl mod_vpl
+ * @param array $allstudents list of students or groups
+ * @param string $tilast filter by last name initials or group name initial
+ * @param string $tifirst filter by first name initials
+ * @return array of objects
+ */
+function vpl_filter_by_initials($vpl, $allstudents, $tilast, $tifirst) {
+    if ($vpl->is_group_activity()) {
+        return vpl_filter_groups_by_initials($allstudents, $tilast);
+    } else {
+        return vpl_filter_users_by_initials($allstudents, $tilast, $tifirst);
+    }
+}
