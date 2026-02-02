@@ -191,7 +191,6 @@ Este arquivo tem o seguinte formato:</p>
 <ul><li>LANG: a linguagem empregada.</li>
 <li>LC_ALL: o mesmo valor que LANG.</li>
 <li>VPL_MAXTIME: tempo máximo de execução em segundos.</li>
-<li>VPL_FILEBASEURL: URL para acessar os arquivos do curso.</li>
 <li>VPL_SUBFILE#: cada nome dos arquivos entregues pelo aluno. # vai de 0 a número de arquivos entregados.</li>
 <li>VPL_SUBFILES: lista de todos os arquivos entregues.</li>
 <li>VPL_VARIATION+id: onde id é a ordem de variação começando por 0 e o valor é o valor da variação.<br></li>
@@ -202,7 +201,6 @@ Se a ação solicitada é &quot;avaliação&quot; se anexam as seguintes variáv
 	<li>VPL_MAXMEMORY: máxima memória utilizável em bytes.</li>
 	<li>VPL_MAXFILESIZE: tamanho máximo em bytes de um arquivo.</li>
 	<li>VPL_MAXPROCESSES: número máximo de processos que se podem executar simultaneamente.</li>
-	<Li>VPL_FILEBASEURL: URL para os arquivos do curso.</Li>
 	<li>VPL_GRADEMIN: nota mínima para esta atividade.</li>
 	<li>VPL_GRADEMAX: nota máxima para esta atividade.</li>
 </ul>

@@ -205,7 +205,6 @@ vpl_run.sh、vpl_debug.sh、vpl_evaluate.shファイルの内容は、
 <ul> <li> LANG: 使用する言語 </li>
 <li> LC_ALL: LANGと同じ </li>
 <li> VPL_MAXTIME: 秒単位の実行時間の最長限度</li>
-<li> VPL_FILEBASEURL: コースのファイルにアクセスするためのURL</li>
 <li> VPL_SUBFILE#:  学生により提出されたそれぞれのファイルの名前。#は0から提出されたファイル数まで </Li>
 <li> VPL_SUBFILES: すべての提出されたファイルのリスト </li>
 <li> VPL_VARIATION + id: ここで、idは0から始まるバリエーションの順番である。また、値はバリエーションの値である </li>
@@ -216,7 +215,6 @@ vpl_run.sh、vpl_debug.sh、vpl_evaluate.shファイルの内容は、
 	<li>VPL_MAXMEMORY: 利用可能な最大メモリ</li>
 	<li>VPL_MAXFILESIZE: バイト単位の作成可能なファイルの最大サイズ</li>
 	<li>VPL_MAXPROCESSES: 同時に実行可能なプロセスの最大数</li>
-	<Li>VPL_FILEBASEURL: コースファイルへのURL</li>
 	<li>VPL_GRADEMIN: この活動の評価の最小値</li>
 	<li>VPL_GRADEMAX: この活動の評価の最大値</li>
 </ul>

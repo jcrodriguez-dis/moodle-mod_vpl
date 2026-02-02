@@ -191,7 +191,6 @@ Endung</th>
 <ul> <li> LANG:  verwendete Sprache. </li>
 <li> LC_ALL: gleicher Wert wie LANG. </li>
 <li> VPL_MAXTIME: maximale Ausführungszeit in Sekunden. </li>
-<li> VPL_FILEBASEURL: URL, um auf die Dateien des Kurses zuzugreifen to access the files of the course. </li>
 <li> VPL_SUBFILE#: jeder Name von Dateien der Abgabe. Das #-Symbol stellt Zahlen zwischen 0 und der Anzahl der abgegebenen Dateien. </li>
 <li> VPL_SUBFILES: Liste aller abgegebenen Dateien. </li>
 <li> VPL_VARIATION + id: wobei die id die Variationsreihenfolge angibt und mit 0 anfängt und der Variablenwert den Wert der Variation angibt.</li>
@@ -202,7 +201,6 @@ Wenn die Aktion Evaluierung ausgeführt wird, werden die folgenden Variablen auc
 	<li>VPL_MAXMEMORY: maximale Hauptspeicherverwendung</li>
 	<li>VPL_MAXFILESIZE: maximale Dateigröße in byte, die erstellt werden kann.</li>
 	<li>VPL_MAXPROCESSES: maximale Anzahl an Prozessen, die gleichzeitig ausgeführt werden.</li>
-	<Li>VPL_FILEBASEURL: URL zu den Kursdateien.</Li>
 	<li>VPL_GRADEMIN: Minimale Bewertung für diese Aktivität</li>
 	<li>VPL_GRADEMAX: Maximale Bewertung für diese Aktivität</li>
 </ul>

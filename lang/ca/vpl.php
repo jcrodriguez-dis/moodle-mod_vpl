@@ -193,7 +193,6 @@ Aquest fitxer t&eacute; el seg&uuml;ent format:
 <ul><li>LANG: el llenguatge empleat.</li>
 <li>LC_ALL: el mateix valor que LANG.</li>
 <li>VPL_MAXTIME: temps m&agrave;xim d\'execuci&oacute; en segons.</li>
-<li>VPL_FILEBASEURL: URL per accedir als fitxers del curs.</li>
 <li>VPL_SUBFILE#: nom dels fitxers lliurats per l\'alumne. # va de 0 a nombre de fitxers lliurats.</li>
 <li>VPL_SUBFILES: llista de tots els fitxers lliurats.</li>
 <li>VPL_VARIATION+id: on id &eacute;s l\'ordre de variaci&oacute; comen&ccedil;ant per 0 i el valor &eacute;s el valor de la variaci&oacute;.<br></li>
@@ -204,7 +203,6 @@ Si l\'acci&oacute; sol&middot;licitada es &quot;avaluaci&oacute;&quot; s\'afegei
 	<li>VPL_MAXMEMORY: m&agrave;xima mem&ograve;ria usable en bytes.</li>
 	<li>VPL_MAXFILESIZE: mida m&agrave;xima en bytes d\'un fitxer.</li>
 	<li>VPL_MAXPROCESSES: nombre m&agrave;xim de processos que poden executar-se simult&agrave;niamente.</li>
-	<Li>VPL_FILEBASEURL: URL a fitxers del curs.</Li>
 	<li>VPL_GRADEMIN: m&iacute;nima nota per aquesta activitat.</li>
 	<li>VPL_GRADEMAX: m&agrave;xima nota per aquesta activitat.</li>
 </ul>

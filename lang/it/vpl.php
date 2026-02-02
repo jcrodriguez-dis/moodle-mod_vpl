@@ -122,7 +122,6 @@ Le informazioni vengono trattate come variabili d\'ambiente:</p>
 <ul><li>LANG: lingua usata.</li>
 <li>LC_ALL: stesso valore di LANG.</li>
 <li>VPL_MAXTIME: tempo massimo di esecuzione in secondi. </li>
-<li> VPL_FILEBASEURL: URL per accedere ai file del corso. </li>
 <li> VPL_SUBFILE#:  ogni nome dei file consegnati dallo studente. # varia da 0 al numero di file conseganti. </Li>
 <li> VPL_SUBFILES: lista di tutti i file consegnati. </li>
 <li> VPL_VARIATION + id:dove id è l\'ordine di variazione partendo da 0 e value è il valore della variazione. </li>
@@ -133,7 +132,6 @@ Se l\'azione richiesta è la valutazione (evaluation), allora sono aggiunte anch
 	<li>VPL_MAXMEMORY: memoria massima utilizzabile</li>
 	<li>VPL_MAXFILESIZE: grandezza massima in byte del file che può essere creato.</li>
 	<li>VPL_MAXPROCESSES: numero massimo di processi che possono essere eseguiti simultaneamente.</li>
-	<Li>VPL_FILEBASEURL: URL ai file del corso.</Li>
 	<li>VPL_GRADEMIN: voto minimo per questa attività</li>
 	<li>VPL_GRADEMAX: voto massimo per questa attività</li>
 </ul>

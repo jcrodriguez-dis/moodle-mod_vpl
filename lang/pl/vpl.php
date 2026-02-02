@@ -94,7 +94,6 @@ Zawartość plików vpl_run.sh, vpl_debug.sh and vpl_evaluate.sh jest łączona 
 <ul> <li> LANG:  używany język. </li>
 <li> LC_ALL: ta sama wartość co w LANG. </li>
 <li> VPL_MAXTIME: maksymalny czas wykonania w sekundach. </li>
-<li> VPL_FILEBASEURL: URL do plików kursu. </li>
 <li> VPL_SUBFILE#:  każda nazwa pliku podana przez studenta. # Zakres od 0 do ilości podanych plików. </Li>
 <li> VPL_SUBFILES: lista wszytkich podanych plików. </li>
 <li> VPL_VARIATION + id: gdzie id jest kolejnością działań, zaczynając od 0, a wartość zmiennej jest wartością działania. </li>
