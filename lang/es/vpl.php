@@ -369,6 +369,7 @@ $string['overrideforgroup'] = '{$a->base} - Vence la entrega VPL para los miembr
 $string['overriden'] = 'Establecido en excepción';
 $string['overrides'] = 'Excepciones';
 $string['overrides_help'] = 'Se puede establecer excepciones en un conjunto de configuraciones para una actividad. Estas configuraciones reemplazarán las configuraciones de la actividad para los usuarios y grupos afectados.';
+$string['overridesummary'] = 'Hay {$a->noverrides} excepciones que afectan a {$a->nuseroverrides} usuarios y {$a->ngroupoverrides} grupos.';
 $string['paste'] = 'Pegar';
 $string['pause'] = 'Pausar';
 $string['pluginadministration'] = 'Administración de VPL';

@@ -375,6 +375,7 @@ $string['overrideforgroup'] = '{$a->base} is due for members of {$a->for}';
 $string['overriden'] = 'Overridden';
 $string['overrides'] = 'Overrides';
 $string['overrides_help'] = 'A set of settings can be overridden for an activity. These settings will override activity settings for affected users and groups.';
+$string['overridesummary'] = 'There are {$a->noverrides} setting overrides affecting {$a->nuseroverrides} users and {$a->ngroupoverrides} groups.';
 $string['paste'] = 'Paste';
 $string['pause'] = 'Pause';
 $string['pluginadministration'] = 'VPL administration';

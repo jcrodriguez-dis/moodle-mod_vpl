@@ -2065,6 +2065,11 @@ class mod_vpl {
             if ($instance->maxexeprocesses) {
                 $html .= $this->str_setting_with_icon('maxexeprocesses', null, false, false);
             }
+            $overridesummary = $this->get_overriden_summary();
+            if ($overridesummary) {
+                $html .= '<br>';
+                $html .= $overridesummary;
+            }
         }
         return $html;
     }
@@ -2076,11 +2081,45 @@ class mod_vpl {
     public function print_submission_restriction($userid = null) {
         echo $this->str_submission_restriction($userid);
     }
+    
+    /**
+     * Get overriden/exception summary in the activity description
+     * @return string HTML
+     */
+    public function get_overriden_summary() {
+        $vplid = $this->instance->id;
+        $vplcmid = $this->cm->id;
+        $overrides = vpl_get_overrides($vplid);
+        $html = '';
+        if ($overrides) {
+            // Calculate overriden settings.
+            $ngroupoverrides = 0;
+            $nuseroverrides = 0;
+            $noverrides = count($overrides);
+            foreach ($overrides as $override) {
+                if ($override->groupids) {
+                    $ngroupoverrides += count(explode(',', $override->groupids));
+                }
+                if ($override->userids) {
+                    $nuseroverrides += count(explode(',', $override->userids));
+                }
+            }
+            $a = new stdClass();
+            $a->noverrides = $noverrides;
+            $a->nuseroverrides = $nuseroverrides;
+            $a->ngroupoverrides = $ngroupoverrides;
+            $overridesummary = get_string('overridesummary', VPL, $a);
+            $url = new moodle_url('/mod/vpl/forms/overrides.php', ['id' => $vplcmid]);
+            $html .= vpl_get_awesome_icon('overrides');
+            $html .= html_writer::link($url, $overridesummary);
+        }
+        return $html;
+    }
 
     /**
      * Show short description
      */
-    public function print_shordescription() {
+    public function print_shortdescription() {
         global $OUTPUT;
         if ($this->instance->shortdescription) {
             echo $OUTPUT->box_start();
@@ -2130,7 +2169,7 @@ class mod_vpl {
         if ($full > '') {
             echo $OUTPUT->box($full);
         } else {
-            $this->print_shordescription();
+            $this->print_shortdescription();
         }
     }
 
