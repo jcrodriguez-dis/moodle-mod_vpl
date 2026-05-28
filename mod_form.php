@@ -125,18 +125,33 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setDefault('requirednet', '');
         $mform->addHelpButton('requirednet', 'requirednet', VPL);
         $mform->setAdvanced('requirednet');
-        $mform->addElement('selectyesno', 'sebrequired', get_string('sebrequired', VPL));
-        $mform->setDefault('sebrequired', 0);
-        $mform->addHelpButton('sebrequired', 'sebrequired', VPL);
-        $mform->setAdvanced('sebrequired');
-        $mform->addElement('textarea', 'sebkeys', get_string('sebkeys', VPL), [
-                'cols' => 66,
-                'rows' => 2,
-        ]);
+        $mform->addElement('header', 'seb', get_string('seb', VPL));
+        $mform->setExpanded('seb', false);
+        foreach (\mod_vpl\seb\settings::get_form_fields() as $field => $definition) {
+                $label = get_string($definition['label'], VPL);
+                if ($definition['type'] === 'select') {
+                        $mform->addElement('select', $field, $label, $definition['options']);
+                } elseif ($definition['type'] === 'textarea') {
+                        $mform->addElement('textarea', $field, $label, [
+                                        'cols' => 66,
+                                        'rows' => 2,
+                        ]);
+                } else {
+                        $mform->addElement($definition['type'], $field, $label);
+                }
+                $mform->setType($field, $definition['param']);
+                $mform->setDefault($field, $definition['default']);
+                if (in_array($field, ['requiresafeexambrowser', 'allowedbrowserexamkeys'], true)) {
+                        $mform->addHelpButton($field, $definition['label'], VPL);
+                }
+                if ($field !== 'requiresafeexambrowser') {
+                        $mform->hideIf($field, 'requiresafeexambrowser', 'eq', 0);
+                }
+        }
+        $mform->addElement('hidden', 'sebrequired', 0);
+        $mform->setType('sebrequired', PARAM_INT);
+        $mform->addElement('hidden', 'sebkeys', '');
         $mform->setType('sebkeys', PARAM_TEXT);
-        $mform->setDefault('sebkeys', '');
-        $mform->addHelpButton('sebkeys', 'sebkeys', VPL);
-        $mform->setAdvanced('sebkeys');
         // Grade.
         $this->standard_grading_coursemodule_elements();
         $mform->addElement('text', 'reductionbyevaluation', get_string('reductionbyevaluation', VPL));
@@ -153,6 +168,30 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->standard_coursemodule_elements();
         // End form.
         $this->add_action_buttons();
+    }
+
+    /**
+     * Add SEB table values to the edit form defaults.
+     *
+     * @param array $defaultvalues Default form values.
+     * @return void
+     */
+    public function data_preprocessing(&$defaultvalues) {
+        if (empty($this->current->instance)) {
+            return;
+        }
+
+        $sebvalues = \mod_vpl\seb\settings::get_form_values_from_instance((object)[
+                'id' => $this->current->instance,
+                'sebrequired' => $defaultvalues['sebrequired'] ?? 0,
+                'sebkeys' => $defaultvalues['sebkeys'] ?? '',
+        ]);
+
+        foreach (\mod_vpl\seb\settings::get_form_fields() as $field => $definition) {
+            if (isset($sebvalues->$field)) {
+                $defaultvalues[$field] = $sebvalues->$field;
+            }
+        }
     }
 
     /**
@@ -188,6 +227,11 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->validate('freeevaluations', '/^[0-9]*$/', '[0..]', $data, $errors);
         $this->validate('maxfiles', '/^[0-9]*$/', '[0..]', $data, $errors);
         $this->validate('reductionbyevaluation', '/^[0-9]*(\.[0-9]+)?%?$/', '#[.#][%]', $data, $errors);
+        if (!empty($data['requiresafeexambrowser']) && !empty($data['enablesebsession']) &&
+                !empty($data['preventsebsimultaneoussessions']) &&
+                trim((string)($data['sebteacherpassword'] ?? '')) === '') {
+            $errors['sebteacherpassword'] = get_string('required');
+        }
         return $errors;
     }
 }

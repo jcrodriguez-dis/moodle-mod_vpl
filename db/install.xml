@@ -55,6 +55,70 @@
         <INDEX NAME="startdate_indx" UNIQUE="false" FIELDS="startdate"/>
       </INDEXES>
     </TABLE>
+    <TABLE NAME="vpl_seb" COMMENT="Stores the manual Safe Exam Browser configuration for a VPL instance.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="vplid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to vpl.id."/>
+        <FIELD NAME="requiresafeexambrowser" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Bool whether to require SEB."/>
+        <FIELD NAME="showsebdownloadlink" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether to show the SEB download button."/>
+        <FIELD NAME="enablesebsession" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether per-session SEB configs are enabled."/>
+        <FIELD NAME="preventsebsimultaneoussessions" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether SEB access is tied to one Moodle session."/>
+        <FIELD NAME="sebteacherpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Teacher password used to invalidate another SEB session."/>
+        <FIELD NAME="linkquitseb" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Quit link used by Safe Exam Browser."/>
+        <FIELD NAME="userconfirmquit" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether confirm quit popup should appear."/>
+        <FIELD NAME="allowuserquitseb" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show quit button."/>
+        <FIELD NAME="quitpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Quit password to exit SEB."/>
+        <FIELD NAME="adminpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Administrator password to edit SEB settings."/>
+        <FIELD NAME="allowreloadinexam" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether user can reload."/>
+        <FIELD NAME="showsebtaskbar" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show SEB task bar"/>
+        <FIELD NAME="showreloadbutton" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show reload button."/>
+        <FIELD NAME="showtime" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show the clock."/>
+        <FIELD NAME="showkeyboardlayout" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show keyboard layout."/>
+        <FIELD NAME="showwificontrol" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to allow user to control networking."/>
+        <FIELD NAME="enableaudiocontrol" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show volume and audio controls."/>
+        <FIELD NAME="muteonstartup" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether browser starts muted."/>
+        <FIELD NAME="allowcapturecamera" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether SEB may access camera."/>
+        <FIELD NAME="allowcapturemicrophone" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether SEB may access microphone."/>
+        <FIELD NAME="allowspellchecking" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether spell checking will happen in SEB."/>
+        <FIELD NAME="activateurlfiltering" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether URLs will be filtered."/>
+        <FIELD NAME="filterembeddedcontent" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether embedded content will be filtered"/>
+        <FIELD NAME="expressionsallowed" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma or newline separated list of allowed expressions"/>
+        <FIELD NAME="regexallowed" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Regex of allowed URLs"/>
+        <FIELD NAME="expressionsblocked" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma or newline separated list of blocked expressions"/>
+        <FIELD NAME="regexblocked" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Regex of blocked URLs"/>
+        <FIELD NAME="allowedbrowserexamkeys" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of allowed browser exam keys."/>
+        <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+        <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="vplid" TYPE="foreign-unique" FIELDS="vplid" REFTABLE="vpl" REFFIELDS="id"/>
+        <KEY NAME="usermodified" TYPE="foreign" FIELDS="usermodified" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+    </TABLE>
+    <TABLE NAME="vpl_seb_session" COMMENT="Stores per-user Safe Exam Browser session keys.">
+      <FIELDS>
+        <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
+        <FIELD NAME="vplid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to vpl.id."/>
+        <FIELD NAME="userid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="User id."/>
+        <FIELD NAME="token1public" TYPE="char" LENGTH="65" NOTNULL="true" SEQUENCE="false" COMMENT="Public token for phase 1 configuration download."/>
+        <FIELD NAME="token1private" TYPE="char" LENGTH="65" NOTNULL="true" SEQUENCE="false" COMMENT="Private phase 1 examKeySalt."/>
+        <FIELD NAME="configkey1" TYPE="char" LENGTH="65" NOTNULL="true" SEQUENCE="false" COMMENT="Phase 1 SEB configuration key."/>
+        <FIELD NAME="sesskey" TYPE="char" LENGTH="20" NOTNULL="false" SEQUENCE="false" COMMENT="Moodle session key associated with phase 2."/>
+        <FIELD NAME="token2private" TYPE="char" LENGTH="65" NOTNULL="false" SEQUENCE="false" COMMENT="Private phase 2 examKeySalt."/>
+        <FIELD NAME="configkey2" TYPE="char" LENGTH="65" NOTNULL="false" SEQUENCE="false" COMMENT="Phase 2 SEB configuration key."/>
+      </FIELDS>
+      <KEYS>
+        <KEY NAME="primary" TYPE="primary" FIELDS="id"/>
+        <KEY NAME="vplid" TYPE="foreign" FIELDS="vplid" REFTABLE="vpl" REFFIELDS="id"/>
+        <KEY NAME="userid" TYPE="foreign" FIELDS="userid" REFTABLE="user" REFFIELDS="id"/>
+      </KEYS>
+      <INDEXES>
+        <INDEX NAME="userid_vplid_uix" UNIQUE="true" FIELDS="userid, vplid"/>
+        <INDEX NAME="token1public_uix" UNIQUE="true" FIELDS="token1public"/>
+      </INDEXES>
+    </TABLE>
     <TABLE NAME="vpl_submissions" COMMENT="Information about submission and grade">
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>

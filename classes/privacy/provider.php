@@ -95,12 +95,58 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
             'server' => 'privacy:metadata:vpl_running_processes:server',
             'start_time' => 'privacy:metadata:vpl_running_processes:starttime',
         ];
-
+        $sebfields = [
+            'vplid' => 'privacy:metadata:vpl_seb:vplid',
+            'requiresafeexambrowser' => 'privacy:metadata:vpl_seb:requiresafeexambrowser',
+            'showsebdownloadlink' => 'privacy:metadata:vpl_seb:showsebdownloadlink',
+            'enablesebsession' => 'privacy:metadata:vpl_seb:enablesebsession',
+            'preventsebsimultaneoussessions' => 'privacy:metadata:vpl_seb:preventsebsimultaneoussessions',
+            'sebteacherpassword' => 'privacy:metadata:vpl_seb:sebteacherpassword',
+            'linkquitseb' => 'privacy:metadata:vpl_seb:linkquitseb',
+            'userconfirmquit' => 'privacy:metadata:vpl_seb:userconfirmquit',
+            'allowuserquitseb' => 'privacy:metadata:vpl_seb:allowuserquitseb',
+            'quitpassword' => 'privacy:metadata:vpl_seb:quitpassword',
+            'adminpassword' => 'privacy:metadata:vpl_seb:adminpassword',
+            'allowreloadinexam' => 'privacy:metadata:vpl_seb:allowreloadinexam',
+            'showsebtaskbar' => 'privacy:metadata:vpl_seb:showsebtaskbar',
+            'showreloadbutton' => 'privacy:metadata:vpl_seb:showreloadbutton',
+            'showtime' => 'privacy:metadata:vpl_seb:showtime',
+            'showkeyboardlayout' => 'privacy:metadata:vpl_seb:showkeyboardlayout',
+            'showwificontrol' => 'privacy:metadata:vpl_seb:showwificontrol',
+            'enableaudiocontrol' => 'privacy:metadata:vpl_seb:enableaudiocontrol',
+            'muteonstartup' => 'privacy:metadata:vpl_seb:muteonstartup',
+            'allowcapturecamera' => 'privacy:metadata:vpl_seb:allowcapturecamera',
+            'allowcapturemicrophone' => 'privacy:metadata:vpl_seb:allowcapturemicrophone',
+            'allowspellchecking' => 'privacy:metadata:vpl_seb:allowspellchecking',
+            'activateurlfiltering' => 'privacy:metadata:vpl_seb:activateurlfiltering',
+            'filterembeddedcontent' => 'privacy:metadata:vpl_seb:filterembeddedcontent',
+            'expressionsallowed' => 'privacy:metadata:vpl_seb:expressionsallowed',
+            'regexallowed' => 'privacy:metadata:vpl_seb:regexallowed',
+            'expressionsblocked' => 'privacy:metadata:vpl_seb:expressionsblocked',
+            'regexblocked' => 'privacy:metadata:vpl_seb:regexblocked',
+            'allowedbrowserexamkeys' => 'privacy:metadata:vpl_seb:allowedbrowserexamkeys',
+            'usermodified' => 'privacy:metadata:vpl_seb:usermodified',
+            'timecreated' => 'privacy:metadata:vpl_seb:timecreated',
+            'timemodified' => 'privacy:metadata:vpl_seb:timemodified',
+        ];
+        $sebsessionfields = [
+            'vplid' => 'privacy:metadata:vpl_seb_session:vplid',
+            'userid' => 'privacy:metadata:vpl_seb_session:userid',
+            'token1public' => 'privacy:metadata:vpl_seb_session:token1public',
+            'token1private' => 'privacy:metadata:vpl_seb_session:token1private',
+            'configkey1' => 'privacy:metadata:vpl_seb_session:configkey1',
+            'sesskey' => 'privacy:metadata:vpl_seb_session:sesskey',
+            'token2private' => 'privacy:metadata:vpl_seb_session:token2private',
+            'configkey2' => 'privacy:metadata:vpl_seb_session:configkey2',
+        ];
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
         $collection->add_database_table('vpl_assigned_variations', $variationsfields, 'privacy:metadata:vpl_assigned_variations');
         $collection->add_database_table('vpl_assigned_overrides', $overridesfields, 'privacy:metadata:vpl_assigned_overrides');
         $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
+        $collection->add_database_table('vpl_seb', $sebfields, 'privacy:metadata:vpl_seb');
+        $collection->add_database_table('vpl_seb_session', $sebsessionfields, 'privacy:metadata:vpl_seb_session');
+        
         // IDE user preferences.
         $collection->add_user_preference('vpl_ide_preferences', 'privacy:metadata:vpl_ide_preferences');
 
@@ -122,6 +168,7 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         self::add_contexts_for_variations($contextlist, $userid);
         self::add_contexts_for_overrides($contextlist, $userid);
         self::add_contexts_for_running($contextlist, $userid);
+        self::add_contexts_for_seb_sessions($contextlist, $userid);
 
         return $contextlist;
     }
@@ -338,6 +385,9 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
 
         // Delete running processes.
         self::delete_running_processes_by_contextlist($contextlist, $userid);
+
+         // Delete SEB session keys.
+        self::delete_seb_sessions_by_contextlist($contextlist, $userid);
     }
 
     /**
@@ -397,6 +447,14 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
                   JOIN {modules} m ON m.id = cm.module
                  WHERE cm.id = :instanceid AND m.name = :modulename";
         $userlist->add_from_sql('userid', $sql, $params);
+
+        // SEB session keys.
+        $sql = "SELECT DISTINCT ss.userid
+                  FROM {vpl_seb_session} ss
+                  JOIN {course_modules} cm ON ss.vplid = cm.instance
+                  JOIN {modules} m ON m.id = cm.module
+                 WHERE cm.id = :instanceid AND m.name = :modulename";
+        $userlist->add_from_sql('userid', $sql, $params);
     }
 
     /**
@@ -451,6 +509,11 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         $sql = "DELETE
                   FROM {vpl_running_processes}
                  WHERE vpl = :vplid AND userid {$userssql}";
+        $DB->execute($sql, $params + $usersparams);
+        // Delete related SEB session keys.
+        $sql = "DELETE
+                  FROM {vpl_seb_session}
+                 WHERE vplid = :vplid AND userid {$userssql}";
         $DB->execute($sql, $params + $usersparams);
     }
 
@@ -566,6 +629,31 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
                   JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
                   JOIN {vpl_running_processes} rp ON rp.vpl = cm.instance
                  WHERE rp.userid = :userid";
+
+        $params = [
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename'    => 'vpl',
+            'userid'        => $userid,
+        ];
+
+        $list->add_from_sql($sql, $params);
+    }
+
+
+    /**
+     * Adds contexts of SEB session keys for the specified user.
+     *
+     * @param contextlist $list the list of context.
+     * @param int $userid the userid.
+     * @return void.
+     */
+    protected static function add_contexts_for_seb_sessions(contextlist $list, int $userid): void {
+        $sql = "SELECT DISTINCT ctx.id
+                  FROM {context} ctx
+                  JOIN {course_modules} cm ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                  JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                  JOIN {vpl_seb_session} ss ON ss.vplid = cm.instance
+                 WHERE ss.userid = :userid";
 
         $params = [
             'contextmodule' => CONTEXT_MODULE,
@@ -734,6 +822,38 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         $DB->execute($sql, $params);
     }
 
+
+
+    /**
+     * Delete SEB session keys for the user and their contextlist.
+     *
+     * @param object $contextlist Object with the contexts related to a userid.
+     * @param int $userid The user ID.
+     */
+    protected static function delete_seb_sessions_by_contextlist($contextlist, $userid) {
+        global $DB;
+
+        [$contextsql, $contextparams] = $DB->get_in_or_equal($contextlist->get_contextids(), SQL_PARAMS_NAMED);
+
+        $params = [
+            'contextmodule' => CONTEXT_MODULE,
+            'modulename' => 'vpl',
+            'userid' => $userid,
+        ];
+
+        $sql = "DELETE
+                  FROM {vpl_seb_session}
+                 WHERE userid = :userid AND
+                       vplid IN (
+                       SELECT cm.instance
+                         FROM {course_modules} cm
+                         JOIN {modules} m ON cm.module = m.id AND m.name = :modulename
+                         JOIN {context} ctx ON cm.id = ctx.instanceid AND ctx.contextlevel = :contextmodule
+                        WHERE ctx.id {$contextsql} )";
+        $params += $contextparams;
+        $DB->execute($sql, $params);
+    }
+    
     /**
      * Helper function to retrieve vpl submissions related with user (submitted or grader).
      *

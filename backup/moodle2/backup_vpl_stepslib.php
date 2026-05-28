@@ -184,10 +184,12 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         // Build the tree.
         $vpl->add_child($requiredfiles);
         $vpl->add_child($executionfiles);
+        $seb = new backup_nested_element('seb');
         $vpl->add_child($variations);
         $vpl->add_child($overrides);
         $vpl->add_child($assignedoverrides);
         $vpl->add_child($submissions);
+        $vpl->add_child($seb);
         $requiredfiles->add_child($requiredfile);
         $executionfiles->add_child($executionfile);
         $variations->add_child($variation);
@@ -208,6 +210,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         $vpl->set_source_sql($query, [ backup::VAR_ACTIVITYID ]);
         $variation->set_source_table('vpl_variations', $parmvplid);
         $override->set_source_table('vpl_overrides', $parmvplid);
+        $seb->set_source_table('vpl_seb', ['vplid' => backup::VAR_ACTIVITYID]);
         if ($userinfo) {
             $asignedvariation->set_source_table('vpl_assigned_variations', $parmvplid);
             $assignedoverride->set_source_table('vpl_assigned_overrides', $parmvplid);

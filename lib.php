@@ -327,7 +327,7 @@ function vpl_adapt_for_vpl_question_mode($instance) {
  * @return int id of the new vpl
  */
 function vpl_add_instance($instance) {
-    global $CFG, $DB;
+    global $CFG, $DB, $USER;
     require_once($CFG->dirroot . '/calendar/lib.php');
     vpl_truncate_vpl($instance);
     activity_modes::update_vpl_instance($instance);
@@ -345,6 +345,7 @@ function vpl_add_instance($instance) {
         \core_completion\api::update_completion_date_event($cmid, 'vpl', $instance, $completionexpected);
     }
     vpl_adapt_for_vpl_question_mode($instance);
+    \mod_vpl\seb\settings::save_for_vpl($id, $instance, (int)($USER->id ?? 0));
     return $id;
 }
 
@@ -387,7 +388,7 @@ function vpl_update_instance_event($instance): void {
  * @return boolean True if updated, false if not found
  */
 function vpl_update_instance($instance) {
-    global $DB;
+    global $DB, $USER;
     vpl_truncate_vpl($instance);
     activity_modes::update_vpl_instance($instance);
     $instance->id = $instance->instance;
@@ -401,7 +402,9 @@ function vpl_update_instance($instance) {
     $completionexpected = (!empty($instance->completionexpected)) ? $instance->completionexpected : null;
     \core_completion\api::update_completion_date_event($cm->id, 'vpl', $instance, $completionexpected);
     vpl_adapt_for_vpl_question_mode($instance);
-    return $DB->update_record(VPL, $instance);
+    $result = $DB->update_record(VPL, $instance);
+    \mod_vpl\seb\settings::save_for_vpl($instance->id, $instance, (int)($USER->id ?? 0));
+    return $result;
 }
 
 /**
@@ -438,6 +441,8 @@ function vpl_delete_instance($id) {
     foreach ($tables as $table) {
         $DB->delete_records($table, ['vpl' => $id]);
     }
+
+    \mod_vpl\seb\settings::delete_for_vpl($id);
 
     // Delete vpl record.
     $DB->delete_records(VPL, ['id' => $id]);
