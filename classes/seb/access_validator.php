@@ -37,27 +37,34 @@ class access_validator {
         global $USER;
 
         $record = settings::get_effective_record($instance);
+        $fullme = $fullme ?? ($GLOBALS['FULLME'] ?? '');
+        $userid = (int)($USER->id ?? 0);
         
         if (!settings::should_enforce_for_record($record)) {
             return true;
         }
 
         if (!empty($record->enablesebsession)) {
-            
-            $userid = (int)($USER->id ?? 0);
-            
             if ($userid <= 0) {
+                self::log_access_denied($record, $userid, 'missing_user');
                 return false;
             }
 
-            return session_manager::validate_final_access( $record, $userid, $fullme ?? ($GLOBALS['FULLME'] ?? ''), $configkeyhash );
+            $allowed = session_manager::validate_final_access($record, $userid, $fullme, $configkeyhash);
+
+            if (!$allowed) {
+                self::log_access_denied($record, $userid, 'invalid_seb_session');
+            }
+
+            return $allowed;
         }
 
         $keys = trim((string)($record->allowedbrowserexamkeys ?? ''));
 
         $receivedconfigkey = trim((string)($configkeyhash ?? self::get_request_header([ 'X-SafeExamBrowser-ConfigKeyHash' ])));
 
-        if (!self::matches_config_hash( $record, $receivedconfigkey, $fullme ?? ($GLOBALS['FULLME'] ?? '') )) {
+        if (!self::matches_config_hash($record, $receivedconfigkey, $fullme)) {
+            self::log_access_denied($record, $userid, 'invalid_config_hash', ['hasbrowserexamkeys' => $keys !== '']);
             return false;
         }
 
@@ -67,7 +74,35 @@ class access_validator {
 
         $receivedbrowserexamkey = trim((string)($browserexamkey ?? self::get_request_header([ 'X-SafeExamBrowser-RequestHash' ])));
 
-        return self::matches_browser_exam_hash( $record, $receivedbrowserexamkey, $fullme ?? ($GLOBALS['FULLME'] ?? '') );
+        $allowed = self::matches_browser_exam_hash($record, $receivedbrowserexamkey, $fullme);
+
+        if (!$allowed) {
+            self::log_access_denied($record, $userid, 'invalid_browser_exam_hash');
+        }
+
+        return $allowed;
+    }
+
+    /**
+     * Log a denied SEB access attempt.
+     *
+     * @param \stdClass $record SEB settings record.
+     * @param int $userid User id.
+     * @param string $reason Denial reason.
+     * @param array $other Additional event data.
+     * @return void
+     */
+    protected static function log_access_denied(\stdClass $record, int $userid, string $reason, array $other = []): void {
+        $cmid = !empty($record->cmid) ? (int)$record->cmid : settings::resolve_cmid((int)($record->vplid ?? 0));
+
+        \mod_vpl\event\seb_access_denied::create([
+            'objectid' => (int)($record->vplid ?? 0),
+            'context' => $cmid ? \context_module::instance($cmid) : \context_system::instance(),
+            'userid' => $userid,
+            'other' => array_merge([
+                'reason' => $reason,
+            ], $other),
+        ])->trigger();
     }
 
     /**

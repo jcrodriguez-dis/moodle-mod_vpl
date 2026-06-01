@@ -581,7 +581,7 @@ class settings {
      * @param int $vplid VPL instance id.
      * @return int
      */
-    protected static function resolve_cmid(int $vplid): int {
+    public static function resolve_cmid(int $vplid): int {
         
         global $DB;
 

@@ -547,6 +547,7 @@ $string['sebrequired'] = 'Se requiere navegador SEB';
 $string['sebrequired_bad'] = 'Parece que <b>no está usando</b> el navegador SEB';
 $string['sebrequired_help'] = 'Se requiere el navegador SEB apropiadamente configurado.';
 $string['sebrequired_pass'] = 'Parece que <b>sí está usando</b> el navegador SEB';
+$string['eventsebwrongkey'] = 'Clave SEB incorrecta';
 $string['select_all'] = 'Seleccionar todo';
 $string['selectbreakpoint'] = 'Selecciona punto de parada';
 $string['server'] = 'Servidor';

@@ -72,6 +72,35 @@ class session_manager {
         return $session;
     }
 
+
+
+     /**
+     * Centralized validation for SEB token. Triggers event if invalid.
+     *
+     * @param string $token Public token.
+     * @param int $vplid VPL id.
+     * @param int $userid User id.
+     * @return null|object Session if valid, null if invalid (and logs event)
+     */
+    public static function validate_token($token, $vplid, $userid) {
+        global $USER;
+        $session = self::get_by_public_token($token);
+        if (!$session || (int)$session->vplid !== (int)$vplid || (int)$session->userid !== (int)$userid) {
+            // Disparar evento de clave SEB incorrecta.
+            $cmid = \mod_vpl\seb\settings::resolve_cmid($vplid);
+            \mod_vpl\event\seb_wrong_key::create([
+                'objectid' => $vplid,
+                'context' => $cmid ? \context_module::instance($cmid) : null,
+                'userid' => $USER->id,
+                'other' => [
+                    'token' => $token
+                ]
+            ])->trigger();
+            return null;
+        }
+        return $session;
+    }
+    
     /**
      * Return a session record by the public phase 1 token.
      *

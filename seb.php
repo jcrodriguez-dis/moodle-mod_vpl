@@ -47,13 +47,11 @@ if (!empty($record->enablesebsession)) {
     
     if ($token !== '') {
         
-        $session = \mod_vpl\seb\session_manager::get_by_public_token($token);
-        
-        if (!$session || (int)$session->vplid !== (int)$record->vplid || (int)$session->userid !== (int)$USER->id) {
+        $session = \mod_vpl\seb\session_manager::validate_token($token, $record->vplid, $USER->id);
+        if (!$session) {
             vpl_redirect('?id=' . $id, get_string('notavailable'));
             die;
         }
-
         $session = \mod_vpl\seb\session_manager::refresh_phase1($record, $session, $starturl);
         
         } else {

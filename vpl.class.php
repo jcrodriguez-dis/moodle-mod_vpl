@@ -743,6 +743,18 @@ class mod_vpl {
                         } else {
                             $SESSION->$passattempt = 1;
                         }
+
+                        $cmid = $this->get_course_module() ? $this->get_course_module()->id : null;
+                        \mod_vpl\event\seb_access_denied::create([
+                            'objectid' => $this->get_instance()->id,
+                            'context' => $cmid ? \context_module::instance($cmid) : null,
+                            'userid' => $USER->id ?? 0,
+                            'other' => [
+                                'reason' => 'invalid_teacher_password',
+                                'activityid' => $activityid,
+                                'attempts' => isset($SESSION->$passattempt) ? (int)$SESSION->$passattempt : 0,
+                            ],
+                        ])->trigger();
                         sleep($SESSION->$passattempt);
                     }
                     $this->print_seb_teacher_password_form($password !== '', isset($SESSION->$passattempt) ? $SESSION->$passattempt : 0);
