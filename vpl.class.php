@@ -623,8 +623,10 @@ class mod_vpl {
                 throw new Exception($str);
             }
             $this->print_header();
+            echo html_writer::start_div('vpl-seb-access mx-auto text-center', ['style' => 'max-width: 720px;']);
             vpl_notice($str, 'warning');
             $this->print_seb_launch_buttons();
+            echo html_writer::end_div();
             $this->print_footer();
             die();
         }
@@ -646,7 +648,7 @@ class mod_vpl {
             $buttons[] = html_writer::link(
                 new moodle_url('https://safeexambrowser.org/download_en.html'),
                 get_string('downloadsafeexambrowser', VPL),
-                ['class' => 'btn btn-secondary', 'target' => '_blank', 'rel' => 'noopener']
+                ['class' => 'btn btn-secondary m-1', 'target' => '_blank', 'rel' => 'noopener']
             );
         }
 
@@ -669,15 +671,15 @@ class mod_vpl {
         $buttons[] = html_writer::link(
             $this->get_seb_launch_url($configurl),
             get_string('launchsafeexambrowser', VPL),
-            ['class' => 'btn btn-primary']
+            ['class' => 'btn btn-primary m-1']
         );
         $buttons[] = html_writer::link(
             $configurl,
             get_string('downloadsebconfig', VPL),
-            ['class' => 'btn btn-secondary']
+            ['class' => 'btn btn-secondary m-1']
         );
 
-        echo html_writer::div(implode(' ', $buttons), 'my-3');
+        echo html_writer::div(implode(' ', $buttons), 'my-3 text-center');
     }
 
     /**
@@ -779,8 +781,9 @@ class mod_vpl {
      * @param bool $invalidpassword Whether a wrong password was submitted.
      * @return void
      */
-        protected function print_seb_teacher_password_form($invalidpassword, $attempts = 0) {
+    protected function print_seb_teacher_password_form($invalidpassword, $attempts = 0) {
         $this->print_header();
+        echo html_writer::start_div('vpl-seb-access mx-auto text-center', ['style' => 'max-width: 720px;']);
         vpl_notice(get_string('sebsimultaneoussessionblocked', VPL), 'warning');
         if ($invalidpassword) {
             vpl_notice(get_string('sebinvalidteacherpassword', VPL), 'warning');
@@ -793,7 +796,8 @@ class mod_vpl {
         echo html_writer::start_tag('form', [
             'method' => 'post',
             'action' => $action->out(false),
-            'class' => 'my-3',
+            'class' => 'my-3 mx-auto',
+            'style' => 'max-width: 420px;',
         ]);
         echo html_writer::start_div('form-group');
         echo html_writer::tag('label', get_string('sebteacherpassword', VPL), ['for' => 'id_sebteacherpassword']);
@@ -811,6 +815,7 @@ class mod_vpl {
             'class' => 'btn btn-primary',
         ]);
         echo html_writer::end_tag('form');
+        echo html_writer::end_div();
         $this->print_footer();
         }
 
