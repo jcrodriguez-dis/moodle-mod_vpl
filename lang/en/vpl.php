@@ -609,6 +609,19 @@ $string['terminaltheme'] = 'Terminal theme';
 $string['test'] = 'Test activity';
 $string['testcases'] = 'Tests configuration';
 $string['testcases_help'] = '<p>Here you configure the evaluator used for this activity.</p>';
+$string['testcases_adv_help'] = 'This feature allows to run the student\'s program and check the output for a given input. Evaluation cases are defined in &quot;vpl_evaluate.cases&quot;. The file has the following format:
+<ul>
+<li> "<b>case</b> = case description": Marks the start of a test case definition.</li>
+<li> "<b>input</b> = text": Can span several lines and ends when another instruction is encountered.</li>
+<li> "<b>output</b> = text": Can span several lines and ends when another instruction is encountered. A case may define multiple correct outputs. Outputs have three different types:
+<ul>
+<li> <b>number</b>: defined as sequence of numbers (integers and floats). Only numbers in the output are checked, text is ignored. Floats are accepted within 0.01% of target.</li>
+<li> <b>text</b>: defined as text without double quotes. Only words are checked and the other chars are ignored. Comparison is case-insensitive.</li>
+<li> <b>exact text</b>: defined as text into double quotes. The exact match is used to test the output.</li>
+</ul>
+</li>
+<li> "<b>grade reduction</b> = [value|percentage%]" : By default each error reduces a student\'s grade (starts with maxgrade) by (grade_range/number of cases). This instruction alters the reduction value or percentage.</li>
+</ul>';
 $string['text'] = 'Text';
 $string['timeleft'] = 'Time left';
 $string['timelimited'] = 'Time limited';
