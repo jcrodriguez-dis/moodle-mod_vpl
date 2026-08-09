@@ -30,12 +30,12 @@ Feature: In a VPL activity feature Local execution servers
     And I click on "VPL activity testing" "link" in the "region-main" "region"
     And I navigate to "Local execution servers" in current page administration
     And I set the following fields to these values:
-      | id_jailservers | "https://demojail.dis.ulpgc.es" |
+      | id_jailservers | https://demojail.dis.ulpgc.es |
     And I press "Save changes"
     Then I should see "Saved"
     And I should see "https://demojail.dis.ulpgc.es"
     And I set the following fields to these values:
-      | id_jailservers | "https://nojail.com" |
+      | id_jailservers | https://nojail.com |
     And I press "Save changes"
     Then I should see "Saved"
     And I should see "https://nojail.com"
