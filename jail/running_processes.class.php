@@ -65,7 +65,7 @@ class vpl_running_processes {
      * For a user and (optional) a VPL activity returns directruns.
      * @param int $userid
      * @param ?int $vplid
-     * @return array processes records
+     * @return array processes records in order of creation (oldest first).
      */
     public static function get_directrun(int $userid, ?int $vplid = null) {
         global $DB;
@@ -73,7 +73,7 @@ class vpl_running_processes {
         if ($vplid !== null) {
             $params['vpl'] = $vplid;
         }
-        return $DB->get_records(self::TABLE, $params);
+        return $DB->get_records(self::TABLE, $params, 'id ASC');
     }
 
     /**
