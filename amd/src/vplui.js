@@ -381,7 +381,8 @@ VPLUI.progressBar = function(title, message, onUserClose) {
  */
 VPLUI.showMessage = function(message, initialoptions) {
     var options = $.extend({}, VPLUI.dialogbaseOptions, initialoptions);
-    var messageDialog = $('<div class="vpl_ide_dialog" style="display:none"></div>');
+    const dialogid = options.id? ' id="vpl_ide_dialog_' + options.id + '" ' : '';
+    var messageDialog = $('<div' + dialogid + ' class="vpl_ide_dialog" style="display:none"></div>');
     var icon = '';
     var saniMessage = VPLUtil.sanitizeText(message).replace(/\n/g, '<br>');
     var contents = ' <span class="dmessage">' + saniMessage + '</span>';
@@ -470,8 +471,8 @@ VPLUI.showErrorMessage = function(message, options) {
  */
 VPLUI.requestAction = function(action, title, data, URL, noDialog) {
     var deferred = $.Deferred();
-    var request = null;
-    var xhr = false;
+    var request = {readyState: 1};
+    var controller = new AbortController();
     var apb = false;
     if (!noDialog) {
         if (title === '') {
@@ -479,40 +480,42 @@ VPLUI.requestAction = function(action, title, data, URL, noDialog) {
         }
         apb = new VPLUI.progressBar(action, title, function() {
             if (request.readyState != 4) {
-                if (xhr && xhr.abort) {
-                    xhr.abort();
-                }
+                controller.abort();
             }
         });
     }
-    request = $.ajax({
-        beforeSend: function(jqXHR) {
-            xhr = jqXHR;
-            return true;
+    fetch(URL + action, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
         },
-        async: true,
-        type: "POST",
-        url: URL + action,
-        'data': JSON.stringify(data),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"
-    }).always(function() {
-        if (!noDialog) {
-            apb.close();
+        body: JSON.stringify(data),
+        credentials: 'same-origin',
+        signal: controller.signal
+    }).then(function(response) {
+        if (!response.ok) {
+            throw new Error('HTTP ' + response.status);
         }
-    }).done(function(response) {
+        return response.json();
+    }).then(function(response) {
         if (!response.success) {
             deferred.reject(response.error);
         } else {
             deferred.resolve(response.response);
         }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
+    }).catch(function(error) {
+        var textStatus = error && error.name === 'AbortError' ? 'abort' : 'error';
         var message = VPLUtil.str('connection_fail') + ': ' + textStatus;
-        if (window.VPLDebugMode && errorThrown.message != undefined) {
-            message += ': ' + errorThrown.message;
+        if (window.VPLDebugMode && error && error.message != undefined) {
+            message += ': ' + error.message;
         }
         VPLUtil.log(message);
         deferred.reject(message);
+    }).finally(function() {
+        request.readyState = 4;
+        if (!noDialog) {
+            apb.close();
+        }
     });
     return deferred;
 };
@@ -713,7 +716,8 @@ VPLUI.clearIDEStatus = function() {
         position: '',
         language: '',
         unsaved: false,
-        action: ''
+        action: '',
+        lsp: '',
     });
 };
 
@@ -723,7 +727,11 @@ VPLUI.updateIDEStatus = function(status) {
     }
     $('#vpl_ide_statusbar').show();
     if (typeof status.fileName !== 'undefined') {
-        $('#vpl_ide_statusbar .vpl_ide_statusbar_filename').text(status.fileName);
+        if (status.fileName === '') {
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_filename').hide();
+        } else {
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_filename').text(status.fileName).show();
+        }
     }
     if (typeof status.position !== 'undefined') {
         $('#vpl_ide_statusbar .vpl_ide_statusbar_position').text(status.position);
@@ -754,6 +762,13 @@ VPLUI.updateIDEStatus = function(status) {
             $('#vpl_ide_statusbar .vpl_ide_statusbar_unsaved').show();
         } else {
             $('#vpl_ide_statusbar .vpl_ide_statusbar_unsaved').hide();
+        }
+    }
+    if (typeof status.lsp !== 'undefined') {
+        if (status.lsp !== '') {
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_lsp').text(status.lsp).show();
+        } else {
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_lsp').hide();
         }
     }
 };

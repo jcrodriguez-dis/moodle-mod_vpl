@@ -104,9 +104,6 @@ export const binaryExtension = function() {
     this.close = function() {
         this.setOpen(false);
     };
-    this.langSelection = function() {
-        this.setLang(VPLUtil.str('binaryfile'));
-    };
     /**
      * Returns the size of the content in a human-readable string (e.g., 1.2 MB, 512 KB).
      * @returns {string} Human-readable size string.
@@ -142,10 +139,9 @@ export const binaryExtension = function() {
             {
                 fileName: this.getFileName(),
                 position: this.getHumanReadableSize(),
-                language: this.getLang(),
+                language: this.getLangName() + " " + VPLUtil.str('binaryfile'),
                 unsaved: this.isModified(),
             }
         );
     };
-    this.setLang(VPLUtil.str('binaryfile'));
 };

@@ -26,6 +26,7 @@
 
 import $ from 'jquery';
 import {VPLUtil} from 'mod_vpl/vplutil';
+import {VPLUI} from 'mod_vpl/vplui';
 
 export const blocklyExtension = function() {
     var self = this;
@@ -652,7 +653,14 @@ export const blocklyExtension = function() {
         }
         return data;
     };
-    this.langSelection = function() {
-        this.setLang('Blockly');
+    this.updateStatus = function() {
+        VPLUI.updateIDEStatus(
+            {
+                fileName: this.getFileName(),
+                position: '',
+                language: "Blockly",
+                unsaved: this.isModified(),
+            }
+        );
     };
 };
