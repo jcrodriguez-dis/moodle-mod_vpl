@@ -82,12 +82,11 @@ $vpl->prepare_page('views/checkjailservers.php', [
 
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 // Display page.
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/checkjailservers.css'));
 $vpl->print_header(get_string('check_jail_servers', VPL));
 $vpl->print_heading_with_help('check_jail_servers');
 
 \mod_vpl\event\vpl_jail_servers_tested::log($vpl);
-$servers = vpl_jailserver_manager::check_servers(get_currentjailservers($vpl));
+$serversinfo = vpl_jailserver_manager::check_servers($vpl);
 $serverstable = new html_table();
 $serverstable->head = [
         '#',
@@ -112,25 +111,25 @@ $pluginversion = $plugin->version;
 
 $serverstable->data = [];
 $num = 0;
-foreach ($servers as $server) {
-    $serverurl = remove_path($server->server);
-    if (vpl_jailserver_manager::is_private_host($serverurl)) {
-        $message = 'WARNING: not accessible from the internet';
-        $serverurl = s($serverurl) . '<br>' . s($message);
+foreach ($serversinfo as $info) {
+    $serverurl = remove_path($info->server);
+    $serverissues = vpl_jailserver_manager::get_server_issues($info->server);
+    if (count($serverissues) > 0) {
+        $serverurl .= '<br><div class="vpl_server_warning">' . implode("<br>\n", $serverissues) . '</div>';
     }
     $num++;
-    if ($server->offline) {
-        $status = '<div class="vpl_server_failed">' . $server->current_status . '</div>';
+    if ($info->offline) {
+        $status = '<div class="vpl_server_failed">' . $info->current_status . '</div>';
     } else {
-        $status = $server->current_status;
+        $status = $info->current_status;
     }
     $serverstable->data[] = [
             $num,
             $serverurl,
             $status,
-            $server->laststrerror,
-            $server->lastfail > 0 ? userdate($server->lastfail) : '',
-            $server->nfails,
+            $info->laststrerror,
+            $info->lastfail > 0 ? userdate($info->lastfail) : '',
+            $info->nfails,
     ];
 }
 $processestable = new html_table();
