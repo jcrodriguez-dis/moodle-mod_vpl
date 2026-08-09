@@ -330,43 +330,73 @@ class mod_vpl_edit {
     }
 
     /**
-     * Request to stop the direct run for this user and vpl activity if any
+     * Check and stop the direct runs that pass a limit for this user and vpl activity if any
      * @param int $vplid
      * @param int $userid
+     * @param int $maxrunning
      */
-    public static function stopdirectrun($vplid, $userid) {
-        $processes = vpl_running_processes::get_directrun($userid, $vplid);
-        foreach ($processes as $process) {
-            try {
-                $data = new \stdClass();
-                $data->adminticket = $process->adminticket;
-                $request = vpl_jailserver_manager::get_action_request('stop', $data);
-                vpl_jailserver_manager::get_response($data->server, $request, $error);
-            } catch (\Throwable $e) {
-                debugging("Process directrun in execution server not sttoped or not found", DEBUG_DEVELOPER);
+    public static function limit_directruns($vplid, $userid, $maxrunning) {
+        $allprocesses = vpl_running_processes::get_directrun($userid);
+        if (count($allprocesses) >= $maxrunning) {
+            // Sort the processes so that the oldest ones are first and the newest ones are last.
+            // The processes that are not for this VPL activity are sorted first, so that they are stopped first.
+            usort($allprocesses, function ($a, $b) use ($vplid) {
+                if ($a->vpl == $vplid && $b->vpl == $vplid) {
+                    return $a->id <=> $b->id;
+                }
+                if ($a->vpl == $vplid) {
+                    return 1;
+                }
+                if ($b->vpl == $vplid) {
+                    return -1;
+                }
+                return $a->id <=> $b->id;
+            });
+            $processestostop = array_slice($allprocesses, 0, count($allprocesses) - $maxrunning + 1);
+            foreach ($processestostop as $process) {
+                try {
+                    $data = new \stdClass();
+                    $data->adminticket = $process->adminticket;
+                    $request = vpl_jailserver_manager::get_action_request('stop', $data);
+                    vpl_jailserver_manager::get_response($process->server, $request, $error);
+                } catch (\Throwable $e) {
+                    debugging("Process directrun in execution server not stopped or not found", DEBUG_DEVELOPER);
+                }
+                vpl_running_processes::delete($userid, $vplid, $process->adminticket);
             }
-            vpl_running_processes::delete($userid, $vplid, $process->adminticket);
         }
     }
 
     /**
      * Request the direct run code in an execution server
      *
-     * @param mod_vpl $vpl
-     * @param int $userid
-     * @param string $command
-     * @param array $files
+     * @param mod_vpl $vpl VPL instance
+     * @param int $userid User id of the run request
+     * @param stdClass $actiondata of the command to execute
      * @return stdClass with the response information
      * @throws Exception
      */
-    public static function directrun($vpl, $userid, $command, $files) {
+    public static function directrun($vpl, $userid, $actiondata) {
         $vplid = $vpl->get_instance()->id;
-        self::stopdirectrun($vplid, $userid);
-        $executefilename = '.vpl_directrun.sh';
+        // TODO: This is a temporary solution to limit the number of direct runs for non-managers and non-graders.
+        if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) || $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+            $maxrunning = 1000;
+        } else {
+            $maxrunning = 3;
+        }
+        self::limit_directruns($vplid, $userid, $maxrunning);
+        $command = $actiondata->command;
+        if ($command == '') {
+            throw new Exception(get_string('nojailavailable', VPL));
+        }
+        $language = null;
+        if ($command[0] == '$') {
+            $language = preg_replace('/[^a-z_]/', '', substr($command, 1));
+            $command = '/usr/local/bin/vpl/' . $language . '_ls';
+        }
         $maxmemory = 2000 * 1000 * 1000;
-        $localservers = $vpl->get_instance()->jailservers;
         $error = '';
-        $server = vpl_jailserver_manager::get_server($maxmemory, $localservers, $error);
+        $server = vpl_jailserver_manager::get_server($vpl, $maxmemory, $error, $language);
         if ($server == '') {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             $men = get_string('nojailavailable', VPL);
@@ -376,12 +406,27 @@ class mod_vpl_edit {
             throw new Exception($men);
         }
         $data = new stdClass();
-        mod_vpl_submission_CE::adaptbinaryfiles($data, $files);
+        mod_vpl_submission_CE::adaptbinaryfiles($data, $actiondata->files);
+        $vplang = vpl_get_lang();
+        $executefilename = '.vpl_directrun.sh';
         $data->files[$executefilename] = <<<DIRECTRUNCODE
 #!/bin/bash
 cat > vpl_execution <<CONTENTS
 #!/bin/bash
+for NEWLANG in $vplang en_US.UTF-8 C.utf8 POSIX C
+do
+    export LC_ALL=\$NEWLANG 2> .vpl_set_locale_error
+    if [ -s .vpl_set_locale_error ]; then
+        rm -f .vpl_set_locale_error
+        continue
+    else
+        break
+    fi
+done
+rm -f .vpl_set_locale_error
+stty raw -echo
 $command
+
 CONTENTS
 chmod +x vpl_execution
 DIRECTRUNCODE;
@@ -389,7 +434,7 @@ DIRECTRUNCODE;
         $data->fileencoding[$executefilename] = 0;
         $data->execute = $executefilename;
         $plugin = new stdClass();
-        require(dirname(__FILE__) . '/../version.php');
+        require(__DIR__ . '/../version.php');
         $pluginversion = $plugin->version;
         $data->pluginversion = $pluginversion;
         $data->interactive = 1;
@@ -409,14 +454,27 @@ DIRECTRUNCODE;
             throw new Exception(get_string('serverexecutionerror', VPL));
         }
         $parsed = parse_url($server);
+        $usinghttp = $parsed['scheme'] == 'http';
+        $usinghttps = $parsed['scheme'] == 'https';
+        if (! isset($parsed['port']) && $usinghttp) {
+            $parsed['port'] = 80;
+        }
+        if (! isset($parsed['port']) && $usinghttps) {
+            $parsed['port'] = 443;
+        }
+        if (! isset($jailresponse['port'])) { // Try to fix old jail servers that don't return port.
+            $jailresponse['port'] = $parsed['port'];
+        }
+        if (! isset($jailresponse['secureport'])) { // Try to fix old jail servers that don't return port.
+            $jailresponse['secureport'] = $parsed['port'];
+        }
+        $plugincfg = get_config('mod_vpl');
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
-        $usinghttp = $parsed['scheme'] == 'http';
-        $usinghttps = $parsed['scheme'] == 'https';
         $response->port = $usinghttp ? $parsed['port'] : $jailresponse['port'];
         $response->securePort = $usinghttps ? $parsed['port'] : $jailresponse['secureport'];
-        $response->wsProtocol = get_config('mod_vpl')->websocket_protocol;
+        $response->wsProtocol = $plugincfg->websocket_protocol;
         $response->homepath = $jailresponse['homepath'];
         $process = new stdClass();
         $process->userid = $userid;

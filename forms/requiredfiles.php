@@ -52,7 +52,7 @@ $options['maxfiles'] = 1000;
 $options['saved'] = true;
 $options['readOnlyFiles'] = [];
 
-vpl_editor_util::generate_requires($vpl, $options);
+vpl_editor_util::generate_jquery();
 
 $vpl->print_header(get_string('requestedfiles', VPL));
 $vpl->print_heading_with_help('requestedfiles');
@@ -60,5 +60,6 @@ $vpl->print_heading_with_help('requestedfiles');
 vpl_editor_util::print_tag();
 vpl_editor_util::print_js_i18n();
 vpl_editor_util::print_js_description($vpl, $USER->id);
+vpl_editor_util::generate_requires($vpl, $options);
 
 $vpl->print_footer_simple();
