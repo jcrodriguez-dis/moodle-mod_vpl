@@ -97,7 +97,7 @@ try {
             }
             $files = mod_vpl_edit::filesfromide($actiondata->files);
             $filestodelete = isset($actiondata->filestodelete) ? $actiondata->filestodelete : [];
-            $result->response = mod_vpl_edit::update(
+            $result->success = mod_vpl_edit::update(
                 $vpl,
                 $userid,
                 $actiondata->processid,
@@ -165,11 +165,11 @@ try {
             if (! $canview) {
                 throw new Exception(get_string('notavailable'));
             }
-            $files = mod_vpl_edit::filesfromide($actiondata->files);
-            $result->response = mod_vpl_edit::directrun($vpl, $userid, $actiondata->command, $files);
+            $actiondata->files = mod_vpl_edit::filesfromide($actiondata->files);
+            $result->response = mod_vpl_edit::directrun($vpl, $userid, $actiondata);
             break;
         default:
-            throw new Exception('ajax action error: ' + $action);
+            throw new Exception('ajax action error: ' . $action);
     }
     if ($result->response === null) {
         $result->success = false;
