@@ -7,7 +7,7 @@
 
 #include "stop.hpp"
 
-volatile bool Stop::TERMRequested = false;
+bool Stop::TERMRequested = false;
 
 /**
  * Class Stop Definitions

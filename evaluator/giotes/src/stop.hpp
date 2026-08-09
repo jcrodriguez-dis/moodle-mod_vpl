@@ -11,7 +11,7 @@
  * Class Stop
  */
 class Stop{
-	static volatile bool TERMRequested;
+	static bool TERMRequested;
 public:
 	static void setTERMRequested();
 	static bool isTERMRequested();

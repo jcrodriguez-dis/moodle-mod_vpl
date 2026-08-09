@@ -85,8 +85,8 @@ class Evaluation {
 	char comments[MAXCOMMENTS + 1][MAXCOMMENTSLENGTH + 1];
 	char titles[MAXCOMMENTS + 1][MAXCOMMENTSTITLELENGTH + 1];
 	char titlesGR[MAXCOMMENTS + 1][MAXCOMMENTSTITLELENGTH + 1];
-	volatile int ncomments;
-	volatile bool stopping;
+	int ncomments;
+	bool stopping;
 	static Evaluation *singlenton;
 	string finalReportMessage;
 	string failmark;
