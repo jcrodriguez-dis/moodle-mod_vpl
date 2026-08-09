@@ -73,7 +73,6 @@ if ($showfr || $showfe) {
 }
 
 // Print the page header.
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header(get_string('description', VPL));
 
 // Print the main part of the page.

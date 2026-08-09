@@ -39,7 +39,6 @@ if (! $vpl->is_visible()) {
     notice(get_string('notavailable'));
 }
 \mod_vpl\event\vpl_security_webservice::log($vpl);
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/webservice.css'));
 $vpl->print_header(get_string('webservice', VPL));
 $vpl->print_view_tabs('view.php');
 echo $OUTPUT->heading_with_help($vpl->get_printable_name() . ' - ' . get_string('webservice', VPL), 'webservice', VPL, '', '', 1);

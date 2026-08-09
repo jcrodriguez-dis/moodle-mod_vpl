@@ -47,7 +47,6 @@ $vpl->prepare_page('similarity/listsimilarity.php', [
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
 \mod_vpl\event\vpl_similarity_report_viewed::log($vpl);
 // Print header.
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
 $vpl->print_header(get_string('listsimilarity', VPL));
 $vpl->print_view_tabs(basename(__FILE__));
 $form = new vpl_similarity_form('listsimilarity.php', $vpl);

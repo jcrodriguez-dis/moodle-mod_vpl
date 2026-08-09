@@ -1,7 +1,50 @@
+/* ── Student picture in menu ──────────────────────────── */
 div.vpl_student_picture_in_menu {
     position: absolute;
     right: 50px;
     z-index: 50;
+}
+
+/* ── Similarity ──────────────────────────── */
+.vpl_codefilecontent {
+    max-height: 600px;
+    overflow: auto;
+}
+
+/* ── Grade ──────────────────────────── */
+.vpl_nm {
+    background-color: red;
+    color: white;
+}
+
+/* ── Show files ──────────────────────────── */
+.vpl_sh {
+    direction: ltr;
+    text-align: left;
+}
+
+.vpl_sh div {
+    display: inline-block;
+}
+
+.vpl_g,
+.vpl_g * {
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    font-size: 12px;
+    white-space: pre;
+    word-wrap: normal;
+}
+
+/* ── Show hide content ──────────────────────────── */
+.vpl_show_hide_content {
+    margin-left: 10px;
+}
+
+.vpl_show_hide_content pre {
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    overflow-y: hidden;
+    margin-bottom: 0;
+    padding-bottom: 1rem;
 }
 
 #page-mod-vpl-view span.alert-warning,
@@ -11,4 +54,1018 @@ div.vpl_student_picture_in_menu {
     display: inline;
     margin: 0;
     padding: 0 0.5em 0 0.5em;
+}
+/* ── Similarity ──────────────────────────── */
+.vpl_sim0,
+.vpl_sim1,
+.vpl_sim2,
+.vpl_sim3,
+.vpl_sim4,
+.vpl_sim5 {
+    color: #fff;
+    font-size: small;
+    height: 3em;
+}
+.vpl_sim6,
+.vpl_sim7,
+.vpl_sim8,
+.vpl_sim9,
+.vpl_sim10,
+.vpl_sim11 {
+    color: #000;
+    font-size: small;
+    height: 3em;
+}
+
+.vpl_sim0 {
+    background-color: #f00;
+}
+
+.vpl_sim1 {
+    background-color: #ff1010;
+}
+
+.vpl_sim2 {
+    background-color: #ff2828;
+}
+
+.vpl_sim3 {
+    background-color: #ff4040;
+}
+
+.vpl_sim4 {
+    background-color: #ff5858;
+}
+
+.vpl_sim5 {
+    background-color: #ff7070;
+}
+
+.vpl_sim6 {
+    background-color: #f88;
+}
+
+.vpl_sim7 {
+    background-color: #ffa0a0;
+}
+
+.vpl_sim8 {
+    background-color: #ffb8b8;
+}
+
+.vpl_sim9 {
+    background-color: #ffd0d0;
+}
+
+.vpl_sim10 {
+    background-color: #ffe8e8;
+}
+
+.vpl_sim11 {
+    background-color: #fff;
+}
+
+/* ── Grade ──────────────────────────── */
+#vpl_grade_view {
+    position: relative;
+    display: flex;
+}
+
+#vpl_grade_form {
+    width: auto;
+}
+
+#vpl_grade_form textarea {
+    resize: both;
+    margin: 0 1em;
+}
+
+#vpl_grade_comments {
+    height: 10em;
+    overflow: auto;
+}
+
+#vpl_submission_view {
+    clear: both;
+}
+
+td.vpl_hl_evaluation_row {
+    background-color: yellow;
+    animation: changeHlColors 5s infinite;
+}
+
+td.vpl_finished_evaluation_row {
+    border-top: 4px solid lightgreen;
+}
+
+@keyframes changeHlColors {
+    0% {
+        border-bottom-color: yellow;
+    }
+    50% {
+        background-color: orange;
+    }
+    100% {
+        background-color: yellow;
+    }
+}
+
+tr.vpl_hidden_evaluation_row {
+    display: none;
+}
+
+/* ── VPL IDE ──────────────────────────── */
+#vpl_results_accordion .vpl_ide_accordion_c_description a,
+#vpl_results_accordion .vpl_ide_accordion_c_comments a,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation a,
+#vpl_results_accordion .vpl_ide_accordion_c_references a {
+    color: #1177d1; /* Removes Jquery-UI and set Moodle default theme color. */
+}
+
+#vpl_results_accordion .vpl_ide_accordion_c_description hr,
+#vpl_results_accordion .vpl_ide_accordion_c_comments hr,
+#vpl_results_accordion .vpl_ide_accordion_c_compilation hr,
+#vpl_results_accordion .vpl_ide_accordion_c_references hr {
+    border: none;
+    border-top: 2.5px solid #444;
+    margin: 0.5em 0;
+    padding: 0;
+}
+
+
+.vpl_ide_root {
+    direction: ltr;
+    text-align: left;
+    width: 100%;
+}
+
+.vpl_ide_root_fullscreen {
+    background-color: white;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 90;
+}
+
+.vpl_body_fullscreen {
+    overflow: hidden;
+}
+
+/* Using vpl_body_fullscreen class to get fullscreen */
+.vpl_body_fullscreen .block {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen header {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #dock {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .back-to-top {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen #nav-drawer {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen nav {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_body_fullscreen .d-print-none {
+    display: none;
+    visibility: hidden;
+}
+
+.vpl_ide_dialog {
+    z-index: 999;
+}
+#vpl_ide_dialog_about {
+    width: 400px;
+    height: 260px;
+}
+#vpl_menu .ui-button-text-only,
+#vpl_menu .ui-button-text {
+    padding: 0.4em;
+}
+
+.vpl_ide_menu {
+    min-width: 340px;
+    padding: 0.2em;
+}
+
+.vpl_ide_tr {
+    border: 0;
+    margin: 0;
+    min-width: 330px;
+    padding: 0;
+    position: relative;
+    width: 100%;
+}
+
+#vpl_filelist {
+    display: none;
+    left: 0;
+    position: absolute;
+    top: 0;
+}
+
+#vpl_filelist_header {
+    padding-left: 0.5em;
+}
+
+#vpl_filelist_content {
+    overflow: auto;
+    padding-left: 0.5em;
+    white-space: pre;
+}
+
+.vpl_ide_dirindent {
+    display: inline-block;
+    width: 1.5em;
+}
+
+.vpl_ide_tabs {
+    position: absolute;
+    top: 0;
+}
+
+#vpl_tabs_scroll {
+    overflow: auto;
+}
+
+.vpl_ide_tabs li {
+    line-height: 1ex;
+}
+
+.vpl_ide_charicon {
+    color: gray;
+}
+
+.vpl_ide_closeicon {
+    color: white;
+    text-shadow:
+        1px 0 1px gray,
+        0 1px 1px gray,
+        0 -1px 1px gray,
+        -1px 0 1px gray;
+}
+div.vpl_ide_dialog_content {
+    height: 250px;
+    overflow: scroll;
+    width: 350px;
+}
+
+.vpl_ide_closeicon:hover {
+    color: gray;
+    cursor: pointer;
+    text-shadow: none;
+}
+
+.vpl_ide .ui-widget {
+    font-size: 12px;
+}
+
+.vpl_ide .ui-widget-content {
+    font-size: 12px;
+}
+
+.vpl_ide .ui-dialog-titlebar {
+    font-size: 13px;
+    padding: 0 1em 0 1em;
+}
+
+.vpl_ide .ui-button {
+    font-size: 14px;
+}
+
+div.vpl_ide_file.ui-tabs-panel {
+    padding: 0;
+}
+/*Resolve problem with essential theme*/
+.vpl_ide_file * {
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
+}
+
+.vpl_ide_file {
+    font-family:
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
+    margin: 2px;
+    padding: 0;
+    z-index: 0;
+    position: absolute;
+}
+
+.vpl_ide_binary {
+    font-size: 300%;
+    line-height: 200%;
+    margin: auto;
+    text-align: center;
+    z-index: 0;
+}
+
+.vpl_ide_img {
+    width: inherit;
+    overflow: auto;
+}
+
+.vpl_ide_img img {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    display: block;
+}
+
+.vpl_ide_audio {
+    width: auto;
+    display: block;
+}
+
+.vpl_ide_audio audio {
+    max-width: 100%;
+    display: block;
+}
+
+.vpl_ide_video {
+    width: inherit;
+    overflow: auto;
+}
+
+.vpl_ide_video video {
+    max-width: 100%;
+    max-height: 100%;
+    height: auto;
+    width: auto;
+    display: block;
+}
+
+.vpl_ide_statusbar {
+    width: 100%;
+    border: 1px solid lightgray;
+    background-color: #f0f0f0;
+}
+.vpl_ide_statusbar_filelist {
+    padding: 0 0.5em 0 0.5em;
+    border-right: 1px solid lightgray;
+}
+
+.vpl_ide_statusbar_filename {
+    padding: 0 0.5em 0 0.5em;
+    text-align: left;
+    border-right: 1px solid lightgray;
+}
+
+.vpl_ide_statusbar_action {
+    padding: 0 0.5em 0 0.5em;
+    border-left: 1px solid lightgray;
+    float: right;
+    animation: actionPulse 3s infinite;
+}
+
+@keyframes actionPulse {
+    0% {
+        background-color: inherit;
+    }
+    50% {
+        background-color: #bcf000;
+    }
+    100% {
+        background-color: inherit;
+    }
+}
+
+.vpl_ide_statusbar_unsaved {
+    padding: 0 0.5em 0 0.5em;
+    color: white;
+    background-color: red;
+    border-left: 1px solid lightgray;
+    font-weight: bold;
+    animation: unsavedPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes unsavedPulse {
+    0% {
+        background-color: red;
+        color: white;
+    }
+    50% {
+        background-color: #f66;
+        color: white;
+    }
+    100% {
+        background-color: red;
+        color: white;
+    }
+}
+
+.vpl_ide_statusbar_position,
+.vpl_ide_statusbar_language,
+.vpl_ide_statusbar_lsp,
+.vpl_ide_statusbar_shrightpanel,
+.vpl_ide_statusbar_lsp,
+.vpl_ide_statusbar_preferences {
+    float: right;
+    padding: 0 0.5em 0 0.5em;
+    border-left: 1px solid lightgray;
+}
+
+.vpl_ide_statusbar_lsp {
+    cursor: pointer;
+}
+
+img.vpl_ide_file {
+    display: block;
+    height: auto;
+    padding: 2px;
+    width: auto;
+    z-index: 0;
+}
+
+.vpl_ide_results {
+    height: 100%;
+    min-width: 100px;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.vpl_ide_results pre {
+    font: 1em/1 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    white-space: pre;
+    word-break: normal;
+    word-wrap: normal;
+    margin-bottom: 0;
+    padding-bottom: 1rem;
+    overflow-y: hidden;
+}
+
+.vpl_ide_progressbar {
+    min-width: 100px;
+    position: relative;
+}
+
+.vpl_ide_progressbaricon {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    width: 2em;
+}
+
+.vpl_ide_progressbarlabel {
+    border: 0;
+    display: block;
+    font-weight: bold;
+    margin: 0 1em 0 1em;
+    padding: 0 1em 0 1em;
+    text-align: center;
+}
+
+.vpl_icon_repeat {
+    left: -0.7em;
+    position: absolute;
+}
+
+.vpl_ide {
+    font-size: 12px;
+}
+.vpl_ide div.ui-dialog-titlebar {
+    padding: 0.15em;
+}
+.ace_gutter-tooltip {
+    white-space: pre-wrap;
+}
+
+/* .ui-widget overrides fonts, so we have to increase the specificity */
+.ui-widget.vpl_ide_accordion_c_compilation,
+.ui-widget.vpl_ide_accordion_c_execution,
+.vpl_ide_accordion_c_compilation,
+.vpl_ide_accordion_c_execution {
+    font:
+        1em/1
+        'Monaco',
+        'Menlo',
+        'Ubuntu Mono',
+        'Consolas',
+        'source-code-pro',
+        monospace;
+    max-width: 120em;
+    white-space: pre;
+}
+
+.vpl_vnc {
+    position: fixed;
+    width: auto;
+    z-index: 1000;
+}
+
+.vpl_vnc .ui-dialog-content {
+    padding: 0;
+}
+
+.vpl_vnc .ui-button-text-only .ui-button-text {
+    padding: 0.15em;
+}
+#vpl_dialog_terminal {
+    display: none;
+}
+.vpl_terminal {
+    background-color: black;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    z-index: 1000;
+}
+
+.vpl_terminal_theme1 div {
+    background-color: white;
+    color: black;
+}
+
+.vpl_clipboard {
+    display: none;
+    z-index: 1010;
+}
+.vpl_clipboard_label1.ui-button-text,
+.vpl_clipboard_label1.ui-button-text {
+    padding: 0.15em;
+}
+.vpl_clipboard .vpl_clipboard_entry1,
+.vpl_clipboard .vpl_clipboard_entry2 {
+    height: 50px;
+    width: 200px;
+}
+
+/*Resolve problem with essential theme*/
+pre.vpl_terminal * {
+    border: 0;
+    font: 1em/1 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    margin: 0;
+    padding: 0;
+}
+
+pre.vpl_terminal {
+    display: inline-block;
+    font: 1em/1 "Monaco", "Menlo", "Ubuntu Mono", "Consolas", "source-code-pro", monospace;
+    font-size: 12px;
+    padding: 2px;
+}
+/* Support to ways of class setting, jqueryui button may change */
+#vpl_ide_timeleft.vpl_buttonleft_orange,
+.vpl_buttonleft_orange {
+    background-color: orange;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+#vpl_ide_timeleft.vpl_buttonleft_red,
+.vpl_buttonleft_red {
+    background-color: red;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+#vpl_ide_timeleft.vpl_buttonleft_black,
+.vpl_buttonleft_black {
+    background-color: black;
+    background-image: none;
+    color: white;
+    font-weight: bold;
+}
+
+label[for="vpl_donotshowagain"] {
+    font-size: 95%;
+}
+
+.vpl_bt_extrahtml {
+    font-weight: 550;
+}
+
+.vpl_dimmed {
+    opacity: 0.3;
+}
+
+#vpl_ide_dialog_preferences legend {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+#vpl_ide_dialog_preferences > div {
+    display: flex;
+    gap: 1.5em;
+    align-items: flex-start;
+}
+#vpl_ide_dialog_preferences > div > fieldset {
+    flex: 1;
+    min-width: 0;
+}
+#vpl_ide_dialog_preferences select {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.vpl_ide_file img,
+.vpl_ide_file video {
+    max-height: 100%;
+    height: auto;
+    width: auto;
+}
+
+.vpl_ide_file audio {
+    max-width: 100%;
+    height: auto;
+    width: auto;
+}
+
+.vpl_ide_file embed {
+    max-width: 100%;
+    max-height: 100%;
+    height: 100%;
+    width: 100%;
+}
+
+/* override.css */
+/* Support to ways of class setting, jqueryui button may change */
+.path-mod-vpl .override-option .col-md-3 {
+    height: 0;
+}
+
+.path-mod-vpl .override-option .fdate_time_selector div:nth-child(3) {
+    break-after: always;
+}
+
+.path-mod-vpl .override-option > .form-group:first-child {
+    margin-bottom: 0;
+}
+
+.path-mod-vpl #vpl_override_options_form #fgroup_id_buttonar {
+    display: none;
+}
+
+.path-mod-vpl .override-action-button {
+    cursor: pointer;
+}
+
+/* ── ACE editor markers for LSP diagnostics ──────────────────────────── */
+
+.vpl_ace-error-marker {
+    position: absolute;
+    background-color: rgba(220, 30, 30, 0.12);
+    border-bottom: 2px solid rgba(220, 30, 30, 0.85);
+}
+.vpl_ace-warning-marker {
+    position: absolute;
+    background-color: rgba(230, 160, 0, 0.15);
+    border-bottom: 2px dashed rgba(210, 140, 0, 0.9);
+}
+.vpl_ace-info-marker {
+    position: absolute;
+    background-color: rgba(0, 123, 255, 0.1);
+    border-bottom: 2px dashed rgba(0, 100, 220, 0.75);
+}
+
+/* Dark ACE theme variants for LSP diagnostic markers */
+.ace_dark .vpl_ace-error-marker {
+    background-color: rgba(255, 70, 70, 0.18);
+    border-bottom: 2px solid rgba(255, 80, 80, 0.9);
+}
+.ace_dark .vpl_ace-warning-marker {
+    background-color: rgba(255, 210, 0, 0.12);
+    border-bottom: 2px dashed rgba(255, 190, 0, 0.9);
+}
+.ace_dark .vpl_ace-info-marker {
+    background-color: rgba(100, 180, 255, 0.1);
+    border-bottom: 2px dashed rgba(100, 180, 255, 0.8);
+}
+
+/* ── Language Server context menu ──────────────────────────── */
+.vpl_ls_menu {
+    position: fixed;
+    display: block;
+    z-index: 9999;
+    visibility: hidden;
+    padding: 0;
+    margin: 0;
+    min-width: 200px;
+    border-radius: 3px;
+    white-space: nowrap;
+    border: 1px solid #c6c6c6;
+    box-shadow: 2px 4px 10px rgba(0, 0, 0, 0.25);
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    line-height: 1;
+    user-select: none;
+    pointer-events: auto;
+}
+
+.vpl_ls_menuoption_preferred {
+    font-weight: bold;
+}
+
+.vpl_ls_menuoption_disabled {
+    opacity: 0.5;
+    pointer-events: none;
+}
+.vpl_ls_menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.vpl_ls_menu li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    margin: 0;
+    padding: 5px 14px;
+    border: 0;
+    border-bottom: 1px solid #d0d0d0;
+    background: transparent;
+    color: inherit;
+    font-size: inherit;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.vpl_ls_menu li:last-child {
+    border-bottom: none;
+}
+
+.vpl_ls_menu li:hover {
+    background: #0078d4;
+    color: #fff;
+}
+
+.vpl_ls_menu .vpl_ls_cm_label {
+    flex: 1;
+}
+
+.vpl_ls_menu .vpl_ls_cm_shortcut {
+    color: #777;
+    font-size: 11px;
+}
+
+.vpl_ls_menu.ace_dark .vpl_ls_cm_shortcut {
+    color: #ccc;
+    font-size: 11px;
+}
+
+.vpl_ls_menu li:hover .vpl_ls_cm_shortcut {
+    color: #cce5ff;
+}
+
+/* Tooltip styling for LSP hover information. */
+.vpl_tooltip {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    padding: 8px;
+    line-height: 1;
+}
+
+/* ── Hover tooltip styling ──────────────────────────── */
+/* Remove space after <p> <ul> <ol>. */
+/* Reduce size of heading tags. */
+/* Same color that other adapted ace. */
+.vpl_hover_tooltip {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    padding: 8px;
+    line-height: 1;
+}
+
+.vpl_hover_tooltip *:first-child {
+    font-weight: bold;
+}
+
+.vpl_ls_signature_label {
+    white-space: pre-wrap;
+}
+
+.vpl_ls_active_parameter {
+    font-weight: bold;
+    text-decoration: underline;
+    color: #0a5ad4;
+}
+
+.vpl_hover_tooltip.ace_dark .vpl_ls_active_parameter,
+.vpl_hover_tooltip .ace_dark .vpl_ls_active_parameter {
+    color: #4fc3f7;
+}
+
+.vpl_ls_signature_count {
+    opacity: 0.7;
+    font-style: italic;
+}
+
+.vpl_hover_tooltip.ace_dark,
+.vpl_hover_tooltip .ace_dark {
+    border-color: #454545;
+}
+
+.vpl_hover_tooltip.ace_dark code,
+.vpl_hover_tooltip .ace_dark code {
+    color: #0bef85;
+}
+.vpl_hover_tooltip.ace_dark pre,
+.vpl_hover_tooltip .ace_dark pre {
+    color: #0cc;
+}
+
+.vpl_hover_tooltip p,
+.vpl_hover_tooltip pre,
+.vpl_hover_tooltip blockquote,
+.vpl_hover_tooltip ul,
+.vpl_hover_tooltip ol {
+    margin-block-start: 0;
+    margin-block-end: 0.1em;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+.vpl_hover_tooltip pre {
+    overflow: visible;
+}
+
+.vpl_hover_tooltip li {
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+}
+
+.vpl_hover_tooltip h1,
+.vpl_hover_tooltip h2,
+.vpl_hover_tooltip h3,
+.vpl_hover_tooltip h4,
+.vpl_hover_tooltip h5,
+.vpl_hover_tooltip h6 {
+    margin: 0.5em 0 0.25em 0;
+}
+.vpl_hover_tooltip h1 {
+    font-size: 1.6em;
+}
+.vpl_hover_tooltip h2 {
+    font-size: 1.5em;
+}
+.vpl_hover_tooltip h3 {
+    font-size: 1.4em;
+}
+.vpl_hover_tooltip h4 {
+    font-size: 1.3em;
+}
+.vpl_hover_tooltip h5 {
+    font-size: 1.2em;
+}
+.vpl_hover_tooltip h6 {
+    font-size: 1.1em;
+}
+.vpl_hover_tooltip hr {
+    border: none;
+    border-top: 2px solid #c6c6c6;
+    margin: 0;
+}
+
+.vpl_hover_tooltip.ace_dark hr,
+.vpl_hover_tooltip .ace_dark hr {
+    border-top: 2px solid #c0c0c0;
+}
+
+.vpl_hover_tooltip.ace_dark blockquote,
+.vpl_hover_tooltip .ace_dark blockquote {
+    color: #d0d0d0;
+}
+
+/* ── Rename dialog styling ──────────────────────────── */
+#vpl_ls_rename {
+    position: fixed;
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+    visibility: hidden;
+    z-index: 10000;
+    padding: 8px;
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    pointer-events: auto;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+    line-height: 1.4;
+}
+
+#vpl_ls_rename input {
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 1px 4px;
+    line-height: 1;
+    height: calc(1em + 4px);
+    box-sizing: border-box;
+}
+
+#vpl_ls_rename button {
+    border: 1px solid #c6c6c6;
+    border-radius: 3px;
+    font-family: inherit;
+    font-size: inherit;
+    padding: 1px 6px;
+    line-height: 1;
+    height: calc(1em + 4px);
+    box-sizing: border-box;
+}
+
+#vpl_ls_rename.ace_dark {
+    border-color: #454545;
+}
+#vpl_ls_rename.ace_dark input {
+    border-color: #454545;
+}
+#vpl_ls_rename.ace_dark button {
+    border-color: #454545;
+}
+
+/* ── Server status messages ──────────────────────────── */
+
+.vpl_server_failed {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    background-color: #c62828;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.08) inset;
+}
+.vpl_server_failed::before {
+    content: "\2716";
+    display: inline-block;
+    margin-right: 0.4em;
+}
+.vpl_server_warning {
+    display: inline-block;
+    padding: 0.25em 0.6em;
+    background-color: #ffb300;
+    color: #1a1a1a;
+    border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.04) inset;
+}
+.vpl_server_warning::before {
+    content: "\26A0";
+    display: inline-block;
+    margin-right: 0.4em;
+}
+
+/* ── Webservice ──────────────────────────── */
+.spoiler {
+    position: relative;
+    display: inline-block;
+}
+
+.spoiler .hider {
+    background-color: #444;
+    color: #444;
+    text-align: center;
+    font-weight: bold;
+    cursor: pointer;
+    width: 100%;
+    position: absolute;
+    z-index: 1;
+    top: 0;
+    left: 0;
+}
+
+.spoiler .hider:hover {
+    color: #eee;
+}
+
+.crypted {
+    font-size: 0;
+}
+
+.cryptchar:before {
+    content: '•';
 }

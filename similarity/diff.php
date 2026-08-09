@@ -33,7 +33,6 @@ global $COURSE, $PAGE, $OUTPUT;
 require_course_login($COURSE);
 $strdiff = get_string('diff', VPL);
 $PAGE->set_url('/mod/vpl/similarity/diff.php');
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $PAGE->set_title($strdiff);
 $PAGE->set_pagelayout('popup');
 vpl_sh_factory::include_js();

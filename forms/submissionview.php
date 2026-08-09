@@ -85,8 +85,6 @@ if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
 
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-
 // Print header.
 $vpl->print_header(get_string('submissionview', VPL));
 $vpl->print_view_tabs(basename(__FILE__));

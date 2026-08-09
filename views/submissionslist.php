@@ -396,9 +396,6 @@ $noevaluating = $evaluate == 0;
 \mod_vpl\event\vpl_all_submissions_viewed::log($vpl);
 
 if (! $downloading) {
-    $PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-    $PAGE->requires->css(new moodle_url('/mod/vpl/css/index.css'));
-    $PAGE->requires->css(new moodle_url('/mod/vpl/css/grade.css'));
     // Print header.
     $vpl->print_header(get_string('submissionslist', VPL));
     $vpl->print_view_tabs(basename(__FILE__));

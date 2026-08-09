@@ -257,7 +257,6 @@ if ($update !== null) {
 }
 
 $PAGE->force_settings_menu();
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/overrides.css'));
 $vpl->print_header(get_string('overrides', VPL));
 $vpl->print_heading_with_help('overrides');
 echo $OUTPUT->box_start();

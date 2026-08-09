@@ -65,7 +65,6 @@ $PAGE->set_url('/mod/vpl/similarity/user_similarity.php', [
         'userid' => $userid,
 ]);
 $PAGE->navbar->add($strtitle);
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
 $PAGE->set_title(fullname($user) . ':' . $strtitle);
 $PAGE->set_heading($course->fullname);
 

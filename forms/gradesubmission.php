@@ -31,8 +31,6 @@ require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
 require_login();
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/grade.css'));
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');
 
 vpl_include_jsfile('hide_footer.js', false);
