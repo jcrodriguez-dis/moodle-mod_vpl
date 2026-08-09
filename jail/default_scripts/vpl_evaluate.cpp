@@ -59,7 +59,7 @@ public:
  * Class Stop Declaration
  */
 class Stop{
-	static volatile bool TERMRequested;
+	static bool TERMRequested;
 public:
 	static void setTERMRequested();
 	static bool isTERMRequested();
@@ -306,8 +306,8 @@ class Evaluation {
 	char comments[MAXCOMMENTS + 1][MAXCOMMENTSLENGTH + 1];
 	char titles[MAXCOMMENTS + 1][MAXCOMMENTSTITLELENGTH + 1];
 	char titlesGR[MAXCOMMENTS + 1][MAXCOMMENTSTITLELENGTH + 1];
-	volatile int ncomments;
-	volatile bool stopping;
+	int ncomments;
+	bool stopping;
 	static Evaluation *singlenton;
 	Evaluation();
 
@@ -336,7 +336,7 @@ public:
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
-volatile bool Stop::TERMRequested = false;
+bool Stop::TERMRequested = false;
 time_t Timer::startTime = 0;
 const char **TestCase::envv = NULL;
 Evaluation* Evaluation::singlenton = NULL;
