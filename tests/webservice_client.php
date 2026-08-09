@@ -101,7 +101,8 @@ function vpl_call_service($url, $fun, $request = '') {
     }
     $rawresponse = curl_exec($ch);
     if ($rawresponse === false) {
-        $error = 'request failed: ' . s(curl_error($ch));
+        $detailederror = str_replace($url, '[JAIL_SERVER]', curl_error($ch));
+        $error = 'Request failed: ' . s($detailederror);
         curl_close($ch);
         vpl_call_print($fun, $error);
         return $error;
