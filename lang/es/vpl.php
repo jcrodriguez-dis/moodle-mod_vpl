@@ -305,6 +305,13 @@ $string['local_jail_servers_help'] = '<p>Aquí se establecen los servidores de e
 <p>Si se quiere impedir que esta actividad y las que se basen en ella no use los servidores especificados en las actividades derivadas ni
 los especificados globalmente, añada al final una línea que contenga "end_of_jails".
 </p>';
+$string['ls:cmcodeaction'] = 'Acciones sobre el código';
+$string['ls:cmdefinition'] = 'Ir a la definición';
+$string['ls:cmformat'] = 'Formatear documento';
+$string['ls:cmformatrange'] = 'Formatear rango seleccionado';
+$string['ls:cmimplementation'] = 'Ir a la implementación';
+$string['ls:cmreferences'] = 'Ir a las referencias';
+$string['ls:cmrename'] = 'Renombrar símbolo';
 $string['manualgrading'] = 'Calificación manual';
 $string['math'] = 'Matemáticas';
 $string['maxexefilesize'] = 'Máximo tamaño de un fichero en ejecución';
@@ -460,6 +467,8 @@ $string['proxy_description'] = 'Proxy de Moodle a servidores de ejecución';
 $string['redo'] = 'Rehacer';
 $string['reductionbyevaluation'] = 'Reducción por evaluación automática';
 $string['reductionbyevaluation_help'] = 'Reducir la puntuación final un valor o un porcentaje por cada evaluación automática solicitada por el estudiante';
+$string['references'] = 'Referencias';
+$string['referencesto'] = 'Referencias a <em>{$a}</em>';
 $string['regularscreen'] = 'Pantalla normal';
 $string['removeallsubmissions'] = 'Elimina todas las entregas y notas';
 $string['removeallsubmissions_help'] = 'Elimina todas las entregas y notas en todas las actividades VPL del curso seleccionado';
