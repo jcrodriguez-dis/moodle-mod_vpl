@@ -45,7 +45,7 @@ try {
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".
-    require_login($vpl->get_course(), false);
+    require_login();
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/requiredfiles.json.php', [
             'id' => $id,

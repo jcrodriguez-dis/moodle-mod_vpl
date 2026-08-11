@@ -35,9 +35,7 @@ $result->response = new stdClass();
 $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
-    if (! isloggedin()) {
-        throw new Exception(get_string('loggedinnot'));
-    }
+    require_login();
     $id = required_param('id', PARAM_INT); // Course module id.
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $userid = optional_param('userid', false, PARAM_INT);
@@ -45,8 +43,12 @@ try {
     $copy = optional_param('privatecopy', false, PARAM_INT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey."require_sesskey();".
-    require_login($vpl->get_course(), false);
-
+    $allow = $vpl->has_capability(VPL_SUBMIT_CAPABILITY);
+    $allow = $allow || $vpl->has_capability(VPL_GRADE_CAPABILITY);
+    $allow = $allow || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+    if (! $allow) {
+        throw new Exception(get_string('notavailable'));
+    }
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/edit.json.php', [
             'id' => $id,
             'action' => $action,

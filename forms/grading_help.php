@@ -87,8 +87,8 @@ try {
     }
     $id = required_param('id', PARAM_INT); // Course module id.
     $vpl = new mod_vpl($id);
-    require_login($vpl->get_course(), false);
-
+    require_login();
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/grading_help.php', ['id' => $id]));
     echo $OUTPUT->header(); // Send headers.
     $result->response = get_grading_help($vpl);

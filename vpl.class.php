@@ -1566,7 +1566,7 @@ class mod_vpl {
         global $PAGE, $CFG;
         $this->script = $script;
         // Next line resolve problem of classic theme not showing setting menu.
-        require_login($this->get_course(), false, $this->get_course_module());
+        require_login();
         $action = basename($script, '.php');
         if ($script) {
             $PAGE->set_url(new moodle_url('/mod/vpl/' . $script, $parms));
