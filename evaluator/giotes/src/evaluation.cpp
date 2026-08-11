@@ -291,7 +291,9 @@ void Evaluation::loadTestCases(string fname) {
 					}
 					currentCase.setCaseDescription(Tools::trim(value));
 				} else {
-					addFatalError(getString(str_error_parameter_unknow, i + 1));
+					if (tag[0] != '#') { // Ignore comment tag and line with = but no tag.
+						addFatalError(getString(str_error_parameter_unknow, i + 1));
+					}
 				}
 			} else {
 				if ( line.size() > 0 ) {
