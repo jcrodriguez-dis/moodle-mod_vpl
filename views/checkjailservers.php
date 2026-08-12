@@ -72,13 +72,11 @@ function remove_path($url) {
 }
 
 global $PAGE, $COURSE, $COURSE, $DB;
-require_login();
 
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('views/checkjailservers.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('views/checkjailservers.php', ['id' => $id]);
 
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
 // Display page.

@@ -29,13 +29,13 @@ require_once(dirname(__FILE__) . '/grade_form.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
-require_login();
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
-$PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');
-
-vpl_include_jsfile('hide_footer.js', false);
 
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
+
+$PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');
+vpl_include_jsfile('hide_footer.js', false);
 $userid = required_param('userid', PARAM_INT);
 
 $vpl = new mod_vpl($id);

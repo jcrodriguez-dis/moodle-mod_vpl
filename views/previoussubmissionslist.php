@@ -32,8 +32,6 @@ require_once(dirname(__FILE__) . '/submissionsgraph.php');
 
 global $CFG, $USER, $OUTPUT;
 
-require_login();
-
 /**
  * Creates an action menu for submission actions.
  *
@@ -58,9 +56,10 @@ function vpl_actions_menu($id, $userid, $subid) {
 
 
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
+$vpl = new mod_vpl($id);
 $userid = optional_param('userid', null, PARAM_INT);
 $detailed = abs(optional_param('detailed', 0, PARAM_INT)) % 2;
-$vpl = new mod_vpl($id);
 if ($userid == null) {
     if ($vpl->has_capability(VPL_GRADE_CAPABILITY)) { // TODO add VPL course setting check.
         $userid = $USER->id;

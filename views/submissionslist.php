@@ -344,9 +344,9 @@ function vpl_get_students($vpl) {
     }
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
+
 $groupid = optional_param('group', - 1, PARAM_INT);
 $evaluate = optional_param('evaluate', 0, PARAM_INT);
 $showgrades = optional_param('showgrades', 0, PARAM_INT);

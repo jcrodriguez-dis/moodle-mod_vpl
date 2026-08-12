@@ -55,9 +55,8 @@ class mod_vpl_setjails_form extends moodleform {
     }
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/local_jail_servers.php', [ 'id' => $id ]);
 $vpl->require_capability(VPL_SETJAILS_CAPABILITY);

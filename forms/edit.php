@@ -29,8 +29,8 @@ require_once(__DIR__ . '/../vpl_submission.class.php');
 require_once(__DIR__ . '/../editor/editor_utility.php');
 
 global $USER, $DB;
-require_login();
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $userid = optional_param('userid', false, PARAM_INT);
 $copy = optional_param('privatecopy', false, PARAM_INT);
 $subid = optional_param('submissionid', false, PARAM_INT);

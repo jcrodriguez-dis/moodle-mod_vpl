@@ -29,9 +29,9 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 
-require_login();
-$id = required_param('id', PARAM_INT);
 try {
+    $id = required_param('id', PARAM_INT);
+    mod_vpl::require_login($id);
     $vpl = new mod_vpl($id);
     $vpl->restrictions_check();
     if (! $vpl->is_visible()) {

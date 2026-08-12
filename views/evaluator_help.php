@@ -28,9 +28,9 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 
 global $PAGE, $OUTPUT;
-require_login();
 
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $evaluatorname = required_param('evaluator', PARAM_ALPHANUMEXT);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('views/evaluator_help.php', [ 'id' => $id, 'evaluator' => $evaluatorname ]);

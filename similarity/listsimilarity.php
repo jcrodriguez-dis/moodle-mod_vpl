@@ -33,18 +33,15 @@ use mod_vpl\similarity\utility;
 
 ini_set('memory_limit', '256M');
 
-require_login();
-
 global $CFG, $OUTPUT, $PAGE;
 
 $id = required_param('id', PARAM_INT);
-$timelimit = 600; // 10 minutes.
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('similarity/listsimilarity.php', [
-        'id' => $id,
-]);
-
+$vpl->prepare_page('similarity/listsimilarity.php', ['id' => $id]);
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+
+$timelimit = 600; // 10 minutes.
 \mod_vpl\event\vpl_similarity_report_viewed::log($vpl);
 // Print header.
 $vpl->print_header(get_string('listsimilarity', VPL));

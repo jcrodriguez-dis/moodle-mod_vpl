@@ -30,8 +30,8 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 
 try {
-    require_login();
     $id = required_param('id', PARAM_INT);
+    mod_vpl::require_login($id);
     $vpl = new mod_vpl($id);
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $filegroup = $vpl->get_execution_fgm();

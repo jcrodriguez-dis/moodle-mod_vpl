@@ -29,9 +29,8 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/edit.class.php');
 require_once(dirname(__FILE__) . '/../editor/editor_utility.php');
 
-require_login();
 $id = required_param('id', PARAM_INT);
-
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/requiredfiles.php', [ 'id' => $id ]);
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);

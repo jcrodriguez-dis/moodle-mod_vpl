@@ -33,8 +33,8 @@ require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
 global $USER, $DB;
 try {
-    require_login();
     $id = required_param('id', PARAM_INT);
+    mod_vpl::require_login($id);
     $vpl = new mod_vpl($id);
     $userid = optional_param('userid', false, PARAM_INT);
     $submissionid = optional_param('submissionid', false, PARAM_INT);

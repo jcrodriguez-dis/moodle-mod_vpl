@@ -30,16 +30,17 @@ require_once(dirname(__FILE__) . '/../editor/editor_utility.php');
 
 global $USER, $DB, $OUTPUT;
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
+$vpl = new mod_vpl($id);
+
 $userid = optional_param('userid', false, PARAM_INT);
 $parms = [ 'id' => $id ];
 if ($userid) {
     $parms['userid'] = $userid;
 }
-$vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/evaluation.php', $parms);
+
 if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // Evaluate own submission.
     $userid = $USER->id;
     $vpl->require_capability(VPL_SUBMIT_CAPABILITY);

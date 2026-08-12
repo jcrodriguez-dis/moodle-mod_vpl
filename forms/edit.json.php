@@ -35,8 +35,8 @@ $result->response = new stdClass();
 $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
-    require_login();
     $id = required_param('id', PARAM_INT); // Course module id.
+    mod_vpl::require_login($id);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $userid = optional_param('userid', false, PARAM_INT);
     $subid = optional_param('subid', false, PARAM_INT);

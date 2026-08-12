@@ -31,13 +31,10 @@ global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 require_once(dirname(__FILE__) . '/similarity_form.class.php');
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('similarity/similarity_form.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('similarity/similarity_form.php', ['id' => $id]);
 
 // Find out current groups mode.
 $cm = $vpl->get_course_module();

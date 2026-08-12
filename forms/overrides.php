@@ -74,11 +74,11 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
     }
 }
 
-require_login();
-
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
+
 $edit = optional_param('edit', null, PARAM_INT);
 $delete = optional_param('delete', null, PARAM_INT);
 $update = optional_param('update', null, PARAM_INT);

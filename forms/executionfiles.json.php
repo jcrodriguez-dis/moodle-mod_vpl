@@ -37,8 +37,8 @@ try {
     require_once(dirname(__FILE__) . '/../locallib.php');
     require_once(dirname(__FILE__) . '/../vpl.class.php');
     require_once(dirname(__FILE__) . '/edit.class.php');
-    require_login();
     $id = required_param('id', PARAM_INT); // Course id.
+    mod_vpl::require_login($id);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".

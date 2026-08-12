@@ -36,54 +36,34 @@ require_once(dirname(__FILE__) . '/similarity_form.class.php');
 
 ini_set('memory_limit', '256M');
 
-require_login();
-
 global $CFG, $DB, $PAGE, $OUTPUT;
 
-$id = required_param('id', PARAM_INT); // Course id.
+$id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $userid = required_param('userid', PARAM_INT);
 $timelimit = 600; // Limit 10 minutes.
 // Check course existence.
-if (
-    ! $course = $DB->get_record("course", [
-        'id' => $id,
-    ])
-) {
+if (! $course = $DB->get_record("course", ['id' => $id])) {
     throw new moodle_exception('invalidcourseid');
 }
 require_course_login($course);
-$user = $DB->get_record('user', [
-        'id' => $userid,
-]);
+$user = $DB->get_record('user', ['id' => $userid]);
 if (! $user) {
     throw new moodle_exception('invalidcourseid');
 }
-
-$strtitle = get_string('listsimilarity', VPL);
-$PAGE->set_url('/mod/vpl/similarity/user_similarity.php', [
-        'id' => $id,
-        'userid' => $userid,
-]);
-$PAGE->navbar->add($strtitle);
-$PAGE->set_title(fullname($user) . ':' . $strtitle);
-$PAGE->set_heading($course->fullname);
-
-// Print header.
-echo $OUTPUT->header();
-echo $OUTPUT->heading(fullname($user));
-echo '<h2>' . $strtitle . '</h2>';
-
 // TODO create own log type.
 
 $ovpls = get_all_instances_in_course(VPL, $course);
 $timenow = time();
 $vpls = [];
+$nocapability = true;
 // Get and select vpls to show.
 foreach ($ovpls as $ovpl) {
     $vpl = new mod_vpl(false, $ovpl->id);
     if (! $vpl->has_capability(VPL_SIMILARITY_CAPABILITY)) {
         continue;
     }
+    $nocapability = false;
     $instance = $vpl->get_instance();
     // Example => NO.
     if ($instance->example) {
@@ -95,6 +75,26 @@ foreach ($ovpls as $ovpl) {
     }
     $vpls[] = $vpl;
 }
+// Hide user name if user has no capability to see similarity.
+if ($nocapability) {
+    $username = '';
+} else{
+    $username = fullname($user);
+}
+$strtitle = get_string('listsimilarity', VPL);
+$PAGE->set_url('/mod/vpl/similarity/user_similarity.php', [
+        'id' => $id,
+        'userid' => $userid,
+]);
+$PAGE->navbar->add($strtitle);
+$PAGE->set_title($username . ':' . $strtitle);
+$PAGE->set_heading($course->fullname);
+
+// Print header.
+echo $OUTPUT->header();
+echo $OUTPUT->heading($username);
+echo '<h2>' . $strtitle . '</h2>';
+
 @set_time_limit($timelimit);
 // Prepare table construction.
 $firstname = get_string('firstname');

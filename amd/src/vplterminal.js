@@ -135,8 +135,10 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                     }
                 };
                 ws.onopen = function() {
-                    self.setMessage('');
                     self.setTitle(str('connected'));
+                    self.startBlinking();
+                    self.setMessage('');
+                    terminal.focus();
                 };
                 ws.onclose = function() {
                     self.setTitle(str('connection_closed'));

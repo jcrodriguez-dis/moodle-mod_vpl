@@ -41,11 +41,11 @@ try {
         throw new Exception(get_string('loggedinnot'));
     }
 
-    $id = required_param('id', PARAM_INT); // Course id.
+    $id = required_param('id', PARAM_INT);
+    mod_vpl::require_login($id);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".
-    require_login();
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/requiredfiles.json.php', [
             'id' => $id,

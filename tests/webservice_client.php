@@ -132,14 +132,11 @@ function vpl_call_print($fun, $res) {
     echo "</pre>\n";
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+mod_vpl::require_login($id);
 $vpl = new mod_vpl($id);
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
-$vpl->prepare_page('tests/webservice_client.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('tests/webservice_client.php', ['id' => $id]);
 $basebody = "id=$id";
 
 $vpl->print_header('Web service test client');
