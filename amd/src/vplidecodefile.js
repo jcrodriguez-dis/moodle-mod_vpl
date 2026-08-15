@@ -192,7 +192,7 @@ export const codeExtension = function() {
         }
         return editor;
     };
-    this.getRange = function(startRow=0, startColumn=0, endRow=0, endColumn=0) {
+    this.getRange = function(startRow = 0, startColumn = 0, endRow = 0, endColumn = 0) {
         return new Range(startRow, startColumn, endRow, endColumn);
     };
     this.getTooltip = function() {

@@ -811,9 +811,6 @@ var VPLIDE = function(rootId, options) {
             return tabs.tabs('option', 'active');
         };
         this.getFileTab = function(id) {
-            // jQuery UI tabs indexes by the DOM order of the <li> tabs, which is not
-            // guaranteed to match the openFiles array order (e.g. after sorting files).
-            // Return the real DOM index so tab activation targets the right tab.
             var li = tabsUl.children('#vpl_tab_name' + id);
             if (li.length === 0) {
                 return -1;
@@ -1130,13 +1127,20 @@ var VPLIDE = function(rootId, options) {
             }
         }
     };
-    const initialPanelOrder = ['grade', 'references', 'variables', 'compilation', 'comments', 'execution','description'];
+    const initialPanelOrder = [
+        'grade',
+        'references',
+        'variables',
+        'compilation',
+        'comments',
+        'execution',
+        'description',
+    ];
     const needProcessingResult = ['compilation', 'comments'];
     const needSanitizeResult = ['execution'];
 
     this.setResult = function(res, go = false, clearAnnotations = true) {
         self.updateEvaluationNumber(res);
-        // normaize name for i18n
         res.description = window.VPLDescription;
         res.comments = res.evaluation;
         var files = fileManager.getFiles();

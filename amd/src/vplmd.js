@@ -21,8 +21,8 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-import { marked } from 'marked';
-import { VPLUtil } from './vplutil';
+import {marked} from 'marked';
+import {VPLUtil} from './vplutil';
 
 const parserOptions = {
     gfm: true,
@@ -78,7 +78,7 @@ function fixMarkDownLink(markdown, pos, limit, insideCodeBlock) {
         } else {
             // URL title
             fixed += fixMarkDownCodeInline(markdown, nextLink + 1, endLink, insideCodeBlock);
-            let outLink = markdown.indexOf(")", endLink  + 1);
+            let outLink = markdown.indexOf(")", endLink + 1);
             if (outLink === -1 || outLink >= limit) {
                 fixed += fixMarkDownCodeInline(markdown, endLink + 1, limit, insideCodeBlock);
                 break;
@@ -102,8 +102,8 @@ function fixMarkDownLink(markdown, pos, limit, insideCodeBlock) {
  */
 function fixMarkDownCodeInline(markdown, pos, limit, insideCodeBlock) {
     let fixed = "";
-    let openCode = insideCodeBlock?"´":"<code>";
-    let closeCode = insideCodeBlock?"´":"</code>";
+    let openCode = insideCodeBlock ? "´" : "<code>";
+    let closeCode = insideCodeBlock ? "´" : "</code>";
     while (pos < limit) {
         let nextCode = markdown.indexOf("`", pos);
         if (nextCode === -1 || nextCode >= limit) {

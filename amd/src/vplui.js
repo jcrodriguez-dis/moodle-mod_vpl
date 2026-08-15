@@ -381,7 +381,7 @@ VPLUI.progressBar = function(title, message, onUserClose) {
  */
 VPLUI.showMessage = function(message, initialoptions) {
     var options = $.extend({}, VPLUI.dialogbaseOptions, initialoptions);
-    const dialogid = options.id? ' id="vpl_ide_dialog_' + options.id + '" ' : '';
+    const dialogid = options.id ? ' id="vpl_ide_dialog_' + options.id + '" ' : '';
     var messageDialog = $('<div' + dialogid + ' class="vpl_ide_dialog" style="display:none"></div>');
     var icon = '';
     var saniMessage = VPLUtil.sanitizeText(message).replace(/\n/g, '<br>');
@@ -503,6 +503,7 @@ VPLUI.requestAction = function(action, title, data, URL, noDialog) {
         } else {
             deferred.resolve(response.response);
         }
+        return response;
     }).catch(function(error) {
         var textStatus = error && error.name === 'AbortError' ? 'abort' : 'error';
         var message = VPLUtil.str('connection_fail') + ': ' + textStatus;

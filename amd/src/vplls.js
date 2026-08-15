@@ -34,11 +34,13 @@ import {VPLUI} from 'mod_vpl/vplui';
  * @param {Array.<String>} LSAvailable Array of programming languages with Language Server available.
  * @param {String} userLocale User's locale
  */
-export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
+export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
     if (LSAvailable.length == 0) {
         VPLUtil.log("No LS available for the current VPL activity.");
         // Set all methods to do nothing to avoid errors when trying to use the LS client.
-        this.getLS = function() { return null; };
+        this.getLS = function() {
+            return null;
+        };
         this.newFile = VPLUtil.doNothing;
         this.deleteFile = VPLUtil.doNothing;
         this.renameFile = VPLUtil.doNothing;
@@ -57,14 +59,18 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         this.codeActionRequest = VPLUtil.doNothing;
         this.executeCodeAction = VPLUtil.doNothing;
         this.startConnections = VPLUtil.doNothing;
-        this.isConnected = function() { return false; };
-        this.getStatus = function() { return ''; };
+        this.isConnected = function() {
+            return false;
+        };
+        this.getStatus = function() {
+            return '';
+        };
         this.init = VPLUtil.doNothing;
         return;
     }
     // Time in milliseconds to delay the closing of contextualmenu
     const delayedCloseTime = 300;
-    // self variable to access the VPLLS instance in inner functions.
+    // Variable to access the VPLLS instance in inner functions.
     const self = this;
     // Global variable to access the Language Server Client instances.
     var languageServers = {};
@@ -86,7 +92,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         return LSInstance.isConnected() ? LSInstance : null;
     };
     this.getLS = function(file) {
-        if (! file) {
+        if (!file) {
             return null;
         }
         return self.getLSByLanguage(file.getLSLang());
@@ -115,7 +121,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
     };
     this.createFileNotification = async function(LS, fileName) {
         if (LS === null || !LS.getCapabilities().supportsDidCreateFiles()) {
-            return;
+            return {result: null};
         }
         var param = {
             "files": [{
@@ -127,7 +133,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
 
     this.deleteFileNotification = async function(LS, fileName) {
         if (LS === null || !LS.getCapabilities().supportsDidDeleteFiles()) {
-            return;
+            return {result: null};
         }
         var param = {
             "files": [{
@@ -138,7 +144,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
     };
     this.renameFileNotification = async function(LS, oldFileName, newFileName) {
         if (LS === null || !LS.getCapabilities().supportsDidRenameFiles()) {
-            return;
+            return {result: null};
         }
         var param = {
             "files": [{
@@ -152,7 +158,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
     this.openFile = async function(file) {
         let LS = self.getLS(file);
         if (LS === null) {
-            return;
+            return {result: null};
         }
         return LS.addTask(
             async function() {
@@ -164,26 +170,26 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Create a new file in the server
      * @param {File} file
      */
-    this.newFile = async function (file) {
-        var resolve, reject;
-        var promise = new Promise(function(res, rej) {
-            resolve = res;
-            reject = rej;
+    this.newFile = async function(file) {
+        var resolveNewFile, rejectNewFile;
+        var promiseNewFile = new Promise(function(resolve, reject) {
+            resolveNewFile = resolve;
+            rejectNewFile = reject;
         });
         let LS = self.getLS(file);
         if (LS === null) {
-            resolve({result: null});
-            return promise;
+            resolveNewFile({result: null});
+            return promiseNewFile;
         }
         // TODO is it needed to create de file in all LSs?
         LS.addTask(
             async function() {
                 if (LS.isStopped()) {
-                    resolve({result: null});
-                    return promise;
+                    resolveNewFile({result: null});
+                    return promiseNewFile;
                 }
                 const data = {
-                    files:[{
+                    files: [{
                         name: LS.fileNameToProjectPath(file.getFileName()),
                         contents: file.getContent(),
                         encoding: 0
@@ -196,42 +202,42 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
                     async function() {
                         var response = await self.createFileNotification(LS, file.getFileName());
                         await LS.didChangeWatchedFilesNotification([{file: file, type: 1}]);
-                        resolve(response);
+                        resolveNewFile(response);
                     }
                 ).fail(function(error) {
-                    reject(error);
+                    rejectNewFile(error);
                 });
-                return promise;
+                return promiseNewFile;
             }
         );
-        return promise;
+        return promiseNewFile;
     };
 
     /**
      * Delete a file in the server
      * @param {File} file
      */
-    this.deleteFile = async function (file) {
-        var resolve, reject;
-        var promise = new Promise(function(res, rej) {
-            resolve = res;
-            reject = rej;
+    this.deleteFile = async function(file) {
+        var resolveDelete, rejectDelete;
+        var promiseDelete = new Promise(function(resolve, reject) {
+            resolveDelete = resolve;
+            rejectDelete = reject;
         });
         // TODO is it needed to remove de file in all LSs?
         let LS = self.getLS(file);
         if (LS === null) {
-            resolve({result: null});
-            return promise;
+            resolveDelete({result: null});
+            return promiseDelete;
         }
         LS.addTask(
             async function() {
                 if (LS.isStopped()) {
-                    resolve({result: null});
-                    return promise;
+                    resolveDelete({result: null});
+                    return promiseDelete;
                 }
                 const data = {
-                    files:[],
-                    filestodelete:[LS.fileNameToProjectPath(file.getFileName())],
+                    files: [],
+                    filestodelete: [LS.fileNameToProjectPath(file.getFileName())],
                     processid: LS.getVPLTaskId()
                 };
                 await self.closeFileNotification(file, false);
@@ -240,15 +246,15 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
                     async function() {
                         var response = await self.deleteFileNotification(LS, file.getFileName());
                         await LS.didChangeWatchedFilesNotification([{file: file, type: 3}]);
-                        resolve(response);
+                        resolveDelete(response);
                     }
                 ).fail(function(error) {
-                    reject(error);
+                    rejectDelete(error);
                 });
-                return promise;
+                return promiseDelete;
             }
         );
-        return promise;
+        return promiseDelete;
     };
 
     /**
@@ -256,7 +262,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * to signal newly opened text documents
      * @param {File} file
      */
-    this.openFileNotification = async function (file) {
+    this.openFileNotification = async function(file) {
         let LS = self.getLS(file);
         if (LS === null) {
             return;
@@ -282,7 +288,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * @param {File} file
      * @param {Boolean} [save=true] Whether to save the file before closing
      */
-    this.closeFileNotification = async function (file, save = true) {
+    this.closeFileNotification = async function(file, save = true) {
         let LS = self.getLS(file);
         if (LS === null) {
             return {result: null};
@@ -312,54 +318,54 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * @param {File} oldFile Old file
      * @param {File} newFile New file
      */
-    this.renameFile = async function (oldFile, newFile) {
-        var resolve, reject;
-        var promise = new Promise(function(res, rej) {
-            resolve = res;
-            reject = rej;
+    this.renameFile = async function(oldFile, newFile) {
+        var resolveRename, rejectRename;
+        var promiseRename = new Promise(function(resolve, reject) {
+            resolveRename = resolve;
+            rejectRename = reject;
         });
         let changeLanguage = oldFile.getLSLang() != newFile.getLSLang();
         try {
             if (changeLanguage) {
                 let LS = self.getLS(oldFile);
-                LS.removeMarkersOfFile(newFile, oldFile.getFileName());
-                await self.deleteFile(oldFile);
+                LS?.removeMarkersOfFile(newFile, oldFile.getFileName());
+                await self.newFile(newFile);
                 await self.openFile(newFile);
-                self.openFile(newFile)
-                .then(function(response) {
-                    resolve(response);
-                });
+                await self.deleteFile(oldFile);
+                resolveRename({result: null});
+                return promiseRename;
             } else {
                 let LS = self.getLS(oldFile);
                 if (LS === null) {
-                    resolve({result: null});
-                    return promise;
+                    resolveRename({result: null});
+                    return promiseRename;
                 }
-                return LS.addTask( async function() {
+                return LS.addTask(async function() {
                     if (LS.isStopped()) {
-                        resolve({result: null});
-                        return promise;
+                        resolveRename({result: null});
+                        return promiseRename;
                     }
                     if (newFile.isOpen()) { // Was open before rename
                         await self.closeFileNotification(oldFile, false);
                     }
                     var data = {
-                        files:[{
+                        files: [{
                             name: LS.fileNameToProjectPath(newFile.getFileName()),
                             contents: newFile.getContent(),
                             encoding: 0
                         }],
-                        filestodelete:[LS.fileNameToProjectPath(oldFile.getFileName())],
+                        filestodelete: [LS.fileNameToProjectPath(oldFile.getFileName())],
                         processid: LS.getVPLTaskId()
                     };
                     VPLUI.requestAction('update', '', data, APIURL, true).
                     done(async function() {
                         try {
+                            var response = {result: null};
                             if (LS.getCapabilities().supportsDidRenameFiles() === false) {
                                 await self.deleteFileNotification(LS, oldFile.getFileName());
                                 await self.createFileNotification(LS, newFile.getFileName());
                             } else {
-                                var response = await self.renameFileNotification(
+                                response = await self.renameFileNotification(
                                     LS, oldFile.getFileName(), newFile.getFileName());
                             }
                             await LS.didChangeWatchedFilesNotification([
@@ -370,20 +376,20 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
                             if (newFile.isOpen()) {
                                await self.openFileNotification(newFile);
                             }
-                            resolve(response);
+                            resolveRename(response);
                         } catch (error) {
-                            reject({result: null, error: error});
+                            rejectRename({result: null, error: error});
                         }
                     }).fail(function(error) {
-                        reject({result: null, error: error});
+                        rejectRename({result: null, error: error});
                     });
-                    return promise;
+                    return promiseRename;
                 });
             }
         } catch (error) {
-            reject({result: null, error: error});
+            rejectRename({result: null, error: error});
         }
-        return promise;
+        return promiseRename;
     };
 
     /**
@@ -401,7 +407,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Send the definition request to the Language Server to resolve
      * the definition location of a symbol at a given text document position
      */
-    this.definitionRequest = function () {
+    this.definitionRequest = function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasDefinitionProvider()) {
@@ -427,7 +433,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * to resolve project-wide references for the symbol
      * denoted by the given text document position
      */
-    this.referencesRequest = function () {
+    this.referencesRequest = function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasReferencesProvider()) {
@@ -436,7 +442,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         let editor = file.getEditor();
         let cursor = editor.getCursorPosition();
         let token = editor.getSession().getTokenAt(cursor.row, cursor.column);
-        if (! token?.value) {
+        if (!(token?.value)) {
             return;
         }
         let fileName = file.getFileName();
@@ -461,7 +467,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * to resolve the implementation location of a symbol at
      * a given text document position
      */
-    this.implementationRequest = function () {
+    this.implementationRequest = function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasImplementationProvider()) {
@@ -471,7 +477,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         let cursor = file.getEditor().getCursorPosition();
         let fileURI = LS.fileNameToUri(fileName);
         var param = {
-            "textDocument": { "uri": fileURI },
+            "textDocument": {"uri": fileURI},
             "position": {
                 "line": cursor.row,
                 "character": cursor.column
@@ -486,7 +492,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Opens the rename Dialog
      * Send the prepareRename request to the Language Server to check if the symbol can be renamed
      */
-    this.renameSymbolRequest = async function () {
+    this.renameSymbolRequest = async function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasRenameProvider()) {
@@ -500,14 +506,14 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
             let fileName = file.getFileName();
             let fileURI = LS.fileNameToUri(fileName);
             var param = {
-                "textDocument": { "uri": fileURI },
+                "textDocument": {"uri": fileURI},
                 "position": {
                     "line": cursor.row,
                     "character": cursor.column
                 }
             };
             let response = await LS.sendRequest("textDocument/prepareRename", param, fileName);
-            if (! response?.result) {
+            if (!(response?.result)) {
                 LS.log("The symbol selected cannot be renamed.");
                 return;
             }
@@ -544,7 +550,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * client can perform a workspace-wide rename of a symbol
      * @param {String} name to change for
      */
-    this.renameSymbolHandler = async function (name) {
+    this.renameSymbolHandler = async function(name) {
         if (name == "") {
             return {result: null};
         }
@@ -574,7 +580,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Send the formatting request to the Language Server
      * to format a whole document
      */
-    this.formattingRequest = function () {
+    this.formattingRequest = function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasDocumentFormattingProvider()) {
@@ -601,7 +607,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Send the rangeFormatting request to the Language Server
      * to format a given range in a document
      */
-    this.rangeFormattingRequest = function () {
+    this.rangeFormattingRequest = function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasDocumentRangeFormattingProvider()) {
@@ -662,7 +668,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
      * Send the codeAction request to the Language Server
      * to compute commands for a given text document and range
      */
-    this.codeActionRequest = async function () {
+    this.codeActionRequest = async function() {
         let file = fileManager.currentFile();
         let LS = self.getLS(file);
         if (LS === null || !LS.getCapabilities().hasCodeActionProvider()) {
@@ -676,7 +682,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         for (let marker of LS.getAllMarkers()) {
             if (marker.fileName == fileName) {
                 let range = marker.range;
-                if(!onRange){
+                if (!onRange) {
                     diagnostics.push({
                         "range": {
                             "start": {
@@ -943,7 +949,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
                 return;
             }
             let LS = self.getLS(file);
-            if (LS === null  || self.isCodeActionMenuOpen() || self.isContextMenuOpen()) {
+            if (LS === null || self.isCodeActionMenuOpen() || self.isContextMenuOpen()) {
                 file.getTooltip()?.hide();
                 return;
             }
@@ -1097,7 +1103,7 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
         let optionRangeFormatting = document.getElementById('vpl_ls_cm_formatrange');
         let optionFormatting = document.getElementById('vpl_ls_cm_format');
         let optionCodeAction = document.getElementById('vpl_ls_cm_codeaction');
-        document.addEventListener('contextmenu', function (e) {
+        document.addEventListener('contextmenu', function(e) {
             if (e.target.className == 'ace_text-input') {
                 let file = fileManager.currentFile();
                 var LS = self.getLS(file);
@@ -1185,13 +1191,13 @@ export const VPLLS = function (APIURL, fileManager, LSAvailable, userLocale) {
                 e.preventDefault();
             }
         });
-        okBtn.addEventListener('click', function () {
+        okBtn.addEventListener('click', function() {
             let name = renameSymbolDialog.querySelector("input").value;
             self.renameSymbolHandler(name);
             renameSymbolDialog.querySelector("input").value = "";
             renameSymbolDialog.style.visibility = 'hidden';
         });
-        cancelBtn.addEventListener('click', function () {
+        cancelBtn.addEventListener('click', function() {
             renameSymbolDialog.style.visibility = 'hidden';
         });
         self.renameDialog = renameSymbolDialog;

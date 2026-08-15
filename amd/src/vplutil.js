@@ -67,7 +67,10 @@ VPLUtil.getUserPreferences = function(func) {
         credentials: 'same-origin'
     }).then(function(response) {
         return response.json();
-    }).then(func);
+    }).then(func)
+    .catch(function() {
+        // Keep previous fire-and-forget behavior.
+    });
 };
 
 const filterXSSOptions = {
@@ -794,6 +797,7 @@ VPLUtil.directRunTest = function(URL, command, data) {
             result.connection.onclose = function(event) {
                 log.debug("WS close: " + event.code + " " + event.reason);
             };
+            return result;
         })
         .catch(function(message) {
             log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);

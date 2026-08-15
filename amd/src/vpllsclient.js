@@ -55,7 +55,7 @@ class LSTaskQueue {
         }
         this.running = true;
         while (this.taskQueue.length > 0) {
-            const { task, resolve, reject } = this.taskQueue.shift();
+            const {task, resolve, reject} = this.taskQueue.shift();
             try {
                 const result = await task();
                 resolve(result);
@@ -76,24 +76,22 @@ class LSServerCapabilities {
             this.textDocumentSync = {
                 change: caps.textDocumentSync,
                 openClose: caps.textDocumentSync !== 0,
-                save: { includeText: false }
+                save: {includeText: false}
             };
         } else if (typeof caps.textDocumentSync === 'object' && caps.textDocumentSync !== null) {
             const s = caps.textDocumentSync;
             this.textDocumentSync = {
                 change: typeof s.change === 'number' ? s.change : 1,
                 openClose: !!s.openClose,
-                save: s.save ? { includeText: !!(s.save.includeText) } : null
+                save: s.save ? {includeText: !!(s.save.includeText)} : null
             };
         } else {
             this.textDocumentSync = {
                 change: 1,
                 openClose: true,
-                save: { includeText: false }
+                save: {includeText: false}
             };
         }
-
-        // simple booleans
         this.definitionProvider = !!caps.definitionProvider;
         this.referencesProvider = !!caps.referencesProvider;
         this.implementationProvider = !!caps.implementationProvider;
@@ -101,13 +99,13 @@ class LSServerCapabilities {
         this.codeActionProvider = !!caps.codeActionProvider;
         this.documentFormattingProvider = !!caps.documentFormattingProvider;
         this.documentRangeFormattingProvider = !!caps.documentRangeFormattingProvider;
-        // executeCommandProvider
+        // ExecuteCommandProvider.
         const ecp = caps.executeCommandProvider;
         this.executeCommandProvider = {
             commands: (ecp && Array.isArray(ecp.commands)) ? ecp.commands.slice() : []
         };
 
-        // completion provider
+        // Completion provider.
         if (caps.completionProvider && typeof caps.completionProvider === 'object') {
             this.completionProvider = {
                 available: true,
@@ -116,10 +114,10 @@ class LSServerCapabilities {
                     : []
             };
         } else {
-            this.completionProvider = { available: false, triggerCharacters: [] };
+            this.completionProvider = {available: false, triggerCharacters: []};
         }
 
-        // signature help provider
+        // Signature help provider.
         if (caps.signatureHelpProvider && typeof caps.signatureHelpProvider === 'object') {
             this.signatureHelpProvider = {
                 available: true,
@@ -131,10 +129,10 @@ class LSServerCapabilities {
                     : []
             };
         } else {
-            this.signatureHelpProvider = { available: false, triggerCharacters: [], retriggerCharacters: [] };
+            this.signatureHelpProvider = {available: false, triggerCharacters: [], retriggerCharacters: []};
         }
 
-        // rename provider
+        // Rename provider.
         if (caps.renameProvider) {
             if (typeof caps.renameProvider === 'object') {
                 this.renameProvider = {
@@ -154,7 +152,7 @@ class LSServerCapabilities {
             };
         }
 
-        // workspace file operations
+        // Workspace file operations.
         const fo = (caps.workspace && caps.workspace.fileOperations) ? caps.workspace.fileOperations : {};
         this.fileOperations = {
             didCreate:  !!(fo.didCreate),
@@ -251,24 +249,24 @@ class LSServerCapabilities {
  * @param {String} language Programming language name of the Language Server
  * @param {String} locale Locale language of the user
  */
-export const VPLLSClient = function (APIURL, fileManager, language, locale) {
+export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     // Reference to the current instance
     const self = this;
     // One second in milliseconds
     const seconds = 1000;
     // One minute in milliseconds
     const minutes = 60 * seconds;
-    // ms to wait after a file change before sending the notification to the Language Server
-    const timeoutFileChange = 1 *seconds;
-    // ms to wait after conection to start sending notifications to the Language Server
+    // Time in ms to wait after a file change before sending the notification to the Language Server
+    const timeoutFileChange = 1 * seconds;
+    // Time in ms to wait after connection to start sending notifications to the Language Server
     const waitTimeLSStart = 500;
-    // ms to wait for recheck if LS connected
+    // Time in ms to wait for recheck if LS connected
     const waitTimeConecting = 100;
-    // ms to wait before retrying to connect with the Language Server after a connection loss
+    // Time in ms to wait before retrying to connect with the Language Server after a connection loss
     const waitTimeForRetryingLSConection = 5 * minutes;
     // Maximum number of reconnection attempts before giving up
     const maxConnectionsAttempts = 5;
-    // ms to wait for a response before rejecting a pending request
+    // Time in ms to wait for a response before rejecting a pending request
     const requestTimeout = 30 * seconds;
     // Inactivity timeout. LS shuts down after this period of inactivity
     const inactivityTimeout = 10 * minutes;
@@ -403,8 +401,8 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         let request = {
             requestMethod:"Not found ID '" + id + "' in requests",
             fileName: null,
-            reject: function() {},
-            resolve: function() {}
+            reject: VPLUtil.doNothing,
+            resolve: VPLUtil.doNothing,
         };
         if (requests[id] != undefined) {
             request = requests[id];
@@ -446,7 +444,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         }
     };
     this.applyWorkspaceEdit = function(workspaceEdit) {
-        if(workspaceEdit.changes) {
+        if (workspaceEdit.changes) {
             let textChanges = workspaceEdit.changes;
             for (let fileURI of Object.keys(textChanges)) {
                 self.applyFileChanges(fileURI, textChanges[fileURI]);
@@ -541,7 +539,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                 fileManager.addFile(
                     {name: fileName, contents: "", encoding: 0},
                     replace,
-                    function() {},
+                    VPLUtil.doNothing,
                     showError
                 );
                 break;
@@ -549,8 +547,8 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             case "delete": {
                 let fileName = self.uriToFileName(operation.uri);
                 let file = fileManager.getFileByName(fileName);
-                if (! file){
-                    if (! options.ignoreIfNotExists) {
+                if (!file) {
+                    if (!options.ignoreIfNotExists) {
                         showError("file does not exist (" + fileName + ")");
                     }
                     return;
@@ -638,7 +636,6 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             let editorSession = file.getEditor().getSession();
             let annotation = [];
             for (let i = 0; i < message.params.diagnostics.length; i++) {
-                //let range = editor.getSelectionRange();?
                 let diagnostic = message.params.diagnostics[i];
                 let rangeStart = diagnostic.range.start;
                 let rangeEnd = diagnostic.range.end;
@@ -686,12 +683,12 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * @param {VPLFile} file The file to send the completion request for
      * @param {Object} context The completion context to send with the request
      */
-    this.completionRequest = function (file, context) {
+    this.completionRequest = function(file, context) {
         if (!serverCapabilities.hasCompletionProvider()) {
-            return;
+            return Promise.resolve({result: null});
         }
         if (file == false || file.getLSLang() != language || file.isOpen() == false) {
-            return;
+            return Promise.resolve({result: null});
         }
         let cursor = file.getEditor().getCursorPosition();
         let fileName = file.getFileName();
@@ -720,7 +717,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * @param {Object} context The signature help context to send with the request
      * @returns {Promise} A promise that resolves with the signature help received from the Language Server
      */
-    this.signatureHelpRequest = function (file, context) {
+    this.signatureHelpRequest = function(file, context) {
         if (!serverCapabilities.hasSignatureHelpProvider()) {
             return Promise.resolve({result: null});
         }
@@ -756,46 +753,32 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         if (!result || !Array.isArray(result.signatures) || result.signatures.length === 0) {
             return null;
         }
-        let sigIndex = result.activeSignature || 0;
-        if (sigIndex < 0 || sigIndex >= result.signatures.length) {
-            sigIndex = 0;
-        }
+        let sigIndex = result.activeSignature ?? 0;
+        sigIndex = sigIndex >= 0 && sigIndex < result.signatures.length ? sigIndex : 0;
         let signature = result.signatures[sigIndex];
         let label = signature.label || "";
         let parameters = Array.isArray(signature.parameters) ? signature.parameters : [];
         let activeParam = signature.activeParameter ?? result.activeParameter ?? 0;
-        let labelHTML;
-        if (activeParam >= 0 && activeParam < parameters.length) {
-            let param = parameters[activeParam];
-            let range = null;
-            if (Array.isArray(param.label) && param.label.length === 2) {
-                range = param.label;
-            } else if (typeof param.label === "string") {
-                let pos = label.indexOf(param.label);
-                if (pos !== -1) {
-                    range = [pos, pos + param.label.length];
-                }
-            }
-            if (range) {
-                labelHTML = VPLUtil.sanitizeText(label.substring(0, range[0]))
-                    + "<b class='vpl_ls_active_parameter'>"
-                    + VPLUtil.sanitizeText(label.substring(range[0], range[1])) + "</b>"
-                    + VPLUtil.sanitizeText(label.substring(range[1]));
-            }
+        let parameter = parameters[activeParam];
+        let range = parameter?.label;
+        if (typeof range === "string") {
+            let start = label.indexOf(range);
+            range = start === -1 ? null : [start, start + range.length];
         }
-        if (labelHTML === undefined) {
-            labelHTML = VPLUtil.sanitizeText(label);
-        }
+        let labelHTML = Array.isArray(range) && range.length === 2
+            ? VPLUtil.sanitizeText(label.substring(0, range[0]))
+                + "<b class='vpl_ls_active_parameter'>"
+                + VPLUtil.sanitizeText(label.substring(range[0], range[1])) + "</b>"
+                + VPLUtil.sanitizeText(label.substring(range[1]))
+            : VPLUtil.sanitizeText(label);
         let html = "<div class='vpl_ls_signature_label'>" + labelHTML + "</div>";
         let signatureDoc = signature.documentation;
         if (signatureDoc) {
             html += "<div>" + VPLMD.markDownToHTML(signatureDoc.value || signatureDoc) + "</div>";
         }
-        if (activeParam >= 0 && activeParam < parameters.length) {
-            let paramDoc = parameters[activeParam].documentation;
-            if (paramDoc) {
-                html += "<div>" + VPLMD.markDownToHTML(paramDoc.value || paramDoc) + "</div>";
-            }
+        if (parameter?.documentation) {
+            let paramDoc = parameter.documentation;
+            html += "<div>" + VPLMD.markDownToHTML(paramDoc.value || paramDoc) + "</div>";
         }
         if (result.signatures.length > 1) {
             html += "<div class='vpl_ls_signature_count'>(" + (sigIndex + 1) + "/" + result.signatures.length + ")</div>";
@@ -879,6 +862,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                 // Keep the active parameter in sync while the user types or deletes inside the argument list.
                 triggerSignatureHelp(file, {triggerKind: 3, isRetrigger: true});
             }
+            return Promise.resolve();
         });
     }
     /**
@@ -932,7 +916,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * Sets event handlers for the file
      * @param {VPLFile} file The file to set the event handlers for
      */
-    this.setEventHandlers = function (file) {
+    this.setEventHandlers = function(file) {
         if (file.isOpen() == false || file.getLSLang() != language || !file.isCode()) {
             return;
         }
@@ -946,20 +930,20 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         if (serverCapabilities.hasCompletionProvider()) {
             editor.completers = [self.aceCompleterAdapter];
         }
-        session.on('change', function (delta) {
+        session.on('change', function(delta) {
             resetInactivityTimeout();
             if (self.eventHandlersActive) {
                 self.addFileChangeDelta(file, delta);
                 handleSignatureHelpChange(file, delta);
             }
         });
-        session.selection.on('changeCursor', function () {
+        session.selection.on('changeCursor', function() {
             let tooltip = file.getSignatureTooltip();
             if (self.eventHandlersActive && tooltip?.isOpen) {
                 triggerSignatureHelp(file, {triggerKind: 3, isRetrigger: true});
             }
         });
-        editor.on('blur', function () {
+        editor.on('blur', function() {
             if(file.isOpen()) {
                 file.getSignatureTooltip()?.hide();
                 file.getHoverTooltip()?.hide();
@@ -972,13 +956,13 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         hoverTooltip.vpl.hideDelay = 300;
         hoverTooltip.vpl.originalHide = hoverTooltip.hide.bind(hoverTooltip);
         hoverTooltip.vpl.hideTimer = null;
-        hoverTooltip.hide = function (e) {
+        hoverTooltip.hide = function(e) {
             clearTimeout(hoverTooltip.vpl.hideTimer);
             hoverTooltip.vpl.hideTimer = setTimeout(() => {
                 hoverTooltip.vpl.originalHide(e);
             }, hoverTooltip.vpl.hideDelay);
         };
-        hoverTooltip.vpl.cancelHide = function () {
+        hoverTooltip.vpl.cancelHide = function() {
             clearTimeout(hoverTooltip.vpl.hideTimer);
         };
         hoverTooltip.getElement().addEventListener("mouseenter", () => {
@@ -991,7 +975,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             }
             const pos = event.getDocumentPosition();
             const message = await self.hoverRequest(event, file);
-            if (! message?.result?.contents) {
+            if (!message?.result?.contents) {
                 hoverTooltip.hide();
                 return;
             }
@@ -1030,9 +1014,9 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
     };
     // Manage the change file timer acumulating deltas
     // to avoid sending too many notifications to the Language Server.
-    (function () {
-        var changeFilesTimerId = {}; // timeId changeFile
-        var deltaChangeFiles = {}; // delta changeFile
+    (function() {
+        var changeFilesTimerId = {};
+        var deltaChangeFiles = {};
         /**
          * Checks if there is a change file timer set for a file.
          * @param {VPLFile} file that have been changed in the client
@@ -1098,7 +1082,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                 "text": delta.lines.join("\n")
             };
         }
-        // delta.action == "remove"
+        // Then the delta.action == "remove"
         return {
             "range": {
                 "start": start,
@@ -1134,7 +1118,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         var param = {
             "changes": changes
         };
-        return await self.sendNotification("workspace/didChangeWatchedFiles", param);
+        await self.sendNotification("workspace/didChangeWatchedFiles", param);
     };
 
     /**
@@ -1144,7 +1128,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * @param {VPLFile} file object of the changed file
      * @param {Object[]} delta Array of delta changes to send as an incremental change
      */
-    this.fileChangeNotification = function (file, delta) {
+    this.fileChangeNotification = function(file, delta) {
         if (file.isOpen() == false || file.getLSLang() != language) {
             return;
         }
@@ -1179,7 +1163,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * to signal newly opened text documents
      * @param {File} file
      */
-    this.openFileNotification = function (file) {
+    this.openFileNotification = function(file) {
         if (file.getLSLang() != language || !file.isOpen() || !self.isConnected()) {
             return;
         }
@@ -1205,25 +1189,25 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * inform when the document was saved in the client before close
      * @param {File} file file object of the saved file
      */
-    this.saveFileNotification = async function (file) {
-        let resolve, reject;
-        const promise = new Promise(function (res, rej) {
-            resolve = res;
-            reject = rej;
+    this.saveFileNotification = async function(file) {
+        let resolveSaveFile, rejectSaveFile;
+        const promiseSaveFile = new Promise(function(resolve, reject) {
+            resolveSaveFile = resolve;
+            rejectSaveFile = reject;
         });
         if (!file || !self.getCapabilities().supportsSave() || self.isStopped()) {
-            resolve({ result: null });
-            return promise;
+            resolveSaveFile({result: null});
+            return promiseSaveFile;
         }
         const fileName = file.getFileName();
         const fileURI = self.fileNameToUri(fileName);
         const content = file.getContent();
         if (openFilesFirstContent[fileName] === content) {
-            resolve({ result: null });
-            return promise;
+            resolveSaveFile({result: null});
+            return promiseSaveFile;
         }
         var param = {
-            "textDocument": { "uri": fileURI }
+            "textDocument": {"uri": fileURI}
         };
         if (self.getCapabilities().saveIncludesText()) {
             param.text = content;
@@ -1239,13 +1223,13 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         };
         VPLUI.requestAction('update', '', data, APIURL, true)
             .done(
-                async function () {
-                    resolve(await self.sendNotification("textDocument/didSave", param));
+                async function() {
+                    resolveSaveFile(await self.sendNotification("textDocument/didSave", param));
                 }
-            ).fail(function (error) {
-                reject(error);
+            ).fail(function(error) {
+                rejectSaveFile(error);
             });
-        return promise;
+        return promiseSaveFile;
     };
 
     /**
@@ -1254,7 +1238,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * and notify all open files in the client that are supported by the Language Server
      * @param {*} message The message received from the Language Server
      */
-    this.initializeProcess = function (message) {
+    this.initializeProcess = function(message) {
         // Wrap raw capabilities into LSServerCapabilities instance for helpers
         serverCapabilities = new LSServerCapabilities(message?.result?.capabilities);
         self.aceCompleterAdapter.triggerCharacters = serverCapabilities.getCompletionTriggerCharacters();
@@ -1290,7 +1274,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             typeName = typeNames[type - 1] || "Unknown";
         } else if (typeof type === "string") {
             typeName = type;
-        }else {
+        } else {
             typeName = "Unknown";
         }
         const forced = type == 0 || messageText.includes("starting");
@@ -1311,7 +1295,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             for (let contentPart of contents) {
                 html += getContentMarkDown(contentPart) + "\n";
             }
-        } else if(typeof contents === "string") {
+        } else if (typeof contents === "string") {
             html += contents + "\n";
         } else {
             let header = "";
@@ -1326,7 +1310,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         return html;
     }
 
-   /**
+    /**
      * It goes to file and start line of the definition requested
      * received from the Language Server
      * @param {*} message The message received from the Language Server
@@ -1355,47 +1339,60 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
     }
 
     /**
+     * Returns the file data (file name and lines) for a given file name
+     * @param {string} fileName The name of the file to get the data for
+     * @returns {Object} An object containing the file name and lines, or null if the file is not found
+     */
+    function getFileDataForReferences(fileName) {
+        let file = fileManager.getFileByName(fileName);
+        if  (file) {
+            return {fileName: fileName, lines: file.getContent().split("\n")};
+        }
+        return {fileName: null, lines: null};
+    }
+
+    /**
      * It shows the references received from the Language Server
      * with the file name and line number, and when clicking on it, goes to the corresponding file and line.
      * @param {*} message The message received from the Language Server containing the references
+     * @param {*} request The request sent to the Language Server that generated the references
      */
-    function references(message) {
+    function references(message, request) {
         if(!Array.isArray(message.result) || message.result.length === 0) {
             return;
         }
-        let content = "";
-
-        let lastFileData = {fileName: null, line: null};
+        var inList = false;
+        var content = "";
+        var referenceName = request?.data?.name ?? "?";
+        content +=  "<b>" + VPLUtil.str('referencesfor', VPLUtil.sanitizeText(referenceName)) + "</b>\n<hr>\n<br>\n";
+        let fileData = {fileName: null, line: null};
         for (let place of message.result) {
             let start = place.range.start;
             let end = place.range.end;
             let fileName = self.uriToFileName(place.uri);
-            if (lastFileData.fileName !== fileName) {
-                let file = fileManager.getFileByName(fileName);
-                if  (file) {
-                    let newFileData = {fileName: fileName, lines: file.getContent().split("\n")};
-                    if (lastFileData.fileName === null) {
-                        let identifier = newFileData.lines[start.line].substring(start.character, end.character);
-                        if (start.line != end.line) {
-                            line = newFileData.lines[start.line].substring(start.character);
-                        }
-                        content += VPLUtil.str('referencesto', identifier) + "\n<hr>\n<br>\n";
-                    } else if (lastFileData.fileName != newFileData.fileName) {
-                        content += "</ul>\n";
-                    }
-                    lastFileData = newFileData;
+            if (fileData.fileName !== fileName) {
+                fileData = getFileDataForReferences(fileName);
+                if (inList) {
+                    // Close the previous list of references for the previous file.
+                    content += "</ul>\n";
+                    inList = false;
+                }
+                if (fileData.fileName !== null) {
+                    // Show the file name in bold and start a new list for the references in that file.
                     content += "<b>" + VPLUtil.sanitizeText(fileName) + "</b>\n<ul>\n";
-                } else {
-                    continue;
+                    inList = true;
                 }
             }
-            let line = lastFileData.lines[start.line];
-            var saniFilename = VPLUtil.sanitizeText(fileName);
-            var iniA = '<a href="#" data-file="' + saniFilename + '" data-line="' + (start.line + 1) + '">';
-            let initext = VPLUtil.sanitizeText(line.substring(0, start.character));
-            let identifier = iniA+ VPLUtil.sanitizeText(line.substring(start.character, end.character)) + '</a>';
+            if (fileData.fileName === null) {
+                continue;
+            }
+            let line = fileData.lines[start.line];
+            let saniFilename = VPLUtil.sanitizeText(fileName);
+            let iniText = VPLUtil.sanitizeText(line.substring(0, start.character));
+            var reference = '<a href="#" data-file="' + saniFilename + '" data-line="' + (start.line + 1) + '">';
+            reference += VPLUtil.sanitizeText(line.substring(start.character, end.character)) + '</a>';
             let endText = VPLUtil.sanitizeText(line.substring(end.character));
-            content += "<li>Line " + (start.line + 1) + ": " + initext + identifier + endText + "</li>\n";
+            content += "<li>Line " + (start.line + 1) + ": " + iniText + reference + endText + "</li>\n";
         }
         if (content === "") {
             return;
@@ -1422,10 +1419,10 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      *                          contains an ApplyWorkspaceEditParams {label?, edit}.
      */
     async function applyEdit(message) {
-        var resolve, reject;
-        var promise = new Promise(function(res, rej) {
-            resolve = res;
-            reject = rej;
+        var resolveApplyEdit, rejectApplyEdit;
+        var promiseApplyEdit = new Promise(function(resolve, reject) {
+            resolveApplyEdit = resolve;
+            rejectApplyEdit = reject;
         });
 
         var applied = false;
@@ -1446,7 +1443,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         }
         // ApplyWorkspaceEditResponse: {applied: boolean, failureReason?: string}
         let result = {"applied": applied};
-        if (! applied && failureReason !== undefined) {
+        if (!applied && failureReason !== undefined) {
             result.failureReason = failureReason;
         }
         var files = [];
@@ -1472,12 +1469,12 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         VPLUI.requestAction('update', '', data, APIURL, true)
         .done(
             async function() {
-                resolve(await self.sendResponse(message.id, result));
+                resolveApplyEdit(await self.sendResponse(message.id, result));
             }
         ).fail(function(error) {
-            reject(error);
+            rejectApplyEdit(error);
         });
-        return promise;
+        return promiseApplyEdit;
     }
 
     /**
@@ -1516,33 +1513,35 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      */
     (function() {
         const defaultTriggerCharacters = [".", ">", "@", "$"];
-        const mapKindToMeta = {
-            1: "text",
-            2: "method",
-            3: "function",
-            4: "constructor",
-            5: "field",
-            6: "variable",
-            7: "class",
-            8: "interface",
-            9: "module",
-            10: "property",
-            11: "unit",
-            12: "value",
-            13: "enum",
-            14: "keyword",
-            15: "snippet",
-            16: "color",
-            17: "file",
-            18: "reference",
-            19: "folder",
-            20: "enumMember",
-            21: "constant",
-            22: "struct",
-            23: "event",
-            24: "operator",
-            25: "type"
-        };
+        const mapKindToMeta = [
+            undefined,
+            "text", // Number 1 - Text
+            "method", // Number 2 - Method
+            "function", // Number 3 - Function
+            "constructor", // Number 4 - Constructor
+            "field", // Number 5 - Field
+            "variable", // Number 6 - Variable
+            "class", // Number 7 - Class
+            "interface", // Number 8 - Interface
+            "module", // Number 9 - Module
+            "property", // Number 10 - Property
+            "unit", // Number 11 - Unit
+            "value", // Number 12 - Value
+            "enum", // Number 13 - Enum
+            "keyword", // Number 14 - Keyword
+            "snippet", // Number 15 - Snippet
+            "color", // Number 16 - Color
+            "file", // Number 17 - File
+            "reference", // Number 18 - Reference
+            "folder", // Number 19 - Folder
+            "enumMember", // Number 20 - EnumMember
+            "constant", // Number 21 - Constant
+            "struct", // Number 22 - Struct
+            "event", // Number 23 - Event
+            "operator", // Number 24 - Operator
+            "type" // Number 25 - TypeParameter
+        ];
+
         /**
          * Build the HTML content for the documentation of a completion item
          * using the 'detail' and 'documentation' properties of the item
@@ -1628,7 +1627,14 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                     const message = await self.completionRequest(session.$vplfile, context);
                     const result = message?.result;
                     // LSP can return completion items or an object with an 'items' property with completion items
-                    var items = Array.isArray(result)? result: ( Array.isArray(result?.items)? result.items: []);
+                    var items;
+                    if (Array.isArray(result)) {
+                        items = result;
+                    } else if (Array.isArray(result?.items)) {
+                        items = result.items;
+                    } else {
+                        items = [];
+                    }
                     var sortedItems = sortCompletionItems(items);
                     var aceItems = sortedItems.map(function(item, index) {
                         return translateCompletionItemToAce(item, index, sortedItems.length);
@@ -1680,7 +1686,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                 }
 
                 if (lspItem.textEdit) {
-                    // textEdit is either a TextEdit (range) or an InsertReplaceEdit (insert/replace).
+                    // The textEdit is either a TextEdit (range) or an InsertReplaceEdit (insert/replace).
                     const lsprange = lspItem.textEdit.range ?? lspItem.textEdit.replace ?? lspItem.textEdit.insert;
                     // The textEdit range was computed when the completion was requested. While the
                     // popup stayed open the user may have typed more characters, which now lie after
@@ -1734,57 +1740,85 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      * @returns {string} Regex string
      */
     function globToRegexStr(glob) {
-        let str = '';
-        let i = 0;
-        while (i < glob.length) {
-            const c = glob[i];
-            if (c === '*') {
-                if (glob[i + 1] === '*') {
-                    str += '.*';
-                    i += 2;
-                    if (glob[i] === '/') {
-                        i++;
-                    }
-                } else {
-                    str += '[^/]*';
+        var str = '';
+        var i = 0;
+        /**
+         * Converts an asterisk (*) in a glob pattern to a regex string.
+         * @returns {string} Regex string for the asterisk
+         */
+        function asteriskToRegex() {
+            if (glob[i + 1] === '*') {
+                str += '.*';
+                i += 2;
+                if (glob[i] === '/') {
                     i++;
                 }
-            } else if (c === '?') {
-                str += '[^/]';
+            } else {
+                str += '[^/]*';
                 i++;
-            } else if (c === '{') {
-                let j = i + 1;
-                let depth = 1;
-                let parts = [];
-                let part = '';
-                while (j < glob.length && depth > 0) {
-                    if (glob[j] === '{') {
-                        depth++;
-                        part += glob[j];
-                    } else if (glob[j] === '}') {
-                        depth--;
-                        if (depth === 0) {
-                            parts.push(part);
-                        } else {
-                            part += glob[j];
-                        }
-                    } else if (glob[j] === ',' && depth === 1) {
+            }
+        }
+        /**
+         * Converts a question mark (?) in a glob pattern to a regex string.
+         * @returns {string} Regex string for the question mark
+         */
+        function questionMarkToRegex() {
+            str += '[^/]';
+            i++;
+        }
+        /**
+         * Converts a brace ({a,b}) in a glob pattern to a regex string.
+         * @returns {string} Regex string for the brace
+         */
+        function braceToRegex() {
+            let j = i + 1;
+            let depth = 1;
+            let parts = [];
+            let part = '';
+            while (j < glob.length && depth > 0) {
+                if (glob[j] === '{') {
+                    depth++;
+                    part += glob[j];
+                } else if (glob[j] === '}') {
+                    depth--;
+                    if (depth === 0) {
                         parts.push(part);
-                        part = '';
                     } else {
                         part += glob[j];
                     }
-                    j++;
+                } else if (glob[j] === ',' && depth === 1) {
+                    parts.push(part);
+                    part = '';
+                } else {
+                    part += glob[j];
                 }
-                str += '(?:' + parts.map(globToRegexStr).join('|') + ')';
-                i = j;
+                j++;
+            }
+            str += '(?:' + parts.map(globToRegexStr).join('|') + ')';
+            i = j;
+        }
+        /**
+         * Converts a bracket ([abc]) in a glob pattern to a regex string.
+         * @returns {string} Regex string for the bracket
+         */
+        function bracketToRegex() {
+            let j = i + 1;
+            while (j < glob.length && glob[j] !== ']') {
+                j++;
+            }
+            str += glob.substring(i, j + 1);
+            i = j + 1;
+        }
+        while (i < glob.length) {
+            const c = glob[i];
+            if (c === '*') {
+                asteriskToRegex();
+            } else if (c === '?') {
+                questionMarkToRegex();
+            } else if (c === '{') {
+                braceToRegex();
             } else if (c === '[') {
-                let j = i + 1;
-                while (j < glob.length && glob[j] !== ']') {
-                    j++;
-                }
-                str += glob.substring(i, j + 1);
-                i = j + 1;
+                bracketToRegex();
             } else {
                 str += c.replace(/[.+^${}()|[\]\\]/g, '\\$&');
                 i++;
@@ -1801,7 +1835,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      */
     function fileMatchesWatchedRegistrations(fileName, fileChangeType) {
         // Map LSP FileChangeType to WatchKind bit (Created=1, Changed=2, Deleted=4)
-        const watchKindBit = fileChangeType === 1 ? 1 : (fileChangeType === 2 ? 2 : 4);
+        const watchKindBit = fileChangeType < 3 ? fileChangeType : 4;
         for (let reg of Object.values(watchedFileRegistrations)) {
             for (let watcher of reg.watchers) {
                 const kind = watcher.kind !== undefined ? watcher.kind : 7;
@@ -1842,6 +1876,8 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         }
         if (message.id !== undefined) {
             return self.sendResponse(message.id, null);
+        } else {
+            return Promise.resolve({result: null});
         }
     }
 
@@ -1860,6 +1896,8 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         }
         if (message.id !== undefined) {
             return self.sendResponse(message.id, null);
+        } else {
+            return Promise.resolve({result: null});
         }
     }
 
@@ -1874,7 +1912,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         "initialize": VPLUtil.doNothing,
         "textDocument/publishDiagnostics": publishDiagnostics,
         "textDocument/completion": VPLUtil.doNothing,
-        "textDocument/hover": VPLUtil.doNothing, // hover is handled in the request promise
+        "textDocument/hover": VPLUtil.doNothing, // Hover is handled in the request promise
         "textDocument/definition": definition,
         "textDocument/implementation": implementation,
         "textDocument/references": references,
@@ -1957,7 +1995,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
     // Pending message for the Language Server
     var pendingMessage = {
         "active": false,
-        "buffer": new Uint8Array(0),  // byte buffer — Content-Length is in bytes, not chars
+        "buffer": new Uint8Array(0),  // The byte buffer — Content-Length is in bytes, not chars
         "expectedLength": 0,
     };
     const contentLengthRegex = /Content-Length:\s*(\d+)/i;
@@ -2012,7 +2050,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                         continue;
                     }
                     let contentLengthMatch = headers.match(contentLengthRegex);
-                    if (! contentLengthMatch) {
+                    if (!contentLengthMatch) {
                         log("Ignoring header response: no Content-Length header found.");
                         log("Header received: " + headers);
                         continue;
@@ -2089,7 +2127,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         };
         self.setStatus();
         VPLUtil.directRun(APIURL, '$' + language, files)
-        .then(function (openws) {
+        .then(function(openws) {
             log("Connection established. home: " + openws.homepath);
             ws = openws;
             let projectpath = openws.homepath + "/" + projectFolder;
@@ -2111,6 +2149,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
             reConnectionTimerId = null;
             self.setStatus();
             self.initializeRequest();
+            return Promise.resolve();
         })
         .catch(function() {
             ws = null;
@@ -2155,8 +2194,9 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         self.setStatus();
         if (taskId !== null) {
             VPLUtil.cancelDirectRun(APIURL, taskId)
-            .then(function () {
+            .then(function() {
                 log("LS stopped");
+                return Promise.resolve();
             })
             .catch(function() {
                 log("Error stopping LS");
@@ -2219,31 +2259,31 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
      */
     this.sendRequest = function(method, params, fileName = null, data = null) {
         let id = ++messageId;
-        let resolve, reject;
-        const promise = new Promise(function(res, rej) {
-            resolve = res;
-            reject = rej;
+        let resolveRequest, rejectRequest;
+        const promiseRequest = new Promise(function(res, rej) {
+            resolveRequest = res;
+            rejectRequest = rej;
         });
         resetInactivityTimeout();
         if (!self.isConnected()) {
             log("Cannot send request: " + method + " due to connection lost.");
-            resolve({result: null});
+            resolveRequest({result: null});
             tryReconnect();
-            return promise;
+            return promiseRequest;
         }
         const timeoutId = window.setTimeout(function() {
             if (requests[id]) {
                 log('Request timeout: ' + method + ' id: ' + id, true);
                 delete requests[id];
-                resolve({result: null});
+                resolveRequest({result: null});
             }
         }, requestTimeout);
         requests[id] = {
             'requestMethod': method,
             'fileName': fileName,
             'data': data,
-            'resolve': resolve,
-            'reject': reject,
+            'resolve': resolveRequest,
+            'reject': rejectRequest,
             'timeoutId': timeoutId
         };
         let jsonMessage = {
@@ -2258,7 +2298,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
         ws.connection.send(request);
         self.setStatus();
         log("Sent request: " + method + " with id: " + jsonMessage.id);
-        return promise;
+        return promiseRequest;
     };
 
     /**
@@ -2338,7 +2378,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
     /**
      * Send the initialize request to the Language Server
      */
-    this.initializeRequest = function () {
+    this.initializeRequest = function() {
         if (self.isConnecting()) {
             setTimeout(self.initializeRequest, waitTimeConecting);
             return;
@@ -2425,7 +2465,7 @@ export const VPLLSClient = function (APIURL, fileManager, language, locale) {
                         "dynamicRegistration": false
                     }, "formatting": {
                         "dynamicRegistration": false
-                    }, "rangeFormatting":{
+                    }, "rangeFormatting": {
                         "dynamicRegistration": false
                     }, "rename": {
                         "dynamicRegistration": false,

@@ -255,17 +255,17 @@ export class VPLIDEButtons {
         // Map of modifier synonyms to a canonical token. This makes matching independent
         // of the naming used in the bindKey definitions (e.g. "Option"/"Alt", "Command"/"Cmd"/"Meta").
         var modifierAliases = {
-            shift: 'shift',
-            ctrl: 'ctrl',
-            control: 'ctrl',
-            alt: 'alt',
-            option: 'alt',
-            opt: 'alt',
-            cmd: 'meta',
-            command: 'meta',
-            meta: 'meta',
-            win: 'meta',
-            super: 'meta'
+            'shift': 'shift',
+            'ctrl': 'ctrl',
+            'control': 'ctrl',
+            'alt': 'alt',
+            'option': 'alt',
+            'opt': 'alt',
+            'cmd': 'meta',
+            'command': 'meta',
+            'meta': 'meta',
+            'win': 'meta',
+            'super': 'meta'
         };
         var modifierOrder = ['shift', 'ctrl', 'alt', 'meta'];
         // Normalize a shortcut string (e.g. "Command-Option-U") into a canonical, order-independent
