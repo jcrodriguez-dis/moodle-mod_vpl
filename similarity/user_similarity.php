@@ -78,7 +78,7 @@ foreach ($ovpls as $ovpl) {
 // Hide user name if user has no capability to see similarity.
 if ($nocapability) {
     $username = '';
-} else{
+} else {
     $username = fullname($user);
 }
 $strtitle = get_string('listsimilarity', VPL);
