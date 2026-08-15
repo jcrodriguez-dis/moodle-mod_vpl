@@ -445,10 +445,10 @@ class vpl_jailserver_manager {
     }
 
     /**
-     * Return a valid server to be used, May tag some servers as faulty
+     * Return a valid server to be used, may tag some servers as faulty
      *
-     * @param int $maxmemory Required
      * @param \mod_vpl $vpl Object of the current VPL activity
+     * @param int $maxmemory Required
      * @param ?string $feedback Info about jail servers response
      * @param string $language Language for LS servers, default null (any language)
      * @return string URL of the server or empty string if no server is available
@@ -485,7 +485,7 @@ class vpl_jailserver_manager {
                 } else if (! isset($response['status'])) {
                     self::server_fail($server, $error);
                     $feedback .= parse_url($server, PHP_URL_HOST) . " protocol error (No status)\n";
-                } else if (self::get_last_server_version() > '' && self::get_last_server_version() < '4.0.3') {
+                } else if (version_compare(self::get_last_server_version(), '4.0.3', '<')) {
                     self::server_fail($server, get_string('message::bad_jailserver', VPL));
                     $feedback .= parse_url($server, PHP_URL_HOST) . " not available.\n";
                 } else {
@@ -596,7 +596,7 @@ class vpl_jailserver_manager {
                 $info->offline = true;
                 self::server_fail($server, $status);
             } else {
-                if (self::get_last_server_version() > '' && self::get_last_server_version() < '4.0.3') {
+                if (version_compare(self::get_last_server_version(), '4.0.3', '<')) {
                     $info->offline = true;
                     $status = get_string('message::bad_jailserver', VPL);
                 } else {
