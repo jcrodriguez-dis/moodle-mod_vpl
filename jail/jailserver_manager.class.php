@@ -449,8 +449,8 @@ class vpl_jailserver_manager {
      *
      * @param \mod_vpl $vpl Object of the current VPL activity
      * @param int $maxmemory Required
-     * @param ?string $feedback Info about jail servers response
-     * @param string $language Language for LS servers, default null (any language)
+     * @param string|null &$feedback Info about jail servers response
+     * @param string|null $language Language for LS servers, default null (any language)
      * @return string URL of the server or empty string if no server is available
      */
     public static function get_server(
