@@ -265,7 +265,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
     this.openFileNotification = async function(file) {
         let LS = self.getLS(file);
         if (LS === null) {
-            return;
+            return Promise.resolve({result: null});
         }
         return await LS.openFileNotification(file);
     };

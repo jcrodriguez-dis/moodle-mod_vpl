@@ -399,7 +399,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      */
     function getRequestByIdAndRemove(id) {
         let request = {
-            requestMethod:"Not found ID '" + id + "' in requests",
+            requestMethod: "Not found ID '" + id + "' in requests",
             fileName: null,
             reject: VPLUtil.doNothing,
             resolve: VPLUtil.doNothing,
@@ -705,7 +705,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         self.notifyPendingFileChanges(file);
         return self.addTask(
-            async () => {
+            async function() {
                 return self.sendRequest("textDocument/completion", param, fileName);
             }
         );
@@ -739,7 +739,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         self.notifyPendingFileChanges(file);
         return self.addTask(
-            async () => {
+            async function() {
                 return self.sendRequest("textDocument/signatureHelp", param, fileName);
             }
         );
@@ -862,7 +862,9 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 // Keep the active parameter in sync while the user types or deletes inside the argument list.
                 triggerSignatureHelp(file, {triggerKind: 3, isRetrigger: true});
             }
-            return Promise.resolve();
+            return;
+        }).catch(function(error) {
+            log("Error handling signature help change: " + error);
         });
     }
     /**
@@ -944,7 +946,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             }
         });
         editor.on('blur', function() {
-            if(file.isOpen()) {
+            if (file.isOpen()) {
                 file.getSignatureTooltip()?.hide();
                 file.getHoverTooltip()?.hide();
                 file.getTooltip()?.hide();
@@ -1345,7 +1347,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      */
     function getFileDataForReferences(fileName) {
         let file = fileManager.getFileByName(fileName);
-        if  (file) {
+        if (file) {
             return {fileName: fileName, lines: file.getContent().split("\n")};
         }
         return {fileName: null, lines: null};
@@ -1358,13 +1360,13 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * @param {*} request The request sent to the Language Server that generated the references
      */
     function references(message, request) {
-        if(!Array.isArray(message.result) || message.result.length === 0) {
+        if (!Array.isArray(message.result) || message.result.length === 0) {
             return;
         }
         var inList = false;
         var content = "";
         var referenceName = request?.data?.name ?? "?";
-        content +=  "<b>" + VPLUtil.str('referencesfor', VPLUtil.sanitizeText(referenceName)) + "</b>\n<hr>\n<br>\n";
+        content += "<b>" + VPLUtil.str('referencesfor', VPLUtil.sanitizeText(referenceName)) + "</b>\n<hr>\n<br>\n";
         let fileData = {fileName: null, line: null};
         for (let place of message.result) {
             let start = place.range.start;
@@ -1599,7 +1601,13 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 }
                 const aLabel = a.label ?? "";
                 const bLabel = b.label ?? "";
-                return aLabel < bLabel ? -1 : (aLabel > bLabel ? 1 : 0);
+                if (aLabel === bLabel) {
+                    return 0;
+                }
+                if (aLabel < bLabel) {
+                    return -1;
+                }
+                return 1;
             });
         }
 
@@ -1995,7 +2003,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     // Pending message for the Language Server
     var pendingMessage = {
         "active": false,
-        "buffer": new Uint8Array(0),  // The byte buffer — Content-Length is in bytes, not chars
+        "buffer": new Uint8Array(0), // The byte buffer — Content-Length is in bytes, not chars
         "expectedLength": 0,
     };
     const contentLengthRegex = /Content-Length:\s*(\d+)/i;
@@ -2149,7 +2157,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             reConnectionTimerId = null;
             self.setStatus();
             self.initializeRequest();
-            return Promise.resolve();
+            return;
         })
         .catch(function() {
             ws = null;
@@ -2196,7 +2204,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             VPLUtil.cancelDirectRun(APIURL, taskId)
             .then(function() {
                 log("LS stopped");
-                return Promise.resolve();
+                return;
             })
             .catch(function() {
                 log("Error stopping LS");
@@ -2260,9 +2268,9 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     this.sendRequest = function(method, params, fileName = null, data = null) {
         let id = ++messageId;
         let resolveRequest, rejectRequest;
-        const promiseRequest = new Promise(function(res, rej) {
-            resolveRequest = res;
-            rejectRequest = rej;
+        const promiseRequest = new Promise(function(resolve, reject) {
+            resolveRequest = resolve;
+            rejectRequest = reject;
         });
         resetInactivityTimeout();
         if (!self.isConnected()) {
