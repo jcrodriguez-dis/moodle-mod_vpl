@@ -30,7 +30,8 @@ require_once(__DIR__ . '/../editor/editor_utility.php');
 
 global $USER, $DB;
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $userid = optional_param('userid', false, PARAM_INT);
 $copy = optional_param('privatecopy', false, PARAM_INT);
 $subid = optional_param('submissionid', false, PARAM_INT);

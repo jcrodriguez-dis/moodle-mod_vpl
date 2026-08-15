@@ -185,21 +185,6 @@ class mod_vpl {
     }
 
     /**
-     * Require login for a course module.
-     *
-     * @param int $cmid Course module id
-     * @param bool $autologinguest Whether to allow auto-login guest
-     * @return void
-     */
-    public static function require_login($cmid, $autologinguest = true) {
-        $cm = get_coursemodule_from_id(VPL, $cmid);
-        if (! $cm) {
-            throw new moodle_exception('invalidcoursemodule');
-        }
-        require_login($cm->course, $autologinguest, $cm);
-    }
-
-    /**
      * Constructor
      *
      * @param int $id optional course_module id

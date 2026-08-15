@@ -39,7 +39,8 @@ ini_set('memory_limit', '256M');
 global $CFG, $DB, $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $userid = required_param('userid', PARAM_INT);
 $timelimit = 600; // Limit 10 minutes.
 // Check course existence.

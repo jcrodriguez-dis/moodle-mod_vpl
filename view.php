@@ -30,7 +30,8 @@ require_once(dirname(__FILE__) . '/vpl.class.php');
 global $USER, $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT); // Course Module ID.
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 
 $vpl = new mod_vpl($id);
 $urlparms = [ 'id' => $id ];

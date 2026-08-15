@@ -42,7 +42,8 @@ try {
     }
 
     $id = required_param('id', PARAM_INT);
-    mod_vpl::require_login($id);
+    [$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+    require_login($course, true, $cm);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".

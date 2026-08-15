@@ -405,7 +405,8 @@ class mod_vpl_executionoptions_form extends \moodleform {
 }
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new \mod_vpl($id);
 $vpl->prepare_page('forms/executionoptions.php', [ 'id' => $id ]);
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);

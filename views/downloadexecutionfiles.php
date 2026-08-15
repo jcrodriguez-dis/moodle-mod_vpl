@@ -31,7 +31,8 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 
 try {
     $id = required_param('id', PARAM_INT);
-    mod_vpl::require_login($id);
+    [$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+    require_login($course, true, $cm);
     $vpl = new mod_vpl($id);
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $filegroup = $vpl->get_execution_fgm();

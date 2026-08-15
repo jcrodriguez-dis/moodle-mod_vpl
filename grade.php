@@ -28,7 +28,8 @@ require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/vpl.class.php');
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('grade.php', ['id' => $id]);
 $vpl->print_header();

@@ -32,7 +32,8 @@ require_once(dirname(__FILE__) . '/../views/sh_factory.class.php');
 global $DB, $USER, $PAGE;
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $userid = optional_param('userid', false, PARAM_INT);
 

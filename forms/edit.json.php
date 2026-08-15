@@ -36,7 +36,9 @@ $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
     $id = required_param('id', PARAM_INT); // Course module id.
-    mod_vpl::require_login($id);
+    [$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+    require_login($course, true, $cm);
+
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $userid = optional_param('userid', false, PARAM_INT);
     $subid = optional_param('subid', false, PARAM_INT);

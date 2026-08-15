@@ -129,7 +129,8 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
 }
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $all = optional_param('all', 0, PARAM_INT);
 /**

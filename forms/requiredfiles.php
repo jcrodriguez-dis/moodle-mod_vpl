@@ -30,7 +30,8 @@ require_once(dirname(__FILE__) . '/edit.class.php');
 require_once(dirname(__FILE__) . '/../editor/editor_utility.php');
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/requiredfiles.php', [ 'id' => $id ]);
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);

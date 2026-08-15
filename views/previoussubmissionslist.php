@@ -56,7 +56,8 @@ function vpl_actions_menu($id, $userid, $subid) {
 
 
 $id = required_param('id', PARAM_INT);
-mod_vpl::require_login($id);
+[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $userid = optional_param('userid', null, PARAM_INT);
 $detailed = abs(optional_param('detailed', 0, PARAM_INT)) % 2;
