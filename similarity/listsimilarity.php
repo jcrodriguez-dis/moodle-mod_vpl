@@ -36,7 +36,7 @@ ini_set('memory_limit', '256M');
 global $CFG, $OUTPUT, $PAGE;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('similarity/listsimilarity.php', ['id' => $id]);

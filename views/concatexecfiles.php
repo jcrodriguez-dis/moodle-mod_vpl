@@ -33,7 +33,7 @@ require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot . '/mod/vpl/views/sh_factory.class.php');
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vplinstance = $vpl->get_instance();

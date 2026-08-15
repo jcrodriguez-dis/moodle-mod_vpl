@@ -32,7 +32,7 @@ require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 
 $PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');

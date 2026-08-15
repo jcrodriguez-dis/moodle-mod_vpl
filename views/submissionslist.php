@@ -345,7 +345,7 @@ function vpl_get_students($vpl) {
 }
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 
 $groupid = optional_param('group', - 1, PARAM_INT);

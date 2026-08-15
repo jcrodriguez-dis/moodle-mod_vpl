@@ -118,7 +118,7 @@ class mod_vpl_executionlimits_form extends moodleform {
 }
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/executionlimits.php', ['id' => $id]);

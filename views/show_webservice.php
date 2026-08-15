@@ -30,7 +30,7 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 global $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('views/show_webservice.php', [ 'id' => $id ]);

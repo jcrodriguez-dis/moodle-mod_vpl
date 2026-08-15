@@ -30,7 +30,7 @@ require_once(dirname(__FILE__) . '/../locallib.php');
 global $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $evaluatorname = required_param('evaluator', PARAM_ALPHANUMEXT);
 $vpl = new mod_vpl($id);

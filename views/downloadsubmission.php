@@ -34,7 +34,7 @@ require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 global $USER, $DB;
 try {
     $id = required_param('id', PARAM_INT);
-    [$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
     require_login($course, true, $cm);
     $vpl = new mod_vpl($id);
     $userid = optional_param('userid', false, PARAM_INT);

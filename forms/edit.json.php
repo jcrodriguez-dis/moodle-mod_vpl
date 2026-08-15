@@ -36,7 +36,7 @@ $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
     $id = required_param('id', PARAM_INT); // Course module id.
-    [$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
     require_login($course, true, $cm);
 
     $action = required_param('action', PARAM_ALPHANUMEXT);

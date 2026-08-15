@@ -30,7 +30,7 @@ require_once(__DIR__ . '/../editor/editor_utility.php');
 
 global $USER, $DB;
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 $userid = optional_param('userid', false, PARAM_INT);
 $copy = optional_param('privatecopy', false, PARAM_INT);

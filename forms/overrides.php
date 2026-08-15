@@ -77,7 +77,7 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_instance($id, 'vpl');
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
 require_login($course, true, $cm);
 
 $edit = optional_param('edit', null, PARAM_INT);
