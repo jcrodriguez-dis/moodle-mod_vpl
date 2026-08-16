@@ -28,9 +28,10 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 
 global $PAGE, $OUTPUT;
-require_login();
 
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('views/show_webservice.php', [ 'id' => $id ]);
 $vpl->require_capability(VPL_VIEW_CAPABILITY);
@@ -39,7 +40,6 @@ if (! $vpl->is_visible()) {
     notice(get_string('notavailable'));
 }
 \mod_vpl\event\vpl_security_webservice::log($vpl);
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/webservice.css'));
 $vpl->print_header(get_string('webservice', VPL));
 $vpl->print_view_tabs('view.php');
 echo $OUTPUT->heading_with_help($vpl->get_printable_name() . ' - ' . get_string('webservice', VPL), 'webservice', VPL, '', '', 1);

@@ -101,7 +101,8 @@ function vpl_call_service($url, $fun, $request = '') {
     }
     $rawresponse = curl_exec($ch);
     if ($rawresponse === false) {
-        $error = 'request failed: ' . s(curl_error($ch));
+        $detailederror = str_replace($url, '[JAIL_SERVER]', curl_error($ch));
+        $error = 'Request failed: ' . s($detailederror);
         curl_close($ch);
         vpl_call_print($fun, $error);
         return $error;
@@ -131,14 +132,12 @@ function vpl_call_print($fun, $res) {
     echo "</pre>\n";
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
-$vpl->prepare_page('tests/webservice_client.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('tests/webservice_client.php', ['id' => $id]);
 $basebody = "id=$id";
 
 $vpl->print_header('Web service test client');

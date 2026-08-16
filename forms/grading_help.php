@@ -86,9 +86,10 @@ try {
         throw new Exception(get_string('loggedinnot'));
     }
     $id = required_param('id', PARAM_INT); // Course module id.
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+    require_login($course, true, $cm);
     $vpl = new mod_vpl($id);
-    require_login($vpl->get_course(), false);
-
+    $vpl->require_capability(VPL_GRADE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/grading_help.php', ['id' => $id]));
     echo $OUTPUT->header(); // Send headers.
     $result->response = get_grading_help($vpl);

@@ -33,21 +33,18 @@ use mod_vpl\similarity\utility;
 
 ini_set('memory_limit', '256M');
 
-require_login();
-
 global $CFG, $OUTPUT, $PAGE;
 
 $id = required_param('id', PARAM_INT);
-$timelimit = 600; // 10 minutes.
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('similarity/listsimilarity.php', [
-        'id' => $id,
-]);
-
+$vpl->prepare_page('similarity/listsimilarity.php', ['id' => $id]);
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+
+$timelimit = 600; // 10 minutes.
 \mod_vpl\event\vpl_similarity_report_viewed::log($vpl);
 // Print header.
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/similarity.css'));
 $vpl->print_header(get_string('listsimilarity', VPL));
 $vpl->print_view_tabs(basename(__FILE__));
 $form = new vpl_similarity_form('listsimilarity.php', $vpl);

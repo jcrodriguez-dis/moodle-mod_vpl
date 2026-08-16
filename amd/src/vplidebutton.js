@@ -124,7 +124,8 @@ export class VPLIDEButtons {
                     title += ' (' + buttons[buttonName].key + ')';
                 }
 
-                var html = "<a id='vpl_ide_" + buttonName + "' href='#' title='" + title + "'>";
+                var html = "<a id='vpl_ide_" + VPLUtil.sanitizeText(buttonName) +
+                    "' href='#' title='" + VPLUtil.sanitizeText(title) + "'>";
                 html += VPLUI.genIcon(buttons[buttonName].icon) + "</a>";
                 return html;
             }
@@ -137,6 +138,7 @@ export class VPLIDEButtons {
             var bw = $('#vpl_ide_' + buttonName);
             buttons[buttonName].active = active;
             bw.data("vpl-active", active);
+            bw.data("vpl-idebutton", buttonName);
             if (!active) {
                 bw.addClass('ui-button-disabled ui-state-disabled');
             } else {
@@ -172,19 +174,24 @@ export class VPLIDEButtons {
             }
             var commands = editor.commands.commands;
             var platform = editor.commands.platform;
+            var resolveKey = function(bindKey) {
+                return typeof bindKey === 'string' ? bindKey : bindKey[platform];
+            };
             for (var buttonName in buttons) {
-                if (buttons.hasOwnProperty(buttonName)) {
-                    var editorName = buttons[buttonName].editorName;
-                    if (commands[editorName] && commands[editorName].bindKey && !buttons[buttonName].key) {
-                        buttons[buttonName].key = commands[editorName].bindKey[platform];
-                        self.setText(buttonName);
-                    } else {
-                        if (buttons[buttonName].bindKey &&
-                            !buttons[buttonName].hasOwnProperty('key')) {
-                            buttons[buttonName].key = buttons[buttonName].bindKey[platform];
-                            self.setText(buttonName);
-                        }
-                    }
+                if (!buttons.hasOwnProperty(buttonName)) {
+                    continue;
+                }
+                var button = buttons[buttonName];
+                if (button.hasOwnProperty('key')) {
+                    continue;
+                }
+                var editorCmd = commands[button.editorName];
+                if (editorCmd && editorCmd.bindKey) {
+                    button.key = resolveKey(editorCmd.bindKey);
+                    self.setText(buttonName);
+                } else if (button.bindKey) {
+                    button.key = button.bindKey[platform];
+                    self.setText(buttonName);
                 }
             }
         };
@@ -193,7 +200,7 @@ export class VPLIDEButtons {
             for (var buttonName in buttons) {
                 if (buttons[buttonName].hasOwnProperty('key')) {
                     html += '<li>';
-                    html += buttons[buttonName].title + ' (' + buttons[buttonName].key + ')';
+                    html += VPLUtil.sanitizeText(buttons[buttonName].title + ' (' + buttons[buttonName].key + ')');
                     html += '</li>';
                 }
             }
@@ -206,7 +213,7 @@ export class VPLIDEButtons {
                 for (var editorName in commands) {
                     if (commands[editorName].hasOwnProperty('bindKey') && commands[editorName].bindKey[platform] > '') {
                         html += '<li>';
-                        html += editorName + ' (' + commands[editorName].bindKey[platform] + ')';
+                        html += VPLUtil.sanitizeText(editorName + ' (' + commands[editorName].bindKey[platform] + ')');
                         html += '</li>';
                     }
                 }
@@ -218,6 +225,9 @@ export class VPLIDEButtons {
             return html;
         };
         $(menuElement).on("click", "a", function(event) {
+            if (!$(this).data("vpl-idebutton")) {
+                return true;
+            }
             if ($(this).data("vpl-active")) {
                 var actionid = $(this).attr('id');
                 if (typeof actionid === 'string' && actionid.startsWith('vpl_ide_')) {
@@ -242,39 +252,83 @@ export class VPLIDEButtons {
             return false;
         });
 
+        // Map of modifier synonyms to a canonical token. This makes matching independent
+        // of the naming used in the bindKey definitions (e.g. "Option"/"Alt", "Command"/"Cmd"/"Meta").
+        var modifierAliases = {
+            'shift': 'shift',
+            'ctrl': 'ctrl',
+            'control': 'ctrl',
+            'alt': 'alt',
+            'option': 'alt',
+            'opt': 'alt',
+            'cmd': 'meta',
+            'command': 'meta',
+            'meta': 'meta',
+            'win': 'meta',
+            'super': 'meta'
+        };
+        var modifierOrder = ['shift', 'ctrl', 'alt', 'meta'];
+        // Normalize a shortcut string (e.g. "Command-Option-U") into a canonical, order-independent
+        // representation (e.g. "alt+meta+u") so tokens and modifier order do not affect matching.
+        var normalizeKey = function(key) {
+            if (!key) {
+                return '';
+            }
+            var parts = key.toLowerCase().split('-');
+            var mods = {};
+            var main = '';
+            for (var i = 0; i < parts.length; i++) {
+                var part = parts[i];
+                if (modifierAliases.hasOwnProperty(part)) {
+                    mods[modifierAliases[part]] = true;
+                } else {
+                    main = part;
+                }
+            }
+            var result = '';
+            for (var m = 0; m < modifierOrder.length; m++) {
+                if (mods[modifierOrder[m]]) {
+                    result += modifierOrder[m] + '+';
+                }
+            }
+            return result + main;
+        };
         $('body').on('keydown', function(event) {
             var check = false;
-            var strkey = '';
-            if (event.shiftKey) {
-                strkey += 'shift-';
-            }
-            if (event.altKey) {
-                strkey += 'alt-';
-                check = true;
-            }
-            if (event.ctrlKey) {
-                strkey += 'ctrl-';
-                check = true;
-            }
-            if (event.metaKey) {
-                strkey += 'meta-';
-                check = true;
-            }
+            var main = '';
             if (event.which >= 112 && event.which <= 123) {
-                strkey += 'f' + (event.which - 111);
+                main = 'f' + (event.which - 111);
                 check = true;
             } else {
                 var char = String.fromCharCode(event.which).toLowerCase();
-                if (char < 'a' || char > 'z') {
-                    check = false;
-                } else {
-                    strkey += char;
+                if (char >= 'a' && char <= 'z') {
+                    main = char;
+                } else if (event.key && event.key.length === 1) {
+                    // Handle punctuation and symbol keys (e.g. "." for Ctrl-.).
+                    main = event.key.toLowerCase();
                 }
             }
-            if (check) {
+            if (event.altKey || event.ctrlKey || event.metaKey) {
+                check = true;
+            }
+            if (check && main !== '') {
+                var eventKey = '';
+                if (event.shiftKey) {
+                    eventKey += 'shift+';
+                }
+                if (event.ctrlKey) {
+                    eventKey += 'ctrl+';
+                }
+                if (event.altKey) {
+                    eventKey += 'alt+';
+                }
+                if (event.metaKey) {
+                    eventKey += 'meta+';
+                }
+                eventKey += main;
                 for (var buttonName in buttons) {
-                    if (buttons[buttonName].hasOwnProperty('key')) {
-                        if (strkey == buttons[buttonName].key.toLowerCase()) {
+                    if (buttons[buttonName].hasOwnProperty('key') && buttons[buttonName].key) {
+                        if (eventKey == normalizeKey(buttons[buttonName].key)) {
                             event.preventDefault();
                             event.stopImmediatePropagation();
                             buttons[buttonName].action();

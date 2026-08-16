@@ -1,4 +1,5 @@
 Case=Bad
 Bad line=nothing
     # This is a comment
+ # This is another comment with = checking parser of tags
 Other bad line

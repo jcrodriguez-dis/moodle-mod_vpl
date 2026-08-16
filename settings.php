@@ -48,12 +48,12 @@ $defaultdefaultexefilesize = vpl_get_array_key($listmaxexefilesize, 64 * $megaby
 $defaultdefaultexememory = vpl_get_array_key($listmaxexememory, 128 * $megabyte);
 $defaultdefaultexeprocesses = 200;
 $prefix = 'mod_vpl/';
-$settings->add(new admin_setting_heading('heading1', '', get_string('maxresourcelimits', VPL)));
+$settings->add(new admin_setting_heading('heading1', '', get_string('maxresourcelimits', COMPVPL)));
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'maxfilesize',
-        get_string('maxfilesize', VPL),
-        get_string('maxfilesize', VPL),
+        get_string('maxfilesize', COMPVPL),
+        get_string('maxfilesize', COMPVPL),
         $defaultmaxfilesize,
         $listmaxfilesize
     )
@@ -61,8 +61,8 @@ $settings->add(
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'maxexetime',
-        get_string('maxexetime', VPL),
-        get_string('maxexetime', VPL),
+        get_string('maxexetime', COMPVPL),
+        get_string('maxexetime', COMPVPL),
         $defaultmaxtime,
         $listmaxtime
     )
@@ -70,8 +70,8 @@ $settings->add(
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'maxexefilesize',
-        get_string('maxexefilesize', VPL),
-        get_string('maxexefilesize', VPL),
+        get_string('maxexefilesize', COMPVPL),
+        get_string('maxexefilesize', COMPVPL),
         $defaultmaxexefilesize,
         $listmaxexefilesize
     )
@@ -79,11 +79,8 @@ $settings->add(
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'maxexememory',
-        get_string('maxexememory', VPL),
-        get_string(
-            'maxexememory',
-            VPL
-        ),
+        get_string('maxexememory', COMPVPL),
+        get_string('maxexememory', COMPVPL),
         $defaultmaxexememory,
         $listmaxexememory
     )
@@ -91,20 +88,20 @@ $settings->add(
 $settings->add(
     new admin_setting_configtext(
         $prefix . 'maxexeprocesses',
-        get_string('maxexeprocesses', VPL),
-        get_string('maxexeprocesses', VPL),
+        get_string('maxexeprocesses', COMPVPL),
+        get_string('maxexeprocesses', COMPVPL),
         $defaultmaxexeprocesses,
         PARAM_INT,
         4
     )
 );
-$settings->add(new admin_setting_heading('headingd', '', get_string('defaultresourcelimits', VPL)));
+$settings->add(new admin_setting_heading('headingd', '', get_string('defaultresourcelimits', COMPVPL)));
 $name = 'defaultfilesize';
 $settings->add(
     new admin_setting_configselect(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name, VPL),
+        get_string($name, COMPVPL),
+        get_string($name, COMPVPL),
         $defaultdefaultfilesize,
         $listmaxfilesize
     )
@@ -113,8 +110,8 @@ $name = 'defaultexetime';
 $settings->add(
     new admin_setting_configselect(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name, VPL),
+        get_string($name, COMPVPL),
+        get_string($name, COMPVPL),
         $defaultdefaulttime,
         $listmaxtime
     )
@@ -123,8 +120,8 @@ $name = 'defaultexefilesize';
 $settings->add(
     new admin_setting_configselect(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name, VPL),
+        get_string($name, COMPVPL),
+        get_string($name, COMPVPL),
         $defaultdefaultexefilesize,
         $listmaxexefilesize
     )
@@ -133,8 +130,8 @@ $name = 'defaultexememory';
 $settings->add(
     new admin_setting_configselect(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name, VPL),
+        get_string($name, COMPVPL),
+        get_string($name, COMPVPL),
         $defaultdefaultexememory,
         $listmaxexememory
     )
@@ -143,52 +140,52 @@ $name = 'defaultexeprocesses';
 $settings->add(
     new admin_setting_configtext(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name, VPL),
+        get_string($name, COMPVPL),
+        get_string($name, COMPVPL),
         $defaultdefaultexeprocesses,
         PARAM_INT,
         4
     )
 );
-$settings->add(new admin_setting_heading('heading2', '', get_string('jail_servers_config', VPL)));
+$settings->add(new admin_setting_heading('heading2', '', get_string('jail_servers_config', COMPVPL)));
 $default = "# This server is only for test use.\n";
 $default .= "# Install your own Jail server and remove the following line as soon as possible.\n";
 $default .= 'https://demojail.dis.ulpgc.es';
 $settings->add(
     new admin_setting_configtextarea(
         $prefix . 'jail_servers',
-        get_string('jail_servers', VPL),
-        get_string('jail_servers_description', VPL),
+        get_string('jail_servers', COMPVPL),
+        get_string('jail_servers_description', COMPVPL),
         $default
     )
 );
 $settings->add(
     new admin_setting_configcheckbox(
         $prefix . 'use_xmlrpc',
-        get_string('use_xmlrpc', VPL),
-        get_string('use_xmlrpc_description', VPL),
+        get_string('use_xmlrpc', COMPVPL),
+        get_string('use_xmlrpc_description', COMPVPL),
         0
     )
 );
 $settings->add(
     new admin_setting_configcheckbox(
         $prefix . 'acceptcertificates',
-        get_string('acceptcertificates', VPL),
-        get_string('acceptcertificates_description', VPL),
+        get_string('acceptcertificates', COMPVPL),
+        get_string('acceptcertificates_description', COMPVPL),
         0
     )
 );
 $wsoptions = [
-        'always_use_wss' => get_string('always_use_wss', VPL),
-        'always_use_ws' => get_string('always_use_ws', VPL),
-        'depends_on_https' => get_string('depends_on_https', VPL),
+        'always_use_wss' => get_string('always_use_wss', COMPVPL),
+        'always_use_ws' => get_string('always_use_ws', COMPVPL),
+        'depends_on_https' => get_string('depends_on_https', COMPVPL),
 ];
 $name = 'websocket_protocol';
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'websocket_protocol',
-        get_string('websocket_protocol', VPL),
-        get_string('websocket_protocol_description', VPL),
+        get_string('websocket_protocol', COMPVPL),
+        get_string('websocket_protocol_description', COMPVPL),
         'depends_on_https',
         $wsoptions
     )
@@ -197,23 +194,23 @@ $name = 'proxy';
 $settings->add(
     new admin_setting_configtext(
         $prefix . $name,
-        get_string($name, VPL),
-        get_string($name . '_description', VPL),
+        get_string($name, COMPVPL),
+        get_string($name . '_description', COMPVPL),
         '',
         PARAM_URL
     )
 );
 $settings->add(new admin_setting_heading('heading3', '', get_string('miscellaneous')));
 $defaultsubmitmethods = [
-    'auto' => get_string('submitmethod_default_auto', VPL),
-    'files' => get_string('submitfiles', VPL),
-    'archive' => get_string('archive', VPL),
+    'auto' => get_string('submitmethod_default_auto', COMPVPL),
+    'files' => get_string('submitfiles', COMPVPL),
+    'archive' => get_string('archive', COMPVPL),
 ];
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'defaultsubmitmethod',
-        get_string('submitmethod_default', VPL),
-        get_string('submitmethod_default_description', VPL),
+        get_string('submitmethod_default', COMPVPL),
+        get_string('submitmethod_default_description', COMPVPL),
         'auto',
         $defaultsubmitmethods
     )
@@ -221,8 +218,8 @@ $settings->add(
 $settings->add(
     new admin_setting_configcheckbox(
         $prefix . 'use_watermarks',
-        get_string('usewatermarks', VPL),
-        get_string('usewatermarks_description', VPL),
+        get_string('usewatermarks', COMPVPL),
+        get_string('usewatermarks_description', COMPVPL),
         0
     )
 );
@@ -232,9 +229,23 @@ $default = vpl_get_array_key($list, 60);
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'discard_submission_period',
-        get_string('discard_submission_period', VPL),
-        get_string('discard_submission_period_description', VPL),
+        get_string('discard_submission_period', COMPVPL),
+        get_string('discard_submission_period_description', COMPVPL),
         $default,
+        $list
+    )
+);
+$list = [
+    0 => get_string('backupallsubmissions_no', COMPVPL),
+    1 => get_string('backupallsubmissions_user_choice', COMPVPL),
+    2 => get_string('backupallsubmissions_yes', COMPVPL),
+];
+$settings->add(
+    new admin_setting_configselect(
+        $prefix . 'backupallsubmissions',
+        get_string('backupallsubmissions', COMPVPL),
+        get_string('backupallsubmissions_description', COMPVPL),
+        0,
         $list
     )
 );
@@ -282,8 +293,8 @@ foreach ($list as $theme) {
 $settings->add(
     new admin_setting_configselect(
         $prefix . 'editor_theme',
-        get_string('editortheme', VPL),
-        get_string('editortheme', VPL),
+        get_string('editortheme', COMPVPL),
+        get_string('editortheme', COMPVPL),
         'chrome',
         $themelist
     )

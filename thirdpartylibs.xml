@@ -19,6 +19,17 @@
         <licenseversion>3</licenseversion>
     </library>
     <library>
+        <location>thirdpartylibs/filterxss</location>
+        <name>js-xss (JavaScript XSS filter)</name>
+        <license>MIT</license>
+    </library>
+    <library>
+        <location>thirdpartylibs/marked</location>
+        <name>marked (JavaScript Markdown parser)</name>
+        <version>18.0.3</version>
+        <license>MIT</license>
+    </library>
+    <library>
         <location>editor/ace9</location>
         <name>ACE (Ajax.org Cloud9 Editor)</name>
         <version>1.4.12</version>

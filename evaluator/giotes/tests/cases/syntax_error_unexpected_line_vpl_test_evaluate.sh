@@ -4,4 +4,5 @@ if [ -s "$VPLTESTERRORS" ] ; then
 fi
 assertOutput "(line:2) unknow parameter"
 assertOutputFalse "(line:3)"
-assertOutput "(line:4) text out of parameter or comment"
+assertOutputFalse "(line:4)"
+assertOutput "(line:5) text out of parameter or comment"

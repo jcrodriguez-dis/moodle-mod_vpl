@@ -294,7 +294,6 @@ $strduedate = get_string('duedate', VPL);
 if (! $downloading) {
     $PAGE->set_url('/mod/vpl/index.php', [ 'id' => $id ]);
     $PAGE->navbar->add($strvpls);
-    $PAGE->requires->css(new moodle_url('/mod/vpl/css/index.css'));
     $PAGE->set_title($strvpls);
     $PAGE->set_heading($course->fullname);
     $PAGE->set_pagelayout('incourse');

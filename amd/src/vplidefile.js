@@ -31,13 +31,13 @@ import {codeExtension} from 'mod_vpl/vplidecodefile';
 import {blocklyExtension} from 'mod_vpl/vplideblocklyfile';
 import {binaryExtension} from 'mod_vpl/vplidebinaryfile';
 
-export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
+export const VPLFile = function(id, name, value, fileManager) {
     var tid = "#vpl_file" + id;
     var tabnameid = "#vpl_tab_name" + id;
     var fileName = name;
     var modified = true;
     var opened = false;
-    var langType = 'text';
+    var langInfo = VPLUtil.getFileLangInfo(name);
     var self = this;
     var binary = VPLUtil.isBinary(name, value);
     var readOnly = fileManager.isReadOnly(name);
@@ -51,9 +51,6 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     this.getFileManager = function() {
         return fileManager;
     };
-    this.getFileName = function() {
-        return fileName;
-    };
     this.getId = function() {
         return id;
     };
@@ -62,9 +59,6 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     };
     this.getTId = function() {
         return tid;
-    };
-    this.getFileName = function() {
-        return fileName;
     };
     this.isModified = function() {
         return modified;
@@ -80,12 +74,6 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     this.getTabPos = function() {
         return fileManager.getTabPos(this);
     };
-    this.setLang = function(lang) {
-        langType = lang;
-    };
-    this.getLang = function() {
-        return langType;
-    };
     this.isOpen = function() {
         return opened;
     };
@@ -93,7 +81,7 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
         opened = openState;
     };
     this.getVPLIDE = function() {
-        return vplIdeInstance;
+        return fileManager.getIDE();
     };
     this.change = function() {
         if (!modified) {
@@ -103,19 +91,32 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
             VPLUtil.longDelay('setModified', fileManager.setModified);
         }
     };
+    this.getAceLang = function() {
+        return langInfo.aceName;
+    };
+    this.getLangName = function() {
+        return langInfo.typeName;
+    };
+    this.getLSLang = function() {
+        return langInfo.lsName;
+    };
+    this.getFileName = function() {
+        return fileName;
+    };
     this.setFileName = function(name) {
         if (!VPLUtil.validPath(name)) {
             return false;
         }
         if (name != fileName) {
             fileName = name;
+            langInfo = VPLUtil.getFileLangInfo(name);
             self.change();
         }
         this.setReadOnly(fileManager.isReadOnly(name));
+        binary = VPLUtil.isBinary(name, value);
         if (!this.isOpen()) {
             return true;
         }
-        binary = VPLUtil.isBinary(name, value);
         this.showFileName();
         this.langSelection();
         return true;
@@ -174,13 +175,17 @@ export const VPLFile = function(id, name, value, fileManager, vplIdeInstance) {
     this.isBinary = function() {
         return binary;
     };
+    this.isCode = function() {
+        return false;
+    };
     this.updateStatus = function() {
         VPLUI.updateIDEStatus(
             {
                 fileName: self.getFileName(),
                 position: '',
-                language: self.isBinary() ? VPLUtil.str('binaryfile') : self.getLang(),
+                language: self.isBinary() ? VPLUtil.str('binaryfile') : self.getLangName(),
                 unsaved: self.isModified(),
+                lsp: '',
             }
         );
     };

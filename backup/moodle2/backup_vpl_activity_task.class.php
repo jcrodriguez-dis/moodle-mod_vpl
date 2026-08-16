@@ -36,9 +36,27 @@ require_once(dirname(__FILE__) . '/backup_vpl_stepslib.php');
  */
 class backup_vpl_activity_task extends backup_activity_task {
     /**
-     * No particular settings for this activity.
+     * Add settings for this activity
+     * @return void
      */
     protected function define_my_settings() {
+        $plugincfg = get_config('mod_vpl');
+        if (!empty($plugincfg->backupallsubmissions) && $plugincfg->backupallsubmissions == 1) {
+            $settingname = $this->get_modulename() . '_' .
+                           $this->get_moduleid() . '_backupallsubmissions';
+            $setting = new backup_activity_generic_setting(
+                $settingname,
+                base_setting::IS_BOOLEAN,
+                false // Default: include only the last submission.
+            );
+
+            $setting->get_ui()->set_label(
+                get_string('backupallsubmissions', 'mod_vpl')
+            );
+            $this->add_setting($setting);
+            // This option is relevant only when user data is included.
+            $this->get_setting('userinfo')->add_dependency($setting);
+        }
     }
 
     /**

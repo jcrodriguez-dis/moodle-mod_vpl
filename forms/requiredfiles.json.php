@@ -27,7 +27,7 @@ define('AJAX_SCRIPT', true);
 
 require(__DIR__ . '/../../../config.php');
 
-global $PAGE, $OUTPUT;
+global $PAGE, $OUTPUT, $USER;
 $result = new stdClass();
 $result->success = true;
 $result->response = new stdClass();
@@ -41,11 +41,12 @@ try {
         throw new Exception(get_string('loggedinnot'));
     }
 
-    $id = required_param('id', PARAM_INT); // Course id.
+    $id = required_param('id', PARAM_INT);
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+    require_login($course, true, $cm);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey "require_sesskey();".
-    require_login($vpl->get_course(), false);
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/requiredfiles.json.php', [
             'id' => $id,
@@ -77,8 +78,23 @@ try {
             $result->response->files = mod_vpl_edit::filestoide($files);
             $result->response->version = $fgm->getversion();
             break;
+        case 'directrun':
+            $actiondata->files = mod_vpl_edit::filesfromide($actiondata->files);
+            $result->response = mod_vpl_edit::directrun($vpl, $USER->id, $actiondata);
+            break;
+        case 'update':
+            $files = mod_vpl_edit::filesfromide($actiondata->files);
+            $filestodelete = isset($actiondata->filestodelete) ? $actiondata->filestodelete : [];
+            $result->success = mod_vpl_edit::update(
+                $vpl,
+                $USER->id,
+                $actiondata->processid,
+                $files,
+                $filestodelete
+            );
+            break;
         default:
-            throw new Exception('ajax action error: ' + $action);
+            throw new Exception('ajax action error: ' . $action);
     }
 } catch (\Throwable $e) {
     $result->success = false;

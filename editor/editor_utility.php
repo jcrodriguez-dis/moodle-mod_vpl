@@ -49,7 +49,6 @@ class vpl_editor_util {
     public static function generate_requires_evaluation() {
         global $PAGE;
         self::generate_jquery();
-        $PAGE->requires->css(new moodle_url('/mod/vpl/editor/VPLIDE.css'));
     }
 
     /**
@@ -59,6 +58,7 @@ class vpl_editor_util {
      * @param array $options Additional options for the IDE.
      */
     public static function generate_requires($vpl, $options) {
+        require_once(__DIR__ . '/../jail/jailserver_manager.class.php');
         global $PAGE;
         global $CFG;
         $userprefs = \mod_vpl\util\userpreferences::get();
@@ -76,9 +76,12 @@ class vpl_editor_util {
         $options['postMaxSize'] = \mod_vpl\util\phpconfig::get_post_max_size();
         $options['isGroupActivity'] = $vpl->is_group_activity();
         $options['isTeacher'] = $vpl->has_capability(VPL_GRADE_CAPABILITY) || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+        $options['lsavailable'] = vpl_jailserver_manager::get_ls_list($vpl);
         self::generate_jquery();
         $opt = new stdClass();
         $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor';
+        $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/marked/marked.umd.min.js'));
+        $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/filterxss/xss.min.js'));
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
         $PAGE->requires->js_call_amd('mod_vpl/vplide', 'init', [$tagid, $options]);
     }
@@ -105,7 +108,7 @@ class vpl_editor_util {
     /**
      * Prints the JavaScript description of the VPL activity.
      *
-     * @param \mod_vpl\local\vpl $vpl The VPL instance.
+     * @param \mod_vpl $vpl The VPL instance.
      * @param int $userid The user ID for which to get the variation HTML.
      */
     public static function print_js_description($vpl, $userid) {
@@ -138,6 +141,15 @@ class vpl_editor_util {
         $terminal = s(get_string('terminal', VPL));
         $terminaltheme = s(get_string('terminaltheme', VPL));
         $unsaved = s(get_string('unsaved', VPL));
+        $lscmdefinition = s(get_string('ls:cmdefinition', VPL));
+        $lscmreferences = s(get_string('ls:cmreferences', VPL));
+        $lscmimplementation = s(get_string('ls:cmimplementation', VPL));
+        $lscmrename = s(get_string('ls:cmrename', VPL));
+        $lscmformatrange = s(get_string('ls:cmformatrange', VPL));
+        $lscmformat = s(get_string('ls:cmformat', VPL));
+        $lscmcodeaction = s(get_string('ls:cmcodeaction', VPL));
+        $ok = s(get_string('ok'));
+        $cancel = s(get_string('cancel'));
 
         $html = <<<"HTML"
 <div id="$tagid" class="vpl_ide vpl_ide_root">
@@ -157,10 +169,13 @@ class vpl_editor_util {
         </div>
     </div>
     <div id="vpl_ide_statusbar" class="vpl_ide_statusbar ui-corner-all">
-            <span class="vpl_ide_statusbar_filename"></span>
+            <span class="vpl_ide_statusbar_filelist"></span>
+            <span class="vpl_ide_statusbar_filename" style="display: none;"></span>
             <span class="vpl_ide_statusbar_unsaved" style="display: none;">$unsaved</span>
+            <span class="vpl_ide_statusbar_shrightpanel" style="display: none;"></span>
             <span class="vpl_ide_statusbar_preferences"></span>
             <span class="vpl_ide_statusbar_position"></span>
+            <span class="vpl_ide_statusbar_lsp" style="display: none;"></span>
             <span class="vpl_ide_statusbar_language"></span>
             <span class="vpl_ide_statusbar_action"></span>
     </div>
@@ -299,7 +314,48 @@ class vpl_editor_util {
     <div id="vpl_dialog_vnc" style="display: none;">
         <div></div>
     </div>
-</div>
+    <div id="vpl_ls_contextmenu" class="vpl_ls_menu">
+        <ul>
+            <li id='vpl_ls_cm_definition' data-lsaction="definitionRequest">
+                <span class="vpl_ls_cm_label">$lscmdefinition</span>
+                <span class="vpl_ls_cm_shortcut">F12</span>
+            </li>
+            <li id='vpl_ls_cm_implementation' data-lsaction="implementationRequest">
+                <span class="vpl_ls_cm_label">$lscmimplementation</span>
+                <span class="vpl_ls_cm_shortcut">Ctrl-F12</span>
+            </li>
+            <li id='vpl_ls_cm_references' data-lsaction="referencesRequest">
+                <span class="vpl_ls_cm_label">$lscmreferences</span>
+                <span class="vpl_ls_cm_shortcut">Shift-F12</span>
+            </li>
+            <li id='vpl_ls_cm_rename' data-lsaction="renameSymbolRequest">
+                <span class="vpl_ls_cm_label">$lscmrename</span>
+                <span class="vpl_ls_cm_shortcut">Ctrl-F2</span>
+            </li>
+            <li id='vpl_ls_cm_formatrange' data-lsaction="rangeFormattingRequest">
+                <span class="vpl_ls_cm_label">$lscmformatrange</span>
+                <span class="vpl_ls_cm_shortcut">Ctrl-Shift-F</span>
+            </li>
+            <li id='vpl_ls_cm_format' data-lsaction="formattingRequest">
+                <span class="vpl_ls_cm_label">$lscmformat</span>
+                <span class="vpl_ls_cm_shortcut">Shift-Alt-F</span>
+            </li>
+            <li id='vpl_ls_cm_codeaction' data-lsaction="codeActionRequest">
+                <span class="vpl_ls_cm_label">$lscmcodeaction</span>
+                <span class="vpl_ls_cm_shortcut">Ctrl-.</span>
+            </li>
+        </ul>
+    </div>
+    <div id="vpl_ls_rename">
+        <label for="vpl_ls_rename_input_field">$rename </label>
+        <input type="text" id="vpl_ls_rename_input_field" size="20" autofocus />
+        <button id="vpl_ls_rename_ok_btn" class="vpl_ls_rename_btn">$ok</button>
+        <button id="vpl_ls_rename_cancel_btn" class="vpl_ls_rename_btn">$cancel</button>
+    </div>
+    <div id="vpl_ls_codeactions" class="vpl_ls_menu">
+        <ul>
+        </ul>
+    </div>
 HTML;
         echo $html;
     }
@@ -415,7 +471,10 @@ HTML;
                 'open_private_browser',
                 'update',
                 'updating',
+                'unsaved',
                 'unzipping',
+                'references',
+                'referencesto',
         ];
         $words = [
                 'cancel',

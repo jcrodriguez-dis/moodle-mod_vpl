@@ -31,7 +31,14 @@ export const codeExtension = function() {
     var self = this;
     var editor = null;
     var session = null;
+    var Range = null;
+    var tooltip = null;
+    var hoverTooltip = null;
+    var signatureTooltip = null;
     var getOldContent = this.getContent;
+    this.isCode = function() {
+        return true;
+    };
     this.getContent = function() {
         if (!this.isOpen()) {
             return getOldContent.call(this);
@@ -48,7 +55,7 @@ export const codeExtension = function() {
     var oldDestroy = this.destroy;
     this.destroy = function() {
         if (this.isOpen()) {
-            editor.destroy();
+            this.close();
         }
         oldDestroy.call(this);
     };
@@ -175,11 +182,9 @@ export const codeExtension = function() {
             return;
         }
         var filenamepath = this.getFileName();
-        var lang = VPLUtil.langType(filenamepath);
-        session.setMode("ace/mode/" + lang);
+        session.setMode("ace/mode/" + self.getAceLang());
         session.setTabSize(4);
         session.setUseSoftTabs(!VPLUtil.useHardTabs(filenamepath));
-        this.setLang(lang);
     };
     this.getEditor = function() {
         if (!this.isOpen()) {
@@ -187,11 +192,32 @@ export const codeExtension = function() {
         }
         return editor;
     };
+    this.getRange = function(startRow = 0, startColumn = 0, endRow = 0, endColumn = 0) {
+        return new Range(startRow, startColumn, endRow, endColumn);
+    };
+    this.getTooltip = function() {
+        return tooltip;
+    };
+    this.getHoverTooltip = function() {
+        return hoverTooltip;
+    };
+    this.getSignatureTooltip = function() {
+        return signatureTooltip;
+    };
     this.setTheme = function(theme) {
         if (!this.isOpen()) {
             return;
         }
         editor.setTheme("ace/theme/" + theme);
+        tooltip.setTheme(editor.getTheme());
+        hoverTooltip.setTheme(editor.getTheme());
+    };
+    this.isDarkTheme = function() {
+        if (!this.isOpen()) {
+            return false;
+        }
+        const fileDOM = document.getElementById('vpl_file' + this.getId());
+        return fileDOM.classList.contains('ace_dark');
     };
     this.setKeyBinding = function(binding) {
         if (!this.isOpen()) {
@@ -226,6 +252,7 @@ export const codeExtension = function() {
         status.position = "Ln " + (pos.row + 1) + ', Col ' + (pos.column + 1);
         status.language = VPLUtil.langName(fullname);
         status.unsaved = this.isModified();
+        status.lsp = self.getFileManager().getLSManager().getStatus(this);
         VPLUI.updateIDEStatus(status);
     };
 
@@ -242,11 +269,20 @@ export const codeExtension = function() {
         if (this.isOpen()) {
             return editor;
         }
+        if ($('#vpl_file' + this.getId()).length === 0) {
+            return false;
+        }
         var fileManager = this.getFileManager();
         var tid = this.getTId();
         // Workaround to remove jquery-ui theme background color.
         $(tid).removeClass('ui-widget-content ui-tabs-panel');
         ace.require("ace/ext/language_tools");
+        ace.require("ace/ext/snippets");
+        const aceTooltipModule = ace.require("ace/tooltip");
+        tooltip = new aceTooltipModule.Tooltip(document.body, "vpl_tooltip ace_tooltip" + this.getId());
+        hoverTooltip = new aceTooltipModule.HoverTooltip();
+        signatureTooltip = new aceTooltipModule.Tooltip(document.body);
+        Range = ace.require("ace/range").Range;
         editor = ace.edit("vpl_file" + this.getId());
         session = editor.getSession();
         editor.setOptions({
@@ -254,8 +290,6 @@ export const codeExtension = function() {
             enableSnippets: true,
         });
         editor.setValue(this.getContent());
-        editor.setFontSize(fileManager.getFontSize());
-        editor.setTheme("ace/theme/" + fileManager.getTheme());
         const keyBinding = fileManager.getEditorKeyBinding ? fileManager.getEditorKeyBinding() : null;
         if (keyBinding && keyBinding !== 'Ace') {
             editor.setKeyboardHandler('ace/keyboard/' + keyBinding.toLowerCase());
@@ -272,6 +306,8 @@ export const codeExtension = function() {
         // Avoid undo of editor initial content.
         session.setUndoManager(new ace.UndoManager());
         this.setOpen(true);
+        editor.setFontSize(fileManager.getFontSize());
+        self.setTheme(fileManager.getTheme());
         this.langSelection();
         // Code to control Paste and drop under restricted editing.
         editor.execCommand('replace');
@@ -313,7 +349,8 @@ export const codeExtension = function() {
         $(tid).find('div.ace_scroller').css('position', 'static');
         this.adjustSize();
         $(tid).find('div.ace_scroller').css('position', 'absolute');
-        this.updateStatus();
+        self.updateStatus();
+        fileManager.getLSManager().openFile(self);
         return editor;
     };
     this.close = function() {
@@ -322,6 +359,13 @@ export const codeExtension = function() {
             return;
         }
         this.setContent(editor.getValue());
+        VPLUI.clearIDEStatus();
+        tooltip.hide();
+        tooltip.destroy();
+        hoverTooltip.hide();
+        hoverTooltip.destroy();
+        signatureTooltip.hide();
+        signatureTooltip.destroy();
         editor.destroy();
         editor = null;
         session = null;

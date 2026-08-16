@@ -31,16 +31,14 @@ require_once(dirname(__FILE__) . '/watermark.class.php');
 
 global $CFG, $DB;
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('similarity/listwatermark.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('similarity/listwatermark.php', ['id' => $id]);
+$vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
 
 $course = $vpl->get_course();
-$vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
 \mod_vpl\event\vpl_watermark_report_viewed::log($vpl);
 // Print header.
 $vpl->print_header(get_string('listwatermarks', VPL));

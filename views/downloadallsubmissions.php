@@ -128,15 +128,15 @@ function vpl_add_ce_to_zip($zip, $submission, $zipdirname) {
     return $total;
 }
 
-require_login();
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+$vpl = new mod_vpl($id);
 $all = optional_param('all', 0, PARAM_INT);
-
 /**
  * @var int Size trigger to close the zip file and reopen it.
  */
 const SIZE_TRIGGER = 64 * 1024 * 1024; // 64Mb.
-$vpl = new mod_vpl($id);
 $cm = $vpl->get_course_module();
 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
 \mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);

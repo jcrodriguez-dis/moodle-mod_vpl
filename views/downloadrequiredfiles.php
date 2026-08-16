@@ -29,10 +29,12 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 
-require_login();
-$id = required_param('id', PARAM_INT);
 try {
+    $id = required_param('id', PARAM_INT);
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+    require_login($course, true, $cm);
     $vpl = new mod_vpl($id);
+    $vpl->require_capability(VPL_VIEW_CAPABILITY);
     $vpl->restrictions_check();
     if (! $vpl->is_visible()) {
         vpl_redirect('?id=' . $id, get_string('notavailable'));

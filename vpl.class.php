@@ -76,18 +76,11 @@ class mod_vpl {
     protected $executionfgm;
 
     /**
-     * An internal array of messages describing errors found
+     * An internal array of notices describing to show
      *
-     * @var string[]
+     * @var string[][]
      */
-    protected $errors = [];
-
-    /**
-     * An internal array of messages describing warnings found
-     *
-     * @var string[]
-     */
-    protected $warnings = [];
+    protected $notices = ['error' => [], 'warning' => [], 'success' => [], 'info' => []];
 
     /**
      * $script of the current page, used to set some page options
@@ -225,7 +218,7 @@ class mod_vpl {
             $this->cm = get_coursemodule_from_instance(VPL, $this->instance->id, $this->course->id);
             if (! ($this->cm)) {
                 // Don't stop on error. This let delete a corrupted course.
-                $this->errors[] = get_string('invalidcoursemodule', 'error');
+                $this->add_notice(get_string('invalidcoursemodule', 'error'), 'error');
             } else {
                 $this->instance->cmidnumber = $this->cm->idnumber;
             }
@@ -233,10 +226,10 @@ class mod_vpl {
         if (! $this->basedon_is_ok()) {
             // Don't stop on error. This allow to repare based on chain.
             if (! self::get_db_record(VPL, $this->instance->basedon)) {
-                $this->errors[] = get_string('basedon_deleted', VPL);
+                $this->add_notice(get_string('basedon_deleted', VPL), 'error');
                 $this->instance->basedon = 0; // Avoid missing VPL errors.
             } else {
-                $this->errors[] = get_string('basedon_chain_broken', VPL);
+                $this->add_notice(get_string('basedon_chain_broken', VPL), 'error');
             }
         }
         $this->requiredfgm = null;
@@ -410,7 +403,7 @@ class mod_vpl {
                 $ret .= ' (' . $grouping->name . ')';
             }
         }
-        if (count($this->errors)) {
+        if (count($this->notices['error'])) {
             $ret .= ' (' . get_string('error') . ')';
         }
         return $ret;
@@ -583,8 +576,8 @@ class mod_vpl {
             if (constant('AJAX_SCRIPT')) {
                 throw new Exception($str);
             }
+            $this->add_notice($str, 'warning');
             $this->print_header();
-            vpl_notice($str, 'warning');
             $this->print_footer();
             die();
         }
@@ -622,6 +615,7 @@ class mod_vpl {
             if (constant('AJAX_SCRIPT')) {
                 throw new Exception($str);
             }
+            $this->add_notice($str, 'warning');
             $this->print_header();
             echo html_writer::start_div('vpl-seb-access mx-auto text-center', ['style' => 'max-width: 720px;']);
             vpl_notice($str, 'warning');
@@ -892,6 +886,19 @@ class mod_vpl {
     }
 
     /**
+     * Remove readonly files for students in submissions.
+     * They are there as information for students but not to be submitted.
+     * @param array $files Array of submitted files (name => data)
+     */
+    public function remove_readonly_files(&$files) {
+        $readonly = $this->get_readonly_files();
+        foreach ($readonly as $name) {
+            if (isset($files[$name])) {
+                unset($files[$name]);
+            }
+        }
+    }
+    /**
      * Internal checks and adds submission if possible. Removes unneeded submissions.
      *
      * @param mod_vpl $vpl
@@ -927,6 +934,7 @@ class mod_vpl {
                 return false;
             }
         }
+        $vpl->remove_readonly_files($files);
         $lastsub = false;
         if (($lastsubins = $vpl->last_user_submission($userid)) !== false) {
             $lastsub = new mod_vpl_submission($vpl, $lastsubins);
@@ -1712,7 +1720,6 @@ class mod_vpl {
         global $PAGE, $CFG;
         $this->script = $script;
         // Next line resolve problem of classic theme not showing setting menu.
-        require_login($this->get_course(), false, $this->get_course_module());
         $action = basename($script, '.php');
         if ($script) {
             $PAGE->set_url(new moodle_url('/mod/vpl/' . $script, $parms));
@@ -1754,29 +1761,44 @@ class mod_vpl {
                 $warningmessage = '<b>' . get_string('activity_mode', VPL) . ': </b>';
                 $warningmessage .= get_string($strmode, VPL) . "<br>\n";
                 $warningmessage .= get_string($strmode . '_help', VPL);
-                $this->warnings[] = $warningmessage;
+                $this->add_notice($warningmessage, 'warning');
                 $instance = $this->get_instance();
                 if ($this->is_example() && $instance->run == 0 && $instance->debug == 0) {
                     $warningmessage = '<b>' . get_string('notice') . ': </b><br>';
                     $strno = get_string('no');
                     $warningmessage .= $this->str_setting_with_icon('run', $strno, false, false);
                     $warningmessage .= ' ' . $this->str_setting_with_icon('debug', $strno, false, false);
-                    $this->warnings[] = $warningmessage;
+                    $this->add_notice($warningmessage, 'warning');
                 }
             }
         }
     }
 
     /**
-     * Show array of notifications
+     * Add notification to show after header
      *
-     * @param array $notifications Array of messages to show
-     * @param string $type notification type: 'error', 'warning' or 'info'
+     * @param string $message The message to show
+     * @param string $type The type of notification: 'error', 'warning', 'success', 'info'
+     */
+    public function add_notice($message, $type = 'info') {
+        if (isset($this->notices[$type])) {
+            $this->notices[$type][] = $message;
+        } else {
+            debugging("Invalid notice type '$type'", DEBUG_DEVELOPER);
+        }
+    }
+
+    /**
+     * Show of notifications collected with add_notice and clear the notifications
+     *
      * @return void
      */
-    public function show_notifications($notifications, $type) {
-        foreach ($notifications as $message) {
-            vpl_notice($message, $type);
+    public function show_notifications() {
+        foreach ($this->notices as $type => $messages) {
+            foreach ($messages as $message) {
+                vpl_notice($message, $type);
+            }
+            $this->notices[$type] = [];
         }
     }
 
@@ -1795,7 +1817,7 @@ class mod_vpl {
         $notavaliable = ! $this->is_visible();
         if ($notavaliable) {
             $tittle = get_string('notavailable');
-            $this->errors[] = $tittle;
+            $this->add_notice($tittle, 'error');
             $setheading = false;
         }
         $PAGE->set_title($this->get_course()->fullname . ' ' . $tittle);
@@ -1810,8 +1832,7 @@ class mod_vpl {
         echo $OUTPUT->header();
         $this->set_warnings();
         self::$headerisout = true;
-        $this->show_notifications($this->errors, 'error');
-        $this->show_notifications($this->warnings, 'warning');
+        $this->show_notifications();
         if ($notavaliable) {
             $this->print_footer_simple();
             die();
@@ -2465,7 +2486,7 @@ class mod_vpl {
      * @param array $already array of based on visited, default empty
      * return an array with variations for this user
      */
-    public function get_variation_identification($userid = 0, &$already = []) {
+    public function get_variation_identification($userid = 0, &$already = []): array {
         if (! ($this->instance->usevariations) || isset($already[$this->instance->id])) { // Avoid infinite recursion.
             return [];
         }

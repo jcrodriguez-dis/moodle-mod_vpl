@@ -27,15 +27,14 @@ use core\output\html_writer;
 
 require_once(__DIR__ . '/../../../config.php');
 
-require_login();
-
 global $CFG, $PAGE, $OUTPUT;
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
 require_once($CFG->dirroot . '/mod/vpl/vpl_submission_CE.class.php');
 require_once($CFG->dirroot . '/mod/vpl/views/sh_factory.class.php');
 
 $id = required_param('id', PARAM_INT);
-
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vplinstance = $vpl->get_instance();
 $context = context_module::instance($id);

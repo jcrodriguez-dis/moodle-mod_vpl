@@ -143,6 +143,45 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
     ];
 
     /**
+     * @var bool|null Cached value of the backup all submissions setting.
+     */
+    protected $cachedbackupallsubmissions = null;
+
+    /**
+     * Get if the backup should include all submissions or only the last one.
+     * @return bool True if all submissions should be included, false otherwise.
+     */
+    protected function get_backup_all_submissions() {
+        if ($this->cachedbackupallsubmissions === null) {
+            $plugincfg = get_config('mod_vpl');
+            if (!empty($plugincfg->backupallsubmissions)) {
+                switch ($plugincfg->backupallsubmissions) {
+                    case 0:
+                        $this->cachedbackupallsubmissions = false;
+                        break;
+                    case 1:
+                        $settingname = $this->get_modulename() . '_' .
+                            $this->get_moduleid() . '_allsubmissions';
+                        $setting = $this->get_setting($settingname);
+                        if ($setting) {
+                            $this->cachedbackupallsubmissions = $setting->get_value();
+                        } else {
+                            $this->cachedbackupallsubmissions = false;
+                        }
+                        break;
+                    case 2:
+                        $this->cachedbackupallsubmissions = true;
+                        break;
+                    default:
+                        $this->cachedbackupallsubmissions = false;
+                }
+            } else {
+                $this->cachedbackupallsubmissions = false;
+            }
+        }
+        return $this->cachedbackupallsubmissions;
+    }
+    /**
      * Define the full structure of a VPL instance with user data
      * {@inheritDoc}
      * @see backup_structure_step::define_structure()
@@ -214,16 +253,16 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         if ($userinfo) {
             $asignedvariation->set_source_table('vpl_assigned_variations', $parmvplid);
             $assignedoverride->set_source_table('vpl_assigned_overrides', $parmvplid);
-            /*
-             * Uncomment next line and comment nexts to backup all student's submissions, not only last one.
-             * $submission->set_source_table('vpl_submissions', $parmvplid);
-             */
-            $query = 'SELECT s.* FROM {vpl_submissions} s';
-            $query .= ' inner join';
-            $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
-            $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
-            $query .= ' on ls.maxid = s.id ORDER BY s.id';
-            $submission->set_source_sql($query, [ backup::VAR_ACTIVITYID ]);
+            if ($this->get_backup_all_submissions()) {
+                $submission->set_source_table('vpl_submissions', $parmvplid);
+            } else {
+                $query = 'SELECT s.* FROM {vpl_submissions} s';
+                $query .= ' inner join';
+                $query .= ' (SELECT max(id) maxid FROM {vpl_submissions}';
+                $query .= '   WHERE {vpl_submissions}.vpl = ? GROUP BY {vpl_submissions}.userid) ls';
+                $query .= ' on ls.maxid = s.id ORDER BY s.id';
+                $submission->set_source_sql($query, [ backup::VAR_ACTIVITYID ]);
+            }
         }
 
         // Define id annotations.

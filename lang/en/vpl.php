@@ -71,6 +71,16 @@ $string['automaticgrading_help'] = 'If set to Yes, the grade proposed by the aut
 If set to No, no grade will be applied by this activity; teachers will have to review proposed grades in order to apply them manually.';
 $string['averageperiods'] = 'Average periods {$a}';
 $string['averagetime'] = 'Average time {$a}';
+$string['backupallsubmissions'] = 'Include all students\' submissions in backup';
+$string['backupallsubmissions_description'] = 'If set to No, only the last submission will be included -common behavior-.<br>
+If user choice is set, the user can choose to include the last one or all submissions and the <b>backup may be huge</b>.<br>
+If set to Yes, all submissions will be included and the <b>backup may be huge</b>.';
+$string['backupallsubmissions_help'] = 'If set to No, only the last submission will be included -common behavior-.<br>
+If set to Yes, all submissions will be included and the <b>backup may be huge</b>.';
+$string['backupallsubmissions_no'] = 'No: only the last submission will be included -common behavior-';
+$string['backupallsubmissions_user_choice'] = 'User choice: Not recommended, the backup may be huge';
+$string['backupallsubmissions_yes'] = 'Yes: NOT RECOMMENDED, the backup may be huge';
+
 $string['basedon'] = 'Based on';
 $string['basedon_chain_broken'] = 'Error: The chain of based-on activities is broken. Please, review based-on activities.';
 $string['basedon_deleted'] = 'Error: The based-on activity missed (was deleted?). Please, set the based-on activity.';
@@ -161,10 +171,12 @@ $string['editor'] = 'Editor';
 $string['editortheme'] = 'Editor theme';
 $string['error:inconsistency'] = "Inconsistency found '{\$a}'";
 $string['error:invalidevaluator'] = 'Invalid vplevaluator plugin ({$a}): disabled or missing';
+$string['error:invalidfile'] = 'Invalid file ({$a})';
 $string['error:recordnotdeleted'] = "Record not deleted '{\$a}'";
 $string['error:recordnotinserted'] = "Record not inserted '{\$a}'";
 $string['error:recordnotupdated'] = "Record not updated '{\$a}'";
 $string['error:recursivedefinition'] = "Recursive basedon VPL definition";
+$string['error:savingevaluatorsettings'] = 'Error saving evaluator settings';
 $string['error:uninstalling'] = 'Error uninstalling VPL. All data may have not been deleted';
 $string['error:zipnotfound'] = 'ZIP file not found';
 $string['evaluate'] = 'Evaluate';
@@ -282,6 +294,10 @@ $string['instanceselection'] = 'VPL selection';
 $string['intermediate'] = 'Intermediate';
 $string['isexample'] = 'Example';
 $string['isexample_help'] = 'This activity acts as an example, allowing students to run and debug the example files, but not to submit.';
+$string['jail_server_badurl'] = 'Bad URL format for execution server: "{$a}"';
+$string['jail_server_isopen'] = 'Security warning: Use URLPATH to prevent unauthorized public access to the execution server: "{$a}"';
+$string['jail_server_isprivate'] = 'Warning: The server "{$a}" is in a private network and cannot be reached from external networks.';
+$string['jail_server_usinghttp'] = 'Security warning: Don\'t use HTTP. Use HTTPS to prevent transmitted data from being exposed, which could compromise the execution server: "{$a}"';
 $string['jail_servers'] = 'Execution servers list';
 $string['jail_servers_config'] = 'Execution servers config';
 $string['jail_servers_description'] = 'Write a line for each server';
@@ -313,6 +329,13 @@ If you want to prevent this activity and derived ones
 from using other servers, then you have to add a line
 containing "end_of_jails" at the end of the server list.
 </p>';
+$string['ls:cmcodeaction'] = 'Code action';
+$string['ls:cmdefinition'] = 'Go to definition';
+$string['ls:cmformat'] = 'Format document';
+$string['ls:cmformatrange'] = 'Format selected range';
+$string['ls:cmimplementation'] = 'Go to implementation';
+$string['ls:cmreferences'] = 'Go to references';
+$string['ls:cmrename'] = 'Rename symbol';
 $string['manualgrading'] = 'Manual grading';
 $string['math'] = 'Math';
 $string['maxexefilesize'] = 'Maximum execution file size';
@@ -469,6 +492,8 @@ $string['proxy_description'] = 'Proxy from Moodle to execution servers';
 $string['redo'] = 'Redo';
 $string['reductionbyevaluation'] = "Reduction by automatic evaluation";
 $string['reductionbyevaluation_help'] = "Reduce final score by a value or percentage for each automatic evaluation requested by the student";
+$string['references'] = 'References';
+$string['referencesto'] = 'References to <em>{$a}</em>';
 $string['regularscreen'] = 'Regular screen';
 $string['removeallsubmissions'] = 'Remove all submissions and grades';
 $string['removeallsubmissions_help'] = 'Remove all submissions and grades in all VPL activities in the selected course';

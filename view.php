@@ -29,8 +29,10 @@ require_once(dirname(__FILE__) . '/vpl.class.php');
 
 global $USER, $PAGE, $OUTPUT;
 
-require_login();
 $id = required_param('id', PARAM_INT); // Course Module ID.
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+
 $vpl = new mod_vpl($id);
 $urlparms = [ 'id' => $id ];
 if (optional_param('userid', -1, PARAM_INT) != -1) {
@@ -73,7 +75,6 @@ if ($showfr || $showfe) {
 }
 
 // Print the page header.
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 $vpl->print_header(get_string('description', VPL));
 
 // Print the main part of the page.

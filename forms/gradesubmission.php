@@ -29,15 +29,14 @@ require_once(dirname(__FILE__) . '/grade_form.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
-require_login();
 global $CFG, $PAGE, $DB, $USER, $OUTPUT;
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/grade.css'));
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
-$PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');
-
-vpl_include_jsfile('hide_footer.js', false);
 
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+
+$PAGE->requires->strings_for_js(['loading', 'error'], 'moodle');
+vpl_include_jsfile('hide_footer.js', false);
 $userid = required_param('userid', PARAM_INT);
 
 $vpl = new mod_vpl($id);

@@ -90,16 +90,17 @@ class vpl_sh_ace extends vpl_sh_base {
             echo "<h4 id='$tid'>" . s($filename) . "</h4>\n";
         }
         if ($filedata > '') {
-            $code = '<pre ';
-            $code .= " id='code$tid' style='display:none' >";
+            $code = '<div class="vpl_codefilecontent">';
+            $code .= "<pre id='code$tid'>";
             $code .= htmlentities($filedata, ENT_NOQUOTES);
             $code .= "</pre>\n";
+            $code .= "</div>\n";
             echo $code;
-            $code = '<h4 ';
-            $code .= " id='code{$tid}load' style='text-align:center'>";
-            $code .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
-            $code .= "</h4>\n";
-            echo $code;
+            $loadding = '<h4 ';
+            $loadding .= " id='code{$tid}load' style='text-align:center'>";
+            $loadding .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
+            $loadding .= "</h4>\n";
+            echo $loadding;
             $parms = [$tid, $filename, $theme, $showln, $nl];
             vpl_sh_factory::syntaxhighlight_file($parms);
         }

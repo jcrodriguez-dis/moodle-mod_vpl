@@ -27,6 +27,9 @@
 import $ from 'jquery';
 import log from 'core/log';
 import url from 'core/url';
+
+/* global filterXSS */
+
 export var VPLUtil = {};
 VPLUtil.doNothing = $.noop;
 VPLUtil.returnFalse = function() {
@@ -38,35 +41,80 @@ VPLUtil.returnTrue = function() {
 var debugMode = false;
 VPLUtil.log = function(m, forced) {
     if (debugMode || forced) {
-        log.debug(m);
+        let timestamp = "[VPL " + new Date().toISOString() + "]";
+        log.debug(timestamp + " " + m);
     }
 };
 VPLUtil.setUserPreferences = function(pref) {
-    $.ajax({
-        async: true,
-        type: "POST",
-        url: url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey,
-        'data': JSON.stringify(pref),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"
+    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify(pref),
+        credentials: 'same-origin'
+    }).catch(function() {
+        // Keep previous fire-and-forget behavior.
     });
 };
 VPLUtil.getUserPreferences = function(func) {
-    $.ajax({
-        async: true,
-        type: "POST",
-        url: url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey,
-        'data': JSON.stringify({getPreferences: true}),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"
-    }).done(func);
+    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({getPreferences: true}),
+        credentials: 'same-origin'
+    }).then(function(response) {
+        return response.json();
+    }).then(func)
+    .catch(function() {
+        // Keep previous fire-and-forget behavior.
+    });
+};
+
+const filterXSSOptions = {
+    whiteList: {
+        h1: [],
+        h2: [],
+        h3: [],
+        h4: [],
+        h5: [],
+        h6: [],
+
+        p: [],
+        br: [],
+        hr: [],
+
+        strong: [],
+        b: [],
+        em: [],
+        i: [],
+        s: [],
+
+        blockquote: [],
+
+        code: ['class'],
+        pre: ['class'],
+
+        ul: [],
+        ol: [],
+        li: [],
+
+        table: [],
+        thead: [],
+        tbody: [],
+        tr: [],
+        th: ['align'],
+        td: ['align'],
+
+        a: ['title'],
+    },
+    stripIgnoreTag: true,
+    stripIgnoreTagBody: ['script', 'style', 'iframe', 'object', 'embed']
 };
 VPLUtil.sanitizeHTML = function(t) {
-    if (typeof t == 'undefined' || t.replace(/^\s+$/g, '') == '') {
-        return '';
-    }
-    var doc = new DOMParser().parseFromString(t, 'text/html');
-    return doc.body.innerHTML;
+    return filterXSS(t, filterXSSOptions);
 };
 VPLUtil.sanitizeText = function(s) {
     if (typeof s == 'undefined') {
@@ -183,7 +231,7 @@ VPLUtil.String2ArrayBuffer = function(data) {
     VPLUtil.isBlockly = function(fileName) {
         return regBlk.test(VPLUtil.fileExtension(fileName));
     };
-    var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[/^`´]|^-|^ | $|\.\./;
+    var regInvalidFileName = /[\cA-\cZ]|[:-@]|[{-~]|\\|\[|\]|[/^`´]|^-|^ | $|\.$|^\.\.$/;
     VPLUtil.validFileName = function(fileName) {
         if (fileName.length < 1) {
             return false;
@@ -304,14 +352,15 @@ VPLUtil.dataFromURLData = function(data) {
     };
 })();
 (function() {
-    var maplang = {
+    var mapLangnameToAcename = {
         'Abap': 'abap',
         'ABC': 'abc',
         'Ada': 'ada',
         'ActionScript': 'actionscript',
         'x86 assembly': 'assembly_x86',
         'Bash': 'sh',
-        'Batch': 'batchfile',
+        'Bash/shell': 'sh',
+        'Windows Bat': 'batchfile',
         'C': 'c_cpp',
         'C++': 'c_cpp',
         'VPL cases': 'cases',
@@ -364,7 +413,6 @@ VPLUtil.dataFromURLData = function(data) {
         'Scala': 'scala',
         'Scheme': 'scheme',
         'SCSS': 'scss',
-        'Bash/shell': 'sh',
         'Swift': 'swift',
         'SQL': 'sql',
         'SVG': 'svg',
@@ -380,14 +428,25 @@ VPLUtil.dataFromURLData = function(data) {
         'XML': 'xml',
         'YAML': 'yaml'
     };
-    var mapname = {
+    var mapLangnameToLsname = Object.assign({}, mapLangnameToAcename, {
+        'Windows Bat': 'bat',
+        'Bash': 'shellscript',
+        'Bash/shell': 'shellscript',
+        'C': 'c',
+        'C++': 'cpp',
+        'CoffeeScript': 'coffeescript',
+        'Go': 'go',
+        'Plain text': 'plaintext',
+        'VisualBasic': 'vb',
+    });
+    var mapExtensionToLangname = {
         'abap': 'Abap',
         'abc': 'ABC',
         'ada': 'Ada', 'ads': 'Ada', 'adb': 'Ada',
         'as': 'ActionScript', 'as3': 'ActionScript',
         'asm': 'x86 assembly',
         'bash': 'Bash',
-        'bat': 'Batch',
+        'bat': 'Windows Bat',
         'c': 'C', 'C': 'C++', 'cc': 'C++', 'cpp': 'C++', 'c++': 'C++',
         'hxx': 'C++', 'h': 'C', 'H': 'C++',
         'cases': 'VPL cases',
@@ -464,25 +523,52 @@ VPLUtil.dataFromURLData = function(data) {
      * @returns {object} copy of the language names
      */
     VPLUtil.getLangNames = function() {
-        return Object.assign({}, mapname);
+        return Object.assign({}, mapExtensionToLangname);
     };
 
     /**
      * Returns the Ace9 language type for a file
      * @param {string} filenamepath
      * @returns {string} language type
-     * @see https://ace.c9.io/#nav=api&api=edit_session
      */
     VPLUtil.langType = function(filenamepath) {
         var ext = VPLUtil.fileExtension(filenamepath);
-        if (ext in mapname) {
-            return maplang[mapname[ext]];
+        if (ext in mapExtensionToLangname) {
+            return mapLangnameToAcename[mapExtensionToLangname[ext]];
         }
         var extfile = '.' + VPLUtil.getFileName(filenamepath);
-        if (extfile in mapname) {
-            return maplang[mapname[extfile]];
+        if (extfile in mapExtensionToLangname) {
+            return mapLangnameToAcename[mapExtensionToLangname[extfile]];
         }
         return 'plain_text';
+    };
+
+    /**
+     * Returns information about the language for a file
+     * @param {string} filenamepath
+     * @returns {object} language type
+     */
+    VPLUtil.getFileLangInfo = function(filenamepath) {
+        var result = {
+            typeName: 'Plain text',
+            aceName: 'plain_text',
+            lsName: 'plaintext'
+        };
+        var ext = VPLUtil.fileExtension(filenamepath);
+        if (ext in mapExtensionToLangname) {
+            result.typeName = mapExtensionToLangname[ext];
+            result.aceName = mapLangnameToAcename[result.typeName];
+            result.lsName = mapLangnameToLsname[result.typeName];
+            return result;
+        }
+        var extfile = '.' + VPLUtil.getFileName(filenamepath);
+        if (extfile in mapExtensionToLangname) {
+            result.typeName = mapExtensionToLangname[extfile];
+            result.aceName = mapLangnameToAcename[result.typeName];
+            result.lsName = mapLangnameToLsname[result.typeName];
+            return result;
+        }
+        return result;
     };
 
     /**
@@ -492,12 +578,12 @@ VPLUtil.dataFromURLData = function(data) {
      */
     VPLUtil.langName = function(filenamepath) {
         var ext = VPLUtil.fileExtension(filenamepath);
-        if (ext in mapname) {
-            return mapname[ext];
+        if (ext in mapExtensionToLangname) {
+            return mapExtensionToLangname[ext];
         }
         var extfile = '.' + VPLUtil.getFileName(filenamepath);
-        if (extfile in mapname) {
-            return mapname[extfile];
+        if (extfile in mapExtensionToLangname) {
+            return mapExtensionToLangname[extfile];
         }
         return 'Plain text';
     };
@@ -511,7 +597,7 @@ VPLUtil.dataFromURLData = function(data) {
     var i18n = {};
     var strreg = /\{\\*\$a\\*}/g;
     VPLUtil.str = function(key, parm) {
-        if (!i18n[key]) {
+        if (i18n[key] == undefined) {
             return '{' + key + '}';
         }
         if (typeof parm != 'undefined') {
@@ -586,12 +672,12 @@ VPLUtil.isMac = function() {
     return window.navigator.userAgent.indexOf('Mac') > -1;
 };
 (function() {
-    var lastProccessID = -1;
+    var lastProcessID = -1;
     VPLUtil.setProcessId = function(id) {
-        lastProccessID = id;
+        lastProcessID = id;
     };
     VPLUtil.getProcessId = function() {
-        return lastProccessID;
+        return lastProcessID;
     };
 })();
 
@@ -605,34 +691,78 @@ VPLUtil.isMac = function() {
  *         Use done() to set handler to receive the WebSocket. Use fail to set error handler.
  */
 VPLUtil.directRun = function(URL, command, files) {
-    var deferred = $.Deferred();
-    $.ajax({
-        async: true,
-        type: "POST",
-        url: URL + 'directrun',
-        'data': JSON.stringify({"command": command, "files": files}),
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"
-    }).done(function(result) {
-        if (!result.success) {
-            deferred.reject(result.error);
-        } else {
-            var response = result.response;
-            VPLUtil.setProtocol(response);
-            var ws = new WebSocket(response.executionURL);
-            log.debug('Conecting with:' + response.executionURL);
-            deferred.resolve({processid: response.processid, homepath: response.homepath, connection: ws});
+    var promise = fetch(URL + 'directrun', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({"command": command, "files": files}),
+        credentials: 'same-origin'
+    }).then(function(response) {
+        if (!response.ok) {
+            throw new Error('Connection fail: HTTP ' + response.status);
         }
-    }).fail(function(jqXHR, textStatus, errorThrown) {
-        var message = 'Connection fail' + ': ' + textStatus;
-        if (errorThrown.message != undefined) {
-            message += ': ' + errorThrown.message;
+        return response.json();
+    }).then(function(result) {
+        if (!result.success) {
+            throw result.error;
+        }
+        var response = result.response;
+        VPLUtil.setProtocol(response);
+        var ws = new WebSocket(response.executionURL);
+        log.debug('Conecting with:' + response.executionURL);
+        return {processid: response.processid, homepath: response.homepath, connection: ws};
+    }).catch(function(error) {
+        var message = 'Connection fail';
+        if (typeof error === 'string') {
+            message += ': ' + error;
+        } else if (error && error.message != undefined) {
+            message += ': ' + error.message;
         }
         log.debug(message);
-        deferred.reject(message);
+        throw message;
     });
-    return deferred;
+    return promise;
 };
+
+/**
+ * Cancel a direct run process. The process must be running and the execution server must support cancellation.
+ * @param {string} URL to VPL editor services in Moodle server
+ * @param {number} processid Process ID to cancel
+ * @returns {object} deferred.
+ *         Use done() to set handler to receive the result. Use fail to set error handler.
+ */
+VPLUtil.cancelDirectRun = function(URL, processid) {
+    var promise = fetch(URL + 'cancel', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json; charset=utf-8'
+        },
+        body: JSON.stringify({"processid": processid}),
+        credentials: 'same-origin'
+    }).then(function(response) {
+        if (!response.ok) {
+            throw new Error('Connection fail: HTTP ' + response.status);
+        }
+        return response.json();
+    }).then(function(result) {
+        if (!result.success) {
+            throw result.error;
+        }
+        return result.response;
+    }).catch(function(error) {
+        var message = 'Connection fail';
+        if (typeof error === 'string') {
+            message += ': ' + error;
+        } else if (error && error.message != undefined) {
+            message += ': ' + error.message;
+        }
+        log.debug(message);
+        throw message;
+    });
+    return promise;
+};
+
 /**
  * Function to experiment with Direct run.
  * Limits: one data send and 10 messages received and 10 minutes connected
@@ -640,11 +770,11 @@ VPLUtil.directRun = function(URL, command, files) {
  * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
  * @param {object} data to send to server
  */
-    VPLUtil.directRunTest = function(URL, command, data) {
+VPLUtil.directRunTest = function(URL, command, data) {
     var files = [{name: 'a.c', contents: 'int main(){return 0;}', encoding: 0},
                     {name: 'b.c', contents: 'int f(){return 1;}', encoding: 0}];
     VPLUtil.directRun(URL, command, files)
-        .done(function(result) {
+        .then(function(result) {
             var mcount = 0;
             result.connection.onopen = function() {
                 log.debug("Ws open " + result.homepath + " processid " + result.processid);
@@ -667,8 +797,9 @@ VPLUtil.directRun = function(URL, command, files) {
             result.connection.onclose = function(event) {
                 log.debug("WS close: " + event.code + " " + event.reason);
             };
+            return result;
         })
-        .fail(function(message) {
+        .catch(function(message) {
             log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);
         });
 };
@@ -682,8 +813,8 @@ VPLUtil.directRun = function(URL, command, files) {
  * @param {boolean} folding If true add folding to titles
  * @returns {string} HTML processed
  */
-VPLUtil.processResult = function(text, filenames, sh, noFormat, addLinks, folding) {
-    if (typeof text == 'undefined' || text.replace(/^\s+$/gm, '') == '') {
+VPLUtil.processResult = function(text, filenames, sh, noFormat = false, addLinks = true, folding = false) {
+    if (typeof text == 'undefined' || text.trim() == '') {
         return '';
     }
     /**
@@ -1136,6 +1267,10 @@ VPLUtil.loadModule = function(module, variable) {
         var self = this;
         var result = this.results[pos];
         var tag = document.getElementById(result.tagId);
+        if (!tag) {
+            VPLUtil.log('Error: tag ' + result.tagId + ' not found for result processing');
+            return;
+        }
         var text = tag.textContent || tag.innerText;
         tag.innerHTML = VPLUtil.processResult(text, this.shFileNames, this.shFiles,
             result.noFormat, result.addLinks, result.folding);
@@ -1164,11 +1299,16 @@ VPLUtil.loadModule = function(module, variable) {
         new FileGroupHighlighter(groupFiles, groupResults);
     };
     VPLUtil.flEventHandler = function(event) {
+        if (!event || !event.target || !event.target.getAttribute('href') || !event.target.getAttribute('data-line')) {
+            return;
+        }
         var tag = event.target.getAttribute('href').substring(1);
         var line = event.target.getAttribute('data-line');
         var sh = shs[tag];
-        sh.gotoLine(line, 0);
-        sh.scrollToLine(line, true);
+        if (sh) {
+            sh.gotoLine(line, 0);
+            sh.scrollToLine(line, true);
+        }
     };
     VPLUtil.setflEventHandler = function() {
         var links = document.getElementsByClassName("vpl_fl");

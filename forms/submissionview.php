@@ -31,21 +31,18 @@ require_once(dirname(__FILE__) . '/../views/sh_factory.class.php');
 
 global $DB, $USER, $PAGE;
 
-require_login();
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+$vpl = new mod_vpl($id);
 $userid = optional_param('userid', false, PARAM_INT);
 
-$vpl = new mod_vpl($id);
+$param = ['id' => $id];
 if ($userid) {
-    $vpl->prepare_page('forms/submissionview.php', [
-            'id' => $id,
-            'userid' => $userid,
-    ]);
-} else {
-    $vpl->prepare_page('forms/submissionview.php', [
-            'id' => $id,
-    ]);
+    $param['userid'] = $userid;
 }
+$vpl->prepare_page('forms/submissionview.php', $param);
+
 if (! $vpl->is_visible()) {
     \mod_vpl\event\vpl_security::log($vpl);
     vpl_redirect('?id=' . $id, get_string('notavailable'));
@@ -84,8 +81,6 @@ if ($subinstance != null && $subinstance->vpl != $vpl->get_instance()->id) {
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
 }
-
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/sh.css'));
 
 // Print header.
 $vpl->print_header(get_string('submissionview', VPL));

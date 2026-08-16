@@ -74,11 +74,12 @@ function vpl_get_overrideactions($id, $overrideid, $editing) {
     }
 }
 
-require_login();
-
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+
 $edit = optional_param('edit', null, PARAM_INT);
 $delete = optional_param('delete', null, PARAM_INT);
 $update = optional_param('update', null, PARAM_INT);
@@ -257,7 +258,6 @@ if ($update !== null) {
 }
 
 $PAGE->force_settings_menu();
-$PAGE->requires->css(new moodle_url('/mod/vpl/css/overrides.css'));
 $vpl->print_header(get_string('overrides', VPL));
 $vpl->print_heading_with_help('overrides');
 echo $OUTPUT->box_start();

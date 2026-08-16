@@ -40,7 +40,8 @@ class vpl_sh_text_nsh extends vpl_sh_base {
      */
     public function print_file($name, $data) {
         echo "<h4>" . s($name) . "</h4>\n";
-        echo '<pre class="vpl_sh vpl_g">';
+        echo "<div  class='vpl_codefilecontent' >";
+        echo '<pre class="vpl_sh vpl_g" >';
         $lines = preg_split("/\r\n|\n|\r/", $data);
         $nl = 1;
         foreach ($lines as $line) {
@@ -49,5 +50,6 @@ class vpl_sh_text_nsh extends vpl_sh_base {
             $nl++;
         }
         echo "</pre>\n";
+        echo "</div>\n";
     }
 }

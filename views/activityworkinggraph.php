@@ -27,12 +27,12 @@ require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../locallib.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/workinggraph.php');
-require_login();
+
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('views/activityworkinggraph.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('views/activityworkinggraph.php', ['id' => $id]);
 
 $vpl->require_capability(VPL_GRADE_CAPABILITY);
 

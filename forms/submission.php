@@ -31,21 +31,17 @@ require_once(dirname(__FILE__) . '/../vpl_submission.class.php');
 
 global $USER;
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
-$userid = optional_param('userid', false, PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
+$userid = optional_param('userid', false, PARAM_INT);
+$param = ['id' => $id];
 if ($userid) {
-    $vpl->prepare_page('forms/submission.php', [
-            'id' => $id,
-            'userid' => $userid,
-    ]);
-} else {
-    $vpl->prepare_page('forms/submission.php', [
-            'id' => $id,
-    ]);
+    $param['userid'] = $userid;
 }
+$vpl->prepare_page('forms/submission.php', $param);
+
 if (! $vpl->is_submit_able()) {
     vpl_redirect('?id=' . $id, get_string('notavailable'));
 }

@@ -469,12 +469,16 @@ final class locallib_test extends \advanced_testcase {
         $this->assertTrue(vpl_is_valid_file_name('f'));
         $this->assertTrue(vpl_is_valid_file_name('fj'));
         $this->assertTrue(vpl_is_valid_file_name('.f'));
-        $this->assertTrue(vpl_is_valid_file_name('f.'));
-        $this->assertTrue(vpl_is_valid_file_name('.f.'));
         $this->assertTrue(vpl_is_valid_file_name('..f'));
+        $this->assertTrue(vpl_is_valid_file_name('algo..f'));
+        $this->assertTrue(vpl_is_valid_file_name('a.l.g.o..f'));
+        $this->assertFalse(vpl_is_valid_file_name('f.'));
         $this->assertFalse(vpl_is_valid_file_name('.'));
         $this->assertFalse(vpl_is_valid_file_name('..'));
         $this->assertFalse(vpl_is_valid_file_name(' '));
+        $this->assertFalse(vpl_is_valid_file_name(' algo'));
+        $this->assertFalse(vpl_is_valid_file_name('algo '));
+        $this->assertFalse(vpl_is_valid_file_name('-algo'));
         $this->assertFalse(vpl_is_valid_file_name('             '));
         $this->assertFalse(vpl_is_valid_file_name('a/b'));
         $this->assertFalse(vpl_is_valid_file_name('a\b'));

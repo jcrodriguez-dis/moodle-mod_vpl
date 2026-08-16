@@ -35,18 +35,22 @@ $result->response = new stdClass();
 $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
-    if (! isloggedin()) {
-        throw new Exception(get_string('loggedinnot'));
-    }
     $id = required_param('id', PARAM_INT); // Course module id.
+    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+    require_login($course, true, $cm);
+
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $userid = optional_param('userid', false, PARAM_INT);
     $subid = optional_param('subid', false, PARAM_INT);
     $copy = optional_param('privatecopy', false, PARAM_INT);
     $vpl = new mod_vpl($id);
     // TODO use or not sesskey."require_sesskey();".
-    require_login($vpl->get_course(), false);
-
+    $allow = $vpl->has_capability(VPL_SUBMIT_CAPABILITY);
+    $allow = $allow || $vpl->has_capability(VPL_GRADE_CAPABILITY);
+    $allow = $allow || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
+    if (! $allow) {
+        throw new Exception(get_string('notavailable'));
+    }
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/edit.json.php', [
             'id' => $id,
             'action' => $action,
@@ -97,7 +101,7 @@ try {
             }
             $files = mod_vpl_edit::filesfromide($actiondata->files);
             $filestodelete = isset($actiondata->filestodelete) ? $actiondata->filestodelete : [];
-            $result->response = mod_vpl_edit::update(
+            $result->success = mod_vpl_edit::update(
                 $vpl,
                 $userid,
                 $actiondata->processid,
@@ -165,11 +169,11 @@ try {
             if (! $canview) {
                 throw new Exception(get_string('notavailable'));
             }
-            $files = mod_vpl_edit::filesfromide($actiondata->files);
-            $result->response = mod_vpl_edit::directrun($vpl, $userid, $actiondata->command, $files);
+            $actiondata->files = mod_vpl_edit::filesfromide($actiondata->files);
+            $result->response = mod_vpl_edit::directrun($vpl, $userid, $actiondata);
             break;
         default:
-            throw new Exception('ajax action error: ' + $action);
+            throw new Exception('ajax action error: ' . $action);
     }
     if ($result->response === null) {
         $result->success = false;

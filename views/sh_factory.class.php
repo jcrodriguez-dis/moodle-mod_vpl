@@ -48,6 +48,7 @@ class vpl_sh_factory {
         if (! self::$loaded) {
             $opt = new stdClass();
             $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor/';
+            $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/filterxss/xss.min.js'));
             $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
             self::$loaded = true;
         }

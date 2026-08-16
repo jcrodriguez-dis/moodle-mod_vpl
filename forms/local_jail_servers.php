@@ -23,9 +23,11 @@
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
 
-require_once(dirname(__FILE__) . '/../../../config.php');
-require_once(dirname(__FILE__) . '/../locallib.php');
-require_once(dirname(__FILE__) . '/../vpl.class.php');
+require_once(__DIR__ . '/../../../config.php');
+require_once(__DIR__ . '/../locallib.php');
+require_once(__DIR__ . '/../vpl.class.php');
+require_once(__DIR__ . '/../jail/jailserver_manager.class.php');
+
 global $CFG;
 require_once($CFG->libdir . '/formslib.php');
 
@@ -53,33 +55,51 @@ class mod_vpl_setjails_form extends moodleform {
     }
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/local_jail_servers.php', [ 'id' => $id ]);
-vpl_include_jsfile('hideshow.js');
 $vpl->require_capability(VPL_SETJAILS_CAPABILITY);
-$vpl->print_header(get_string('local_jail_servers', VPL));
-$vpl->print_heading_with_help('local_jail_servers');
-
 $mform = new mod_vpl_setjails_form('local_jail_servers.php');
 // Display page.
 
 if (! $mform->is_cancelled() && $fromform = $mform->get_data()) {
     if (isset($fromform->jailservers)) {
-        \mod_vpl\event\vpl_execution_localjails_updated::log($vpl);
-        $instance = $vpl->get_instance();
-        $instance->jailservers = $fromform->jailservers;
-        if ($vpl->update()) {
-            vpl_notice(get_string('saved', VPL));
+        $serversinfo = vpl_jailserver_manager::get_servers_info($fromform->jailservers);
+        if (count($serversinfo['badservers']) > 0) {
+            $message = get_string('optionsnotsaved', VPL);
+            foreach ($serversinfo['badservers'] as $badserver) {
+                $message .= '<br>' . get_string('jail_server_badurl', VPL, s($badserver));
+            }
+            $vpl->add_notice($message, 'error');
         } else {
-            vpl_notice(get_string('optionsnotsaved', VPL), 'error');
+            \mod_vpl\event\vpl_execution_localjails_updated::log($vpl);
+            foreach ($serversinfo['allservers'] as $server) {
+                $issues = vpl_jailserver_manager::get_server_issues($server);
+                if (count($issues) > 0) {
+                    $vpl->add_notice(implode("<br>\n", $issues), 'warning');
+                }
+            }
+            $instance = $vpl->get_instance();
+            $instance->jailservers = $fromform->jailservers;
+            if ($vpl->update()) {
+                $vpl->add_notice(get_string('saved', VPL), 'success');
+            } else {
+                $vpl->add_notice(get_string('optionsnotsaved', VPL), 'error');
+            }
         }
     } else {
-        vpl_notice(get_string('optionsnotsaved', VPL), 'error');
+        $vpl->add_notice(get_string('optionsnotsaved', VPL), 'error');
     }
 }
+if ($mform->is_cancelled()) {
+    $vpl->add_notice(get_string('cancelled'), 'warning');
+}
+
+$vpl->print_header(get_string('local_jail_servers', VPL));
+$vpl->print_heading_with_help('local_jail_servers');
+
 $data = new stdClass();
 $data->id = $id;
 $data->jailservers = $vpl->get_instance()->jailservers;

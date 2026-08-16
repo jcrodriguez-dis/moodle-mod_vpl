@@ -109,13 +109,14 @@ function print_basic_html($form, $vpl) {
     }
 }
 
-require_login();
-
 $id = required_param('id', PARAM_INT);
-$varid = optional_param('varid', -13, PARAM_INT);
-$canceled = optional_param('cancel', '', PARAM_TEXT) !== '';
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 $vpl->prepare_page('forms/variations.php', ['id' => $id]);
+
+$varid = optional_param('varid', -13, PARAM_INT);
+$canceled = optional_param('cancel', '', PARAM_TEXT) !== '';
 vpl_include_jsfile('hideshow.js');
 $vplid = $vpl->get_instance()->id;
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);

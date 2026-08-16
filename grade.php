@@ -27,12 +27,11 @@ require_once(dirname(__FILE__) . '/../../config.php');
 require_once(dirname(__FILE__) . '/lib.php');
 require_once(dirname(__FILE__) . '/vpl.class.php');
 
-require_login();
 $id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
-$vpl->prepare_page('grade.php', [
-        'id' => $id,
-]);
+$vpl->prepare_page('grade.php', ['id' => $id]);
 $vpl->print_header();
 if ($vpl->has_capability(VPL_GRADE_CAPABILITY)) {
     $userid = optional_param('userid', false, PARAM_INT);

@@ -27,15 +27,14 @@ import $ from 'jquery';
 /* eslint-disable no-unused-vars */
 import jqui from 'jqueryui';
 /* eslint-enable no-unused-vars */
-import coreURL from 'core/url';
 import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
 import {VPLFile} from 'mod_vpl/vplidefile';
 import {VPLIDEButtons} from 'mod_vpl/vplidebutton';
 import {VPLTerminal} from 'mod_vpl/vplterminal';
 import {VPLVNCClient} from 'mod_vpl/vplvnc';
+import {VPLLS} from 'mod_vpl/vplls';
 
-var vplIdeInstance;
 var VPLIDE = function(rootId, options) {
     var self = this;
     var fileManager;
@@ -55,8 +54,7 @@ var VPLIDE = function(rootId, options) {
     var str = VPLUtil.str;
     var rootObj = $('#' + rootId);
     $("head").append('<meta name="viewport" content="initial-scale=1">')
-                    .append('<meta name="viewport" width="device-width">')
-                    .append('<link rel="stylesheet" href="' + coreURL.relativeUrl('/mod/vpl/editor/VPLIDE.css') + '"/>');
+                    .append('<meta name="viewport" width="device-width">');
     if (rootObj.length === 0) {
         throw new Error("VPL: constructor tag_id not found");
     }
@@ -240,7 +238,7 @@ var VPLIDE = function(rootId, options) {
     }
     // Init editor vars.
     var menu = $('#vpl_menu');
-    var menuButtons = new VPLIDEButtons(menu, isOptionAllowed);
+    var menuButtons = new VPLIDEButtons(rootObj, isOptionAllowed);
     var tr = $('#vpl_tr');
     var fileListContainer = $('#vpl_filelist');
     var fileList = $('#vpl_filelist_header');
@@ -252,6 +250,9 @@ var VPLIDE = function(rootId, options) {
     var renameDiretoryAction = VPLUtil.doNothing;
     fileListContainer.vplMinWidth = 80;
     resultContainer.vplMinWidth = 100;
+    this.getMenuButtons = function() {
+        return menuButtons;
+    };
     /**
      * Avoids selecting grade.
      * @param {object} event Unuse.
@@ -268,8 +269,10 @@ var VPLIDE = function(rootId, options) {
     }
     /**
      * Constructor of FileManager objects
+     * @param {object} IDEInstance The IDE instance
+     * @param {object} options Object with configuration options
      */
-    function FileManager() {
+    function FileManager(IDEInstance, options) {
         var tabsUl = $('#vpl_tabs_ul');
         $('#vpl_tabs').tabs();
         var tabs = $('#vpl_tabs').tabs("widget");
@@ -277,6 +280,7 @@ var VPLIDE = function(rootId, options) {
         var openFiles = [];
         var modified = true;
         var self = this;
+        var LSManager = null;
         (function() {
             var version;
             self.setVersion = function(v) {
@@ -286,6 +290,12 @@ var VPLIDE = function(rootId, options) {
                 return version;
             };
         })();
+        this.getIDE = function() {
+            return IDEInstance;
+        };
+        this.getLSManager = function() {
+            return LSManager;
+        };
         this.updateFileList = function() {
             self.generateFileList();
         };
@@ -381,8 +391,10 @@ var VPLIDE = function(rootId, options) {
         };
         this.setTheme = function(theme) {
             options.editorTheme = theme;
-            for (var i = 0; i < files.length; i++) {
-                files[i].setTheme(theme);
+            for (let file of files) {
+                if (file.isCode() || file.isOpen()) {
+                    file.setTheme(theme);
+                }
             }
         };
         this.getEditorKeyBinding = function() {
@@ -390,8 +402,10 @@ var VPLIDE = function(rootId, options) {
         };
         this.setEditorKeyBinding = function(binding) {
             options.editorKeyBinding = binding;
-            for (var i = 0; i < files.length; i++) {
-                files[i].setKeyBinding(binding);
+            for (let file of files) {
+                if (file.isCode() || file.isOpen()) {
+                    file.setKeyBinding(binding);
+                }
             }
         };
         this.getEditorShowInvisibles = function() {
@@ -399,8 +413,10 @@ var VPLIDE = function(rootId, options) {
         };
         this.setEditorShowInvisibles = function(show) {
             options.editorShowInvisibles = show;
-            for (var i = 0; i < files.length; i++) {
-                files[i].setShowInvisibles(show);
+            for (let file of files) {
+                if (file.isCode() || file.isOpen()) {
+                    file.setShowInvisibles(show);
+                }
             }
         };
         this.getEditorLiveAutocompletion = function() {
@@ -408,11 +424,16 @@ var VPLIDE = function(rootId, options) {
         };
         this.setEditorLiveAutocompletion = function(enable) {
             options.editorLiveAutocompletion = enable;
-            for (var i = 0; i < files.length; i++) {
-                files[i].setLiveAutocompletion(enable);
+            for (let file of files) {
+                if (file.isCode() || file.isOpen()) {
+                    file.setLiveAutocompletion(enable);
+                }
             }
         };
         this.addTab = function(fid) {
+            if (rootObj.find('#vpl_file' + fid).length > 0) {
+                return;
+            }
             var hlink = '<a href="#vpl_file' + fid + '"></a>';
             tabsUl.append('<li id="vpl_tab_name' + fid + '">' + hlink + '</li>');
             tabs.append('<div id="vpl_file' + fid + '" class="vpl_ide_file"></div>');
@@ -424,7 +445,11 @@ var VPLIDE = function(rootId, options) {
         this.isReadOnly = function(fileName) {
             return this.readOnly || this.readOnlyFiles.indexOf(fileName) != -1;
         };
-        this.open = function(pos) {
+        /**
+         * Open file in the IDE.
+         * @param {number|object} pos Position of the file in the files array or the file object.
+         */
+        this.openFile = function(pos) {
             var file;
             if (typeof pos == 'object') {
                 file = pos;
@@ -447,29 +472,29 @@ var VPLIDE = function(rootId, options) {
             if (!file.isOpen()) {
                 return;
             }
-            var pos;
-            var fid = file.getId();
+            const fid = file.getId();
             file.close();
+            LSManager.closeFile(file);
             VPLUI.clearIDEStatus();
-            self.removeTab(fid);
-            var ptab = self.getTabPos(fid);
+            let ptab = self.getTabPos(fid);
+            const lastTab = ptab === openFiles.length - 1;
             openFiles.splice(ptab, 1);
+            self.removeTab(fid);
             tabs.tabs('refresh');
             adjustTabsTitles(false);
             self.fileListVisible(true);
             VPLUtil.delay('updateFileList', self.updateFileList);
             VPLUtil.delay('adjustTabsTitles', adjustTabsTitles, false);
-            if (openFiles.length == ptab) {
+            if (lastTab) {
                 ptab--;
             }
             if (ptab >= 0 && openFiles.length > ptab) {
-                pos = self.getFilePosById(openFiles[ptab].getId());
-                self.gotoFile(pos, 'c');
-                return;
+                self.gotoFile(openFiles[ptab], 'c');
             }
         };
         this.isClosed = function(pos) {
-            return !files[pos].isOpen();
+            const file = (typeof pos == 'object') ? pos : files[pos];
+            return !file || !file.isOpen();
         };
         this.fileListVisible = function(b) {
             if (b === fileListContainer.vplVisible) {
@@ -506,8 +531,8 @@ var VPLIDE = function(rootId, options) {
         };
         this.setFontSize = function(size) {
             options.editorFontSize = size;
-            for (var i = 0; i < files.length; i++) {
-                files[i].setFontSize(size);
+            for (let file of files) {
+                file.setFontSize(size);
             }
         };
         this.getFontSize = function() {
@@ -527,6 +552,13 @@ var VPLIDE = function(rootId, options) {
             options.terminalTheme = theme;
             terminal.setTheme(theme);
         };
+        /**
+         * Adds a file to the IDE.
+         * @param {object} file Object with name, contents and encoding of the file.
+         * @param {boolean} [replace=false] Whether to replace the file if it already exists.
+         * @param {function} ok Callback function to be called if the file is added successfully.
+         * @param {function} showError Callback function to be called if there is an error adding the file.
+         */
         this.addFile = function(file, replace, ok, showError) {
             if ((typeof file.name != 'string') || !VPLUtil.validPath(file.name)) {
                 showError(str('incorrect_file_name') + '\n(' + file.name + ')');
@@ -559,7 +591,7 @@ var VPLIDE = function(rootId, options) {
                 return false;
             }
             var fid = VPLUtil.getUniqueId();
-            var newfile = new VPLFile(fid, file.name, file.contents, this, vplIdeInstance);
+            var newfile = new VPLFile(fid, file.name, file.contents, fileManager);
             if (file.encoding == 1) {
                 newfile.extendToBinary();
             } else {
@@ -572,6 +604,7 @@ var VPLIDE = function(rootId, options) {
             newfile.setFileName(file.name);
             files.push(newfile);
             self.setModified();
+            LSManager.newFile(newfile);
             if (files.length > 5) {
                 self.fileListVisible(true);
             }
@@ -584,11 +617,12 @@ var VPLIDE = function(rootId, options) {
                 if (pos == -1) {
                     throw new Error("Internal error: File name not found");
                 }
-                if (files[pos].getId() < this.minNumberOfFiles) {
-                    throw new Error("Internal error: Renaming requested filename");
+                let file = files[pos];
+                if (file.getId() < this.minNumberOfFiles) {
+                    throw new Error("Cannot rename required filename");
                 }
                 // No change.
-                if (files[pos].getFileName() == newname) {
+                if (file.getFileName() == newname) {
                     return true; // Equals name file.
                 }
                 // No valid new name.
@@ -598,45 +632,47 @@ var VPLIDE = function(rootId, options) {
                     throw str('incorrect_file_name');
                 }
                 // Binary files cannot change extension.
-                if (files[pos].isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
+                if (file.isBinary() && VPLUtil.fileExtension(oldname) != VPLUtil.fileExtension(newname)) {
                     throw str('incorrect_file_name');
                 }
                 // Can not change from binary to text or viceversa.
-                if (files[pos].isBinary() != VPLUtil.isBinary(newname)) {
+                if (file.isBinary() != VPLUtil.isBinary(newname)) {
                     throw str('incorrect_file_name');
                 }
                 // Can not change from blockly to text or viceversa.
                 if (VPLUtil.isBlockly(oldname) != VPLUtil.isBlockly(newname)) {
-                    if (files[pos].getContent() > '') {
+                    if (file.getContent() > '') {
                         showMessage(str('delete_file_fq', oldname), {
                             ok: function() {
-                                var file = {
+                                var fileToAdd = {
                                     name: newname,
                                     contents: '',
                                     encoding: 0
                                 };
                                 fileManager.deleteFile(oldname, showError);
-                                var fileResult = fileManager.addFile(file, false, updateMenu, showError);
+                                var fileResult = fileManager.addFile(fileToAdd, false, updateMenu, showError);
                                 if (fileResult) {
                                     fileManager.gotoFileName(newname);
                                 }
                             }
                         });
                     } else {
-                        var file = {
+                        var fileToAdd = {
                             name: newname,
                             contents: '',
                             encoding: 0
                         };
                         fileManager.deleteFile(oldname, showError);
-                        var fileResult = fileManager.addFile(file, false, updateMenu, showError);
+                        var fileResult = fileManager.addFile(fileToAdd, false, updateMenu, showError);
                         if (fileResult) {
                             fileManager.gotoFileName(newname);
                         }
                     }
                     return true;
                 }
-                files[pos].setFileName(newname);
+                let oldFile = new VPLFile('', file.getFileName(), '', fileManager);
+                file.setFileName(newname);
+                LSManager.renameFile(oldFile, file);
             } catch (e) {
                 showError(str('filenotrenamed', oldname) + '\n' + e);
                 return false;
@@ -696,7 +732,10 @@ var VPLIDE = function(rootId, options) {
                 // Set the new file names
                 for (i = 0; i < newFileNames.length; i++) {
                     if (newFileNames[i]) {
-                        files[i].setFileName(newFileNames[i]);
+                        let newFile = files[i];
+                        let oldFile = new VPLFile('', newFile.getFileName(), '', fileManager);
+                        newFile.setFileName(newFileNames[i]);
+                        LSManager.renameFile(oldFile, newFile);
                     }
                 }
             } catch (e) {
@@ -720,6 +759,7 @@ var VPLIDE = function(rootId, options) {
             }
             this.setModified();
             this.closeFile(files[pos]);
+            LSManager.deleteFile(files[pos]);
             files.splice(pos, 1);
             if (openFiles.length == 0) {
                 VPLUI.clearIDEStatus();
@@ -730,9 +770,22 @@ var VPLIDE = function(rootId, options) {
             return true;
         };
         this.currentFile = function() {
-            var id = tabs.tabs('option', 'active');
-            if (id in openFiles) {
-                var file = openFiles[id];
+            // The active value is a DOM tab index (jQuery UI), not an openFiles index.
+            // Resolve it through the tab <li> id so it always maps to the right file
+            // even if openFiles order differs from the DOM tab order.
+            var index = tabs.tabs('option', 'active');
+            var li = tabsUl.children('li').eq(index);
+            var file = false;
+            if (li.length > 0) {
+                var fid = parseInt(li.attr('id').replace('vpl_tab_name', ''), 10);
+                for (var i = 0; i < openFiles.length; i++) {
+                    if (openFiles[i].getId() == fid) {
+                        file = openFiles[i];
+                        break;
+                    }
+                }
+            }
+            if (file) {
                 if (arguments.length === 0) {
                     return file;
                 }
@@ -758,12 +811,11 @@ var VPLIDE = function(rootId, options) {
             return tabs.tabs('option', 'active');
         };
         this.getFileTab = function(id) {
-            for (var i = 0; i < openFiles.length; i++) {
-                if (openFiles[i].getId() == id) {
-                    return i;
-                }
+            var li = tabsUl.children('#vpl_tab_name' + id);
+            if (li.length === 0) {
+                return -1;
             }
-            return -1;
+            return tabsUl.children('li').index(li);
         };
         this.getFilePosById = function(id) {
             for (var i = 0; i < files.length; i++) {
@@ -775,24 +827,27 @@ var VPLIDE = function(rootId, options) {
         };
         this.gotoFile = function(pos, l) {
             var file = files[pos];
-            self.open(file);
+            if (!file) {
+                return;
+            }
+            self.openFile(file);
             tabs.tabs('option', 'active', self.getFileTab(file.getId()));
-            if (l !== 'c') {
+            if (l != undefined && l !== 'c') {
                 file.gotoLine(parseInt(l, 10));
             }
             file.focus();
         };
-        this.gotoFileLink = function(a) {
-            var tag = $(a);
-            var fname = tag.data('file');
+        this.gotoFileLink = function(link) {
+            var linkTag = $(link);
+            var fileName = linkTag.data('file');
             var fpos = -1;
-            if (fname > '') {
-                fpos = this.fileNameExists(fname);
+            if (fileName > '') {
+                fpos = this.fileNameExists(fileName);
             } else {
-                fpos = self.getFilePosById(tag.data('fileid'));
+                fpos = self.getFilePosById(linkTag.data('fileid'));
             }
             if (fpos >= 0) {
-                var line = tag.data('line');
+                var line = linkTag.data('line');
                 if (typeof line == 'undefined') {
                     line = 'c';
                 }
@@ -850,6 +905,13 @@ var VPLIDE = function(rootId, options) {
         };
         this.getFile = function(i) {
             return files[i];
+        };
+        this.getFileByName = function(fileName) {
+            var pos = this.fileNameExists(fileName);
+            if (pos >= 0) {
+                return files[pos];
+            }
+            return null;
         };
         this.getFiles = function() {
             return files;
@@ -963,6 +1025,8 @@ var VPLIDE = function(rootId, options) {
         tabsUl.on('dblclick', 'a', menuButtons.getAction('rename'));
         fileListContent.on('dblclick', 'a[data-fileid]', menuButtons.getAction('rename'));
         fileListContent.on('dblclick', 'a[data-dirname]', renameDiretoryAction);
+        // LSManager creation must be here becouse init uses fileManager.
+        LSManager = new VPLLS(options.ajaxurl, self, options.lsavailable, options.locale);
     }
     this.updateEvaluationNumber = function(res) {
         if (typeof res.nevaluations != 'undefined') {
@@ -982,7 +1046,7 @@ var VPLIDE = function(rootId, options) {
     this.getTerminal = function() {
         return terminal;
     };
-    this.setResultGrade = function(content, raw) {
+    this.setResultGrade = function(content, noUpdate) {
         var name = 'grade';
         var titleclass = 'vpl_ide_accordion_t_' + name;
         var contentclass = 'vpl_ide_accordion_c_' + name;
@@ -990,7 +1054,7 @@ var VPLIDE = function(rootId, options) {
             result.append('<div class="' + titleclass + '"></div>');
             result.append('<div class="' + contentclass + '"></div>');
         }
-        if (typeof raw == 'undefined') {
+        if (noUpdate) {
             return result.find('h4.' + titleclass).length > 0;
         }
         var titleTag = result.find('.' + titleclass);
@@ -1002,14 +1066,22 @@ var VPLIDE = function(rootId, options) {
             return false;
         }
     };
-    this.setResultTab = function(name, content, raw) {
+    /**
+     * Set the content of a result tab. If content is empty, the tab is removed.
+     * @param {String} name I18n key of the name of tab to set and identifier of the tab content class.
+     * @param {String} content HTML content to set in the tab
+     * @param {boolean} noUpdate Do not change the tab
+     * @returns {boolean} true if the tab has content after after the call, false otherwise
+     */
+    this.setResultTab = function(name, content, noUpdate) {
         var titleclass = 'vpl_ide_accordion_t_' + name;
         var contentclass = 'vpl_ide_accordion_c_' + name;
         if (result.find('.' + contentclass).length == 0) {
             result.append('<div class="' + titleclass + '"></div>');
             result.append('<div class="' + contentclass + '"></div>');
         }
-        if (typeof raw == 'undefined') {
+        if (noUpdate) {
+            // If no update, only check if the tab has content to decide if it should be shown or not.
             return result.find('h4.' + titleclass).length > 0;
         }
         var titleTag = result.find('.' + titleclass);
@@ -1020,13 +1092,16 @@ var VPLIDE = function(rootId, options) {
             return $("<h5>").append($(this).contents());
         });
         if (contentTag.html() == HTMLcontent.html()) {
+            // No change. Keep the tab if it already exists, to avoid losing the tab position.
             return content > '';
         }
         if (content > '') {
+            // Set content.
             titleTag.replaceWith('<h4 class="' + titleclass + '">' + str(name) + '</h4>');
             contentTag.replaceWith('<div class="ui-widget ' + contentclass + '">' + HTMLcontent.html() + '</div>');
             return true;
         } else {
+            // Remove content.
             titleTag.replaceWith('<div class="' + titleclass + '"></div>');
             contentTag.replaceWith('<div class="' + contentclass + '"></div>');
             return false;
@@ -1052,56 +1127,78 @@ var VPLIDE = function(rootId, options) {
             }
         }
     };
-    this.setResult = function(res, go) {
+    const initialPanelOrder = [
+        'grade',
+        'references',
+        'variables',
+        'compilation',
+        'comments',
+        'execution',
+        'description',
+    ];
+    const needProcessingResult = ['compilation', 'comments'];
+    const needSanitizeResult = ['execution'];
+
+    this.setResult = function(res, go = false, clearAnnotations = true) {
         self.updateEvaluationNumber(res);
+        res.description = window.VPLDescription;
+        res.comments = res.evaluation;
         var files = fileManager.getFiles();
         var fileNames = [];
-        var i;
-        for (i = 0; i < files.length; i++) {
-            fileNames[i] = files[i].getFileName();
-            files[i].clearAnnotations();
+        if (res.compilation || res.comments) {
+            for (let i = 0; i < files.length; i++) {
+                fileNames[i] = files[i].getFileName();
+                if (clearAnnotations) {
+                    files[i].clearAnnotations();
+                }
+            }
         }
         var show = false;
-        var hasContent;
-        var grade = VPLUtil.sanitizeText(res.grade);
         var gradeShow;
-        var formated;
-        gradeShow = self.setResultGrade(grade, res.grade);
-        show = show || gradeShow;
-        hasContent = self.setResultTab('variables', res.variables, res.variables);
-        show = show || hasContent;
-        formated = VPLUtil.processResult(res.compilation, fileNames, files, true, true, false);
-        hasContent = self.setResultTab('compilation', formated, res.compilation);
-        show = show || hasContent;
-        formated = VPLUtil.processResult(res.evaluation, fileNames, files, false, true, false);
-        hasContent = self.setResultTab('comments', formated, res.evaluation);
-        show = show || hasContent;
-        formated = VPLUtil.sanitizeText(res.execution);
-        hasContent = self.setResultTab('execution', formated, res.execution);
-        show = show || hasContent;
-        hasContent = self.setResultTab('description', window.VPLDescription, window.VPLDescription);
-        if (hasContent) {
-            self.applyMathJax();
+        for (let panelName of initialPanelOrder) {
+            let hasContent;
+            let panelContent = res[panelName];
+            let noUpdate = panelContent === undefined;
+            if (panelName == 'grade') {
+                hasContent = self.setResultGrade(VPLUtil.sanitizeText(res.grade), noUpdate);
+                gradeShow = hasContent;
+            } else if (needProcessingResult.includes(panelName)) {
+                let formated = VPLUtil.processResult(res[panelName], fileNames, files, panelName == 'compilation');
+                hasContent = self.setResultTab(panelName, formated, noUpdate);
+            } else if (needSanitizeResult.includes(panelName)) {
+                hasContent = self.setResultTab(panelName, VPLUtil.sanitizeText(res[panelName]), noUpdate);
+            } else {
+                hasContent = self.setResultTab(panelName, res[panelName], noUpdate);
+            }
+            if (panelName == 'description' && hasContent) {
+                // Description can contain math formulas, so we need to apply MathJax if it's loaded.
+                self.applyMathJax();
+            }
+            show = show || hasContent;
         }
-        show = show || hasContent;
         if (show) {
+            var currentFile = fileManager.currentFile();
             resultContainer.show();
             resultContainer.vplVisible = true;
             reinitAccordion(gradeShow ? 1 : 0);
-            for (i = 0; i < files.length; i++) {
-                var annotations = files[i].getAnnotations();
-                for (var j = 0; j < annotations.length; j++) {
-                    if (go || annotations[j].type == 'error') {
-                        fileManager.gotoFile(i, annotations[j].row + 1);
-                        break;
+            if (go) {
+                for (let i = 0; i < files.length; i++) {
+                    let annotations = files[i].getAnnotations();
+                    for (let j = 0; j < annotations.length; j++) {
+                        if (annotations[j].type == 'error') {
+                            fileManager.gotoFile(i, annotations[j].row + 1);
+                            break;
+                        }
                     }
                 }
+            } else if (currentFile) {
+                fileManager.gotoFile(fileManager.getFilePosById(currentFile.getId()));
             }
-            $('#vpl_ide_shrightpanel').show();
+            $('.vpl_ide_statusbar_shrightpanel').show();
         } else {
             resultContainer.hide();
             resultContainer.vplVisible = false;
-            $('#vpl_ide_shrightpanel').hide();
+            $('.vpl_ide_statusbar_shrightpanel').hide();
         }
         VPLUtil.delay('autoResizeTab', autoResizeTab);
     };
@@ -1238,7 +1335,7 @@ var VPLIDE = function(rootId, options) {
         var tabsUlWidth = 0;
         tabsUl.width(100000);
         var last = tabsUl.children('li:visible').last();
-        if (last.length) {
+        if (last.length == 1) {
             var parentScrollLeft = tabsUl.parent().scrollLeft();
             tabsUlWidth = parentScrollLeft + last.position().left + last.width() + tabsAir;
             tabsUl.width(tabsUlWidth);
@@ -1350,9 +1447,7 @@ var VPLIDE = function(rootId, options) {
         };
         var newfile = fileManager.addFile(file, false, updateMenu, showErrorMessage);
         if (newfile) {
-            fileManager.open(newfile);
-            tabs.tabs('option', 'active', fileManager.getTabPos(newfile.getId()));
-            newfile.focus();
+            fileManager.gotoFileName(newfile.getFileName());
             return true;
         }
         return false;
@@ -1759,8 +1854,8 @@ var VPLIDE = function(rootId, options) {
             VPLUtil.delay('updateFileList', fileManager.updateFileList);
         },
         bindKey: {
-            win: 'Ctrl-L',
-            mac: 'Ctrl-L'
+            win: 'Ctrl-Alt-L',
+            mac: 'Ctrl-Option-L'
         }
     });
 
@@ -1799,6 +1894,7 @@ var VPLIDE = function(rootId, options) {
             var filename = file.getFileName();
             var message = str('delete_file_fq', filename);
             showMessage(message, {
+                id: 'delete',
                 ok: function() {
                     fileManager.deleteFile(filename, showErrorMessage);
                 },
@@ -1807,8 +1903,8 @@ var VPLIDE = function(rootId, options) {
             });
         },
         bindKey: {
-            win: 'Ctrl-D',
-            mac: 'Ctrl-D'
+            win: 'Alt-D',
+            mac: 'Option-D'
         }
     });
     menuButtons.add({
@@ -2028,9 +2124,9 @@ var VPLIDE = function(rootId, options) {
                         fileManager.setVersion(response.version);
                         menuButtons.setTimeLeft(response);
                         VPLUtil.delay('updateMenu', updateMenu);
-                        if (VPLUI.monitorRunning()) {
+                        if (VPLUI.monitorRunning() || fileManager.getLSManager().isConnected()) {
                             data.processid = VPLUtil.getProcessId();
-                            VPLUI.requestAction('update', 'updating', data, options.ajaxurl);
+                            VPLUI.requestAction('update', '', data, options.ajaxurl, true);
                         }
                     }
                 }).fail(showErrorMessage);
@@ -2183,18 +2279,6 @@ var VPLIDE = function(rootId, options) {
             mac: 'Ctrl-M'
         }
     });
-    var rightpanelstyle = "position:absolute;right:0;top:60px;z-index:100;margin:3px";
-    tr.append('<span style="' + rightpanelstyle + '">' + menuButtons.getHTML('shrightpanel') + '</span>');
-    var rightPanelButton = $('#vpl_ide_shrightpanel');
-    menuButtons.setText('shrightpanel', 'close-rightpanel', VPLUtil.str('shrightpanel'));
-
-    rightPanelButton.button();
-    rightPanelButton.css('padding', '0');
-    $('#vpl_ide_shrightpanel.ui-button-text').css('padding', '0');
-    rightPanelButton.on('click', function() {
-        menuButtons.launchAction('shrightpanel');
-    });
-    rightPanelButton.hide();
     menu.addClass("ui-widget-header ui-corner-all");
     var menuHtml = "";
     menuHtml += menuButtons.getHTML('more');
@@ -2209,7 +2293,6 @@ var VPLIDE = function(rootId, options) {
     menuHtml += "<span id='vpl_ide_menuextra'>";
     menuHtml += "<span id='vpl_ide_file'>";
     // TODO autosave not implemented.
-    menuHtml += menuButtons.getHTML('filelist');
     menuHtml += menuButtons.getHTML('new');
     menuHtml += menuButtons.getHTML('rename');
     menuHtml += menuButtons.getHTML('delete');
@@ -2246,17 +2329,16 @@ var VPLIDE = function(rootId, options) {
     $('#vpl_ide_about').button();
     $('#vpl_ide_user').button().css('float', 'right').hide();
     $('#vpl_ide_timeleft').button().css('float', 'right').hide();
+    $('.vpl_ide_statusbar_filelist').append(menuButtons.getHTML('filelist'));
     $('.vpl_ide_statusbar_preferences').append(menuButtons.getHTML('preferences'));
-    $('#vpl_ide_preferences').on('click', function() {
-        menuButtons.launchAction('preferences');
-    });
+    $('.vpl_ide_statusbar_shrightpanel').append(menuButtons.getHTML('shrightpanel'));
     $('#vpl_menu .ui-button').css('padding', '6px');
     $('#vpl_menu .ui-button-text').css('padding', '0');
     var alwaysActive = ['filelist', 'more', 'fullscreen', 'about', 'resetfiles',
                         'download', 'comments', 'console', 'import',
-                        'preferences', 'timeleft'];
-    for (var i = 0; i < alwaysActive.length; i++) {
-        menuButtons.enable(alwaysActive[i], true);
+                        'preferences', 'timeleft', 'shrightpanel'];
+    for (let button of alwaysActive) {
+        menuButtons.enable(button, true);
     }
     menuButtons.setExtracontent('user', options.username);
     menuButtons.setTimeLeft(options);
@@ -2403,8 +2485,8 @@ var VPLIDE = function(rootId, options) {
             return undefined;
         });
     }
-    fileManager = new FileManager();
-
+    fileManager = new FileManager(self, options);
+    self.fileManager = fileManager;
     autoResizeTab();
     // Checks menu width every 1 sec as it can change without event.
     (function() {
@@ -2426,22 +2508,28 @@ var VPLIDE = function(rootId, options) {
     VPLUI.requestAction('load', 'loading', options, options.loadajaxurl)
     .done(function(response) {
         let allOK = true;
-        let files = response.files;
+        let loadedFiles = response.files;
         let showFileList = false;
         let openFirstFile = false;
-        for (let i = 0; i < files.length; i++) {
-            let file = files[i];
-            let r = fileManager.addFile(file, false, updateMenu, showErrorMessage);
-            if (r) {
-                r.resetModified();
-                if (i < minNumberOfFiles || files.length <= 5) {
-                    fileManager.open(r);
+        for (let loadFile of loadedFiles) {
+            let file = fileManager.addFile(loadFile, false, updateMenu, showErrorMessage);
+            if (file) {
+                file.resetModified();
+            } else {
+                allOK = false;
+            }
+        }
+        fileManager.getLSManager().startConnections();
+        if (allOK) {
+            let existingFiles = fileManager.getFiles();
+            for (let i = 0; i < existingFiles.length; i++) {
+                let file = existingFiles[i];
+                if (i < minNumberOfFiles || existingFiles.length <= 5) {
+                    fileManager.openFile(file);
                     openFirstFile = true;
                 } else {
                     showFileList = true;
                 }
-            } else {
-                allOK = false;
             }
         }
         if (openFirstFile) {
@@ -2464,15 +2552,6 @@ var VPLIDE = function(rootId, options) {
         } else if (!options.saved) {
             fileManager.setModified();
         }
-        fileManager.setFontSize(options.editorFontSize);
-        fileManager.setTheme(options.editorTheme);
-        fileManager.setEditorKeyBinding(options.editorKeyBinding);
-        fileManager.setEditorShowInvisibles(options.editorShowInvisibles);
-        fileManager.setEditorLiveAutocompletion(options.editorLiveAutocompletion);
-        fileManager.setTerminalFontSize(options.terminalFontSize);
-        if (options.terminalTheme) {
-            fileManager.setTerminalTheme(options.terminalTheme);
-        }
         fileManager.setVersion(response.version);
         fileManager.fileListVisible(showFileList);
         VPLUtil.afterAll('AfterLoadFiles', function() {
@@ -2490,5 +2569,5 @@ var VPLIDE = function(rootId, options) {
 };
 
 export const init = (rootId, options) => {
-    vplIdeInstance = new VPLIDE(rootId, options);
+    new VPLIDE(rootId, options);
 };
