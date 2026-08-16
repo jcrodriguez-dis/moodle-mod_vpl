@@ -208,6 +208,21 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     }
 
     /**
+     * Restore the Safe Exam Browser settings.
+     *
+     * @param array $data seb instance data.
+     * @return void
+     */
+    protected function process_seb($data) {
+        global $DB;
+        $data = (object)$data;
+        $data->vplid = $this->get_new_parentid('vpl');
+        if (!$DB->record_exists('vpl_seb', ['vplid' => $data->vplid])) {
+            $DB->insert_record('vpl_seb', $data);
+        }
+    }
+
+    /**
      * Restore an override assignation
      * @param array $data assigned override instance
      */

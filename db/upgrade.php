@@ -594,6 +594,76 @@ function xmldb_vpl_upgrade_2026042413() {
 }
 
 /**
+ * Upgrades VPL to add Safe Exam Browser settings tables.
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2026052302() {
+    global $DB;
+    $dbman = $DB->get_manager();
+
+    $table = new xmldb_table('vpl_seb');
+    if (!$dbman->table_exists($table)) {
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('vplid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('requiresafeexambrowser', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('showsebdownloadlink', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('enablesebsession', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('preventsebsimultaneoussessions', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('sebteacherpassword', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('linkquitseb', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('userconfirmquit', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('allowuserquitseb', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('quitpassword', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('adminpassword', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('allowreloadinexam', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('showsebtaskbar', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('showreloadbutton', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('showtime', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('showkeyboardlayout', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('showwificontrol', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('enableaudiocontrol', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('muteonstartup', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('allowcapturecamera', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('allowcapturemicrophone', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('allowspellchecking', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('activateurlfiltering', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('filterembeddedcontent', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
+        $table->add_field('expressionsallowed', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('regexallowed', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('expressionsblocked', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('regexblocked', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('allowedbrowserexamkeys', XMLDB_TYPE_TEXT, null, null, null, null, null);
+        $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('vplid', XMLDB_KEY_FOREIGN_UNIQUE, ['vplid'], 'vpl', ['id']);
+        $table->add_key('usermodified', XMLDB_KEY_FOREIGN, ['usermodified'], 'user', ['id']);
+        $dbman->create_table($table);
+    }
+
+    $table = new xmldb_table('vpl_seb_session');
+    if (!$dbman->table_exists($table)) {
+        $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
+        $table->add_field('vplid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('userid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('token1public', XMLDB_TYPE_CHAR, '65', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('token1private', XMLDB_TYPE_CHAR, '65', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('configkey1', XMLDB_TYPE_CHAR, '65', null, XMLDB_NOTNULL, null, null);
+        $table->add_field('sesskey', XMLDB_TYPE_CHAR, '20', null, null, null, null);
+        $table->add_field('token2private', XMLDB_TYPE_CHAR, '65', null, null, null, null);
+        $table->add_field('configkey2', XMLDB_TYPE_CHAR, '65', null, null, null, null);
+        $table->add_key('primary', XMLDB_KEY_PRIMARY, ['id']);
+        $table->add_key('vplid', XMLDB_KEY_FOREIGN, ['vplid'], 'vpl', ['id']);
+        $table->add_key('userid', XMLDB_KEY_FOREIGN, ['userid'], 'user', ['id']);
+        $table->add_index('userid_vplid_uix', XMLDB_INDEX_UNIQUE, ['userid', 'vplid']);
+        $table->add_index('token1public_uix', XMLDB_INDEX_UNIQUE, ['token1public']);
+        $dbman->create_table($table);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -659,6 +729,10 @@ function xmldb_vpl_upgrade($oldversion = 0) {
     if ($oldversion < $vpl45) {
         xmldb_vpl_upgrade_2026042413();
         upgrade_mod_savepoint(true, $vpl45, 'vpl');
+    }
+    if ($oldversion < 2026052302) {
+        xmldb_vpl_upgrade_2026052302();
+        upgrade_mod_savepoint(true, 2026052302, 'vpl');
     }
     return true;
 }
