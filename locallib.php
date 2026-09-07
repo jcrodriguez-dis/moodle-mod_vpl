@@ -786,6 +786,7 @@ function vpl_is_valid_file_name($name) {
  * @codeCoverageIgnore
  */
 function vpl_truncate_string(&$string, $limit) {
+    $string = trim($string);
     if (strlen($string) <= $limit) {
         return;
     }
@@ -855,7 +856,7 @@ function vpl_truncate_vpl($instance) {
     if (property_exists($instance, 'jailservers') &&  $instance->jailservers == null) {
         $instance->jailservers = '';
     }
-    foreach (['name', 'requirednet', 'password', 'variationtitle'] as $field) {
+    foreach (['name', 'requirednet', 'password', 'variationtitle', 'sebkeys'] as $field) {
         if (isset($instance->$field)) {
             vpl_truncate_string($instance->$field, 255);
         }
@@ -916,19 +917,30 @@ function vpl_check_network($networks, $ip = false) {
 /**
  * Get awesome icon for action
  *
- * @param string $str name of the icon
- * @param string $classes additional classes to add to the icon
+ * @param string $str name of the icon or icons separated by |.
+ * @param string $classes optional additional classes to add to the icon.
+ * @param string $title optional title to add to the icons.
  * @return string
  * @codeCoverageIgnore
  */
-function vpl_get_awesome_icon($str, $classes = '') {
-    $icon = 'mod_vpl:' . $str;
-    $imap = mod_vpl_get_fontawesome_icon_map();
-    if (isset($imap[$icon])) {
-        $ficon = $imap[$icon];
-        return '<i class="fa ' . $ficon . $classes . '"></i> ';
+function vpl_get_awesome_icon($str, $classes = '', $title = '') {
+    $icons = explode('|', $str);
+    $html = '';
+    if ($title > '') {
+        $title = ' title="' . s($title) . '"';
     }
-    return '';
+    foreach ($icons as $icon) {
+        $icon = 'mod_vpl:' . $icon;
+        $imap = mod_vpl_get_fontawesome_icon_map();
+        if (isset($imap[$icon])) {
+            $ficon = $imap[$icon];
+            $html .= '<i class="fa ' . $ficon . ' ' . $classes . '"' . $title . '></i>';
+        }
+    }
+    if ($html > '') {
+        $html .= ' ';
+    }
+    return $html;
 }
 
 /**
