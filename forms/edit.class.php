@@ -413,18 +413,20 @@ class mod_vpl_edit {
 #!/bin/bash
 cat > vpl_execution <<CONTENTS
 #!/bin/bash
-for NEWLANG in $vplang en_US.UTF-8 C.utf8 POSIX C
-do
-    export LC_ALL=\$NEWLANG 2> .vpl_set_locale_error
-    if [ -s .vpl_set_locale_error ]; then
-        rm -f .vpl_set_locale_error
-        continue
-    else
-        break
-    fi
-done
-rm -f .vpl_set_locale_error
-stty raw -echo
+{
+    stty raw -echo
+    for NEWLANG in $vplang en_US.UTF-8 C.utf8 POSIX C
+    do
+        export LC_ALL=\$NEWLANG 2> .vpl_set_locale_error
+        if [ -s .vpl_set_locale_error ]; then
+            rm -f .vpl_set_locale_error
+            continue
+        else
+            break
+        fi
+    done
+    rm -f .vpl_set_locale_error
+} > /dev/null 2>&1
 $command
 
 CONTENTS

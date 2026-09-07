@@ -344,33 +344,35 @@ class vpl_jailserver_manager {
             }
             $parse = parse_url($server);
             if ($parse === false || ! isset($parse['scheme']) || ! isset($parse['host'])) {
-                $badservers[] = $server;
+                $badservers[$server] = true;
             } else if ($parse['scheme'] != 'http' && $parse['scheme'] != 'https') {
-                $badservers[] = $server;
+                $badservers[$server] = true;
             } else {
                 if ($languages != null) {
                     foreach (preg_split('/[ ,;]+/', $languages) as $language) {
-                        $language = trim($language);
+                        $language = strtolower(trim($language));
                         if ($language == '') {
                             continue;
                         }
-                        if (isset($lsservers[$language])) {
-                            $lsservers[$language][] = $server;
-                        } else {
-                            $lsservers[$language] = [$server];
+                        if (!isset($lsservers[$language])) {
+                            $lsservers[$language] = [];
                         }
+                        $lsservers[$language][$server] = true;
                     }
                 } else {
-                    $servers[] = $server;
+                    $servers[$server] = true;
                 }
-                $allservers[] = $server;
+                $allservers[$server] = true;
             }
         }
+        foreach ($lsservers as $language => $servers) {
+            $lsservers[$language] = array_keys($servers);
+        }
         return [
-                'servers' => $servers,
-                'badservers' => $badservers,
+                'servers' => array_keys($servers),
+                'badservers' => array_keys($badservers),
                 'lsservers' => $lsservers,
-                'allservers' => $allservers,
+                'allservers' => array_keys($allservers),
         ];
     }
 
@@ -576,6 +578,16 @@ class vpl_jailserver_manager {
         $requestready = self::get_available_request(1024 * 10);
         $serversinfo = self::get_servers_info(self::get_servers_text($vpl));
         $serverlist = array_unique($serversinfo['allservers']);
+        $lsservers = $serversinfo['lsservers'];
+        $lsbyserver = [];
+        foreach ($lsservers as $language => $servers) {
+            foreach ($servers as $server) {
+                if (!isset($lsbyserver[$server])) {
+                    $lsbyserver[$server] = [];
+                }
+                $lsbyserver[$server][$language] = true;
+            }
+        }
         $feedback = [];
         foreach ($serverlist as $server) {
             $status = '';
@@ -606,6 +618,7 @@ class vpl_jailserver_manager {
                 }
             }
             $info->current_status = $status;
+            $info->ls = isset($lsbyserver[$server]) ? array_keys($lsbyserver[$server]) : [];
             $feedback[] = $info;
         }
         return $feedback;

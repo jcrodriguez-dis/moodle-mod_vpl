@@ -71,6 +71,22 @@ function remove_path($url) {
     return $url;
 }
 
+/**
+ * Check if there are any LS (language servers) in the servers info.
+ *
+ * @param array $serversinfo Array of server info objects
+ *
+ * @return bool True if there are any LS, false otherwise
+ */
+function there_are_ls($serversinfo) {
+    foreach ($serversinfo as $info) {
+        if (!empty($info->ls)) {
+            return true;
+        }
+    }
+    return false;
+}
+
 global $PAGE, $COURSE, $COURSE, $DB;
 
 $id = required_param('id', PARAM_INT);
@@ -103,6 +119,11 @@ $serverstable->align = [
         'left',
         'right',
 ];
+$havels = there_are_ls($serversinfo);
+if ($havels) {
+    $serverstable->head[] = 'LS';
+    $serverstable->align[] = 'left';
+}
 
 $plugin = new stdClass();
 require_once(dirname(__FILE__) . '/../version.php');
@@ -122,7 +143,7 @@ foreach ($serversinfo as $info) {
     } else {
         $status = $info->current_status;
     }
-    $serverstable->data[] = [
+    $row = [
             $num,
             $serverurl,
             $status,
@@ -130,6 +151,10 @@ foreach ($serversinfo as $info) {
             $info->lastfail > 0 ? userdate($info->lastfail) : '',
             $info->nfails,
     ];
+    if ($havels) {
+        $row[] = implode(', ', $info->ls);
+    }
+    $serverstable->data[] = $row;
 }
 $processestable = new html_table();
 $processestable->head = [
