@@ -95,6 +95,20 @@ const VPL_OVERRIDES = 'vpl_overrides';
 const VPL_ASSIGNED_OVERRIDES = 'vpl_assigned_overrides';
 
 /**
+ * @var string VPL_SEB Table name for SEB settings.
+ *
+ * This table stores the SEB settings for a VPL instance.
+ */
+const VPL_SEB = 'vpl_seb';
+
+/**
+ * @var string VPL_SEB_SESSION Table name for SEB session settings.
+ *
+ * This table stores the SEB session settings for a VPL instance.
+ */
+const VPL_SEB_SESSION = 'vpl_seb_session';
+
+/**
  * @var string VPL_GRADE_CAPABILITY Capability string for grading VPL.
  *
  * This capability allows users to grade submissions in a VPL instance.
