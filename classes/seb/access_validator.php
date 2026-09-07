@@ -5,212 +5,136 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
  * SEB: Access validator for Safe Exam Browser integration.
  *
  * @package mod_vpl
  * @copyright 2026 Alejandro David Arzola Saavedra
+ * @copyright 2026 8 Juan Carlos Rodríguez del Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Alejandro David Arzola Saavedra <alejandro.arzola101@alu.ulpgc.es>
+ * @author Juan Carlos Rodríguez del Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 
 namespace mod_vpl\seb;
-
-defined('MOODLE_INTERNAL') || die();
 
 /**
  * Validate SEB request headers for VPL access.
  */
 class access_validator {
     /**
-     * Validate SEB access for a VPL instance.
+     * Get the current SEB session and phase for a VPL.
      *
-     * @param \stdClass $instance VPL instance.
-     * @param string|null $fullme Current URL.
-     * @param string|null $browserexamkey Optional browser exam key hash override.
-     * @param string|null $configkeyhash Optional config key hash override.
-     * @return bool
+     * @param \stdClass $settings SEB settings record.
+     * @return \stdClass Session and phase information.
      */
-    public static function validate_access(\stdClass $instance, ?string $fullme = null, ?string $browserexamkey = null, ?string $configkeyhash = null): bool {
-        
-        global $USER;
-
-        $record = settings::get_effective_record($instance);
-        $fullme = $fullme ?? ($GLOBALS['FULLME'] ?? '');
-        $userid = (int)($USER->id ?? 0);
-        
-        if (!settings::should_enforce_for_record($record)) {
-            return true;
+    public static function get_session_and_phase(\stdClass $settings): \stdClass {
+        global $USER, $FULLME;
+        $userid = empty($settings->enablesebsession) ? 0 : $USER->id;
+        $fullme = $FULLME ?? '';
+        $session = session_manager::get_session($settings, $userid);
+        if (empty($session)) {
+            // No existing session, create a new one and go to phase 0.
+            $session = session_manager::create_session($settings, $userid);
+            $session->phase = 0;
+            return $session;
         }
-
-        if (!empty($record->enablesebsession)) {
-            if ($userid <= 0) {
-                self::log_access_denied($record, $userid, 'missing_user');
-                return false;
+        $session->phase = 0;
+        $receivedconfigkey = trim(self::get_browser_config_key_from_request());
+        if ($receivedconfigkey === '') {
+            // Existing session, but no config key received, stay in phase 0.
+            return $session;
+        }
+        $phase2exists = session_manager::exists_phase2($session);
+        if ($phase2exists) {
+            if (self::matches_config_key($receivedconfigkey, $session->configkey2, $fullme)) {
+                // Phase 2 session exists and received config key matches.
+                if (session_manager::is_unallowed_moodle_session($settings, $session)) {
+                    // Moodle session is no longer allowed, log access denied.
+                    // This must not happen under normal circumstances.
+                    self::log_access_denied($settings, $userid, 'Moodle session lost SEB authentication');
+                    $session->phase = -3;
+                } else {
+                    // Final access granted.
+                    $session->phase = 2;
+                }
+                return $session;
             }
-
-            $allowed = session_manager::validate_final_access($record, $userid, $fullme, $configkeyhash);
-
-            if (!$allowed) {
-                self::log_access_denied($record, $userid, 'invalid_seb_session');
+        }
+        if (self::matches_config_key($receivedconfigkey, $session->configkey1, $fullme)) {
+            // Phase 1 session matches the received config key.
+            $session->phase = 1;
+            if (session_manager::is_unallowed_moodle_session($settings, $session)) {
+                // Moodle session is no longer allowed, log access denied.
+                // Requires teacher intervention to regain access.
+                self::log_access_denied($settings, $userid, 'Moodle session lost SEB authentication');
+                $session->phase = -1;
             }
-
-            return $allowed;
+            return $session;
         }
-
-        $keys = trim((string)($record->allowedbrowserexamkeys ?? ''));
-
-        $receivedconfigkey = trim((string)($configkeyhash ?? self::get_request_header([ 'X-SafeExamBrowser-ConfigKeyHash' ])));
-
-        if (!self::matches_config_hash($record, $receivedconfigkey, $fullme)) {
-            self::log_access_denied($record, $userid, 'invalid_config_hash', ['hasbrowserexamkeys' => $keys !== '']);
-            return false;
-        }
-
-        if ($keys === '') {
-            return true;
-        }
-
-        $receivedbrowserexamkey = trim((string)($browserexamkey ?? self::get_request_header([ 'X-SafeExamBrowser-RequestHash' ])));
-
-        $allowed = self::matches_browser_exam_hash($record, $receivedbrowserexamkey, $fullme);
-
-        if (!$allowed) {
-            self::log_access_denied($record, $userid, 'invalid_browser_exam_hash');
-        }
-
-        return $allowed;
+        // Received config key does not match any existing session.
+        // Keep the request in phase 0 and record the denied access attempt.
+        self::log_access_denied($settings, $userid, 'SEB configuration key does not match session');
+        return $session;
     }
 
     /**
      * Log a denied SEB access attempt.
      *
-     * @param \stdClass $record SEB settings record.
+     * @param \stdClass $settings SEB settings record.
      * @param int $userid User id.
      * @param string $reason Denial reason.
      * @param array $other Additional event data.
      * @return void
      */
-    protected static function log_access_denied(\stdClass $record, int $userid, string $reason, array $other = []): void {
-        $cmid = !empty($record->cmid) ? (int)$record->cmid : settings::resolve_cmid((int)($record->vplid ?? 0));
+    protected static function log_access_denied(\stdClass $settings, int $userid, string $reason, array $other = []): void {
+        $cmid = settings::get_cmid($settings->vplid);
 
-        \mod_vpl\event\seb_access_denied::create([
-            'objectid' => (int)($record->vplid ?? 0),
+        \mod_vpl\event\seb_access_denied::log([
+            'objectid' => $settings->vplid,
             'context' => $cmid ? \context_module::instance($cmid) : \context_system::instance(),
             'userid' => $userid,
             'other' => array_merge([
                 'reason' => $reason,
             ], $other),
-        ])->trigger();
+        ]);
     }
 
     /**
-     * Check if received config hash is valid.
+     * Check if received key is valid with session key for the given url.
      *
-     * @param \stdClass $record SEB settings record.
-     * @param string|null $configkeyhash Hash to compare.
-     * @param string $fullme Current URL.
+     * @param string $receivedexamkey Received exam key from the browser.
+     * @param string $sessionkey Session key to compare against.
+     * @param string $url Current URL.
      * @return bool
      */
-    public static function matches_config_hash(\stdClass $record, ?string $configkeyhash, string $fullme = ''): bool {
-        if (!$configkeyhash) {
-            return false;
-        }
-
-        $url = $fullme;
-        
+    public static function matches_config_key(string $receivedexamkey, string $sessionkey, string $url = ''): bool {
         if ($url === '') {
-            return false;
+            global $FULLME;
+            $url = $FULLME ?? '';
         }
-
-        $confighash = settings::get_config_hash($record);
-        
-        if ($confighash === '') {
-            return false;
-        }
-
-        $expected = hash('sha256', $url . $confighash);
-        return hash_equals($expected, strtolower($configkeyhash));
+        $expected = hash('sha256', $url . $sessionkey);
+        return hash_equals($expected, strtolower($receivedexamkey));
     }
 
     /**
-     * Check if received browser exam hash is valid.
-     *
-     * @param \stdClass $record SEB settings record.
-     * @param string|null $browserexamkey Hash to compare.
-     * @param string $fullme Current URL.
-     * @return bool
-     */
-    public static function matches_browser_exam_hash(\stdClass $record, ?string $browserexamkey, string $fullme): bool {
-        
-        $keys = trim((string)($record->allowedbrowserexamkeys ?? ''));
-        
-        if ($keys === '') {
-            return true;
-        }
-        if (!$browserexamkey) {
-            return false;
-        }
-
-        $url = $fullme;
-        
-        if ($url === '') {
-            return false;
-        }
-
-        foreach (preg_split('/\s+/', $keys) as $candidate) {
-            
-            if ($candidate === '') {
-                continue;
-            }
-
-            if (hash('sha256', $url . $candidate) === strtolower($browserexamkey)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Return first non-empty request header
-     *
-     * @param string[] $names Candidate header names.
+     * Get the browser config key from the request headers.
      * @return string
      */
-    protected static function get_request_header(array $names): string {
-        foreach ($names as $name) {
-            if (!empty($_SERVER[$name])) {
-                return (string)$_SERVER[$name];
-            }
+    public static function get_browser_config_key_from_request(): string {
+        $headername = 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH';
+        if (isset($_SERVER[$headername])) {
+            return trim($_SERVER[$headername]);
         }
-
-        if (function_exists('getallheaders')) {
-            
-            $headers = getallheaders();
-            
-            if (is_array($headers)) {
-                
-                $normalized = [];
-                
-                foreach ($headers as $key => $value) {
-                    $normalized[strtolower((string)$key)] = (string)$value;
-                }
-
-                foreach ($names as $name) {
-                    
-                    $lookup = strtolower(str_replace('HTTP_', '', str_replace('_', '-', $name)));
-                    
-                    if (!empty($normalized[$lookup])) {
-                        return $normalized[$lookup];
-                    }
-                }
-            }
-        }
-
         return '';
     }
 }
-
-
-

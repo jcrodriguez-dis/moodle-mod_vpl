@@ -143,6 +143,40 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
     ];
 
     /**
+     * @var array SEB table fields list
+     */
+    protected $sebfields = [
+        'vplid',
+        'enablesebsession',
+        'preventsebsimultaneoussessions',
+        'sebteacherpassword',
+        'showsebdownloadlink',
+        'linkquitseb',
+        'userconfirmquit',
+        'allowuserquitseb',
+        'quitpassword',
+        'allowreloadinexam',
+        'showsebtaskbar',
+        'showreloadbutton',
+        'showtime',
+        'showkeyboardlayout',
+        'showwificontrol',
+        'enableaudiocontrol',
+        'muteonstartup',
+        'allowcapturecamera',
+        'allowcapturemicrophone',
+        'allowspellchecking',
+        'activateurlfiltering',
+        'filterembeddedcontent',
+        'expressionsallowed',
+        'regexallowed',
+        'expressionsblocked',
+        'regexblocked',
+        'usermodified',
+        'timecreated',
+        'timemodified',
+    ];
+    /**
      * @var bool|null Cached value of the backup all submissions setting.
      */
     protected $cachedbackupallsubmissions = null;
@@ -223,7 +257,7 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
         // Build the tree.
         $vpl->add_child($requiredfiles);
         $vpl->add_child($executionfiles);
-        $seb = new backup_nested_element('seb');
+        $seb = new backup_nested_element('seb', $idfield, $this->sebfields);
         $vpl->add_child($variations);
         $vpl->add_child($overrides);
         $vpl->add_child($assignedoverrides);

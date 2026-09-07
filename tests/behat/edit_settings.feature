@@ -41,12 +41,13 @@ Feature: Create and change VPL activity settings
       | id_maxfilesize | 16384 |
       | id_password | key |
       | id_requirednet | 10.10.10.13 |
-      | id_sebrequired | 1 |
-      | id_sebkeys | 1234567890 |
       | id_grade_modgrade_type | Point |
       | id_grade_modgrade_point | 17 |
       | id_reductionbyevaluation | 1% |
       | id_freeevaluations | 3 |
+      | id_sebrequired | 1 |
+      | id_sebkeys | 0123456789012345678901234567890123456789012345678901234567890123 |
+
     And I log out
 
   @javascript
@@ -64,7 +65,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Free evaluations:"
     And I should not see "Password:"
     And I should not see "Require network address:"
-    And I should not see "Using SEB browser is required:"
+    And I should not see "Require the use of Safe Exam Browser:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
     And I should see "Run: No"
@@ -85,7 +86,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Free evaluations:"
     And I should not see "Password:"
     And I should not see "Require network address:"
-    And I should not see "Using SEB browser is required:"
+    And I should not see "Require the use of Safe Exam Browser:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
     And I should see "Run: No"
@@ -105,7 +106,7 @@ Feature: Create and change VPL activity settings
     And I should not see "Free evaluations:"
     And I should not see "Password:"
     And I should not see "Require network address:"
-    And I should not see "Using SEB browser is required:"
+    And I should not see "Require the use of Safe Exam Browser:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Disable external file upload"
     And I should not see "Run: No"
@@ -129,7 +130,7 @@ Feature: Create and change VPL activity settings
     And I should see "Free evaluations: 3"
     And I should see "Password: Yes"
     And I should see "Require network address: 10.10.10.13"
-    And I should see "Using SEB browser is required: Yes"
+    And I should see "Require the use of Safe Exam Browser: Yes"
     And I should see "SEB exam Key/s: Yes"
     And I should see "Disable external file upload"
     And I should see "Run: No"
@@ -153,7 +154,7 @@ Feature: Create and change VPL activity settings
     And I should see "Free evaluations: 3"
     And I should see "Password: Yes"
     And I should see "Require network address: 10.10.10.13"
-    And I should see "Using SEB browser is required: Yes"
+    And I should see "Require the use of Safe Exam Browser: Yes"
     And I should see "SEB exam Key/s: Yes"
     And I should see "Disable external file upload"
     And I should see "Run: No"
@@ -179,8 +180,7 @@ Feature: Create and change VPL activity settings
       | id_showdescription | "" |
       | id_worktype | Individual work |
       | id_requirednet | |
-      | id_sebrequired | No |
-      | id_sebkeys | |
+      | id_sebrequired | 0 |
       | id_cmidnumber | Full CMID |
     # The password field cannot be changed
     And I press "Save and display"
@@ -195,7 +195,7 @@ Feature: Create and change VPL activity settings
     And I should see "Free evaluations: 3"
     And I should see "Password:"
     And I should not see "Require network address:"
-    And I should not see "Using SEB browser is required:"
+    And I should not see "Require the use of Safe Exam Browser:"
     And I should not see "SEB exam Key/s:"
     And I should see "Disable external file upload"
     And I should see "Run: No"
@@ -221,7 +221,7 @@ Feature: Create and change VPL activity settings
     And I should see "Free evaluations: 3"
     And I should not see "Password:"
     And I should not see "Require network address:"
-    And I should not see "Using SEB browser is required:"
+    And I should not see "Require the use of Safe Exam Browser:"
     And I should not see "SEB exam Key/s:"
     And I should not see "Run: No"
     And I should not see "Evaluate: No"

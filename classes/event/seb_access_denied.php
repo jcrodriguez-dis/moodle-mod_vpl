@@ -24,8 +24,11 @@
  */
 namespace mod_vpl\event;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Event class for denied SEB access attempts.
+ *
+ * @package mod_vpl
+ */
 class seb_access_denied extends base {
     /**
      * Init method for setting event properties.
@@ -52,7 +55,7 @@ class seb_access_denied extends base {
      */
     public function get_description() {
         $reason = (string)($this->other['reason'] ?? 'unknown');
-        return "El usuario con id {$this->userid} no pudo acceder a una actividad VPL con SEB. Motivo: {$reason}.";
+        return "The user with id {$this->userid} could not access a VPL activity with SEB. Reason: {$reason}.";
     }
 
     /**
@@ -61,15 +64,6 @@ class seb_access_denied extends base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/vpl/view.php', array('id' => $this->contextinstanceid));
-    }
-
-    /**
-     * Custom data for legacy log.
-     *
-     * @return array
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'vpl', 'seb_access_denied', 'view.php?id=' . $this->contextinstanceid, $this->userid, $this->contextinstanceid);
+        return $this->get_url_base('view.php');
     }
 }

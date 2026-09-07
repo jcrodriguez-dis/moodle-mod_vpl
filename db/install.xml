@@ -59,7 +59,6 @@
       <FIELDS>
         <FIELD NAME="id" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="true"/>
         <FIELD NAME="vplid" TYPE="int" LENGTH="10" NOTNULL="true" SEQUENCE="false" COMMENT="Foreign key to vpl.id."/>
-        <FIELD NAME="requiresafeexambrowser" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Bool whether to require SEB."/>
         <FIELD NAME="showsebdownloadlink" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether to show the SEB download button."/>
         <FIELD NAME="enablesebsession" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether per-session SEB configs are enabled."/>
         <FIELD NAME="preventsebsimultaneoussessions" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether SEB access is tied to one Moodle session."/>
@@ -68,7 +67,6 @@
         <FIELD NAME="userconfirmquit" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether confirm quit popup should appear."/>
         <FIELD NAME="allowuserquitseb" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show quit button."/>
         <FIELD NAME="quitpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Quit password to exit SEB."/>
-        <FIELD NAME="adminpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Administrator password to edit SEB settings."/>
         <FIELD NAME="allowreloadinexam" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether user can reload."/>
         <FIELD NAME="showsebtaskbar" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show SEB task bar"/>
         <FIELD NAME="showreloadbutton" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show reload button."/>
@@ -86,7 +84,6 @@
         <FIELD NAME="regexallowed" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Regex of allowed URLs"/>
         <FIELD NAME="expressionsblocked" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Comma or newline separated list of blocked expressions"/>
         <FIELD NAME="regexblocked" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Regex of blocked URLs"/>
-        <FIELD NAME="allowedbrowserexamkeys" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="List of allowed browser exam keys."/>
         <FIELD NAME="usermodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timecreated" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>
         <FIELD NAME="timemodified" TYPE="int" LENGTH="10" NOTNULL="true" DEFAULT="0" SEQUENCE="false"/>

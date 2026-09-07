@@ -5,432 +5,262 @@
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
+//
+// VPL for Moodle is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * SEB: Per-user session configuration manager.
+ * SEB: Session manager for Safe Exam Browser integration.
  *
  * @package mod_vpl
  * @copyright 2026 Alejandro David Arzola Saavedra
+ * @copyright 2026 8 Juan Carlos Rodríguez del Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Alejandro David Arzola Saavedra <alejandro.arzola101@alu.ulpgc.es>
+ * @author Juan Carlos Rodríguez del Pino <jc.rodriguezdelpino@ulpgc.es>
  */
 
 namespace mod_vpl\seb;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
- * Handles the two-step anti fake SEB configuration flow.
+ * Handles the two-step SEB configuration flow.
+ * Requires two steps to allow the student to login to Moodle before accessing the activity.
+ *
+ * First step (option a):
+ *      The student goes to the VPL activity in Moodle.
+ *      The student clicks on the SEB launch link in Moodle.
+ *      Seb browser downloads a permissive SEB configuration for that user.
+ * First step (option b):
+ *     The student goes to the VPL activity in Moodle.
+ *     The student downloads or gets the permissive SEB configuration.
+ *     The users double clicks the SEB configuration file to launch SEB.
+ *
+ * This permissive configuration allows the student to login in Moodle.
+ *
+ * Second step:
+ *     The student goes to the activity.
+ *     If multissesion control is enabled and user already has a session,
+ *     the teacher's password for a new session is required.
+ *     Then automatically SEB browser downloads a restrictive SEB configuration for that activity.
+ *     This restrictive configuration allows the student to access the activity.
  */
 class session_manager {
     /** Table name for SEB session records. */
     public const TABLE = 'vpl_seb_session';
 
     /**
-     * Return or create the per-user session.
+     * Get record with VPL-SEB user session.
      *
-     * @param \stdClass $record Effective SEB settings.
+     * @param \stdClass $settings SEB settings.
      * @param int $userid User id.
-     * @param mixed $starturl Phase 1 start URL.
-     * @return \stdClass
+     * @return ?\stdClass Session record or null if not found.
      */
-    public static function get_or_create(\stdClass $record, int $userid, $starturl, bool $rotatephase1 = false): \stdClass {
-        
+    public static function get_session(\stdClass $settings, int $userid): ?\stdClass {
         global $DB;
-
-        $vplid = (int)$record->vplid;
-        $session = $DB->get_record(self::TABLE, ['vplid' => $vplid, 'userid' => $userid]);
-
-        if ($session) {
-            $samesession = !empty($session->sesskey) && hash_equals((string)$session->sesskey, sesskey());
-
-            if ($rotatephase1 && !$samesession) {
-                $session->token1public = self::new_token($vplid, $userid, sesskey());
-                $session->token1private = self::new_token($vplid, $userid, sesskey());
-            }
-
-            $session->configkey1 = self::calculate_config_key($record, $starturl, (string)$session->token1private, true);
-            $DB->update_record(self::TABLE, $session);
-
-            return $session;
+        if (empty($settings->enablesebsession)) {
+            $userid = 0;
         }
+        $vplid = $settings->vplid;
+        $params = ['vplid' => $vplid, 'userid' => $userid];
+        $session = $DB->get_record(self::TABLE, $params);
+        return !empty($session) ? $session : null;
+    }
 
+    /**
+     * Creates a new session that can be specific for a user or shared by activity.
+     *
+     * @param \stdClass $settings SEB settings.
+     * @param int $userid User id.
+     * @return \stdClass The new session record.
+     */
+    public static function create_session(\stdClass $settings, int $userid): \stdClass {
+        global $DB;
+        if (empty($settings->enablesebsession)) {
+            $userid = 0;
+        }
+        $vplid = $settings->vplid;
         $session = (object)[
             'vplid' => $vplid,
             'userid' => $userid,
-            'token1public' => self::new_token($vplid, $userid, sesskey()),
-            'token1private' => self::new_token($vplid, $userid, sesskey()),
-            'configkey1' => '',
-            'sesskey' => '',
+            'token1public' => self::new_token($vplid, $userid),
+            'token1private' => self::new_token($vplid, $userid),
             'token2private' => '',
+            'configkey1' => '',
             'configkey2' => '',
+            'sesskey' => '',
         ];
-
-        $session->configkey1 = self::calculate_config_key($record, $starturl, $session->token1private, true);
-        $session->id = $DB->insert_record(self::TABLE, $session);
-
+        $payload = config_payload::get_phase1_payload($settings, $session->token1private);
+        $session->configkey1 = self::calculate_config_key($payload);
+        try {
+            $session->id = $DB->insert_record(self::TABLE, $session);
+        } catch (\dml_exception $e) {
+            // Handle race condition where another session was created for the same user and VPL.
+            $session = self::get_session($settings, $userid);
+            if (empty($session)) {
+                throw $e;
+            }
+        }
         return $session;
     }
 
+    /**
+     * Creates a new session that can be specific for a user or shared by activity.
+     *
+     * @param \stdClass $settings SEB settings.
+     * @param int $userid User id.
+     * @return \stdClass The new session record.
+     */
+    public static function get_or_create_session(\stdClass $settings, int $userid): \stdClass {
+        $session = self::get_session($settings, $userid);
+        if (empty($session)) {
+            $session = self::create_session($settings, $userid);
+        }
+        return $session;
+    }
 
+    /**
+     * Update an existing session record.
+     *
+     * @param \stdClass $session Session record.
+     * @return void
+     */
+    public static function update_session(\stdClass $session): void {
+        global $DB;
+        $DB->update_record(self::TABLE, $session);
+    }
 
-     /**
-     * Centralized validation for SEB token. Triggers event if invalid.
+    /**
+     * Does the given SEB session have phase 2 data?
+     *
+     * @param \stdClass $session Session record.
+     * @return bool True if the session has phase 2 data.
+     */
+    public static function exists_phase2(\stdClass $session): bool {
+        return !empty($session->configkey2) && !empty($session->token2private);
+    }
+
+    /**
+     * Is the given SEB session not allowing current Moodle session?
+     *
+     * @param \stdClass $settings SEB settings.
+     * @param \stdClass $session Session record.
+     * @return bool True if SEB session does not allow current Moodle sessions.
+     */
+    public static function is_unallowed_moodle_session(\stdClass $settings, \stdClass $session): bool {
+        if (empty($session) || empty($session->sesskey)) {
+            return false;
+        }
+        if ($settings->enablesebsession && $settings->preventsebsimultaneoussessions) {
+            return !hash_equals($session->sesskey, sesskey());
+        }
+        return false;
+    }
+
+    /**
+     * Prepare SEB session for phase 2 and if necessary associate it to current Moodle session.
+     *
+     * @param \stdClass $settings SEB settings.
+     * @param \stdClass $session Session record.
+     * @return void
+     */
+    public static function prepare_phase2(\stdClass $settings, \stdClass $session): void {
+        if ($settings->enablesebsession && $settings->preventsebsimultaneoussessions) {
+            $session->sesskey = sesskey();
+        }
+        $session->token2private = self::new_token($settings->vplid, $session->userid);
+        $payload = config_payload::get_phase2_payload($settings, $session->token2private);
+        $session->configkey2 = self::calculate_config_key($payload);
+        self::update_session($session);
+    }
+
+    /**
+     * Get session using public token and validate it. Triggers event if invalid.
      *
      * @param string $token Public token.
      * @param int $vplid VPL id.
-     * @param int $userid User id.
      * @return null|object Session if valid, null if invalid (and logs event)
      */
-    public static function validate_token($token, $vplid, $userid) {
+    public static function get_session_by_public_token(string $token, int $vplid) {
+        global $DB;
         global $USER;
-        $session = self::get_by_public_token($token);
-        if (!$session || (int)$session->vplid !== (int)$vplid || (int)$session->userid !== (int)$userid) {
-            // Disparar evento de clave SEB incorrecta.
-            $cmid = \mod_vpl\seb\settings::resolve_cmid($vplid);
-            \mod_vpl\event\seb_wrong_key::create([
+        $session = $DB->get_record(self::TABLE, ['token1public' => $token, 'vplid' => $vplid]);
+        if (empty($session)) {
+            // Log event for invalid token access attempt.
+            $cmid = settings::get_cmid($vplid);
+            $info = [
                 'objectid' => $vplid,
-                'context' => $cmid ? \context_module::instance($cmid) : null,
-                'userid' => $USER->id,
-                'other' => [
-                    'token' => $token
-                ]
-            ])->trigger();
-            return null;
-        }
-        return $session;
-    }
-    
-    /**
-     * Return a session record by the public phase 1 token.
-     *
-     * @param string $token Public token.
-     * @return \stdClass|null
-     */
-    public static function get_by_public_token(string $token): ?\stdClass {
-        
-        global $DB;
-
-        $session = $DB->get_record(self::TABLE, ['token1public' => $token]);
-
-        return $session === false ? null : $session;
-    }
-
-    /**
-     * Refresh the stored phase 1 config key for an existing token record.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param \stdClass $session Session record.
-     * @param mixed $starturl Start URL.
-     * @return \stdClass
-     */
-    public static function refresh_phase1(\stdClass $record, \stdClass $session, $starturl): \stdClass {
-        
-        global $DB;
-
-        $session->configkey1 = self::calculate_config_key($record, $starturl, (string)$session->token1private, true);
-        
-        if (!empty($session->id)) {
-            $DB->update_record(self::TABLE, $session);
+                'context' => $cmid ? \context_module::instance($cmid) : \context_system::instance(),
+                'userid' => $USER->id ?? 0,
+                'other' => ['reason' => 'No session found for token'],
+            ];
+            \mod_vpl\event\seb_wrong_key::log($info);
         }
         return $session;
     }
 
     /**
-     * Build the phase 1 SEB configuration.
-     *
-     * @param \stdClass $record Effective SEB settings.
+     * Get phase1 SEB configuration XML for a user session.
+     * @param \stdClass $settings SEB settings.
      * @param \stdClass $session Session record.
-     * @param mixed $starturl Start URL.
-     * @return string
+     * @return string The SEB configuration XML.
      */
-    public static function build_phase1_config_xml(\stdClass $record, \stdClass $session, $starturl): string {
-        
-        $phase1 = self::get_phase1_record($record);
-        
-        return settings::build_download_config_xml(
-            $phase1,
-            $starturl,
-            [
-                'downloadAndOpenSebConfig' => true,
-                'examSessionClearCookiesOnEnd' => false,
-                'examSessionClearCookiesOnStart' => true,
-                'examSessionReconfigureAllow' => true,
-                'examSessionReconfigureConfigURL' => '*',
-                'examKeySalt' => (string)$session->token1private,
-                'removeBrowserProfile' => false,
-            ]
-        );
+    public static function get_phase1_config_xml(\stdClass $settings, \stdClass $session): string {
+        $payload = config_payload::get_phase1_payload($settings, $session->token1private);
+        $configkey = self::calculate_config_key($payload);
+        if (!hash_equals($session->configkey1, $configkey)) {
+            // The payload changed since the session was created, keep the stored key in sync.
+            $session->configkey1 = $configkey;
+            self::update_session($session);
+        }
+        return plist_builder::build_config_xml($payload);
     }
 
     /**
-     * Build the phase 2 SEB configuration.
-     *
-     * @param \stdClass $record Effective SEB settings.
+     * Get phase2 SEB configuration XML for a user session.
+     * @param \stdClass $settings SEB settings.
      * @param \stdClass $session Session record.
-     * @param mixed $starturl Start URL.
-     * @return string
+     * @return string The SEB configuration XML.
      */
-    public static function build_phase2_config_xml(\stdClass $record, \stdClass $session, $starturl): string {
-        return settings::build_download_config_xml(
-            $record,
-            $starturl,
-            [
-                'downloadAndOpenSebConfig' => false,
-                'examSessionClearCookiesOnEnd' => true,
-                'examSessionClearCookiesOnStart' => false,
-                'examSessionReconfigureAllow' => false,
-                'examSessionReconfigureConfigURL' => '',
-                'examKeySalt' => (string)$session->token2private,
-                'removeBrowserProfile' => true,
-            ]
-        );
-    }
-
-    /**
-     * Return true when the current request is using the user's phase 1 config key.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param int $userid User id.
-     * @param string $fullme Current URL.
-     * @param string|null $configkeyhash Optional received hash.
-     * @return bool
-     */
-    public static function is_phase1_request( \stdClass $record, int $userid, string $fullme, ?string $configkeyhash = null ): bool {
-
-        if (empty($record->enablesebsession)) {
-            return false;
+    public static function get_phase2_config_xml(\stdClass $settings, \stdClass $session): string {
+        $payload = config_payload::get_phase2_payload($settings, $session->token2private);
+        $configkey = self::calculate_config_key($payload);
+        if (!hash_equals($session->configkey2, $configkey)) {
+            // The payload changed since phase 2 was prepared, keep the stored key in sync.
+            $session->configkey2 = $configkey;
+            self::update_session($session);
         }
-
-        return self::get_phase1_request_session($record, $userid, $fullme, $configkeyhash) !== null;
-    }
-
-    /**
-     * Return the phase 1 record matching the current SEB request.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param int $userid User id.
-     * @param string $fullme Current URL.
-     * @param string|null $configkeyhash Optional received hash.
-     * @return \stdClass|null
-     */
-    protected static function get_phase1_request_session( \stdClass $record, int $userid, string $fullme, ?string $configkeyhash = null ): ?\stdClass {
-
-        global $DB;
-
-        $sessions = $DB->get_records(self::TABLE, ['vplid' => (int)$record->vplid, 'userid' => $userid], 'id DESC');
-        
-        foreach ($sessions as $session) {
-            if (empty($session->configkey1)) {
-                continue;
-            }
-            if (self::matches_config_key( (string)$session->configkey1, $fullme, $configkeyhash, [config_payload::get_start_url($record)] )) {
-                return $session;
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Prepare phase 2 for the current Moodle session.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param int $userid User id.
-     * @param mixed $starturl Phase 2 start URL.
-     * @return \stdClass
-     */
-    public static function start_phase2( \stdClass $record, int $userid, $starturl, string $fullme = '', bool $replaceothers = false ): \stdClass {
-
-        global $DB;
-
-        $session = self::get_phase1_request_session($record, $userid, $fullme);
-
-        if (!$session) {
-            $session = self::get_or_create($record, $userid, $starturl);
-        }
-
-        if ($replaceothers && !empty($session->id)) {
-            $DB->delete_records_select( self::TABLE, 'vplid = :vplid AND userid = :userid AND id <> :id', ['vplid' => (int)$record->vplid, 'userid' => $userid, 'id' => $session->id] );
-        }
-
-        $session->sesskey = sesskey();
-        $session->token2private = self::new_token((int)$record->vplid, $userid, $session->sesskey);
-        $session->configkey2 = self::calculate_config_key($record, $starturl, $session->token2private, false);
-        $DB->update_record(self::TABLE, $session);
-        
-        return $session;
-    }
-
-    /**
-     * Return true if another Moodle session is already registered for this user/activity.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param int $userid User id.
-     * @return bool
-     */
-    public static function has_other_active_session(\stdClass $record, int $userid): bool {
-        
-        global $DB;
-
-        if (empty($record->preventsebsimultaneoussessions)) {
-            return false;
-        }
-        
-        $sessions = $DB->get_records(self::TABLE, ['vplid' => (int)$record->vplid, 'userid' => $userid]);
-        
-        foreach ($sessions as $session) {
-            if (!empty($session->sesskey) && !hash_equals((string)$session->sesskey, sesskey())) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Validate final SEB access against phase 2 config key and Moodle session key.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @param int $userid User id.
-     * @param string $fullme Current URL.
-     * @param string|null $configkeyhash Optional received hash.
-     * @return bool
-     */
-    public static function validate_final_access( \stdClass $record, int $userid, string $fullme, ?string $configkeyhash = null ): bool {
-        
-        global $DB;
-
-        $sessions = $DB->get_records(self::TABLE, ['vplid' => (int)$record->vplid, 'userid' => $userid], 'id DESC');
-        
-        foreach ($sessions as $session) {
-            if (empty($session->configkey2)) {
-                continue;
-            }
-            if (!self::matches_config_key( (string)$session->configkey2, $fullme, $configkeyhash, [config_payload::get_start_url($record)] )) {
-                continue;
-            }
-            if (!empty($record->preventsebsimultaneoussessions) && !hash_equals((string)$session->sesskey, sesskey())) {
-                return false;
-            }
-            return true;
-        }
-        return false;
+        return plist_builder::build_config_xml($payload);
     }
 
     /**
      * Check a plain teacher exception password.
      *
-     * @param \stdClass $record Effective SEB settings.
+     * Note: The password is stored in the database as plain text.
+     * This allows to reveal the password for the teacher in the activity view page.
+     * This password allows teachers to accept a new session for a student.
+     * We will use hash_equals to avoid timing attacks.
+     * @param \stdClass $settings SEB settings.
      * @param string $password Submitted password.
-     * @return bool
+     * @return bool true if the password is correct.
      */
-    public static function validate_teacher_password(\stdClass $record, string $password): bool {
-        
-        $expected = trim((string)($record->sebteacherpassword ?? ''));
-        
+    public static function validate_teacher_password(\stdClass $settings, string $password): bool {
+        $expected = trim((string)($settings->sebteacherpassword ?? ''));
         return $expected !== '' && hash_equals($expected, $password);
     }
 
     /**
      * Calculate the stored SEB configuration key for the generated XML payload.
      *
-     * @param \stdClass $record Effective SEB settings.
-     * @param mixed $starturl Start URL.
-     * @param string $examkeysalt Dynamic examKeySalt value.
-     * @param bool $phase1 Whether to calculate the permissive phase 1 key.
+     * @param array $payload Payload of the SEB configuration.
      * @return string
      */
-    protected static function calculate_config_key( \stdClass $record, $starturl, string $examkeysalt, bool $phase1 ): string {
-
-        $payloadrecord = $phase1 ? self::get_phase1_record($record) : clone($record);
-        $payload = config_payload::get_download_payload($payloadrecord);
-        $payload['startURL'] = self::starturl_to_string($starturl);
-        $payload['downloadAndOpenSebConfig'] = $phase1;
-        $payload['examSessionClearCookiesOnEnd'] = !$phase1;
-        $payload['examSessionClearCookiesOnStart'] = $phase1;
-        $payload['examSessionReconfigureAllow'] = $phase1;
-        $payload['examSessionReconfigureConfigURL'] = $phase1 ? '*' : '';
-        $payload['examKeySalt'] = $examkeysalt;
-        $payload['removeBrowserProfile'] = !$phase1;
-        $payload = config_payload::canonicalize_payload($payload);
-
-        return hash('sha256', json_encode($payload, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE));
-    }
-
-    /**
-     * Return a permissive SEB record for the authentication phase.
-     *
-     * @param \stdClass $record Effective SEB settings.
-     * @return \stdClass
-     */
-    protected static function get_phase1_record(\stdClass $record): \stdClass {
-        
-        $phase1 = settings::get_defaults();
-        $phase1->vplid = (int)($record->vplid ?? 0);
-        $phase1->cmid = (int)($record->cmid ?? 0);
-        $phase1->requiresafeexambrowser = 1;
-        $phase1->showsebdownloadlink = 1;
-        $phase1->linkquitseb = (string)($record->linkquitseb ?? '');
-        $phase1->userconfirmquit = (int)!empty($record->userconfirmquit);
-        $phase1->allowuserquitseb = (int)!empty($record->allowuserquitseb);
-        $phase1->quitpassword = (string)($record->quitpassword ?? '');
-        $phase1->adminpassword = (string)($record->adminpassword ?? '');
-        $phase1->allowreloadinexam = 1;
-        $phase1->showsebtaskbar = 1;
-        $phase1->showreloadbutton = 1;
-        $phase1->showtime = 1;
-        $phase1->showkeyboardlayout = 1;
-        $phase1->allowedbrowserexamkeys = '';
-
-        return $phase1;
-    }
-
-    /**
-     * Compare a received SEB ConfigKeyHash with a stored config key.
-     *
-     * @param string $configkey Stored config key.
-     * @param string $fullme Current URL.
-     * @param string|null $configkeyhash Optional received hash.
-     * @param string[] $extraurls Extra URLs accepted for the same config key.
-     * @return bool
-     */
-    protected static function matches_config_key( string $configkey, string $fullme, ?string $configkeyhash = null, array $extraurls = [] ): bool {
-
-        $received = trim((string)($configkeyhash ?? self::get_config_key_header()));
-        
-        if ($received === '') {
-            return false;
-        }
-
-        foreach (array_merge([$fullme], $extraurls) as $candidateurl) {
-            
-            $url = $candidateurl;
-            
-            if ($url === '') {
-                continue;
-            }
-
-            if (hash_equals(hash('sha256', $url . $configkey), strtolower($received))) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Return the SEB ConfigKeyHash request header.
-     *
-     * @return string
-     */
-    protected static function get_config_key_header(): string {
-        
-        foreach ([ 'HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH', 'X-SafeExamBrowser-ConfigKeyHash', 'X_SAFEEXAMBROWSER_CONFIGKEYHASH', ] as $name) {
-            if (!empty($_SERVER[$name])) {
-                return (string)$_SERVER[$name];
-            }
-        }
-        return '';
+    protected static function calculate_config_key($payload): string {
+        return hash('sha256', config_payload::get_seb_json($payload));
     }
 
     /**
@@ -438,45 +268,55 @@ class session_manager {
      *
      * @param int $vplid VPL id.
      * @param int $userid User id.
-     * @param string $extra Extra entropy.
      * @return string
      */
-    protected static function new_token(int $vplid, int $userid, string $extra = ''): string {
-        
-        $message = implode('|', [ $vplid, $userid, $extra, random_string(64), ]);
-
-        return hash_hmac('sha256', $message, self::get_site_secret());
+    protected static function new_token(int $vplid, int $userid): string {
+        [$minutes, $nanoseconds] = hrtime(); // Add some entropy.
+        $message = implode('|', [$nanoseconds, $vplid, $userid, complex_random_string(64), $minutes]);
+        return hash('sha256', $message);
     }
 
     /**
-     * Return a stable site secret for deriving SEB session tokens.
+     * Delete sessions for a VPL instance.
      *
-     * @return string
+     * @param int $vplid VPL instance id.
+     * @return void
      */
-    protected static function get_site_secret(): string {
-        
-        global $CFG;
-
-        foreach (['passwordsaltmain', 'dbpass', 'dataroot'] as $field) {
-            if (!empty($CFG->$field)) {
-                return (string)$CFG->$field;
-            }
-        }
-
-        return (string)($CFG->wwwroot ?? __FILE__);
+    public static function delete_for_vpl(int $vplid): void {
+        global $DB;
+        $DB->delete_records(self::TABLE, ['vplid' => $vplid]);
     }
 
     /**
-     * Convert a moodle_url/string start URL to the exact XML string representation.
+     * Check whether a VPL has any stored SEB sessions.
      *
-     * @param mixed $starturl Start URL.
-     * @return string
+     * @param int $vplid VPL instance id.
+     * @return bool True when at least one session exists.
      */
-    protected static function starturl_to_string($starturl): string {
-        if (is_object($starturl) && method_exists($starturl, 'out')) {
-            return $starturl->out(true);
+    public static function exists_for_vpl(int $vplid): bool {
+        global $DB;
+        return $DB->record_exists(self::TABLE, ['vplid' => $vplid]);
+    }
+
+    /**
+     * Send a SEB configuration file and stop script.
+     *
+     * @param string $config SEB plist XML.
+     * @return void
+     */
+    public static function send_seb_config($config) {
+        $headers = [
+            'Cache-Control: private, no-store, max-age=0',
+            'Expires: 0',
+            'Pragma: no-cache',
+            'Content-Disposition: attachment; filename=' . settings::get_download_filename(),
+            'Content-Type: application/seb',
+            'Content-Length: ' . strlen($config),
+        ];
+        foreach ($headers as $header) {
+            header($header);
         }
-        
-        return (string)$starturl;
+        echo $config;
+        die();
     }
 }

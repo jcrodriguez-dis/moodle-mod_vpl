@@ -17,6 +17,7 @@
 defined('MOODLE_INTERNAL') || die();
 
 use mod_vpl\util\activity_modes;
+use mod_vpl\seb\ui as sebui;
 
 require_once(dirname(__FILE__) . '/../../course/moodleform_mod.php');
 require_once(dirname(__FILE__) . '/lib.php');
@@ -127,31 +128,22 @@ class mod_vpl_mod_form extends moodleform_mod {
         $mform->setAdvanced('requirednet');
         $mform->addElement('header', 'seb', get_string('seb', VPL));
         $mform->setExpanded('seb', false);
-        foreach (\mod_vpl\seb\settings::get_form_fields() as $field => $definition) {
-                $label = get_string($definition['label'], VPL);
-                if ($definition['type'] === 'select') {
-                        $mform->addElement('select', $field, $label, $definition['options']);
-                } elseif ($definition['type'] === 'textarea') {
-                        $mform->addElement('textarea', $field, $label, [
-                                        'cols' => 66,
-                                        'rows' => 2,
-                        ]);
-                } else {
-                        $mform->addElement($definition['type'], $field, $label);
-                }
-                $mform->setType($field, $definition['param']);
-                $mform->setDefault($field, $definition['default']);
-                if (in_array($field, ['requiresafeexambrowser', 'allowedbrowserexamkeys'], true)) {
-                        $mform->addHelpButton($field, $definition['label'], VPL);
-                }
-                if ($field !== 'requiresafeexambrowser') {
-                        $mform->hideIf($field, 'requiresafeexambrowser', 'eq', 0);
-                }
-        }
-        $mform->addElement('hidden', 'sebrequired', 0);
-        $mform->setType('sebrequired', PARAM_INT);
-        $mform->addElement('hidden', 'sebkeys', '');
+        $mform->addElement('select', 'sebrequired', get_string('sebrequired', VPL), [
+                    0 => \get_string('no'),
+                    1 => \get_string('seb_useclientconfig', \VPL),
+                    2 => \get_string('seb_configuremanually', \VPL),
+                ]);
+        $mform->setDefault('sebrequired', 0);
+        $mform->addHelpButton('sebrequired', 'sebrequired', VPL);
+        $mform->addElement('textarea', 'sebkeys', get_string('sebkeys', VPL), [
+            'cols' => 66,
+            'rows' => 2,
+        ]);
         $mform->setType('sebkeys', PARAM_TEXT);
+        $mform->setDefault('sebkeys', '');
+        $mform->addHelpButton('sebkeys', 'sebkeys', VPL);
+        $mform->hideIf('sebkeys', 'sebrequired', 'ne', 1);
+        \mod_vpl\seb\ui::add_fields_to_form($mform, (int)$this->_instance);
         // Grade.
         $this->standard_grading_coursemodule_elements();
         $mform->addElement('text', 'reductionbyevaluation', get_string('reductionbyevaluation', VPL));
@@ -177,20 +169,8 @@ class mod_vpl_mod_form extends moodleform_mod {
      * @return void
      */
     public function data_preprocessing(&$defaultvalues) {
-        if (empty($this->current->instance)) {
-            return;
-        }
-
-        $sebvalues = \mod_vpl\seb\settings::get_form_values_from_instance((object)[
-                'id' => $this->current->instance,
-                'sebrequired' => $defaultvalues['sebrequired'] ?? 0,
-                'sebkeys' => $defaultvalues['sebkeys'] ?? '',
-        ]);
-
-        foreach (\mod_vpl\seb\settings::get_form_fields() as $field => $definition) {
-            if (isset($sebvalues->$field)) {
-                $defaultvalues[$field] = $sebvalues->$field;
-            }
+        if (!empty($this->current->id)) {
+            sebui::set_form_data($this->current->id, $defaultvalues);
         }
     }
 
@@ -227,11 +207,25 @@ class mod_vpl_mod_form extends moodleform_mod {
         $this->validate('freeevaluations', '/^[0-9]*$/', '[0..]', $data, $errors);
         $this->validate('maxfiles', '/^[0-9]*$/', '[0..]', $data, $errors);
         $this->validate('reductionbyevaluation', '/^[0-9]*(\.[0-9]+)?%?$/', '#[.#][%]', $data, $errors);
-        if (!empty($data['requiresafeexambrowser']) && !empty($data['enablesebsession']) &&
-                !empty($data['preventsebsimultaneoussessions']) &&
-                trim((string)($data['sebteacherpassword'] ?? '')) === '') {
-            $errors['sebteacherpassword'] = get_string('required');
+        if (!empty($data['sebrequired']) && (int)$data['sebrequired'] === 1) {
+            $dataentry = trim((string)($data['sebkeys'] ?? ''));
+            if ($dataentry === '') {
+                $errors['sebkeys'] = get_string('required');
+            } else {
+                $keys = preg_split('/\R+/', trim($data['sebkeys'])) ?: [];
+                foreach ($keys as $key) {
+                    $key = trim($key);
+                    if ($key === '') {
+                        continue;
+                    }
+                    if (!preg_match('/^[0-9a-f]{64}$/i', $key)) {
+                        $errors['sebkeys'] = get_string('invaliddata', 'error');
+                        break;
+                    }
+                }
+            }
         }
+        sebui::validate_form_data($data, $errors);
         return $errors;
     }
 }

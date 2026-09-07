@@ -584,11 +584,56 @@ class mod_vpl {
     }
 
     /**
+     * Checks if browser say that is SEB
+     * @return bool
+     */
+    public function is_seb_browser() {
+        return strpos($_SERVER['HTTP_USER_AGENT'], 'SEB') !== false;
+    }
+
+    /**
+     * Array with SEB header params with keys as values.
+     */
+    const SEBHEADERPARAMS = [
+        'HTTP_X_SAFEEXAMBROWSER_REQUESTHASH',
+        'HTTP_X_SAFEEXAMBROWSER_CONFIGKEYHASH',
+    ];
+    /**
      * Checks if SEB key is valid
-     * @return void
+     * @return bool
      */
     protected function is_sebkey_valid() {
-        return \mod_vpl\seb\settings::validate_access($this->get_instance());
+        global $FULLME;
+        $rawkeys = $this->get_sebkeys();
+        $expectedkeys = [];
+        foreach (preg_split('/\s+/', $rawkeys) as $key) {
+            if ($key === '') {
+                continue;
+            }
+            $expectedkeys[] = hash('sha256', $FULLME . $key);
+        }
+        $receivedkeys = [];
+        foreach (self::SEBHEADERPARAMS as $headername) {
+            if (isset($_SERVER[$headername])) {
+                $receivedkeys[] = strtolower($_SERVER[$headername]);
+            }
+        }
+        foreach ($receivedkeys as $browserkey) {
+            foreach ($expectedkeys as $expectedkey) {
+                if (hash_equals($expectedkey, $browserkey)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return SEB keys.
+     * @return string
+     */
+    public function get_sebkeys() {
+        return trim($this->get_instance()->sebkeys);
     }
 
     /**
@@ -597,257 +642,62 @@ class mod_vpl {
      * @return bool
      */
     public function pass_seb_check() {
-        return \mod_vpl\seb\settings::validate_access($this->get_instance());
+        return $this->get_sebkeys() === '' || $this->is_sebkey_valid();
     }
 
     /**
      * Checks SEB restrictions and shows error if not passed.
-     *
+     * @param bool $ignoreteacher Ignore that the user is teacher for SEB check
      * @return void
      */
-    protected function seb_check() {
-        if ($this->handle_seb_phase1_reconfiguration()) {
-            die();
-        }
-
-        if (! $this->pass_seb_check() && ! $this->has_capability(VPL_GRADE_CAPABILITY)) {
-            $str = get_string('sebrequired_help', VPL);
-            if (constant('AJAX_SCRIPT')) {
-                throw new Exception($str);
-            }
-            $this->add_notice($str, 'warning');
-            $this->print_header();
-            echo html_writer::start_div('vpl-seb-access mx-auto text-center', ['style' => 'max-width: 720px;']);
-            vpl_notice($str, 'warning');
-            $this->print_seb_launch_buttons();
-            echo html_writer::end_div();
-            $this->print_footer();
-            die();
-        }
-    }
-
-    /**
-     * Print the SEB download/configuration buttons for students blocked outside SEB.
-     *
-     * @return void
-     */
-    protected function print_seb_launch_buttons() {
-        $record = \mod_vpl\seb\settings::get_effective_record($this->get_instance());
-        if (empty($record->requiresafeexambrowser)) {
+    protected function seb_check(bool $ignoreteacher = false) {
+        if (! $this->uses_seb()) {
             return;
         }
-
-        $buttons = [];
-        if (!empty($record->showsebdownloadlink)) {
-            $buttons[] = html_writer::link(
-                new moodle_url('https://safeexambrowser.org/download_en.html'),
-                get_string('downloadsafeexambrowser', VPL),
-                ['class' => 'btn btn-secondary m-1', 'target' => '_blank', 'rel' => 'noopener']
-            );
+        $teacherpass = !$ignoreteacher && $this->is_teacher();
+        if (!$this->is_seb_browser() && $teacherpass) {
+            return;
         }
-
-        // Añadir token1public a la URL si SEB por sesión está activo.
-        if (!empty($record->enablesebsession)) {
-            global $USER;
-            $session = \mod_vpl\seb\session_manager::get_or_create(
-                $record,
-                (int)$USER->id,
-                new moodle_url('/mod/vpl/view.php', ['id' => $this->get_course_module()->id]),
-                true
-            );
-            $configurl = new moodle_url('/mod/vpl/seb.php', [
-                'id' => $this->get_course_module()->id,
-                'token' => $session->token1public
-            ]);
-        } else {
-            $configurl = new moodle_url('/mod/vpl/seb.php', ['id' => $this->get_course_module()->id]);
-        }
-        $buttons[] = html_writer::link(
-            $this->get_seb_launch_url($configurl),
-            get_string('launchsafeexambrowser', VPL),
-            ['class' => 'btn btn-primary m-1']
-        );
-        $buttons[] = html_writer::link(
-            $configurl,
-            get_string('downloadsebconfig', VPL),
-            ['class' => 'btn btn-secondary m-1']
-        );
-
-        echo html_writer::div(implode(' ', $buttons), 'my-3 text-center');
-    }
-
-    /**
-     * Convert a normal config URL into a SEB protocol launch URL.
-     *
-     * @param moodle_url $configurl HTTP(S) URL to the generated .seb file.
-     * @return string
-     */
-    protected function get_seb_launch_url(moodle_url $configurl) {
-        $url = $configurl->out(false);
-        if (strpos($url, 'https://') === 0) {
-            return 'sebs://' . substr($url, strlen('https://'));
-        }
-        if (strpos($url, 'http://') === 0) {
-            return 'seb://' . substr($url, strlen('http://'));
-        }
-        return $url;
-    }
-
-    /**
-     * If this request comes from phase 1 SEB config, deliver phase 2 config.
-     *
-     * @return bool True when the request has been handled.
-     */
-    protected function handle_seb_phase1_reconfiguration() {
-        global $FULLME, $USER;
-
-        if ($this->has_capability(VPL_GRADE_CAPABILITY) || constant('AJAX_SCRIPT')) {
-            return false;
-        }
-
-        $instance = $this->get_instance();
-        $record = \mod_vpl\seb\settings::get_effective_record($instance);
-        if (empty($record->enablesebsession)) {
-            return false;
-        }
-
-        $userid = (int)($USER->id ?? 0);
-        if ($userid <= 0) {
-            return false;
-        }
-
-        $fullme = $FULLME ?? '';
-        if (!\mod_vpl\seb\session_manager::is_phase1_request($record, $userid, $fullme)) {
-            return false;
-        }
-
-        $replaceothers = false;
-        if (\mod_vpl\seb\session_manager::has_other_active_session($record, $userid)) {
-            global $SESSION;
-            $activityid = $this->get_instance()->id;
-            $passvar = 'vpl_sebteacherpassword_' . $activityid;
-            $passattempt = 'vpl_sebteacherpassword_attempt' . $activityid;
-            $password = optional_param('sebteacherpassword', '', PARAM_TEXT);
-
-            if (isset($SESSION->$passvar) && $SESSION->$passvar === md5($record->sebteacherpassword)) {
-                // Ya autenticado en esta sesión.
-            } else {
-                if (!\mod_vpl\seb\session_manager::validate_teacher_password($record, $password)) {
-                    if ($password !== '') {
-                        if (isset($SESSION->$passattempt)) {
-                            $SESSION->$passattempt++;
-                        } else {
-                            $SESSION->$passattempt = 1;
-                        }
-
-                        $cmid = $this->get_course_module() ? $this->get_course_module()->id : null;
-                        \mod_vpl\event\seb_access_denied::create([
-                            'objectid' => $this->get_instance()->id,
-                            'context' => $cmid ? \context_module::instance($cmid) : null,
-                            'userid' => $USER->id ?? 0,
-                            'other' => [
-                                'reason' => 'invalid_teacher_password',
-                                'activityid' => $activityid,
-                                'attempts' => isset($SESSION->$passattempt) ? (int)$SESSION->$passattempt : 0,
-                            ],
-                        ])->trigger();
-                        sleep($SESSION->$passattempt);
-                    }
-                    $this->print_seb_teacher_password_form($password !== '', isset($SESSION->$passattempt) ? $SESSION->$passattempt : 0);
-                    return true;
+        $sebrequired = $this->get_instance()->sebrequired;
+        if ($sebrequired == 1) {
+            if (! $this->pass_seb_check()) {
+                sleep(5); // Avoid force brute crack.
+                $str = get_string('sebrequired', COMPVPL);
+                if ($this->is_seb_browser()) {
+                    $str .= '<br>' . get_string('sebkeys_bad', COMPVPL);
+                } else {
+                    $str .= '<br>' . get_string('sebrequired_bad', COMPVPL);
                 }
-                // Contraseña correcta: guardar en sesión y limpiar contador.
-                $SESSION->$passvar = md5($record->sebteacherpassword);
-                unset($SESSION->$passattempt);
+                if (constant('AJAX_SCRIPT')) {
+                    throw new Exception($str);
+                }
+                $this->add_notice($str, 'warning');
+                $this->print_header();
+                $this->print_footer();
+                die();
             }
-            $replaceothers = true;
+        } else if ($sebrequired == 2) {
+            \mod_vpl\seb\ui::seb_check($this);
         }
-
-        $starturl = new moodle_url('/mod/vpl/view.php', ['id' => $this->get_course_module()->id]);
-        $session = \mod_vpl\seb\session_manager::start_phase2($record, $userid, $starturl, $fullme, $replaceothers);
-        $this->send_seb_config(\mod_vpl\seb\session_manager::build_phase2_config_xml($record, $session, $starturl));
-        return true;
-    }
-
-    /**
-     * Print the teacher password form used to replace an active SEB session.
-     *
-     * @param bool $invalidpassword Whether a wrong password was submitted.
-     * @return void
-     */
-    protected function print_seb_teacher_password_form($invalidpassword, $attempts = 0) {
-        $this->print_header();
-        echo html_writer::start_div('vpl-seb-access mx-auto text-center', ['style' => 'max-width: 720px;']);
-        vpl_notice(get_string('sebsimultaneoussessionblocked', VPL), 'warning');
-        if ($invalidpassword) {
-            vpl_notice(get_string('sebinvalidteacherpassword', VPL), 'warning');
-        }
-        if ($attempts > 0) {
-            vpl_notice(get_string('attemptnumber', VPL, $attempts), 'warning');
-        }
-
-        $action = new moodle_url('/mod/vpl/view.php', ['id' => $this->get_course_module()->id]);
-        echo html_writer::start_tag('form', [
-            'method' => 'post',
-            'action' => $action->out(false),
-            'class' => 'my-3 mx-auto',
-            'style' => 'max-width: 420px;',
-        ]);
-        echo html_writer::start_div('form-group');
-        echo html_writer::tag('label', get_string('sebteacherpassword', VPL), ['for' => 'id_sebteacherpassword']);
-        echo html_writer::empty_tag('input', [
-            'type' => 'password',
-            'name' => 'sebteacherpassword',
-            'id' => 'id_sebteacherpassword',
-            'class' => 'form-control',
-            'autocomplete' => 'off',
-        ]);
-        echo html_writer::end_div();
-        echo html_writer::empty_tag('input', [
-            'type' => 'submit',
-            'value' => get_string('continue'),
-            'class' => 'btn btn-primary',
-        ]);
-        echo html_writer::end_tag('form');
-        echo html_writer::end_div();
-        $this->print_footer();
-        }
-
-    /**
-     * Send a SEB configuration file and stop normal page rendering.
-     *
-     * @param string $config SEB plist XML.
-     * @return void
-     */
-    protected function send_seb_config($config) {
-        foreach ([
-                'Cache-Control: private, max-age=1, no-transform',
-                'Expires: ' . gmdate('D, d M Y H:i:s', time()) . ' GMT',
-                'Pragma: no-cache',
-                'Content-Disposition: attachment; filename=' . \mod_vpl\seb\settings::get_download_filename(),
-                'Content-Type: application/seb',
-        ] as $header) {
-            header($header);
-        }
-        echo $config;
+        $this->set_pagelayout_secure();
     }
 
     /**
      * Return true if is set to use SEB.
-     * @return void
+     * @return bool
      */
-    protected function use_seb() {
-        return \mod_vpl\seb\settings::uses_seb($this->get_instance());
+    protected function uses_seb() {
+        return $this->get_instance()->sebrequired > 0;
     }
 
     /**
      * Checks all restrictions and shows error if not passed
      * @return void
      */
-    public function restrictions_check() {
+    public function restrictions_check(bool $ignoreteacher = false) {
         $this->network_check();
+        $this->seb_check($ignoreteacher);
         $this->password_check();
-        $this->seb_check();
     }
 
     /**
@@ -1367,7 +1217,7 @@ class mod_vpl {
             $courseid = $this->get_course()->id;
             return print_group_picture($group, $courseid, false, true);
         } else {
-            $options = ['courseid' => $this->get_instance()->course, 'link' => ! $this->use_seb()];
+            $options = ['courseid' => $this->get_instance()->course, 'link' => !$this->uses_seb()];
             return $OUTPUT->user_picture($user, $options);
         }
     }
@@ -1655,7 +1505,7 @@ class mod_vpl {
      */
     public function print_footer() {
         global $OUTPUT;
-        if (! $this->use_seb()) {
+        if (! $this->uses_seb()) {
             $style = "float:right; right:10px; padding:8px; background-color: white;text-align:center;";
             echo '<div style="' . $style . '">';
             echo '<a href="http://vpl.dis.ulpgc.es/">';
@@ -1803,6 +1653,15 @@ class mod_vpl {
     }
 
     /**
+     * Set the page layout to secure
+     *
+     * @return void
+     */
+    public function set_pagelayout_secure() {
+        global $PAGE;
+        $PAGE->set_pagelayout('secure');
+    }
+    /**
      * print header
      *
      * @param string $info title and last nav option
@@ -1824,10 +1683,9 @@ class mod_vpl {
         if ($setheading) {
             $PAGE->set_heading($this->get_course()->fullname);
         }
-        if ($this->use_seb() && ! $this->is_teacher()) {
+        if ($PAGE->pagelayout == 'secure') {
             $PAGE->set_heading($this->get_course()->fullname . ' - ' . $tittle);
             $PAGE->set_popup_notification_allowed(false);
-            $PAGE->set_pagelayout('secure');
         }
         echo $OUTPUT->header();
         $this->set_warnings();
@@ -1902,7 +1760,7 @@ class mod_vpl {
         }
         $html .= '</b>: ';
         if ($value === null) {
-            $value = $this->instance->$str;
+            $value = empty($this->instance->$str) ? '' : $this->instance->$str;
         }
         $html .= $value;
         return $html;
@@ -1922,7 +1780,7 @@ class mod_vpl {
         $html .= $this->str_setting($str, $value, $raw, $comp);
         if ($newline) {
             $html .= "<br>\n";
-        } else {
+        } else if ($value != '') {
             $html .= '. ';
         }
         return $html;
@@ -1936,11 +1794,19 @@ class mod_vpl {
      * @param string $comp component for i18n, default mod_vpl.
      * @return string HTML
      */
-    protected function str_setting_with_hidden_value($str, $value, $comp = 'mod_vpl') {
+    protected function str_setting_with_hidden_value($str, $value, $raw = false, $comp = 'mod_vpl') {
         $html = $this->str_setting_with_icon($str, get_string('yes'), false, false, $comp);
         $infohs = new mod_vpl\util\hide_show();
         $html .= $infohs->generate();
-        $html .= $infohs->content_in_tag('span', s($value));
+        if (!$raw) {
+            $value = nl2br(s($value));
+        }
+        if (strpos($value, '<br>') === false) {
+            $tag = 'span';
+        } else {
+            $tag = 'div';
+        }
+        $html .= $infohs->content_in_tag($tag, $value);
         $html .= "<br>\n";
         return $html;
     }
@@ -1950,9 +1816,7 @@ class mod_vpl {
      * @return string HTML
      */
     public function overriden_icon() {
-        $iconclass = mod_vpl_get_fontawesome_icon_map()['mod_vpl:overrides'];
-        $title = get_string('overriden', VPL);
-        return '<i class="fa ' . $iconclass . ' mx-2" title="' . $title . '" aria-label="' . $title . '"></i>';
+        return vpl_get_awesome_icon('user|overrides', '', get_string('overriden', VPL));
     }
 
     /**
@@ -2013,6 +1877,7 @@ class mod_vpl {
         global $CFG, $USER;
         $html = '';
         $isgrader = $this->has_capability(VPL_GRADE_CAPABILITY);
+        $checkrestriction = $isgrader && $this->script == 'view.php';
         if ($isgrader && !$this->is_mode(activity_modes::NORMAL)) {
             $strmode = activity_modes::get_i18n_key($this->instance->activity_mode);
             $html .= $this->str_setting_with_icon('activity_mode', get_string($strmode, VPL), false, true);
@@ -2079,20 +1944,17 @@ class mod_vpl {
         }
         $html .= $this->str_gradereduction($userid);
         if ($isgrader) {
-            $password = trim($this->get_effective_setting('password'));
+            $password = $this->get_password();
             if ($password) {
-                $html .= $this->str_setting_with_icon('password', $stryes, false, false, 'moodle');
-                $infohs = new mod_vpl\util\hide_show();
-                $html .= $infohs->generate();
-                $html .= $infohs->content_in_tag('span', s($password));
+                $info = s($password);
                 if ($password != $this->instance->password) {
-                    $html .= $this->overriden_icon();
-                }
-                $html .= "<br>\n";
+                    $info .= $this->overriden_icon();
+                };
+                $html .= $this->str_setting_with_hidden_value('password', $info, true, 'moodle');
             }
             if (trim($instance->requirednet) > '') {
                 $info = s($instance->requirednet);
-                if ($this->script == 'view.php') {
+                if ($checkrestriction) {
                     if (vpl_check_network($instance->requirednet)) {
                         $text = get_string('requirednet_pass', COMPVPL, getremoteaddr());
                         $type = 'success';
@@ -2104,29 +1966,51 @@ class mod_vpl {
                 }
                 $html .= $this->str_setting_with_icon('requirednet', $info);
             }
-            $sebsettings = \mod_vpl\seb\settings::get_effective_record($instance);
-            if (!empty($sebsettings->requiresafeexambrowser)) {
-                $html .= $this->str_setting_with_icon('requiresafeexambrowser', $stryes);
-                if (!empty($sebsettings->showsebdownloadlink)) {
-                    $html .= $this->str_setting_with_icon('showsebdownloadlink', $stryes);
+            if ($instance->sebrequired == 1) {
+                $html .= $this->str_setting_with_icon('sebrequired', $stryes, false, false);
+                $html .= '<ul>';
+                $info = nl2br(s($instance->sebkeys));
+                $html .= '<li>';
+                $html .= $this->str_setting_with_hidden_value('sebkeys', $info, true);
+                $html .= '</li>';
+                if ($checkrestriction) {
+                    if ($this->is_sebkey_valid()) {
+                        $text = get_string('sebkeys_pass', COMPVPL);
+                        $type = 'success';
+                    } else {
+                        if ($this->is_seb_browser()) {
+                            $text = get_string('sebkeys_bad', COMPVPL);
+                            $type = 'warning';
+                        } else {
+                            $text = get_string('sebrequired_bad', COMPVPL);
+                            $type = 'warning';
+                        }
+                    }
+                    $html .= "<li><span class='alert-$type'>$text</span></li>";
                 }
+                $html .= '</ul>';
+            } else if ($instance->sebrequired == 2) {
+                $sebsettings = \mod_vpl\seb\settings::get_values_from_vplid($instance->id);
+                $infohtml = '<ul>';
+                $value = empty($sebsettings->preventsebsimultaneoussessions) ? $strno : $stryes;
+                $infohtml .= '<li>';
+                $infohtml .= $this->str_setting_with_icon('preventsebsimultaneoussessions', $value);
+                $infohtml .= '</li>';
                 if (trim((string)$sebsettings->sebteacherpassword) !== '') {
-                    $html .= $this->str_setting_with_hidden_value('sebteacherpassword', $sebsettings->sebteacherpassword);
+                    $infohtml .= '<li>';
+                    $infohtml .= $this->str_setting_with_hidden_value('sebteacherpassword', $sebsettings->sebteacherpassword);
+                    $infohtml .= '</li>';
                 }
                 if (trim((string)$sebsettings->quitpassword) !== '') {
-                    $html .= $this->str_setting_with_hidden_value('quitpassword', $sebsettings->quitpassword);
+                    $infohtml .= '<li>';
+                    $infohtml .= $this->str_setting_with_hidden_value('quitpassword', $sebsettings->quitpassword);
+                    $infohtml .= '</li>';
                 }
-                if (trim((string)$sebsettings->adminpassword) !== '') {
-                    $html .= $this->str_setting_with_hidden_value('adminpassword', $sebsettings->adminpassword);
-                }
+                $infohtml .= '</ul>';
+                $infohtml .= \mod_vpl\seb\ui::get_seb_check_link($this);
+                $html .= $this->str_setting_with_hidden_value('sebrequired', $infohtml, true);
             }
-            if (trim($sebsettings->allowedbrowserexamkeys) > '') {
-                $html .= $this->str_setting_with_icon('sebkeys', $stryes, false, false);
-                $infohs = new mod_vpl\util\hide_show();
-                $html .= $infohs->generate();
-                $html .= $infohs->content_in_tag('div', nl2br(s($sebsettings->allowedbrowserexamkeys)));
-                $html .= "<br>\n";
-            }
+
             if ($instance->restrictededitor) {
                 $html .= $this->str_setting_with_icon('restrictededitor', $stryes);
             }

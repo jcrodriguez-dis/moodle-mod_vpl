@@ -97,7 +97,6 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         ];
         $sebfields = [
             'vplid' => 'privacy:metadata:vpl_seb:vplid',
-            'requiresafeexambrowser' => 'privacy:metadata:vpl_seb:requiresafeexambrowser',
             'showsebdownloadlink' => 'privacy:metadata:vpl_seb:showsebdownloadlink',
             'enablesebsession' => 'privacy:metadata:vpl_seb:enablesebsession',
             'preventsebsimultaneoussessions' => 'privacy:metadata:vpl_seb:preventsebsimultaneoussessions',
@@ -106,7 +105,6 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
             'userconfirmquit' => 'privacy:metadata:vpl_seb:userconfirmquit',
             'allowuserquitseb' => 'privacy:metadata:vpl_seb:allowuserquitseb',
             'quitpassword' => 'privacy:metadata:vpl_seb:quitpassword',
-            'adminpassword' => 'privacy:metadata:vpl_seb:adminpassword',
             'allowreloadinexam' => 'privacy:metadata:vpl_seb:allowreloadinexam',
             'showsebtaskbar' => 'privacy:metadata:vpl_seb:showsebtaskbar',
             'showreloadbutton' => 'privacy:metadata:vpl_seb:showreloadbutton',
@@ -124,7 +122,6 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
             'regexallowed' => 'privacy:metadata:vpl_seb:regexallowed',
             'expressionsblocked' => 'privacy:metadata:vpl_seb:expressionsblocked',
             'regexblocked' => 'privacy:metadata:vpl_seb:regexblocked',
-            'allowedbrowserexamkeys' => 'privacy:metadata:vpl_seb:allowedbrowserexamkeys',
             'usermodified' => 'privacy:metadata:vpl_seb:usermodified',
             'timecreated' => 'privacy:metadata:vpl_seb:timecreated',
             'timemodified' => 'privacy:metadata:vpl_seb:timemodified',
@@ -146,7 +143,7 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
         $collection->add_database_table('vpl_seb', $sebfields, 'privacy:metadata:vpl_seb');
         $collection->add_database_table('vpl_seb_session', $sebsessionfields, 'privacy:metadata:vpl_seb_session');
-        
+
         // IDE user preferences.
         $collection->add_user_preference('vpl_ide_preferences', 'privacy:metadata:vpl_ide_preferences');
 
@@ -853,7 +850,7 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         $params += $contextparams;
         $DB->execute($sql, $params);
     }
-    
+
     /**
      * Helper function to retrieve vpl submissions related with user (submitted or grader).
      *

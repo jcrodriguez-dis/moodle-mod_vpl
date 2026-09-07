@@ -35,6 +35,10 @@ require_login($course, true, $cm);
 
 $vpl = new mod_vpl($id);
 $urlparms = [ 'id' => $id ];
+$sebcheck = optional_param('sebcheck', 0, PARAM_BOOL);
+if ($sebcheck) {
+    $urlparms['sebcheck'] = 1;
+}
 if (optional_param('userid', -1, PARAM_INT) != -1) {
     $urlparms['userid'] = required_param('userid', PARAM_INT);
 }
@@ -51,7 +55,7 @@ if ($vpl->is_teacher()) {
 } else {
     $userid = $USER->id;
 }
-$vpl->restrictions_check();
+$vpl->restrictions_check((bool)$sebcheck);
 
 \mod_vpl\event\vpl_description_viewed::log($vpl);
 

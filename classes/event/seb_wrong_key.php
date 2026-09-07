@@ -24,17 +24,20 @@
  */
 namespace mod_vpl\event;
 
-defined('MOODLE_INTERNAL') || die();
-
+/**
+ * Event class for SEB wrong key attempts.
+ *
+ * @package mod_vpl
+ */
 class seb_wrong_key extends base {
-        /**
-         * Init method for setting event properties.
-         */
-        protected function init() {
-            $this->data['crud'] = 'r'; // 'r' for read, 'c' for create, 'u' for update, 'd' for delete.
-            $this->data['edulevel'] = self::LEVEL_OTHER;
-            $this->data['objecttable'] = 'vpl';
-        }
+    /**
+     * Init method for setting event properties.
+     */
+    protected function init() {
+        $this->data['crud'] = 'r';
+        $this->data['edulevel'] = self::LEVEL_OTHER;
+        $this->data['objecttable'] = 'vpl';
+    }
     /**
      * Returns localised event name.
      *
@@ -50,7 +53,7 @@ class seb_wrong_key extends base {
      * @return string
      */
     public function get_description() {
-        return "El usuario con id {$this->userid} intentó acceder con una clave SEB incorrecta.";
+        return "The user with id {$this->userid} attempted to access with an incorrect SEB key.";
     }
 
     /**
@@ -59,15 +62,6 @@ class seb_wrong_key extends base {
      * @return \moodle_url
      */
     public function get_url() {
-        return new \moodle_url('/mod/vpl/view.php', array('id' => $this->contextinstanceid));
-    }
-
-    /**
-     * Custom data for legacy log.
-     *
-     * @return array
-     */
-    protected function get_legacy_logdata() {
-        return array($this->courseid, 'vpl', 'seb_wrong_key', 'view.php?id=' . $this->contextinstanceid, $this->userid, $this->contextinstanceid);
+        return $this->get_url_base('view.php');
     }
 }

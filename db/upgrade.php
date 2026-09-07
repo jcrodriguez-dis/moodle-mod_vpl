@@ -606,7 +606,6 @@ function xmldb_vpl_upgrade_2026052302() {
     if (!$dbman->table_exists($table)) {
         $table->add_field('id', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, XMLDB_SEQUENCE, null);
         $table->add_field('vplid', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, null);
-        $table->add_field('requiresafeexambrowser', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('showsebdownloadlink', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('enablesebsession', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('preventsebsimultaneoussessions', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
@@ -615,7 +614,6 @@ function xmldb_vpl_upgrade_2026052302() {
         $table->add_field('userconfirmquit', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('allowuserquitseb', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('quitpassword', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('adminpassword', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('allowreloadinexam', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('showsebtaskbar', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
         $table->add_field('showreloadbutton', XMLDB_TYPE_INTEGER, '1', null, null, null, null);
@@ -633,7 +631,6 @@ function xmldb_vpl_upgrade_2026052302() {
         $table->add_field('regexallowed', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('expressionsblocked', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('regexblocked', XMLDB_TYPE_TEXT, null, null, null, null, null);
-        $table->add_field('allowedbrowserexamkeys', XMLDB_TYPE_TEXT, null, null, null, null, null);
         $table->add_field('usermodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timecreated', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');
         $table->add_field('timemodified', XMLDB_TYPE_INTEGER, '10', null, XMLDB_NOTNULL, null, '0');

@@ -19,11 +19,11 @@ Feature: Create and change VPL activity access settings
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
     And the following "activities" exist:
-      | activity   | name               | intro   | password | requirednet | sebrequired | sebkeys | course | section |
-      | vpl        | VPL with password  | No desc | key      |             | 0           |         | C1     | 1       |
-      | vpl        | VPL with network   | No desc |          | 10.10.10.13 | 0           |         | C1     | 1       |
-      | vpl        | VPL with SEB       | No desc |          |             | 1           |         | C1     | 1       |
-      | vpl        | VPL with SEB key   | No desc |          |             | 0           | afssdaf | C1     | 1       |
+      | activity   | name                | intro   | password | requirednet | sebrequired | sebkeys | course | section |
+      | vpl        | VPL with password   | No desc | key      |             | 0           |         | C1     | 1       |
+      | vpl        | VPL with network    | No desc |          | 10.10.10.13 | 0           |         | C1     | 1       |
+      | vpl        | VPL with SEB key    | No desc |          |             | 1           | afssdaf | C1     | 1       |
+      | vpl        | VPL with SEB manual | No desc |          |             | 2           |         | C1     | 1       |
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => teacher access
@@ -57,6 +57,7 @@ Feature: Create and change VPL activity access settings
       | id_password | key |
     And I press "Continue"
     And I should not see "A password is required"
+    Then I should not see "Safe Exam Browser"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere network => student access
@@ -65,19 +66,20 @@ Feature: Create and change VPL activity access settings
     And I am on "Course 1" course homepage
     And I click on "VPL with network" "link" in the "region-main" "region"
     Then I should see "Action not allowed from"
+    Then I should not see "Safe Exam Browser"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB browser => student access
     When I log in as "student1"
     And I am on "Course 1" course homepage
-    And I click on "VPL with SEB" "link" in the "region-main" "region"
-    Then I should see "Using SEB browser is required"
+    And I click on "VPL with SEB key" "link" in the "region-main" "region"
+    Then I should see "Require the use of Safe Exam Browser"
     And I should see "It looks like you are not using SEB browser"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere SEB key => student access
     When I log in as "student1"
     And I am on "Course 1" course homepage
-    And I click on "VPL with SEB key" "link" in the "region-main" "region"
-    Then I should see "Using SEB browser is required"
+    And I click on "VPL with SEB manual" "link" in the "region-main" "region"
+    Then I should see "Safe Exam Browser"
     And I should see "It looks like you are not using SEB browser"

@@ -84,6 +84,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         $paths[] = new restore_path_element('execution_file', '/activity/vpl/execution_files/execution_file');
         $paths[] = new restore_path_element('variation', '/activity/vpl/variations/variation');
         $paths[] = new restore_path_element('override', '/activity/vpl/overrides/override');
+        $paths[] = new restore_path_element('seb', '/activity/vpl/seb');
         if ($userinfo) {
             $paths[] = new restore_path_element('assigned_variation', '/activity/vpl/assigned_variations/assigned_variation');
             $paths[] = new restore_path_element('assigned_override', '/activity/vpl/assigned_overrides/assigned_override');
@@ -217,6 +218,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         global $DB;
         $data = (object)$data;
         $data->vplid = $this->get_new_parentid('vpl');
+        $data->usermodified = $this->get_mappingid('user', $data->usermodified);
         if (!$DB->record_exists('vpl_seb', ['vplid' => $data->vplid])) {
             $DB->insert_record('vpl_seb', $data);
         }
