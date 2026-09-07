@@ -282,6 +282,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     var VPLTaskId = null;
     // Number of reconnection attempts
     var reConnection = 0;
+    // Timestamp (ms) of the last connection attempt, used to keep a minimum delay between attempts
+    var lastConnectionAttemptTime = 0;
     // Message ID for requests
     var messageId = 0;
     // Version of the Language Server Protocol
@@ -292,6 +294,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     var allMarkers = [];
     // Server capabilities received from the Language Server (normalized wrapper)
     var serverCapabilities = new LSServerCapabilities({});
+    // Ace uses JavaScript string offsets, which are UTF-16 code units.
+    var positionEncoding = "utf-16";
     // Dynamic file watcher registrations from client/registerCapability
     var watchedFileRegistrations = {};
     // Content of the files when they are opened
@@ -325,6 +329,13 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         return serverCapabilities;
     };
     /**
+     * Return the position encoding negotiated with the Language Server.
+     * @returns {String} LSP position encoding.
+     */
+    this.getPositionEncoding = function() {
+        return positionEncoding;
+    };
+    /**
      * Reset the inactivity timeout, so the LS will not shut down due to inactivity.
      */
     function resetInactivityTimeout() {
@@ -338,7 +349,13 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         // reconnection is scheduled or in progress, restart it now that there is activity again.
         if (self.isStopped() && reConnectionTimerId === null && !self.isConnecting()) {
             reConnection = 0;
-            self.startConnection();
+            // Keep the retry delay so user activity cannot produce a burst of connection attempts.
+            const elapsed = Date.now() - lastConnectionAttemptTime;
+            if (elapsed >= waitTimeForRetryingLSConection) {
+                self.startConnection();
+            } else {
+                scheduleReconnection(waitTimeForRetryingLSConection - elapsed);
+            }
         }
         inactivityTimeoutId = setTimeout(() => {
             log("Inactivity timeout reached. Shutting down LS.");
@@ -953,9 +970,9 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             }
         });
         var hoverTooltip = file.getHoverTooltip();
-        // We add a delay to the hover tooltip hide function
+        // Keep the tooltip visible while the pointer moves into it or across a small gap.
         hoverTooltip.vpl = {};
-        hoverTooltip.vpl.hideDelay = 300;
+        hoverTooltip.vpl.hideDelay = 500;
         hoverTooltip.vpl.originalHide = hoverTooltip.hide.bind(hoverTooltip);
         hoverTooltip.vpl.hideTimer = null;
         hoverTooltip.hide = function(e) {
@@ -966,11 +983,14 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         hoverTooltip.vpl.cancelHide = function() {
             clearTimeout(hoverTooltip.vpl.hideTimer);
+            hoverTooltip.vpl.hideTimer = null;
         };
         hoverTooltip.getElement().addEventListener("mouseenter", () => {
             hoverTooltip.vpl.cancelHide();
         });
         hoverTooltip.setDataProvider(async function(event, editor) {
+            // Ace waits before invoking the provider; cancel the old hide while the new hover is resolved.
+            hoverTooltip.vpl.cancelHide();
             if (!self.eventHandlersActive || !self.isConnected()) {
                 hoverTooltip.hide();
                 return;
@@ -1166,7 +1186,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * @param {File} file
      */
     this.openFileNotification = function(file) {
-        if (file.getLSLang() != language || !file.isOpen() || !self.isConnected()) {
+        if (file.getLSLang() != language || !file.isOpen() || !self.isConnected()
+                || !self.eventHandlersActive) {
             return;
         }
         self.setEventHandlers(file);
@@ -1243,6 +1264,12 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     this.initializeProcess = function(message) {
         // Wrap raw capabilities into LSServerCapabilities instance for helpers
         serverCapabilities = new LSServerCapabilities(message?.result?.capabilities);
+        positionEncoding = message?.result?.capabilities?.positionEncoding || "utf-16";
+        if (positionEncoding !== "utf-16") {
+            log("Unsupported LSP position encoding: " + positionEncoding, true);
+            self.stopConnection();
+            return;
+        }
         self.aceCompleterAdapter.triggerCharacters = serverCapabilities.getCompletionTriggerCharacters();
         let serverName = message?.result?.serverInfo?.name;
         let serverVersion = message?.result?.serverInfo?.version;
@@ -2007,9 +2034,39 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         "expectedLength": 0,
     };
     const contentLengthRegex = /Content-Length:\s*(\d+)/i;
-    const firstEmptyLineRegex = /\r?\n\r?\n/;
+    // Tolerates the extra CR added when the server output goes through a pseudo terminal
+    const firstEmptyLineRegex = /\r*\n\r*\n/;
     const lsTextEncoder = new TextEncoder();
     const lsTextDecoder = new TextDecoder();
+    const headerMark = lsTextEncoder.encode("Content-Length");
+
+    /**
+     * Drops the pending bytes before the next message header to recover the message
+     * framing when the received content does not match the announced Content-Length.
+     * @returns {boolean} True if a header was found, false if the buffer was discarded
+     */
+    function resynchronizeBuffer() {
+        pendingMessage.active = false;
+        pendingMessage.expectedLength = 0;
+        const buffer = pendingMessage.buffer;
+        for (let i = 0; i <= buffer.length - headerMark.length; i++) {
+            let found = true;
+            for (let j = 0; j < headerMark.length; j++) {
+                if (buffer[i + j] !== headerMark[j]) {
+                    found = false;
+                    break;
+                }
+            }
+            if (found) {
+                log("Resynchronizing message framing, discarding " + i + " bytes.");
+                pendingMessage.buffer = buffer.subarray(i);
+                return true;
+            }
+        }
+        log("Resynchronizing message framing, discarding " + buffer.length + " bytes.");
+        pendingMessage.buffer = new Uint8Array(0);
+        return false;
+    }
 
     /**
      * It processes the response from the WebSocket connection with the Language Server
@@ -2043,6 +2100,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 } catch (e) {
                     log("Error parsing JSON message: " + e);
                     log("Wrong JSON content: " + messageContent);
+                    resynchronizeBuffer();
                 }
             } else {
                 // Headers are ASCII — byte index equals char index, safe to decode for search
@@ -2075,6 +2133,19 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     }
     var reConnectionTimerId = null;
     /**
+     * Schedule a new connection attempt with the Language Server.
+     * @param {Number} delay Time in ms to wait before trying to connect again
+     */
+    function scheduleReconnection(delay) {
+        if (reConnectionTimerId !== null) {
+            return;
+        }
+        reConnectionTimerId = setTimeout(function() {
+            reConnectionTimerId = null;
+            self.startConnection();
+        }, delay);
+    }
+    /**
      * It tries to reconnect with the Language Server
      * if the connection is lost.
      */
@@ -2090,9 +2161,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         }
         requests = {};
         if (reConnection < maxConnectionsAttempts) {
-            reConnectionTimerId = setTimeout(function() {
-                self.startConnection();
-            }, waitTimeForRetryingLSConection);
+            scheduleReconnection(waitTimeForRetryingLSConection);
             reConnection++;
         } else {
             log("Max reconnection attempts reached. Stopping reconnecting.");
@@ -2102,6 +2171,14 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * Start connection with the Language Server
      */
     this.startConnection = function() {
+        if (self.isConnecting() || self.isConnected()) {
+            return;
+        }
+        if (reConnectionTimerId !== null) {
+            window.clearTimeout(reConnectionTimerId);
+            reConnectionTimerId = null;
+        }
+        lastConnectionAttemptTime = Date.now();
         VPLTaskId = null;
         messageId = 0;
         version = 0;
@@ -2154,14 +2231,12 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 self.eventHandlersActive = false;
                 tryReconnect();
             };
-            reConnectionTimerId = null;
             self.setStatus();
             self.initializeRequest();
             return;
         })
         .catch(function() {
             ws = null;
-            reConnectionTimerId = null;
             self.setStatus();
             tryReconnect();
         });
@@ -2505,6 +2580,9 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                                 ]
                             }
                         }
+                    },
+                    "general": {
+                        "positionEncodings": ["utf-16"]
                     }
                 }
             }

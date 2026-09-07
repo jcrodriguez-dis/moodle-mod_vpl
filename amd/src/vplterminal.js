@@ -105,12 +105,39 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         }).catch(VPLUtil.doNothing);
         return text;
     };
-
-    this.connect = function(server, onClose) {
+    this.focus = function() {
+        initReady.then(function() {
+            if (!terminal) {
+                return;
+            }
+            terminal.focus();
+            // The dialog moves the focus to a tabbable element while opening,
+            // so the terminal focus is claimed again once the dialog has settled.
+            setTimeout(function() {
+                if (!terminal) {
+                    return;
+                }
+                terminal.focus();
+            }, 0);
+            return;
+        }).catch(function(error) {
+            VPLUtil.log('Error focusing terminal: ' + error);
+        });
+    };
+    this.blur = function() {
+        initReady.then(function() {
+            if (terminal) {
+                terminal.blur();
+            }
+            return;
+        }).catch(VPLUtil.doNothing);
+    };
+    this.connect = function(server, onShow, onClose) {
         onCloseAction = onClose;
         if ("WebSocket" in window) {
             initReady.then(function() {
                 terminal.reset();
+                onShow();
                 self.show();
                 if (ws) {
                     ws.close();
@@ -138,15 +165,16 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
                     self.setTitle(str('connected'));
                     self.startBlinking();
                     self.setMessage('');
-                    terminal.focus();
+                    self.focus();
                 };
                 ws.onclose = function() {
                     self.setTitle(str('connection_closed'));
-                    terminal.blur();
+                    self.blur();
                     self.stopBlinking();
-                    onClose();
+                    onCloseAction();
                     ws.stopOutput = true;
                 };
+                self.focus();
                 return;
             }).catch(VPLUtil.doNothing); // InitReady.then
         } else {
@@ -171,9 +199,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             localWs.writeIt();
             localWs.close();
             self.setTitle(str('connection_closed'));
-            if (terminal) {
-                terminal.blur();
-            }
+            self.blur();
             onCloseAction();
         }
         self.stopBlinking();
@@ -281,27 +307,38 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         }
     }
     /**
+     * Adjusts the terminal element to the current size of the dialog content
+     */
+    function fitTerminalToDialog() {
+        const margin = 13;
+        terminalTag.width(tdialog.width() - margin);
+        terminalTag.height(tdialog.height() - margin);
+    }
+    /**
      * Limits the size of the dialogo to the IDE
      */
     function controlDialogSize() {
         // Resize if dialog is large than screen.
         var bw = tIde.width();
         var bh = tIde.height();
-        if (tdialog.width() > bw) {
+        var clamped = false;
+        if (tdialog.parent().outerWidth() > bw) {
             tdialog.dialog("option", "width", bw);
+            clamped = true;
         }
-        if (tdialog.parent().height() > bh) {
-            tdialog.dialog("option", "height", bh - tdialog.prev().outerHeight());
+        if (tdialog.parent().outerHeight() > bh) {
+            tdialog.dialog("option", "height", bh);
+            clamped = true;
         }
-        const margin = 13;
-        terminalTag.width(tdialog.width() - margin);
-        terminalTag.height(tdialog.height() - margin);
+        // The dialog width is 'auto', so sizing the terminal from the dialog width would
+        // shrink both of them a bit on every call. Only do it when the dialog has been resized.
+        if (clamped) {
+            fitTerminalToDialog();
+        }
         if (fitAddon) {
             fitAddon.fit();
         }
-        if (terminal) {
-            terminal.focus();
-        }
+        self.focus();
     }
     tdialog.dialog({
         closeOnEscape: false,
@@ -309,13 +346,13 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         width: 'auto',
         height: 'auto',
         resizable: true,
-        dragStop: controlDialogSize,
+        dragStop: function() {
+            self.focus();
+        },
         open: controlDialogSize,
         focus: function() {
             controlDialogSize();
-            if (terminal) {
-                terminal.focus();
-            }
+            self.focus();
             if (self.isConnected()) {
                 self.startBlinking();
             }
@@ -327,11 +364,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             titleText = VPLUI.setTitleBar(tdialog, 'console', 'console',
                     ['clipboard', 'keyboard', 'theme'],
                     [openClipboard,
-                    function() {
-                        if (terminal) {
-                            terminal.focus();
-                        }
-                    },
+                    self.focus,
                     function() {
                         let themeNames = Object.keys(themes);
                         let oldTheme = tdialog.data('terminal_theme');
@@ -348,13 +381,18 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         resizeStop: function() {
             tdialog.width(tdialog.parent().width());
             tdialog.height(tdialog.parent().height() - tdialog.prev().outerHeight());
+            fitTerminalToDialog();
             controlDialogSize();
             if (fitAddon) {
                 fitAddon.fit();
             }
-            if (terminal) {
-                terminal.focus();
-            }
+            self.focus();
+        }
+    });
+    // Clicking the title bar moves the focus out of the editor, so give it back to the terminal.
+    tdialog.parent().find('.ui-dialog-titlebar').on('click', function(event) {
+        if ($(event.target).closest('button, a, input, select, textarea').length === 0) {
+            self.focus();
         }
     });
     this.setFontSize = function(size) {
@@ -395,7 +433,7 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     this.show = function() {
         tdialog.dialog('open');
         if (terminal) {
-            terminal.focus();
+            self.focus();
             fitAddon.fit();
         }
     };
@@ -403,17 +441,11 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
         if (!terminal) {
             return;
         }
-        if (!terminal.options.cursorBlink) {
-            VPLUtil.log("Terminal: cursor start blinking");
-        }
         terminal.options.cursorBlink = true;
     };
     this.stopBlinking = function() {
         if (!terminal) {
             return;
-        }
-        if (terminal.options.cursorBlink) {
-            VPLUtil.log("Terminal: cursor stop blinking");
         }
         terminal.options.cursorBlink = false;
     };

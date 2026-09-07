@@ -310,39 +310,16 @@ export const codeExtension = function() {
         self.setTheme(fileManager.getTheme());
         this.langSelection();
         // Code to control Paste and drop under restricted editing.
-        editor.execCommand('replace');
-        var addEventDrop = function() {
-            var tag = $(tid + ' div.ace_search');
-            if (tag.length) {
-                tag.on('drop', fileManager.dropHandler);
-                var button = $('.ace_searchbtn_close');
-                button.trigger('click');
-            } else {
-                setTimeout(addEventDrop, 50);
-            }
-        };
         editor.on('change', function() {
             self.change();
         });
         session.selection.on('changeCursor', function() {
             self.updateStatus();
         });
-        // Try to grant dropHandler installation.
-        setTimeout(addEventDrop, 5);
-        // Save previous onPaste and change for a new one.
-        var prevOnPaste = editor.onPaste;
-        editor.onPaste = function(s) {
-            if (fileManager.restrictedEdit) {
-                editor.insert(fileManager.getClipboard());
-            } else {
-                prevOnPaste.call(editor, s);
-            }
-        };
         // Control copy and cut (yes cut also use this) for localClipboard.
         editor.on('copy', function(t) {
             fileManager.setClipboard(t.text);
         });
-        $(tid).on('paste', '*', fileManager.restrictedPaste);
         $(tid + ' div.ace_content').on('drop', fileManager.dropHandler);
         $(tid + ' div.ace_content').on('dragover', fileManager.dragoverHandler);
         // Workaround to avoid hidden first line in editor.

@@ -131,6 +131,7 @@ var VPLIDE = function(rootId, options) {
             e.originalEvent.dataTransfer.dropEffect = 'copy';
         }
         e.preventDefault();
+        e.stopImmediatePropagation();
     }
     /**
      * Handler for drop event.
@@ -139,6 +140,7 @@ var VPLIDE = function(rootId, options) {
      */
     function dropHandler(e) {
         if (restrictedEdit) { // No drop allowed.
+            e.preventDefault();
             e.stopImmediatePropagation();
             return false;
         }
@@ -222,19 +224,63 @@ var VPLIDE = function(rootId, options) {
         }
         return false;
     }
+    /**
+     * Handle paste under restricted editing at the IDE boundary.
+     * @param {Event} e paste event.
+     */
+    function restrictedPasteHandler(e) {
+        if (!restrictedEdit) {
+            return;
+        }
+        var target = e.target;
+        if (!target || !target.closest) {
+            return;
+        }
+        if (target.closest('.ace_search')) {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+            return;
+        }
+        var editorContainer = target.closest('.ace_editor');
+        var currentEditor = fileManager.currentFile('getEditor');
+        if (!editorContainer || !currentEditor || currentEditor.container !== editorContainer) {
+            return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        currentEditor.insert(fileManager.getClipboard());
+    }
+    /**
+     * Block dragover under restricted editing at the IDE boundary.
+     * @param {DragEvent} e dragover event.
+     */
+    function restrictedDragoverHandler(e) {
+        if (!restrictedEdit) {
+            return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        if (e.dataTransfer) {
+            e.dataTransfer.dropEffect = 'none';
+        }
+    }
+    /**
+     * Block drop under restricted editing at the IDE boundary.
+     * @param {DragEvent} e drop event.
+     */
+    function restrictedDropHandler(e) {
+        if (!restrictedEdit) {
+            return;
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+    }
     rootObj.on('drop', dropHandler);
     rootObj.on('dragover', dragoverHandler);
-    /**
-     * Handler for paste limited by restrictedEdit var.
-     * @param {object} e event.
-     * @returns {boolean}
-     */
-    function restrictedPaste(e) {
-        if (restrictedEdit) {
-            e.stopPropagation();
-            return false;
-        }
-        return true;
+    if (restrictedEdit) {
+        rootObj[0].addEventListener('paste', restrictedPasteHandler, true);
+        rootObj[0].addEventListener('dragover', restrictedDragoverHandler, true);
+        rootObj[0].addEventListener('drop', restrictedDropHandler, true);
     }
     // Init editor vars.
     var menu = $('#vpl_menu');
@@ -350,7 +396,6 @@ var VPLIDE = function(rootId, options) {
             }
             return false;
         }
-        this.restrictedPaste = restrictedPaste;
         this.dropHandler = dropHandler;
         this.dragoverHandler = dragoverHandler;
         this.readOnly = readOnly;
@@ -825,7 +870,7 @@ var VPLIDE = function(rootId, options) {
             }
             return -1;
         };
-        this.gotoFile = function(pos, l) {
+        this.gotoFile = function(pos, l, setFocus = true) {
             var file = files[pos];
             if (!file) {
                 return;
@@ -835,7 +880,9 @@ var VPLIDE = function(rootId, options) {
             if (l != undefined && l !== 'c') {
                 file.gotoLine(parseInt(l, 10));
             }
-            file.focus();
+            if (setFocus) {
+                file.focus();
+            }
         };
         this.gotoFileLink = function(link) {
             var linkTag = $(link);
@@ -1192,7 +1239,8 @@ var VPLIDE = function(rootId, options) {
                     }
                 }
             } else if (currentFile) {
-                fileManager.gotoFile(fileManager.getFilePosById(currentFile.getId()));
+                // Refreshing the current file must not take the focus, e.g. from the console.
+                fileManager.gotoFile(fileManager.getFilePosById(currentFile.getId()), undefined, false);
             }
             $('.vpl_ide_statusbar_shrightpanel').show();
         } else {
@@ -1410,6 +1458,12 @@ var VPLIDE = function(rootId, options) {
      */
     function focusCurrentFile() {
         fileManager.currentFile('focus');
+    }
+    /**
+     * Transfer focus away from the current file
+     */
+    function blurCurrentFile() {
+        fileManager.currentFile('blur');
     }
     var dialogbaseOptions = $.extend({}, {
         close: focusCurrentFile
@@ -2411,7 +2465,7 @@ var VPLIDE = function(rootId, options) {
                     lastConsole.close();
                 }
                 lastConsole = terminal;
-                terminal.connect(coninfo.executionURL, function() {
+                terminal.connect(coninfo.executionURL, blurCurrentFile, function() {
                     ws.close();
                     focusCurrentFile();
                 });

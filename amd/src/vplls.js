@@ -948,8 +948,25 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 self.closeAllOverlays();
                 return;
             }
+            if (event.type === 'mouseleave') {
+                if (file != false && file.isCode() && file.isOpen()) {
+                    file.getTooltip()?.hide();
+                }
+                return;
+            }
             let LS = self.getLS(file);
             if (LS === null || self.isCodeActionMenuOpen() || self.isContextMenuOpen()) {
+                file.getTooltip()?.hide();
+                return;
+            }
+            const filePanel = document.getElementById("vpl_file" + file.getId());
+            if (!filePanel) {
+                file.getTooltip()?.hide();
+                return;
+            }
+            const filePanelRect = filePanel.getBoundingClientRect();
+            if (event.clientX < filePanelRect.left || event.clientX > filePanelRect.right
+                    || event.clientY < filePanelRect.top || event.clientY > filePanelRect.bottom) {
                 file.getTooltip()?.hide();
                 return;
             }
@@ -994,13 +1011,14 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 file.getTooltip().hide();
             }
         }
-        // IDE DOM element
-        const IDE = document.getElementById('vplide');
+        // Panel for open files DOM element
+        const editorFilesPanel = document.getElementById('vpl_tabs');
         /**
          * Show and hide markers of diagnostic information in a tooltip
          * when the mouse is moved over the editor
          */
-        IDE.addEventListener('mousemove', handleTooltipTrigger);
+        editorFilesPanel.addEventListener('mousemove', handleTooltipTrigger);
+        editorFilesPanel.addEventListener('mouseleave', handleTooltipTrigger);
     })();
     /**
      * Create a custom context menu with the available Language Server actions
