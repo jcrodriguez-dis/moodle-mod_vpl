@@ -683,6 +683,7 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:check_jail_servers' => 'fa-rocket',
             'mod_vpl:variations' => 'fa-random',
             'mod_vpl:overrides' => 'fa-unlock-alt',
+            'mod_vpl:useroverride' => 'fa-user',
             'mod_vpl:keepfiles' => 'fa-link',
             'mod_vpl:advancedsettings' => 'fa-cogs',
             'mod_vpl:submission' => 'fa-cloud-upload',
@@ -729,7 +730,11 @@ function mod_vpl_get_fontawesome_icon_map() {
             'mod_vpl:delete' => 'fa-trash',
             'mod_vpl:editthis' => 'fa-edit',
             'mod_vpl:exitrole' => 'fa-close',
+            'mod_vpl:worktype' => 'fa-laptop',
             'mod_vpl:activity_mode' => 'fa-cogs',
+            'mod_vpl:seb' => 'fa-globe',
+            'mod_vpl:sebrequired' => 'fa-globe',
+            'mod_vpl:requirednet' => 'fa-street-view',
     ];
 }
 
@@ -1066,7 +1071,8 @@ function vpl_reset_instance_userdata($vplid) {
         $vpl->update_override_calendar_events($override, null, true);
     }
     $DB->delete_records(VPL_ASSIGNED_OVERRIDES, $paramselectingvpl);
-
+    $DB->delete_records(VPL_SEB, ['vplid' => $vplid]);
+    $DB->delete_records(VPL_SEB_SESSION, ['vplid' => $vplid]);
     // Delete submission, execution and evaluation files.
     fulldelete($CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata');
 }
