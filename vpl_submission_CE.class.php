@@ -423,14 +423,15 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             // If the programming language is 'all', return the default run mode.
             return '0';
         }
-        if (! empty($data->run_mode) && $data->run_mode > '1') {
-            return $data->run_mode;
+        $runmode = isset($data->run_mode) ? (int) $data->run_mode : 0;
+        if ($runmode >= 2 && $runmode <= 5) {
+            return (string) $runmode;
         }
         $modes = [
-            '2' => self::RUN_TEXT_MODE_MARK,
-            '3' => self::RUN_GUI_MODE_MARK,
-            '4' => self::RUN_WEBAPP_MODE_MARK,
-            '5' => self::RUN_TEXTINGUI_MODE_MARK,
+            2 => self::RUN_TEXT_MODE_MARK,
+            3 => self::RUN_GUI_MODE_MARK,
+            4 => self::RUN_WEBAPP_MODE_MARK,
+            5 => self::RUN_TEXTINGUI_MODE_MARK,
         ];
         $chunklength = 2 * 1024;
         if (! isset($data->submittedlist)) {
@@ -444,7 +445,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $startingchunk = substr($filedata, 0, $chunklength);
             foreach ($modes as $mode => $mark) {
                 if (stripos($startingchunk, $mark) !== false) {
-                    return $mode;
+                    return (string) $mode;
                 }
             }
         }
@@ -456,7 +457,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $startingchunk = substr($data->files[$filename], 0, $chunklength);
             foreach ($modes as $mode => $mark) {
                 if (stripos($startingchunk, $mark) !== false) {
-                    return $mode;
+                    return (string) $mode;
                 }
             }
         }
