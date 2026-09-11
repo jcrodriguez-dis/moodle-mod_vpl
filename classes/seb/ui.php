@@ -76,6 +76,9 @@ class ui {
                 '',
                 \html_writer::div($warning, 'alert alert-warning')
             );
+            $mform->addElement('selectyesno', 'sebsessionsdelete', get_string('sebsessionsdelete', VPL));
+            $mform->setDefault('sebsessionsdelete', false);
+            $mform->addHelpButton('sebsessionsdelete', 'sebsessionsdelete', VPL);
         }
         foreach (settings::get_form_fields() as $field => $definition) {
             $label = get_string($definition['label'], VPL);

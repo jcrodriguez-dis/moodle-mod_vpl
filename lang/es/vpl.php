@@ -621,7 +621,10 @@ Las opciones disponibles son:
 * Sí - Usar la configuración del cliente SEB <br/>No hay ninguna configuración de Safe Exam Browser en el lado de Moodle.';
 $string['sebrequired_pass'] = 'Parece que <b>sí está usando</b> el navegador SEB';
 $string['sebsimultaneoussessionblocked'] = 'Ya hay otra sesión SEB activa para esta actividad. Introduzca la clave del profesor para reemplazarla.';
-$string['sebsessionwarning'] = 'Actualmente existen sesiones SEB para esta actividad. Al cambiar la configuración de SEB se eliminarán todas las sesiones actuales.';
+$string['sebsessionwarning'] = 'Actualmente existen sesiones SEB para esta actividad. Los cambios en la configuración de SEB se aplicarán a nuevas sesiones, no a las existentes.';
+$string['sebsessionsdelete'] = 'Eliminar las sesiones SEB de la actividad';
+$string['sebsessionsdelete_help'] = 'Si las elimina, hará que los navegadores SEB asociados dejen de estar vinculados a la actividad y
+que los estudiantes tengan que iniciar una nueva sesión SEB para acceder a ella sin requisito de contraseña de sesión múltiple.';
 $string['sebteacherpassword'] = 'Clave de profesor para excepciones de sesión SEB';
 $string['select_all'] = 'Seleccionar todo';
 $string['selectbreakpoint'] = 'Selecciona punto de parada';

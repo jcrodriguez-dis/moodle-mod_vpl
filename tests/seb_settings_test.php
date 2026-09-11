@@ -163,7 +163,8 @@ final class seb_settings_test extends base_fixture {
         $this->setAdminUser();
         $instance = $this->create_seb_vpl(['showsebtaskbar' => 0]);
         $values = settings::get_values_from_vplid($instance->id);
-        session_manager::create_session($values, (int)$USER->id);
+        $session = session_manager::create_session($values, (int)$USER->id);
+        session_manager::prepare_phase2($values, $session);
         $this->assertTrue($DB->record_exists('vpl_seb_session', ['vplid' => $instance->id]));
 
         settings::save_for_vpl($instance->id, (object)[
@@ -171,7 +172,13 @@ final class seb_settings_test extends base_fixture {
             'showtime' => 0,
         ], (int)$USER->id);
 
-        $this->assertFalse($DB->record_exists('vpl_seb_session', ['vplid' => $instance->id]));
+        $this->assertTrue(session_manager::exists_for_vpl($instance->id));
+        settings::save_for_vpl($instance->id, (object)[
+            'sebrequired' => 2,
+            'sebsessionsdelete' => 1,
+            'showtime' => 0,
+        ], (int)$USER->id);
+        $this->assertFalse(session_manager::exists_for_vpl($instance->id));
     }
 
     /**

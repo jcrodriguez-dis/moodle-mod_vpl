@@ -204,7 +204,8 @@ class session_manager {
     }
 
     /**
-     * Get phase1 SEB configuration XML for a user session.
+     * Retrieves the SEB configuration XML for phase 1 based on the user's session.
+     * Updates the session if the configuration key has changed.
      * @param \stdClass $settings SEB settings.
      * @param \stdClass $session Session record.
      * @return string The SEB configuration XML.
@@ -228,12 +229,6 @@ class session_manager {
      */
     public static function get_phase2_config_xml(\stdClass $settings, \stdClass $session): string {
         $payload = config_payload::get_phase2_payload($settings, $session->token2private);
-        $configkey = self::calculate_config_key($payload);
-        if (!hash_equals($session->configkey2, $configkey)) {
-            // The payload changed since phase 2 was prepared, keep the stored key in sync.
-            $session->configkey2 = $configkey;
-            self::update_session($session);
-        }
         return plist_builder::build_config_xml($payload);
     }
 
@@ -288,14 +283,15 @@ class session_manager {
     }
 
     /**
-     * Check whether a VPL has any stored SEB sessions.
+     * Check whether a VPL has any stored SEB sessions with sesskey.
      *
      * @param int $vplid VPL instance id.
-     * @return bool True when at least one session exists.
+     * @return bool True when at least one session exists with sesskey exists.
      */
     public static function exists_for_vpl(int $vplid): bool {
         global $DB;
-        return $DB->record_exists(self::TABLE, ['vplid' => $vplid]);
+        $where = "vplid = :vplid and sesskey IS NOT NULL and sesskey <> ''";
+        return $DB->record_exists_select(self::TABLE, $where, ['vplid' => $vplid]);
     }
 
     /**

@@ -210,7 +210,8 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertFalse($mform->elementExists('seb_session_warning'));
 
         $settings = settings::get_values_from_vplid($instance->id);
-        session_manager::create_session($settings, (int)$this->students[0]->id);
+        $session = session_manager::create_session($settings, (int)$this->students[0]->id);
+        session_manager::prepare_phase2($settings, $session);
 
         $mform = new \MoodleQuickForm('sebformwithsession', 'post', '');
         ui::add_fields_to_form($mform, $instance->id);

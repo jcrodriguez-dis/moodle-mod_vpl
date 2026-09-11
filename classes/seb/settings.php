@@ -338,6 +338,9 @@ class settings {
         $record->vplid = $vplid;
 
         if (!self::should_store($record)) {
+            if (isset($data->sebsessionsdelete) && $data->sebsessionsdelete) {
+                session_manager::delete_for_vpl($vplid);
+            }
             return;
         }
 
@@ -352,7 +355,9 @@ class settings {
             $record->timecreated = $record->timemodified;
             $DB->insert_record(self::TABLE, $record);
         }
-        session_manager::delete_for_vpl($vplid);
+        if (isset($data->sebsessionsdelete) && $data->sebsessionsdelete) {
+            session_manager::delete_for_vpl($vplid);
+        }
     }
 
     /**
