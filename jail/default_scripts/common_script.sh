@@ -87,13 +87,21 @@ function apply_evaluation_mode {
 # Wait until a program ($1 e.g. execution_int) of the current user ends. 
 function wait_end {
 	local PSRESFILE
+	local PSOPTIONS=()
 	PSRESFILE=.vpl_temp_search_program
+	if ps -o user= -o args= >/dev/null 2>&1; then
+		PSOPTIONS=(-o user= -o args=)
+	fi
 	# Wait until program start or until	5s
 	for I in {1..5}
 	do
 		sleep 1s
-		ps -f -u $USER > $PSRESFILE
-		grep "$1" $PSRESFILE &> /dev/null
+		ps "${PSOPTIONS[@]}" > "$PSRESFILE"
+		if [ -n "$USER" ]; then
+			grep -E "(^|[[:space:]])${USER}([[:space:]]|$)" "$PSRESFILE" | grep -F -- "$1" &> /dev/null
+		else
+			grep -F -- "$1" "$PSRESFILE" &> /dev/null
+		fi
 		if [ "$?" == "0" ] ; then
 			break
 		fi
@@ -102,8 +110,12 @@ function wait_end {
 	while :
 	do
 		sleep 1s
-		ps -f -u $USER > $PSRESFILE
-		grep "$1" $PSRESFILE &> /dev/null
+		ps "${PSOPTIONS[@]}" > "$PSRESFILE"
+		if [ -n "$USER" ]; then
+			grep -E "(^|[[:space:]])${USER}([[:space:]]|$)" "$PSRESFILE" | grep -F -- "$1" &> /dev/null
+		else
+			grep -F -- "$1" "$PSRESFILE" &> /dev/null
+		fi
 		if [ "$?" != "0" ] ; then
 			rm $PSRESFILE
 			return

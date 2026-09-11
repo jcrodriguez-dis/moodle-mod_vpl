@@ -71,13 +71,21 @@ function vpl_set_xauth {
 # Wait until a program ($1 e.g. execution_int) of the current user ends. 
 function wait_end {
 	local PSRESFILE
+    local PSOPTIONS=()
 	PSRESFILE=.vpl_temp_search_program
+    if ps -o user= -o args= >/dev/null 2>&1; then
+        PSOPTIONS=(-o user= -o args=)
+    fi
 	#wait start until 5s
 	for I in 1 .. 5
 	do
 		sleep 1s
-		ps -f -u $USER > $PSRESFILE
-		grep $1 $PSRESFILE &> /dev/null
+        ps "${PSOPTIONS[@]}" > "$PSRESFILE"
+        if [ -n "$USER" ]; then
+            grep -E "(^|[[:space:]])${USER}([[:space:]]|$)" "$PSRESFILE" | grep -F -- "$1" &> /dev/null
+        else
+            grep -F -- "$1" "$PSRESFILE" &> /dev/null
+        fi
 		if [ "$?" == "0" ] ; then
 			break
 		fi
@@ -85,8 +93,12 @@ function wait_end {
 	while :
 	do
 		sleep 1s
-		ps -f -u $USER > $PSRESFILE
-		grep $1 $PSRESFILE &> /dev/null
+        ps "${PSOPTIONS[@]}" > "$PSRESFILE"
+        if [ -n "$USER" ]; then
+            grep -E "(^|[[:space:]])${USER}([[:space:]]|$)" "$PSRESFILE" | grep -F -- "$1" &> /dev/null
+        else
+            grep -F -- "$1" "$PSRESFILE" &> /dev/null
+        fi
 		if [ "$?" != "0" ] ; then
 			rm $PSRESFILE
 			return
@@ -182,14 +194,16 @@ OUTPUTFILE=$HOME/.std_output
     chmod +x $HOME/vpl_evaluation_in_gui
     $HOME/vpl_evaluation_in_gui
 } &> $OUTPUTFILE
+    local PSOPTIONS=()
 
+    if ps -o user= -o args= >/dev/null 2>&1; then
+        PSOPTIONS=(-o user= -o args=)
+    fi
 # Shows task output stdout & stderr if any content
 if [ -s $OUTPUTFILE ] ; then
     if [ -x "$(command -v xterm)" ] ; then
         xterm -T "std output" -bg white -fg red -e /bin/bash -c "more $OUTPUTFILE; sleep 3"
-    elif [ -x "$(command -v x-terminal-emulator)" ] ; then
-        x-terminal-emulator -e /bin/bash -c "more $OUTPUTFILE; sleep 3"
-    else
+        ps "${PSOPTIONS[@]}" > "$PSRESFILE"
         sleep 5s
     fi
 else
@@ -203,9 +217,7 @@ PIDFILE=$(ls $HOME/.vnc/*.pid)
 if [ -x "$(command -v tightvncserver)" ] ; then
     FILENAME=${PIDFILE##*/}
     TIGHTDIS=${FILENAME%.*}
-    [ -n "$TIGHTDIS" ] && tightvncserver -kill $TIGHTDIS
-fi
-
+        ps "${PSOPTIONS[@]}" > "$PSRESFILE"
 if [ -f $PIDFILE ] ; then 
     kill -SIGTERM $(cat $PIDFILE)
     [ $? = 0 ] && sleep 2
