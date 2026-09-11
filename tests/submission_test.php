@@ -229,13 +229,12 @@ final class submission_test extends base_fixture {
 
         $this->assertEquals('c', $data->pln);
         $this->assertSame([], $data->submittedlist);
+        $localenvfile = 'vpl_evaluation_tests/case/.localenvironment.sh';
         $this->assertArrayHasKey(
-            'vpl_evaluation_tests/case/.localenvironment.sh',
+            $localenvfile,
             $data->files
         );
-        $this->assertStringContainsString('VPL_SUBFILE0', $data->files[
-            'vpl_evaluation_tests/case/.localenvironment.sh'
-        ]);
+        $this->assertStringContainsString('VPL_SUBFILE0', $data->files[$localenvfile]);
     }
 
     /**
