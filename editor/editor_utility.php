@@ -127,7 +127,9 @@ class vpl_editor_util {
      * Prints the HTML tag for the VPL IDE.
      */
     public static function print_tag() {
+        global $CFG;
         $tagid = 'vplide';
+        $baseurl = $CFG->wwwroot . '/mod/vpl/';
         $filelist = s(get_string('filelist', VPL));
         $newfilename = s(get_string('new_file_name', VPL));
         $rename = s(get_string('rename'));
@@ -269,24 +271,31 @@ class vpl_editor_util {
             target="_blank">GNU GPL v3</a><br> This software uses/includes the
         following software under the corresponding licence:
         <ul>
-            <li><a href="http://ace.c9.io" target="_blank">ACE</a>: an embeddable
-                code editor written in JavaScript. Copyright (c) 2010, Ajax.org B.V.
-                (<a href="../editor/ace9/LICENSE" target="_blank">licence</a>)</li>
+            <li><a href="https://ace.c9.io/" target="_blank">Ace</a> 1.43.4:
+                An embeddable code editor written in JavaScript, licensed under
+                BSD 3-Clause (<a href="{$baseurl}thirdpartylibs/ace/LICENSE" target="_blank">licence</a>)</li>
             <li><a href="https://xtermjs.org/" target="_blank">xterm.js</a>:
-                A terminal emulator written in JavaScript. Copyright (c) 2017-2019,
-                The xterm.js authors (MIT License)</li>
-            <li><a href="http://kanaka.github.io/noVNC/" target="_blank">noVNC</a>:
-                VNC client using HTML5 (WebSockets, Canvas). noVNC is Copyright (C)
-                2011 Joel Martin &lt;github@martintribe.org&gt; (<a
-                href="../thirdpartylibs/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
-            <li>unzip.js: August Lilleaas</li>
-            <li>inflate.js: August Lilleaas and Masanao Izumo &lt;iz@onicos.co.jp&gt;</li>
+                A terminal emulator written in JavaScript, licensed under the MIT
+                License (<a href="{$baseurl}thirdpartylibs/xterm/LICENSE.txt" target="_blank">licence</a>)</li>
+            <li><a href="https://novnc.com/" target="_blank">noVNC</a>:
+                A VNC client using HTML5 (WebSockets and Canvas), licensed under
+                MPL 2.0 (<a href="{$baseurl}thirdpartylibs/noVNC/LICENSE.txt" target="_blank">licence</a>)</li>
+            <li><a href="https://marked.js.org/" target="_blank">marked</a> 18.0.3:
+                A JavaScript Markdown parser, licensed under the MIT License</li>
+            <li><a href="https://github.com/leizongmin/js-xss" target="_blank">js-xss</a>:
+                A JavaScript XSS filter, licensed under the MIT License</li>
+            <li><a href="https://github.com/augustl/js-unzip" target="_blank">unzip.js</a>:
+                A JavaScript ZIP archive reader, licensed under the MIT License
+                (<a href="{$baseurl}editor/zip/unzip%20LICENCE.txt" target="_blank">licence</a>)</li>
+            <li><a href="https://github.com/augustl/js-unzip" target="_blank">inflate.js</a>:
+                A JavaScript DEFLATE decompressor, licensed under the MIT License
+                (<a href="{$baseurl}editor/zip/inflate%20LICENSE.txt" target="_blank">licence</a>)</li>
             <li><a href="https://developers.google.com/blockly" target="_blank">Blockly</a>:
-               A library for building visual programming editors
-               (<a href="../editor/blockly/LICENSE" target="_blank">licence</a>)</li>
+               A library for building visual programming editors, licensed under
+               Apache License 2.0 (<a href="{$baseurl}editor/blockly/LICENSE" target="_blank">licence</a>)</li>
             <li><a href="https://github.com/NeilFraser/JS-Interpreter" target="_blank">JS-Interpreter</a>:
-               A sandboxed JavaScript interpreter in JavaScript
-               (<a href="../editor/acorn/LICENSE" target="_blank">licence</a>)</li>
+               A sandboxed JavaScript interpreter in JavaScript, licensed under
+               Apache License 2.0 (<a href="{$baseurl}editor/acorn/LICENSE" target="_blank">licence</a>)</li>
         </ul>
         </div>
     </div>
