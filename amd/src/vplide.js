@@ -522,7 +522,6 @@ var VPLIDE = function(rootId, options) {
             LSManager.closeFile(file);
             VPLUI.clearIDEStatus();
             let ptab = self.getTabPos(fid);
-            const lastTab = ptab === openFiles.length - 1;
             openFiles.splice(ptab, 1);
             self.removeTab(fid);
             tabs.tabs('refresh');
@@ -530,11 +529,11 @@ var VPLIDE = function(rootId, options) {
             self.fileListVisible(true);
             VPLUtil.delay('updateFileList', self.updateFileList);
             VPLUtil.delay('adjustTabsTitles', adjustTabsTitles, false);
-            if (lastTab) {
-                ptab--;
-            }
-            if (ptab >= 0 && openFiles.length > ptab) {
-                self.gotoFile(openFiles[ptab], 'c');
+            if (openFiles.length > 0) {
+                const nextTab = ptab < openFiles.length ? ptab : openFiles.length - 1;
+                const nextFile = openFiles[nextTab];
+                let filePos = self.getFilePosById(nextFile.getId());
+                self.gotoFile(filePos, 'c');
             }
         };
         this.isClosed = function(pos) {
@@ -1342,17 +1341,22 @@ var VPLIDE = function(rootId, options) {
         handles: ""
     };
     tabs.resizable(resizableOptions);
-        /**
-         * Updates handles for internal IDE resize
-         */
+    /**
+     * Updates handles for internal IDE resize
+     */
     function updateTabsHandles() {
         var handles = ['e', 'w', 'e', 'e, w'];
         var index = 0;
         index += fileListContainer.vplVisible ? 1 : 0;
         index += resultContainer.vplVisible ? 2 : 0;
+        var newHandles = handles[index];
+        var newDisable = index === 0;
+        if (resizableOptions.handles === newHandles && resizableOptions.disabled === newDisable) {
+            return;
+        }
         tabs.resizable('destroy');
-        resizableOptions.handles = handles[index];
-        resizableOptions.disable = index === 0;
+        resizableOptions.handles = newHandles;
+        resizableOptions.disabled = newDisable;
         tabs.resizable(resizableOptions);
     }
     /**
@@ -1574,16 +1578,26 @@ var VPLIDE = function(rootId, options) {
         }
     };
     var dialogComments = $('#vpl_ide_dialog_comments');
+    var dialogCommentsNeedRevert = false;
     var oldStudentComments = '';
     dialogButtons[str('ok')] = function() {
         if (oldStudentComments != $('#vpl_ide_input_comments').val()) {
+            oldStudentComments = $('#vpl_ide_input_comments').val();
             fileManager.setModified();
         }
+        dialogCommentsNeedRevert = false;
         $(this).dialog('close');
     };
     dialogComments.dialog($.extend({}, dialogbaseOptions, {
         open: function() {
             oldStudentComments = $('#vpl_ide_input_comments').val();
+            dialogCommentsNeedRevert = true;
+        },
+        close: function() {
+            if (dialogCommentsNeedRevert) {
+                $('#vpl_ide_input_comments').val(oldStudentComments);
+            }
+            focusCurrentFile();
         },
         title: str('comments'),
         width: '40em',
@@ -1818,6 +1832,7 @@ var VPLIDE = function(rootId, options) {
         prefTerminalFontsizeValue.text(prefSnapshot.terminalFontSize);
     };
     var dialogPreferencesButtons = {};
+    var dialogPreferencesNeedRevert = false;
     dialogPreferencesButtons[str('ok')] = function() {
         var editorTheme = prefEditorThemeSelect.val();
         var editorFontSize = prefEditorFontsizeSlider.slider('value');
@@ -1842,10 +1857,10 @@ var VPLIDE = function(rootId, options) {
             terminalTheme: terminalTheme,
             terminalFontSize: terminalFontSize,
         });
+        dialogPreferencesNeedRevert = false;
         $(this).dialog('close');
     };
-    dialogPreferencesButtons[str('cancel')] = function() {
-        // Revert all live changes made while the dialog was open.
+    const revertPreferences = function() {
         fileManager.setTheme(prefSnapshot.editorTheme);
         fileManager.setFontSize(prefSnapshot.editorFontSize);
         fileManager.setEditorKeyBinding(prefSnapshot.editorKeyBinding);
@@ -1853,14 +1868,23 @@ var VPLIDE = function(rootId, options) {
         fileManager.setEditorLiveAutocompletion(prefSnapshot.editorLiveAutocompletion);
         fileManager.setTerminalTheme(prefSnapshot.terminalTheme);
         fileManager.setTerminalFontSize(prefSnapshot.terminalFontSize);
+    };
+    dialogPreferencesButtons[str('cancel')] = function() {
         $(this).dialog('close');
     };
     dialogPreferences.dialog($.extend({}, dialogbaseOptions, {
         title: str('preferences'),
         buttons: dialogPreferencesButtons,
         open: function() {
+            dialogPreferencesNeedRevert = true;
             loadPreferencesDialogState();
         },
+        close: function() {
+            if (dialogPreferencesNeedRevert) {
+                revertPreferences();
+            }
+            focusCurrentFile();
+        }
     }));
     prefEditorFontsizeSlider.slider({
         min: 1,
