@@ -232,24 +232,67 @@ var VPLIDE = function(rootId, options) {
         if (!restrictedEdit) {
             return;
         }
-        var target = e.target;
-        if (!target || !target.closest) {
-            return;
-        }
-        if (target.closest('.ace_search')) {
-            e.preventDefault();
-            e.stopImmediatePropagation();
-            return;
-        }
-        var editorContainer = target.closest('.ace_editor');
-        var currentEditor = fileManager.currentFile('getEditor');
-        if (!editorContainer || !currentEditor || currentEditor.container !== editorContainer) {
-            return;
-        }
         e.preventDefault();
         e.stopImmediatePropagation();
-        currentEditor.insert(fileManager.getClipboard());
+
+        var target = e.target;
+        if (!target || !fileManager || !target.closest) {
+            return;
+        }
+
+        var clipboardText = fileManager.getClipboard();
+        if (typeof clipboardText !== 'string') {
+            return;
+        }
+
+        // Ace search and replace fields are normal text inputs.
+        var searchField = target.closest(
+            '.ace_search_field, .ace_replace_field'
+        );
+
+        if (searchField && !searchField.disabled && !searchField.readOnly) {
+            var start = searchField.selectionStart || 0;
+            var end = searchField.selectionEnd || 0;
+
+            searchField.setRangeText(clipboardText, start, end, 'end');
+            searchField.dispatchEvent(new Event('input', {
+                bubbles: true
+            }));
+            return;
+        }
+
+        // Ace's hidden textarea must be handled through the Ace API.
+        var editorContainer = target.closest('.ace_editor');
+        var currentEditor = fileManager.currentFile('getEditor');
+
+        if (editorContainer && currentEditor &&
+                currentEditor.container === editorContainer) {
+            currentEditor.insert(clipboardText);
+            return;
+        }
+
+        // Handle ordinary text controls outside Ace.
+        var input = target.closest(
+            'input[type="text"], input[type="search"], ' +
+            'input[type="url"], input[type="email"], textarea'
+        );
+
+        if (input && !input.disabled && !input.readOnly) {
+            var inputStart = input.selectionStart || 0;
+            var inputEnd = input.selectionEnd || 0;
+
+            input.setRangeText(
+                clipboardText,
+                inputStart,
+                inputEnd,
+                'end'
+            );
+            input.dispatchEvent(new Event('input', {
+                bubbles: true
+            }));
+        }
     }
+
     /**
      * Block dragover under restricted editing at the IDE boundary.
      * @param {DragEvent} e dragover event.
@@ -278,9 +321,10 @@ var VPLIDE = function(rootId, options) {
     rootObj.on('drop', dropHandler);
     rootObj.on('dragover', dragoverHandler);
     if (restrictedEdit) {
-        rootObj[0].addEventListener('paste', restrictedPasteHandler, true);
-        rootObj[0].addEventListener('dragover', restrictedDragoverHandler, true);
-        rootObj[0].addEventListener('drop', restrictedDropHandler, true);
+        // Capture events before page and component handlers.
+        document.addEventListener('paste', restrictedPasteHandler, true);
+        document.addEventListener('dragover', restrictedDragoverHandler, true);
+        document.addEventListener('drop', restrictedDropHandler, true);
     }
     // Init editor vars.
     var menu = $('#vpl_menu');
