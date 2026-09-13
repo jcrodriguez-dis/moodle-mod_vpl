@@ -47,15 +47,15 @@ Feature: Create and change VPL activity access settings
     Then I should see "A password is required"
     And I set the following fields to these values:
       | id_password | clave |
-    And I press "Continue"
+    And I press "Save"
     And I should see "Attempt number 1"
     And I set the following fields to these values:
       | id_password | reclave |
-    And I press "Continue"
+    And I press "Save"
     And I should see "Attempt number 2"
     And I set the following fields to these values:
       | id_password | key |
-    And I press "Continue"
+    And I press "Save"
     And I should not see "A password is required"
     Then I should not see "Safe Exam Browser"
 

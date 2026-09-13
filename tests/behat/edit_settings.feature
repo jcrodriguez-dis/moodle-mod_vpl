@@ -210,7 +210,7 @@ Feature: Create and change VPL activity settings
     Then I should see "A password is required"
     And I set the following fields to these values:
     | id_password | key |
-    And I press "Continue"
+    And I press "Save"
     Then I should see "Due date:"
     And I should see "Available from:"
     And I should see "Maximum number of files: 13"
