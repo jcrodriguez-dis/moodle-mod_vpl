@@ -620,17 +620,17 @@ Las opciones disponibles son:
 * Sí - Configurar manualmente <br/>Puede configurar Safe Exam Browser manualmente aquí.
 * Sí - Usar la configuración del cliente SEB <br/>No hay ninguna configuración de Safe Exam Browser en el lado de Moodle.';
 $string['sebrequired_pass'] = 'Parece que <b>sí está usando</b> el navegador SEB';
-$string['sebsimultaneoussessionblocked'] = 'Ya hay otra sesión SEB activa para esta actividad. Introduzca la clave del profesor para reemplazarla.';
-$string['sebsessionwarning'] = 'Actualmente existen sesiones SEB para esta actividad. Los cambios en la configuración de SEB se aplicarán a nuevas sesiones, no a las existentes.';
+$string['sebsessionmismatch'] = 'La sesión SEB no coincide con la esperada. Salga de SEB y vuelva a intentarlo.';
 $string['sebsessionsdelete'] = 'Eliminar las sesiones SEB de la actividad';
 $string['sebsessionsdelete_help'] = 'Si las elimina, hará que los navegadores SEB asociados dejen de estar vinculados a la actividad y
 que los estudiantes tengan que iniciar una nueva sesión SEB para acceder a ella sin requisito de contraseña de sesión múltiple.';
+$string['sebsessionwarning'] = 'Actualmente existen sesiones SEB para esta actividad. Los cambios en la configuración de SEB se aplicarán a nuevas sesiones, no a las existentes.';
+$string['sebsimultaneoussessionblocked'] = 'Ya hay otra sesión SEB activa para esta actividad. Introduzca la clave del profesor para reemplazarla.';
 $string['sebteacherpassword'] = 'Clave de profesor para excepciones de sesión SEB';
 $string['select_all'] = 'Seleccionar todo';
 $string['selectbreakpoint'] = 'Selecciona punto de parada';
 $string['server'] = 'Servidor';
 $string['serverexecutionerror'] = 'Error en el servidor de ejecución';
-$string['sebsessionmismatch'] = 'La sesión SEB no coincide con la esperada. Salga de SEB y vuelva a intentarlo.';
 $string['setbyexecutionoptions'] = 'establecido por las opciones de ejecución';
 $string['shortcuts'] = 'Atajos de teclado';
 $string['shortdescription'] = 'Descripción corta';

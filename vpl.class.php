@@ -691,7 +691,8 @@ class mod_vpl {
     }
 
     /**
-     * Checks all restrictions and shows error if not passed
+     * Checks all restrictions for the current user and activity.
+     * @param bool $ignoreteacher Ignore that the user is teacher for SEB check
      * @return void
      */
     public function restrictions_check(bool $ignoreteacher = false) {
@@ -1791,6 +1792,7 @@ class mod_vpl {
      *
      * @param string $str setting string i18n to get description.
      * @param string $value setting value.
+     * @param bool $raw if true $value is treated as raw HTML, default false.
      * @param string $comp component for i18n, default mod_vpl.
      * @return string HTML
      */

@@ -66,6 +66,7 @@ class ui {
      * Add SEB fields to VPL setting form.
      *
      * @param \MoodleQuickForm $mform The Moodle form object.
+     * @param int $vplid The ID of the VPL instance.
      */
     public static function add_fields_to_form(\MoodleQuickForm $mform, int $vplid = 0) {
         if ($vplid > 0 && session_manager::exists_for_vpl($vplid)) {

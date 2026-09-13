@@ -35,6 +35,7 @@ require_once(__DIR__ . '/../vpl.class.php');
 
 /**
  * Send a 400 Bad Request response and terminate the script.
+ * @param string $message The error message to display.
  */
 function vpl_bad_request($message = 'Bad Request') {
     global $CFG;

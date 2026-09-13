@@ -106,6 +106,7 @@ $string['check_jail_servers_help'] = "<p>This page checks and shows the status o
 for this activity.</p>";
 $string['checkforcourse'] = 'Check for course {$a}';
 $string['checkgroups'] = 'Check groups consistency';
+$string['checkseb'] = 'Check Safe Exam Browser';
 $string['checksitewide'] = 'Check sitewide';
 $string['clicktoshow'] = 'Click to show';
 $string['clipboard'] = 'Clipboard';
@@ -625,7 +626,6 @@ $string['scanother'] = 'Scan similarities in added sources';
 $string['scanzipfile'] = 'Zip file';
 $string['search:activity'] = 'Virtual Programming Lab - activity information (name and description)';
 $string['seb'] = 'Safe Exam Browser';
-$string['checkseb'] = 'Check Safe Exam Browser';
 $string['seb_configuremanually'] = 'Yes - Configure manually';
 $string['seb_useclientconfig'] = 'Yes - Use SEB client config';
 $string['sebinvalidteacherpassword'] = 'The teacher password is not valid.';
@@ -641,17 +641,17 @@ The available options are:
 * Yes - Configure manually <br/>You can configure Safe Exam Browser manually here.
 * Yes - Use SEB client config <br/>No configurations of Safe Exam Browser are on the Moodle side.';
 $string['sebrequired_pass'] = 'It looks like you are <b>using</b> SEB browser';
-$string['sebsimultaneoussessionblocked'] = 'Another SEB session is already active for this activity. Enter the teacher password to replace it.';
-$string['sebsessionwarning'] = 'SEB sessions currently exist for this activity. Changing the SEB settings will be applied only to new sessions, not to existing ones.';
+$string['sebsessionmismatch'] = 'SEB session does not match the expected one. Exit SEB and try again.';
 $string['sebsessionsdelete'] = 'Delete current activity SEB sessions';
 $string['sebsessionsdelete_help'] = 'If you delete the current activity SEB sessions, the SEB browsers associated with this activity will no longer be linked to the activity and
 this will require students to start a new SEB session to access the activity without any multiple session password being needed.';
+$string['sebsessionwarning'] = 'SEB sessions currently exist for this activity. Changing the SEB settings will be applied only to new sessions, not to existing ones.';
+$string['sebsimultaneoussessionblocked'] = 'Another SEB session is already active for this activity. Enter the teacher password to replace it.';
 $string['sebteacherpassword'] = 'Teacher password for SEB session exceptions';
 $string['select_all'] = 'Select all';
 $string['selectbreakpoint'] = 'Select breakpoint';
 $string['server'] = 'Server';
 $string['serverexecutionerror'] = 'Server execution error';
-$string['sebsessionmismatch'] = 'SEB session does not match the expected one. Exit SEB and try again.';
 $string['setbyexecutionoptions'] = 'set by execution options';
 $string['shortcuts'] = 'Keyboard shortcuts';
 $string['shortdescription'] = 'Short description';
