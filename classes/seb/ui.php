@@ -32,11 +32,6 @@ namespace mod_vpl\seb;
  */
 class ui {
     /**
-     * Name of the session variable used to store the number of attempts for the teacher password.
-     */
-    const VAR_TEACHER_PASSWORD_ATTEMPT = 'vpl_sebteacherpassword_attempt';
-
-    /**
      * Add SEB fields to VPL setting form.
      *
      * @param \MoodleQuickForm $mform The Moodle form object.
@@ -226,48 +221,17 @@ class ui {
      * @return void
      */
     public static function print_seb_teacher_password_form($vpl) {
-        global $SESSION;
-        $passattempt = self::VAR_TEACHER_PASSWORD_ATTEMPT;
         $invalidpassword = false;
-        $attempts = isset($SESSION->$passattempt) ? $SESSION->$passattempt : 0;
+        $attempts = teacher_password_form::get_attempt($vpl);
         $invalidpassword = $attempts > 0;
         $vpl->print_header();
         echo \html_writer::start_div('vpl-seb-access mx-auto', ['style' => 'max-width: 720px;']);
-        vpl_notice(get_string('sebsimultaneoussessionblocked', VPL), 'warning');
         if ($invalidpassword) {
             vpl_notice(get_string('sebinvalidteacherpassword', VPL), 'warning');
             vpl_notice(get_string('attemptnumber', VPL, $attempts), 'warning');
         }
-
-        $action = new \moodle_url('/mod/vpl/view.php', ['id' => $vpl->get_course_module()->id]);
-        echo \html_writer::start_tag('form', [
-            'method' => 'post',
-            'action' => $action->out(false),
-            'class' => 'my-3 mx-auto',
-            'style' => 'max-width: 420px;',
-        ]);
-        echo \html_writer::start_div('form-group');
-        echo \html_writer::tag('label', get_string('sebteacherpassword', VPL), ['for' => 'id_sebteacherpassword']);
-        echo \html_writer::empty_tag('input', [
-            'type' => 'password',
-            'name' => 'sebteacherpassword',
-            'id' => 'id_sebteacherpassword',
-            'class' => 'form-control',
-            'autocomplete' => 'off',
-        ]);
-        echo \html_writer::end_div();
-        echo \html_writer::empty_tag('input', [
-            'type' => 'submit',
-            'value' => get_string('continue'),
-            'class' => 'btn btn-primary',
-        ]);
-        echo \html_writer::empty_tag('input', [
-            'type' => 'hidden',
-            'name' => 'sesskey',
-            'value' => sesskey(),
-        ]);
-        echo \html_writer::end_tag('form');
-        echo \html_writer::end_div();
+        $form = new teacher_password_form($vpl);
+        $form->display();
         $vpl->print_footer();
         die();
     }
@@ -336,8 +300,7 @@ class ui {
                     die();
                 } else {
                     session_manager::prepare_phase2($settings, $session);
-                    $passattempt = self::VAR_TEACHER_PASSWORD_ATTEMPT;
-                    unset($SESSION->$passattempt);
+                    teacher_password_form::reset_attempt($vpl);
                 }
                 // Break intentionally omitted to allow fall-through to case 1.
             case 1:
@@ -372,7 +335,6 @@ class ui {
         global $USER;
         global $SESSION;
         $activityid = $vpl->get_instance()->id;
-        $passattempt = self::VAR_TEACHER_PASSWORD_ATTEMPT;
         $password = optional_param('sebteacherpassword', '', PARAM_TEXT);
         $sesskey = optional_param('sesskey', '', PARAM_RAW);
         if ($password === '' || $sesskey == '' || !confirm_sesskey($sesskey)) {
@@ -381,11 +343,7 @@ class ui {
         if (session_manager::validate_teacher_password($settings, $password)) {
             return true;
         } else {
-            if (isset($SESSION->$passattempt)) {
-                $SESSION->$passattempt++;
-            } else {
-                $SESSION->$passattempt = 1;
-            }
+            teacher_password_form::increment_attempt($vpl);
             $cmid = $vpl->get_course_module()->id;
             \mod_vpl\event\seb_access_denied::log([
                 'objectid' => $activityid,
@@ -394,10 +352,10 @@ class ui {
                 'other' => [
                     'reason' => 'invalid_teacher_password',
                     'activityid' => $activityid,
-                    'attempts' => $SESSION->$passattempt,
+                    'attempts' => teacher_password_form::get_attempt($vpl),
                 ],
             ]);
-            sleep(min($SESSION->$passattempt, 6)); // Delay to mitigate brute-force attempts.
+            sleep(min(teacher_password_form::get_attempt($vpl), 6)); // Delay to mitigate brute-force attempts.
             return false;
         }
     }

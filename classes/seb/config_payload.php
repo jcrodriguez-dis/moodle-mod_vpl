@@ -47,6 +47,7 @@ class config_payload {
         'showTime' => true,
         'showInputLanguage' => true,
         'allowQuit' => true,
+        'clipboardPolicy' => 0,
         'quitURLConfirm' => false,
         'audioControlEnabled' => false,
         'audioMute' => false,
@@ -175,16 +176,16 @@ class config_payload {
     }
 
     /**
-     * Return an anchored regular expression matching a URL, an optional userid parameter and fragment.
+     * Return an anchored regular expression matching a URL.
      *
-     * Any other extra parameter is rejected, e.g. a repeated ?id=1&id=2 would reach
-     * an activity other than the allowed one, as PHP keeps the last occurrence.
+     * The parameter must contain the query string with the id=value.
+     * The regex avoids matching any URL that adds chars to the value of the id parameter.
      *
      * @param string $url Absolute URL to match.
      * @return string
      */
     public static function url_to_regex(string $url): string {
-        return '^' . preg_quote($url) . '(&userid=[0-9]+)?(#.*)?$';
+        return '^' . preg_quote($url) . '(&|#|$).*';
     }
 
     /**

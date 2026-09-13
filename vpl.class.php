@@ -487,40 +487,47 @@ class mod_vpl {
     }
 
     /**
-     * Check if pass password restriction
-     * @param string $passset Password to check
-     * @return bool true if passed
+     * Get the session variable name for the password for the current VPL instance.
+     *
+     * @return string The session variable name.
      */
-    public function pass_password_check($passset = '') {
+    public function get_password_var() {
+        return 'vpl_password_' . $this->instance->id;
+    }
+    /**
+     * Check if password restriction is required and if it was passed
+     * Returns false if the password restriction is required and has not been passed yet.
+     *
+     * @return bool true if the password restriction has already been passed
+     */
+    public function passed_password_check() {
         $password = $this->get_password();
         if ($password > '' && ! $this->is_teacher()) {
             global $SESSION;
             $passwordmd5 = $this->get_password_md5();
-            $passvar = 'vpl_password_' . $this->instance->id;
-            $passattempt = 'vpl_password_attempt' . $this->instance->id;
-            if (isset($SESSION->$passvar) && $SESSION->$passvar == $passwordmd5) {
-                return true;
-            }
-            if ($passset == '') {
-                $passset = optional_param('password', '', PARAM_TEXT);
-            }
-            if ($passset > '') {
-                if ($passset == $password) {
-                    $SESSION->$passvar = $passwordmd5;
-                    unset($SESSION->$passattempt);
-                    return true;
-                }
-                if (isset($SESSION->$passattempt)) {
-                    $SESSION->$passattempt++;
-                } else {
-                    $SESSION->$passattempt = 1;
-                }
-                // Wait vpl_password_attempt seconds to limit force brute crack.
-                sleep($SESSION->$passattempt);
-            }
-            return false;
+            $passvar = $this->get_password_var();
+            return isset($SESSION->$passvar) && $SESSION->$passvar == $passwordmd5;
         }
         return true;
+    }
+    /**
+     * Check if password set is correct for the restriction
+     * If the password is correct, it will mark the restriction as passed and return true.
+     * @param string $passset Password to check
+     * @return bool true if passed
+     */
+    public function pass_password_check($passset) {
+        global $SESSION;
+        $password = $this->get_password();
+        $passvar = $this->get_password_var();
+        if ($passset > '') {
+            if ($passset == $password) {
+                $SESSION->$passvar = $this->get_password_md5();
+                \mod_vpl\forms\activity_password::reset_attempt($this);
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -528,28 +535,29 @@ class mod_vpl {
      */
     protected function password_check() {
         global $SESSION;
-        if ($this->get_password() == '' || $this->is_teacher()) {
+        global $PAGE;
+
+        if ($this->passed_password_check()) {
             return;
         }
-        if (! $this->pass_password_check()) {
-            if (constant('AJAX_SCRIPT')) {
-                throw new Exception(get_string('requiredpassword', VPL));
-            }
-            require_once('forms/password_form.php');
-            $this->print_header();
-            $posturl = $_SERVER['SCRIPT_NAME'] . "?id={$this->cm->id}";
-            $mform = new mod_vpl_password_form($posturl, $this);
-            $passattempt = 'vpl_password_attempt' . $this->get_instance()->id;
-            if (isset($SESSION->$passattempt)) {
-                vpl_notice(
-                    get_string('attemptnumber', VPL, $SESSION->$passattempt),
-                    'warning'
-                );
-            }
-            $mform->display();
-            $this->print_footer();
-            die();
+        if (constant('AJAX_SCRIPT')) {
+            throw new Exception(get_string('requiredpassword', VPL));
         }
+        $userpassword = optional_param('password', '', PARAM_TEXT);
+        if ($userpassword > '') {
+            \mod_vpl\forms\activity_password::increment_attempt($this);
+        }
+        $passwordform = new \mod_vpl\forms\activity_password($this);
+        $formdata = $passwordform->get_data();
+        if ($formdata) {
+            if ($this->pass_password_check($formdata->password)) {
+                return;
+            }
+        }
+        $this->print_header();
+        $passwordform->display();
+        $this->print_footer();
+        die();
     }
 
     /**

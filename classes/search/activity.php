@@ -62,9 +62,9 @@ class activity extends \core_search\base_activity {
 
         if (
             $vpl->pass_network_check() &&
-                $vpl->pass_password_check() &&
-                $vpl->pass_seb_check() &&
-                $vpl->is_visible()
+            $vpl->pass_password_check() &&
+            $vpl->pass_seb_check() &&
+            $vpl->is_visible()
         ) {
             return \core_search\manager::ACCESS_GRANTED;
         }
