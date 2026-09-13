@@ -33,23 +33,35 @@ global $CFG, $DB;
 require_once($CFG->libdir . '/formslib.php');
 
 /**
- * Returns HTML of a variation in the variation page
+ * Returns actions for a variation in HTML
  *
  * @param object $variation DB register.
  * @param object $cmid of the VPL activity.
  * @param int $number secuential number of the variation in the page
  * @return string HTML
  */
-function get_variation_with_edit_html($variation, $cmid, $number) {
+function get_variation_actions_html($variation, $cmid, $number) {
     global $OUTPUT;
     $anchor = "vpl_variation_{$cmid}_{$number}";
+    $separator = "<hr id='$anchor'>";
+
     $parms = ['number' => $number, 'identification' => s($variation->identification)];
-    $html = "<hr id='$anchor'><b>" . get_string('variation_n_i', VPL, $parms) . '</b> ';
-    $parms = ['id' => $cmid, 'varid' => $variation->id, 'number' => $number];
+    $variationidentification = get_string('variation_n_i', VPL, $parms);
+
+    $parms = ['id' => $cmid, 'varid' => $variation->id, 'number' => $number, 'action' => 'edit'];
     $url = new moodle_url('/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('edit');
-    $html .= ' ' . html_writer::link($url, $btext, ['class' => 'btn btn-primary']) . '<br>';
-    $html .= $OUTPUT->box($variation->description);
+    $editbutton = html_writer::link($url, $btext, ['class' => 'btn btn-primary']);
+
+    $parms = ['id' => $cmid, 'varid' => $variation->id, 'number' => $number, 'action' => 'delete'];
+    $url = new moodle_url('/mod/vpl/forms/variations.php', $parms);
+    $btext = get_string('delete');
+    $deletebutton = html_writer::link($url, $btext, ['class' => 'btn btn-danger']);
+
+    $variationcontent = $OUTPUT->box($variation->description);
+    $html = "$separator\n";
+    $html .= "<b>$variationidentification</b> $editbutton $deletebutton<br>\n";
+    $html .= $variationcontent;
     return $html;
 }
 
@@ -76,12 +88,33 @@ function get_link_variation_html($variation, $cmid, $number) {
  * @return string HTML
  */
 function get_add_variation_html($cmid) {
-    $parms = ['id' => $cmid, 'varid' => -1, 'number' => 0];
+    $parms = ['id' => $cmid, 'varid' => -1, 'number' => 0, 'action' => 'add'];
     $url = new moodle_url('/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('add');
     $html = html_writer::link($url, $btext, ['class' => 'btn btn-primary']);
     return $html;
 }
+
+/**
+ * Sets the variation data in the given form.
+ *
+ * @param object $mform form to set the data in.
+ * @param int $vplid ID of the VPL activity.
+ * @param int $varid ID of the variation.
+ * @return void
+ */
+function set_variation_data($mform, $vplid, $varid) {
+    global $DB;
+    $variation = $DB->get_record(VPL_VARIATIONS, ['id' => $varid, 'vpl' => $vplid]);
+    if ($variation) {
+        $variation->varid = $variation->id;
+        $variation->description = ['text' => $variation->description];
+        $mform->set_data($variation);
+    } else {
+        throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
+    }
+}
+
 
 /**
  * Prints HTML showing the link to add a new variation for this activity
@@ -95,118 +128,120 @@ function print_basic_html($form, $vpl) {
     $form->display();
     $list = $DB->get_records('vpl_variations', ['vpl' => $vpl->get_instance()->id]);
     // Show variations.
-    $id = $vpl->get_course_module()->id;
-    echo get_add_variation_html($id);
+    $cmid = $vpl->get_course_module()->id;
+    echo get_add_variation_html($cmid);
     $number = 1;
     foreach ($list as $variation) {
-        echo ' ' . get_link_variation_html($variation, $id, $number);
+        echo ' ' . get_link_variation_html($variation, $cmid, $number);
         $number++;
     }
     $number = 1;
     foreach ($list as $variation) {
-        echo get_variation_with_edit_html($variation, $id, $number);
+        echo get_variation_actions_html($variation, $cmid, $number);
         $number++;
     }
 }
 
-$id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+$cmid = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($cmid, 'vpl');
 require_login($course, true, $cm);
-$vpl = new mod_vpl($id);
-$vpl->prepare_page('forms/variations.php', ['id' => $id]);
+
+$vpl = new mod_vpl($cmid);
+$vpl->prepare_page('forms/variations.php', ['id' => $cmid]);
 
 $varid = optional_param('varid', -13, PARAM_INT);
 $canceled = optional_param('cancel', '', PARAM_TEXT) !== '';
+$variationaction = optional_param('action', '', PARAM_TEXT);
+
 vpl_include_jsfile('hideshow.js');
 $vplid = $vpl->get_instance()->id;
 $vpl->require_capability(VPL_MANAGE_CAPABILITY);
-$href = vpl_mod_href('forms/variations.php', 'id', $id);
+$href = vpl_mod_href('forms/variations.php', 'id', $cmid);
 $vpl->print_header(get_string('variations', VPL));
 $vpl->print_heading_with_help('variations');
-$form = new option_form($href);
-// Generate default form and check for action.
-if ($varid == -13) { // No variation, basic form.
-    if ($canceled) {
-        vpl_notice(get_string('cancelled'));
-        print_basic_html($form, $vpl);
-    } else if ($fromform = $form->get_data()) {
-        vpl_truncate_string($fromform->variationtitle, 255);
-        $instance = $vpl->get_instance();
-        $instance->usevariations = $fromform->usevariations;
-        $instance->variationtitle = $fromform->variationtitle;
-        $vpl->update();
-        \mod_vpl\event\vpl_variation_updated::log($vpl);
-        vpl_notice(get_string('updated', '', $instance->variationtitle));
-        print_basic_html($form, $vpl);
-    } else {
-        print_basic_html($form, $vpl);
+
+if ($canceled) {
+    vpl_notice(get_string('cancelled'));
+    $form = new option_form($href);
+    if ($form->is_cancelled()) {
+        $href = vpl_mod_href('forms/variations.php', 'id', $cmid, 'cancel', 1);
+        vpl_inmediate_redirect($href);
     }
-} else if ($varid == -1) { // Add new variation.
-    $mform = new form($href, 0, -1);
+    print_basic_html($form, $vpl);
+} else if ($variationaction === 'add') {
+    $mform = new form($href, 'add', -1);
     $fromform = $mform->get_data();
     if ($fromform) {
-        if ($canceled) {
-            vpl_notice(get_string('cancelled'));
-            print_basic_html($form, $vpl);
+        $fromform->vpl = $vplid;
+        unset($fromform->id);
+        $fromform->description = $fromform->description['text'];
+        vpl_truncate_variations($fromform);
+        if ($vid = $DB->insert_record(VPL_VARIATIONS, $fromform)) {
+            \mod_vpl\event\variation_added::logvpl($vpl, $vid);
         } else {
-            $fromform->vpl = $vplid;
-            unset($fromform->id);
-            $fromform->description = $fromform->description['text'];
-            vpl_truncate_variations($fromform);
-            if ($vid = $DB->insert_record(VPL_VARIATIONS, $fromform)) {
-                \mod_vpl\event\variation_added::logvpl($vpl, $vid);
-            } else {
-                throw new moodle_exception('error:recordnotinserted', 'mod_vpl', '', VPL_VARIATIONS);
-            }
-            vpl_notice(get_string('saved', VPL));
-            print_basic_html($form, $vpl);
+            throw new moodle_exception('error:recordnotinserted', 'mod_vpl', '', VPL_VARIATIONS);
         }
+        vpl_notice(get_string('saved', VPL));
+        $form = new option_form($href);
+        print_basic_html($form, $vpl);
     } else {
         $mform->display();
     }
-} else {
-    $number = optional_param('number', 0, PARAM_INT);
-    $mform = new form($href, $number, $varid);
+} else if ($variationaction === 'edit') {
+    $mform = new form($href, 'edit', $varid);
     $fromform = $mform->get_data();
     if ($fromform) {
-        if ($canceled) {
-            vpl_notice(get_string('cancelled'));
+        if ($DB->get_record(VPL_VARIATIONS, ['id' => $fromform->varid, 'vpl' => $vplid])) { // Check consistence.
+            $fromform->vpl = $vplid;
+            $fromform->id = $fromform->varid;
+            $fromform->description = $fromform->description['text'];
+            vpl_truncate_variations($fromform);
+            $DB->update_record(VPL_VARIATIONS, $fromform);
+            \mod_vpl\event\variation_updated::logvpl($vpl, $fromform->varid);
+            vpl_notice(get_string('updated', '', $fromform->identification));
+            $form = new option_form($href);
             print_basic_html($form, $vpl);
-        } else if (isset($_POST['delete'])) { // Deletes variation and its assignned variations.
+        } else {
+            throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
+        }
+    } else {
+        set_variation_data($mform, $vplid, $varid);
+        $mform->display();
+    }
+} else if ($variationaction === 'delete') {
+    $mform = new form($href, 'delete', $varid);
+    $fromform = $mform->get_data();
+    if ($fromform) {
+        if (isset($_POST['delete'])) { // Deletes variation and its assignned variations.
             if ($DB->delete_records(VPL_VARIATIONS, ['id' => $fromform->varid, 'vpl' => $vplid])) {
                 \mod_vpl\event\variation_deleted::logvpl($vpl, $fromform->varid);
                 $DB->delete_records(VPL_ASSIGNED_VARIATIONS, ['variation' => $fromform->varid]);
                 vpl_notice(get_string('deleted'));
+                $form = new option_form($href);
                 print_basic_html($form, $vpl);
             } else {
                 throw new moodle_exception('error:recordnotdeleted', 'mod_vpl', '', VPL_VARIATIONS);
             }
-        } else { // Update record.
-            if ($DB->get_record(VPL_VARIATIONS, ['id' => $fromform->varid, 'vpl' => $vplid])) { // Check consistence.
-                $fromform->vpl = $vplid;
-                $fromform->id = $fromform->varid;
-                $fromform->description = $fromform->description['text'];
-                vpl_truncate_variations($fromform);
-                $DB->update_record(VPL_VARIATIONS, $fromform);
-                \mod_vpl\event\variation_updated::logvpl($vpl, $fromform->varid);
-                vpl_notice(get_string('updated', '', $fromform->identification));
-                print_basic_html($form, $vpl);
-            } else {
-                throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
-            }
-        }
+        } // Handle deletion of a variation.
     } else {
-        $variation = $DB->get_record(VPL_VARIATIONS, ['id' => $varid, 'vpl' => $vplid]);
-        if ($variation) {
-            $variation->varid = $variation->id;
-            $variation->id = $id;
-            $variation->description = ['text' => $variation->description];
-            $mform->set_data($variation);
-            $mform->display();
-        } else {
-            throw new moodle_exception('error:inconsistency', 'mod_vpl', '', VPL_VARIATIONS);
+        set_variation_data($mform, $vplid, $varid);
+        $mform->display();
+    }
+} else {
+    // Default action: display the options form.
+    $form = new option_form($href);
+    if ($varid == -13) { // No variation, basic form.
+        if ($fromform = $form->get_data()) {
+            vpl_truncate_string($fromform->variationtitle, 255);
+            $instance = $vpl->get_instance();
+            $instance->usevariations = $fromform->usevariations;
+            $instance->variationtitle = $fromform->variationtitle;
+            $vpl->update();
+            \mod_vpl\event\vpl_variation_updated::log($vpl);
+            vpl_notice(get_string('updated', '', $instance->variationtitle));
         }
     }
+    print_basic_html($form, $vpl);
 }
 
 $vpl->print_footer();

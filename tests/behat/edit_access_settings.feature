@@ -30,14 +30,14 @@ Feature: Create and change VPL activity access settings
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I click on "VPL with password" "link" in the "region-main" "region"
-    Then I should not see "A password is required"
+    Then I should see "Password: Yes"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => non-editing teacher access
     When I log in as "teacher2"
     And I am on "Course 1" course homepage
     And I click on "VPL with password" "link" in the "region-main" "region"
-    Then I should not see "A password is required"
+    Then I should see "Password: Yes"
 
   @javascript
   Scenario: An editing teacher creates a VPL activity that requiere password => student access

@@ -25,6 +25,7 @@ Feature: In an VPL activity, editing teacher change variations
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I click on "VPL activity name" "link" in the "region-main" "region"
+    Then I should not see "My variation title text"
     And I navigate to "Variations" in current page administration
     And I set the following fields to these values:
       | id_usevariations | 1 |
@@ -33,7 +34,22 @@ Feature: In an VPL activity, editing teacher change variations
     Then I should see "Updated My variation title text"
     Then I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
+    # If there are no variations, the variation title should not be visible
     Then I should not see "My variation title text"
+    And I navigate to "Variations" in current page administration
+    Then I should see "Yes"
+    Then the field "variationtitle" matches value "My variation title text"
+    And I set the following fields to these values:
+      | id_usevariations | 0 |
+      | id_variationtitle | My variation title changed |
+    And I press "Save"
+    And I should see "Updated My variation title changed"
+    Then I am on "Course 1" course homepage
+    Then I click on "VPL activity name" "link" in the "region-main" "region"
+    Then I should not see "My variation title changed"
+    And I navigate to "Variations" in current page administration
+    Then I should see "No"
+    Then the field "variationtitle" matches value "My variation title changed"
 
   @javascript
   Scenario: A teacher creates a variation and deletes a variation
@@ -59,7 +75,19 @@ Feature: In an VPL activity, editing teacher change variations
     And I should see "This is a variation description"
     Then I navigate to "Variations" in current page administration
     When I click on "Edit" "link" in the "region-main" "region"
-    And I accept confirm in VPL
+    And I set the following fields to these values:
+      | id_identification | changed-code |
+      | id_description | This is an edited variation description |
+    And I press "Save"
+    Then I am on "Course 1" course homepage
+    Then I click on "VPL activity name" "link" in the "region-main" "region"
+    Then I should see "Variations"
+    And I click on "#sht0" in VPL
+    And I should see "changed-code"
+    And I should see "My variation title text"
+    And I should see "This is an edited variation description"
+    Then I navigate to "Variations" in current page administration
+    When I click on "Delete" "link" in the "region-main" "region"
     And I press "Delete"
     Then I should see "Deleted"
     Then I am on "Course 1" course homepage

@@ -41,17 +41,18 @@ class form extends \moodleform {
     protected $varid;
 
     /**
-     * @var int $number Number of the variation in the page
+     * @var string $action the action being performed (add, edit, delete)
      */
-    protected $number;
+    protected $action;
     /**
      * Constructor
      * @param object $page the page where the form will be displayed
-     * @param int $number the number of the variation in the page
+     * @param string $action the action being performed (add, edit, delete)
      * @param int $varid the id of the variation to edit, -1 for new variation
+     * @param string $varname the name of the variation
      */
-    public function __construct($page, $number = 0, $varid = 0) {
-        $this->number = $number;
+    public function __construct($page, $action, $varid = 0, $varname = '') {
+        $this->action = $action;
         $this->varid = $varid;
         parent::__construct($page);
     }
@@ -61,33 +62,37 @@ class form extends \moodleform {
      */
     protected function definition() {
         $mform = & $this->_form;
-        if ($this->number > 0) {
-            $title = get_string('variation_n', VPL, "{$this->number}");
-        } else {
+        if ($this->action === 'add') {
             $title = get_string('add');
+        } else {
+            $title = get_string('variation_n', VPL, "{$this->varid}");
         }
         $mform->addElement('header', 'variation', $title);
         $mform->addElement('hidden', 'varid', $this->varid);
+        $mform->addElement('hidden', 'action', $this->action);
         $mform->setType('varid', PARAM_INT);
-
-        $mform->addElement('text', 'identification', get_string('varidentification', VPL), [
-                'size' => '20',
-        ]);
+        $mform->setType('action', PARAM_TEXT);
+        $identificationoptions = ['size' => 20];
+        $identificationstr = get_string('varidentification', VPL);
+        $mform->addElement('text', 'identification', $identificationstr, $identificationoptions);
         $mform->setDefault('identification', '');
         $mform->setType('identification', PARAM_RAW);
-        $fieldname = 'description'; // Allows multile editors in page.
-        $mform->addElement('editor', $fieldname, get_string('description', VPL));
-        $mform->setType($fieldname, PARAM_RAW);
-        $mform->setDefault($fieldname, '');
+        $mform->disabledIf('identification', 'action', 'eq', 'delete');
+
+        $descriptionoptions = ['rows' => $this->action === 'delete' ? 2 : 10];
+        $descriptionstr = get_string('description', VPL);
+        $mform->addElement('editor', 'description', $descriptionstr, $descriptionoptions);
+        $mform->setType('description', PARAM_RAW);
+        $mform->setDefault('description', '');
+        $mform->disabledIf('description', 'action', 'eq', 'delete');
 
         $buttongroup = [];
-        $buttongroup[] = $mform->createElement('submit', 'save', get_string('save', VPL));
-        $buttongroup[] = $mform->createElement('submit', 'cancel', get_string('cancel'));
-        if ($this->number > 0) {
-            $menssage = addslashes(get_string('delete'));
-            $onclick = 'onclick="return confirm(\'' . $menssage . '\')"';
-            $buttongroup[] = $mform->createElement('submit', 'delete', get_string('delete'), $onclick);
+        if ($this->action === 'delete') {
+            $buttongroup[] = $mform->createElement('submit', 'delete', get_string('delete'));
+        } else {
+            $buttongroup[] = $mform->createElement('submit', 'save', get_string('save', VPL));
         }
+        $buttongroup[] = $mform->createElement('submit', 'cancel', get_string('cancel'));
         $mform->addGroup($buttongroup);
     }
 }

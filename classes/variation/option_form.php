@@ -48,7 +48,7 @@ class option_form extends \moodleform {
         $mform->setType('variationtitle', PARAM_TEXT);
         $buttongroup = [];
         $buttongroup[] = $mform->createElement('submit', 'save', get_string('save', VPL));
-        $buttongroup[] = $mform->createElement('submit', 'cancel', get_string('cancel'));
+        $buttongroup[] = $mform->createElement('cancel', 'cancel', get_string('cancel'));
         $mform->addGroup($buttongroup);
     }
 }
