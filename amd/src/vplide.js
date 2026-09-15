@@ -147,7 +147,7 @@ var VPLIDE = function(rootId, options) {
         var droppedFiles = [];
         // Function that lists all files and subfiles of given entry into droppedFiles.
         var listDroppedFiles = function(entry, path = '') {
-            return new Promise(function(resolve) {
+            return new Promise(function(resolve, reject) {
                 if (entry.isFile) {
                     // Current entry is a file : add it to the list.
                     entry.file(function(file) {
@@ -160,19 +160,24 @@ var VPLIDE = function(rootId, options) {
                         });
                         droppedFiles.push(file);
                         resolve();
-                    });
+                    }, reject);
                 } else if (entry.isDirectory) {
                     // Current entry is a directory : process its content.
                     var dirReader = entry.createReader();
-                    dirReader.readEntries(function(entries) {
-                        var dirPromises = [];
-                        for (var i = 0; i < entries.length; i++) {
-                            dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
-                        }
-                        Promise.all(dirPromises).then(resolve).catch(function(err) {
-                            VPLUtil.log("Error reading directory entries: " + err);
-                        });
-                    });
+                    var readDirectoryEntries = function() {
+                        dirReader.readEntries(function(entries) {
+                            if (entries.length === 0) {
+                                resolve();
+                                return;
+                            }
+                            var dirPromises = [];
+                            for (var i = 0; i < entries.length; i++) {
+                                dirPromises.push(listDroppedFiles(entries[i], path + entry.name + "/"));
+                            }
+                            Promise.all(dirPromises).then(readDirectoryEntries).catch(reject);
+                        }, reject);
+                    };
+                    readDirectoryEntries();
                 } else {
                     // This is neither a directory nor a file : ignore it.
                     resolve();
@@ -184,7 +189,11 @@ var VPLIDE = function(rootId, options) {
         // List every element of the drop event.
         var promises = [];
         for (var i = 0; i < dt.items.length; i++) {
-            var entry = dt.items[i].webkitGetAsEntry();
+            const item = dt.items[i];
+            if (!item || !item.webkitGetAsEntry) {
+                continue;
+            }
+            var entry = item.webkitGetAsEntry();
             if (!entry) { // Used if testing with Behat
                 const file = dt.items[i].getAsFile();
                 if (file) {
@@ -204,7 +213,7 @@ var VPLIDE = function(rootId, options) {
         }
 
         // Drop files.
-        if (dt.files.length > 0) {
+        if (promises.length > 0) {
             Promise.all(promises)
             .then(function() {
                 VPLUI.readSelectedFiles(droppedFiles, function(file) {
@@ -217,6 +226,7 @@ var VPLIDE = function(rootId, options) {
             })
             .catch(function(err) {
                 VPLUtil.log("Error processing dropped files: " + err);
+                showErrorMessage(err);
             });
 
             e.stopImmediatePropagation();
@@ -2175,6 +2185,7 @@ var VPLIDE = function(rootId, options) {
     function resetFiles() {
         VPLUI.requestAction('resetfiles', '', {}, options.ajaxurl)
         .done(function(response) {
+            var modified = false;
             for (var resetFile of response.files) {
                 let pos = fileManager.fileNameExists(resetFile.name);
                 if (pos != -1) {
@@ -2182,16 +2193,19 @@ var VPLIDE = function(rootId, options) {
                     let file = fileManager.getFiles()[pos];
                     if (file.getContent() != resetFile.contents) {
                         file.setContent(resetFile.contents);
-                        file.setModified(true);
-                        self.setModified(true);
+                        file.setModified();
+                        modified = true;
                     }
                 } else {
                     // New file, add it.
                     fileManager.addFile(resetFile, false, VPLUtil.doNothing, showErrorMessage);
+                    modified = true;
                 }
             }
-            fileManager.fileListVisibleIfNeeded();
-            VPLUtil.delay('updateMenu', updateMenu);
+            if (modified) {
+                fileManager.setModified(true);
+                fileManager.fileListVisibleIfNeeded();
+            }
         }).fail(showErrorMessage);
     }
     menuButtons.add({
