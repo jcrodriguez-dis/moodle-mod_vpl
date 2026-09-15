@@ -165,12 +165,13 @@ class mod_vpl_webservice extends external_api {
             throw new Exception(get_string('notavailable'));
         }
         $instance = $vpl->get_instance();
+        $passwordrequired = $vpl->get_password();
         $ret = [
                 'name' => format_string($instance->name),
                 'shortdescription' => format_string($instance->shortdescription),
                 'intro' => self::rewrite_pluginfile_for_external($vpl->get_fulldescription(), context_module::instance($id)->id),
                 'introformat' => (int) FORMAT_HTML,
-                'reqpassword' => ($instance->password > '' ? 1 : 0),
+                'reqpassword' => ($passwordrequired > '' ? 1 : 0),
                 'example' => ((int) $instance->activity_mode) == 1 ? 1 : 0, // Keep for compatibility.
                 'activity_mode' => (int) $instance->activity_mode,
                 'restrictededitor' => (int) $instance->restrictededitor,

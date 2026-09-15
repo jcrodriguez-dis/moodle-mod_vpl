@@ -166,7 +166,8 @@ final class webservice_test extends base_fixture {
             $this->setUser($user);
             foreach ($this->vpls as $vpl) {
                 $instance = $vpl->get_instance();
-                $res = mod_vpl_webservice::info($vpl->get_course_module()->id, $instance->password);
+                $password = $vpl->get_password();
+                $res = mod_vpl_webservice::info($vpl->get_course_module()->id, $password);
                 $this->assertEquals($instance->name, $res['name']);
                 $rqfiles = $vpl->get_required_fgm();
                 $this->internal_test_files($rqfiles->getallfiles(), $res['reqfiles']);
@@ -493,7 +494,7 @@ final class webservice_test extends base_fixture {
         }
         $id = $this->vpldefault->get_course_module()->id;
         $files = ['a.c' => '#include <content.h>\n'];
-        $password = $this->vpldefault->get_instance()->password;
+        $password = $this->vpldefault->get_password();
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
             if ($this->vpldefault->is_submit_able()) {
@@ -505,7 +506,7 @@ final class webservice_test extends base_fixture {
             }
         }
         $files = ['b.c' => '#include <content.h>\n'];
-        $password = $this->vpldefault->get_instance()->password;
+        $password = $this->vpldefault->get_password();
         $teacher = $this->editingteachers[0];
         $this->setUser($teacher);
         foreach (array_merge($this->students, $this->teachers) as $user) {
@@ -546,7 +547,7 @@ final class webservice_test extends base_fixture {
         $data = file_get_contents($fullfilename);
         $this->assertTrue(strlen($data) > 1000);
         $files = [ $filename => $data];
-        $password = $this->vpldefault->get_instance()->password;
+        $password = $this->vpldefault->get_password();
         foreach (array_merge($this->students, $this->teachers) as $user) {
             $this->setUser($user);
             if ($this->vpldefault->is_submit_able()) {
@@ -654,7 +655,7 @@ final class webservice_test extends base_fixture {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
-        $password = $this->vpldefault->get_instance()->password;
+        $password = $this->vpldefault->get_password();
         $executionfiles = $this->vpldefault->get_execution_fgm();
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");
         $this->assertTrue($added);
@@ -804,7 +805,7 @@ final class webservice_test extends base_fixture {
             $this->markTestSkipped('VPL web service not tested: Web service not available.');
         }
         $id = $this->vpldefault->get_course_module()->id;
-        $password = $this->vpldefault->get_instance()->password;
+        $password = $this->vpldefault->get_password();
         $files = ['a.c' => "#include <stdio.h>\nint main(){printf(\"Hello\\n\");}\n"];
         $executionfiles = $this->vpldefault->get_execution_fgm();
         $added = $executionfiles->addfile('vpl_evaluate.cases', "case = t1\ninput=\noutput= Hello\n");

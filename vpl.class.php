@@ -475,7 +475,7 @@ class mod_vpl {
      * @param int|null $userid optional user id to get the password for, if null get the password for the current user
      * @return string password
      */
-    protected function get_password($userid = null) {
+    public function get_password($userid = null) {
         return trim($this->get_effective_setting('password', $userid));
     }
 
@@ -519,6 +519,9 @@ class mod_vpl {
     public function pass_password_check($passset) {
         global $SESSION;
         $password = $this->get_password();
+        if ($password == '') {
+            return true;
+        }
         $passvar = $this->get_password_var();
         if ($passset > '') {
             if ($passset == $password) {
