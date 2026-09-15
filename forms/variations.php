@@ -42,9 +42,9 @@ require_once($CFG->libdir . '/formslib.php');
  */
 function get_variation_actions_html($variation, $cmid, $number) {
     global $OUTPUT;
+    $variationclass = "vpl_variation_{$number}";
     $anchor = "vpl_variation_{$cmid}_{$number}";
     $separator = "<hr id='$anchor'>";
-
     $parms = ['number' => $number, 'identification' => s($variation->identification)];
     $variationidentification = get_string('variation_n_i', VPL, $parms);
 
@@ -60,7 +60,8 @@ function get_variation_actions_html($variation, $cmid, $number) {
 
     $variationcontent = $OUTPUT->box($variation->description);
     $html = "$separator\n";
-    $html .= "<b>$variationidentification</b> $editbutton $deletebutton<br>\n";
+    $variationheader = "<b>$variationidentification</b> $editbutton $deletebutton\n";
+    $html .= html_writer::div($variationheader, $variationclass);
     $html .= $variationcontent;
     return $html;
 }

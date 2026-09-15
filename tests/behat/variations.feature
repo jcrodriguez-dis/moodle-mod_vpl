@@ -87,7 +87,7 @@ Feature: In an VPL activity, editing teacher change variations
     And I should see "My variation title text"
     And I should see "This is an edited variation description"
     Then I navigate to "Variations" in current page administration
-    When I click on "Delete" "link" in the "region-main" "region"
+    When I click on "Delete" "link" in the ".vpl_variation_1" "css_element"
     And I press "Delete"
     Then I should see "Deleted"
     Then I am on "Course 1" course homepage
