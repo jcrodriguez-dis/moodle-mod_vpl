@@ -782,12 +782,16 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             let start = label.indexOf(range);
             range = start === -1 ? null : [start, start + range.length];
         }
-        let labelHTML = Array.isArray(range) && range.length === 2
-            ? VPLUtil.sanitizeText(label.substring(0, range[0]))
-                + "<b class='vpl_ls_active_parameter'>"
-                + VPLUtil.sanitizeText(label.substring(range[0], range[1])) + "</b>"
-                + VPLUtil.sanitizeText(label.substring(range[1]))
-            : VPLUtil.sanitizeText(label);
+        let labelHTML;
+        if (Array.isArray(range) && range.length === 2) {
+            const preParam = VPLUtil.sanitizeText(label.substring(0, range[0]));
+            const paramContent = VPLUtil.sanitizeText(label.substring(range[0], range[1]));
+            const postParam = VPLUtil.sanitizeText(label.substring(range[1]));
+            const param = "<b class='vpl_ls_active_parameter'>" + paramContent + "</b>";
+            labelHTML = preParam + param + postParam;
+        } else {
+            labelHTML = VPLUtil.sanitizeText(label);
+        }
         let html = "<div class='vpl_ls_signature_label'>" + labelHTML + "</div>";
         let signatureDoc = signature.documentation;
         if (signatureDoc) {
@@ -797,9 +801,11 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             let paramDoc = parameter.documentation;
             html += "<div>" + VPLMD.markDownToHTML(paramDoc.value || paramDoc) + "</div>";
         }
-        if (result.signatures.length > 1) {
-            html += "<div class='vpl_ls_signature_count'>(" + (sigIndex + 1) + "/" + result.signatures.length + ")</div>";
-        }
+        /* Hide the signature count for now */
+        /* if (result.signatures.length > 1) {
+            let signatureCount = "(" + (sigIndex + 1) + "/" + result.signatures.length + ")";
+            html += "<div class='vpl_ls_signature_count'>" + signatureCount + "</div>";
+        } */
         return html;
     }
     /**
@@ -824,7 +830,12 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         let coords = editor.renderer.textToScreenCoordinates(cursor.row, cursor.column);
         let fontSize = file.getFileManager().getFontSize();
         let element = tooltip.getElement();
-        element.className = "vpl_hover_tooltip ace_tooltip" + (file.isDarkTheme() ? " ace_dark" : "");
+        element.classList.add("vpl_hover_tooltip", "vpl_ls_signature_tooltip", "ace_tooltip");
+        if (file.isDarkTheme()) {
+            element.classList.add("ace_dark");
+        } else {
+            element.classList.remove("ace_dark");
+        }
         element.style.fontSize = fontSize + "px";
         tooltip.setHtml(html);
         tooltip.show();

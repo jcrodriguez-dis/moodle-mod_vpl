@@ -839,10 +839,10 @@ label[for="vpl_donotshowagain"] {
 }
 
 /* Tooltip styling for LSP hover information. */
-.vpl_tooltip {
+.ace_tooltip.vpl_tooltip {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     border: 1px solid #c6c6c6;
-    border-radius: 3px;
+    border-radius: 4px;
     padding: 8px;
     line-height: 1;
 }
@@ -854,7 +854,7 @@ label[for="vpl_donotshowagain"] {
 .vpl_hover_tooltip {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     border: 1px solid #c6c6c6;
-    border-radius: 3px;
+    border-radius: 4px;
     padding: 8px;
     line-height: 1;
 }
@@ -863,15 +863,26 @@ label[for="vpl_donotshowagain"] {
     font-weight: bold;
 }
 
+.ace_tooltip.vpl_ls_signature_tooltip {
+    z-index: 100000;
+}
+
 .vpl_ls_signature_label {
     white-space: pre-wrap;
 }
 
 .vpl_ls_active_parameter {
     font-weight: bold;
-    text-decoration: underline;
+    padding: 0 2px 0 2px;
+    border-radius: 3px;
+    border: 1px solid #0000ff;
     color: #0a5ad4;
 }
+.ace_dark .vpl_ls_active_parameter {
+    border: 1px solid yellow;
+    color: rgb(0, 213, 255);
+}
+
 
 .vpl_hover_tooltip.ace_dark .vpl_ls_active_parameter,
 .vpl_hover_tooltip .ace_dark .vpl_ls_active_parameter {
