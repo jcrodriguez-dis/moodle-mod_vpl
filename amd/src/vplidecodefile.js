@@ -274,14 +274,18 @@ export const codeExtension = function() {
         }
         var fileManager = this.getFileManager();
         var tid = this.getTId();
+        const fileElement = document.getElementById("vpl_file" + this.getId());
         // Workaround to remove jquery-ui theme background color.
-        $(tid).removeClass('ui-widget-content ui-tabs-panel');
+        fileElement.classList.remove('ui-widget-content', 'ui-tabs-panel');
         ace.require("ace/ext/language_tools");
         ace.require("ace/ext/snippets");
         const aceTooltipModule = ace.require("ace/tooltip");
-        tooltip = new aceTooltipModule.Tooltip(document.body, "vpl_tooltip ace_tooltip" + this.getId());
+        tooltip = new aceTooltipModule.Tooltip(document.body);
+        tooltip.getElement().classList.add("vpl_tooltip");
         hoverTooltip = new aceTooltipModule.HoverTooltip();
+        hoverTooltip.getElement().classList.add("vpl_tooltip");
         signatureTooltip = new aceTooltipModule.Tooltip(document.body);
+        signatureTooltip.getElement().classList.add("vpl_tooltip", "vpl_ls_signature_tooltip");
         Range = ace.require("ace/range").Range;
         editor = ace.edit("vpl_file" + this.getId());
         session = editor.getSession();
