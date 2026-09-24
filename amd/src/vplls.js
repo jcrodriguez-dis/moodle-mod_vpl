@@ -45,6 +45,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
         this.deleteFile = VPLUtil.doNothing;
         this.renameFile = VPLUtil.doNothing;
         this.openFile = VPLUtil.doNothing;
+        this.closeFile = VPLUtil.doNothing;
         this.openFileNotification = VPLUtil.doNothing;
         this.closeFileNotification = VPLUtil.doNothing;
         this.didChangeWatchedFilesNotification = VPLUtil.doNothing;
