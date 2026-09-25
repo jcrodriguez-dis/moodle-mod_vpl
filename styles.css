@@ -875,7 +875,7 @@ label[for="vpl_donotshowagain"] {
     font-weight: bold;
     padding: 0 2px 0 2px;
     border-radius: 3px;
-    border: 1px solid #0000ff;
+    border: 1px solid #00f;
     color: #0a5ad4;
 }
 .ace_dark .vpl_ls_active_parameter {

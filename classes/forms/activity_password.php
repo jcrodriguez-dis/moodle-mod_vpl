@@ -18,7 +18,7 @@
  * Get password to access form
  *
  * @package mod_vpl
- * @copyright 2012 Juan Carlos Rodríguez-del-Pino
+ * @copyright 2026 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
@@ -42,7 +42,6 @@ class activity_password extends \moodleform {
 
     /**
      * Constructor
-     * @param \moodle_page $page The page where the form will be displayed.
      * @param \mod_vpl $vpl The VPL instance.
      */
     public function __construct($vpl) {

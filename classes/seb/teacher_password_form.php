@@ -42,7 +42,6 @@ class teacher_password_form extends \moodleform {
 
     /**
      * Constructor
-     * @param \moodle_page $page The page where the form will be displayed.
      * @param \mod_vpl $vpl The VPL instance.
      */
     public function __construct($vpl) {
