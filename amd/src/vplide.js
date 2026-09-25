@@ -2238,23 +2238,21 @@ var VPLIDE = function(rootId, options) {
                 VPLUI.requestAction('save', 'saving', data, options.ajaxurl)
                 .done(function(response) {
                     if (response.requestsconfirmation && !noconfirmation) {
-                        var checkboxID = 'vpl_donotshowagain';
-                        var donotshowagain = '<input type="checkbox" id="' + checkboxID + '"'
-                                            + ' class="align-text-bottom mr-1 mt-3">'
-                                            + '<label for="' + checkboxID + '">' + str('donotshowagain') + '</label>';
-                        var $checkbox;
-                        showMessage(response.question + '<br>' + donotshowagain, {
+                        showMessage(response.question, {
                             title: str('saving'),
                             icon: 'alert',
-                            yes: function() {
-                                if ($checkbox.length == 1 && $checkbox.prop('checked')) {
+                            askDoNotShowAgain: true,
+                            preyes:  function() {
+                                let checkbox = document.getElementById('vpl_donotshowagain');
+                                if (checkbox && checkbox.checked) {
                                     noconfirmation = true;
                                 }
+                            },
+                            yes: function() {
                                 data.version = 0;
                                 doSave();
                             }
                         });
-                        $checkbox = $('#' + checkboxID);
                     } else {
                         fileManager.resetModified();
                         fileManager.setVersion(response.version);
@@ -2265,6 +2263,7 @@ var VPLIDE = function(rootId, options) {
                             VPLUI.requestAction('update', '', data, options.ajaxurl, true);
                         }
                     }
+                    fileManager.currentFile('focus');
                 }).fail(showErrorMessage);
             }
             doSave();

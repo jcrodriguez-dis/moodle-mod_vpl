@@ -386,6 +386,16 @@ VPLUI.showMessage = function(message, initialoptions) {
     var icon = '';
     var saniMessage = VPLUtil.sanitizeText(message).replace(/\n/g, '<br>');
     var contents = ' <span class="dmessage">' + saniMessage + '</span>';
+    if (options.askDoNotShowAgain) {
+        const checkboxID = 'vpl_donotshowagain';
+        const donotshowagain = '<br>'
+                            + '<input type="checkbox" id="' + checkboxID + '"'
+                            + ' class="align-text-bottom mr-1 mt-3">'
+                            + '<label for="' + checkboxID + '">'
+                            + VPLUtil.str('donotshowagain')
+                            + '</label>';
+        contents += donotshowagain;
+    }
     messageDialog.html(contents);
     if (typeof options.icon == 'undefined') {
         icon = 'info';
@@ -409,6 +419,9 @@ VPLUI.showMessage = function(message, initialoptions) {
         delete options.ok;
     } else if (typeof initialoptions.yes == 'function') {
         messageButtons[VPLUtil.str('yes')] = function() {
+            if (typeof initialoptions.preyes == 'function') {
+                initialoptions.preyes();
+            }
             $(this).dialog('close');
             initialoptions.yes();
         };
