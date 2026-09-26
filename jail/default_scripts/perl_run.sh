@@ -20,7 +20,7 @@ do
 done
 IFS=$SIFS
 # Remove OKs compilations
-cat .vpl_perl_errors | egrep -v "OK$"
+grep -E -v "OK$" .vpl_perl_errors
 get_first_source_file perl prl
 cat common_script.sh > vpl_execution
 echo "perl -w \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
