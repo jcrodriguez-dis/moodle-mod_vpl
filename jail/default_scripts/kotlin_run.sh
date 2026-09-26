@@ -11,11 +11,13 @@
 check_program java
 check_program kotlinc
 if [ "$1" == "version" ] ; then
-	echo "#!/bin/bash" > vpl_execution
-	echo "kotlinc -version &> .kotlinc_version" >> vpl_execution
-	echo "result=\$?"
-	echo "cat .kotlinc_version | sed 's/.*kotlin/kotlin/'" >> vpl_execution
-	echo "exit \$result"
+	{
+		echo "#!/bin/bash"
+		echo "kotlinc -version &> .kotlinc_version"
+		echo "result=\$?"
+		echo "cat .kotlinc_version | sed 's/.*kotlin/kotlin/'"
+		echo "exit \$result"
+	} > vpl_execution
 	chmod +x vpl_execution
 	exit
 fi

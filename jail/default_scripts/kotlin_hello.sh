@@ -14,7 +14,7 @@ END_OF_FILE
 mkdir "hello kotlin" 2> /dev/null
 cat > "hello kotlin/Message.kt" <<'END_OF_FILE'
 fun hello() {
-    println(readLine())
+    println(readln())
 }
 END_OF_FILE
 export VPL_SUBFILE0="vpl_hello.kt"
