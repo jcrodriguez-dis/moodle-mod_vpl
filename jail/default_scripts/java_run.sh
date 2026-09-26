@@ -38,9 +38,9 @@ function hasMain {
 	local RESULT
 	RESULT=1
 	FILE=$(getClassFile "$1")
-	REGEX_HAS_MAIN="^  public static void main\(java.lang.String\[\]\);$"
+	REGEX_HAS_MAIN="^  public static void main\(java.lang.String\[\]\)( throws .*)?;$"
 	if [ "$JAVA_SHORT_LAUNCH_OPTIONS" -ne "0" ] ; then
-		REGEX_HAS_MAIN="$REGEX_HAS_MAIN|^  (public |protected |)(static |)void main\((java.lang.String(\[\]|\.{3})|)\);$"
+		REGEX_HAS_MAIN="$REGEX_HAS_MAIN|^  (public |protected |)(static |)void main\((java.lang.String(\[\]|\.{3})|)\)( throws .*)?;$"
 	fi
 	if [ -f "$FILE" ] ; then
     	[ "$VPL_DEBUG" != "" ] && javap "$FILE"
