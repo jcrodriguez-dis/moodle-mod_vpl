@@ -5,15 +5,15 @@
 # License http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 # Author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
 
-# @vpl_script_description Using mzscheme
+# @vpl_script_description Using racket or mzscheme
 # load common script and check programs
 . common_script.sh
-check_program mzscheme
+check_program racket mzscheme
 if [ "$1" == "version" ] ; then
 	get_program_version -v
 fi
 get_first_source_file scm s
 cat common_script.sh > vpl_execution
-echo "mzscheme -f \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+echo "$PROGRAM -f \"$FIRST_SOURCE_FILE\"" >>vpl_execution
 chmod +x vpl_execution
 apply_run_mode
