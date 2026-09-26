@@ -20,7 +20,7 @@ OUTPUTFILE=output.exe
 # Generate file with source files
 generate_file_of_files .vpl_source_files
 # Detect NUnit
-NUNITLIBFILE=$(ls /usr/lib/cli/nunit.framework*/nunit.framework.dll | tail -n 1)
+NUNITLIBFILE=$(ls /usr/lib/cli/nunit.framework*/nunit.framework.dll 2>/dev/null | tail -n 1)
 [ -f "$NUNITLIBFILE" ] && export NUNITLIB="-r:$NUNITLIBFILE"
 # Compile
 export MONO_ENV_OPTIONS=--gc=sgen

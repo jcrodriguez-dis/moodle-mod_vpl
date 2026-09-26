@@ -13,7 +13,7 @@
 function get_project {
     get_source_files $1 NOERROR
     if [ "$SOURCE_FILES" == "" ] ; then
-        DOTNET_VERSION=$(dotnet --version | grep -o "^...") 
+        DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
 
         # Check if NUnit is available and get the version
         check_nunit

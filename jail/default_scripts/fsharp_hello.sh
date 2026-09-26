@@ -27,9 +27,9 @@ export DOTNET_CLI_TELEMETRY_OPTOUT=1
 export DOTNET_RUNNING_IN_CONTAINER=1
 export DOTNET_EnableWriteXorExecute=0
 export DOTNET_NOLOGO=1
-DOTNET_VERSION=$(dotnet --version | grep -o "^...")
-
-cat > "test_fsharp/hello_vpl.fsproj" <<END_OF_FILE
+if command -v dotnet &> /dev/null ; then
+    DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
+    cat > "test_fsharp/hello_vpl.fsproj" <<END_OF_FILE
 <Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
 		<OutputType>Exe</OutputType>
@@ -41,5 +41,6 @@ cat > "test_fsharp/hello_vpl.fsproj" <<END_OF_FILE
 	</ItemGroup>
 </Project>
 END_OF_FILE
+fi
 
 export INPUT_TEXT="Hello from the F# language!"

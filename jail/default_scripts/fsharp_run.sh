@@ -12,7 +12,7 @@
 function get_project {
 	get_source_files $1 NOERROR
 	if [ "$SOURCE_FILES" == "" ] ; then
-		local DOTNET_VERSION=$(dotnet --version | grep -o "^...")
+		local DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
 		get_source_files fs
 		# IMPORTANT: Use your own .fsproj
 		local FILES_CONF=

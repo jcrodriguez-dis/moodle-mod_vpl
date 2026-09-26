@@ -12,7 +12,7 @@
 function get_project {
 	get_source_files $1 NOERROR
 	if [ "$SOURCE_FILES" == "" ] ; then
-		DOTNET_VERSION=$(dotnet --version | grep -o "^...")
+		DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
 		local config_filename=default.$1
 		cat >> $config_filename << END_CONFIG
 <Project Sdk="Microsoft.NET.Sdk">
