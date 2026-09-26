@@ -8,7 +8,7 @@
 # @vpl_script_description Using nodejs with the first file
 # load common script and check programs
 . common_script.sh
-check_program nodejs
+check_program node nodejs
 if [ "$1" == "version" ] ; then
 	get_program_version -v
 fi
@@ -16,6 +16,6 @@ fi
 get_first_source_file js
 cat common_script.sh > vpl_execution
 [ "$(command -pv npm)" != "" ] && (echo "export NODE_PATH=$(npm root -g)" >> vpl_execution)
-echo "nodejs \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
+echo "$PROGRAM \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode
