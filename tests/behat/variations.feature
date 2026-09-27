@@ -61,12 +61,14 @@ Feature: In an VPL activity, editing teacher change variations
       | id_usevariations | 1 |
       | id_variationtitle | My variation title text |
     And I press "Save"
+    Then I should see "Updated My variation title text"
     When I click on "Add" "link" in the "region-main" "region"
     And I set the following fields to these values:
       | id_identification | variation-code |
       | id_description | This is a variation description |
     And I press "Save"
-    Then I am on "Course 1" course homepage
+    Then I should see "Variation 1: variation-code"
+    When I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
     Then I should see "Variations"
     And I click on "#sht0" in VPL
@@ -74,7 +76,7 @@ Feature: In an VPL activity, editing teacher change variations
     And I should see "My variation title text"
     And I should see "This is a variation description"
     Then I navigate to "Variations" in current page administration
-    When I click on "Edit" "link" in the "region-main" "region"
+    When I click on "Edit" "link" in the ".vpl_variation_1" "css_element"
     And I set the following fields to these values:
       | id_identification | changed-code |
       | id_description | This is an edited variation description |
@@ -88,7 +90,7 @@ Feature: In an VPL activity, editing teacher change variations
     And I should see "This is an edited variation description"
     Then I navigate to "Variations" in current page administration
     When I click on "Delete" "link" in the ".vpl_variation_1" "css_element"
-    And I press "Delete"
+    And I click on "#id_delete" "css_element"
     Then I should see "Deleted"
     Then I am on "Course 1" course homepage
     Then I click on "VPL activity name" "link" in the "region-main" "region"
