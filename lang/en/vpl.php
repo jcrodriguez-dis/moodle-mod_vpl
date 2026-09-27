@@ -546,6 +546,7 @@ $string['proposedgrade'] = 'Proposed grade: {$a}';
 $string['proxy'] = 'proxy';
 $string['proxy_description'] = 'Proxy from Moodle to execution servers';
 $string['quitpassword'] = 'Quit password';
+$string['readonly'] = 'Read only';
 $string['redo'] = 'Redo';
 $string['reductionbyevaluation'] = "Reduction by automatic evaluation";
 $string['reductionbyevaluation_help'] = "Reduce final score by a value or percentage for each automatic evaluation requested by the student";

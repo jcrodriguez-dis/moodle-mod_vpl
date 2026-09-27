@@ -524,6 +524,7 @@ $string['proposedgrade'] = 'Nota propuesta: {$a}';
 $string['proxy'] = 'proxy';
 $string['proxy_description'] = 'Proxy de Moodle a servidores de ejecución';
 $string['quitpassword'] = 'Clave de salida';
+$string['readonly'] = 'Solo lectura';
 $string['redo'] = 'Rehacer';
 $string['reductionbyevaluation'] = 'Reducción por evaluación automática';
 $string['reductionbyevaluation_help'] = 'Reducir la puntuación final un valor o un porcentaje por cada evaluación automática solicitada por el estudiante';

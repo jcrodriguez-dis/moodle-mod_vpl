@@ -199,7 +199,7 @@ VPLUI.iconRequired = function() {
     return html;
 };
 VPLUI.iconReadOnly = function() {
-    var html = ' <span title="' + VPLUtil.str('readOnly') + '" class="vpl_ide_charicon">';
+    var html = ' <span title="' + VPLUtil.str('readonly') + '" class="vpl_ide_charicon">';
     html += '<i class="fa fa-lock"></i>' + '</span> ';
     return html;
 };

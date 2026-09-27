@@ -1404,7 +1404,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         var inList = false;
         var content = "";
         var referenceName = request?.data?.name ?? "?";
-        content += "<b>" + VPLUtil.str('referencesfor', VPLUtil.sanitizeText(referenceName)) + "</b>\n<hr>\n<br>\n";
+        content += "<b>" + VPLUtil.str('referencesto', VPLUtil.sanitizeText(referenceName)) + "</b>\n<hr>\n<br>\n";
         let fileData = {fileName: null, line: null};
         for (let place of message.result) {
             let start = place.range.start;

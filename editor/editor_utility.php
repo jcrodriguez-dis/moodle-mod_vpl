@@ -426,6 +426,7 @@ HTML;
                 'outofmemory',
                 'paste',
                 'print',
+                'readonly',
                 'redo',
                 'regularscreen',
                 'rename',
