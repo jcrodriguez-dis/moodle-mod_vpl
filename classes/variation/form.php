@@ -83,7 +83,7 @@ class form extends \moodleform {
         $descriptionstr = get_string('description', VPL);
         $mform->addElement('editor', 'description', $descriptionstr, $descriptionoptions);
         $mform->setType('description', PARAM_RAW);
-        $mform->setDefault('description', '');
+        $mform->setDefault('description', ['text' => '', 'format' => FORMAT_HTML]);
         $mform->disabledIf('description', 'action', 'eq', 'delete');
 
         $buttongroup = [];
