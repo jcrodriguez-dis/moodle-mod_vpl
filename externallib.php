@@ -194,7 +194,7 @@ class mod_vpl_webservice extends external_api {
     /**
      * Returns the structure of the info function.
      *
-    * @return \core_external\external_single_structure
+     * @return external_single_structure
      */
     public static function info_returns() {
         return new external_single_structure([
@@ -275,7 +275,7 @@ class mod_vpl_webservice extends external_api {
     /**
      * Returns the structure that the save function returns.
      *
-    * @return \core_external\external_single_structure
+     * @return external_single_structure
      */
     public static function save_returns() {
         return null;
@@ -343,7 +343,7 @@ class mod_vpl_webservice extends external_api {
     /**
      * Returns the structure of that the open function returns.
      *
-    * @return \core_external\external_single_structure
+     * @return external_single_structure
      */
     public static function open_returns() {
         return new external_single_structure([
@@ -417,7 +417,7 @@ class mod_vpl_webservice extends external_api {
     /**
      * Returns the structure that the evaluate function returns.
      *
-    * @return \core_external\external_single_structure
+     * @return external_single_structure
      */
     public static function evaluate_returns() {
         $desc = "URL to the service that monitor the evaluation in the jail server.
@@ -503,7 +503,7 @@ if the websocket client send something to the server then the evaluation is stop
     /**
      * Returns the structure of the result of the evaluation.
      *
-        * @return \core_external\external_single_structure
+     * @return external_single_structure
      */
     public static function get_result_returns() {
         return new external_single_structure([
