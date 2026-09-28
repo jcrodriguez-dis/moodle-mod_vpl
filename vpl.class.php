@@ -906,21 +906,27 @@ class mod_vpl {
     /**
      * Get the last submission of all users
      *
-     * @param string $fields conma separeted
-     *            to retrieve from submissions table, default s.*. userid is always retrieved
+     * @param string $extrafields conma separeted to retrieve from submissions table, default all.
+     *            The $extrafields should not include s.id, s.vpl, s.userid, or s.groupid as they are always retrieved.
      * @return object array
      */
-    public function all_last_user_submission($fields = 's.*') {
+    public function all_last_user_submission($extrafields = 's.*') {
         // Get last submissions records for this vpl module.
         global $DB;
+        $extrafields = trim($extrafields);
         $id = $this->get_instance()->id;
         if ($this->is_group_activity()) {
             $idfield = 'groupid';
+            $otheridfield = 'userid';
         } else {
             $idfield = 'userid';
+            $otheridfield = 'groupid';
+        }
+        if ($extrafields !== '') {
+            $extrafields = ', ' . $extrafields;
         }
         $query = <<<SQL
-        SELECT s.$idfield, s.vpl, s.id, $fields FROM {vpl_submissions} s
+        SELECT s.$idfield, s.vpl, s.id, s.$otheridfield $extrafields FROM {vpl_submissions} s
             JOIN
                 (SELECT max(id) as maxid, vpl, $idfield FROM {vpl_submissions}
                     WHERE vpl=?
@@ -2423,7 +2429,7 @@ class mod_vpl {
             } else {
                 $allstudents = $this->get_students();
             }
-            $submissions = $this->all_last_user_submission('s.dategraded, s.userid, s.groupid');
+            $submissions = $this->all_last_user_submission('s.dategraded');
             $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
             $result->ugcount = count($allstudents);
             $result->subcount = count($submissions);
