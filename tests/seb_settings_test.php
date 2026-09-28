@@ -24,10 +24,11 @@
  */
 
 
-namespace mod_vpl\tests;
+namespace mod_vpl;
 
 use mod_vpl\seb\session_manager;
 use mod_vpl\seb\settings;
+use mod_vpl\tests\base_fixture;
 
 defined('MOODLE_INTERNAL') || die();
 

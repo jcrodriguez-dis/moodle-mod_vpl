@@ -23,13 +23,14 @@
  * @author Alejandro David Arzola Saavedra <alejandro.arzola101@alu.ulpgc.es>
  */
 
-namespace mod_vpl\tests;
+namespace mod_vpl;
 
 use mod_vpl\event\seb_wrong_key;
 use mod_vpl\seb\access_validator;
 use mod_vpl\seb\session_manager;
 use mod_vpl\seb\settings;
 use mod_vpl\seb\ui;
+use mod_vpl\tests\base_fixture;
 
 defined('MOODLE_INTERNAL') || die();
 
