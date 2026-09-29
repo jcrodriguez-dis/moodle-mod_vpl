@@ -102,8 +102,9 @@ $string['calendardue'] = 'VPL submission is due';
 $string['calendarexpectedon'] = 'VPL submission expected';
 $string['changesNotSaved'] = 'Changes have not been saved';
 $string['check_jail_servers'] = 'Check execution servers';
-$string['check_jail_servers_help'] = "<p>This page checks and shows the status of execution servers used
-for this activity.</p>";
+$string['check_jail_servers_help'] = "<p>This page checks and shows the status of execution servers used.</p>";
+$string['check_running_tasks'] = 'Check course running tasks';
+$string['check_running_tasks_help'] = "<p>This page checks and shows the status of running tasks on current course.</p>";
 $string['checkforcourse'] = 'Check for course {$a}';
 $string['checkgroups'] = 'Check groups consistency';
 $string['checkseb'] = 'Check Safe Exam Browser';

@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Class for logging when jail servers are tested
+ * Class for logging when running tasks are checked
  *
  * @package mod_vpl
  * @copyright 2014 onwards Juan Carlos Rodríguez-del-Pino
@@ -25,10 +25,10 @@
 namespace mod_vpl\event;
 
 /**
- * Event class for when jail servers are tested.
- * This class is used to log the event when jail servers are tested.
+ * Event class for when running tasks are checked.
+ * This class is used to log the event when running tasks are checked.
  */
-class vpl_jail_servers_tested extends vpl_base {
+class vpl_running_tasks_checked extends vpl_base {
     /**
      * Initializes the event.
      * This method is called when the event is created.
@@ -36,7 +36,7 @@ class vpl_jail_servers_tested extends vpl_base {
     protected function init() {
         parent::init();
         $this->data['crud'] = 'r';
-        $this->legacyaction = 'jail servers tested';
+        $this->legacyaction = 'course running tasks checked';
     }
 
     /**
@@ -45,6 +45,6 @@ class vpl_jail_servers_tested extends vpl_base {
      * @return string Description of the event.
      */
     public function get_description() {
-        return $this->get_description_mod('jail servers');
+        return $this->get_description_mod('running tasks');
     }
 }

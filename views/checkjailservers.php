@@ -156,61 +156,11 @@ foreach ($serversinfo as $info) {
     }
     $serverstable->data[] = $row;
 }
-$processestable = new html_table();
-$processestable->head = [
-        '#',
-        get_string('user'),
-        get_string('activity'),
-        get_string('server', VPL),
-        get_string('startingfrom'),
-        get_string('status'),
-];
-$processestable->align = [
-        'right',
-        'left',
-        'left',
-        'left',
-        'left',
-        'left',
-];
-
-$processestable->data = [];
-$num = 0;
-$processes = vpl_running_processes::lanched_processes($COURSE->id);
-foreach ($processes as $process) {
-    $data = new stdClass();
-    $data->adminticket = $process->adminticket;
-    $data->pluginversion = $pluginversion;
-    $request = vpl_jailserver_manager::get_action_request('running', $data);
-    $error = '';
-    $response = vpl_jailserver_manager::get_response($process->server, $request, $error);
-    if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
-        // Removes zombi tasks.
-        vpl_running_processes::delete($process->userid, $process->vpl, $process->adminticket);
-    }
-    $status = '';
-    if (isset($response['running']) && $response['running'] == 1) {
-        $status = get_string('running', VPL);
-    }
-    $serverurl = remove_path($process->server);
-    $num++;
-    $vpl = new mod_vpl(false, $process->vpl);
-    $user = $DB->get_record('user', [
-            'id' => $process->userid,
-    ]);
-    $processestable->data[] = [
-            $num,
-            $vpl->fullname($user),
-            $vpl->get_printable_name(),
-            $serverurl,
-            userdate($process->start_time),
-            $status,
-    ];
-}
-
 echo html_writer::table($serverstable);
-if (count($processestable->data) > 0) {
-    echo html_writer::table($processestable);
-}
-
+// Button to check running tasks.
+echo html_writer::link(
+    new moodle_url('/mod/vpl/views/checkrunningtasks.php', ['id' => $id]),
+    get_string('check_running_tasks', VPL),
+    ['class' => 'btn btn-primary']
+);
 $vpl->print_footer();
