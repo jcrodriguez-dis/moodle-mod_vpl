@@ -1233,7 +1233,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
     }
     /**
      * Register a click event handler for the Language Server status element in the IDE status bar.
-      * When clicked, it reconnects a stopped Language Server or resets its inactivity timeout.
+     * When clicked, it reconnects a stopped Language Server or resets its inactivity timeout.
      */
     function registerLSStatusClickHandler() {
         let statusElement = document.querySelector('#vpl_ide_statusbar .vpl_ide_statusbar_lsp');
