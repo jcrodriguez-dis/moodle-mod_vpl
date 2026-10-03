@@ -83,7 +83,10 @@ $taskstable->align = [
 $taskstable->data = [];
 $num = 0;
 $processes = vpl_running_processes::lanched_processes($COURSE->id);
+$nprocesses = count($processes);
+$progressbar = new \mod_vpl\util\progress_bar(get_string('check_running_tasks', VPL), 0, $nprocesses);
 foreach ($processes as $process) {
+    $progressbar->set_value($num);
     $data = new stdClass();
     $data->adminticket = $process->adminticket;
     $data->pluginversion = $pluginversion;
@@ -113,6 +116,9 @@ foreach ($processes as $process) {
             $status,
     ];
 }
+
+$progressbar->set_value($nprocesses);
+$progressbar->hide();
 
 echo html_writer::table($taskstable);
 
