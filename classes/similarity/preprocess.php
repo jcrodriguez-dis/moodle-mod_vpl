@@ -151,8 +151,8 @@ class preprocess {
         $spb->set_max(count($list));
         $i = 0;
         foreach ($list as $user) {
-            $i++;
             $spb->set_value($i);
+            $i++;
             if (isset($submissions[$user->id])) {
                 $subinstance = $submissions[$user->id];
                 $submission = new \mod_vpl_submission($vpl, $subinstance);
@@ -163,6 +163,7 @@ class preprocess {
                 }
             }
         }
+        $spb->set_value(count($list));
     }
 
     /**
@@ -262,7 +263,7 @@ class preprocess {
         if ($zip->open($zipfilename) === true) {
             $spb->set_max($zip->numFiles);
             for ($i = 0; $i < $zip->numFiles; $i++) {
-                $spb->set_value($i + 1);
+                $spb->set_value($i);
                 $filename = $zip->getNameIndex($i);
                 if ($filename == false) {
                     break;

@@ -25,13 +25,14 @@
 
 namespace mod_vpl\util;
 
-defined('MOODLE_INTERNAL') || die();
-require_once(dirname(__FILE__) . '/../../locallib.php');
-
 /**
- * Class to show a progress bar in a box
+ * Class to show a progress bar using the Moodle core progress bar.
  */
-class progress_bar extends status_box {
+class progress_bar extends \core\output\progress_bar {
+    /**
+     * @var bool this class flushes the output buffers itself
+     */
+    protected static $supportsoutputbuffering = true;
     /**
      * @var int minimum value
      */
@@ -41,13 +42,13 @@ class progress_bar extends status_box {
      */
     protected $max;
     /**
-     * @var int last time the progress bar was updated
-     */
-    protected $lasttime;
-    /**
      * @var string text to show in the progress bar
      */
     protected $text;
+    /**
+     * @var int time when the progress bar was created
+     */
+    protected $starttime;
 
     /**
      * Constructor
@@ -57,39 +58,58 @@ class progress_bar extends status_box {
      * @param int $max maximum value (default 100)
      */
     public function __construct($text = '', $min = 0, $max = 100) {
-        parent::__construct($text);
+        parent::__construct('vpl_pb_' . uniqid(), 500, true);
         $this->text = $text;
         $this->min = $min;
         $this->max = $max;
-        $this->lasttime = 0;
+        $this->starttime = time();
+        $this->update_full(0, $text);
+        $this->scroll_into_view();
+    }
+
+    /**
+     * Scroll the page to make the progress bar visible
+     */
+    protected function scroll_into_view() {
+        echo \html_writer::script(
+            'var e = document.getElementById(' . json_encode($this->get_id()) . ');' .
+            'if (e) { e.scrollIntoView({block: "nearest"}); }'
+        );
+        @ob_flush();
+        flush();
     }
 
     /**
      * Set the value of the progress bar
      *
-     * @param int $value current value
+     * @param int|string $value current value, a string is shown as text
      */
     public function set_value($value) {
         if (is_string($value)) {
             $this->print_text($this->text . ' (' . $value . ')');
             return;
         }
-        $currenttime = time();
-        $percent = ((($value - $this->min) * 100) / ($this->max - $this->min));
-        if ($this->lasttime != $currenttime || $percent >= 100) {
-            if ($percent > 100) {
-                $percent = 100;
-            }
-            $this->lasttime = $currenttime;
-            if ($percent == 100) {
-                $text = $this->text . ' (' . sprintf("%5.1f", $percent) . '%)';
-                $text .= ' ' . get_string('numseconds', '', $currenttime - $this->starttime);
-                $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
-                $this->print_text($text);
-            } else {
-                $this->print_text($this->text . ' (' . sprintf("%5.1f", $percent) . '%)');
-            }
+        $range = $this->max - $this->min;
+        $percent = $range > 0 ? (($value - $this->min) * 100) / $range : 100;
+        $percent = max(0, min(100, $percent));
+        $text = $this->text;
+        if ($percent >= 100) {
+            $text .= ' ' . get_string('numseconds', '', time() - $this->starttime);
+            $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
         }
+        $this->update_full($percent, $text);
+    }
+
+    /**
+     * Update the bar and flush the output buffers so it is shown at once.
+     *
+     * @param float $percent progress percentage
+     * @param string $msg status message
+     */
+    protected function update_raw($percent, $msg) {
+        parent::update_raw($percent, $msg);
+        @ob_flush();
+        flush();
     }
 
     /**
@@ -99,5 +119,26 @@ class progress_bar extends status_box {
      */
     public function set_max($max) {
         $this->max = $max;
+    }
+
+    /**
+     * Print text in the status message of the progress bar
+     *
+     * @param string $text text to show
+     */
+    public function print_text($text) {
+        $this->update_full($this->get_percent(), $text);
+    }
+
+    /**
+     * Hide the progress bar
+     */
+    public function hide() {
+        echo \html_writer::script(
+            'var e = document.getElementById(' . json_encode($this->get_id()) . ');' .
+            'if (e) { e.style.display = "none"; }'
+        );
+        @ob_flush();
+        flush();
     }
 }

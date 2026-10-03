@@ -34,7 +34,7 @@ class utility {
      * @param array $files The array of file_pair objects to process.
      * @param int $maxselected The maximum number of files to select.
      * @param int $slimit The limit of files to process.
-     * @param status_box $spb The status box to update progress.
+     * @param \mod_vpl\util\progress_bar $spb The status box to update progress.
      * @return array An array of selected file_pair objects.
      */
     public static function get_selected(&$files, $maxselected, $slimit, $spb) {
@@ -54,7 +54,7 @@ class utility {
         }
         $spb->set_max($slimit);
         for ($i = 0; $i < $slimit; $i++) { // Search similarity with.
-            $spb->set_value($i + 1);
+            $spb->set_value($i);
             $current = $files[$i];
             $currenttype = $current->get_type();
             $userid = $current->get_userid();
@@ -94,6 +94,7 @@ class utility {
                 }
             }
         }
+        $spb->set_value($slimit);
         self::filter_selected($vs1, $maxselected, $minlevel1, 1, true);
         self::filter_selected($vs2, $maxselected, $minlevel2, 2, true);
         self::filter_selected($vs3, $maxselected, $minlevel3, 3, true);

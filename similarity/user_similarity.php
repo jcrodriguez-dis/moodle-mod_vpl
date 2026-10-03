@@ -39,8 +39,6 @@ ini_set('memory_limit', '256M');
 global $CFG, $DB, $PAGE, $OUTPUT;
 
 $id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
-require_login($course, true, $cm);
 $userid = required_param('userid', PARAM_INT);
 $timelimit = 600; // Limit 10 minutes.
 // Check course existence.
@@ -65,9 +63,8 @@ foreach ($ovpls as $ovpl) {
         continue;
     }
     $nocapability = false;
-    $instance = $vpl->get_instance();
     // Example => NO.
-    if ($instance->example) {
+    if ($vpl->is_example()) {
         continue;
     }
     // Cannot be graded => NO.
