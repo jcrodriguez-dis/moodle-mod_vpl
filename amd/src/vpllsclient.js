@@ -257,7 +257,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     // One minute in milliseconds
     const minutes = 60 * seconds;
     // Time in ms to wait after a file change before sending the notification to the Language Server
-    const timeoutFileChange = 1 * seconds;
+    const timeoutFileChange = 500;
     // Time in ms to wait after connection to start sending notifications to the Language Server
     const waitTimeLSStart = 500;
     // Time in ms to wait for recheck if LS connected
@@ -365,6 +365,23 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     }
     this.resetInactivityTimeout = resetInactivityTimeout;
     /**
+     * Reconnect to the Language Server right now if it is down, ignoring the retry delay.
+     * Used when the user explicitly asks for it. It also restarts the inactivity timeout.
+     */
+    this.reconnectNow = function() {
+        const minInterval = 10 * seconds;
+        if (self.isStopped() && !self.isConnecting()
+                && Date.now() - lastConnectionAttemptTime >= minInterval) {
+            if (reConnectionTimerId !== null) {
+                window.clearTimeout(reConnectionTimerId);
+                reConnectionTimerId = null;
+            }
+            reConnection = 0;
+            self.startConnection();
+        }
+        resetInactivityTimeout();
+    };
+    /**
      * Given a URI, it returns the corresponding file name
      * if the URI starts with the home path of the Language Server
      * otherwise, it returns null
@@ -433,7 +450,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     this.applyFileChanges = function(fileURI, changes) {
         let fileName = self.uriToFileName(fileURI);
         let file = fileManager.getFileByName(fileName);
-        if (file == false) {
+        if (!file) {
             return;
         }
         if (!file.isOpen()) {
@@ -633,6 +650,17 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         }
         allMarkers = [];
     };
+    /**
+     * Remove the diagnostics of a file edited while the Language Server is disconnected,
+     * as they can not be updated and no longer match the code.
+     * @param {VPLFile} file The file that has been changed
+     */
+    function clearStaleDiagnostics(file) {
+        if (allMarkers.some((marker) => marker.fileName == file.getFileName())) {
+            self.removeMarkersOfFile(file);
+            file.clearAnnotations();
+        }
+    }
     /**
      * Publishes diagnostics received from the Language Server
      * @param {Object} message containing the diagnostics
@@ -939,7 +967,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 "character": pos.column
             }
         };
-        return self.sendRequest("textDocument/hover", param, fileName);
+        return self.sendFileRequest(file, "textDocument/hover", param);
     };
 
     /**
@@ -965,12 +993,27 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             if (self.eventHandlersActive) {
                 self.addFileChangeDelta(file, delta);
                 handleSignatureHelpChange(file, delta);
+            } else {
+                clearStaleDiagnostics(file);
             }
         });
         session.selection.on('changeCursor', function() {
             let tooltip = file.getSignatureTooltip();
             if (self.eventHandlersActive && tooltip?.isOpen) {
                 triggerSignatureHelp(file, {triggerKind: 3, isRetrigger: true});
+            }
+        });
+        editor.commands.addCommand({
+            name: 'vplHideLSTooltips',
+            bindKey: {win: 'Esc', mac: 'Esc'},
+            readOnly: true,
+            exec: function() {
+                if (file.isOpen()) {
+                    file.getSignatureTooltip()?.hide();
+                    file.getHoverTooltip()?.hide();
+                    file.getTooltip()?.hide();
+                }
+                return true;
             }
         });
         editor.on('blur', function() {
@@ -983,12 +1026,17 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         var hoverTooltip = file.getHoverTooltip();
         // Keep the tooltip visible while the pointer moves into it or across a small gap.
         hoverTooltip.vpl = {};
-        hoverTooltip.vpl.hideDelay = 500;
+        hoverTooltip.vpl.hideDelay = 300;
         hoverTooltip.vpl.originalHide = hoverTooltip.hide.bind(hoverTooltip);
         hoverTooltip.vpl.hideTimer = null;
         hoverTooltip.hide = function(e) {
-            clearTimeout(hoverTooltip.vpl.hideTimer);
+            // Ace calls hide on every mouse move outside the range; restarting the timer
+            // each time would postpone the hiding while the mouse keeps moving.
+            if (hoverTooltip.vpl.hideTimer !== null) {
+                return;
+            }
             hoverTooltip.vpl.hideTimer = setTimeout(() => {
+                hoverTooltip.vpl.hideTimer = null;
                 hoverTooltip.vpl.originalHide(e);
             }, hoverTooltip.vpl.hideDelay);
         };
@@ -1384,7 +1432,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * @returns {Object} An object containing the file name and lines, or null if the file is not found
      */
     function getFileDataForReferences(fileName) {
-        let file = fileManager.getFileByName(fileName);
+        // References outside the project (e.g. library files) have no file name.
+        let file = fileName === null ? null : fileManager.getFileByName(fileName);
         if (file) {
             return {fileName: fileName, lines: file.getContent().split("\n")};
         }
@@ -1429,10 +1478,11 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             let line = fileData.lines[start.line];
             let saniFilename = VPLUtil.sanitizeText(fileName);
             let iniText = VPLUtil.sanitizeText(line.substring(0, start.character));
-            var reference = '<a href="#" data-file="' + saniFilename + '" data-line="' + (start.line + 1) + '">';
-            reference += VPLUtil.sanitizeText(line.substring(start.character, end.character)) + '</a>';
+            let linkStart = '<a href="#" data-file="' + saniFilename + '" data-line="' + (start.line + 1) + '">';
+            var reference = linkStart + VPLUtil.sanitizeText(line.substring(start.character, end.character)) + '</a>';
             let endText = VPLUtil.sanitizeText(line.substring(end.character));
-            content += "<li>Line " + (start.line + 1) + ": " + iniText + reference + endText + "</li>\n";
+            let lineLink = linkStart + "Line " + (start.line + 1) + '</a>';
+            content += '<li>' + lineLink + ": " + iniText + reference + endText + "</li>\n";
         }
         if (content === "") {
             return;
@@ -2240,6 +2290,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 // Disable event handlers while LS is stopped to avoid triggering LSP activity.
                 log("WebSocket closed.");
                 self.eventHandlersActive = false;
+                // The socket is already closed, so show the lost connection right away.
+                self.setStatus();
                 tryReconnect();
             };
             self.setStatus();
@@ -2393,6 +2445,25 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         self.setStatus();
         log("Sent request: " + method + " with id: " + jsonMessage.id);
         return promiseRequest;
+    };
+
+    /**
+     * Send a request related to a file after sending the pending changes of the file, so the
+     * Language Server answers according to the current content. Requests are queued with the
+     * rest of tasks to keep the order of the notifications and requests.
+     * @param {VPLFile} file File related to the request
+     * @param {String} method Name of the request
+     * @param {Object} params Parameters needed for the request
+     * @param {Object|null} data Additional data related to the request, if any
+     * @returns {Promise} A promise that resolves with the response of the Language Server
+     */
+    this.sendFileRequest = function(file, method, params, data = null) {
+        self.notifyPendingFileChanges(file);
+        return self.addTask(
+            async function() {
+                return self.sendRequest(method, params, file.getFileName(), data);
+            }
+        );
     };
 
     /**

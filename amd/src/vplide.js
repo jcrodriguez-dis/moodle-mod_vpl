@@ -400,6 +400,9 @@ var VPLIDE = function(rootId, options) {
             self.generateFileList();
         };
         this.fileNameExists = function(name) {
+            if (typeof name !== 'string') {
+                return -1;
+            }
             var checkName = name.toLowerCase();
             for (var i = 0; i < files.length; i++) {
                 if (files[i].getFileName().toLowerCase() == checkName) {
@@ -568,10 +571,11 @@ var VPLIDE = function(rootId, options) {
             VPLUtil.delay('updateMenu', updateMenu);
         };
         this.closeFile = function(file) {
-            if (!file.isOpen()) {
+            const fid = file.getId();
+            // A file whose editor is still loading has a tab but is not open yet.
+            if (!file.isOpen() && self.getTabPos(fid) == openFiles.length) {
                 return;
             }
-            const fid = file.getId();
             file.close();
             LSManager.closeFile(file);
             VPLUI.clearIDEStatus();
@@ -1171,9 +1175,10 @@ var VPLIDE = function(rootId, options) {
      * @param {String} name I18n key of the name of tab to set and identifier of the tab content class.
      * @param {String} content HTML content to set in the tab
      * @param {boolean} noUpdate Do not change the tab
+     * @param {boolean} [closable=false] Add an icon to the tab title to let the user remove the tab
      * @returns {boolean} true if the tab has content after after the call, false otherwise
      */
-    this.setResultTab = function(name, content, noUpdate) {
+    this.setResultTab = function(name, content, noUpdate, closable = false) {
         var titleclass = 'vpl_ide_accordion_t_' + name;
         var contentclass = 'vpl_ide_accordion_c_' + name;
         if (result.find('.' + contentclass).length == 0) {
@@ -1197,7 +1202,8 @@ var VPLIDE = function(rootId, options) {
         }
         if (content > '') {
             // Set content.
-            titleTag.replaceWith('<h4 class="' + titleclass + '">' + str(name) + '</h4>');
+            titleTag.replaceWith('<h4 class="' + titleclass + '">' + str(name)
+                + (closable ? VPLUI.iconClose() : '') + '</h4>');
             contentTag.replaceWith('<div class="ui-widget ' + contentclass + '">' + HTMLcontent.html() + '</div>');
             return true;
         } else {
@@ -1238,6 +1244,26 @@ var VPLIDE = function(rootId, options) {
     ];
     const needProcessingResult = ['compilation', 'comments'];
     const needSanitizeResult = ['execution'];
+    // Result tabs the user can remove with an icon in the tab title.
+    const closableResultTabs = ['references', 'variables', 'compilation', 'execution'];
+    /**
+     * Remove a result tab and hide the result panel if no tab is left.
+     * @param {String} name Identifier of the result tab
+     */
+    this.closeResultTab = function(name) {
+        self.setResultTab(name, '', false);
+        if (result.find('h4').length > 0) {
+            reinitAccordion(result.find('h4.vpl_ide_accordion_t_grade').length > 0 ? 1 : 0);
+        } else {
+            if (result.hasClass('ui-accordion')) {
+                result.accordion('destroy');
+            }
+            resultContainer.hide();
+            resultContainer.vplVisible = false;
+            $('.vpl_ide_statusbar_shrightpanel').hide();
+        }
+        VPLUtil.delay('autoResizeTab', autoResizeTab);
+    };
 
     this.setResult = function(res, go = false, clearAnnotations = true) {
         self.updateEvaluationNumber(res);
@@ -1259,16 +1285,17 @@ var VPLIDE = function(rootId, options) {
             let hasContent;
             let panelContent = res[panelName];
             let noUpdate = panelContent === undefined;
+            let closable = closableResultTabs.includes(panelName);
             if (panelName == 'grade') {
                 hasContent = self.setResultGrade(VPLUtil.sanitizeText(res.grade), noUpdate);
                 gradeShow = hasContent;
             } else if (needProcessingResult.includes(panelName)) {
                 let formated = VPLUtil.processResult(res[panelName], fileNames, files, panelName == 'compilation');
-                hasContent = self.setResultTab(panelName, formated, noUpdate);
+                hasContent = self.setResultTab(panelName, formated, noUpdate, closable);
             } else if (needSanitizeResult.includes(panelName)) {
-                hasContent = self.setResultTab(panelName, VPLUtil.sanitizeText(res[panelName]), noUpdate);
+                hasContent = self.setResultTab(panelName, VPLUtil.sanitizeText(res[panelName]), noUpdate, closable);
             } else {
-                hasContent = self.setResultTab(panelName, res[panelName], noUpdate);
+                hasContent = self.setResultTab(panelName, res[panelName], noUpdate, closable);
             }
             if (panelName == 'description' && hasContent) {
                 // Description can contain math formulas, so we need to apply MathJax if it's loaded.
@@ -1321,6 +1348,16 @@ var VPLIDE = function(rootId, options) {
     };
     result.accordion(accordionOptions);
     resultContainer.width(2 * resultContainer.vplMinWidth);
+    result.on('click', 'h4 .vpl_ide_closeicon', function(event) {
+        // The tab is removed, so it does not matter that the accordion has already toggled it.
+        event.stopPropagation();
+        event.preventDefault();
+        const titleClass = $(this).closest('h4').attr('class').split(/\s+/)
+            .find((c) => c.startsWith('vpl_ide_accordion_t_'));
+        if (titleClass) {
+            self.closeResultTab(titleClass.substring('vpl_ide_accordion_t_'.length));
+        }
+    });
     result.on('click', 'a', function(event) {
         if (fileManager.gotoFileLink(event.currentTarget)) {
             event.preventDefault();

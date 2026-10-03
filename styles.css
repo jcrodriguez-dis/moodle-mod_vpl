@@ -334,6 +334,11 @@ div.vpl_ide_dialog_content {
     text-shadow: none;
 }
 
+/* Close icon of the result tabs at the right end of the accordion header. */
+#vpl_results_accordion h4 .vpl_ide_closeicon {
+    float: right;
+}
+
 .vpl_ide .ui-widget {
     font-size: 12px;
 }
@@ -843,7 +848,7 @@ label[for="vpl_donotshowagain"] {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     border: 1px solid #c6c6c6;
     border-radius: 4px;
-    padding: 8px;
+    padding: 4px;
     line-height: 1;
 }
 
@@ -855,7 +860,7 @@ label[for="vpl_donotshowagain"] {
     font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
     border: 1px solid #c6c6c6;
     border-radius: 4px;
-    padding: 8px;
+    padding: 4px;
     line-height: 1;
 }
 

@@ -98,6 +98,15 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
         }
         return self.getLSByLanguage(file.getLSLang());
     };
+    /**
+     * Returns the Language Server client of the file even if it is not connected.
+     * Useful to show the diagnostics that remain in the editor after losing the connection.
+     * @param {VPLFile} file
+     * @returns {VPLLSClient|null}
+     */
+    this.getLSClient = function(file) {
+        return (file && languageServers[file.getLSLang()]) || null;
+    };
     this.getLSByFileName = function(fileName) {
         return self.getLSByLanguage(VPLUtil.getFileLangInfo(fileName).lsName);
     };
@@ -426,7 +435,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 "character": cursor.column
             }
         };
-        LS.sendRequest("textDocument/definition", param, fileName);
+        LS.sendFileRequest(file, "textDocument/definition", param);
     };
 
     /**
@@ -460,7 +469,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 "includeDeclaration": true
             }
         };
-        LS.sendRequest("textDocument/references", param, fileName, {name: token.value});
+        LS.sendFileRequest(file, "textDocument/references", param, {name: token.value});
     };
 
     /**
@@ -484,7 +493,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 "character": cursor.column
             }
         };
-        LS.sendRequest("textDocument/implementation", param, fileName);
+        LS.sendFileRequest(file, "textDocument/implementation", param);
     };
 
     var renameSymbolDialog = null;
@@ -513,7 +522,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                     "character": cursor.column
                 }
             };
-            let response = await LS.sendRequest("textDocument/prepareRename", param, fileName);
+            let response = await LS.sendFileRequest(file, "textDocument/prepareRename", param);
             if (!(response?.result)) {
                 LS.log("The symbol selected cannot be renamed.");
                 return;
@@ -573,7 +582,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
             },
             "newName": name
         };
-        return await LS.sendRequest("textDocument/rename", param, fileName);
+        return await LS.sendFileRequest(file, "textDocument/rename", param);
 
     };
 
@@ -601,7 +610,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 "trimFinalNewlines": true
             }
         };
-        LS.sendRequest("textDocument/formatting", param, fileName);
+        LS.sendFileRequest(file, "textDocument/formatting", param);
     };
 
     /**
@@ -639,7 +648,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 "trimFinalNewlines": true
             }
         };
-        LS.sendRequest("textDocument/rangeFormatting", param, fileName);
+        LS.sendFileRequest(file, "textDocument/rangeFormatting", param);
     };
     /**
      * Returns true if the given range is included in the given cursor selection
@@ -734,7 +743,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
             }
         };
         lastCodeActionSuggestions = [];
-        let message = await LS.sendRequest("textDocument/codeAction", param, fileName);
+        let message = await LS.sendFileRequest(file, "textDocument/codeAction", param);
         showCodeActionSuggestions(LS, message);
     };
     /**
@@ -955,7 +964,8 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 }
                 return;
             }
-            let LS = self.getLS(file);
+            // Diagnostics stay in the editor when the connection is lost, so do not require a connected LS.
+            let LS = self.getLSClient(file);
             if (LS === null || self.isCodeActionMenuOpen() || self.isContextMenuOpen()) {
                 file.getTooltip()?.hide();
                 return;
@@ -981,7 +991,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 for (let marker of markersFound) {
                     let icon = "<span class='ace_" + marker.type + " ace_icon' aria-label='"
                                + marker.type + "' role='img'> </span>";
-                    html = "<div>" + icon + "<span>" + marker.text + "</span></div>";
+                    html += "<div>" + icon + "<span>" + marker.text + "</span></div>";
                 }
                 let tooltip = file.getTooltip();
                 let tooltipElement = tooltip.getElement();
@@ -1223,14 +1233,14 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
     }
     /**
      * Register a click event handler for the Language Server status element in the IDE status bar.
-     * When clicked, it resets the inactivity timeout of the current Language Server.
+      * When clicked, it reconnects a stopped Language Server or resets its inactivity timeout.
      */
     function registerLSStatusClickHandler() {
         let statusElement = document.querySelector('#vpl_ide_statusbar .vpl_ide_statusbar_lsp');
         statusElement?.addEventListener('click', function() {
             let file = fileManager.currentFile();
             let LS = languageServers[file?.getLSLang()];
-            LS?.resetInactivityTimeout();
+           LS?.reconnectNow();
         });
     }
     var dialogInitialized = false;
