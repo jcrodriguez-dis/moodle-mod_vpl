@@ -71,7 +71,7 @@ class vpl_sh_ace extends vpl_sh_base {
      * @param bool $title show title
      * @return void
      */
-    public function print_file($filename, $filedata, $showln = true, $nl = 3000, $title = true) {
+    public function print_file($filename, $filedata, $showln = true, $nl = -1, $title = true) {
         global $PAGE;
         if (
             array_search($filename, self::$executionfiles) !== false &&
@@ -90,7 +90,11 @@ class vpl_sh_ace extends vpl_sh_base {
             echo "<h4 id='$tid'>" . s($filename) . "</h4>\n";
         }
         if ($filedata > '') {
-            $code = '<div class="vpl_codefilecontent">';
+            if ($nl >= 0) {
+                $code = '<div>';
+            } else {
+                $code = '<div class="vpl_codefilecontent">';
+            }
             $code .= "<pre id='code$tid'>";
             $code .= htmlentities($filedata, ENT_NOQUOTES);
             $code .= "</pre>\n";
@@ -101,6 +105,9 @@ class vpl_sh_ace extends vpl_sh_base {
             $loadding .= vpl_get_awesome_icon('loading') . get_string('loading', VPL);
             $loadding .= "</h4>\n";
             echo $loadding;
+            if ($nl == -1) {
+                $nl = 3000;
+            }
             $parms = [$tid, $filename, $theme, $showln, $nl];
             vpl_sh_factory::syntaxhighlight_file($parms);
         }
