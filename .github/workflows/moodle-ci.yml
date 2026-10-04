@@ -5,6 +5,7 @@ on: [workflow_dispatch]
 jobs:
   test:
     runs-on: ubuntu-24.04
+    timeout-minutes: 60
 
     services:
       postgres:
@@ -29,25 +30,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        php: ['8.1', '8.2', '8.3']
-        moodle-branch: ['MOODLE_404_STABLE', 'MOODLE_405_STABLE', 'MOODLE_500_STABLE', 'MOODLE_501_STABLE', 'MOODLE_502_STABLE']
-        database: [pgsql, mariadb]
-        # Reduces DB versions
-        exclude:
-          - database: pgsql
-            moodle-branch: MOODLE_405_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_500_STABLE
-          - database: pgsql
-            moodle-branch: MOODLE_501_STABLE
-          - php: '8.1'
-            moodle-branch: MOODLE_500_STABLE
-          - php: '8.1'
-            moodle-branch: MOODLE_501_STABLE
-          - php: '8.1'
-            moodle-branch: MOODLE_502_STABLE
-          - php: '8.2'
-            moodle-branch: MOODLE_502_STABLE
+        include:
+          - {php: '8.1', moodle-branch: 'MOODLE_405_STABLE', database: mariadb}
+          - {php: '8.3', moodle-branch: 'MOODLE_405_STABLE', database: pgsql}
+          - {php: '8.2', moodle-branch: 'MOODLE_500_STABLE', database: mariadb}
+          - {php: '8.3', moodle-branch: 'MOODLE_501_STABLE', database: mariadb}
+          - {php: '8.3', moodle-branch: 'MOODLE_501_STABLE', database: pgsql}
+          - {php: '8.3', moodle-branch: 'MOODLE_502_STABLE', database: mariadb}
+          - {php: '8.3', moodle-branch: 'MOODLE_502_STABLE', database: pgsql}
+          - {php: '8.3', moodle-branch: 'MOODLE_503_STABLE', database: mariadb}
+          - {php: '8.3', moodle-branch: 'MOODLE_503_STABLE', database: pgsql}
 
     steps:
       - name: Check out repository code
@@ -129,18 +121,19 @@ jobs:
           sudo apt-get install -y valgrind
 
       - name: Tests of VPL default "Basic I/O test" for students' programs
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: ./plugin/tests/vpl_evaluate/test_vpl_evaluate.sh
       
       - name: Tests tester of automatic evaluation of students' programs
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
 
       - name: Tests of evaluators subplugins
-        if: ${{ always() }}
+        if: ${{ !cancelled() }}
         run: |
           cd ./plugin/evaluator
-          for evaluator in $(ls -d *); do
+          for evaluator in */; do
+            evaluator="${evaluator%/}"
             if [ -f "${evaluator}/tests/run_tests.sh" ]; then
               chmod +x "./${evaluator}/tests/run_tests.sh"
               "./${evaluator}/tests/run_tests.sh"
