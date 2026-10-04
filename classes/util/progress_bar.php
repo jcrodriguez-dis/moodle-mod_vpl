@@ -98,6 +98,8 @@ class progress_bar extends \core\output\progress_bar {
             $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
         }
         $this->update_full($percent, $text);
+        @ob_flush();
+        flush();
     }
 
     /**
@@ -128,6 +130,8 @@ class progress_bar extends \core\output\progress_bar {
      */
     public function print_text($text) {
         $this->update_full($this->get_percent(), $text);
+        @ob_flush();
+        flush();
     }
 
     /**
