@@ -108,6 +108,7 @@ echo $OUTPUT->box_end();
 if (mod_vpl\webservice\manager::service_is_available()) {
     echo html_writer::link('/mod/vpl/views/show_webservice.php?id=' . $id, get_string('webservice', VPL));
 }
-
+if ($showfr || $showfe) {
+    vpl_sh_factory::syntaxhighlight();
+}
 $vpl->print_footer();
-vpl_sh_factory::syntaxhighlight();
