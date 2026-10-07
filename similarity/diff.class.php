@@ -415,7 +415,7 @@ class vpl_diff {
             $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
             $zipname = required_param('zipfile' . $f, PARAM_RAW);
             $filename = required_param('filename' . $f, PARAM_RAW);
-            $htmlheader .= $filename . ' ' . optional_param('username' . $f, '', PARAM_TEXT);
+            $htmlheader .= s($filename) . ' ' . optional_param('username' . $f, '', PARAM_TEXT);
             $ext = strtoupper(pathinfo($zipname, PATHINFO_EXTENSION));
             if ($ext != 'ZIP') {
                 throw new moodle_exception('wrongzipfilename');
