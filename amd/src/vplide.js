@@ -558,10 +558,11 @@ var VPLIDE = function(rootId, options) {
             } else {
                 file = files[pos];
             }
-            if (file.isOpen()) {
+            var fid = file.getId();
+            // A file may already have a tab while its editor is still loading.
+            if (file.isOpen() || self.getTabPos(fid) < openFiles.length) {
                 return;
             }
-            var fid = file.getId();
             self.addTab(fid);
             openFiles.push(file);
             menuButtons.setGetkeys(file.open());
@@ -572,6 +573,7 @@ var VPLIDE = function(rootId, options) {
         };
         this.closeFile = function(file) {
             const fid = file.getId();
+            const activeFile = self.currentFile();
             // A file whose editor is still loading has a tab but is not open yet.
             if (!file.isOpen() && self.getTabPos(fid) == openFiles.length) {
                 return;
@@ -588,8 +590,11 @@ var VPLIDE = function(rootId, options) {
             VPLUtil.delay('updateFileList', self.updateFileList);
             VPLUtil.delay('adjustTabsTitles', adjustTabsTitles, false);
             if (openFiles.length > 0) {
-                const nextTab = ptab < openFiles.length ? ptab : openFiles.length - 1;
-                const nextFile = openFiles[nextTab];
+                let nextFile = activeFile;
+                if (!activeFile || activeFile.getId() == fid) {
+                    const nextTab = ptab < openFiles.length ? ptab : openFiles.length - 1;
+                    nextFile = openFiles[nextTab];
+                }
                 let filePos = self.getFilePosById(nextFile.getId());
                 self.gotoFile(filePos, 'c');
             }
@@ -1499,7 +1504,7 @@ var VPLIDE = function(rootId, options) {
             tabsUl.width('');
         }
     };
-    autoResizeTab = function() {
+    autoResizeTab = function(proportional) {
         var oldWidth = tabs.width();
         var newWidth = menu.width();
         var planb = false;
@@ -1525,7 +1530,19 @@ var VPLIDE = function(rootId, options) {
                 planb = true;
             }
         }
-        if (planb) {
+        if (proportional === true) {
+            var fixedLeft = fileListContainer.vplVisible ? fileListContainer.outerWidth() + tabsAir : 0;
+            var resultWidth = resultContainer.vplVisible ? resultContainer.width() : 0;
+            var resultExtra = resultContainer.vplVisible ? resultContainer.outerWidth() - resultWidth : 0;
+            var resultAir = resultContainer.vplVisible ? tabsAir : 0;
+            var scalableWidth = tabs.width() + resultWidth + resultExtra + resultAir;
+            var rel = (menu.width() - fixedLeft) / scalableWidth;
+            tabs.css('left', fixedLeft);
+            tabs.width(tabs.width() * rel);
+            if (resultContainer.vplVisible) {
+                resultContainer.width((resultWidth + resultExtra + resultAir) * rel - resultExtra - resultAir);
+            }
+        } else if (planb) {
             var rel = menu.width() / oldWidth;
             var wfl = 0;
             if (fileListContainer.vplVisible) {
@@ -2203,7 +2220,9 @@ var VPLIDE = function(rootId, options) {
                 fullScreen = true;
             }
             focusCurrentFile();
-            setTimeout(autoResizeTab, 10);
+            setTimeout(function() {
+                autoResizeTab(true);
+            }, 10);
         },
         bindKey: {
             win: 'Alt-F',
