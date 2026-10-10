@@ -55,7 +55,7 @@ class clusters {
     /**
      * @var int Maximum number of members in a cluster.
      */
-    const MAX_MEMBERS = 5;
+    const MAX_MEMBERS = 10;
 
     /**
      * Constructor
@@ -67,6 +67,10 @@ class clusters {
         // Identify every file.
         // Set all files to not clustered.
         $fid = 0;
+        foreach ($selected as $case) {
+            unset($case->first->fid);
+            unset($case->second->fid);
+        }
         foreach ($selected as $case) {
             if (! isset($case->first->fid)) {
                 $case->first->cluster = - 1;
@@ -107,13 +111,11 @@ class clusters {
                 $newid = count($this->clusters);
                 $pair->first->cluster = $newid;
                 $pair->second->cluster = $newid;
-                $this->clusters[$newid] = [
-                        $pair,
-                ];
+                $this->clusters[$newid] = [$pair];
                 $this->cmembers[$newid] = 2;
             } else {
+                // Both files already belong to the cluster: no new member.
                 $this->clusters[$c1][] = $pair;
-                $this->cmembers[$c1]++;
             }
         } else if ($c1 == - 1 || $c2 == - 1) { // One file not assigned.
             if ($c1 == - 1) {
@@ -172,6 +174,7 @@ class clusters {
             if (false) { // Debug zone.
                 $this->print_cluster($this->clusters[$maxcluster], 1);
             }
+            $this->clusters[$maxcluster][] = $pair; // Keep the bridging pair.
             $this->cmembers[$maxcluster] += $this->cmembers[$mincluster];
             $this->cmembers[$mincluster] = 0;
             $this->clusters[$mincluster] = []; // Remove cluster.
