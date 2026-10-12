@@ -127,6 +127,9 @@ class vpl_similarity_form extends moodleform {
         for ($i = 150; $i <= 400; $i += 50) {
             $options[$i] = $i;
         }
+        for ($i = 500; $i <= 5000; $i += 500) {
+            $options[$i] = $i;
+        }
         asort($options);
         $mform->addElement('select', 'maxoutput', get_string('maxsimilarityoutput', VPL), $options);
         $mform->setType('maxoutput', PARAM_INT);
