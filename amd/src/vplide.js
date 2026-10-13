@@ -1505,13 +1505,13 @@ var VPLIDE = function(rootId, options) {
         }
     };
     autoResizeTab = function(proportional) {
-        var oldWidth = tabs.width();
-        var newWidth = menu.width();
-        var planb = false;
+        let oldWidth = tabs.width();
+        let newWidth = menu.width();
+        let planb = false;
         updateTabsHandles();
         tr.width(menu.outerWidth());
         if (fileListContainer.vplVisible) {
-            var left = fileListContainer.outerWidth() + tabsAir;
+            const left = fileListContainer.outerWidth() + tabsAir;
             oldWidth += left;
             if (left >= 100) {
                 newWidth -= left;
@@ -1523,7 +1523,7 @@ var VPLIDE = function(rootId, options) {
             tabs.css('left', 0);
         }
         if (resultContainer.vplVisible) {
-            var right = resultContainer.outerWidth() + tabsAir;
+            const right = resultContainer.outerWidth() + tabsAir;
             oldWidth += right;
             newWidth -= right;
             if (newWidth < 100) {
@@ -1531,20 +1531,20 @@ var VPLIDE = function(rootId, options) {
             }
         }
         if (proportional === true) {
-            var fixedLeft = fileListContainer.vplVisible ? fileListContainer.outerWidth() + tabsAir : 0;
-            var resultWidth = resultContainer.vplVisible ? resultContainer.width() : 0;
-            var resultExtra = resultContainer.vplVisible ? resultContainer.outerWidth() - resultWidth : 0;
-            var resultAir = resultContainer.vplVisible ? tabsAir : 0;
-            var scalableWidth = tabs.width() + resultWidth + resultExtra + resultAir;
-            var rel = (menu.width() - fixedLeft) / scalableWidth;
+            const fixedLeft = fileListContainer.vplVisible ? fileListContainer.outerWidth() + tabsAir : 0;
+            const resultWidth = resultContainer.vplVisible ? resultContainer.width() : 0;
+            const resultExtra = resultContainer.vplVisible ? resultContainer.outerWidth() - resultWidth : 0;
+            const resultAir = resultContainer.vplVisible ? tabsAir : 0;
+            const scalableWidth = tabs.width() + resultWidth + resultExtra + resultAir;
+            const rel = (menu.width() - fixedLeft) / scalableWidth;
             tabs.css('left', fixedLeft);
             tabs.width(tabs.width() * rel);
             if (resultContainer.vplVisible) {
                 resultContainer.width((resultWidth + resultExtra + resultAir) * rel - resultExtra - resultAir);
             }
         } else if (planb) {
-            var rel = menu.width() / oldWidth;
-            var wfl = 0;
+            const rel = menu.width() / oldWidth;
+            let wfl = 0;
             if (fileListContainer.vplVisible) {
                 wfl = fileListContainer.width() * rel;
                 fileListContainer.width(wfl - tabsAir);
