@@ -75,8 +75,7 @@ class progress_bar extends \core\output\progress_bar {
             'var e = document.getElementById(' . json_encode($this->get_id()) . ');' .
             'if (e) { e.scrollIntoView({block: "nearest"}); }'
         );
-        @ob_flush();
-        flush();
+        self::flush_all();
     }
 
     /**
@@ -98,8 +97,7 @@ class progress_bar extends \core\output\progress_bar {
             $text .= sprintf(" %5.1fMB", memory_get_usage() / 1024000);
         }
         $this->update_full($percent, $text);
-        @ob_flush();
-        flush();
+        self::flush_all();
     }
 
     /**
@@ -110,8 +108,7 @@ class progress_bar extends \core\output\progress_bar {
      */
     protected function update_raw($percent, $msg) {
         parent::update_raw($percent, $msg);
-        @ob_flush();
-        flush();
+        self::flush_all();
     }
 
     /**
@@ -130,8 +127,7 @@ class progress_bar extends \core\output\progress_bar {
      */
     public function print_text($text) {
         $this->update_full($this->get_percent(), $text);
-        @ob_flush();
-        flush();
+        self::flush_all();
     }
 
     /**
@@ -142,7 +138,16 @@ class progress_bar extends \core\output\progress_bar {
             'var e = document.getElementById(' . json_encode($this->get_id()) . ');' .
             'if (e) { e.style.display = "none"; }'
         );
-        @ob_flush();
+        self::flush_all();
+    }
+
+    /**
+     * Flush all the active output buffer levels and the system buffer.
+     */
+    protected static function flush_all() {
+        while (ob_get_level() > 0) {
+            @ob_end_flush();
+        }
         flush();
     }
 }
