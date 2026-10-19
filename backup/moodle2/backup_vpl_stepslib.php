@@ -194,8 +194,9 @@ class backup_vpl_activity_structure_step extends backup_activity_structure_step 
                         $this->cachedbackupallsubmissions = false;
                         break;
                     case 1:
-                        $settingname = $this->get_modulename() . '_' .
-                            $this->get_moduleid() . '_allsubmissions';
+                        $task = $this->get_task();
+                        $settingname = $task->get_modulename() . '_' .
+                            $task->get_moduleid() . '_backupallsubmissions';
                         $setting = $this->get_setting($settingname);
                         if ($setting) {
                             $this->cachedbackupallsubmissions = $setting->get_value();
