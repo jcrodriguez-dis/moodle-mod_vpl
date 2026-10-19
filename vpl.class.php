@@ -2126,6 +2126,10 @@ class mod_vpl {
                 $html .= $this->str_setting_with_icon('maxexeprocesses', null, false, false);
             }
             $html .= "<br>\n";
+            if ($this->has_capability(VPL_SETJAILS_CAPABILITY) && trim($instance->jailservers) > '') {
+                $serverlist = "\n" . preg_replace('/\/\w+\s*$/m', '/******', $instance->jailservers);
+                $html .= $this->str_setting_with_hidden_value('local_jail_servers', $serverlist);
+            }
             $html .= $this->get_overriden_summary();
         }
         return $html;
