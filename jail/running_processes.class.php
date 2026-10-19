@@ -133,18 +133,46 @@ class vpl_running_processes {
         }
         $DB->delete_records(self::TABLE, $parms);
     }
+
     /**
-     * Returns records of processes registered in a course
-     * @param int $courseid ID of the course
+     * Returns records of processes registered in a course or all
+     * @param int $courseid ID of the course if specified, -1 for all courses.
      * @return array[] Array of DB records.
      */
-    public static function lanched_processes(int $courseid) {
+    public static function lanched_processes(int $courseid = -1) {
         global $DB;
-        $sql = 'SELECT {vpl_running_processes}.* FROM {vpl_running_processes}';
-        $sql .= ' INNER JOIN {vpl} ON {vpl_running_processes}.vpl = {vpl}.id';
-        $sql .= ' WHERE {vpl}.course = ?;';
-        $param = [ $courseid ];
+        if ($courseid != -1) {
+            $sql = 'SELECT {vpl_running_processes}.*
+                        FROM {vpl_running_processes}
+                        INNER JOIN {vpl}
+                        ON {vpl_running_processes}.vpl = {vpl}.id
+                        WHERE {vpl}.course = ?;';
+            $param = [ $courseid ];
+        } else {
+            $sql = 'SELECT {vpl_running_processes}.*
+                        FROM {vpl_running_processes};';
+            $param = [];
+        }
         return $DB->get_records_sql($sql, $param);
+    }
+
+    /**
+     * Check if a process is running and return its status.
+     * If process is not running, it will be removed from the DB table.
+     * @param object $process record of the process to check.
+     * @return bool True if the process is running, false otherwise.
+     */
+    public static function is_running(object $process) {
+        $data = new stdClass();
+        $data->adminticket = $process->adminticket;
+        $request = vpl_jailserver_manager::get_action_request('running', $data);
+        $error = '';
+        $response = vpl_jailserver_manager::get_response($process->server, $request, $error);
+        if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
+            // Removes zombi tasks.
+            self::delete($process->userid, $process->vpl, $process->adminticket);
+        }
+        return isset($response['running']) && $response['running'] == 1;
     }
 
     /**
