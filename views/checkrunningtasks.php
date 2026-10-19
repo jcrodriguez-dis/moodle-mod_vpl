@@ -89,26 +89,15 @@ $nprocesses = count($processes);
 $progressbar = new \mod_vpl\util\progress_bar(get_string('check_running_tasks', VPL), 0, $nprocesses);
 foreach ($processes as $process) {
     $progressbar->set_value($num);
-    $data = new stdClass();
-    $data->adminticket = $process->adminticket;
-    $data->pluginversion = $pluginversion;
-    $request = vpl_jailserver_manager::get_action_request('running', $data);
-    $error = '';
-    $response = vpl_jailserver_manager::get_response($process->server, $request, $error);
-    if ($response === false || ( isset($response['running']) && $response['running'] != 1)) {
-        // Removes zombi tasks.
-        vpl_running_processes::delete($process->userid, $process->vpl, $process->adminticket);
-    }
+    $running = vpl_running_processes::is_running($process);
     $status = '';
-    if (isset($response['running']) && $response['running'] == 1) {
+    if ($running) {
         $status = get_string('running', VPL);
     }
     $serverurl = remove_path($process->server);
     $num++;
     $vpl = new mod_vpl(false, $process->vpl);
-    $user = $DB->get_record('user', [
-            'id' => $process->userid,
-    ]);
+    $user = $DB->get_record('user', ['id' => $process->userid]);
     $taskstable->data[] = [
             $num,
             $vpl->fullname($user),
