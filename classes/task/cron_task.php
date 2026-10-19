@@ -44,8 +44,14 @@ class cron_task extends \core\task\scheduled_task {
      * Get the range of time around the start date.
      * @return int The range of time in seconds.
      */
-    public function get_startdate_range(): int {
-        return self::STARTDATE_RANGE;
+    public function get_time_range(): int {
+        $lastrun = $this->get_last_run_time();
+        if ($lastrun !== false) {
+            $elapsed = intval((time() - $lastrun) * 1.2);
+            return min(self::STARTDATE_RANGE, $elapsed);
+        } else {
+            return self::STARTDATE_RANGE;
+        }
     }
 
     /**
@@ -78,10 +84,16 @@ class cron_task extends \core\task\scheduled_task {
         $sql = 'SELECT id, startdate, duedate, course, name FROM {vpl}
                     WHERE startdate < ?
                           and startdate >= ?
-                          and (duedate > startdate or duedate = 0)';
-        $parms = [$now + self::STARTDATE_RANGE, $now];
+                          and (duedate > startdate or duedate = 0)
+                          and activity_mode = ?';
+        $notbefore = $now - $this->get_time_range() / 2;
+        $notafter = $now + $this->get_time_range() / 2;
+        $parms = [$notafter, $notbefore, 0]; // NORMAL => activity_mode = 0.
         $vpls = $DB->get_records_sql($sql, $parms);
+        $checked = 0;
+        $donevisible = 0;
         foreach ($vpls as $instance) {
+            $checked++;
             if (! instance_is_visible(VPL, $instance)) {
                 $vpl = new \mod_vpl(null, $instance->id);
                 if ($this->verbose) {
@@ -90,8 +102,11 @@ class cron_task extends \core\task\scheduled_task {
                 $cm = $vpl->get_course_module();
                 set_coursemodule_visible($cm->id, true);
                 $rebuilds[$cm->course] = $cm->course;
+                $donevisible++;
             }
         }
+        echo "Checked $checked VPL instances.\n";
+        echo "Made visible $donevisible VPL instances.\n";
         foreach ($rebuilds as $courseid) {
             rebuild_course_cache($courseid);
         }
@@ -108,11 +123,38 @@ class cron_task extends \core\task\scheduled_task {
     }
 
     /**
+     * Check and remove stopped processes.
+     * Check only non short-lived processes.
+     * @param int $maxtime Maximum time in seconds to be checking.
+     */
+    public function remove_stopped_processes($maxtime) {
+        global $CFG;
+        require_once($CFG->dirroot . '/mod/vpl/jail/running_processes.class.php');
+        $shortlive = 60 * 5;
+        $startedbefore = time() - $shortlive;
+        $timeout = time() + $maxtime;
+        $processes = \vpl_running_processes::lanched_processes();
+        shuffle($processes);
+        $checked = 0;
+        foreach ($processes as $process) {
+            if ($process->start_time < $startedbefore) {
+                \vpl_running_processes::is_running($process);
+                $checked++;
+            }
+            if (time() > $timeout) {
+                break;
+            }
+        }
+        echo "Checked $checked task processes.\n";
+    }
+
+    /**
      * Run VPL cron.
      */
     public function execute() {
         $this->make_visible();
         $this->remove_old_processes();
+        $this->remove_stopped_processes($this->get_time_range() / 2);
         return true;
     }
 }
