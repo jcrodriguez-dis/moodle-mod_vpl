@@ -533,16 +533,16 @@ function vpl_user_outline($course, $user, $mod, $instance) {
  * @param stdClass $course Course object
  * @param stdClass $user User object
  * @param stdClass $mod Course module object
- * @param stdClass $vpl VPL instance object
+ * @param stdClass $vpl VPL DB instance record
  */
 function vpl_user_complete($course, $user, $mod, $vpl) {
-    if (! $vpl->is_visible()) {
-        return;
-    }
     require_once('vpl_submission.class.php');
     // TODO Print a detailed report of what a user has done with a given particular instance.
     // Search submisions for $user $instance.
     $vpl = new mod_vpl(null, $vpl->id);
+    if (! $vpl->is_visible()) {
+        return;
+    }
     $sub = $vpl->last_user_submission($user->id);
     if ($sub !== false) {
         require_once(dirname(__FILE__) . '/vpl_submission_CE.class.php');
