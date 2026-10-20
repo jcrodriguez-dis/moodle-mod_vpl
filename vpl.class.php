@@ -2005,7 +2005,7 @@ class mod_vpl {
                             $type = 'warning';
                         }
                     }
-                    $html .= "<li><span class='alert-$type'>$text</span></li>";
+                    $html .= "<li><span class='alert alert-$type'>$text</span></li>";
                 }
                 $html .= '</ul>';
             } else if ($instance->sebrequired == 2) {
