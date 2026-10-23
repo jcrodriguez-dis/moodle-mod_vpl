@@ -642,6 +642,16 @@ function vpl_fileextension($filename) {
     return pathinfo($filename, PATHINFO_EXTENSION);
 }
 
+/**
+ * Return true if filename is a blockly file
+ *
+ * @param string $filename
+ * @return boolean
+ * @codeCoverageIgnore
+ */
+function vpl_is_blockly($filename) {
+    return preg_match('/^blockly[0123]?$/i', vpl_fileextension($filename)) == 1;
+}
 
 /**
  * Get if filename has image extension
