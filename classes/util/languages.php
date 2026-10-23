@@ -43,8 +43,9 @@ class languages {
         'c' => ['c'],
         'clojure' => ['clj'],
         'cobol' => ['cob', 'cbl'],
-        'cpp' => ['h', 'hxx', 'cc', 'C', 'cpp', 'c++'],
+        'cpp' => ['h', 'hpp', 'hxx', 'cc', 'C', 'cpp', 'c++'],
         'csharp' => ['cs'],
+        'css' => ['css'],
         'd' => ['d'],
         'dart' => ['dart'],
         'eiffel' => ['e'],
@@ -57,6 +58,7 @@ class languages {
         'html' => ['htm', 'html'],
         'java' => ['java'],
         'javascript' => ['js'],
+        'json' => ['json'],
         'julia' => ['jl'],
         'kotlin' => ['kt'],
         'lisp' => ['lisp', 'lsp'],
@@ -81,6 +83,7 @@ class languages {
         'verilog' => ['v', 'vh'],
         'vhdl' => ['vhd', 'vhdl'],
         'visualbasic' => ['vb'],
+        'xml' => ['xml'],
     ];
     /**
      * Associative array for detecting the programming language
@@ -102,11 +105,13 @@ class languages {
         'C' => 'cpp',
         'c++' => 'cpp',
         'h' => 'cpp',
+        'hpp' => 'cpp',
         'hxx' => 'cpp',
         'cbl' => 'cobol',
         'cob' => 'cobol',
         'clj' => 'clojure',
         'cs' => 'csharp',
+        'css' => 'css',
         'd' => 'd',
         'dart' => 'dart',
         'e' => 'eiffel',
@@ -124,6 +129,7 @@ class languages {
         'html' => 'html',
         'java' => 'java',
         'js' => 'javascript',
+        'json' => 'json',
         'jl' => 'julia',
         'kt' => 'kotlin',
         'lisp' => 'lisp',
@@ -159,6 +165,7 @@ class languages {
         'vb' => 'visualbasic',
         'vhd' => 'vhdl',
         'vhdl' => 'vhdl',
+        'xml' => 'xml',
     ];
     /**
      * Associative array for detecting the build system
