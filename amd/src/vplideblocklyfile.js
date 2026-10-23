@@ -657,6 +657,7 @@ export const blocklyExtension = function() {
         VPLUI.updateIDEStatus(
             {
                 fileName: this.getFileName(),
+                binary: this.isBinary(),
                 position: '',
                 language: "Blockly",
                 unsaved: this.isModified(),

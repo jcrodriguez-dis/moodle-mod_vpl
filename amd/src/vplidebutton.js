@@ -150,7 +150,11 @@ export class VPLIDEButtons {
                 return;
             }
             buttons[buttonName].originalAction = action;
-            buttons[buttonName].action = function() {
+            buttons[buttonName].action = function(event) {
+                const repeated = event?.originalEvent?.repeat || event?.repeat;
+                if (buttons[buttonName].allowRepeat === false && repeated) {
+                    return;
+                }
                 if (buttons[buttonName].active) {
                     action();
                 }
@@ -331,7 +335,7 @@ export class VPLIDEButtons {
                         if (eventKey == normalizeKey(buttons[buttonName].key)) {
                             event.preventDefault();
                             event.stopImmediatePropagation();
-                            buttons[buttonName].action();
+                            buttons[buttonName].action(event);
                             return false;
                         }
                     }

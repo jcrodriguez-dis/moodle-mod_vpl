@@ -41,6 +41,19 @@ class file_icon {
     ];
 
     /**
+     * Get the shared filename mappings for the IDE.
+     *
+     * @return array
+     */
+    public static function get_client_config(): array {
+        return [
+            'extensions' => languages::EXTENSION2LANGUAGE,
+            'filenames' => languages::CONFIG2LANGUAGE,
+            'scripts' => self::EXECUTION_SCRIPTS,
+        ];
+    }
+
+    /**
      * Get the icon identifier for a file.
      *
      * @param string $filename

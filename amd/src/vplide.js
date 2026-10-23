@@ -1103,7 +1103,7 @@ var VPLIDE = function(rootId, options) {
                                 sname = '<b>' + sname + '</b>';
                             }
                             attrs = 'href="#" data-fileid="' + file.getId() + '" title="' + path + '"';
-                            line = '<a ' + attrs + '>' + sname + '</a>';
+                            line = '<a ' + attrs + '>' + VPLUI.iconFile(file.getFileName(), file.isBinary()) + sname + '</a>';
                             if (file.isModified()) {
                                 line = VPLUI.iconModified() + line;
                             }

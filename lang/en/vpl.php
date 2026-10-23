@@ -345,6 +345,10 @@ If you want to prevent this activity and derived ones
 from using other servers, then you have to add a line
 containing "end_of_jails" at the end of the server list.
 </p>';
+$string['ls:averageresponsetime'] = 'Average response time';
+$string['ls:bytesreceived'] = 'Bytes received';
+$string['ls:bytessent'] = 'Bytes sent';
+$string['ls:clientrequests'] = 'Client requests / server responses';
 $string['ls:cmcodeaction'] = 'Code action';
 $string['ls:cmdefinition'] = 'Go to definition';
 $string['ls:cmformat'] = 'Format document';
@@ -352,6 +356,12 @@ $string['ls:cmformatrange'] = 'Format selected range';
 $string['ls:cmimplementation'] = 'Go to implementation';
 $string['ls:cmreferences'] = 'Go to references';
 $string['ls:cmrename'] = 'Rename symbol';
+$string['ls:notifications'] = 'Notifications';
+$string['ls:runningtime'] = 'Running time';
+$string['ls:sentreceived'] = 'sent / received';
+$string['ls:serverrequests'] = 'Server requests / client responses';
+$string['ls:statistics'] = '{$a} Language Server statistics';
+$string['ls:waittime'] = 'Cumulative response wait time';
 $string['manualgrading'] = 'Manual grading';
 $string['math'] = 'Math';
 $string['maxexefilesize'] = 'Maximum execution file size';

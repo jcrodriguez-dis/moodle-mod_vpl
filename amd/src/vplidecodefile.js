@@ -253,6 +253,10 @@ export const codeExtension = function() {
         status.language = VPLUtil.langName(fullname);
         status.unsaved = this.isModified();
         status.lsp = self.getFileManager().getLSManager().getStatus(this);
+        status.annotations = session.getAnnotations();
+        status.gotoAnnotation = function(line) {
+            self.gotoLine(line);
+        };
         VPLUI.updateIDEStatus(status);
     };
 
@@ -319,6 +323,11 @@ export const codeExtension = function() {
         });
         session.selection.on('changeCursor', function() {
             self.updateStatus();
+        });
+        session.on('changeAnnotation', function() {
+            if (fileManager.currentFile() === self) {
+                self.updateStatus();
+            }
         });
         // Control copy and cut (yes cut also use this) for localClipboard.
         editor.on('copy', function(t) {

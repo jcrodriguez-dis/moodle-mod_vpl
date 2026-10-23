@@ -1190,6 +1190,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
             menuButtons.add({
                 "name": actionName,
                 "originalAction": self[actionName],
+                "allowRepeat": false,
                 "bindKey": contextMenuActions[actionName]
             });
         }
@@ -1232,11 +1233,23 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
         self.renameDialog = renameSymbolDialog;
     }
     /**
-     * Register a click event handler for the Language Server status element in the IDE status bar.
+     * Register interaction handlers for the Language Server status element in the IDE status bar.
      * When clicked, it reconnects a stopped Language Server or resets its inactivity timeout.
+     * Statistics are calculated on hover or focus, without a background polling timer.
      */
     function registerLSStatusClickHandler() {
         let statusElement = document.querySelector('#vpl_ide_statusbar .vpl_ide_statusbar_lsp');
+        /**
+         * Read the active file's server statistics when the user inspects its status.
+         */
+        function showStatistics() {
+            const file = fileManager.currentFile();
+            const LS = languageServers[file?.getLSLang()];
+            statusElement.title = LS ? VPLUI.getLSStatisticsTitle(LS.getStatistics()) : '';
+        }
+        statusElement?.setAttribute('tabindex', '0');
+        statusElement?.addEventListener('mouseenter', showStatistics);
+        statusElement?.addEventListener('focus', showStatistics);
         statusElement?.addEventListener('click', function() {
             let file = fileManager.currentFile();
             let LS = languageServers[file?.getLSLang()];

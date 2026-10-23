@@ -138,6 +138,7 @@ export const binaryExtension = function() {
         VPLUI.updateIDEStatus(
             {
                 fileName: this.getFileName(),
+                binary: this.isBinary(),
                 position: this.getHumanReadableSize(),
                 language: this.getLangName() + " " + VPLUtil.str('binaryfile'),
                 unsaved: this.isModified(),

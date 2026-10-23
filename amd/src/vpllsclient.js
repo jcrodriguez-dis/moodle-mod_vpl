@@ -257,7 +257,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     // One minute in milliseconds
     const minutes = 60 * seconds;
     // Time in ms to wait after a file change before sending the notification to the Language Server
-    const timeoutFileChange = 500;
+    const timeoutFileChange = 200;
     // Time in ms to wait after connection to start sending notifications to the Language Server
     const waitTimeLSStart = 500;
     // Time in ms to wait for recheck if LS connected
@@ -274,6 +274,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     var inactivityTimeoutId = null;
     // WebSocket connection with the Language Server
     var ws = null;
+    var connectionAttempt = 0;
     // Home path of the Language Server
     var urihomepath = "";
     // Project folder in the Language Server
@@ -290,6 +291,57 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     var version = 0;
     // Requests pending a message from the Language Server
     var requests = {};
+    var statistics;
+    /**
+     * Reset the statistics for a new server process.
+     */
+    function resetStatistics() {
+        statistics = {
+            startedAt: null,
+            stoppedAt: null,
+            responseWaitTime: 0,
+            responseTime: 0,
+            completedRequests: 0,
+            requestsSent: 0,
+            requestsReceived: 0,
+            responsesSent: 0,
+            responsesReceived: 0,
+            notificationsSent: 0,
+            notificationsReceived: 0,
+            bytesSent: 0,
+            bytesReceived: 0
+        };
+    }
+    resetStatistics();
+    /**
+     * Get a snapshot, including elapsed time for requests still in flight.
+     * Concurrent requests contribute their individual waiting times.
+     * @returns {Object} Statistics with durations in milliseconds and sizes in bytes
+     */
+    this.getStatistics = function() {
+        const now = window.performance.now();
+        let responseWaitTime = statistics.responseWaitTime;
+        const pending = Object.values(requests);
+        for (const request of pending) {
+            responseWaitTime += now - request.sentAt;
+        }
+        return {
+            language: language.toUpperCase(),
+            runningTime: statistics.startedAt === null ? 0 : (statistics.stoppedAt ?? now) - statistics.startedAt,
+            responseWaitTime: responseWaitTime,
+            averageResponseTime: statistics.completedRequests === 0 ? null :
+                statistics.responseTime / statistics.completedRequests,
+            pendingRequests: pending.length,
+            requestsSent: statistics.requestsSent,
+            requestsReceived: statistics.requestsReceived,
+            responsesSent: statistics.responsesSent,
+            responsesReceived: statistics.responsesReceived,
+            notificationsSent: statistics.notificationsSent,
+            notificationsReceived: statistics.notificationsReceived,
+            bytesSent: statistics.bytesSent,
+            bytesReceived: statistics.bytesReceived
+        };
+    };
     // All markers received from the Language Server
     var allMarkers = [];
     // Server capabilities received from the Language Server (normalized wrapper)
@@ -429,9 +481,11 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * It returns the request corresponding to the given ID
      * and removes it from the pending requests.
      * @param {String} id of the request
+     * @param {boolean} responded Whether a server response completed the request
+     * @param {number} endedAt Monotonic completion timestamp
      * @returns {Object} request corresponding to the ID or a not found message
      */
-    function getRequestByIdAndRemove(id) {
+    function getRequestByIdAndRemove(id, responded = true, endedAt = window.performance.now()) {
         let request = {
             requestMethod: "Not found ID '" + id + "' in requests",
             fileName: null,
@@ -440,11 +494,30 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         if (requests[id] != undefined) {
             request = requests[id];
+            const elapsed = endedAt - request.sentAt;
+            statistics.responseWaitTime += elapsed;
+            if (responded) {
+                statistics.responseTime += elapsed;
+                statistics.completedRequests++;
+            }
             delete requests[id];
             window.clearTimeout(request.timeoutId);
             return request;
         }
         return request;
+    }
+
+    /**
+     * Freeze running time and settle requests when this connection ends.
+     */
+    function stopStatistics() {
+        const now = window.performance.now();
+        if (statistics.startedAt !== null && statistics.stoppedAt === null) {
+            statistics.stoppedAt = now;
+        }
+        for (const id of Object.keys(requests)) {
+            getRequestByIdAndRemove(id, false, now).resolve({result: null});
+        }
     }
 
     this.applyFileChanges = function(fileURI, changes) {
@@ -987,6 +1060,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         session.$vplfile = file;
         if (serverCapabilities.hasCompletionProvider()) {
             editor.completers = [self.aceCompleterAdapter];
+            self.aceCompleterAdapter.configure(editor, window.ace.require("ace/autocomplete"));
         }
         session.on('change', function(delta) {
             resetInactivityTimeout();
@@ -1135,17 +1209,18 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
          */
         self.addFileChangeDelta = function(file, delta) {
             self.clearChangeFileTimer(file);
+            let fileName = file.getFileName();
             if (delta !== undefined) {
-                if (deltaChangeFiles[file.getFileName()] === undefined) {
-                    deltaChangeFiles[file.getFileName()] = [];
+                if (deltaChangeFiles[fileName] === undefined) {
+                    deltaChangeFiles[fileName] = [];
                 }
                 if (Array.isArray(delta)) {
-                    deltaChangeFiles[file.getFileName()] = deltaChangeFiles[file.getFileName()].concat(delta);
+                    deltaChangeFiles[fileName] = deltaChangeFiles[fileName].concat(delta);
                 } else {
-                    deltaChangeFiles[file.getFileName()].push(delta);
+                    deltaChangeFiles[fileName].push(delta);
                 }
             }
-            changeFilesTimerId[file.getFileName()] = window.setTimeout(function() {
+            changeFilesTimerId[fileName] = window.setTimeout(function() {
                 self.notifyPendingFileChanges(file);
             }, timeoutFileChange);
         };
@@ -1702,6 +1777,58 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         self.aceCompleterAdapter = {
             id: "VPL LSPClient Completer",
             identifierRegexps: [/[\p{L}0-9_$]/u],
+            /**
+             * Use LSP matching text and ranking without changing Ace's global filtering.
+             * @param {Object} editor Ace editor
+             * @param {Object} autocompleteModule Ace autocomplete module
+             */
+            configure: function(editor, autocompleteModule) {
+                const {Autocomplete, CompletionProvider, FilteredList} = autocompleteModule;
+                const autocomplete = Autocomplete.for(editor);
+                if (autocomplete.vplLSPFiltering) {
+                    return;
+                }
+                class LSPFilteredList extends FilteredList {
+                    filterCompletions(items, prefix) {
+                        const candidates = items.filter(item => item.filterText !== '' || prefix.length === 0).map(item => ({
+                            ...item,
+                            caption: item.filterText || item.caption,
+                            vplOriginalItem: item
+                        }));
+                        return super.filterCompletions(candidates, prefix).map(match => {
+                            const item = match.vplOriginalItem;
+                            item.matchMask = match.matchMask;
+                            // Ace otherwise sorts prefix matches before the server's preferred items.
+                            item.exactMatch = 1;
+                            item.$score = item.score;
+                            return item;
+                        });
+                    }
+                }
+                class LSPCompletionProvider extends CompletionProvider {
+                    provideCompletions(editor, options, callback) {
+                        return super.provideCompletions(editor, options, (error, completions, finished) => {
+                            if (error || !completions.all.every(item => item.lspItem)) {
+                                callback(error, completions, finished);
+                                return;
+                            }
+                            const filtered = new LSPFilteredList(completions.all);
+                            filtered.exactMatch = completions.exactMatch;
+                            filtered.setFilter(completions.filterText);
+                            this.completions = filtered;
+                            callback(null, filtered, finished);
+                        });
+                    }
+                }
+                autocomplete.detach();
+                autocomplete.getCompletionProvider = function(initialPosition) {
+                    if (!this.completionProvider) {
+                        this.completionProvider = new LSPCompletionProvider(initialPosition);
+                    }
+                    return this.completionProvider;
+                };
+                autocomplete.vplLSPFiltering = true;
+            },
             getCompletions: async function(editor, session, pos, prefix, callback) {
                 try {
                     if (!self.isConnected()) {
@@ -2028,8 +2155,14 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * It processes a message received from the Language Server
      * and executes the corresponding actions in the client.
      * @param {Object} message received from the Language Server
+     * @param {number} receivedAt Monotonic timestamp when the response arrived
      */
-    function processArrivedMessage(message) {
+    function processArrivedMessage(message, receivedAt) {
+        if (message.method !== undefined) {
+            statistics[message.id === undefined ? 'notificationsReceived' : 'requestsReceived']++;
+        } else if (message.id !== undefined) {
+            statistics.responsesReceived++;
+        }
         // Type error message
         if (message.error != undefined) {
             log('Error code: ' + message.error.code + ' message: ' + message.error.message);
@@ -2037,7 +2170,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 log(JSON.stringify(message.error.data));
             }
             if (message.id != undefined) {
-                let errRequest = getRequestByIdAndRemove(message.id);
+                let errRequest = getRequestByIdAndRemove(message.id, true, receivedAt);
                 if (errRequest.resolve) {
                     errRequest.resolve({result: null});
                 }
@@ -2050,8 +2183,8 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             requestMethod: null,
             data: null
         };
-        if (message.id != undefined) {
-            request = getRequestByIdAndRemove(message.id);
+        if (message.id != undefined && message.method === undefined) {
+            request = getRequestByIdAndRemove(message.id, true, receivedAt);
         }
 
         if (message.method != undefined) {
@@ -2080,10 +2213,11 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * It processes the messages received from the Language Server
      * and executes the corresponding actions in the client.
      * @param {Array} messages received from the Language Server
+     * @param {number} receivedAt Monotonic timestamp when the messages arrived
      */
-    function processArrivedMessages(messages) {
+    function processArrivedMessages(messages, receivedAt) {
         for (let message of messages) {
-            processArrivedMessage(message);
+            processArrivedMessage(message, receivedAt);
         }
         self.setStatus();
     }
@@ -2135,9 +2269,11 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * @param {*} response read from the WebSocket connection with the Language Server.
      */
     function processIncomingData(response) {
+        const receivedAt = window.performance.now();
         var datos = response.data;
         // Append incoming bytes to the pending byte buffer
         const newBytes = lsTextEncoder.encode(datos);
+        statistics.bytesReceived += newBytes.byteLength;
         const combined = new Uint8Array(pendingMessage.buffer.length + newBytes.length);
         combined.set(pendingMessage.buffer);
         combined.set(newBytes, pendingMessage.buffer.length);
@@ -2190,7 +2326,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 }
             }
         }
-        processArrivedMessages(messages);
+        processArrivedMessages(messages, receivedAt);
     }
     var reConnectionTimerId = null;
     /**
@@ -2216,11 +2352,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         }
         ws = null;
         // Resolve all pending requests with null result to avoid hanging promises
-        for (let id of Object.keys(requests)) {
-            window.clearTimeout(requests[id].timeoutId);
-            requests[id].resolve({result: null});
-        }
-        requests = {};
+        stopStatistics();
         if (reConnection < maxConnectionsAttempts) {
             scheduleReconnection(waitTimeForRetryingLSConection);
             reConnection++;
@@ -2235,16 +2367,20 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         if (self.isConnecting() || self.isConnected()) {
             return;
         }
+        const attempt = ++connectionAttempt;
         if (reConnectionTimerId !== null) {
             window.clearTimeout(reConnectionTimerId);
             reConnectionTimerId = null;
         }
+        stopStatistics();
         lastConnectionAttemptTime = Date.now();
         VPLTaskId = null;
         messageId = 0;
         version = 0;
         ws = null;
         requests = {};
+        resetStatistics();
+        pendingMessage = {active: false, buffer: new Uint8Array(0), expectedLength: 0};
         self.removeAllMarkers();
         serverCapabilities = new LSServerCapabilities({});
         watchedFileRegistrations = {};
@@ -2274,32 +2410,53 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         self.setStatus();
         VPLUtil.directRun(APIURL, '$' + language, files)
         .then(function(openws) {
+            if (attempt !== connectionAttempt) {
+                const stopped = VPLUtil.cancelDirectRun(APIURL, openws.processid);
+                openws.connection.close();
+                return stopped;
+            }
             log("Connection established. home: " + openws.homepath);
             ws = openws;
+            statistics.startedAt = window.performance.now();
             let projectpath = openws.homepath + "/" + projectFolder;
             urihomepath = "file://" + projectpath.split("/").map(encodeURIComponent).join("/");
             VPLTaskId = openws.processid;
             reConnection = 0;
-            ws.connection.onmessage = processIncomingData;
+            const connection = ws.connection;
+            ws.connection.onmessage = function(response) {
+                if (ws?.connection === connection) {
+                    processIncomingData(response);
+                }
+            };
             ws.connection.onopen = self.setStatus;
             ws.connection.onerror = function() {
                 log("WebSocket error occurred.");
                 self.setStatus();
             };
             ws.connection.onclose = function() {
+                if (ws?.connection !== connection) {
+                    return;
+                }
                 // Disable event handlers while LS is stopped to avoid triggering LSP activity.
                 log("WebSocket closed.");
                 self.eventHandlersActive = false;
+                stopStatistics();
                 // The socket is already closed, so show the lost connection right away.
                 self.setStatus();
                 tryReconnect();
             };
             self.setStatus();
             self.initializeRequest();
-            return;
+            return null;
         })
-        .catch(function() {
+        .catch(function(error) {
+            if (attempt !== connectionAttempt) {
+                log("Error cleaning up superseded LS launch: " + error);
+                return;
+            }
+            log("Error starting LS: " + error);
             ws = null;
+            stopStatistics();
             self.setStatus();
             tryReconnect();
         });
@@ -2326,8 +2483,14 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
      * Close connection with the Language Server
      */
     this.stopConnection = function() {
+        connectionAttempt++;
         let taskId = VPLTaskId;
         VPLTaskId = null;
+        stopStatistics();
+        if (inactivityTimeoutId !== null) {
+            clearTimeout(inactivityTimeoutId);
+            inactivityTimeoutId = null;
+        }
         // Cancel any pending reconnection so the LS stays down until there is activity again.
         if (reConnectionTimerId !== null) {
             window.clearTimeout(reConnectionTimerId);
@@ -2351,6 +2514,23 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     };
 
     /**
+     * Send one framed message, counting UTF-8 bytes only after a successful send.
+     * @param {Object} message JSON-RPC message
+     * @param {string} counter Outgoing message counter
+     * @returns {number} Monotonic send timestamp
+     */
+    function sendMessage(message, counter) {
+        const payload = JSON.stringify(message);
+        const contentLength = lsTextEncoder.encode(payload).byteLength;
+        const header = "Content-Length: " + contentLength + "\r\n\r\n";
+        const sentAt = window.performance.now();
+        ws.connection.send(header + payload);
+        statistics.bytesSent += header.length + contentLength;
+        statistics[counter]++;
+        return sentAt;
+    }
+
+    /**
      * Send a notification to the Language Server
      * @param {String} method Name of the notification
      * @param {String} params Parameters needed for the notification
@@ -2363,10 +2543,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         if (this.isConnected()) {
             resetInactivityTimeout();
-            var payload = JSON.stringify(jsonMessage);
-            const contentLength = new TextEncoder().encode(payload).length;
-            var request = "Content-Length: " + contentLength + "\r\n\r\n" + payload;
-            ws.connection.send(request);
+            sendMessage(jsonMessage, 'notificationsSent');
             log("Sent notification: " + method);
         } else {
             log("Cannot send notification: " + method + " due to connection lost.");
@@ -2386,10 +2563,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         };
         if (this.isConnected()) {
             resetInactivityTimeout();
-            var payload = JSON.stringify(jsonMessage);
-            const contentLength = new TextEncoder().encode(payload).length;
-            var response = "Content-Length: " + contentLength + "\r\n\r\n" + payload;
-            ws.connection.send(response);
+            sendMessage(jsonMessage, 'responsesSent');
             log("Sent response for id: " + id);
         } else {
             log("Cannot send response for id: " + id + " due to connection lost.");
@@ -2417,11 +2591,24 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             tryReconnect();
             return promiseRequest;
         }
+        const jsonMessage = {
+            jsonrpc: "2.0",
+            id: id,
+            method: method,
+            params: params
+        };
+        let sentAt;
+        try {
+            sentAt = sendMessage(jsonMessage, 'requestsSent');
+        } catch (error) {
+            log("Failed to send request: " + method + ": " + error, true);
+            rejectRequest(error);
+            return promiseRequest;
+        }
         const timeoutId = window.setTimeout(function() {
             if (requests[id]) {
                 log('Request timeout: ' + method + ' id: ' + id, true);
-                delete requests[id];
-                resolveRequest({result: null});
+                getRequestByIdAndRemove(id, false).resolve({result: null});
             }
         }, requestTimeout);
         requests[id] = {
@@ -2430,18 +2617,9 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             'data': data,
             'resolve': resolveRequest,
             'reject': rejectRequest,
-            'timeoutId': timeoutId
+            'timeoutId': timeoutId,
+            'sentAt': sentAt
         };
-        let jsonMessage = {
-            "jsonrpc": "2.0",
-            "id": id,
-            "method": method,
-            "params": params
-        };
-        var payload = JSON.stringify(jsonMessage);
-        const contentLength = new TextEncoder().encode(payload).length;
-        var request = "Content-Length: " + contentLength + "\r\n\r\n" + payload;
-        ws.connection.send(request);
         self.setStatus();
         log("Sent request: " + method + " with id: " + jsonMessage.id);
         return promiseRequest;

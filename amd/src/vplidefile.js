@@ -127,7 +127,7 @@ export const VPLFile = function(id, name, value, fileManager) {
         if (fn.length > 20) {
             fn = fn.substring(0, 16) + '...';
         }
-        var html = (modified ? VPLUI.iconModified() : '') + fn;
+        var html = (modified ? VPLUI.iconModified() : '') + VPLUI.iconFile(name, this.isBinary()) + VPLUtil.sanitizeText(fn);
         if (this.isReadOnly()) {
             html = html + VPLUI.iconReadOnly();
         } else if (this.getId() < fileManager.minNumberOfFiles) {
@@ -182,6 +182,7 @@ export const VPLFile = function(id, name, value, fileManager) {
         VPLUI.updateIDEStatus(
             {
                 fileName: self.getFileName(),
+                binary: self.isBinary(),
                 position: '',
                 language: self.isBinary() ? VPLUtil.str('binaryfile') : self.getLangName(),
                 unsaved: self.isModified(),

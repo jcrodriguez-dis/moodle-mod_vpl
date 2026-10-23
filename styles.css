@@ -280,6 +280,13 @@ tr.vpl_hidden_evaluation_row {
     overflow: hidden;
 }
 
+.vpl_ide_fileicon {
+    width: 1.2em;
+    height: 1.2em;
+    margin-right: 0.25em;
+    vertical-align: middle;
+}
+
 #vpl_filelist {
     display: none;
     left: 0;
@@ -501,6 +508,7 @@ div.vpl_ide_file.ui-tabs-panel {
 }
 
 .vpl_ide_statusbar_position,
+.vpl_ide_statusbar_annotations,
 .vpl_ide_statusbar_language,
 .vpl_ide_statusbar_lsp,
 .vpl_ide_statusbar_shrightpanel,
@@ -513,6 +521,31 @@ div.vpl_ide_file.ui-tabs-panel {
 
 .vpl_ide_statusbar_lsp {
     cursor: pointer;
+}
+
+.vpl_ide_annotation {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.15em;
+    margin: 0 0.25em;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+}
+
+.vpl_ide_annotation:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+.vpl_ide_annotation .ace_icon {
+    width: 18px;
+    height: 16px;
+    background-repeat: no-repeat;
+    background-position: center;
 }
 
 img.vpl_ide_file {

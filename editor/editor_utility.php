@@ -80,6 +80,7 @@ class vpl_editor_util {
         self::generate_jquery();
         $opt = new stdClass();
         $opt->scriptPath = $CFG->wwwroot . '/mod/vpl/editor';
+        $opt->fileIconsElement = $tagid;
         $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/marked/marked.umd.min.js'));
         $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/filterxss/xss.min.js'));
         $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [$opt]);
@@ -152,9 +153,10 @@ class vpl_editor_util {
         $lscmcodeaction = s(get_string('ls:cmcodeaction', VPL));
         $ok = s(get_string('ok'));
         $cancel = s(get_string('cancel'));
+        $fileicons = s(json_encode(\mod_vpl\util\file_icon::get_client_config()));
 
         $html = <<<"HTML"
-<div id="$tagid" class="vpl_ide vpl_ide_root">
+<div id="$tagid" class="vpl_ide vpl_ide_root" data-file-icons="$fileicons">
     <div id="vpl_menu" class="vpl_ide_menu"></div>
     <div id="vpl_tr" class="vpl_ide_tr">
         <div id="vpl_filelist" style="display: none;">
@@ -177,6 +179,7 @@ class vpl_editor_util {
             <span class="vpl_ide_statusbar_shrightpanel" style="display: none;"></span>
             <span class="vpl_ide_statusbar_preferences"></span>
             <span class="vpl_ide_statusbar_position"></span>
+            <span class="vpl_ide_statusbar_annotations" style="display: none;"></span>
             <span class="vpl_ide_statusbar_lsp" style="display: none;"></span>
             <span class="vpl_ide_statusbar_language"></span>
             <span class="vpl_ide_statusbar_action"></span>
@@ -420,6 +423,16 @@ HTML;
                 'new',
                 'next',
                 'load',
+                'ls:statistics',
+                'ls:runningtime',
+                'ls:waittime',
+                'ls:averageresponsetime',
+                'ls:sentreceived',
+                'ls:clientrequests',
+                'ls:serverrequests',
+                'ls:notifications',
+                'ls:bytessent',
+                'ls:bytesreceived',
                 'loading',
                 'open',
                 'options',
@@ -491,6 +504,7 @@ HTML;
                 'closebuttontitle',
                 'error',
                 'import',
+                'info',
                 'modified',
                 'no',
                 'notice',

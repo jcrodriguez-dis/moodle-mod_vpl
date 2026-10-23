@@ -727,9 +727,10 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2026042413();
         upgrade_mod_savepoint(true, $vpl45, 'vpl');
     }
-    if ($oldversion < 2026052302) {
+    $vpl500 = 2026052302;
+    if ($oldversion < $vpl500) {
         xmldb_vpl_upgrade_2026052302();
-        upgrade_mod_savepoint(true, 2026052302, 'vpl');
+        upgrade_mod_savepoint(true, $vpl500, 'vpl');
     }
     return true;
 }

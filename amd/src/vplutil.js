@@ -246,6 +246,44 @@ VPLUtil.getCurrentTime = function() {
     return parseInt((new Date()).valueOf() / 1000);
 };
 
+/**
+ * Select the same file icon as the PHP file_icon utility.
+ *
+ * @param {string} filename File path
+ * @param {boolean} binary Whether the file has binary contents
+ * @returns {string} Icon identifier
+ */
+VPLUtil.getFileIconName = function(filename, binary) {
+    if (VPLUtil.isImage(filename)) {
+        return 'image';
+    }
+    if (VPLUtil.isAudio(filename)) {
+        return 'audio';
+    }
+    if (VPLUtil.isVideo(filename)) {
+        return 'video';
+    }
+    if (binary || VPLUtil.isBinary(filename)) {
+        return 'binary';
+    }
+    if (VPLUtil.isBlockly(filename.toLowerCase())) {
+        return 'blockly';
+    }
+    var name = VPLUtil.getFileName(filename);
+    var icons = VPLUtil.options.fileIcons;
+    if (icons.scripts.includes(name)) {
+        return 'vplscript';
+    }
+    if (Object.prototype.hasOwnProperty.call(icons.filenames, name)) {
+        return icons.filenames[name];
+    }
+    var extension = VPLUtil.fileExtension(name);
+    if (Object.prototype.hasOwnProperty.call(icons.extensions, extension)) {
+        return icons.extensions[extension];
+    }
+    return 'text';
+};
+
 VPLUtil.validPath = function(path) {
     if (path.length > 256) {
         return false;
@@ -1375,6 +1413,13 @@ VPLUtil.init = function(options) {
         scriptPath: ''
     };
     $.extend(VPLUtil.options, options);
+    if (VPLUtil.options.fileIconsElement) {
+        var element = document.getElementById(VPLUtil.options.fileIconsElement);
+        if (!element || !element.hasAttribute('data-file-icons')) {
+            throw new Error('VPL file icon configuration is missing');
+        }
+        VPLUtil.options.fileIcons = JSON.parse(element.getAttribute('data-file-icons'));
+    }
     if (typeof window.VPLDebugMode != 'undefined') {
         debugMode = window.VPLDebugMode;
     }

@@ -25,6 +25,10 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
+$PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/marked/marked.umd.min.js'));
+$PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [
+    ['fileIconsElement' => 'test_results', 'scriptPath' => $CFG->wwwroot . '/mod/vpl/editor'],
+]);
 $PAGE->requires->js_call_amd('mod_vpl/jstests-lazy', 'start');
 $course = $DB->get_record("course", [ 'id' => $COURSE->id ]);
 
@@ -35,5 +39,6 @@ $PAGE->set_url('/mod/vpl/tests/test_javascript.php');
 $PAGE->set_title($title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
-echo "<div id='test_results'></div>";
+$fileicons = s(json_encode(\mod_vpl\util\file_icon::get_client_config()));
+echo "<div id='test_results' data-file-icons='$fileicons'></div>";
 echo $OUTPUT->footer();

@@ -25,6 +25,7 @@
 /* globals JSInflate */
 
 import $ from 'jquery';
+import url from 'core/url';
 /* eslint-disable no-unused-vars */
 import jqui from 'jqueryui';
 /* eslint-enable no-unused-vars */
@@ -205,6 +206,18 @@ VPLUI.iconReadOnly = function() {
 };
 VPLUI.iconFolder = function() {
     return '<i class="fa fa-folder-open-o"></i>';
+};
+/**
+ * Get a decorative file type icon for an IDE filename.
+ *
+ * @param {string} filename File path
+ * @param {boolean} binary Whether the file has binary contents
+ * @returns {string} Icon HTML
+ */
+VPLUI.iconFile = function(filename, binary) {
+    var icon = VPLUtil.getFileIconName(filename, binary);
+    var src = url.relativeUrl('/mod/vpl/pix/fileicons/' + icon + '.svg');
+    return '<img class="vpl_ide_fileicon" src="' + VPLUtil.sanitizeText(src) + '" alt="" aria-hidden="true">';
 };
 (function() {
     var menuIcons = {
@@ -724,6 +737,59 @@ VPLUI.webSocketMonitor = function(coninfo, title, running, externalActions) {
     return deferred;
 };
 
+/**
+ * Format a language server statistics snapshot for the native hover tooltip.
+ * @param {Object} statistics Per-connection statistics
+ * @returns {string} Localized multiline tooltip
+ */
+VPLUI.getLSStatisticsTitle = function(statistics) {
+    /**
+     * Format a duration without losing subsecond response measurements.
+     * @param {number} milliseconds Duration
+     * @returns {string} Duration with a human-readable unit
+     */
+    function duration(milliseconds) {
+        if (milliseconds < 1000) {
+            return milliseconds.toFixed(1) + ' ms';
+        }
+        if (milliseconds < 60000) {
+            return (milliseconds / 1000).toFixed(2) + ' s';
+        }
+        if (milliseconds < 3600000) {
+            return (milliseconds / 60000).toFixed(2) + ' min';
+        }
+        return (milliseconds / 3600000).toFixed(2) + ' h';
+    }
+    /**
+     * Format transferred bytes using the IDE's 1024-byte size units.
+     * @param {number} count Bytes
+     * @returns {string} Formatted size
+     */
+    function bytes(count) {
+        if (count < 1024) {
+            return count + ' B';
+        }
+        if (count < 1024 * 1024) {
+            return (count / 1024).toFixed(2) + ' KB';
+        }
+        return (count / (1024 * 1024)).toFixed(2) + ' MB';
+    }
+    const direction = VPLUtil.str('ls:sentreceived');
+    return [
+        VPLUtil.str('ls:statistics', statistics.language),
+        VPLUtil.str('ls:runningtime') + ': ' + duration(statistics.runningTime),
+        VPLUtil.str('ls:waittime') + ': ' + duration(statistics.responseWaitTime),
+        VPLUtil.str('ls:averageresponsetime') + ': ' +
+            (statistics.averageResponseTime === null ? '-' : duration(statistics.averageResponseTime)),
+        VPLUtil.str('ls:clientrequests') + ': ' + statistics.requestsSent + ' / ' + statistics.responsesReceived,
+        VPLUtil.str('ls:serverrequests') + ': ' + statistics.requestsReceived + ' / ' + statistics.responsesSent,
+        VPLUtil.str('ls:notifications') + ' (' + direction + '): ' +
+            statistics.notificationsSent + ' / ' + statistics.notificationsReceived,
+        VPLUtil.str('ls:bytessent') + ': ' + bytes(statistics.bytesSent),
+        VPLUtil.str('ls:bytesreceived') + ': ' + bytes(statistics.bytesReceived)
+    ].join('\n');
+};
+
 VPLUI.clearIDEStatus = function() {
     VPLUI.updateIDEStatus({
         fileName: '',
@@ -740,18 +806,54 @@ VPLUI.updateIDEStatus = function(status) {
         return;
     }
     $('#vpl_ide_statusbar').show();
+    var annotationsPanel = $('#vpl_ide_statusbar .vpl_ide_statusbar_annotations');
+    if (typeof status.annotations !== 'undefined') {
+        annotationsPanel.empty();
+        let nonzero = false;
+        let types = ['error', 'warning', 'info'];
+        types.forEach(function(type) {
+            var annotations = status.annotations.filter(annotation => annotation.type === type);
+            var label = VPLUtil.str(type) + ': ' + annotations.length;
+            var button = $('<button type="button" class="vpl_ide_annotation"></button>')
+                .attr({'data-type': type, title: label, 'aria-label': label})
+                .prop('disabled', annotations.length === 0);
+            if (annotations.length > 0) {
+                nonzero = true;
+                button.append($('<span aria-hidden="true"></span>').addClass('ace_icon ace_' + type));
+                button.append($('<span class="vpl_ide_annotation_count"></span>').text(annotations.length));
+                if (annotations.length > 0) {
+                    var firstRow = annotations.reduce((row, annotation) => Math.min(row, annotation.row), Infinity);
+                    button.on('click', function() {
+                        status.gotoAnnotation(firstRow + 1);
+                    });
+                }
+                annotationsPanel.append(button);
+            }
+        });
+        if (nonzero) {
+            annotationsPanel.show();
+        } else {
+            annotationsPanel.hide();
+        }
+    } else if (typeof status.fileName !== 'undefined') {
+        annotationsPanel.empty().hide();
+    }
+    let icon = '';
     if (typeof status.fileName !== 'undefined') {
         if (status.fileName === '') {
             $('#vpl_ide_statusbar .vpl_ide_statusbar_filename').hide();
         } else {
-            $('#vpl_ide_statusbar .vpl_ide_statusbar_filename').text(status.fileName).show();
+            icon = VPLUI.iconFile(status.fileName, status.binary) + ' ';
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_filename')
+                .html(icon + VPLUtil.sanitizeText(status.fileName)).show();
         }
     }
     if (typeof status.position !== 'undefined') {
         $('#vpl_ide_statusbar .vpl_ide_statusbar_position').text(status.position);
     }
     if (typeof status.language !== 'undefined') {
-        $('#vpl_ide_statusbar .vpl_ide_statusbar_language').text(status.language);
+        let languagehtml = VPLUtil.sanitizeText(status.language);
+        $('#vpl_ide_statusbar .vpl_ide_statusbar_language').html(languagehtml);
     }
     if (typeof status.action !== 'undefined') {
         if (status.action === null) {
@@ -782,7 +884,7 @@ VPLUI.updateIDEStatus = function(status) {
         if (status.lsp !== '') {
             $('#vpl_ide_statusbar .vpl_ide_statusbar_lsp').text(status.lsp).show();
         } else {
-            $('#vpl_ide_statusbar .vpl_ide_statusbar_lsp').hide();
+            $('#vpl_ide_statusbar .vpl_ide_statusbar_lsp').removeAttr('title').hide();
         }
     }
 };

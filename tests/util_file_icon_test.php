@@ -34,6 +34,23 @@ use mod_vpl\util\file_icon;
  */
 final class util_file_icon_test extends \advanced_testcase {
     /**
+     * Check the IDE mappings agree with server-side icon selection.
+     */
+    public function test_client_config_matches_icon_selection(): void {
+        $config = file_icon::get_client_config();
+        foreach ($config['extensions'] as $extension => $icon) {
+            $this->assertSame($icon, file_icon::get_name('src/file.' . $extension), $extension);
+            $this->assertFileExists(__DIR__ . '/../pix/fileicons/' . $icon . '.svg');
+        }
+        foreach ($config['filenames'] as $filename => $icon) {
+            $this->assertSame($icon, file_icon::get_name('src/' . $filename), $filename);
+        }
+        foreach ($config['scripts'] as $filename) {
+            $this->assertSame('vplscript', file_icon::get_name('src/' . $filename), $filename);
+        }
+    }
+
+    /**
      * Check special files and language extensions select their own icon.
      */
     public function test_get_icon_name_for_known_file_types(): void {
