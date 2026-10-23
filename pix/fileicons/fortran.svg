@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Fortran file</title>
+  <desc id="desc">A white F on a purple badge above the Fortran name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="10" y="7" width="44" height="44" rx="8" fill="#754F9A"/>
+  <path d="M22 16h23v6H29v6h13v6H29v10h-7z" fill="#FFF"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#754F9A">Fortran</text>
+</svg>

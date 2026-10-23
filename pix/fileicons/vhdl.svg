@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">VHDL file</title>
+  <desc id="desc">A teal digital timing waveform on a light grid above the VHDL name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M10 12v36h45M10 20h45M10 34h45M23 12v36m16-36v36" fill="none" stroke="#D4E6E8" stroke-width="1.5"/>
+  <path d="M8 35h9V17h10v26h10V23h10v12h9" fill="none" stroke="#118696" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#118696">VHDL</text>
+</svg>

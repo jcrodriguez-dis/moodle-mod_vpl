@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">COBOL file</title>
+  <desc id="desc">A blue punched card with rows of rectangular holes above the COBOL name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M9 12h38l8 8v25H9z" fill="#EAF3FB" stroke="#296194" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M15 20h22" stroke="#9BBEDB" stroke-width="2" stroke-linecap="round"/>
+  <path d="M15 26h4v6h-4zm8 0h4v6h-4zm16 0h4v6h-4zm8 0h3v6h-3zM15 36h4v5h-4zm16 0h4v5h-4zm8 0h4v5h-4z" fill="#3978AE"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#296194">COBOL</text>
+</svg>

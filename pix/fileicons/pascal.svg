@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Pascal file</title>
+  <desc id="desc">Four rows of dots forming Pascal's triangle above the Pascal name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m32 9 23 39H9z" fill="#E3F4EE" stroke="#08776F" stroke-width="2" stroke-linejoin="round"/>
+  <g fill="#078E84">
+    <circle cx="32" cy="17" r="2.5"/>
+    <circle cx="27" cy="26" r="2.5"/>
+    <circle cx="37" cy="26" r="2.5"/>
+    <circle cx="22" cy="35" r="2.5"/>
+    <circle cx="32" cy="35" r="2.5"/>
+    <circle cx="42" cy="35" r="2.5"/>
+    <circle cx="17" cy="44" r="2.5"/>
+    <circle cx="27" cy="44" r="2.5"/>
+    <circle cx="37" cy="44" r="2.5"/>
+    <circle cx="47" cy="44" r="2.5"/>
+  </g>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#078E84">Pascal</text>
+</svg>

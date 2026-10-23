@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Python file</title>
+  <desc id="desc">Two interlocking rounded snakes, blue above and yellow below, each with a white eye.</desc>
+  <g>
+    <path d="M32 6c-10 0-13 3-13 9v5h13v3H16C9 23 6 28 6 36s3 13 10 13h3v-9c0-6 5-9 12-9h10c4 0 7-3 7-7v-9c0-6-5-9-16-9z" fill="#3776AB"/>
+    <path d="M32 6c-10 0-13 3-13 9v5h13v3H16C9 23 6 28 6 36s3 13 10 13h3v-9c0-6 5-9 12-9h10c4 0 7-3 7-7v-9c0-6-5-9-16-9z" transform="rotate(180 32 32)" fill="#FFD343"/>
+    <circle cx="26" cy="13" r="2.3" fill="#FFF"/>
+    <circle cx="38" cy="51" r="2.3" fill="#FFF"/>
+  </g>
+</svg>

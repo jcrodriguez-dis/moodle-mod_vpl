@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">HTML file</title>
+  <desc id="desc">An orange shield with a white stylised five above the HTML name, matching the CSS icon.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m12 7 4 35 16 9 16-9 4-35z" fill="#D9582E"/>
+  <path d="M32 11h15l-3.5 28.5L32 46z" fill="#EF8047"/>
+  <path d="M20 16h24l-.5 6H27l.5 5H43l-2 13-9 4-9-4-1-7h6l.5 3 3.5 1.5 3.5-1.5.5-3H22z" fill="#FFF"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#E34F26">HTML</text>
+</svg>

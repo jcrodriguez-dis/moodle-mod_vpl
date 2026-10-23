@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">MiniZinc file</title>
+  <desc id="desc">A blue constraint cube with connected vertices above the MiniZinc name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m32 8 18 10v21L32 49 14 39V18z" fill="#E4EFFC" stroke="#255DA7" stroke-width="2" stroke-linejoin="round"/>
+  <path d="m14 18 18 11 18-11M32 29v20" fill="none" stroke="#255DA7" stroke-width="2" stroke-linejoin="round"/>
+  <path d="m32 29 18-11v21L32 49z" fill="#255DA7" fill-opacity=".12"/>
+  <g fill="#72A8E4" stroke="#255DA7" stroke-width="1.5">
+    <circle cx="32" cy="8" r="3"/>
+    <circle cx="14" cy="39" r="3"/>
+    <circle cx="50" cy="39" r="3"/>
+  </g>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="9.75" font-weight="700" letter-spacing=".15" fill="#255DA7">MiniZinc</text>
+</svg>

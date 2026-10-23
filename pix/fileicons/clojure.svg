@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Clojure file</title>
+  <desc id="desc">Interwoven green curves inside a blue circle above the Clojure name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <circle cx="32" cy="29" r="21" fill="#F2F7FC" stroke="#4C86BC" stroke-width="3"/>
+  <path d="M21 44c-6-8 10-24 12-31m-4 2c-4 8 1 11 7 16s8 9 5 14" fill="none" stroke="#FFF" stroke-width="9" stroke-linecap="round"/>
+  <path d="M21 44c-6-8 10-24 12-31m-4 2c-4 8 1 11 7 16s8 9 5 14" fill="none" stroke="#619F42" stroke-width="5" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#487B32">Clojure</text>
+</svg>

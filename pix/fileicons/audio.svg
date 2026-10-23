@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Audio file</title>
+  <desc id="desc">Headphones surrounding a colorful sound waveform.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M14 32v-4a18 18 0 0 1 36 0v4" fill="none" stroke="#536F9C" stroke-width="4" stroke-linecap="round"/>
+  <rect x="10" y="29" width="9" height="19" rx="4" fill="#6689C1"/>
+  <rect x="45" y="29" width="9" height="19" rx="4" fill="#6689C1"/>
+  <path d="M24 34v9m8-16v23m8-18v13" stroke="#34958E" stroke-width="3" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#536F9C">Audio</text>
+</svg>

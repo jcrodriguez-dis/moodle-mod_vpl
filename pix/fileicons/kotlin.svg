@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Kotlin file</title>
+  <desc id="desc">A geometric K formed from blue, purple and orange triangles above the Kotlin name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M11 8h42L32 29l21 21H11z" fill="#7851CE"/>
+  <path d="M11 8h21L11 29z" fill="#368FCB"/>
+  <path d="M32 8h21L11 50V29z" fill="#D77A80"/>
+  <path d="m11 50 21-21 21 21z" fill="#ED9855"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#7851CE">Kotlin</text>
+</svg>

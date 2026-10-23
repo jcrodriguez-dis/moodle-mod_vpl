@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">R file</title>
+  <desc id="desc">A blue R in front of a silver elliptical ring.</desc>
+  <ellipse cx="30" cy="26" rx="23" ry="16" fill="none" stroke="#B8C1CB" stroke-width="7"/>
+  <path d="M24 50V19h13c9 0 14 4 14 10 0 5-3 8-8 9l12 12H44L34 39h-2v11zm8-24v7h5c4 0 6-1 6-4s-2-3-6-3z" fill="#276DC3"/>
+</svg>

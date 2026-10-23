@@ -69,6 +69,7 @@ class vpl_sh_binary extends vpl_sh_base {
         return isset($this->mime[$ext]) ? $this->mime[$ext] : '';
     }
 
+
     /**
      * This method prints the content of a binary file.
      *
@@ -77,7 +78,7 @@ class vpl_sh_binary extends vpl_sh_base {
      * @return void
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s($name) . '</h4>';
+        echo $this->get_header($name, $data, 'binary');
         $mime = $this->get_mime($name);
         if ($mime) {
             $encodeddata = base64_encode($data);

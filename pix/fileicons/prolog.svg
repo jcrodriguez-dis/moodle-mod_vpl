@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Prolog file</title>
+  <desc id="desc">A rust-red owl with round eyes and pointed ear tufts above the Prolog name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <g>
+    <path d="M14 8 25 14h14L50 8v25c0 11-7 17-18 17s-18-6-18-17z" fill="#C85E3B" stroke="#95402C" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M15 32c1 8 5 12 10 14m24-14c-1 8-5 12-10 14" fill="none" stroke="#95402C" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="24" cy="25" r="8" fill="#FFF0D4"/>
+    <circle cx="40" cy="25" r="8" fill="#FFF0D4"/>
+    <circle cx="25" cy="25" r="3" fill="#28394A"/>
+    <circle cx="39" cy="25" r="3" fill="#28394A"/>
+    <path d="m28 34 4-3 4 3-4 6z" fill="#F4BD53"/>
+    <path d="M24 50h5m6 0h5" stroke="#95402C" stroke-width="2" stroke-linecap="round"/>
+  </g>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#95402C">Prolog</text>
+</svg>

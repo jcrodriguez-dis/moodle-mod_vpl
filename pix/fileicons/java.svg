@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Java file</title>
+  <desc id="desc">A blue coffee cup with two red steam trails above the Java name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M25 20c-7-5 6-8 1-13m9 13c-7-5 6-8 1-13" fill="none" stroke="#D65C3D" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M44 28h4a7 7 0 0 1 0 14h-7" fill="none" stroke="#3978A5" stroke-width="3"/>
+  <path d="M14 25h30v10c0 8-5 12-15 12s-15-4-15-12z" fill="#3978A5"/>
+  <ellipse cx="29" cy="25" rx="15" ry="3" fill="#B4DAEB"/>
+  <path d="M19 32v4c0 4 2 6 5 7" fill="none" stroke="#80B8D4" stroke-width="2" stroke-linecap="round"/>
+  <path d="M10 50h42" stroke="#3978A5" stroke-width="2.5" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#3978A5">Java</text>
+</svg>

@@ -72,7 +72,7 @@ class vpl_sh_image extends vpl_sh_base {
      * @param string $data content of the file to show
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s($name) . '</h4>';
+        echo $this->get_header($name, $data, 'image');
         echo '<div class="vpl_sh vpl_g">';
         echo '<img src="data:image/' . $this->get_mime($name) . ';base64,';
         echo base64_encode($data);

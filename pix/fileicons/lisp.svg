@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Lisp file</title>
+  <desc id="desc">Two nested pairs of parentheses around a dot above the Lisp name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M19 10c-12 7-12 31 0 38m26-38c12 7 12 31 0 38" fill="none" stroke="#A13C72" stroke-width="3.5" stroke-linecap="round"/>
+  <path d="M27 19c-6 4-6 16 0 20m10-20c6 4 6 16 0 20" fill="none" stroke="#C779A0" stroke-width="3" stroke-linecap="round"/>
+  <circle cx="32" cy="29" r="2.5" fill="#A13C72"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#A13C72">LISP</text>
+</svg>

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Groovy file</title>
+  <desc id="desc">A white G on a blue five-pointed star above the Groovy name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m32 6 7 15 17 3-12 12 3 16-15-8-15 8 3-16L8 24l17-3z" fill="#397C9B" stroke="#235A76" stroke-width="1.5" stroke-linejoin="round"/>
+  <text x="32" y="37" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="23" font-weight="800" fill="#FFF">G</text>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#235A76">Groovy</text>
+</svg>

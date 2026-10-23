@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">All files</title>
+  <desc id="desc">Two stacked documents with coloured file markers above the All label.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M20 8h23l10 10v26H20z" fill="#CCD8EA" stroke="#536B9A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M11 15h23l10 10v24H11z" fill="#F0F4FA" stroke="#536B9A" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M34 15v10h10" fill="#CCD8EA"/>
+  <circle cx="21" cy="32" r="3" fill="#D39B38"/>
+  <circle cx="33" cy="32" r="3" fill="#49A98C"/>
+  <circle cx="21" cy="42" r="3" fill="#B45E91"/>
+  <circle cx="33" cy="42" r="3" fill="#5285C5"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#536B9A">All</text>
+</svg>

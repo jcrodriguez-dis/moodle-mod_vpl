@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Haskell file</title>
+  <desc id="desc">Purple arrows, a lambda and equals bars above the Haskell name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m5 12 12 17L5 46h9l12-17-12-17z" fill="#9B8AD0"/>
+  <path d="m19 12 12 17-12 17h9l8-11 8 11h10L29 12z" fill="#5D4D9B"/>
+  <path d="m40 21 4 6h15v-6zm6 10 4 6h9v-6z" fill="#9B8AD0"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#5D4D9B">Haskell</text>
+</svg>

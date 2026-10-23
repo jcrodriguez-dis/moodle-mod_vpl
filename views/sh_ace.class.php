@@ -87,7 +87,9 @@ class vpl_sh_ace extends vpl_sh_base {
             $theme = 'chrome';
         }
         if ($title) {
-            echo "<h4 id='$tid'>" . s($filename) . "</h4>\n";
+            $iconname = \mod_vpl\util\file_icon::get_name($filename, $filedata);
+            $iconimg = \mod_vpl\util\file_icon::get_img($iconname);
+            echo "<h4 id='$tid'>$iconimg&nbsp;" . s($filename) . "</h4>\n";
         }
         if ($filedata > '') {
             if ($nl >= 0) {

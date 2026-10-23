@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Shell script</title>
+  <desc id="desc">A green terminal prompt and cursor above the Shell name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="7" y="9" width="50" height="39" rx="6" fill="#283B35"/>
+  <path d="M7 18h50" stroke="#5B765C" stroke-width="2"/>
+  <circle cx="14" cy="14" r="1.4" fill="#E89179"/>
+  <circle cx="19" cy="14" r="1.4" fill="#E6C968"/>
+  <circle cx="24" cy="14" r="1.4" fill="#88C678"/>
+  <path d="m16 26 8 6-8 6m15 0h13" fill="none" stroke="#74CF64" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#4A9A34">Shell</text>
+</svg>

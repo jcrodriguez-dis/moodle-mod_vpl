@@ -1906,11 +1906,11 @@ class mod_vpl {
         if (count($files)) {
             $text = '';
             $needcomma = false;
-            foreach ($files as $file) {
+            foreach ($files as $filename) {
                 if ($needcomma) {
                     $text .= ', ';
                 }
-                $text .= s($file);
+                $text .= \mod_vpl\util\file_icon::get_filename_with_icon($filename);
                 $needcomma = true;
             }
             $link = ' (' . vpl_get_awesome_icon('download');

@@ -81,7 +81,7 @@ class vpl_sh_audio extends vpl_sh_base {
      * @param string $data content of the file to show
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s($name) . '</h4>';
+        echo $this->get_header($name, $data, 'audio');
         echo '<div class="vpl_sh vpl_g">';
         echo '<audio controls style="width: 100%; max-width: 500px;">';
         echo '<source src="data:audio/' . $this->get_mime($name) . ';base64,';

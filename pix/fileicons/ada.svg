@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Ada file</title>
+  <desc id="desc">A white A with a turquoise crossbar on a navy badge above the Ada name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="9" y="7" width="46" height="44" rx="8" fill="#26334B"/>
+  <path d="m19 42 10-27h6l10 27h-6l-7-20-7 20z" fill="#F7FAFF"/>
+  <path d="M26 34h12" stroke="#69D3D0" stroke-width="4"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#26334B">Ada</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Ruby file</title>
+  <desc id="desc">A faceted red gemstone above the Ruby name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M16 10h32l8 12-24 28L8 22z" fill="#C83C38" stroke="#A12F32" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="m16 10 5 12 11-12zm16 0 11 12 5-12z" fill="#F37B6B"/>
+  <path d="m8 22 24 28-11-28zm35 0L32 50l24-28z" fill="#A52B32"/>
+  <path d="M8 22h48M21 22l11 28 11-28-11-12z" fill="none" stroke="#FFB1A1" stroke-width="1.5" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#C83C38">Ruby</text>
+</svg>

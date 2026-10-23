@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Assembly file</title>
+  <desc id="desc">A green processor with instruction lines above the ASM name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M22 7v7m10-7v7m10-7v7M22 44v7m10-7v7m10-7v7M10 20h7m-7 9h7m-7 9h7m30-18h7m-7 9h7m-7 9h7" stroke="#5B7652" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="17" y="14" width="30" height="30" rx="4" fill="#293B31" stroke="#5B7652" stroke-width="2"/>
+  <path d="m23 22 4 4-4 4m9-8h8m-8 7h8m-17 7h17" fill="none" stroke="#A8D978" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#52753B">ASM</text>
+</svg>

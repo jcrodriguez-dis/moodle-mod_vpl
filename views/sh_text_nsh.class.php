@@ -39,7 +39,7 @@ class vpl_sh_text_nsh extends vpl_sh_base {
      * @param string $data content of the file to show
      */
     public function print_file($name, $data) {
-        echo "<h4>" . s($name) . "</h4>\n";
+        echo $this->get_header($name, $data, 'text');
         echo "<div  class='vpl_codefilecontent' >";
         echo '<pre class="vpl_sh vpl_g" >';
         $lines = preg_split("/\r\n|\n|\r/", $data);

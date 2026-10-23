@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">MATLAB / Octave file</title>
+  <desc id="desc">A blue-to-orange three-dimensional surface plot representing numerical computing in MATLAB and GNU Octave.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M6 13v28l24 10 27-19" fill="none" stroke="#A4B2C3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  <g stroke-linejoin="round" stroke-width=".6">
+    <path d="m30 24 8-5-8-11-8 21z" fill="#F9A43B" stroke="#F9A43B"/>
+    <path d="m38 19 8 3-8-7-8-7z" fill="#D85B30" stroke="#D85B30"/>
+    <path d="m46 22 8 7-8 6-8-20z" fill="#B94032" stroke="#B94032"/>
+    <path d="m22 29 8-21-8 14-8 13z" fill="#F7C85B" stroke="#F7C85B"/>
+    <path d="m30 8 8 7-8 12-8-5z" fill="#ED8932" stroke="#ED8932"/>
+    <path d="m38 15 8 20-8 6-8-14z" fill="#D45C32" stroke="#D45C32"/>
+    <path d="m14 35 8-13-8 20-8-1z" fill="#55B8C2" stroke="#55B8C2"/>
+    <path d="m22 22 8 5-8 18-8-3z" fill="#2794B9" stroke="#2794B9"/>
+    <path d="m30 27 8 14-8 7-8-3z" fill="#2869A7" stroke="#2869A7"/>
+  </g>
+  <path d="m30 24 8-5 8 3 8 7-8 6-8 6-8 7-8-3-8-3-8-1 8-6 8-6zM22 29l8-21 8 7 8 20M14 35l8-13 8 5 8 14M38 19 30 8 22 22 14 42M46 22l-8-7-8 12-8 18" fill="none" stroke="#FFF" stroke-opacity=".35" stroke-width=".8" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="7.5" font-weight="700" letter-spacing=".1" fill="#2869A7">MATLAB/Octave</text>
+</svg>

@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Perl file</title>
+  <desc id="desc">A sand-coloured camel with long legs, a small rounded hump and a long neck above the Perl name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <g>
+    <path d="m20 31 4 1-1 16 3 3h-6l-2-4zm16 0h4l2 17 3 3h-6l-3-4z" fill="#87552F"/>
+    <path d="M11 26c-4 0-5 4-5 8" fill="none" stroke="#87552F" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M10 25c3-2 7-2 11-2l3-5c2-3 5-3 7 0l4 6h6l3-10c1-4 4-6 8-5l6 3v5h-8l-2 10c-1 5-5 7-10 7H17c-6 0-9-3-7-9z" fill="#C48649" stroke="#87552F" stroke-width="2" stroke-linejoin="round"/>
+    <path d="m14 31 5 2-3 15 3 3h-6l-2-4zm19 2h5l-1 15 3 3h-6l-3-4z" fill="#C48649" stroke="#87552F" stroke-width="2" stroke-linejoin="round"/>
+    <path d="m46 10-1-5 6 4" fill="#C48649" stroke="#87552F" stroke-width="2" stroke-linejoin="round"/>
+    <circle cx="52" cy="12.5" r="1.5" fill="#382B20"/>
+  </g>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#87552F">Perl</text>
+</svg>

@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Dart file</title>
+  <desc id="desc">A folded blue and turquoise dart above the Dart name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="m9 25 16-16h15l15 15v25H30z" fill="#45C4DC"/>
+  <path d="m9 25 21 24h25L25 19z" fill="#087CBF"/>
+  <path d="m25 9 30 15H40z" fill="#76DFEB"/>
+  <path d="m30 49-5-30 30 30z" fill="#1266A0"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#1266A0">Dart</text>
+</svg>

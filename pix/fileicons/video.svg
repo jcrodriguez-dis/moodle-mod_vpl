@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Video file</title>
+  <desc id="desc">A film strip with sprocket holes and an orange play symbol above the Video label.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="10" y="8" width="44" height="42" rx="4" fill="#354D6B"/>
+  <rect x="19" y="12" width="26" height="34" rx="2" fill="#E8F2FA"/>
+  <g fill="#B7C9DC">
+    <rect x="13" y="14" width="3" height="5" rx="1"/>
+    <rect x="13" y="27" width="3" height="5" rx="1"/>
+    <rect x="13" y="40" width="3" height="5" rx="1"/>
+    <rect x="48" y="14" width="3" height="5" rx="1"/>
+    <rect x="48" y="27" width="3" height="5" rx="1"/>
+    <rect x="48" y="40" width="3" height="5" rx="1"/>
+  </g>
+  <path d="m27 20 13 9-13 9z" fill="#E46F53"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#354D6B">Video</text>
+</svg>

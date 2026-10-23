@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Lua file</title>
+  <desc id="desc">A navy moon with a white crater and a small orbiting moon above the Lua name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <circle cx="30" cy="30" r="21" fill="#2C4E83"/>
+  <circle cx="38" cy="21" r="6" fill="#FFF"/>
+  <circle cx="51" cy="9" r="4" fill="#2C4E83"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#2C4E83">Lua</text>
+</svg>

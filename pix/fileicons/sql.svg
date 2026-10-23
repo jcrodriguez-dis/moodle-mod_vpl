@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">SQL file</title>
+  <desc id="desc">A teal database cylinder with three storage layers above the SQL name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M13 15v27c0 5 8 8 19 8s19-3 19-8V15" fill="#16869A" stroke="#086E83" stroke-width="2"/>
+  <path d="M14 28c0 4 8 7 18 7s18-3 18-7M14 39c0 4 8 7 18 7s18-3 18-7" fill="none" stroke="#8DD8E3" stroke-width="2"/>
+  <ellipse cx="32" cy="15" rx="19" ry="7" fill="#A6E0E7" stroke="#086E83" stroke-width="2"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#087A92">SQL</text>
+</svg>

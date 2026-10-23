@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Makefile</title>
+  <desc id="desc">A build target connected to two dependencies above the Make name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M32 24v5H17v7m15-7h15v7" fill="none" stroke="#527838" stroke-width="2.5" stroke-linejoin="round"/>
+  <rect x="22" y="8" width="20" height="16" rx="3" fill="#6E9850" stroke="#527838" stroke-width="2"/>
+  <rect x="7" y="35" width="20" height="15" rx="3" fill="#DCEBCB" stroke="#527838" stroke-width="2"/>
+  <rect x="37" y="35" width="20" height="15" rx="3" fill="#DCEBCB" stroke="#527838" stroke-width="2"/>
+  <path d="M27 16h10M12 42h10m20 0h10" stroke="#527838" stroke-width="2" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#527838">Make</text>
+</svg>

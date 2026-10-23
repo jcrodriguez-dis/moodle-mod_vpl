@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Scala file</title>
+  <desc id="desc">Three curved red ribbons stacked above the Scala name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M14 14c12 0 24-2 36-7v10c-12 5-24 7-36 7zm0 14c12 0 24-2 36-7v10c-12 5-24 7-36 7zm0 14c12 0 24-2 36-7v10c-12 5-24 7-36 7z" fill="#C93439"/>
+  <path d="M14 14c6 0 12-.5 18-1.5v10C26 23.5 20 24 14 24zm0 14c6 0 12-.5 18-1.5v10C26 37.5 20 38 14 38zm0 14c6 0 12-.5 18-1.5v10C26 51.5 20 52 14 52z" fill="#E45654"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#B52E34">Scala</text>
+</svg>

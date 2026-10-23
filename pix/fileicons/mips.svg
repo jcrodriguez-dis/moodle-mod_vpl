@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">MIPS file</title>
+  <desc id="desc">A grey processor containing four instruction stages above the MIPS name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M22 7v7m10-7v7m10-7v7M22 44v7m10-7v7m10-7v7M10 20h7m-7 9h7m-7 9h7m30-18h7m-7 9h7m-7 9h7" stroke="#5B6672" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="17" y="14" width="30" height="30" rx="4" fill="#E5E9ED" stroke="#5B6672" stroke-width="2"/>
+  <path d="M23 21h7v7h-7zm11 0h7v7h-7zM23 32h7v7h-7zm11 0h7v7h-7z" fill="#758A9F"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#5B6672">MIPS</text>
+</svg>

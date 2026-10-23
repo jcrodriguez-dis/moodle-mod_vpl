@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Erlang file</title>
+  <desc id="desc">A white lowercase e on a burgundy badge above the Erlang name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="10" y="7" width="44" height="44" rx="8" fill="#A51F46"/>
+  <path d="M20 29h24c0-8-4-13-12-13s-13 5-13 13 5 13 13 13c5 0 8-1 11-4" fill="none" stroke="#FFF" stroke-width="5" stroke-linejoin="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#A51F46">Erlang</text>
+</svg>

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">TypeScript file</title>
+  <desc id="desc">White TS lettering on a blue square matching the JavaScript icon.</desc>
+  <rect x="9" y="7" width="46" height="46" rx="2" fill="#3178C6" stroke="#245F9E" stroke-width="2"/>
+  <text x="32" y="38" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="21" font-weight="800" fill="#FFF">TS</text>
+</svg>

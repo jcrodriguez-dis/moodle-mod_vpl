@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">JSON file</title>
+  <desc id="desc">Standalone green curly braces and a colon above the JSON name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M24 10c-6 0-7 3-7 9v2c0 4-1 6-5 8 4 2 5 4 5 8v2c0 6 1 9 7 9m16-38c6 0 7 3 7 9v2c0 4 1 6 5 8-4 2-5 4-5 8v2c0 6-1 9-7 9" fill="none" stroke="#4A8B4D" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="32" cy="23" r="2.5" fill="#76A66B"/>
+  <circle cx="32" cy="35" r="2.5" fill="#76A66B"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#54734F">JSON</text>
+</svg>

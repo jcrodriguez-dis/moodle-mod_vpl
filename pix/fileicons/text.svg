@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Text file</title>
+  <desc id="desc">Four standalone lines of plain text above the Text name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M12 13h40M12 35h40" fill="none" stroke="#536B9A" stroke-width="4" stroke-linecap="round"/>
+  <path d="M12 24h29M12 46h29" fill="none" stroke="#8298B6" stroke-width="4" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#536B9A">Text</text>
+</svg>

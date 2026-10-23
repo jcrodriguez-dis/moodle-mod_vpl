@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Julia file</title>
+  <desc id="desc">Three green, purple and red circles arranged in a triangle above the Julia name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <circle cx="32" cy="17" r="11" fill="#4D9436"/>
+  <circle cx="19" cy="40" r="11" fill="#8C59A4"/>
+  <circle cx="45" cy="40" r="11" fill="#C74E46"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#8D5AAF">Julia</text>
+</svg>

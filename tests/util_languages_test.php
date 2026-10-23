@@ -178,6 +178,7 @@ final class util_languages_test extends \advanced_testcase {
             'hello.c'      => 'c',
             'hello.cpp'    => 'cpp',
             'hello.h'      => 'cpp',
+            'hello.hpp'    => 'cpp',
             'hello.java'   => 'java',
             'hello.py'     => 'python',
             'hello.js'     => 'javascript',

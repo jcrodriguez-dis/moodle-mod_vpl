@@ -275,6 +275,11 @@ tr.vpl_hidden_evaluation_row {
     width: 100%;
 }
 
+.vpl_file_header_icon {
+    width: 1.4em;
+    overflow: hidden;
+}
+
 #vpl_filelist {
     display: none;
     left: 0;

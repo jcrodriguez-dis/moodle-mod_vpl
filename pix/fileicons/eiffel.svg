@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Eiffel file</title>
+  <desc id="desc">A simplified red lattice tower with an open arched base above the Eiffel name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M31 9h2l4 18 5 13 9 10H40c0-6-3-11-8-11s-8 5-8 11H13l9-10 5-13z" fill="#F4C0B6" stroke="#A73E36" stroke-width="2" stroke-linejoin="round"/>
+  <path d="M32 6v3m-5 18h10M21 40h22M27 27l12 10m-2-10L25 37M26 21h12M12 51h40" fill="none" stroke="#A73E36" stroke-width="2" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#B63B35">Eiffel</text>
+</svg>

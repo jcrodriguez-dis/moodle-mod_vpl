@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">PHP file</title>
+  <desc id="desc">A blue elephant with a large ear and curled trunk above the PHP name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <g>
+    <path d="M11 28c-5 0-6 5-6 9" fill="none" stroke="#405987" stroke-width="2.5" stroke-linecap="round"/>
+    <path d="M12 31h9v17h-7zm20 0h9v17h-7z" fill="#405987"/>
+    <path d="M10 29c0-10 7-16 18-16h9c9 0 15 6 15 15v9c0 4 3 5 5 2l2 3c-5 7-13 3-13-4v-4h-3v16h-8V39H23v11h-8V39c-3-2-5-5-5-10z" fill="#6684C2" stroke="#405987" stroke-width="2" stroke-linejoin="round"/>
+    <path d="M29 19c-5 1-7 6-5 11s7 7 12 4l3-14c-3-2-6-2-10-1z" fill="#9BB4E2" stroke="#405987" stroke-width="2" stroke-linejoin="round"/>
+    <path d="m45 33 7 3-7 3z" fill="#FFF5D9"/>
+    <circle cx="44" cy="25" r="1.8" fill="#20324F"/>
+  </g>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#405987">PHP</text>
+</svg>

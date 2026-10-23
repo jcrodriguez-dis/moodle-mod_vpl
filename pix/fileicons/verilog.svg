@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Verilog file</title>
+  <desc id="desc">A purple AND gate with two inputs and one output above the Verilog name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M7 21h10M7 37h10m29-8h11" stroke="#7046B4" stroke-width="3" stroke-linecap="round"/>
+  <path d="M17 12h12a17 17 0 0 1 0 34H17z" fill="#EDE5F8" stroke="#7046B4" stroke-width="2.5" stroke-linejoin="round"/>
+  <path d="M23 21h6a8 8 0 0 1 8 8" fill="none" stroke="#B59ADB" stroke-width="2" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#7046B4">Verilog</text>
+</svg>

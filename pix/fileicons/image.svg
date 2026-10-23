@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Image file</title>
+  <desc id="desc">A framed landscape with sun and mountains above the Image label.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <rect x="8" y="9" width="48" height="40" rx="4" fill="#EAF5FE" stroke="#4486B6" stroke-width="2"/>
+  <circle cx="42" cy="20" r="5" fill="#EDB34B"/>
+  <path d="m12 42 13-16 10 12 7-7 10 12v2H12z" fill="#56A67C"/>
+  <path d="m18 35 7-9 7 9-7-3z" fill="#D3EEE3"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#3977A2">Image</text>
+</svg>

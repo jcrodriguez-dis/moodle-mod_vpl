@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Binary file</title>
+  <desc id="desc">A navy processor displaying zero and one above the Binary name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M22 7v7m10-7v7m10-7v7M22 44v7m10-7v7m10-7v7M10 20h7m-7 9h7m-7 9h7m30-18h7m-7 9h7m-7 9h7" stroke="#526A87" stroke-width="2.5" stroke-linecap="round"/>
+  <rect x="17" y="14" width="30" height="30" rx="4" fill="#233951" stroke="#526A87" stroke-width="2"/>
+  <text x="32" y="35" text-anchor="middle" font-family="ui-monospace,Consolas,monospace" font-size="16" font-weight="700" fill="#A8E6C1">01</text>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#526A87">Binary</text>
+</svg>

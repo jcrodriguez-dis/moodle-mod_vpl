@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="title desc">
+  <title id="title">Blockly file</title>
+  <desc id="desc">Three interlocking blue, green and orange programming blocks above the Blockly name.</desc>
+  <style>
+    @media (max-width: 32px) {
+      .filetype-label {
+        display: none;
+      }
+    }
+  </style>
+  <path d="M10 9h10l3 3h7l3-3h20v12H33l-3 3h-7l-3-3H10z" fill="#4B8FD0" stroke="#3171AE" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M10 23h10l3 3h7l3-3h15v12H33l-3 3h-7l-3-3H10z" fill="#55A66E" stroke="#378651" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M10 37h10l3 3h7l3-3h20v12H10z" fill="#E3AD43" stroke="#BA842B" stroke-width="1.5" stroke-linejoin="round"/>
+  <path d="M37 15h9M34 29h7M37 44h9" stroke="#FFF" stroke-opacity=".7" stroke-width="2" stroke-linecap="round"/>
+  <text class="filetype-label" x="32" y="61" text-anchor="middle" font-family="ui-sans-serif,Arial,sans-serif" font-size="10.75" font-weight="700" letter-spacing=".15" fill="#3171AE">Blockly</text>
+</svg>

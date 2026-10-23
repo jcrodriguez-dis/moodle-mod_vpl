@@ -24,6 +24,21 @@
  */
 class vpl_sh_base {
     /**
+     * Get the header HTML for a file, including its icon.
+     *
+     * @param string $filename name of the file
+     * @param string|null $data content of the file (optional)
+     * @param string|null $icon icon name (optional)
+     * @return string HTML header for the file
+     */
+    public function get_header($filename, $data = null, $icon = null) {
+        if ($icon === null) {
+            $icon = \mod_vpl\util\file_icon::get_name($filename, $data);
+        }
+        $iconimg = \mod_vpl\util\file_icon::get_img($icon);
+        return "<h4>$iconimg " . s($filename) . "</h4>\n";
+    }
+    /**
      * This function prints the content of a file.
      *
      * @param string $filename name of the file
