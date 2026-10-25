@@ -316,9 +316,10 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     /**
      * Get a snapshot, including elapsed time for requests still in flight.
      * Concurrent requests contribute their individual waiting times.
+     * @param {Object} file The file for which to get statistics (used to determine the language name)
      * @returns {Object} Statistics with durations in milliseconds and sizes in bytes
      */
-    this.getStatistics = function() {
+    this.getStatistics = function(file) {
         const now = window.performance.now();
         let responseWaitTime = statistics.responseWaitTime;
         const pending = Object.values(requests);
@@ -326,7 +327,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             responseWaitTime += now - request.sentAt;
         }
         return {
-            language: language.toUpperCase(),
+            language: file? file.getLangName() : language.toUpperCase(),
             runningTime: statistics.startedAt === null ? 0 : (statistics.stoppedAt ?? now) - statistics.startedAt,
             responseWaitTime: responseWaitTime,
             averageResponseTime: statistics.completedRequests === 0 ? null :

@@ -1245,7 +1245,8 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
         function showStatistics() {
             const file = fileManager.currentFile();
             const LS = languageServers[file?.getLSLang()];
-            statusElement.title = LS ? VPLUI.getLSStatisticsTitle(LS.getStatistics()) : '';
+            const stats = LS?.getStatistics(file);
+            statusElement.title = LS ? VPLUI.getLSStatisticsTitle(stats) : '';
         }
         statusElement?.setAttribute('tabindex', '0');
         statusElement?.addEventListener('mouseenter', showStatistics);
