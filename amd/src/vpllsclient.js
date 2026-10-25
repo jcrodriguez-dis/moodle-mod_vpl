@@ -327,7 +327,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             responseWaitTime += now - request.sentAt;
         }
         return {
-            language: file? file.getLangName() : language.toUpperCase(),
+            language: file ? file.getLangName() : language.toUpperCase(),
             runningTime: statistics.startedAt === null ? 0 : (statistics.stoppedAt ?? now) - statistics.startedAt,
             responseWaitTime: responseWaitTime,
             averageResponseTime: statistics.completedRequests === 0 ? null :
