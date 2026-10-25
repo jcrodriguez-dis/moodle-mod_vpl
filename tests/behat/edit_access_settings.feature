@@ -5,7 +5,8 @@ Feature: Create and change VPL activity access settings
   I need to change the access setting and check the behavior for teacher and other users
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:

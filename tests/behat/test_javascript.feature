@@ -1,15 +1,13 @@
 @mod @mod_vpl @mod_vpl_javascript_test
 Feature: Runs JavaScript tests on browser
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email |
       | manager1 | Manager | Manager | teacher1@example.com |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | manager1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | manager1 | C1 | manager |
@@ -27,5 +25,4 @@ Feature: Runs JavaScript tests on browser
   @javascript
   Scenario: A manager runs JavaScript tests
     When I follow "Run test"
-    Then I should see "Test passed"
-    And I should not see "Error:"
+    Then the VPL JavaScript tests should pass

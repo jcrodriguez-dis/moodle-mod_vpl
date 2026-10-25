@@ -5,7 +5,8 @@ Feature: In a VPL activity, editing allows drop files
   I access to a VPL activity and drop files
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:

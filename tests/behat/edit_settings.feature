@@ -5,7 +5,8 @@ Feature: Create and change VPL activity settings
   I need to change setting and check the description and behavior change for teacher and other users
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode | format  | numsections | initsections |
       | Course 1 | C1        | 0        | 1         | topics  | 1           | 1            |
     And the following "users" exist:
@@ -13,11 +14,6 @@ Feature: Create and change VPL activity settings
       | teacher1 | Teacher   | 1        | teacher1@example.com |
       | teacher2 | Teacher2  | 1        | teacher2@example.com |
       | student1 | Student   | 1        | student1@example.com |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | teacher1 | htmleditor | textarea |
-      | teacher2 | htmleditor | textarea |
-      | student1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |

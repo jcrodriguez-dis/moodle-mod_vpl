@@ -6,7 +6,8 @@ Feature: In a VPL activity get the list of VPL activities in the course
   And see list of VPL activities
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode | format | numsections | initsections |
       | Course 1 | C1        | 0        | 1         | topics | 4           | 1            |
     And the following "users" exist:

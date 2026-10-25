@@ -5,7 +5,8 @@ Feature: In an VPL activity, editing teacher change overrides
   I access to a VPL activity overrides/exceptions page and create modify delete overrides
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1        | 0        | 1         |
     And the following "users" exist:
@@ -14,10 +15,6 @@ Feature: In an VPL activity, editing teacher change overrides
       | teacher2 | Teacher2  | Teacher  | teacher2@example.com |
       | student1 | Student1  | Student  | student1@example.com |
       | student2 | Student2  | Student  | student2@example.com |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | teacher1 | htmleditor | textarea |
-      | teacher2 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user     | course | role           |
       | teacher1 | C1     | editingteacher |

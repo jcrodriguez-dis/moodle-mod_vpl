@@ -5,7 +5,8 @@ Feature: In an VPL activity, editing teacher change activity modes
   I need to change activity mode and check if the behaviour of activities change for students
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:
@@ -16,10 +17,6 @@ Feature: In an VPL activity, editing teacher change activity modes
       | user | course | role |
       | teacher1 | C1 | editingteacher |
       | student1 | C1 | student |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | teacher1 | htmleditor | textarea |
-      | student1 | htmleditor | textarea |
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL simple |

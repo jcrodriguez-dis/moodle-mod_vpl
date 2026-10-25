@@ -4,7 +4,8 @@ Feature: In a VPL activity, similarity feature
   submit files and teachers search similarity and see report
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
     | fullname | shortname | category | groupmode |
     | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:
@@ -13,9 +14,6 @@ Feature: In a VPL activity, similarity feature
     | student1 | Student1 | L1 | student1@example.com |
     | student2 | Student2 | L2 | student2@example.com |
     | student3 | Student3 | l3 | student3@example.com |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | teacher1 | htmleditor | textarea |
     And the following "course enrolments" exist:
     | user | course | role |
     | teacher1 | C1 | editingteacher |

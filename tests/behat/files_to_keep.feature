@@ -5,15 +5,13 @@ Feature: In a VPL activity feature files to keep when running
   And set and see files in files to keep when running
 
   Background:
-    Given the following "courses" exist:
+    Given the default editor is set to "textarea"
+    And the following "courses" exist:
       | fullname | shortname | category | groupmode |
       | Course 1 | C1 | 0 | 1 |
     And the following "users" exist:
       | username | firstname | lastname | email |
       | teacher1 | Teacher | 1 | teacher1@example.com |
-    And the following "user preferences" exist:
-      | user     | preference | value    |
-      | teacher1 | htmleditor | textarea |
     And the following "course enrolments" exist:
       | user | course | role |
       | teacher1 | C1 | editingteacher |
