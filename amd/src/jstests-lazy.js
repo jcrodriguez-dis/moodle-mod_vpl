@@ -31,32 +31,57 @@ var tests = [];
 var result = [];
 var testing = '';
 var nAsserts = 0;
+var suiteAssertsAtStart = 0;
+var finished = false;
+const schedule = window.setTimeout.bind(window);
 
 /**
- * Show results of tests in page and window.console
+ * Show the final result without replacing the suite and failure details.
  */
 function showResults() {
-    var stat = nAsserts + " asserts tested";
-    window.console.log(stat);
-    $('#test_results').append($('<p></p>').text(stat));
-    var message;
-    if (result.length == 0) {
-        message = 'Test passed';
-    } else {
-        message = result.length + ' errors found';
-    }
+    var passed = result.length === 0;
+    var message = nAsserts + ' assertions tested. ' + (passed ? 'Test passed' : result.length + ' errors found');
     window.console.log(message);
-    $('#test_results').append($('<p></p>').text(message));
-    if (result.length > 0) {
-        var list = $('<ol></ol>');
-        for (var i = 0; i < result.length; i++) {
-            window.console.log((i + 1) + ': ' + result[i]);
-            var element = $('<li></li>');
-            element.text(result[i]);
-            list.append(element);
-        }
-        $('#test_results').append(list);
+    $('#vpl_js_summary').text(message);
+    $('#vpl_js_progress').text('Finished ' + tests.length + ' JavaScript test suites.');
+    $('#test_results').attr('data-status', passed ? 'passed' : 'failed');
+}
+
+/**
+ * Publish failures immediately so an unfinished run still has useful diagnostics.
+ * @param {string} message Failure description
+ * @param {*} error Original exception, when available
+ */
+function recordFailure(message, error = new Error(message)) {
+    var detail = 'Error: [' + (testing || 'JavaScript runner') + '] ' + message;
+    if (error && error.stack) {
+        detail += '\n' + error.stack;
     }
+    result.push(detail);
+    window.console.error(detail);
+    $('#vpl_js_failures').append($('<li></li>').append($('<pre></pre>').text(detail)));
+    $('#vpl_js_summary').text(result.length + ' errors found so far.');
+    if (finished) {
+        $('#vpl_js_suites > li').last().attr('data-status', 'failed')
+            .text('Failed: ' + testing + ' (asynchronous error; see failure details)');
+        showResults();
+    }
+}
+
+/**
+ * Report asynchronous errors outside an awaited test.
+ * @param {ErrorEvent} event Browser error event
+ */
+function onError(event) {
+    recordFailure('Uncaught error: ' + (event.error ? String(event.error) : event.message), event.error);
+}
+
+/**
+ * Report promises rejected outside an awaited test.
+ * @param {PromiseRejectionEvent} event Browser rejection event
+ */
+function onRejection(event) {
+    recordFailure('Unhandled rejection: ' + String(event.reason), event.reason);
 }
 
 /**
@@ -67,28 +92,23 @@ function showResults() {
 function assert(b, message) {
     nAsserts++;
     if (!b) {
-        if (typeof message == 'string') {
-            result.push("Error: " + message + " testing " + testing + ' must be true but is ' + b);
-        } else {
-            result.push("Error: assert failed testing " + testing + ' must be true but is ' + b);
-        }
+        recordFailure('Assertion ' + (nAsserts - suiteAssertsAtStart) + ' (total ' + nAsserts + '): ' +
+            (message || 'assert failed') + '. Expected true, found ' + String(b));
     }
 }
 
 /**
  * Basic test assert
- * @param {boolean} a Expected
- * @param {boolean} b Actual
+ * @param {*} a Expected
+ * @param {*} b Actual
  * @param {string} message Optional message
  */
 function assertEquals(a, b, message) {
     nAsserts++;
     if (a != b) {
-        if (typeof message == 'string') {
-            result.push("Error: " + message + " testing " + testing + '. Expected "' + a + '" found "' + b + '"');
-        } else {
-            result.push("Error: assertEquals failed testing " + testing + '. Expected "' + a + '" found "' + b + '"');
-        }
+        recordFailure('Assertion ' + (nAsserts - suiteAssertsAtStart) + ' (total ' + nAsserts + '): ' +
+            (message || 'assertEquals failed') + '. Expected (' + typeof a + ') "' + String(a) +
+            '", found (' + typeof b + ') "' + String(b) + '"');
     }
 }
 
@@ -315,8 +335,9 @@ tests.push({
             VPLUI.updateIDEStatus({lsp: 'LS'});
             assertEquals('221', panel.text(), 'Partial status updates preserve annotation counts');
             VPLUI.updateIDEStatus({annotations: [], gotoAnnotation: VPLUtil.doNothing});
-            assertEquals('000', panel.text(), 'Empty code files show zero counts');
-            assertEquals(3, panel.find('button:disabled').length, 'Zero counts are disabled');
+            assertEquals('', panel.text(), 'Empty code files do not show zero counts');
+            assertEquals(0, panel.children().length, 'Zero counts do not create buttons');
+            assertEquals('none', panel.css('display'), 'Empty code files hide the annotation panel');
             var nextLine = 0;
             VPLUI.updateIDEStatus({
                 annotations: [{type: 'error', row: 0}],
@@ -324,6 +345,7 @@ tests.push({
                     nextLine = line;
                 }
             });
+            assertEquals(1, panel.find('button').length, 'Only annotation types with issues have buttons');
             panel.find('[data-type="error"]').trigger('click');
             assertEquals(1, nextLine, 'Switching files replaces navigation callbacks');
             assertEquals(6, lines.length, 'Previous file navigation is not reused');
@@ -819,16 +841,41 @@ tests.push({
  */
 async function runTests() {
     for (var i = 0; i < tests.length; i++) {
+        testing = tests[i].name;
+        suiteAssertsAtStart = nAsserts;
+        var errorsAtStart = result.length;
+        var startedAt = Date.now();
+        var suite = $('<li></li>').attr('data-status', 'running').text('Running: ' + testing);
+        $('#vpl_js_suites').append(suite);
+        $('#vpl_js_progress').text('Running suite ' + (i + 1) + '/' + tests.length + ': ' + testing);
         try {
-            testing = tests[i].name;
             await tests[i].test();
         } catch (e) {
-            result.push("Error: Exception " + e.message + " testing " + testing + "\n" + e.stack);
+            recordFailure('Exception: ' + String(e), e);
         }
+        await new Promise(resolve => schedule(resolve, 0));
+        var passed = result.length === errorsAtStart;
+        suite.attr('data-status', passed ? 'passed' : 'failed')
+            .text((passed ? 'Passed: ' : 'Failed: ') + testing + ' (' + (nAsserts - suiteAssertsAtStart) +
+                ' assertions, ' + (Date.now() - startedAt) + ' ms)');
     }
 }
 
 export const start = async() => {
+    result = [];
+    testing = '';
+    nAsserts = 0;
+    finished = false;
+    $('#test_results').empty().attr('data-status', 'running')
+        .append($('<p id="vpl_js_summary" role="status"></p>').text('JavaScript tests are running.'))
+        .append($('<p id="vpl_js_progress"></p>'))
+        .append($('<ol id="vpl_js_suites"></ol>'))
+        .append($('<h3></h3>').text('Failure details'))
+        .append($('<ol id="vpl_js_failures"></ol>'));
+    // Keep monitoring after completion because browser error events can arrive late.
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onRejection);
     await runTests();
+    finished = true;
     showResults();
 };

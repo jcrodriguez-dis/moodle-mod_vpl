@@ -39,6 +39,38 @@ use Behat\Mink\Exception\ExpectationException;
  */
 class behat_mod_vpl extends behat_base {
     /**
+     * Wait for the JavaScript suites and include their diagnostics in Behat failures.
+     *
+     * @Then /^the VPL JavaScript tests should pass$/
+     * @throws ExpectationException If tests fail, do not start, or do not finish.
+     */
+    public function the_vpl_javascript_tests_should_pass(): void {
+        $session = $this->getSession();
+        $finished = $session->wait(
+            self::get_extended_timeout() * 1000,
+            "(function() {
+                var report = document.getElementById('test_results');
+                return report && /^(passed|failed)$/.test(report.getAttribute('data-status'));
+            })()"
+        );
+        $report = $session->getPage()->find('css', '#test_results');
+        if ($report === null) {
+            throw new ExpectationException('The VPL JavaScript test report (#test_results) was not found.', $session);
+        }
+        $status = $report->getAttribute('data-status');
+        $details = $report->getText();
+        if (!$finished || !in_array($status, ['passed', 'failed'], true)) {
+            throw new ExpectationException(
+                "VPL JavaScript tests did not finish (status: $status).\n$details",
+                $session
+            );
+        }
+        if ($status !== 'passed') {
+            throw new ExpectationException("VPL JavaScript tests failed.\n$details", $session);
+        }
+    }
+
+    /**
      * Click on any element
      *
      * @Given /^I click on "([^"]*)" in VPL$/

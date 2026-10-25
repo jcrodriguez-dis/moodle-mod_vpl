@@ -40,5 +40,7 @@ $PAGE->set_title($title);
 $PAGE->set_heading($title);
 echo $OUTPUT->header();
 $fileicons = s(json_encode(\mod_vpl\util\file_icon::get_client_config()));
-echo "<div id='test_results' data-file-icons='$fileicons'></div>";
+echo "<div id='test_results' data-status='pending' data-file-icons='$fileicons'>";
+echo '<p>Waiting for mod_vpl/jstests-lazy to start. If this does not change, check AMD loading and the browser console.</p>';
+echo '</div>';
 echo $OUTPUT->footer();
