@@ -56,8 +56,8 @@ class cron_task extends \core\task\scheduled_task {
 
     /**
      * Set the verbose state.
-     * @param bool $state Setting the value to true shows the name of the activity
-     * and false no shows.
+     * @param bool $state Setting if verbose output should be enabled.
+     * True shows messages and false no shows.
      */
     public function set_verbose(bool $state): void {
         $this->verbose = $state;
@@ -105,8 +105,10 @@ class cron_task extends \core\task\scheduled_task {
                 $donevisible++;
             }
         }
-        echo "Checked $checked VPL instances.\n";
-        echo "Made visible $donevisible VPL instances.\n";
+        if ($this->verbose) {
+            echo "Checked $checked VPL instances.\n";
+            echo "Made visible $donevisible VPL instances.\n";
+        }
         foreach ($rebuilds as $courseid) {
             rebuild_course_cache($courseid);
         }
@@ -145,7 +147,9 @@ class cron_task extends \core\task\scheduled_task {
                 break;
             }
         }
-        echo "Checked $checked task processes.\n";
+        if ($this->verbose) {
+            echo "Checked $checked task processes.\n";
+        }
     }
 
     /**

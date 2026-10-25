@@ -37,9 +37,9 @@ use mod_vpl\tests\base_fixture;
 /**
  * Unit tests for cron_task class.
  *
- *     (startdate - range)            startdate
- *  -------------|------------------------|----------------
- *  before             on range           post range
+ *       (now - range / 2)       now       (now + range / 2)
+ *  -------------|---------------|---------------|-------------
+ *  out of range             on range             out of range
  * @group mod_vpl
  * @covers \mod_vpl\task\cron_task
  */
@@ -68,8 +68,8 @@ final class cron_task_test extends base_fixture {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + $this->crontask->get_startdate_range() + 5;
-            $instance->duedate = time() + $this->crontask->get_startdate_range() + 100;
+            $instance->startdate = time() + $this->crontask->get_time_range() + 5;
+            $instance->duedate = time() + $this->crontask->get_time_range() + 100;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible($cm->id, false));
             rebuild_course_cache($cm->course, true);
@@ -89,7 +89,7 @@ final class cron_task_test extends base_fixture {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + $this->crontask->get_startdate_range() / 2;
+            $instance->startdate = time() + $this->crontask->get_time_range() / 4;
             $instance->duedate = 0;
             $this->assertTrue($DB->update_record(VPL, $instance));
             $this->assertTrue(set_coursemodule_visible($cm->id, false));
@@ -103,14 +103,14 @@ final class cron_task_test extends base_fixture {
     }
 
     /**
-     * Method to test start date.
+     * Method to test a recently passed start date within range.
      */
     public function test_startdate(): void {
         global $DB;
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + 5;
+            $instance->startdate = time() - 5;
             $instance->duedate = 0;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible($cm->id, false));
@@ -131,7 +131,7 @@ final class cron_task_test extends base_fixture {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() - 1;
+            $instance->startdate = time() - $this->crontask->get_time_range() - 5;
             $instance->duedate = 0;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible($cm->id, false));
@@ -152,7 +152,7 @@ final class cron_task_test extends base_fixture {
         foreach ($this->vpls as $vpl) {
             $cm = $vpl->get_course_module();
             $instance = $vpl->get_instance();
-            $instance->startdate = time() + $this->crontask->get_startdate_range() / 2;
+            $instance->startdate = time() + $this->crontask->get_time_range() / 4;
             $instance->duedate = time() - 5;
             $DB->update_record(VPL, $instance);
             $this->assertTrue(set_coursemodule_visible($cm->id, false));
