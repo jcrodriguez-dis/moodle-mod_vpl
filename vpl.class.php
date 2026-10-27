@@ -710,6 +710,7 @@ class mod_vpl {
         $this->network_check();
         $this->seb_check($ignoreteacher);
         $this->password_check();
+        $this->check_first_access();
     }
 
     /**
@@ -824,7 +825,10 @@ class mod_vpl {
             $submissiondata->run_count = 0;
             $submissiondata->debug_count = 0;
         }
-        $submissiondata->save_count++; // Increment save count.
+        // Increment save count if not (first submission and there is no files)
+        if (! ($submissiondata->save_count === 0 && count($files) === 0)) {
+            $submissiondata->save_count++; // Increment save count.
+        }
         $submissionid = $DB->insert_record('vpl_submissions', $submissiondata, true);
         if (! $submissionid) {
             $error = get_string('notsaved', VPL) . "\ninserting vpl_submissions record";
@@ -2552,6 +2556,36 @@ class mod_vpl {
             }
         }
         return $ngraded;
+    }
+
+    /**
+     * Check first activity access if has password or using SEB.
+     * Must be used after checks passed.
+     * If fist time access save an empty submission for register the access.
+     * @return void
+     **/
+    public function check_first_access() {
+        global $USER, $DB, $SESSION;
+        $sessvarname = 'vpl_first_access_checked';
+        // If teacher or already checked ignore.
+        if ($this->is_teacher() || ($SESSION->$sessvarname ?? false) == $this->instance->id) {
+            return;
+        }
+        // Needed if password or SEB is required.
+        $needcheck = $this->get_effective_setting('password') > '';
+        $needcheck = $needcheck || $this->uses_seb();
+        if ($needcheck) {
+            $lastsubmission = $this->last_user_submission($USER->id);
+            if ($lastsubmission) {
+                $SESSION->$sessvarname = $this->instance->id;
+            } else {
+                $error = '';
+                $files = [];
+                if ($this->add_submission($USER->id, $files, '', $error) != false) {
+                    $SESSION->$sessvarname = $this->instance->id;
+                }
+            }
+        }
     }
 
     /**

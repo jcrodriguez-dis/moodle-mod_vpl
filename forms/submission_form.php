@@ -33,6 +33,7 @@ require_once(dirname(__FILE__) . '/../locallib.php');
  * Class to define the submission form for VPL
  *
  * This form allows users to submit their work, including file uploads and comments.
+ * Empty access records are treated as first uploads; only existing files can be kept.
  */
 class mod_vpl_submission_form extends moodleform {
     /**
@@ -86,7 +87,12 @@ class mod_vpl_submission_form extends moodleform {
         $mform->setType('comments', PARAM_TEXT);
 
         $submission = $this->vpl->last_user_submission($this->userid);
-        $firstsub = ($submission === false);
+        $subfiles = [];
+        if ($submission !== false) {
+            $vpl_submission = new mod_vpl_submission($this->vpl, $submission);
+            $subfiles = $vpl_submission->get_submitted_fgm()->getFileList();
+        }
+        $firstsub = count($subfiles) === 0;
         $instance = $this->vpl->get_instance();
         $reqfiles = $this->vpl->get_required_files();
         $submitmethosds = [
@@ -138,7 +144,8 @@ class mod_vpl_submission_form extends moodleform {
         foreach ($reqfiles as $reqfile) {
             $field = 'file' . $i;
             $filepickertitle = $requiredicon . $reqfile;
-            if (!$firstsub) {
+            $hascurrentfile = in_array($reqfile, $subfiles, true);
+            if ($hascurrentfile) {
                 $mform->addElement(
                     'radio',
                     $field . 'action',
@@ -160,13 +167,12 @@ class mod_vpl_submission_form extends moodleform {
             }
             $mform->addElement('filepicker', $field, $filepickertitle);
             $mform->disabledIf($field, 'submitmethod', 'neq', 'files');
-            if (!$firstsub) {
+            if ($hascurrentfile) {
                 $mform->disabledIf($field, $field . 'action', 'neq', 'replace');
             }
             $i++;
         }
         if (!$firstsub) {
-            $subfiles = (new mod_vpl_submission($this->vpl, $submission))->get_submitted_fgm()->getFileList();
             foreach ($subfiles as $subfile) {
                 if (!in_array($subfile, $reqfiles)) {
                     $field = 'file' . $i;

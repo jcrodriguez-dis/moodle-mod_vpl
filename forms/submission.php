@@ -79,10 +79,12 @@ if ($fromform = $mform->get_data()) {
     $reqfiles = $rfn->getFileList();
     $files = [];
     $prevsub = $vpl->last_user_submission($userid);
-    $firstsub = ($prevsub === false);
-    if (!$firstsub) {
-        $prevsubfiles = (new mod_vpl_submission($vpl, $prevsub))->get_submitted_fgm()->getAllFiles();
+    $prevsubfiles = [];
+    if ($prevsub !== false) {
+        $vpl_submission = new mod_vpl_submission($vpl, $prevsub);
+        $prevsubfiles = $vpl_submission->get_submitted_fgm()->getAllFiles();
     }
+    $firstsub = count($prevsubfiles) === 0;
     if ($fromform->submitmethod == 'archive') {
         if (!$firstsub && $fromform->archiveaction == 'replace') {
             // Use files of previous submission.
@@ -135,8 +137,11 @@ if ($fromform = $mform->get_data()) {
     } else {
         for ($i = 0; $i < $instance->maxfiles; $i++) {
             $field = 'file' . $i;
-            if (!$firstsub && isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'keep') {
+            if (isset($fromform->{$field . 'action'}) && $fromform->{$field . 'action'} == 'keep') {
                 $filename = $fromform->{$field . 'name'};
+                if (!array_key_exists($filename, $prevsubfiles)) {
+                    throw new moodle_exception('error:invalidfile', VPL, '', $filename);
+                }
                 $files[$filename] = $prevsubfiles[$filename];
             } else {
                 if (
