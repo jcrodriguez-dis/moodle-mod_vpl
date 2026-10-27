@@ -1739,8 +1739,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                 meta: (mapKindToMeta[item.kind] || "completion") + " - LSP",
                 docHTML: buildDocHTML(item),
                 filterText: item.filterText ?? undefined,
-                // Ace orders by score descending. Preserve the server-provided ordering by
-                // assigning a score that decreases with the rank in the sorted list.
+                // Keep server priority as a tiebreaker for equally close matches.
                 score: total - rank,
                 completer: self.aceCompleterAdapter,
                 lspItem: item, // Keep original LSP item for resolve/apply logic
@@ -1748,7 +1747,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         }
 
         /**
-         * Sort completion items following the LSP rules so the most relevant item comes first:
+         * Sort completion items by server priority to break matching-distance ties:
          * preselected items first, then by 'sortText' (lexicographic), then by 'label'.
          * @param {Array<Object>} items The completion items received from the Language Server
          * @return {Array<Object>} A new array with the items sorted by relevance
@@ -1775,11 +1774,36 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             });
         }
 
+        /**
+         * Count case differences at the character positions used by Ace's fuzzy matcher.
+         * @param {string} text Matching text of an already accepted completion
+         * @param {string} prefix Typed characters
+         * @return {number} Number of matched characters with different case
+         */
+        function completionCasePenalty(text, prefix) {
+            const start = text.toLowerCase().indexOf(prefix.toLowerCase());
+            let position = -1;
+            let penalty = 0;
+            for (let i = 0; i < prefix.length; i++) {
+                if (start >= 0) {
+                    position = start + i;
+                } else {
+                    const lower = text.indexOf(prefix[i].toLowerCase(), position + 1);
+                    const upper = text.indexOf(prefix[i].toUpperCase(), position + 1);
+                    position = lower >= 0 && upper >= 0 ? Math.min(lower, upper) : Math.max(lower, upper);
+                }
+                if (text[position] !== prefix[i]) {
+                    penalty++;
+                }
+            }
+            return penalty;
+        }
+
         self.aceCompleterAdapter = {
             id: "VPL LSPClient Completer",
             identifierRegexps: [/[\p{L}0-9_$]/u],
             /**
-             * Use LSP matching text and ranking without changing Ace's global filtering.
+             * Rank LSP matching text by prefix, fuzzy distance, matching case, then server priority.
              * @param {Object} editor Ace editor
              * @param {Object} autocompleteModule Ace autocomplete module
              */
@@ -1794,14 +1818,17 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                         const candidates = items.filter(item => item.filterText !== '' || prefix.length === 0).map(item => ({
                             ...item,
                             caption: item.filterText || item.caption,
+                            score: 0,
                             vplOriginalItem: item
                         }));
                         return super.filterCompletions(candidates, prefix).map(match => {
                             const item = match.vplOriginalItem;
                             item.matchMask = match.matchMask;
-                            // Ace otherwise sorts prefix matches before the server's preferred items.
-                            item.exactMatch = 1;
-                            item.$score = item.score;
+                            item.exactMatch = match.exactMatch;
+                            const casePenalty = completionCasePenalty(match.caption, prefix);
+                            // Distance outweighs case differences; both outweigh server priority.
+                            item.$score = (match.$score * (prefix.length + 1) - casePenalty)
+                                * (this.all.length + 1) + item.score;
                             return item;
                         });
                     }

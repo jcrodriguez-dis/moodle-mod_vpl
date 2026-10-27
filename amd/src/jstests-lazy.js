@@ -731,10 +731,81 @@ tests.push({
         }
         try {
             let list = await complete([
+                {label: 'import', sortText: '000', preselect: true},
+                {label: 'FloatingPointError', sortText: '100'},
+                {label: 'ImportError', sortText: '200'},
+                {label: 'posminimo', sortText: '900'}
+            ], 'po');
+            assertEquals('posminimo,import,ImportError,FloatingPointError', captions(list),
+                'Prefix matches beat preselection and server priority, followed by fuzzy distance');
+            list = await complete([
+                {label: 'p_o_s', sortText: '000'},
+                {label: 'xpos', sortText: '100'},
+                {label: 'posminimo', sortText: '200'},
+                {label: 'p_os', sortText: '300'}
+            ], 'p');
+            assertEquals('p_o_s,posminimo,p_os,xpos', captions(list), 'Server ranking breaks prefix-distance ties');
+            list.setFilter('pos');
+            assertEquals('posminimo,xpos,p_os,p_o_s', captions(list),
+                'Typing reranks cached results by prefix, match position and gaps');
+            list.setFilter('p');
+            assertEquals('p_o_s,posminimo,p_os,xpos', captions(list), 'Backspace recomputes distance ranking');
+            list = await complete([
+                {label: 'xxPo', sortText: '000'},
+                {label: 'POSMINIMO', sortText: '100'}
+            ], 'po');
+            assertEquals('POSMINIMO,xxPo', captions(list), 'Case-insensitive prefix matches remain ahead of substrings');
+            list = await complete([
+                {label: 'INFINITY', sortText: '000', preselect: true},
+                {label: 'INPUT', sortText: '100'},
+                {label: 'Input', sortText: '200'},
+                {label: 'input', sortText: '300'},
+                {label: 'int', sortText: '900'}
+            ], 'in');
+            assertEquals('input,int,Input,INFINITY,INPUT', captions(list),
+                'Matching lowercase characters beat uppercase constants and preselection');
+            list.setFilter('IN');
+            assertEquals('INFINITY,INPUT,Input,input,int', captions(list),
+                'Changing typed case reranks cached completions');
+            list.setFilter('i');
+            assertEquals('input,int,INFINITY,INPUT,Input', captions(list),
+                'Backspace recomputes case penalties');
+            list.setFilter('');
+            assertEquals('INFINITY,INPUT,Input,input,int', captions(list), 'Empty prefix preserves server ranking');
+            list = await complete([
+                {label: 'aBc', sortText: '000'},
+                {label: 'abc', sortText: '100'},
+                {label: 'aBC', sortText: '200'}
+            ], 'ac');
+            assertEquals('aBc,abc,aBC', captions(list),
+                'Only matched characters contribute to fuzzy case penalties');
+            list.setFilter('aC');
+            assertEquals('aBC,aBc,abc', captions(list), 'Fuzzy matching prefers the typed case');
+            list = await complete([
+                {label: 'xIN', sortText: '000'},
+                {label: 'xin', sortText: '100'}
+            ], 'in');
+            assertEquals('xin,xIN', captions(list), 'Substring ranking accounts for matching case');
+            list = await complete([
+                {label: 'xIN', sortText: '000'},
+                {label: 'xxin', sortText: '100'}
+            ], 'in');
+            assertEquals('xIN,xxin', captions(list), 'Fuzzy distance remains more important than case differences');
+            list = await complete([
+                {label: '\u00cdNT', sortText: '000'},
+                {label: '\u00ednt', sortText: '100'}
+            ], '\u00edn');
+            assertEquals('\u00ednt,\u00cdNT', captions(list), 'Accented identifiers retain case preference');
+            list = await complete([
+                {label: 'INPUT', filterText: 'input', sortText: '100'},
+                {label: 'int', filterText: 'INT', sortText: '000'}
+            ], 'in');
+            assertEquals('INPUT,int', captions(list), 'Case penalties use LSP filterText rather than the caption');
+            list = await complete([
                 {label: 'fooPrint', filterText: 'print', sortText: '000', preselect: true},
                 {label: 'print', sortText: '100'}
             ], 'pri');
-            assertEquals('fooPrint,print', captions(list), 'Server priority survives Ace prefix scoring');
+            assertEquals('fooPrint,print', captions(list), 'Server priority breaks ties using LSP filterText');
             list = await complete([
                 {label: 'operator<<', filterText: 'print', sortText: '000', insertText: 'std::cout << '},
                 {label: 'printf', sortText: '100'}
