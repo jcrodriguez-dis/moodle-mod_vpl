@@ -28,6 +28,7 @@ require_once($CFG->dirroot . '/mod/vpl/forms/edit.class.php');
  * @copyright 2026 Juan Carlos Rodriguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @group mod_vpl
+ * @group mod_vpl_edit
  * @covers \mod_vpl_edit
  */
 final class edit_test extends \advanced_testcase {

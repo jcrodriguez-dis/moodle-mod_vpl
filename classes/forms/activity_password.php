@@ -45,8 +45,10 @@ class activity_password extends \moodleform {
      * @param \mod_vpl $vpl The VPL instance.
      */
     public function __construct($vpl) {
+        global $PAGE;
         $this->vpl = $vpl;
-        parent::__construct();
+        // Pass a string so Moodle keeps the activity id in the URL required by SEB's allowlist.
+        parent::__construct($PAGE->url->out(false));
     }
 
     /**
