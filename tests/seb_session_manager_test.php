@@ -268,6 +268,9 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $xml);
         $this->assertStringContainsString('<key>downloadAndOpenSebConfig</key><true/>', $xml);
         $this->assertStringContainsString('<key>examSessionReconfigureAllow</key><true/>', $xml);
+        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+        $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
+        $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
         $starturl = $CFG->wwwroot . '/mod/vpl/forms/edit.php?id=' . $instance->cmid;
         $this->assertStringContainsString(
             '<key>examSessionReconfigureConfigURL</key><string>' . $starturl . '</string>',
@@ -296,6 +299,9 @@ final class seb_session_manager_test extends base_fixture {
 
         $this->assertStringContainsString('<key>showTaskBar</key><false/>', $xml);
         $this->assertStringContainsString('<key>allowQuit</key><true/>', $xml);
+        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+        $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
+        $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
         $expected = '<key>hashedQuitPassword</key><string>' . hash('sha256', 'secret') . '</string>';
         $this->assertStringContainsString($expected, $xml);
         $this->assertStringContainsString('<key>URLFilterEnable</key><true/>', $xml);
@@ -305,6 +311,84 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertStringContainsString($expected, $xml);
         // Phase 2 must not let the browser load another configuration.
         $this->assertStringContainsString('<key>examSessionReconfigureAllow</key><false/>', $xml);
+    }
+
+    /**
+     * Only sign out may be enabled, and only with effective simultaneous-session control.
+     *
+     * @dataProvider security_screen_provider
+     * @param bool $usersessions Whether unique per-user SEB configurations are enabled.
+     * @param bool $preventsimultaneous Whether simultaneous SEB sessions are prevented.
+     * @param bool $allowsignout Whether sign out should be available.
+     */
+    public function test_config_xml_security_screen_options(
+        bool $usersessions,
+        bool $preventsimultaneous,
+        bool $allowsignout
+    ): void {
+        $instance = $this->create_seb_vpl([
+            'enablesebsession' => $usersessions,
+            'preventsebsimultaneoussessions' => $preventsimultaneous,
+        ]);
+        $settings = settings::get_values_from_vplid($instance->id);
+        $session = session_manager::create_session($settings, (int)$this->students[0]->id);
+        session_manager::prepare_phase2($settings, $session);
+        $configs = [
+            session_manager::get_phase1_config_xml($settings, $session),
+            session_manager::get_phase2_config_xml($settings, $session),
+        ];
+        foreach ($configs as $xml) {
+            foreach ([
+                'insideSebEnableSwitchUser',
+                'insideSebEnableLockThisComputer',
+                'insideSebEnableChangeAPassword',
+                'insideSebEnableStartTaskManager',
+                'insideSebEnableShutDown',
+                'insideSebEnableEaseOfAccess',
+                'insideSebEnableNetworkConnectionSelector',
+            ] as $key) {
+                $this->assertStringContainsString('<key>' . $key . '</key><false/>', $xml);
+            }
+            $expected = $allowsignout ? '<true/>' : '<false/>';
+            $this->assertStringContainsString('<key>insideSebEnableLogOff</key>' . $expected, $xml);
+            $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+            $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
+        }
+    }
+
+    /**
+     * Session control is effective only when both settings are enabled.
+     *
+     * @return array
+     */
+    public static function security_screen_provider(): array {
+        return [
+            'no session control' => [false, false, false],
+            'hidden prevention setting without user sessions' => [false, true, false],
+            'user sessions without prevention' => [true, false, false],
+            'effective simultaneous-session control' => [true, true, true],
+        ];
+    }
+
+    /**
+     * Regenerated phase 2 configurations must update keys stored before payload changes.
+     */
+    public function test_phase2_config_xml_updates_stale_config_key(): void {
+        global $DB;
+
+        $instance = $this->create_seb_vpl();
+        $settings = settings::get_values_from_vplid($instance->id);
+        $session = session_manager::create_session($settings, (int)$this->students[0]->id);
+        session_manager::prepare_phase2($settings, $session);
+        $expectedkey = $session->configkey2;
+        $session->configkey2 = hash('sha256', 'previous configuration');
+        session_manager::update_session($session);
+
+        $xml = session_manager::get_phase2_config_xml($settings, $session);
+
+        $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
+        $this->assertSame($expectedkey, $session->configkey2);
+        $this->assertSame($expectedkey, $DB->get_field('vpl_seb_session', 'configkey2', ['id' => $session->id]));
     }
 
     /**

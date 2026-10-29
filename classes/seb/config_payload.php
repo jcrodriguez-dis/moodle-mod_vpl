@@ -60,6 +60,17 @@ class config_payload {
         'URLFilterRules' => [],
         'startURL' => '',
         'sendBrowserExamKey' => true,
+        // Use the Windows Service when available without requiring it (policy 0: optional).
+        'sebServicePolicy' => 0,
+        'sebServiceIgnore' => false,
+        'insideSebEnableSwitchUser' => false,
+        'insideSebEnableLockThisComputer' => false,
+        'insideSebEnableChangeAPassword' => false,
+        'insideSebEnableStartTaskManager' => false,
+        'insideSebEnableShutDown' => false,
+        'insideSebEnableEaseOfAccess' => false,
+        'insideSebEnableNetworkConnectionSelector' => false,
+        'insideSebEnableLogOff' => false,
         'browserWindowWebView' => 3,
         'examSessionClearCookiesOnStart' => false,
         'allowPreferencesWindow' => false,
@@ -70,6 +81,22 @@ class config_payload {
     ];
 
     /**
+     * Build settings shared by both SEB phases.
+     *
+     * @param \stdClass $settings SEB record.
+     * @param string $secret Secret for avoid easy open of config with SEB configuration Tool.
+     * @return array
+     */
+    private static function get_base_payload(\stdClass $settings, $secret): array {
+        $payload = self::DEFAULT_PAYLOAD;
+        $payload['insideSebEnableLogOff'] = !empty($settings->enablesebsession)
+            && !empty($settings->preventsebsimultaneoussessions);
+        $payload['startURL'] = self::get_start_url($settings);
+        $payload['hashedAdminPassword'] = self::get_password_hash($secret);
+        return $payload;
+    }
+
+    /**
      * Build phase 1 payload for SEB.
      *
      * @param \stdClass $settings SEB record.
@@ -77,9 +104,7 @@ class config_payload {
      * @return array
      */
     public static function get_phase1_payload(\stdClass $settings, $secret): array {
-        $payload = self::DEFAULT_PAYLOAD;
-        $payload['startURL'] = self::get_start_url($settings);
-        $payload['hashedAdminPassword'] = self::get_password_hash($secret);
+        $payload = self::get_base_payload($settings, $secret);
         $payload['downloadAndOpenSebConfig'] = true;
         // Discard any cookie kept from a previous run, so Moodle login is always required.
         $payload['examSessionClearCookiesOnStart'] = true;
@@ -101,7 +126,7 @@ class config_payload {
      * @return array
      */
     public static function get_phase2_payload(\stdClass $settings, $secret): array {
-        $payload = self::DEFAULT_PAYLOAD;
+        $payload = self::get_base_payload($settings, $secret);
         $payload['showTaskBar'] = !empty($settings->showsebtaskbar);
         $payload['allowWlan'] = !empty($settings->showwificontrol);
         $payload['showReloadButton'] = !empty($settings->showreloadbutton);
@@ -124,13 +149,11 @@ class config_payload {
         $payload['URLFilterEnable'] = true;
         $payload['URLFilterEnableContentFilter'] = !empty($settings->filterembeddedcontent);
         $payload['URLFilterRules'] = self::get_url_filter_rules($settings);
-        $payload['startURL'] = self::get_start_url($settings);
         // Must stay false: this reconfiguration must keep the Moodle login obtained in phase 1.
         $payload['examSessionClearCookiesOnStart'] = false;
         $payload['examSessionClearCookiesOnEnd'] = true;
         $payload['removeBrowserProfile'] = true;
         $payload['hashedQuitPassword'] = self::get_quit_password_hash($settings);
-        $payload['hashedAdminPassword'] = self::get_password_hash($secret);
         return $payload;
     }
 
