@@ -36,6 +36,7 @@ export class VPLVNCClient {
         var lastState = 'disconnected';
         var lastCanvas = null;
         var resizeImg = null;
+        var resizeSessionBeforeDrag = null;
         var VNCDialog = $('#' + VNCDialogId);
         var canvas = $('#' + VNCDialogId + " div");
         var onCloseAction = VPLUtil.doNothing;
@@ -122,16 +123,37 @@ export class VPLVNCClient {
                 lostFocus();
             }
         });
+        /**
+         * Correct jQuery UI's content size after resizing a border-box dialog.
+         */
+        function fitDialogContent() {
+            var wrapper = VNCDialog.parent();
+            VNCDialog.outerWidth(wrapper.width());
+            VNCDialog.outerHeight(Math.max(0, wrapper.height() - wrapper.children('.ui-dialog-titlebar').outerHeight(true)));
+        }
+
         this.displayResize = function() {
-            var titleBar = VNCDialog.parent().find('.ui-dialog-titlebar');
-            var titleBarHeight = titleBar.outerHeight() || 30;
-            var padding = 3;
-            var w = round(VNCDialog.parent().width() - 2 * padding);
-            var h = round(VNCDialog.parent().height() - 2 * padding - titleBarHeight);
+            fitDialogContent();
+            // Fit the content box without counting the dialog's title bar, padding or borders.
+            var w = Math.floor(VNCDialog.width() / 2) * 2;
+            var h = Math.floor(VNCDialog.height() / 2) * 2;
             VPLUtil.log('Resizing VNC canvas to ' + w + 'x' + h);
             canvas.width(w);
             canvas.height(h);
         };
+
+        /**
+         * Fit the resize preview to the content box without an inline-image baseline gap.
+         */
+        function resizePreview() {
+            self.displayResize();
+            if (resizeImg) {
+                resizeImg.style.left = VNCDialog.css('padding-left');
+                resizeImg.style.top = VNCDialog.css('padding-top');
+                resizeImg.style.width = VNCDialog.width() + 'px';
+                resizeImg.style.height = VNCDialog.height() + 'px';
+            }
+        }
 
         /**
          * Event handler for the VNC dialog open event.
@@ -181,22 +203,35 @@ export class VPLVNCClient {
                 self.disconnect();
             },
             resizeStart: function() {
+                fitDialogContent();
+                if (rfb) {
+                    resizeSessionBeforeDrag = rfb.resizeSession;
+                    rfb.resizeSession = false;
+                }
                 var realCanvas = canvas.find('canvas');
-                if (realCanvas.length > 0) {
+                if (realCanvas.length > 0 && realCanvas[0].width > 0 && realCanvas[0].height > 0) {
                     resizeImg = document.createElement('img');
                     resizeImg.src = realCanvas[0].toDataURL();
-                    resizeImg.style.width = '100%';
-                    resizeImg.style.height = '100%';
-                    canvas.hide();
+                    resizeImg.style.display = 'block';
+                    resizeImg.style.position = 'absolute';
+                    resizePreview();
                     VNCDialog.append(resizeImg);
-                } else {
-                    canvas.hide();
                 }
+                // Keep noVNC measurable so its resize observer never sees a zero-sized screen.
+                canvas.css('visibility', 'hidden');
             },
-            resizeStop: function(event, ui) {
-                VNCDialog.find('img').remove();
-                canvas.show();
-                self.setCanvasSize(ui.size.width, ui.size.height);
+            resize: resizePreview,
+            resizeStop: function() {
+                if (resizeImg) {
+                    resizeImg.remove();
+                    resizeImg = null;
+                }
+                canvas.css('visibility', '');
+                self.displayResize();
+                if (rfb && resizeSessionBeforeDrag !== null) {
+                    rfb.resizeSession = resizeSessionBeforeDrag;
+                    resizeSessionBeforeDrag = null;
+                }
                 VPLUtil.longDelay('vncresize', function() {
                     self.displayResize();
                 });

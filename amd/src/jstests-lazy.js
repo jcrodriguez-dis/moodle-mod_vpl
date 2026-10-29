@@ -26,6 +26,7 @@ import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
 import {VPLLSClient} from 'mod_vpl/vpllsclient';
 import {VPLIDEButtons} from 'mod_vpl/vplidebutton';
+import {VPLVNCClient} from 'mod_vpl/vplvnc';
 
 var tests = [];
 var result = [];
@@ -358,6 +359,107 @@ tests.push({
             assertEquals(0, panel.children().length, 'Clearing status removes navigation');
         } finally {
             fixture.remove();
+        }
+    }
+});
+
+tests.push({
+    'name': "VNC dialog resizing",
+    'test': async function() {
+        var dialog = $('<div id="vpl_test_vnc"><div></div></div>').appendTo('body');
+        var clipboard = $('<div id="vpl_dialog_vnc_clipboard"></div>').appendTo('body');
+        var client = new VPLVNCClient('vpl_test_vnc', key => key);
+        var canvas = dialog.children('div');
+        var wrapper = dialog.parent();
+        var screen = $('<div></div>').css({width: '100%', height: '100%', overflow: 'hidden'}).appendTo(canvas);
+        $('<canvas width="800" height="600"></canvas>').appendTo(screen);
+        /**
+         * Verify the VNC target fits the content area without introducing scroll bars.
+         */
+        function assertFits() {
+            assert(dialog.outerWidth() <= wrapper.width() + 1, 'Dialog width fits inside the window chrome');
+            assert(dialog.outerHeight() + wrapper.children('.ui-dialog-titlebar').outerHeight(true)
+                <= wrapper.height() + 1, 'Dialog height fits below the title bar');
+            assert(canvas.width() <= dialog.width(), 'VNC width fits the dialog content');
+            assert(canvas.height() <= dialog.height(), 'VNC height fits the dialog content');
+            assert(dialog[0].scrollWidth <= dialog[0].clientWidth, 'Dialog has no horizontal overflow');
+            assert(dialog[0].scrollHeight <= dialog[0].clientHeight, 'Dialog has no vertical overflow');
+            assert(wrapper[0].scrollWidth <= wrapper[0].clientWidth, 'Window has no horizontal overflow');
+            assert(wrapper[0].scrollHeight <= wrapper[0].clientHeight, 'Window has no vertical overflow');
+            assertEquals(0, canvas.width() % 2, 'VNC width remains even');
+            assertEquals(0, canvas.height() % 2, 'VNC height remains even');
+        }
+        /**
+         * Verify the snapshot fills the content area throughout the resize.
+         */
+        function assertPreviewFits() {
+            var preview = dialog.children('img');
+            assertEquals(1, preview.length, 'Resizing displays one snapshot');
+            assertEquals('block', preview.css('display'), 'Snapshot has no inline baseline gap');
+            assert(Math.abs(preview.width() - dialog.width()) < 1, 'Snapshot matches the content width');
+            assert(Math.abs(preview.height() - dialog.height()) < 1, 'Snapshot matches the content height');
+            assert(dialog[0].scrollWidth <= dialog[0].clientWidth, 'Snapshot causes no horizontal overflow');
+            assert(dialog[0].scrollHeight <= dialog[0].clientHeight, 'Snapshot causes no vertical overflow');
+            assertEquals('hidden', canvas.css('visibility'), 'Live display stays hidden while resizing');
+            assert(canvas[0].getBoundingClientRect().width > 0, 'Live display retains a measurable width');
+            assert(canvas[0].getBoundingClientRect().height > 0, 'Live display retains a measurable height');
+            var previewRect = preview[0].getBoundingClientRect();
+            var dialogRect = dialog[0].getBoundingClientRect();
+            var left = dialogRect.left + parseFloat(dialog.css('border-left-width')) + parseFloat(dialog.css('padding-left'));
+            var top = dialogRect.top + parseFloat(dialog.css('border-top-width')) + parseFloat(dialog.css('padding-top'));
+            assert(Math.abs(previewRect.left - left) < 1, 'Snapshot aligns with the content left edge');
+            assert(Math.abs(previewRect.top - top) < 1, 'Snapshot aligns with the content top edge');
+            assert(dialog.outerWidth() <= wrapper.width() + 1, 'Preview content fits inside the window width');
+            assert(dialog.outerHeight() + wrapper.children('.ui-dialog-titlebar').outerHeight(true)
+                <= wrapper.height() + 1, 'Preview content fits below the window title bar');
+            assert(wrapper[0].scrollWidth <= wrapper[0].clientWidth, 'Preview does not overflow the window horizontally');
+            assert(wrapper[0].scrollHeight <= wrapper[0].clientHeight, 'Preview does not overflow the window vertically');
+        }
+        /**
+         * Exercise jQuery UI's resize sequence rather than calling dialog callbacks directly.
+         *
+         * @param {Element} target Event target
+         * @param {string} type Mouse event type
+         * @param {number} x Horizontal position
+         * @param {number} y Vertical position
+         * @param {number} buttons Pressed mouse buttons
+         */
+        function mouseEvent(target, type, x, y, buttons) {
+            target.dispatchEvent(new MouseEvent(type, {
+                bubbles: true, cancelable: true, button: 0, buttons: buttons,
+                clientX: x, clientY: y, view: window,
+            }));
+        }
+        try {
+            client.show();
+            wrapper.css({padding: '11px', border: '3px solid black', boxSizing: 'border-box'});
+            dialog.css({padding: '7px 9px', boxSizing: 'border-box', position: 'relative'});
+            dialog.dialog('option', {width: 640, height: 480});
+            var handle = wrapper.find('.ui-resizable-se').css({
+                position: 'absolute', width: '12px', height: '12px', bottom: 0, right: 0,
+            })[0];
+            for (var delta of [-80, 120, -31]) {
+                var rect = handle.getBoundingClientRect();
+                var x = rect.x + rect.width / 2;
+                var y = rect.y + rect.height / 2;
+                mouseEvent(handle, 'mouseover', x, y, 0);
+                mouseEvent(handle, 'mousedown', x, y, 1);
+                for (var offset of [delta / 2, delta]) {
+                    mouseEvent(document, 'mousemove', x + offset, y + offset, 1);
+                    assertPreviewFits();
+                }
+                mouseEvent(document, 'mouseup', x + delta, y + delta, 0);
+                assertEquals(0, dialog.children('img').length, 'Resize stop removes the snapshot');
+                assertEquals('visible', canvas.css('visibility'), 'Resize stop restores the live display');
+                assertEquals(1, canvas.find('canvas').length, 'Resize stop preserves the live canvas');
+                assertFits();
+                await new Promise(resolve => schedule(resolve, 150));
+                assertFits();
+            }
+        } finally {
+            mouseEvent(document, 'mouseup', 0, 0, 0);
+            dialog.dialog('destroy').remove();
+            clipboard.dialog('destroy').remove();
         }
     }
 });
