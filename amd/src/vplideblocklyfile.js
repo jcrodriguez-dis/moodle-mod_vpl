@@ -661,6 +661,7 @@ export const blocklyExtension = function() {
                 position: '',
                 language: "Blockly",
                 unsaved: this.isModified(),
+                lsp: '',
             }
         );
     };

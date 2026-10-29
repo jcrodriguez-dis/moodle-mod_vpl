@@ -142,6 +142,7 @@ export const binaryExtension = function() {
                 position: this.getHumanReadableSize(),
                 language: this.getLangName() + " " + VPLUtil.str('binaryfile'),
                 unsaved: this.isModified(),
+                lsp: '',
             }
         );
     };
