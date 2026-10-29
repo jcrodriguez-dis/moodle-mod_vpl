@@ -140,7 +140,7 @@ export const binaryExtension = function() {
                 fileName: this.getFileName(),
                 binary: this.isBinary(),
                 position: this.getHumanReadableSize(),
-                language: this.getLangName() + " " + VPLUtil.str('binaryfile'),
+                language: VPLUtil.str('binaryfile'),
                 unsaved: this.isModified(),
                 lsp: '',
             }

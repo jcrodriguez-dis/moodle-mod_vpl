@@ -27,6 +27,7 @@ import {VPLUI} from 'mod_vpl/vplui';
 import {VPLLSClient} from 'mod_vpl/vpllsclient';
 import {VPLIDEButtons} from 'mod_vpl/vplidebutton';
 import {VPLVNCClient} from 'mod_vpl/vplvnc';
+import {binaryExtension} from 'mod_vpl/vplidebinaryfile';
 
 var tests = [];
 var result = [];
@@ -296,6 +297,40 @@ tests.push({
             assertEquals('true', icon.attr('aria-hidden'), entry[0] + ' hidden from screen readers');
             assert(icon.hasClass('vpl_ide_fileicon'), entry[0] + ' icon class');
         });
+    }
+});
+
+tests.push({
+    'name': "Binary file status label",
+    'test': function() {
+        var fixture = $('<div id="vpl_ide_statusbar"><span class="vpl_ide_statusbar_filename"></span>' +
+            '<span class="vpl_ide_statusbar_language"></span><span class="vpl_ide_statusbar_position"></span>' +
+            '<span class="vpl_ide_statusbar_unsaved"></span></div>').appendTo('body');
+        try {
+            [
+                {name: 'document.pdf', modified: true},
+                {name: 'photo.png', modified: false},
+                {name: 'unknown.bin', modified: false},
+            ].forEach(function(entry) {
+                var file = {
+                    getFileName: () => entry.name,
+                    getLangName: () => VPLUtil.getFileLangInfo(entry.name).typeName,
+                    getContent: () => 'JVBERg==',
+                    isModified: () => entry.modified,
+                    setContent: VPLUtil.doNothing,
+                };
+                binaryExtension.call(file);
+                file.updateStatus();
+                assertEquals(VPLUtil.str('binaryfile'), fixture.find('.vpl_ide_statusbar_language').text(),
+                    entry.name + ' uses only the localized binary label');
+                assertEquals('4 B', fixture.find('.vpl_ide_statusbar_position').text(), 'File size is preserved');
+                assert(fixture.find('.vpl_ide_statusbar_filename').text().includes(entry.name), 'File name is preserved');
+                assertEquals(entry.modified, fixture.find('.vpl_ide_statusbar_unsaved').css('display') !== 'none',
+                    'Modified status is preserved');
+            });
+        } finally {
+            fixture.remove();
+        }
     }
 });
 
