@@ -131,6 +131,7 @@ try {
             }
             if ($copy) {
                 $load->version = -1;
+                $load->hassubmittedfiles = false;
             }
             $load->files = mod_vpl_edit::filestoide($load->files);
             $result->response = $load;

@@ -136,6 +136,8 @@ class mod_vpl_edit {
             ]);
             $response->version = $subid;
             $response->saved = true;
+            $submission = new mod_vpl_submission($vpl, $subid);
+            $response->hassubmittedfiles = $submission->has_submitted_files();
             return $response;
         } else {
             throw new Exception(get_string('notsaved', VPL) . ': ' . $errormessage);
@@ -207,6 +209,7 @@ class mod_vpl_edit {
         $response->version = 0;
         $response->comments = '';
         $response->compilationexecution = false;
+        $response->hassubmittedfiles = false;
         $vplinstance = $vpl->get_instance();
         if ($submissionid !== false) {
             // Security checks.
@@ -225,6 +228,7 @@ class mod_vpl_edit {
         if ($subreg) {
             $submission = new mod_vpl_submission($vpl, $subreg);
             $fgp = $submission->get_submitted_fgm();
+            $response->hassubmittedfiles = $submission->has_submitted_files();
             $response->version = $subreg->id;
             $response->comments = $subreg->comments;
             $response->files = array_merge($response->files, $fgp->getallfiles());
@@ -260,6 +264,9 @@ class mod_vpl_edit {
             $submission = new mod_vpl_example_CE($vpl);
         } else {
             $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+        }
+        if ($action === 'evaluate' && !$submission->has_submitted_files()) {
+            throw new Exception(get_string('evaluatenofiles', VPL));
         }
         $code = ['run' => 0, 'debug' => 1, 'evaluate' => 2, 'test_evaluate' => 3];
         $traslate = ['run' => 'run', 'debug' => 'debugged',

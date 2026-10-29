@@ -43,6 +43,7 @@ $options['save'] = true;
 $options['run'] = true;
 $options['debug'] = true;
 $options['evaluate'] = true;
+$options['testEvaluation'] = true;
 $options['ajaxurl'] = "executionfiles.json.php?id={$id}&action=";
 $options['download'] = "../views/downloadexecutionfiles.php?id={$id}";
 $options['resetfiles'] = false;

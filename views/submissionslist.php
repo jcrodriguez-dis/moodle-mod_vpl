@@ -383,6 +383,7 @@ $params = [
     'thiddenfields' => implode(',', $thiddenfields),
 ];
 $evaluateusers = [];
+$hasevaluablesubmissions = false;
 if ($evaluate > 0) {
     require_once($CFG->dirroot . '/mod/vpl/editor/editor_utility.php');
     vpl_editor_util::generate_requires_evaluation();
@@ -605,6 +606,8 @@ foreach ($alldata as $data) {
         $gradedon = '';
     } else {
         $submission = $data->submission;
+        $hassubmittedfiles = $submission->has_submitted_files();
+        $hasevaluablesubmissions = $hasevaluablesubmissions || $hassubmittedfiles;
         $subinstance = $submission->get_instance();
         $hrefview = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $user->id, 'inpopup', 1);
         $hrefprev = vpl_mod_href('views/previoussubmissionslist.php', 'id', $id, 'userid', $user->id, 'inpopup', 1);
@@ -620,7 +623,7 @@ foreach ($alldata as $data) {
             $prev = '';
         }
         $subid = $subinstance->id;
-        if ($evaluate == 4) { // Need evaluation all.
+        if ($evaluate == 4 && $hassubmittedfiles) { // Need evaluation all.
             $user->subid = $subid;
             $evaluateusers[] = $user;
         }
@@ -667,7 +670,7 @@ foreach ($alldata as $data) {
         } else {
             $result = $submission->getCE();
             $text = '';
-            if (($evaluate == 2 && $result['executed'] === 0) || $evaluate == 3) { // Need evaluation.
+            if ($hassubmittedfiles && (($evaluate == 2 && $result['executed'] === 0) || $evaluate == 3)) {
                 $user->subid = $subid;
                 $evaluateusers[] = $user;
             }
@@ -779,13 +782,15 @@ if (! $downloading) {
             4 => $urlbase . '4',
     ];
     // Print evaluation selection.
-    $urlsel = new url_select([
-            $urls[2] => get_string('notexecuted', VPL),
-            $urls[3] => get_string('notgraded', VPL),
-            $urls[4] => get_string('all'),
-    ], $urls[$evaluate]);
-    $urlsel->set_label(get_string('evaluate', VPL));
-    echo $OUTPUT->render($urlsel);
+    if ($hasevaluablesubmissions) {
+        $urlsel = new url_select([
+                $urls[2] => get_string('notexecuted', VPL),
+                $urls[3] => get_string('notgraded', VPL),
+                $urls[4] => get_string('all'),
+        ], $urls[$evaluate]);
+        $urlsel->set_label(get_string('evaluate', VPL));
+        echo $OUTPUT->render($urlsel);
+    }
     echo '<br>';
     echo '</div>';
 }

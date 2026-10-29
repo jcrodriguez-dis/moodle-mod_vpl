@@ -163,6 +163,15 @@ class mod_vpl_submission {
     }
 
     /**
+     * Whether this submission contains files, including files with empty contents.
+     *
+     * @return bool
+     */
+    public function has_submitted_files(): bool {
+        return count($this->get_submitted_fgm()->getFileList()) > 0;
+    }
+
+    /**
      * get absolute path to the grade comments file name
      *
      * @return string file name
@@ -921,8 +930,9 @@ class mod_vpl_submission {
         echo '</a>)';
         // Show evaluation link.
         if (
-            ($this->vpl->get_instance()->evaluate && ! $this->is_graded()) ||
-             $this->vpl->has_capability(VPL_GRADE_CAPABILITY)
+            $this->has_submitted_files() &&
+            (($this->vpl->get_instance()->evaluate && ! $this->is_graded()) ||
+             $this->vpl->has_capability(VPL_GRADE_CAPABILITY))
         ) {
             $url = vpl_mod_href('forms/evaluation.php', 'id', $id, 'userid', $userid);
             echo ' (' . vpl_get_awesome_icon('evaluate');

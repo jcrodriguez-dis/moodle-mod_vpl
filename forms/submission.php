@@ -181,7 +181,8 @@ if ($fromform = $mform->get_data()) {
         ]);
 
         // If evaluate on submission.
-        if ($instance->evaluate && $instance->evaluateonsubmission) {
+        $submission = new mod_vpl_submission($vpl, $subid);
+        if ($instance->evaluate && $instance->evaluateonsubmission && $submission->has_submitted_files()) {
             $redirecturl = vpl_mod_href('forms/evaluation.php', 'id', $id, 'userid', $userid);
         } else {
             $redirecturl = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);

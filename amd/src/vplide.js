@@ -2275,6 +2275,7 @@ var VPLIDE = function(rootId, options) {
         }
     });
     var noconfirmation = false;
+    var hasSubmittedFiles = false;
     menuButtons.add({
         name: 'save',
         originalAction: function() {
@@ -2310,6 +2311,7 @@ var VPLIDE = function(rootId, options) {
                             }
                         });
                     } else {
+                        hasSubmittedFiles = response.hassubmittedfiles === true;
                         fileManager.resetModified();
                         fileManager.setVersion(response.version);
                         menuButtons.setTimeLeft(response);
@@ -2516,6 +2518,7 @@ var VPLIDE = function(rootId, options) {
     $('#vpl_ide_file').controlgroup();
     $('#vpl_ide_edit').controlgroup();
     $('#vpl_ide_mexecution').controlgroup();
+    $('#vpl_ide_evaluate').hide();
     $('#vpl_ide_fullscreen').button();
     $('#vpl_ide_about').button();
     $('#vpl_ide_user').button().css('float', 'right').hide();
@@ -2557,7 +2560,10 @@ var VPLIDE = function(rootId, options) {
         }
         menuButtons.enable('run', !running && (!modified || options.example) && isOptionAllowed('run'));
         menuButtons.enable('debug', !running && (!modified || options.example) && isOptionAllowed('debug'));
-        menuButtons.enable('evaluate', !running && (!modified || options.example) && isOptionAllowed('evaluate'));
+        var canEvaluate = isOptionAllowed('evaluate') &&
+            (options.testEvaluation || (options.example ? nfiles > 0 : hasSubmittedFiles));
+        $('#vpl_ide_evaluate').toggle(Boolean(canEvaluate));
+        menuButtons.enable('evaluate', canEvaluate && !running && (!modified || options.example));
         menuButtons.enable('download', !modified);
         menuButtons.enable('new', nfiles < maxNumberOfFiles);
         menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
@@ -2698,6 +2704,7 @@ var VPLIDE = function(rootId, options) {
     fileManager.resetModified();
     VPLUI.requestAction('load', 'loading', options, options.loadajaxurl)
     .done(function(response) {
+        hasSubmittedFiles = response.hassubmittedfiles === true;
         let allOK = true;
         let loadedFiles = response.files;
         let showFileList = false;
