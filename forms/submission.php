@@ -81,8 +81,8 @@ if ($fromform = $mform->get_data()) {
     $prevsub = $vpl->last_user_submission($userid);
     $prevsubfiles = [];
     if ($prevsub !== false) {
-        $vpl_submission = new mod_vpl_submission($vpl, $prevsub);
-        $prevsubfiles = $vpl_submission->get_submitted_fgm()->getAllFiles();
+        $prevsubmission = new mod_vpl_submission($vpl, $prevsub);
+        $prevsubfiles = $prevsubmission->get_submitted_fgm()->getAllFiles();
     }
     $firstsub = count($prevsubfiles) === 0;
     if ($fromform->submitmethod == 'archive') {

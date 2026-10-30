@@ -339,7 +339,7 @@ final class seb_session_manager_test extends base_fixture {
             session_manager::get_phase2_config_xml($settings, $session),
         ];
         foreach ($configs as $xml) {
-            foreach ([
+            $fields = [
                 'insideSebEnableSwitchUser',
                 'insideSebEnableLockThisComputer',
                 'insideSebEnableChangeAPassword',
@@ -347,7 +347,8 @@ final class seb_session_manager_test extends base_fixture {
                 'insideSebEnableShutDown',
                 'insideSebEnableEaseOfAccess',
                 'insideSebEnableNetworkConnectionSelector',
-            ] as $key) {
+            ];
+            foreach ($fields as $key) {
                 $this->assertStringContainsString('<key>' . $key . '</key><false/>', $xml);
             }
             $expected = $allowsignout ? '<true/>' : '<false/>';

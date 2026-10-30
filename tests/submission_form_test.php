@@ -1,26 +1,28 @@
 <?php
-// This file is part of Moodle - http://moodle.org/
+// This file is part of VPL for Moodle - http://vpl.dis.ulpgc.es/
 //
-// Moodle is free software: you can redistribute it and/or modify
+// VPL for Moodle is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by
 // the Free Software Foundation, either version 3 of the License, or
 // (at your option) any later version.
 //
-// Moodle is distributed in the hope that it will be useful,
+// VPL for Moodle is distributed in the hope that it will be useful,
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Moodle. If not, see <http://www.gnu.org/licenses/>.
+// along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 namespace mod_vpl;
+
+use mod_vpl\tests\testable_submission_form;
 
 defined('MOODLE_INTERNAL') || die();
 
 global $CFG;
 require_once($CFG->dirroot . '/mod/vpl/vpl.class.php');
-require_once($CFG->dirroot . '/mod/vpl/forms/submission_form.php');
+require_once($CFG->dirroot . '/mod/vpl/tests/classes/testable_submission_form.php');
 
 /**
  * Tests for upload controls with empty and partially populated submissions.
@@ -64,11 +66,7 @@ final class submission_form_test extends \advanced_testcase {
             $this->assertNotFalse($vpl->add_submission($USER->id, $files, '', $error), $error);
         }
         $PAGE->set_url('/mod/vpl/forms/submission.php', ['id' => $instance->cmid]);
-        $form = new class('submission.php', $vpl, $USER->id) extends \mod_vpl_submission_form {
-            public function getinternalform() {
-                return parent::getinternalform();
-            }
-        };
+        $form = new testable_submission_form('submission.php', $vpl, $USER->id);
         $form->set_data((object) ['id' => $instance->cmid, 'userid' => $USER->id]);
         $internal = $form->getinternalform();
         $previousfiles = $files ?? [];

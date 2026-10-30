@@ -825,7 +825,7 @@ class mod_vpl {
             $submissiondata->run_count = 0;
             $submissiondata->debug_count = 0;
         }
-        // Increment save count if not (first submission and there is no files)
+        // Increment save count if not (first submission and there is no files).
         if (! ($submissiondata->save_count === 0 && count($files) === 0)) {
             $submissiondata->save_count++; // Increment save count.
         }
