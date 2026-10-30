@@ -72,13 +72,12 @@ class vpl_jailserver_manager {
      * @return int Length of the header string
      */
     public static function parse_headers($ch, $header) {
-        $parsed = explode(' ', $header);
-        if (
-            count($parsed) == 3 &&
-            $parsed[0] == 'Server:' &&
-            $parsed[1] == 'vpl-jail-system'
-        ) {
-            self::$lastserverversion = trim($parsed[2]);
+        $parsedheader = explode(':', trim($header), 2);
+        if (count($parsedheader) == 2 && strcasecmp($parsedheader[0], 'Server') == 0) {
+            $parsedname = explode(' ', trim($parsedheader[1]), 2);
+            if (count($parsedname) == 2 && strcasecmp($parsedname[0], 'vpl-jail-system') === 0) {
+                self::$lastserverversion = trim($parsedname[1]);
+            }
         }
         return strlen($header);
     }
