@@ -27,6 +27,7 @@ namespace mod_vpl;
 
 use mod_vpl\event\seb_wrong_key;
 use mod_vpl\seb\access_validator;
+use mod_vpl\seb\config_payload;
 use mod_vpl\seb\session_manager;
 use mod_vpl\seb\settings;
 use mod_vpl\seb\ui;
@@ -371,24 +372,59 @@ final class seb_session_manager_test extends base_fixture {
     }
 
     /**
-     * Regenerated phase 2 configurations must update keys stored before payload changes.
+     * Regenerating phase 2 XML after settings change must preserve live session keys.
      */
-    public function test_phase2_config_xml_updates_stale_config_key(): void {
+    public function test_phase2_config_xml_preserves_live_config_key(): void {
         global $DB;
 
-        $instance = $this->create_seb_vpl();
+        $instance = $this->create_seb_vpl(['showsebtaskbar' => 1]);
         $settings = settings::get_values_from_vplid($instance->id);
         $session = session_manager::create_session($settings, (int)$this->students[0]->id);
         session_manager::prepare_phase2($settings, $session);
         $expectedkey = $session->configkey2;
-        $session->configkey2 = hash('sha256', 'previous configuration');
-        session_manager::update_session($session);
+        settings::save_for_vpl($instance->id, (object)[
+            'sebrequired' => 2,
+            'showsebtaskbar' => 0,
+        ], (int)$this->students[0]->id);
+        $settings = settings::get_values_from_vplid($instance->id);
 
         $xml = session_manager::get_phase2_config_xml($settings, $session);
 
-        $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
+        $this->assertStringContainsString('<key>showTaskBar</key><false/>', $xml);
         $this->assertSame($expectedkey, $session->configkey2);
         $this->assertSame($expectedkey, $DB->get_field('vpl_seb_session', 'configkey2', ['id' => $session->id]));
+    }
+
+    /**
+     * Explicitly clearing sessions lets new phase 2 keys reflect updated settings.
+     */
+    public function test_phase2_config_key_uses_updated_settings_after_sessions_are_cleared(): void {
+        global $DB;
+
+        $userid = (int)$this->students[0]->id;
+        $instance = $this->create_seb_vpl(['showsebtaskbar' => 1]);
+        $settings = settings::get_values_from_vplid($instance->id);
+        $session = session_manager::create_session($settings, $userid);
+        session_manager::prepare_phase2($settings, $session);
+
+        settings::save_for_vpl($instance->id, (object)[
+            'sebrequired' => 2,
+            'showsebtaskbar' => 0,
+            'sebsessionsdelete' => 1,
+        ], $userid);
+
+        $this->assertNull(session_manager::get_session($settings, $userid));
+        $settings = settings::get_values_from_vplid($instance->id);
+        $newsession = session_manager::get_or_create_session($settings, $userid);
+        session_manager::prepare_phase2($settings, $newsession);
+
+        $payload = config_payload::get_phase2_payload($settings, $newsession->token2private);
+        $expectedkey = hash('sha256', config_payload::get_seb_json($payload));
+        $this->assertSame(0, $settings->showsebtaskbar);
+        $this->assertNotEquals($session->id, $newsession->id);
+        $this->assertNotSame($session->configkey2, $newsession->configkey2);
+        $this->assertSame($expectedkey, $newsession->configkey2);
+        $this->assertSame($expectedkey, $DB->get_field('vpl_seb_session', 'configkey2', ['id' => $newsession->id]));
     }
 
     /**
