@@ -2537,49 +2537,39 @@ var VPLIDE = function(rootId, options) {
     menuButtons.setExtracontent('user', options.username);
     menuButtons.setTimeLeft(options);
     updateMenu = function() {
-        var i;
-        var file = fileManager.currentFile();
-        var nfiles = fileManager.length();
-        if (nfiles) {
-            tabs.show();
-        } else {
-            tabs.hide();
-        }
-        if (fileManager.isFileListVisible()) {
-            menuButtons.setText('filelist', 'filelistclose', VPLUtil.str('filelist'));
-        } else {
-            menuButtons.setText('filelist', 'filelist', VPLUtil.str('filelist'));
-        }
-        var modified = fileManager.isModified();
+        const file = fileManager.currentFile();
+        const nfiles = fileManager.length();
+        const fileListIcon = fileManager.isFileListVisible() ? 'filelistclose' : 'filelist';
+        const modified = fileManager.isModified();
+        const noModified = !modified;
+        const running = VPLUI.monitorRunning();
+        const canExecute = !running && (!modified || options.example);
+        const canSortOrMultiDelete = nfiles - minNumberOfFiles > 1;
+        tabs.toggle(nfiles > 0);
+        menuButtons.setText('filelist', fileListIcon, VPLUtil.str('filelist'));
         menuButtons.enable('save', modified);
-        var running = VPLUI.monitorRunning();
-        if (running) {
-            menuButtons.setText('run', 'running');
-        } else {
-            menuButtons.setText('run', 'run');
-        }
-        menuButtons.enable('run', !running && (!modified || options.example) && isOptionAllowed('run'));
-        menuButtons.enable('debug', !running && (!modified || options.example) && isOptionAllowed('debug'));
-        var canEvaluate = isOptionAllowed('evaluate') &&
+        menuButtons.setText('run', running ? 'running' : 'run');
+        menuButtons.enable('run', canExecute && isOptionAllowed('run'));
+        menuButtons.enable('debug', canExecute && isOptionAllowed('debug'));
+        const canEvaluate = isOptionAllowed('evaluate') &&
             (options.testEvaluation || (options.example ? nfiles > 0 : hasSubmittedFiles));
         $('#vpl_ide_evaluate').toggle(Boolean(canEvaluate));
-        menuButtons.enable('evaluate', canEvaluate && !running && (!modified || options.example));
-        menuButtons.enable('download', !modified);
+        menuButtons.enable('evaluate', canEvaluate && canExecute);
+        menuButtons.enable('download', noModified);
         menuButtons.enable('new', nfiles < maxNumberOfFiles);
-        menuButtons.enable('sort', nfiles - minNumberOfFiles > 1);
-        menuButtons.enable('multidelete', nfiles - minNumberOfFiles > 1);
-        menuButtons.enable('showparentfiles', !modified);
-        menuButtons.enable('theme', true);
-        var sel;
+        menuButtons.enable('sort', canSortOrMultiDelete);
+        menuButtons.enable('multidelete', canSortOrMultiDelete);
+        menuButtons.enable('showparentfiles', noModified);
         if (!file || nfiles === 0) {
-            sel = ['rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next'];
-            for (i = 0; i < sel.length; i++) {
-                menuButtons.enable(sel[i], false);
+            const currentFileButtons = ['rename', 'delete', 'undo', 'redo', 'select_all', 'find', 'find_replace', 'next'];
+            for (let button of currentFileButtons) {
+                menuButtons.enable(button, false);
             }
             return;
         }
-        menuButtons.enable('rename', file.getId() >= minNumberOfFiles && nfiles !== 0);
-        menuButtons.enable('delete', file.getId() >= minNumberOfFiles && nfiles !== 0);
+        const canRenameOrDelete = file.getId() >= minNumberOfFiles && nfiles !== 0;
+        menuButtons.enable('rename', canRenameOrDelete);
+        menuButtons.enable('delete', canRenameOrDelete);
         menuButtons.enable('undo', file.hasUndo());
         menuButtons.enable('redo', file.hasRedo());
         menuButtons.enable('select_all', file.hasSelectAll());
