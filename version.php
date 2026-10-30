@@ -29,8 +29,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version = 2026100720; // YYYYMMDDHH (year, month, day, hour).
+$plugin->version = 2026103008; // YYYYMMDDHH (year, month, day, hour).
 $plugin->requires = 2022112800; // Moodle 4.1!
 $plugin->maturity = MATURITY_STABLE;
-$plugin->release = '5.0.0';
+$plugin->release = '5.0.1';
 $plugin->component = 'mod_vpl';
