@@ -30,21 +30,6 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__) . '/../jail/running_processes.class.php');
 
-/**
- * Removes path(jail security) from URL
- *
- * @param string $url URL to clean
- *
- * @return string URL without path
- */
-function remove_path($url) {
-    $path = parse_url($url, PHP_URL_PATH);
-    if ($path > '/') {
-        $lenpath = strlen($path);
-        $url = substr_replace($url, '/*****', -$lenpath, $lenpath);
-    }
-    return $url;
-}
 global $PAGE, $COURSE, $COURSE, $DB;
 
 $id = required_param('id', PARAM_INT);
@@ -94,14 +79,20 @@ foreach ($processes as $process) {
     if ($running) {
         $status = get_string('running', VPL);
     }
-    $serverurl = remove_path($process->server);
+    $serverurl = vpl_jailserver_manager::get_server_short_name_html($process->server);
     $num++;
     $vpl = new mod_vpl(false, $process->vpl);
     $user = $DB->get_record('user', ['id' => $process->userid]);
     $taskstable->data[] = [
             $num,
             $vpl->fullname($user),
-            $vpl->get_printable_name(),
+            html_writer::link(
+                new moodle_url('/mod/vpl/forms/submissionview.php', [
+                    'id' => $vpl->get_course_module()->id,
+                    'userid' => $process->userid,
+                ]),
+                $vpl->get_printable_name()
+            ),
             $serverurl,
             userdate($process->start_time),
             $status,

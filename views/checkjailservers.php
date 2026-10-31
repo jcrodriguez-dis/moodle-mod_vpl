@@ -28,65 +28,6 @@ require_once(dirname(__FILE__) . '/../vpl.class.php');
 require_once(dirname(__FILE__) . '/../jail/jailserver_manager.class.php');
 require_once(dirname(__FILE__) . '/../jail/running_processes.class.php');
 
-/**
- * Get the list of jail servers from the current VPL activity
- * This is a recursive process.
- *
- * @param string $vpl Object of the current VPL activity
- * @param array  $already VPL activities already processed
- *
- * @return string List of jail servers, one per line
- */
-function get_currentjailservers($vpl, &$already = []) {
-    $serverlist = '';
-    $vplinstance = $vpl->get_instance();
-    if (isset($already[$vplinstance->id])) {
-        throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
-    }
-    $call = count($already);
-    $already[$vplinstance->id] = true;
-    if ($vplinstance->basedon) {
-        $basedon = new mod_vpl(null, $vplinstance->basedon);
-        $serverlist = get_currentjailservers($basedon, $already);
-    }
-    if ($vplinstance->jailservers > '') {
-        $serverlist = $vplinstance->jailservers . "\n" . $serverlist;
-    }
-    return $serverlist;
-}
-
-/**
- * Removes path(jail security) from URL
- *
- * @param string $url URL to clean
- *
- * @return string URL without path
- */
-function remove_path($url) {
-    $path = parse_url($url, PHP_URL_PATH);
-    if ($path > '/') {
-        $lenpath = strlen($path);
-        $url = substr_replace($url, '/*****', -$lenpath, $lenpath);
-    }
-    return $url;
-}
-
-/**
- * Check if there are any LS (language servers) in the servers info.
- *
- * @param array $serversinfo Array of server info objects
- *
- * @return bool True if there are any LS, false otherwise
- */
-function there_are_ls($serversinfo) {
-    foreach ($serversinfo as $info) {
-        if (!empty($info->ls)) {
-            return true;
-        }
-    }
-    return false;
-}
-
 global $PAGE, $COURSE, $COURSE, $DB;
 
 $id = required_param('id', PARAM_INT);
@@ -119,7 +60,7 @@ $serverstable->align = [
         'left',
         'right',
 ];
-$havels = there_are_ls($serversinfo);
+$havels = vpl_jailserver_manager::there_are_ls($serversinfo);
 if ($havels) {
     $serverstable->head[] = 'LS';
     $serverstable->align[] = 'left';
@@ -132,7 +73,7 @@ $pluginversion = $plugin->version;
 $serverstable->data = [];
 $num = 0;
 foreach ($serversinfo as $info) {
-    $serverurl = remove_path($info->server);
+    $serverurl = vpl_jailserver_manager::get_server_short_name_html($info->server);
     $serverissues = vpl_jailserver_manager::get_server_issues($info->server);
     if (count($serverissues) > 0) {
         $serverurl .= '<br><div class="vpl_server_warning">' . implode("<br>\n", $serverissues) . '</div>';

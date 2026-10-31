@@ -49,6 +49,89 @@ class vpl_jailserver_manager {
     const TABLE = 'vpl_jailservers';
 
     /**
+     * Get activity jail servers, including inherited servers.
+     *
+     * @param mod_vpl $vpl Current VPL activity.
+     * @param array $already VPL activities already processed.
+     * @return string List of jail servers, one per line.
+     */
+    public static function get_currentjailservers(mod_vpl $vpl, array &$already = []): string {
+        $serverlist = '';
+        $vplinstance = $vpl->get_instance();
+        if (isset($already[$vplinstance->id])) {
+            throw new moodle_exception('error:recursivedefinition', 'mod_vpl');
+        }
+        $already[$vplinstance->id] = true;
+        if ($vplinstance->basedon) {
+            $basedon = new mod_vpl(null, $vplinstance->basedon);
+            $serverlist = self::get_currentjailservers($basedon, $already);
+        }
+        if ($vplinstance->jailservers > '') {
+            $serverlist = $vplinstance->jailservers . "\n" . $serverlist;
+        }
+        return $serverlist;
+    }
+
+    /**
+     * Mask the jail security path.
+     *
+     * @param string $url URL to clean.
+     * @return string URL with its security path masked.
+     */
+    public static function remove_path(string $url): string {
+        $parsed = parse_url($url);
+        if ($parsed === false) {
+            return $url;
+        }
+        $path = str_replace('/', '', $parsed['path'] ?? '');
+        if ($path === '') {
+            return $url;
+        } else {
+            return str_replace($path, '******', $url);
+        }
+    }
+
+    /**
+     * Get a short server name with the masked full URL as its tooltip.
+     *
+     * @param string $url URL of the server.
+     * @return string Short name HTML of the server.
+     */
+    public static function get_server_short_name_html(string $url): string {
+        $fullname = s(self::remove_path($url));
+        $host = parse_url($url, PHP_URL_HOST);
+        if (filter_var(trim($host, '[]'), FILTER_VALIDATE_IP) !== false) {
+            $shortname = $host;
+        } else {
+            $names = explode('.', $host);
+            $shortname = $names[0];
+            if (
+                count($names) >= 2 && ($shortname === '' ||
+                strcasecmp($shortname, 'www') === 0 ||
+                strcasecmp($shortname, 'jail') === 0)
+            ) {
+                $shortname .= "." . $names[1];
+            }
+        }
+        return '<span title="' . $fullname . '">' . s($shortname) . '</span>';
+    }
+
+    /**
+     * Check whether server information contains any language servers.
+     *
+     * @param array $serversinfo Server information objects.
+     * @return bool True if any server has language servers.
+     */
+    public static function there_are_ls(array $serversinfo): bool {
+        foreach ($serversinfo as $info) {
+            if (!empty($info->ls)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
      * Save last server version.
      *
      * @var string
