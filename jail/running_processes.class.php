@@ -146,11 +146,11 @@ class vpl_running_processes {
                         FROM {vpl_running_processes}
                         INNER JOIN {vpl}
                         ON {vpl_running_processes}.vpl = {vpl}.id
-                        WHERE {vpl}.course = ?;';
+                        WHERE {vpl}.course = ?';
             $param = [ $courseid ];
         } else {
             $sql = 'SELECT {vpl_running_processes}.*
-                        FROM {vpl_running_processes};';
+                        FROM {vpl_running_processes}';
             $param = [];
         }
         return $DB->get_records_sql($sql, $param, 0, 1000);
