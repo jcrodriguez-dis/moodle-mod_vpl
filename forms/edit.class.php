@@ -385,8 +385,7 @@ class mod_vpl_edit {
      */
     public static function directrun($vpl, $userid, $actiondata) {
         $vplid = $vpl->get_instance()->id;
-        // TODO: This is a temporary solution to limit the number of direct runs for non-managers and non-graders.
-        if ($vpl->has_capability(VPL_MANAGE_CAPABILITY) || $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
+        if ($vpl->is_teacher()) {
             $maxrunning = 1000;
         } else {
             $maxrunning = 3;

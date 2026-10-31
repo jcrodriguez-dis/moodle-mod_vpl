@@ -417,6 +417,7 @@ class vpl_jailserver_manager {
      */
     public static function get_action_request(string $action, object $data): string {
         global $CFG;
+        $data->servername = parse_url($CFG->wwwroot, PHP_URL_HOST);
         $plugincfg = get_config('mod_vpl');
         if (empty($plugincfg->use_xmlrpc)) {
             $plugincfg->use_xmlrpc = false;

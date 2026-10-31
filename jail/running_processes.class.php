@@ -135,7 +135,7 @@ class vpl_running_processes {
     }
 
     /**
-     * Returns records of processes registered in a course or all
+     * Returns records of task processes registered in a course or all
      * @param int $courseid ID of the course if specified, -1 for all courses.
      * @return array[] Array of DB records.
      */
@@ -153,7 +153,7 @@ class vpl_running_processes {
                         FROM {vpl_running_processes};';
             $param = [];
         }
-        return $DB->get_records_sql($sql, $param);
+        return $DB->get_records_sql($sql, $param, 0, 1000);
     }
 
     /**
