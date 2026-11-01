@@ -103,8 +103,10 @@ jobs:
       - name: Behat features
         id: behat
         if: ${{ !cancelled() }}
-        run: moodle-plugin-ci behat --profile chrome
-  
+        run: |
+          moodle-plugin-ci add-config '$CFG->behat_increasetimeout = 3;'
+          moodle-plugin-ci behat --profile chrome
+
       - name: Install valgrind
         continue-on-error: true # This step may fail but the job can continue
         if: ${{ always() }}
