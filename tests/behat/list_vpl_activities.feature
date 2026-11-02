@@ -107,7 +107,6 @@ Feature: In a VPL activity get the list of VPL activities in the course
     And I press "Save and display"
     And I log out
 
-  @javascript
   Scenario: A teacher see the list of VPL activities from activity page
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -121,7 +120,6 @@ Feature: In a VPL activity get the list of VPL activities in the course
     And I should see "VPL activity six"
     And I should not see " is deprecated"
 
-  @javascript
   Scenario: A teacher filter by sections
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -167,7 +165,6 @@ Feature: In a VPL activity get the list of VPL activities in the course
     And I should see "VPL activity six"
     And I should not see " is deprecated"
 
-  @javascript
   Scenario: A teacher filter instances
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -229,7 +226,6 @@ Feature: In a VPL activity get the list of VPL activities in the course
     And I should not see "VPL activity six"
     And I should not see " is deprecated"
 
-  @javascript
   Scenario: A teacher filter by activity mode
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage

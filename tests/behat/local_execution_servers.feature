@@ -21,7 +21,6 @@ Feature: In a VPL activity feature Local execution servers
       | id_introeditor | No description |
     And I log out
 
-  @javascript
   Scenario: A teacher set and see URLs in Local execution servers
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage

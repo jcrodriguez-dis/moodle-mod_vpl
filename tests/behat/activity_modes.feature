@@ -34,7 +34,6 @@ Feature: In an VPL activity, editing teacher change activity modes
       | id_grade_modgrade_type | None |
     And I log out
 
-  @javascript
   Scenario: Normal mode - students can access and submit
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -82,7 +81,6 @@ Feature: In an VPL activity, editing teacher change activity modes
     When I click on "VPL simple" "link" in the "region-main" "region"
     Then I should see "Not available"
 
-  @javascript
   Scenario: Students read-only mode - students can view but not modify
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -129,7 +127,6 @@ Feature: In an VPL activity, editing teacher change activity modes
     When I click on "VPL simple" "link" in the "region-main" "region"
     Then I should see "Not available"
 
-  @javascript
   Scenario: Example mode - students can view the activity as example
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -179,7 +176,6 @@ Feature: In an VPL activity, editing teacher change activity modes
     When I click on "VPL simple" "link" in the "region-main" "region"
     Then I should see "Not available"
 
-  @javascript
   Scenario: Teacher can always access activities in any mode
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage

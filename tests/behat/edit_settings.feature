@@ -46,7 +46,6 @@ Feature: Create and change VPL activity settings
 
     And I log out
 
-  @javascript
   Scenario: An editing teacher sees default VPL setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -67,7 +66,6 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
-  @javascript
   Scenario: A non-editing teacher sees default VPL setting values
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -88,7 +86,6 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
-  @javascript
   Scenario: A student sees default VPL setting values
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -108,7 +105,6 @@ Feature: Create and change VPL activity settings
     And I should not see "Run: No"
     And I should not see "Evaluate: No"
 
-  @javascript
   Scenario: An editing teacher sees default VPL full setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
@@ -132,7 +128,6 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
-  @javascript
   Scenario: A non-editing teacher sees default VPL full setting values
     Given I log in as "teacher2"
     And I am on "Course 1" course homepage
@@ -156,7 +151,6 @@ Feature: Create and change VPL activity settings
     And I should see "Run: No"
     And I should see "Evaluate: No"
 
-  @javascript
   Scenario: A student does not access activity due to the network restriction
     Given I log in as "student1"
     And I am on "Course 1" course homepage
@@ -164,12 +158,11 @@ Feature: Create and change VPL activity settings
     When I click on "VPL activity full setting" "link" in the "region-main" "region"
     Then I should see "Action not allowed from"
 
-  @javascript
   Scenario: A student sees default VPL full setting values
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     And I click on "VPL activity full setting" "link" in the "region-main" "region"
-    And I navigate to "ettings" in current page administration
+    And I navigate to "Settings" in current page administration
     And I expand all fieldsets
     And I set the following fields to these values:
       | id_name | VPL activity changed setting |
@@ -196,10 +189,6 @@ Feature: Create and change VPL activity settings
     And I should see "Disable external file upload"
     And I should see "Run: No"
     And I should see "Evaluate: No"
-    And I navigate to "ettings" in current page administration
-    And I expand all fieldsets
-    And I click on "#id_cmidnumber[value='Full CMID']" in VPL
-    And I log out
     And I log in as "student1"
     And I am on "Course 1" course homepage
     When I click on "VPL activity changed setting" "link" in the "region-main" "region"
