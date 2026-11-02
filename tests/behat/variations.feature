@@ -124,4 +124,3 @@ Feature: In an VPL activity, editing teacher change variations
     Then I click on "VPL activity name" "link" in the "region-main" "region"
     And I should not see "changed-code"
     And I should not see "This is an edited variation description"
-
