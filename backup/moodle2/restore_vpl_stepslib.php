@@ -131,9 +131,10 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     /**
      * Restore a file
      * @param array $data of file [name, enconding, content]
-     * @param string $path path to directory where to save file
+     * @param string $path path to directory where to save file $relative to $CFG->dataroot
      */
     private function process_groupfile($data, $path) {
+        global $CFG;
         $data = (object) $data;
         $filename = $data->name;
         if (isset($data->encoding) && ($data->encoding == 1)) {
@@ -144,7 +145,13 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         } else {
             $content = $data->content;
         }
-        vpl_fwrite($path . $filename, $content);
+        $filepath = $path . $filename;
+        // Validate logical components; file groups encode nested separators as equals signs.
+        if (!vpl_is_valid_path_name(str_replace('=', '/', $filepath))) {
+            debugging('Invalid file path in backup: ' . $filepath, DEBUG_NORMAL);
+            return;
+        }
+        vpl_fwrite("{$CFG->dataroot}/vpl_data/{$filepath}", $content);
     }
 
     /**
@@ -154,7 +161,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     protected function process_required_file($data) {
         global $CFG;
         $vplid = $this->get_new_parentid('vpl');
-        $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
+        $path = "{$vplid}/";
         $this->process_groupfile($data, $path);
     }
 
@@ -165,7 +172,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
     protected function process_execution_file($data) {
         global $CFG;
         $vplid = $this->get_new_parentid('vpl');
-        $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/';
+        $path = "{$vplid}/";
         $this->process_groupfile($data, $path);
     }
 
@@ -279,7 +286,7 @@ class restore_vpl_activity_structure_step extends restore_activity_structure_ste
         if ($vplid != $sub->vpl) {
             throw new Exception('Submission record vplid inconsistence');
         }
-        $path = $CFG->dataroot . '/vpl_data/' . $vplid . '/usersdata/' . $sub->userid . '/' . $subid . '/';
+        $path = "{$vplid}/usersdata/{$sub->userid}/{$subid}/";
         $this->process_groupfile($data, $path);
     }
 

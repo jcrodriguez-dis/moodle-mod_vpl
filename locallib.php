@@ -769,7 +769,7 @@ function vpl_is_valid_path_name($path) {
 }
 
 /**
- * Return if file or directory name is valid
+ * Return if a file or directory name is valid
  *
  * @param string $name
  * @return boolean
@@ -777,7 +777,7 @@ function vpl_is_valid_path_name($path) {
  */
 function vpl_is_valid_file_name($name) {
     $backtick = chr(96); // Avoid warnning in codecheck.
-    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\\\|\[|\]|[\/\^';
+    $regexp = '/[\x00-\x1f]|[:-@]|[{-~]|\\\\|\*|\[|\]|[\/\^';
     $regexp .= $backtick . '´]|^\-|^ | $|\.$|^\.\.$/';
     if (strlen($name) < 1) {
         return false;

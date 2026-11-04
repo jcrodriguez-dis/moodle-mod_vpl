@@ -486,6 +486,95 @@ final class locallib_test extends \advanced_testcase {
     }
 
     /**
+     * Risky path components must be rejected wherever they appear.
+     *
+     * @dataProvider valid_path_name_provider
+     * @covers \vpl_is_valid_path_name
+     * @param string $path Path to validate.
+     * @param bool $expected Whether the path is valid.
+     */
+    public function test_vpl_is_valid_path_name(string $path, bool $expected): void {
+        $this->assertSame($expected, vpl_is_valid_path_name($path));
+    }
+
+    /**
+     * Relative paths and rejected inputs covering unsafe components and naming boundaries.
+     *
+     * @return array
+     */
+    public static function valid_path_name_provider(): array {
+        $cases = [
+            'simple filename' => ['main.c', true],
+            'nested relative path' => ['src/lib/main.c', true],
+            'leading slash' => ['/src/main.c', false],
+            'restore destination prefix is not a relative filename' => ['/vpl_data/123/main.c', false],
+            'internal spaces' => ['my sources/my file.c', true],
+            'hidden component' => ['.config/settings', true],
+            'dots within component' => ['src/name..txt', true],
+            'internal hyphen and underscore' => ['src/my-file_1.c', true],
+            'maximum component length' => [str_repeat('a', 128), true],
+            'maximum path length' => [str_repeat('a', 128) . '/' . str_repeat('b', 127), true],
+            'leading slash within path length limit' => ['/' . str_repeat('a', 128) . '/' . str_repeat('b', 126), false],
+            'overlong path with leading slash' => ['/' . str_repeat('a', 128) . '/' . str_repeat('b', 127), false],
+            'empty path' => ['', false],
+            'slash only' => ['/', false],
+            'double slash only' => ['//', false],
+            'multiple leading slashes' => ['//src/main.c', false],
+            'trailing separator with leading slash' => ['/src/', false],
+            'empty middle component with leading slash' => ['/src//file.txt', false],
+            'Windows drive relative path' => ['C:file.txt', false],
+            'Windows traversal' => ['src\\..\\file.txt', false],
+            'Linux traversal' => ['src/../file.txt', false],
+            'mixed separators' => ['src/..\\file.txt', false],
+            'trailing separator' => ['src/', false],
+            'empty middle component' => ['src//file.txt', false],
+            'overlong component' => [str_repeat('a', 129), false],
+            'overlong nested component' => ['src/' . str_repeat('a', 129) . '/file.txt', false],
+            'path exceeding total limit only' => [str_repeat('a', 128) . '/' . str_repeat('b', 128), false],
+        ];
+        $invalidcomponents = [
+            'current directory' => '.',
+            'parent directory' => '..',
+            'leading option' => '-rf',
+            'long option' => '--help',
+            'leading space' => ' file',
+            'trailing space' => 'file ',
+            'trailing dot' => 'file.',
+            'only whitespace' => ' ',
+            'command separator' => 'file;command',
+            'pipe' => 'file|command',
+            'input redirection' => 'file<input',
+            'output redirection' => 'file>output',
+            'backtick substitution' => 'file' . chr(96) . 'command' . chr(96),
+            'wildcard' => 'file*',
+            'question mark' => 'file?',
+            'colon' => 'file:stream',
+            'equals sign' => 'file=value',
+            'at sign' => 'file@host',
+            'opening brace' => 'file{a',
+            'closing brace' => 'file}a',
+            'tilde' => '~user',
+            'opening bracket' => 'file[a',
+            'closing bracket' => 'file]a',
+            'caret' => 'file^a',
+            'backslash' => 'file\\name',
+            'acute accent' => "file\u{00B4}name",
+        ];
+        for ($byte = 0; $byte < 32; $byte++) {
+            $invalidcomponents['control byte ' . $byte] = 'file' . chr($byte) . 'name';
+        }
+        foreach ($invalidcomponents as $label => $component) {
+            $cases[$label . ' at start'] = [$component . '/file.txt', false];
+            $cases[$label . ' in middle'] = ['src/' . $component . '/file.txt', false];
+            $cases[$label . ' at end'] = ['src/' . $component, false];
+            $cases[$label . ' at start with leading slash'] = ['/' . $component . '/file.txt', false];
+            $cases[$label . ' in middle with leading slash'] = ['/src/' . $component . '/file.txt', false];
+            $cases[$label . ' at end with leading slash'] = ['/src/' . $component, false];
+        }
+        return $cases;
+    }
+
+    /**
      * Test vpl_filter_groups_by_initials
      *
      * @covers ::vpl_filter_groups_by_initials
