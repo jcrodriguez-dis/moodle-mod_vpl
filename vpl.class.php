@@ -524,7 +524,7 @@ class mod_vpl {
         }
         $passvar = $this->get_password_var();
         if ($passset > '') {
-            if ($passset == $password) {
+            if (hash_equals($password, $passset)) {
                 $SESSION->$passvar = $this->get_password_md5();
                 \mod_vpl\forms\activity_password::reset_attempt($this);
                 return true;
@@ -697,7 +697,7 @@ class mod_vpl {
      * Return true if is set to use SEB.
      * @return bool
      */
-    protected function uses_seb() {
+    public function uses_seb() {
         return $this->get_instance()->sebrequired > 0;
     }
 

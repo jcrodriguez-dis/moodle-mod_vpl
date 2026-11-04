@@ -88,8 +88,14 @@ class mod_vpl_webservice extends external_api {
                 throw new Exception($message);
             }
             if (! $vpl->pass_password_check($password)) {
+                sleep(3);
+                \mod_vpl\forms\activity_password::increment_attempt($vpl);
                 throw new Exception(get_string('requiredpassword', VPL));
             }
+            if ($vpl->uses_seb()) {
+                throw new Exception(get_string('sebrequired', VPL));
+            }
+            $vpl->check_first_access();
         }
         return $vpl;
     }
