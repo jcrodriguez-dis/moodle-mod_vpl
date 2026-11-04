@@ -634,7 +634,7 @@ foreach ($alldata as $data) {
             if ($result['executed'] !== 0) {
                 $prograde = $submission->proposedGrade($result['execution']);
                 if ($prograde > '' && $prograde != $subinstance->grade) {
-                    $text .= ' (' . $prograde . ')';
+                    $text .= ' (' . s($prograde) . ')';
                 }
             }
             $result = []; // Dispose array.

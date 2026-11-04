@@ -43,22 +43,22 @@ function get_grading_help($vpl) {
     $all = [];
     foreach ($list as $text => $info) {
         $astext = s(addslashes_js($text));
-        $html = '';
-        $html .= s($text);
+        $html = s($text);
         foreach (array_keys($info->grades) as $grade) {
             if ($grade >= 0) { // No grade.
                 $jscript = 'window.VPL.addComment(\'' . $astext . '\')';
             } else {
-                $jscript = 'VPL.addComment(\'' . $astext . ' (' . $grade . ')\')';
+                $sanitizedgrade = s(addslashes_js($grade));
+                $jscript = 'VPL.addComment(\'' . $astext . ' (' . $sanitizedgrade . ')\')';
             }
-            $link = '<a href="javascript:void(0)" onclick="' . $jscript . '">' . $grade . '</a>';
+            $link = '<a href="javascript:void(0)" onclick="' . $jscript . '">' . s($grade) . '</a>';
             $html .= ' (' . $link . ')';
         }
-        $html .= '<br>';
+        $html = '(' . $info->count . ') ' . $html . '<br>';
         if (isset($all[$info->count])) {
-            $all[$info->count] .= '(' . $info->count . ') ' . $html;
+            $all[$info->count] .= $html;
         } else {
-            $all[$info->count] = '(' . $info->count . ') ' . $html;
+            $all[$info->count] = $html;
         }
     }
     // Sort comments by number of occurrences.
