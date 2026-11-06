@@ -73,27 +73,29 @@ $pluginversion = $plugin->version;
 $serverstable->data = [];
 $num = 0;
 foreach ($serversinfo as $info) {
-    $serverurl = vpl_jailserver_manager::get_server_short_name_html($info->server);
-    $serverissues = vpl_jailserver_manager::get_server_issues($info->server);
-    if (count($serverissues) > 0) {
-        $serverurl .= '<br><div class="vpl_server_warning">' . implode("<br>\n", $serverissues) . '</div>';
+    $servername = vpl_jailserver_manager::get_server_short_name_html($info->server);
+    $serverissueslist = vpl_jailserver_manager::get_server_issues($info->server);
+    if (count($serverissueslist) > 0) {
+        $serverissues = '<br><div class="vpl_server_warning">' . implode("<br>\n", $serverissueslist) . '</div>';
+    } else {
+        $serverissues = '';
     }
     $num++;
+    $currentstatus = s($info->current_status);
     if ($info->offline) {
-        $status = '<div class="vpl_server_failed">' . $info->current_status . '</div>';
-    } else {
-        $status = $info->current_status;
+        $currentstatus = '<div class="vpl_server_failed">' . $currentstatus . '</div>';
     }
+    $lasterror = s($info->laststrerror);
     $row = [
             $num,
-            $serverurl,
-            $status,
-            $info->laststrerror,
+            $servername . $serverissues,
+            $currentstatus,
+            $lasterror,
             $info->lastfail > 0 ? userdate($info->lastfail) : '',
             $info->nfails,
     ];
     if ($havels) {
-        $row[] = implode(', ', $info->ls);
+        $row[] = s(implode(', ', $info->ls));
     }
     $serverstable->data[] = $row;
 }
