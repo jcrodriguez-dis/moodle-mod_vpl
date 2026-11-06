@@ -322,6 +322,31 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     }
 
     /**
+     * Get all premade scripts names as associative array with script names as keys.
+     * @param object $data Data to send to the jail.
+     * @return array Associative array with script names as keys.
+     */
+    public function get_premade_scripts($data) {
+        $premadescripts = self::SCRIPT_NAME;
+        $premadescripts['vpl_evaluate.cpp'] = '';
+        $premadescripts['pre_vpl_run.sh'] = '';
+        $premadescripts['vpl_environment.sh'] = '';
+        $premadescripts['common_script.sh'] = '';
+        $premadescripts['default_evaluate_textingui.sh'] = '';
+        return $premadescripts;
+    }
+
+    /**
+     * Returns if a file is an internal vpl file or directory.
+     * Internal VPL files/directores are the ones that start with .vpl_
+     * @param string $filename The name of the file directory to check.
+     * @return bool True if the file is an internal vpl file or directory, false otherwise.
+     */
+    public function is_internal_file($filename) {
+        return strpos($filename, '.vpl_') === 0;
+    }
+
+    /**
      * Adds to $data submission information data to be send to the jail
      *
      * @param object $data Data to send to the jail.
@@ -331,14 +356,24 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Submitted files.
         $sfg = $this->get_submitted_fgm();
         $submittedlist = $sfg->getFileList();
-        // Add $submittedlist but removing the files overwrited by teacher's one.
+        $premadescripts = $this->get_premade_scripts($data);
+        $filteredsubmittedlist = [];
+        $removedsubmittedlist = [];
+        // Add $submittedlist but removing the files overwrited by teacher's one or premade scripts.
         foreach ($submittedlist as $filename) {
-            if (! isset($data->files[$filename])) {
+            if (
+                ! isset($data->files[$filename]) &&
+                ! isset($premadescripts[$filename]) &&
+                ! $this->is_internal_file($filename)
+            ) {
+                $filteredsubmittedlist[] = $filename;
                 $data->files[$filename] = $sfg->getFileData($filename);
+            } else {
+                $removedsubmittedlist[] = $filename;
             }
         }
         // Get programming language.
-        $data->pln = self::get_pln($submittedlist);
+        $data->pln = self::get_pln($filteredsubmittedlist);
         // Adapts Java memory limit.
         if ($data->pln == 'java') {
             $javaoffset = 128 * 1024 * 1024; // Checked at Ubuntu 12.04 64 and CentOS 6.5 64.
@@ -354,7 +389,8 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $data->run_count = $this->get_instance()->run_count;
         $data->debug_count = $this->get_instance()->debug_count;
         $data->evaluation_count = $this->get_instance()->nevaluations;
-        $data->submittedlist = $submittedlist;
+        $data->submittedlist = $filteredsubmittedlist;
+        $data->removedsubmittedlist = $removedsubmittedlist;
         return $data;
     }
 
@@ -406,7 +442,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         // Write local environment for each solution.
         foreach ($casefilelist as $casedir => $casefilenames) {
             $localenvironment = self::get_bash_export_for_subfiles($casefilenames);
-            $localenvironmentfile = self::DIR_TEST_EVALUATION . '/' . $casedir . '/.localenvironment.sh';
+            $localenvironmentfile = self::DIR_TEST_EVALUATION . '/' . $casedir . '/.vpl_localenvironment.sh';
             $data->files[$localenvironmentfile] = $localenvironment;
         }
         return $data;
@@ -538,6 +574,12 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $variables['VPL_VARIATIONS'] = $varidentificacions;
             }
         }
+        $variables['VPL_STR_REMOVED_SUBMITTED_FILES'] = get_string('VPL_STR_REMOVED_SUBMITTED_FILES', VPL);
+        if (!empty($data->removedsubmittedlist)) {
+            $variables['VPL_REMOVED_SUBFILES'] = implode("\n", $data->removedsubmittedlist) . "\n";
+        } else {
+            $variables['VPL_REMOVED_SUBFILES'] = '';
+        }
         return $variables;
     }
     /**
@@ -548,12 +590,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     public static function prepare_execution_info($data) {
         $vpl = new mod_vpl(false, $data->activityid);
-        // Prepare vpl_environment.sh content.
-        $enviromentcontent = "#!/bin/bash\n";
-        if (isset($data->submittedlist)) {
-            $enviromentcontent .= self::get_bash_export_for_subfiles($data->submittedlist);
-        }
-        $varsenv = self::get_environment_variables($vpl, $data);
+        // Add pre-made scripts not present in the files to be sent to the jail.
         $premadescripts = self::get_scripts($vpl, $data);
         foreach ($premadescripts as $filename => $filedata) {
             if (isset($data->files[$filename]) && trim($data->files[$filename]) > '') { // Use custom script.
@@ -568,10 +605,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 $data->filestodelete[$filename] = 1;
             }
         }
+        // Get environment variables for the jail.
+        $varsenv = self::get_environment_variables($vpl, $data);
+        unset($data->removedsubmittedlist);
         if ($data->type == self::TTESTEVALUATE) {
             $varsenv['VPL_EVALUATION_SCRIPT'] = "vpl_evaluate.sh";
         }
         if (!empty($data->evaluator)) {
+            // Apply evaluator files, strings, execution script, and environment variables.
             $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($data->evaluator, $vpl, $data);
             if ($evaluator != null) {
                 if ($data->type >= self::TEVALUATE) {
@@ -601,13 +642,15 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 }
             }
         }
-        // If evaluating and evaluator => merge evaluator files and strings.
-        // Add more environment variables to the environment script.
-        foreach ($varsenv as $name => $value) {
-            $enviromentcontent .= vpl_bash_export($name, $value);
+        // Prepare vpl_environment.sh content.
+        $environmentcontent = "#!/bin/bash\n";
+        if (isset($data->submittedlist)) {
+            $environmentcontent .= self::get_bash_export_for_subfiles($data->submittedlist);
         }
-        $enviromentcontent .= <<<'SETLANG'
-        #!/bin/bash
+        foreach ($varsenv as $name => $value) {
+            $environmentcontent .= vpl_bash_export($name, $value);
+        }
+        $environmentcontent .= <<<'END_OF_ENVIRONMENT_ACTIONS'
         for NEWLANG in $VPL_LANG en_US.UTF-8 C.utf8 POSIX C
         do
             export LC_ALL=$NEWLANG 2> .vpl_set_locale_error
@@ -618,10 +661,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
                 break
             fi
         done
+        if [ -n "$VPL_REMOVED_SUBFILES" ] && [ ! -f .vpl_removed_subfiles_notification ]; then
+            printf '%s\n' "$VPL_STR_REMOVED_SUBMITTED_FILES"
+            printf '%s' "$VPL_REMOVED_SUBFILES" | sed 's/^/    /'
+            touch .vpl_removed_subfiles_notification
+        fi
+        END_OF_ENVIRONMENT_ACTIONS;
 
-        SETLANG;
-        // Add script file with VPL environment information and set LC_ALL.
-        $data->files['vpl_environment.sh'] = $enviromentcontent;
+        $data->files['vpl_environment.sh'] = $environmentcontent;
         // Add common script.
         $data->files['common_script.sh'] = file_get_contents(vpl_get_scripts_dir() . '/common_script.sh');
         // Add new script for evaluation mode test_in_gui if needed.
@@ -654,6 +701,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $bashcode .= 'export VPL_SUBFILES="' . $filenames . "\"\n";
         return $bashcode;
     }
+
     /**
      * Recopile execution data to be send to the jail
      *

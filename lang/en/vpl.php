@@ -25,6 +25,7 @@
  */
 
 $string['VPL_COMPILATIONFAILED'] = 'The compilation or preparation of execution has failed';
+$string['VPL_STR_REMOVED_SUBMITTED_FILES'] = 'Removed submitted files due to conflict with internal VPL or teacher files:';
 $string['about'] = 'About';
 $string['acceptcertificates'] = 'Ignore execution server certificate errors';
 $string['acceptcertificates_description'] = 'Checking this option will allow encrypted connections to execution servers even if

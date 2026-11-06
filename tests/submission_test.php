@@ -193,6 +193,34 @@ final class submission_test extends base_fixture {
     }
 
     /**
+     * Tests that execution preparation rejects internal files and directory contents.
+     * @covers \mod_vpl_submission_CE::prepare_execution_submission
+     * @covers \mod_vpl_submission_CE::is_internal_file
+     */
+    public function test_prepare_execution_submission_rejects_internal_files(): void {
+        $submissionrecord = $this->vplonefile->last_user_submission($this->students[0]->id);
+        $submission = new mod_vpl_submission_CE($this->vplonefile, $submissionrecord);
+        $source = "int main(){return 0;}\n";
+        $internalfiles = [
+            '.vpl_internal.py' => 'print("internal")',
+            '.vpl_directory/main.py' => 'print("internal directory")',
+        ];
+        $submission->get_submitted_fgm()->addallfiles(['a.c' => $source] + $internalfiles);
+        $data = (object) [
+            'files' => [],
+            'maxmemory' => 1024,
+            'type' => mod_vpl_submission_CE::TRUN,
+        ];
+
+        $data = $submission->prepare_execution_submission($data);
+
+        $this->assertSame(['a.c' => $source], $data->files);
+        $this->assertSame(['a.c'], $data->submittedlist);
+        $this->assertEqualsCanonicalizing(array_keys($internalfiles), $data->removedsubmittedlist);
+        $this->assertSame('c', $data->pln);
+    }
+
+    /**
      * Method to test submission data preparation.
      * @covers \mod_vpl_submission_CE::prepare_execution_submission
      */
@@ -202,14 +230,114 @@ final class submission_test extends base_fixture {
         $data = (object) [
             'files' => [],
             'maxmemory' => 1024,
+            'type' => mod_vpl_submission_CE::TRUN,
         ];
 
         $data = $submission->prepare_execution_submission($data);
 
         $this->assertEquals('c', $data->pln);
         $this->assertEquals(['a.c'], $data->submittedlist);
+        $this->assertSame([], $data->removedsubmittedlist);
         $this->assertEquals("int main(){\nprintf(\"Hola\");\n}", $data->files['a.c']);
         $this->assertEquals($this->students[0]->id, $data->userid);
+    }
+
+    /**
+     * Method to test that submitted files never replace VPL system files or teacher's scripts.
+     * @covers \mod_vpl_submission_CE::prepare_execution
+     * @covers \mod_vpl_submission_CE::get_premade_scripts
+     * @covers \mod_vpl_submission_CE::prepare_execution_submission
+     */
+    public function test_submitted_files_do_not_replace_system_files(): void {
+        $this->setUser($this->editingteachers[0]);
+        $vpl = $this->create_instance([
+            'name' => 'Protected scripts',
+            'maxfiles' => 20,
+            'maxfilesize' => 100000,
+            'duedate' => time() + 3600,
+        ]);
+        $teacherrun = "#!/bin/bash\necho TEACHER_RUN\n";
+        $vpl->get_execution_fgm()->addallfiles(['vpl_run.sh' => $teacherrun]);
+
+        $evil = "#!/bin/bash\necho STUDENT_EVIL\n";
+        $systemfiles = [
+            'vpl_run.sh', 'vpl_debug.sh', 'vpl_evaluate.sh', 'vpl_test_evaluate.sh',
+            'vpl_evaluate.cases', 'vpl_evaluate.cpp', 'pre_vpl_run.sh', 'vpl_environment.sh',
+            'common_script.sh',
+            'default_evaluate_textingui.sh', '.vpl_localenvironment.sh', '.vpl_removed_subfiles_notification',
+        ];
+        $files = ['main.c' => "int main(){return 0;}\n"];
+        foreach ($systemfiles as $name) {
+            $files[$name] = $evil;
+        }
+        $this->setUser($this->students[0]);
+        $error = '';
+        $id = $vpl->add_submission($this->students[0]->id, $files, '', $error);
+        $this->assertNotEmpty($id, $error);
+        $record = $vpl->last_user_submission($this->students[0]->id);
+
+        $types = [
+            mod_vpl_submission_CE::TRUN,
+            mod_vpl_submission_CE::TDEBUG,
+            mod_vpl_submission_CE::TEVALUATE,
+        ];
+        foreach ($types as $type) {
+            $submission = new mod_vpl_submission_CE($vpl, $record);
+            $data = $submission->prepare_execution($type);
+            foreach ($systemfiles as $name) {
+                if (isset($data->files[$name])) {
+                    $this->assertStringNotContainsString(
+                        'STUDENT_EVIL',
+                        $data->files[$name],
+                        "Type $type: submitted $name replaced a system file"
+                    );
+                }
+            }
+            $this->assertNotContains('vpl_run.sh', $data->submittedlist);
+            $this->assertEquals(['main.c'], array_values($data->submittedlist));
+            $this->assertArrayHasKey('main.c', $data->files);
+            // Teacher's script is kept (concatenated to the default one when based-on, otherwise as is).
+            $this->assertStringContainsString('TEACHER_RUN', $data->files['vpl_run.sh']);
+            // System files always generated.
+            $this->assertArrayHasKey('vpl_environment.sh', $data->files);
+            $this->assertArrayHasKey('common_script.sh', $data->files);
+            $this->assertStringContainsString('VPL_SUBFILE0', $data->files['vpl_environment.sh']);
+            $this->assertStringContainsString(
+                vpl_bash_export('VPL_REMOVED_SUBFILES', implode("\n", $systemfiles) . "\n"),
+                $data->files['vpl_environment.sh']
+            );
+            $this->assertArrayNotHasKey('.vpl_removed_subfiles_notification', $data->files);
+            $this->assertFalse(isset($data->removedsubmittedlist));
+            if ($type >= mod_vpl_submission_CE::TEVALUATE) {
+                $this->assertArrayHasKey('vpl_evaluate.sh', $data->files);
+                $this->assertArrayHasKey('vpl_evaluate.cpp', $data->files);
+            }
+            if ($type == mod_vpl_submission_CE::TDEBUG) {
+                $this->assertArrayHasKey('vpl_debug.sh', $data->files);
+            }
+        }
+
+        // Without teacher's script the default VPL one must be used.
+        $vpl2 = $this->create_instance([
+            'name' => 'Protected default scripts',
+            'maxfiles' => 20,
+            'maxfilesize' => 100000,
+            'duedate' => time() + 3600,
+        ]);
+        $this->setUser($this->students[0]);
+        $id = $vpl2->add_submission($this->students[0]->id, $files, '', $error);
+        $this->assertNotEmpty($id, $error);
+        $record = $vpl2->last_user_submission($this->students[0]->id);
+        $submission = new mod_vpl_submission_CE($vpl2, $record);
+        $data = $submission->prepare_execution(mod_vpl_submission_CE::TEVALUATE);
+        foreach ($systemfiles as $name) {
+            if (isset($data->files[$name])) {
+                $this->assertStringNotContainsString('STUDENT_EVIL', $data->files[$name], "Submitted $name used");
+            }
+        }
+        $this->assertNotEmpty($data->files['vpl_run.sh']);
+        $this->assertNotEmpty($data->files['vpl_evaluate.sh']);
+        $this->assertEquals(['main.c'], array_values($data->submittedlist));
     }
 
     /**
@@ -229,7 +357,7 @@ final class submission_test extends base_fixture {
 
         $this->assertEquals('c', $data->pln);
         $this->assertSame([], $data->submittedlist);
-        $localenvfile = 'vpl_evaluation_tests/case/.localenvironment.sh';
+        $localenvfile = 'vpl_evaluation_tests/case/.vpl_localenvironment.sh';
         $this->assertArrayHasKey(
             $localenvfile,
             $data->files
@@ -295,6 +423,15 @@ final class submission_test extends base_fixture {
         $this->assertEquals($this->students[0]->id, $variables['MOODLE_USER_ID']);
         $this->assertEquals($this->students[0]->email, $variables['MOODLE_USER_EMAIL']);
         $this->assertArrayHasKey('VPL_COMPILATIONFAILED', $variables);
+        $this->assertSame('', $variables['VPL_REMOVED_SUBFILES']);
+        $this->assertSame(
+            get_string('VPL_STR_REMOVED_SUBMITTED_FILES', VPL),
+            $variables['VPL_STR_REMOVED_SUBMITTED_FILES']
+        );
+
+        $data->removedsubmittedlist = ['vpl_run.sh', 'common_script.sh'];
+        $variables = mod_vpl_submission_CE::get_environment_variables($this->vplonefile, $data);
+        $this->assertSame("vpl_run.sh\ncommon_script.sh\n", $variables['VPL_REMOVED_SUBFILES']);
     }
 
     /**
@@ -311,6 +448,7 @@ final class submission_test extends base_fixture {
             ],
             'filestodelete' => [],
             'submittedlist' => ['main.php'],
+            'removedsubmittedlist' => ['vpl_run.sh', 'common_script.sh'],
             'run_mode' => '1',
             'evaluator' => '',
         ];
@@ -321,6 +459,11 @@ final class submission_test extends base_fixture {
         $this->assertArrayHasKey('vpl_environment.sh', $data->files);
         $this->assertArrayHasKey('common_script.sh', $data->files);
         $this->assertStringContainsString('VPL_SUBFILE0', $data->files['vpl_environment.sh']);
+        $this->assertStringContainsString(
+            vpl_bash_export('VPL_REMOVED_SUBFILES', "vpl_run.sh\ncommon_script.sh\n"),
+            $data->files['vpl_environment.sh']
+        );
+        $this->assertFalse(isset($data->removedsubmittedlist));
     }
 
     /**

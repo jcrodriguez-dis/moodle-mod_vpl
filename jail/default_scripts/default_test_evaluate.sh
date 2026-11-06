@@ -136,7 +136,7 @@ function copy_configuration {
 		done
 	)
 	rm "$1/vpl_test_evaluate.sh"
-	[[ -s "$1/.localenvironment.sh" ]] && cat "$1/.localenvironment.sh" >> "$envfile"
+	[[ -s "$1/.vpl_localenvironment.sh" ]] && cat "$1/.vpl_localenvironment.sh" >> "$envfile"
 	[ ! -f "$envfile" ] && echo "#!/bin/bash" > "$envfile"
 	[ -n "$variation" ] && echo "export VPL_VARIATION=\"$variation\"" >> "$envfile"
 	chmod +x "$envfile"
