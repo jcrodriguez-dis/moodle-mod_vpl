@@ -24,7 +24,9 @@
  */
 
 defined('MOODLE_INTERNAL') || die();
+global $CFG;
 require_once(__DIR__ . '/../locallib.php');
+require_once($CFG->libdir . '/filelib.php');
 
 /**
  * vpl_jailserver_manager is a utility class to manage
@@ -150,56 +152,57 @@ class vpl_jailserver_manager {
     /**
      * Parse headers from cURL response to get the server version.
      *
-     * @param resource $ch cURL handle
      * @param string $header Header string from the response
-     * @return int Length of the header string
+     * @return bool True if the Server header was successfully parsed, false otherwise
      */
-    public static function parse_headers($ch, $header) {
+    public static function parse_headers($header) {
         $parsedheader = explode(':', trim($header), 2);
         if (count($parsedheader) == 2 && strcasecmp($parsedheader[0], 'Server') == 0) {
             $parsedname = explode(' ', trim($parsedheader[1]), 2);
             if (count($parsedname) == 2 && strcasecmp($parsedname[0], 'vpl-jail-system') === 0) {
                 self::$lastserverversion = trim($parsedname[1]);
+                return true;
             }
         }
-        return strlen($header);
+        return false;
     }
 
     /**
-     * Get a cURL handle for the jail server.
+     * Get a configured Moodle cURL client, using Moodle's proxy unless VPL overrides it.
      *
      * @param string $server URL of the jail server
      * @param string $request Request to be sent
      * @param bool $fresh If true, force a fresh connection
-     * @return \CurlHandle cURL handle
-     * @throws Exception if cURL is not available
+     * @return \curl Moodle cURL client
      */
     public static function get_curl($server, $request, $fresh = false) {
-        if (! function_exists('curl_init')) {
-            throw new Exception('PHP cURL required');
-        }
         $plugincfg = get_config('mod_vpl');
-        $ch = curl_init();
-        $contenttype = $request[0] == '{' ? 'application/json' : 'text/xml';
-        curl_setopt($ch, CURLOPT_URL, $server);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+        $hasvplproxy = !empty($plugincfg->proxy) && strlen($plugincfg->proxy) > 7;
+        $ch = $hasvplproxy ? new \curl(['proxy' => false]) : new \curl();
+        $contenttype = substr($request, 0, 1) === '{' ? 'application/json' : 'text/xml';
+        $ch->setHeader([
                 "Content-type: {$contenttype};charset=UTF-8",
                 'User-Agent: VPL ' . vpl_get_version(),
         ]);
         self::$lastserverversion = '';
-        curl_setopt($ch, CURLOPT_HEADERFUNCTION, 'vpl_jailserver_manager::parse_headers');
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $request);
-        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 5);
-        if ($fresh) {
-            curl_setopt($ch, CURLOPT_FRESH_CONNECT, true);
-        }
-        if (isset($plugincfg->acceptcertificates) && $plugincfg->acceptcertificates) {
-            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-        }
-        if (isset($plugincfg->proxy) && strlen($plugincfg->proxy) > 7) {
-            curl_setopt($ch, CURLOPT_PROXY, $plugincfg->proxy);
+        $ch->setopt([
+            'CURLOPT_URL' => $server,
+            'CURLOPT_RETURNTRANSFER' => true,
+            'CURLOPT_USERAGENT' => 'VPL ' . vpl_get_version(),
+            'CURLOPT_CONNECTTIMEOUT' => 5,
+            'CURLOPT_FRESH_CONNECT' => $fresh,
+            'CURLOPT_FOLLOWLOCATION' => false,
+            'CURLOPT_SSL_VERIFYPEER' => empty($plugincfg->acceptcertificates),
+            'CURLOPT_SSL_VERIFYHOST' => 2,
+        ]);
+        if ($hasvplproxy) {
+            $ch->setopt([
+                // Moodle's global proxy credentials and type must not leak to the VPL proxy.
+                'CURLOPT_PROXYUSERPWD' => '',
+                'CURLOPT_PROXYAUTH' => CURLAUTH_BASIC,
+                'CURLOPT_PROXYTYPE' => CURLPROXY_HTTP,
+                'CURLOPT_HTTPPROXYTUNNEL' => false,
+            ]);
         }
         return $ch;
     }
@@ -260,16 +263,23 @@ class vpl_jailserver_manager {
      * @return array|false Response from the jail server or false on error
      */
     public static function get_response($server, $request, &$error = null, $fresh = false) {
-        $ch = self::get_curl($server, $request, $fresh);
-        $rawresponse = curl_exec($ch);
-        if ($rawresponse === false) {
-            $detailederror = str_replace($server, '[JAIL_SERVER]', curl_error($ch));
-            $error = 'Request failed: ' . s($detailederror);
-            @curl_close($ch); // TODO: Remove when PHP 8 is required, as it will be closed automatically.
+        $ch = static::get_curl($server, $request, $fresh);
+        $error = '';
+        $proxy = get_config('mod_vpl', 'proxy');
+        // Moodle removes stored proxy options when its built-in proxy handling is disabled.
+        $options = !empty($proxy) && strlen($proxy) > 7 ? ['CURLOPT_PROXY' => $proxy] : [];
+        $rawresponse = $ch->post($server, $request, $options);
+        foreach ($ch->get_raw_response() as $header) {
+            if (self::parse_headers($header)) {
+                break;
+            }
+        }
+        if ($rawresponse === false || $ch->get_errno() !== 0 || !empty($ch->error)) {
+            $detailederror = str_replace($server, '[JAIL_SERVER]', $ch->error);
+            $error = 'Request failed: ' . $detailederror;
         } else {
-            $error = '';
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            @curl_close($ch); // TODO: Remove when PHP 8 is required, as it will be closed automatically.
+            $info = $ch->get_info();
+            $httpcode = $info['http_code'];
             if ($httpcode != 200) {
                 $error = "HTTP Status Code: {$httpcode}";
                 if ($httpcode == 404) {
@@ -279,6 +289,8 @@ class vpl_jailserver_manager {
                 } else if ($httpcode >= 500) {
                     $error .= " - Internal Jail Server Error";
                 }
+            } else if ($rawresponse === '') {
+                $error = 'Empty response from jail server';
             } else if ($rawresponse[0] == '{') {
                 $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
@@ -333,29 +345,30 @@ class vpl_jailserver_manager {
     }
 
     /**
-     * Check for issues in server URL
+     * Check for issues in jail server
      *
      * @param string $server URL of the server
-     * @return string[] Issues message for the server, empty array otherwise
+     * @return string[] Issues messages in HTML for the server, empty array otherwise
      */
     public static function get_server_issues(string $server): array {
         $parse = parse_url($server);
+        $servername = self::get_server_short_name_html($server);
         if ($parse === false || ! isset($parse['scheme']) || ! isset($parse['host'])) {
-            return [get_string('jail_server_badurl', VPL, s($server))];
+            return [get_string('jail_server_badurl', VPL, $servername)];
         }
         $scheme = $parse['scheme'];
         if ($scheme != 'http' && $scheme != 'https') {
-            return [get_string('jail_server_badurl', VPL, s($server))];
+            return [get_string('jail_server_badurl', VPL, $servername)];
         }
         $message = [];
         if ($scheme == 'http') {
-            $message[] = get_string('jail_server_usinghttp', VPL, s($server));
+            $message[] = get_string('jail_server_usinghttp', VPL, $servername);
         }
         if (!isset($parse['path']) || $parse['path'] == '') {
-            $message[] = get_string('jail_server_isopen', VPL, s($server));
+            $message[] = get_string('jail_server_isopen', VPL, $servername);
         }
         if (self::is_private_host($server)) {
-            $message[] = get_string('jail_server_isprivate', VPL, s($server));
+            $message[] = get_string('jail_server_isprivate', VPL, $servername);
         }
         return $message;
     }
@@ -625,8 +638,8 @@ class vpl_jailserver_manager {
     }
 
     /**
-     * Check if a server is located in a private network
-     * Return true ==> private IP
+     * Check if a server is located in a private or local network.
+     * IPv6 literals include loopback, unique-local, link-local and multicast addresses.
      *
      * @param string $url to server
      * @return bool
@@ -640,12 +653,17 @@ class vpl_jailserver_manager {
         if ($hostname === null) {
             return false;
         }
+        $hostname = trim($hostname, '[]');
+        if (filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV6) !== false) {
+            return address_in_subnet($hostname, '::1/128, fc00::/7, fe80::/10, ff00::/8');
+        }
         $name = $hostname . '.';
-        $ip = gethostbyname($name);
+        $ip = filter_var($hostname, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) !== false
+            ? $hostname
+            : gethostbyname($name);
         if ($ip != $name) {
             $private = '10., 127., 172.16-31, 192.168., 169.254., 224-239, 240.';
             return address_in_subnet($ip, $private);
-            // IPv6 not implemented fc00::/7 fe80::/10 .
         }
         return false;
     }
@@ -675,7 +693,7 @@ class vpl_jailserver_manager {
         foreach ($serverlist as $server) {
             $status = '';
             $response = self::get_response($server, $requestready, $status);
-            $params = [ 'serverhash' => self::get_hash($server), 'server' => $server ];
+            $params = ['serverhash' => self::get_hash($server), 'server' => $server];
             $info = $DB->get_record(self::TABLE, $params);
             if ($info === false) {
                 $info = new stdClass();

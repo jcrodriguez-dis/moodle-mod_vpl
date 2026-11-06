@@ -1649,7 +1649,7 @@ class mod_vpl {
     /**
      * Add notification to show after header
      *
-     * @param string $message The message to show
+     * @param string $message The message to show in HTML
      * @param string $type The type of notification: 'error', 'warning', 'success', 'info'
      */
     public function add_notice($message, $type = 'info') {
