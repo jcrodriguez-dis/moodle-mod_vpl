@@ -37,80 +37,66 @@ require_once($CFG->libdir . '/formslib.php');
  * Return HTML fragment for buttons of a given override row.
  * @param int $id VPL cmid.
  * @param int $overrideid Override id for the current row.
- * @param int $editing The id of the override being edited.
+ * @param string $action The action being performed ('no_action', 'new', 'edit', or 'delete').
  * @return string HTML fragment for buttons.
  */
-function vpl_get_overrideactions($id, $overrideid, $editing) {
+function vpl_get_overrideactions($id, $overrideid, $action) {
     global $OUTPUT, $PAGE;
-    if ($editing == $overrideid) {
+    if (in_array($action, ['new', 'edit', 'delete', 'copy'])) {
         vpl_include_jsfile('override.js');
-        $save = '<a href="#" onclick="VPL.submitOverrideForms();">' .
-                    $OUTPUT->pix_icon('save', get_string('save'), 'mod_vpl') .
+        if ($action === 'delete') {
+            $actionstr = 'delete';
+        } else {
+            $actionstr = 'save';
+        }
+        $actionbutton = '<a href="#" onclick="VPL.submitOverrideForms();">' .
+                    $OUTPUT->pix_icon($actionstr, get_string($actionstr), 'mod_vpl') .
                 '</a>';
-        $cancel = '<a href="#" onclick="VPL.cancelOverrideForms();">' .
+        $cancelbutton = '<a href="#" onclick="VPL.cancelOverrideForms();">' .
                     $OUTPUT->pix_icon('cancel', get_string('cancel'), 'mod_vpl') .
                 '</a>';
-        return $save . $cancel;
-    } else if ($editing === null) {
-        $edit = '<a href="?id=' . $id . '&edit=' . $overrideid . '#scroll_point">' .
+        return $actionbutton . $cancelbutton;
+    } else if ($action === 'no_action') {
+        $baseurl = '?id=' . $id . '&overrideid=' . $overrideid . '&action=';
+        $edit = '<a href="' . $baseurl . 'edit' . '#scroll_point">' .
                     $OUTPUT->pix_icon('editthis', get_string('edit'), 'mod_vpl') .
                 '</a>';
-        $copy = '<a href="?id=' . $id . '&edit=0&copy=' . $overrideid . '#scroll_point">' .
+        $copy = '<a href="' . $baseurl . 'copy' . '#scroll_point">' .
                     $OUTPUT->pix_icon('copy', get_string('copy'), 'mod_vpl') .
                 '</a>';
-        $deletebuttonid = 'delete_override_' . $overrideid;
-        $delete = '<a id="' . $deletebuttonid . '" href="?id=' . $id . '&delete=' . $overrideid . '">' .
+        $delete = '<a href="' . $baseurl . 'delete' . '#scroll_point">' .
                       $OUTPUT->pix_icon('delete', get_string('delete'), 'mod_vpl') .
                   '</a>';
-        $PAGE->requires->event_handler(
-            '#' . $deletebuttonid,
-            'click',
-            'M.util.show_confirm_dialog',
-            ['message' => get_string('confirmoverridedeletion', VPL)]
-        );
         return $edit . $copy . $delete;
     } else {
         return '';
     }
 }
 
-global $PAGE, $OUTPUT, $DB;
-
-$id = required_param('id', PARAM_INT);
-[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
-require_login($course, true, $cm);
-
-$edit = optional_param('edit', null, PARAM_INT);
-$delete = optional_param('delete', null, PARAM_INT);
-$update = optional_param('update', null, PARAM_INT);
-$copyid = optional_param('copy', null, PARAM_INT);
-$vpl = new mod_vpl($id);
-$vpl->require_capability(VPL_MANAGE_CAPABILITY);
-$vpl->prepare_page('forms/overrides.php', [ 'id' => $id ]);
-
-$vplid = $vpl->get_instance()->id;
-$overrides = vpl_get_overrides($vplid);
-
-if (!empty($edit) && !isset($overrides[$edit])) {
-    $edit = null;
-}
-
-$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
-
-// Prepare forms if we are editing or submitting an override.
-if ($edit !== null || $update !== null) {
+/**
+ * Compute available users and groups for overrides.
+ *
+ * @param mod_vpl $vpl The VPL activity instance.
+ * @param array $overrides Array of existing overrides.
+ * @param int $overrideid The override ID to exclude from computation.
+ * @return array An array containing available users and available groups.
+ */
+function compute_available_users_and_groups($vpl, $overrides, $overrideid) {
     // Compute users that are not already affected to another override.
+    $id = $vpl->get_course_module()->id;
     if (!$vpl->is_group_activity()) {
         $alreadyassignedusers = [];
         foreach ($overrides as $override) {
-            if ($override->id != $edit && $override->id != $update && !empty($override->userids)) {
-                $alreadyassignedusers = array_merge($alreadyassignedusers, explode(',', $override->userids));
+            if ($override->id != $overrideid && !empty($override->userids)) {
+                foreach (explode(',', $override->userids) as $userid) {
+                    $alreadyassignedusers[$userid] = true;
+                }
             }
         }
         $availableusers = array_map(
             'fullname',
             array_filter(get_enrolled_users(context_module::instance($id)), function ($user) use ($alreadyassignedusers) {
-                    return !in_array($user->id, $alreadyassignedusers);
+                    return !isset($alreadyassignedusers[$user->id]);
             })
         );
     } else {
@@ -121,12 +107,14 @@ if ($edit !== null || $update !== null) {
     if (!empty($groups)) {
         $alreadyassignedgroups = [];
         foreach ($overrides as $override) {
-            if ($override->id != $edit && $override->id != $update && !empty($override->groupids)) {
-                $alreadyassignedgroups = array_merge($alreadyassignedgroups, explode(',', $override->groupids));
+            if ($override->id != $overrideid && !empty($override->groupids)) {
+                foreach (explode(',', $override->groupids) as $groupid) {
+                    $alreadyassignedgroups[$groupid] = true;
+                }
             }
         }
         $availablegroups = array_filter($groups, function ($group) use ($alreadyassignedgroups) {
-            return !in_array($group->id, $alreadyassignedgroups);
+            return !isset($alreadyassignedgroups[$group->id]);
         });
         $availablegroups = array_map(function ($group) {
             return $group->name;
@@ -134,126 +122,151 @@ if ($edit !== null || $update !== null) {
     } else {
         $availablegroups = null;
     }
-
-    // Prepare forms.
-    $usersform = new form($availableusers, $availablegroups);
-    $overrideid = $edit;
-    if ($overrideid === null) {
-        $overrideid = $update;
-    }
-    $optionsform = new options_form($id, $overrideid);
+    return [$availableusers, $availablegroups];
 }
 
-if ($delete !== null) {
-    $overrideid = $delete;
-    if (isset($overrides[$overrideid])) {
-        $override = $overrides[$overrideid];
-        // Delete associated calendar events.
-        $vpl->update_override_calendar_events($override, null, true);
-        // Delete the override.
-        $DB->delete_records(VPL_OVERRIDES, ['id' => $overrideid]);
-        $DB->delete_records(VPL_ASSIGNED_OVERRIDES, ['override' => $overrideid]);
-        \mod_vpl\event\override_deleted::log($vpl, $overrideid);
-    }
-    // Properly reload the page.
-    redirect(new moodle_url('/mod/vpl/forms/overrides.php', [ 'id' => $id ]));
+global $PAGE, $OUTPUT, $DB;
+
+$id = required_param('id', PARAM_INT);
+[$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
+require_login($course, true, $cm);
+
+$action = optional_param('action', 'no_action', PARAM_TEXT);
+if (!in_array($action, ['new', 'edit', 'delete', 'copy', 'no_action'])) {
+    $action = 'no_action';
+}
+$overrideid = optional_param('overrideid', null, PARAM_INT);
+
+$vpl = new mod_vpl($id);
+$vpl->require_capability(VPL_MANAGE_CAPABILITY);
+$vpl->prepare_page('forms/overrides.php', [ 'id' => $id ]);
+
+$vplid = $vpl->get_instance()->id;
+$overrides = vpl_get_overrides($vplid);
+
+if (!empty($overrideid) && !isset($overrides[$overrideid])) {
+    $overrideid = null;
 }
 
-if ($update !== null) {
-    // Update or create an override.
+$fields = ['startdate', 'duedate', 'reductionbyevaluation', 'freeevaluations', 'password'];
+[$availableusers, $availablegroups] = compute_available_users_and_groups($vpl, $overrides, $overrideid);
+$usersform = new form($availableusers, $availablegroups, $action);
+$optionsform = new options_form($id, $overrideid, $action);
+
+// Prepare forms if we are editing or submitting an override.
+if (in_array($action, ['new', 'edit', 'delete', 'copy'])) {
+    if ($optionsform->is_cancelled()) {
+        redirect(new moodle_url('/mod/vpl/forms/overrides.php', [ 'id' => $id ]));
+        die(); // Stop further execution after redirect.
+    }
     $override = $optionsform->get_data();
     if ($override !== null) {
-        vpl_truncate_vpl($override); // Trim and cut password if too large.
-        unset($override->id); // The id field of the form is not the override id - do not use it.
-        foreach ($fields as $field) {
-            if (!isset($override->{'override_' . $field})) {
-                $override->$field = null;
+        // Form submitted, action to do based on the current $action value.
+        if (in_array($action, ['edit', 'delete', 'copy']) && !isset($overrides[$overrideid])) {
+            // Override not found, cannot proceed with edit, delete, or copy.
+            redirect(new moodle_url('/mod/vpl/forms/overrides.php', [ 'id' => $id ]));
+            die(); // Stop further execution after redirect.
+        }
+        if ($action === 'delete') {
+            $override = $overrides[$overrideid];
+            // Delete associated calendar events.
+            $vpl->update_override_calendar_events($override, null, true);
+            // Delete the override.
+            $DB->delete_records(VPL_OVERRIDES, ['id' => $overrideid]);
+            $DB->delete_records(VPL_ASSIGNED_OVERRIDES, ['override' => $overrideid]);
+            \mod_vpl\event\override_deleted::log($vpl, $overrideid);
+        } else if (in_array($action, ['new', 'edit', 'copy'])) {
+            vpl_truncate_vpl($override); // Trim and cut password if too large.
+            unset($override->id); // The id field of the form is not the override id - do not use it.
+            foreach ($fields as $field) {
+                if (!isset($override->{'override_' . $field})) {
+                    $override->$field = null;
+                }
             }
-        }
-        if (empty($override->userids)) {
-            $override->userids = null;
-        }
-        if (empty($override->groupids)) {
-            $override->groupids = null;
-        }
-        $override->vpl = $vplid;
-        $old = [
-                'userids' => [],
-                'groupids' => [],
-        ];
-        if ($update == 0) {
-            // Create the override.
-            $newid = $DB->insert_record(VPL_OVERRIDES, $override);
-            $override->id = $newid;
-            $oldoverride = null;
-            \mod_vpl\event\override_created::log($vpl, $newid);
-        } else {
-            // Update the override.
-            $override->id = $update;
-            if (isset($overrides[$override->id])) {
-                $oldoverride = $overrides[$override->id];
-                if (!empty($oldoverride->userids)) {
-                    $old['userids'] = explode(',', $oldoverride->userids);
-                }
-                if (!empty($oldoverride->groupids)) {
-                    $old['groupids'] = explode(',', $oldoverride->groupids);
-                }
-            } else {
+            if (empty($override->userids)) {
+                $override->userids = null;
+            }
+            if (empty($override->groupids)) {
+                $override->groupids = null;
+            }
+            $override->vpl = $vplid;
+            $old = [
+                    'userids' => [],
+                    'groupids' => [],
+            ];
+            if ($action === 'new' || $action === 'copy') {
+                // Create the override.
+                $newid = $DB->insert_record(VPL_OVERRIDES, $override);
+                $override->id = $newid;
                 $oldoverride = null;
-            }
-            $DB->update_record(VPL_OVERRIDES, $override);
-            \mod_vpl\event\override_updated::log($vpl, $update);
-        }
-
-        $record = [
-                'vpl' => $override->vpl,
-                'override' => $override->id,
-        ];
-        // Process users and groups for the updated override, to update assigned overrides table.
-        foreach (['userid', 'groupid'] as $key) {
-            $record['userid'] = null;
-            $record['groupid'] = null;
-            $ids = $key . 's';
-            sort($old[$ids]);
-            if (!empty($override->$ids)) {
-                $newids = explode(',', $override->$ids);
+                \mod_vpl\event\override_created::log($vpl, $newid);
             } else {
-                $newids = [];
-            }
-            sort($newids);
-            $i = 0;
-            $n = count($old[$ids]);
-            $j = 0;
-            $m = count($newids);
-            // Walk simultaneously through both arrays.
-            while ($i < $n || $j < $m) {
-                if ($i == $n || ($j < $m && $old[$ids][$i] > $newids[$j])) {
-                    // Insert new user/group.
-                    $record[$key] = $newids[$j];
-                    $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $record);
-                    $j++;
-                } else if ($j == $m || ($newids[$j] > $old[$ids][$i])) {
-                    // Remove old user/group.
-                    $DB->delete_records(VPL_ASSIGNED_OVERRIDES, [
-                            'vpl' => $override->vpl,
-                            'override' => $override->id,
-                            $key => $old[$ids][$i],
-                    ]);
-                    $i++;
+                // Update the override.
+                $override->id = $overrideid;
+                if (isset($overrides[$override->id])) {
+                    $oldoverride = $overrides[$override->id];
+                    if (!empty($oldoverride->userids)) {
+                        $old['userids'] = explode(',', $oldoverride->userids);
+                    }
+                    if (!empty($oldoverride->groupids)) {
+                        $old['groupids'] = explode(',', $oldoverride->groupids);
+                    }
                 } else {
-                    // This user/group was and is still there, skip.
-                    $i++;
-                    $j++;
+                    $oldoverride = null;
+                }
+                $DB->update_record(VPL_OVERRIDES, $override);
+                \mod_vpl\event\override_updated::log($vpl, $overrideid);
+            }
+            $record = [
+                    'vpl' => $override->vpl,
+                    'override' => $override->id,
+            ];
+            // Process users and groups for the updated override, to update assigned overrides table.
+            foreach (['userid', 'groupid'] as $key) {
+                $record['userid'] = null;
+                $record['groupid'] = null;
+                $ids = $key . 's';
+                sort($old[$ids]);
+                if (!empty($override->$ids)) {
+                    $newids = explode(',', $override->$ids);
+                } else {
+                    $newids = [];
+                }
+                sort($newids);
+                $i = 0;
+                $n = count($old[$ids]);
+                $j = 0;
+                $m = count($newids);
+                // Walk simultaneously through both arrays.
+                while ($i < $n || $j < $m) {
+                    if ($i == $n || ($j < $m && $old[$ids][$i] > $newids[$j])) {
+                        // Insert new user/group.
+                        $record[$key] = $newids[$j];
+                        $DB->insert_record(VPL_ASSIGNED_OVERRIDES, $record);
+                        $j++;
+                    } else if ($j == $m || ($newids[$j] > $old[$ids][$i])) {
+                        // Remove old user/group.
+                        $DB->delete_records(VPL_ASSIGNED_OVERRIDES, [
+                                'vpl' => $override->vpl,
+                                'override' => $override->id,
+                                $key => $old[$ids][$i],
+                        ]);
+                        $i++;
+                    } else {
+                        // This user/group was and is still there, skip.
+                        $i++;
+                        $j++;
+                    }
                 }
             }
+            // Create or update associated calendar events.
+            $vpl->update_override_calendar_events($override, $oldoverride);
         }
-        // Create or update associated calendar events.
-        $vpl->update_override_calendar_events($override, $oldoverride);
-    }
-    // Do not redirect if validation fails.
-    if ($optionsform->is_validated() || $optionsform->is_cancelled()) {
-        // Properly reload the page.
-        redirect(new moodle_url('/mod/vpl/forms/overrides.php', [ 'id' => $id ]));
+        // Do not redirect if validation fails.
+        if ($optionsform->is_validated() || $optionsform->is_cancelled()) {
+            // Properly reload the page.
+            redirect(new moodle_url('/mod/vpl/forms/overrides.php', [ 'id' => $id ]));
+        }
     }
 }
 
@@ -288,8 +301,9 @@ $scrollpoint = "<i id='scroll_point'></i>";
 // Populate table with existing overrides.
 $i = 1;
 foreach ($overrides as $override) {
-    if ($edit == $override->id) {
+    if ($overrideid == $override->id && $action != 'copy') {
         // This is the override being edited: fill and display the forms.
+        $currentaction = $action;
         $usersform->set_data([
                 'users' => explode(',', $override->userids),
                 'groups' => explode(',', $override->groupids),
@@ -309,6 +323,7 @@ foreach ($overrides as $override) {
         $overridedata = $optionsform->render();
     } else {
         // Set up a proper display for affected users and groups.
+        $currentaction = 'no_action';
         $users = [];
         if (!empty($override->userids)) {
             $users = array_map('fullname', $DB->get_records_list('user', 'id', explode(',', $override->userids), 'id'));
@@ -351,10 +366,10 @@ foreach ($overrides as $override) {
             $overridedata = get_string('none');
         }
     }
-    $table->data[] = [$i++, $users, $overridedata, vpl_get_overrideactions($id, $override->id, $edit)];
+    $table->data[] = [$i++, $users, $overridedata, vpl_get_overrideactions($id, $override->id, $currentaction)];
 }
 
-if ($edit === 0) {
+if ($action === 'new' || $action === 'copy') {
     // A new override is being created, put an additional row at the end.
     $users = $scrollpoint . $usersform->render();
     $formdata = [];
@@ -362,8 +377,8 @@ if ($edit === 0) {
         $formdata[$field] = $vpl->get_instance()->$field;
         $formdata['override_' . $field] = false;
     }
-    if (isset($overrides[$copyid])) {
-        $override = $overrides[$copyid];
+    if ($action === 'copy' && isset($overrides[$overrideid])) {
+        $override = $overrides[$overrideid];
         foreach ($fields as $field) {
             if ($override->$field !== null) {
                 $formdata[$field] = $override->$field;
@@ -373,14 +388,14 @@ if ($edit === 0) {
     }
     $optionsform->set_data($formdata);
     $overridedata = $optionsform->render();
-    $table->data[] = ['', $users, $overridedata, vpl_get_overrideactions($id, 0, 0)];
+    $table->data[] = ['', $users, $overridedata, vpl_get_overrideactions($id, 0, 'new')];
 }
 
 echo html_writer::table($table);
 
-if ($edit === null) {
+if ($action === 'no_action') {
     // No override is being edited, add a button to create one.
-    echo '<a href="?id=' . $id . '&edit=0#scroll_point" class="btn btn-secondary">' . get_string('addoverride', VPL) . '</a>';
+    echo '<a href="?id=' . $id . '&action=new#scroll_point" class="btn btn-secondary">' . get_string('addoverride', VPL) . '</a>';
 }
 
 echo $OUTPUT->box_end();

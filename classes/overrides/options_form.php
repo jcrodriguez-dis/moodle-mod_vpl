@@ -46,14 +46,21 @@ class options_form extends \moodleform {
     protected $overrideid;
 
     /**
+     * @var string $action The action to perform ('save' or 'delete').
+     */
+    protected $action;
+
+    /**
      * Constructor
      *
      * @param int $id The VPL activity ID.
      * @param int $overrideid The override ID to edit, or 0 for a new override.
+     * @param string $action The action to perform ('new', 'edit' or 'delete').
      */
-    public function __construct($id, $overrideid) {
+    public function __construct($id, $overrideid, $action) {
         $this->id = $id;
         $this->overrideid = $overrideid;
+        $this->action = $action;
         parent::__construct();
         $this->_form->updateAttributes(['id' => 'vpl_override_options_form']);
     }
@@ -62,45 +69,59 @@ class options_form extends \moodleform {
      * Defines the form elements for override options.
      */
     protected function definition() {
+        global $OUTPUT;
         $mform = &$this->_form;
         $mform->addElement('hidden', 'id', $this->id);
         $mform->setType('id', PARAM_RAW);
-        $mform->addElement('hidden', 'update', $this->overrideid);
-        $mform->setType('update', PARAM_RAW);
-        $mform->addElement('hidden', 'edit', $this->overrideid);
-        $mform->setType('edit', PARAM_RAW);
+        $mform->addElement('hidden', 'overrideid', $this->overrideid);
+        $mform->setType('overrideid', PARAM_RAW);
         $mform->addElement('hidden', 'userids');
         $mform->setType('userids', PARAM_RAW);
         $mform->addElement('hidden', 'groupids');
         $mform->setType('groupids', PARAM_RAW);
-
+        $mform->addElement('hidden', 'action', $this->action);
+        $mform->setType('action', PARAM_TEXT);
+        if ($this->action === 'delete') {
+            $message = get_string('confirmoverridedeletion', 'mod_vpl');
+            $confirm = $OUTPUT->notification($message, 'warning');
+            $mform->addElement('html', '<div class="override-confirmation">' . $confirm . '</div>');
+        }
         foreach (['startdate', 'duedate'] as $datefield) {
+            $overridefield = 'override_' . $datefield;
             $mform->addElement('html', '<div class="override-option">');
-            $mform->addElement('checkbox', 'override_' . $datefield, get_string($datefield, VPL), get_string('override', VPL));
-            $mform->addHelpButton('override_' . $datefield, 'override', VPL);
+            $mform->addElement('checkbox', $overridefield, get_string($datefield, VPL), get_string('override', VPL));
+            $mform->addHelpButton($overridefield, 'override', VPL);
+            $mform->disabledIf($overridefield, 'action', 'eq', 'delete');
             $mform->addElement('date_time_selector', $datefield, null, ['optional' => true]);
-            $mform->disabledIf($datefield, 'override_' . $datefield);
+            $mform->disabledIf($datefield, $overridefield);
+            $mform->disabledIf($datefield, 'action', 'eq', 'delete');
             $mform->addElement('html', '</div>');
         }
 
         $passwordfield = 'password';
+        $overridefield = 'override_' . $passwordfield;
         $mform->addElement('html', '<div class="override-option">');
-        $mform->addElement('checkbox', 'override_' . $passwordfield, get_string($passwordfield), get_string('override', VPL));
-        $mform->addHelpButton('override_' . $passwordfield, 'override', VPL);
+        $mform->addElement('checkbox', $overridefield, get_string($passwordfield), get_string('override', VPL));
+        $mform->disabledIf($overridefield, 'action', 'eq', 'delete');
+        $mform->addHelpButton($overridefield, 'override', VPL);
         $mform->addElement('passwordunmask', $passwordfield, null, ['optional' => true]);
         $mform->setType($passwordfield, PARAM_TEXT);
         $mform->setDefault($passwordfield, '');
-        $mform->disabledIf($passwordfield, 'override_' . $passwordfield);
+        $mform->disabledIf($passwordfield, $overridefield);
+        $mform->disabledIf($passwordfield, 'action', 'eq', 'delete');
         $mform->addElement('html', '</div>');
 
         foreach (['reductionbyevaluation', 'freeevaluations'] as $textfield) {
+            $overridefield = 'override_' . $textfield;
             $mform->addElement('html', '<div class="override-option">');
-            $mform->addElement('checkbox', 'override_' . $textfield, get_string($textfield, VPL), get_string('override', VPL));
-            $mform->addHelpButton('override_' . $textfield, 'override', VPL);
+            $mform->addElement('checkbox', $overridefield, get_string($textfield, VPL), get_string('override', VPL));
+            $mform->addHelpButton($overridefield, 'override', VPL);
+            $mform->disabledIf($overridefield, 'action', 'eq', 'delete');
             $mform->addElement('text', $textfield, null);
             $mform->setType($textfield, PARAM_TEXT);
             $mform->setDefault($textfield, 0);
-            $mform->disabledIf($textfield, 'override_' . $textfield);
+            $mform->disabledIf($textfield, $overridefield);
+            $mform->disabledIf($textfield, 'action', 'eq', 'delete');
             $mform->addElement('html', '</div>');
         }
 

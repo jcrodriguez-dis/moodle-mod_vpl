@@ -38,6 +38,11 @@ class form extends \moodleform {
     protected $users;
 
     /**
+     * @var string $action The action being performed ('new', 'copy', etc.).
+     */
+    protected $action;
+
+    /**
      * @var ?array $groups Array of groups to select from, or null if not applicable.
      */
     protected $groups;
@@ -47,10 +52,12 @@ class form extends \moodleform {
      *
      * @param ?array $users Array of users to select from, or null if not applicable.
      * @param ?array $groups Array of groups to select from, or null if not applicable.
+     * @param string $action The action being performed ('new', 'copy', etc.).
      */
-    public function __construct($users, $groups) {
+    public function __construct($users, $groups, $action) {
         $this->users = $users;
         $this->groups = $groups;
+        $this->action = $action;
         parent::__construct();
         $this->_form->updateAttributes(['id' => 'vpl_override_users_form']);
     }
@@ -63,11 +70,16 @@ class form extends \moodleform {
     protected function definition() {
         global $CFG;
         $mform = &$this->_form;
+        $options = ['multiple' => true];
         foreach (['users', 'groups'] as $field) {
             if ($this->$field !== null) {
                 $mform->addElement('html', '<div>');
-                $mform->addElement('autocomplete', $field, get_string($field), $this->$field, ['multiple' => true]);
+                $mform->addElement('autocomplete', $field, get_string($field), $this->$field, $options);
+                $mform->disabledIf($field, 'disableaction', 'eq', 'delete');
                 $mform->addElement('html', '</div>');
+                if ($this->action === 'delete') {
+                    $mform->hardFreeze($field);
+                }
             }
         }
     }
