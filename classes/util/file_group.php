@@ -81,9 +81,10 @@ class file_group {
         }
         // Try to reuse other file.
         if (
-            $otherfln != false && is_file($otherfln)
-            && file_get_contents($otherfln) === $data
-            && link($otherfln, $filename)
+            $otherfln != false &&
+            is_file($otherfln) &&
+            file_get_contents($otherfln) === $data &&
+            link($otherfln, $filename)
         ) {
             return;
         }
@@ -102,7 +103,7 @@ class file_group {
             $data = file_get_contents($filename);
             if ($data > '') {
                 $nl = vpl_detect_newline($data);
-                $ret = explode($nl, $data);
+                $ret = array_filter(explode($nl, $data), 'vpl_is_valid_path_name');
             }
         }
         return $ret;
@@ -139,12 +140,12 @@ class file_group {
     }
 
     /**
-     * Encode file path to be a file name
+     * Encode file path to be a file name without directory separators.
      * @param string $path file path
      * @return string
      */
     public static function encodefilename($path) {
-        return str_replace('/', '=', $path);
+        return str_replace(['\\', '/'], '=', $path);
     }
 
     /**
@@ -201,6 +202,9 @@ class file_group {
         }
         vpl_create_dir($this->dir);
         foreach ($files as $filename => $data) {
+            if (! vpl_is_valid_path_name($filename)) {
+                continue;
+            }
             if (!isset($filehash[$filename])) {
                 $filelist[] = $filename;
             }
@@ -265,7 +269,7 @@ class file_group {
         if ($this->cachefilelist !== null) {
             return $this->cachefilelist;
         }
-        $this->cachefilelist = self::read_list($this->filelistname);
+        $this->cachefilelist = array_filter(self::read_list($this->filelistname), 'vpl_is_valid_path_name');
         return $this->cachefilelist;
     }
 
@@ -295,6 +299,7 @@ class file_group {
      * @param bool $otherfln If true, use the other file name to save the list.
      */
     public function setfilelist($filelist, $otherfln = false) {
+        $filelist = array_filter($filelist, 'vpl_is_valid_path_name');
         self::write_list($this->filelistname, $filelist, $otherfln);
         $this->cachefilelist = $filelist;
     }

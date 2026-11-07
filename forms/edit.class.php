@@ -47,6 +47,9 @@ class mod_vpl_edit {
     public static function filesfromide(&$postfiles) {
         $files = [];
         foreach ($postfiles as $file) {
+            if (!vpl_is_valid_path_name($file->name)) {
+                throw new Exception("Invalid file name: " . $file->name);
+            }
             if ($file->encoding == 1) {
                 $files[$file->name] = base64_decode($file->contents);
             } else {
