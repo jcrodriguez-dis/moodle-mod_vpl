@@ -72,13 +72,13 @@ if (! $mform->is_cancelled() && $fromform = $mform->get_data()) {
             foreach ($serversinfo['badservers'] as $badserver) {
                 $message .= '<br>' . get_string('jail_server_badurl', VPL, s($badserver));
             }
-            $vpl->add_notice($message, 'error');
+            $vpl->add_notice($message, 'error', true);
         } else {
             \mod_vpl\event\vpl_execution_localjails_updated::log($vpl);
             foreach ($serversinfo['allservers'] as $server) {
                 $issues = vpl_jailserver_manager::get_server_issues($server);
                 if (count($issues) > 0) {
-                    $vpl->add_notice(implode("<br>\n", $issues), 'warning');
+                    $vpl->add_notice(implode("<br>\n", $issues), 'warning', true);
                 }
             }
             $instance = $vpl->get_instance();

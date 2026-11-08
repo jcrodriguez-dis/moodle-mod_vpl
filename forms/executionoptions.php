@@ -366,7 +366,7 @@ class mod_vpl_executionoptions_form extends \moodleform {
                 }
             } catch (\Exception $e) {
                 $message = get_string('error:savingevaluatorsettings', COMPVPL, $instance->evaluator);
-                vpl_notice(s($message), 'error');
+                vpl_notice($message, 'error');
             }
         }
 
@@ -443,7 +443,7 @@ if ($fromform = $mform->get_data()) {
                     }
                 } catch (\Exception $e) {
                     $message = get_string('error:savingevaluatorsettings', COMPVPL, $instance->evaluator);
-                    vpl_notice(s($message), 'error');
+                    vpl_notice($message, 'error');
                 }
             }
             \mod_vpl\event\vpl_execution_options_updated::log($vpl);

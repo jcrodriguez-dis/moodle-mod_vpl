@@ -39,5 +39,5 @@ try {
     $filegroup->download_files($vpl->get_name());
     die();
 } catch (\Throwable $e) {
-    vpl_redirect('', $e->getMessage(), 'error');
+    vpl_redirect('', s($e->getMessage()), 'error');
 }

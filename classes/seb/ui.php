@@ -281,14 +281,14 @@ class ui {
                 // Not SEB show launch/download buttons and exit.
                 $str = get_string("sebrequired", COMPVPL);
                 if ($vpl->is_seb_browser()) {
-                    $str .= '<br>' . get_string('sebkeys_bad', COMPVPL);
+                    $str .= "<br>\n" . get_string('sebkeys_bad', COMPVPL);
                 } else {
-                    $str .= '<br>' . get_string('sebrequired_bad', COMPVPL);
+                    $str .= "<br>\n" . get_string('sebrequired_bad', COMPVPL);
                 }
                 if (constant('AJAX_SCRIPT')) {
-                    throw new \moodle_exception($str);
+                    throw new \moodle_exception(clean_text($str));
                 }
-                $vpl->add_notice($str, 'warning');
+                $vpl->add_notice($str, 'warning', true);
                 $vpl->print_header();
                 self::print_seb_launch_buttons($vpl);
                 $vpl->print_footer();

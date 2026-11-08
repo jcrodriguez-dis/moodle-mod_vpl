@@ -578,10 +578,14 @@ function vpl_detect_newline(&$data) {
  *
  * @param string $text Text to show
  * @param string $type Type of message (success, info, warning, error). Default = success
+ * @param bool $safe Whether the text is safe HTML. Default = false
  * @codeCoverageIgnore
  */
-function vpl_notice(string $text, $type = 'success') {
+function vpl_notice(string $text, $type = 'success', $safe = false) {
     global $OUTPUT;
+    if (!$safe) {
+        $text = nl2br(s($text));
+    }
     echo $OUTPUT->notification($text, $type);
 }
 

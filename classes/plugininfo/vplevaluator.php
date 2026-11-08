@@ -168,7 +168,7 @@ class vplevaluator extends base {
         try {
             $evaluator = self::get_evaluator($evaluatorname, $vpl);
         } catch (\Exception $e) {
-            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'error');
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, s($evaluatorname)), 'error');
         }
         return $evaluator->get_printable_help($vpl);
     }
@@ -205,7 +205,7 @@ class vplevaluator extends base {
         try {
             $evaluator = self::get_evaluator($evaluatorname, $vpl);
         } catch (\Exception $e) {
-            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'error');
+            return $OUTPUT->notification(get_string('error:invalidevaluator', VPL, s($evaluatorname)), 'error');
         }
         return $evaluator->get_printable_help_link($vpl, $ifhelp);
     }

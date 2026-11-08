@@ -41,6 +41,6 @@ try {
     $evaluator = \mod_vpl\plugininfo\vplevaluator::get_evaluator($evaluatorname, $vpl);
     echo $evaluator->get_printable_help($vpl);
 } catch (\moodle_exception $e) {
-    echo $OUTPUT->notification(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
+    vpl_notice(get_string('error:invalidevaluator', VPL, $evaluatorname), 'notifyproblem');
 }
 $vpl->print_footer();

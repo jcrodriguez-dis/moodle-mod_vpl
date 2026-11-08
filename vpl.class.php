@@ -685,14 +685,14 @@ class mod_vpl {
                 sleep(5); // Avoid force brute crack.
                 $str = get_string('sebrequired', COMPVPL);
                 if ($this->is_seb_browser()) {
-                    $str .= '<br>' . get_string('sebkeys_bad', COMPVPL);
+                    $str .= "<br>\n" . get_string('sebkeys_bad', COMPVPL);
                 } else {
-                    $str .= '<br>' . get_string('sebrequired_bad', COMPVPL);
+                    $str .= "<br>\n" . get_string('sebrequired_bad', COMPVPL);
                 }
                 if (constant('AJAX_SCRIPT')) {
-                    throw new Exception($str);
+                    throw new Exception(clean_text($str));
                 }
-                $this->add_notice($str, 'warning');
+                $this->add_notice($str, 'warning', true);
                 $this->print_header();
                 $this->print_footer();
                 die();
@@ -1681,10 +1681,11 @@ class mod_vpl {
      *
      * @param string $message The message to show in HTML
      * @param string $type The type of notification: 'error', 'warning', 'success', 'info'
+     * @param bool $safe Whether the message is safe HTML. Default = false
      */
-    public function add_notice($message, $type = 'info') {
+    public function add_notice($message, $type = 'info', $safe = false) {
         if (isset($this->notices[$type])) {
-            $this->notices[$type][] = $message;
+            $this->notices[$type][] = ['message' => $message, 'safe' => $safe];
         } else {
             debugging("Invalid notice type '$type'", DEBUG_DEVELOPER);
         }
@@ -1698,7 +1699,7 @@ class mod_vpl {
     public function show_notifications() {
         foreach ($this->notices as $type => $messages) {
             foreach ($messages as $message) {
-                vpl_notice($message, $type);
+                vpl_notice($message['message'], $type, $message['safe']);
             }
             $this->notices[$type] = [];
         }

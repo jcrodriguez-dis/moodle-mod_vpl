@@ -55,7 +55,7 @@ class activity extends \core_search\base_activity {
         } catch (\dml_missing_record_exception $ex) {
             // If the record does not exist anymore.
             return \core_search\manager::ACCESS_DELETED;
-        } catch (\dml_exception $ex) {
+        } catch (\Exception $ex) {
             // Skip results if there is any unexpected error.
             return \core_search\manager::ACCESS_DENIED;
         }
