@@ -101,15 +101,16 @@ class mod_vpl_webservice extends external_api {
     }
 
     /**
-     * Encode file format from array if key = value (filename => data),
-     * to an array of arrays with 'name', 'data' and 'enconding' for each file.
+     * Encode files from VPL format to WebService format
+     * VPL format: array of filename as key and data as value (filename => data),
+     * WebService format: array of arrays with 'name', 'data' and 'encoding' keys for each file.
      *
-     * @param array $oldfiles of (filename => data).
-     * @return array of array with 'name', 'data' and 'conding' keys.
+     * @param array $vplfiles of (filename => data).
+     * @return array of array with 'name', 'data' and 'encoding' keys.
      */
-    private static function encode_files(&$oldfiles) {
+    private static function encode_files(&$vplfiles) {
         $files = [];
-        foreach ($oldfiles as $name => $data) {
+        foreach ($vplfiles as $name => $data) {
             $file = [];
             $file['name'] = $name;
             if (vpl_is_binary($name, $data)) {
@@ -125,15 +126,18 @@ class mod_vpl_webservice extends external_api {
     }
 
     /**
-     * Revert encode_files action.
+     * Decode files from WebService format to VPL format.
      *
-     * @param array $oldfiles of array with 'name', 'data' and 'conding' keys.
+     * @param array $wsfiles array of arrays with 'name', 'data' and 'encoding' keys.
      * @return array files of (filename => data).
      */
-    private static function decode_files(&$oldfiles) {
+    private static function decode_files(&$wsfiles) {
         $files = [];
-        foreach ($oldfiles as $file) {
+        foreach ($wsfiles as $file) {
             $name = $file['name'];
+            if (!vpl_is_valid_path_name($name)) {
+                throw new Exception(get_string('invalidfilename', VPL));
+            }
             if (isset($file['encoding']) && $file['encoding'] == 1) {
                 $data = base64_decode($file['data']);
             } else {
