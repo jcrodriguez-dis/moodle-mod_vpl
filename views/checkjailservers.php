@@ -69,7 +69,9 @@ if ($havels) {
 $plugin = new stdClass();
 require_once(dirname(__FILE__) . '/../version.php');
 $pluginversion = $plugin->version;
-
+$nservers = count($serversinfo);
+$progressbar = new \mod_vpl\util\progress_bar(get_string('check_jail_servers', VPL), 0, $nservers);
+$progressbar->set_value(0);
 $serverstable->data = [];
 $num = 0;
 foreach ($serversinfo as $info) {
@@ -98,7 +100,10 @@ foreach ($serversinfo as $info) {
         $row[] = s(implode(', ', $info->ls));
     }
     $serverstable->data[] = $row;
+    $progressbar->set_value($num);
 }
+$progressbar->set_value($nservers);
+$progressbar->hide();
 echo html_writer::table($serverstable);
 // Button to check running tasks.
 echo html_writer::link(
