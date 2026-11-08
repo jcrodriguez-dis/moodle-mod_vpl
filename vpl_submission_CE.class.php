@@ -666,6 +666,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             printf '%s' "$VPL_REMOVED_SUBFILES" | sed 's/^/    /'
             touch .vpl_removed_subfiles_notification
         fi
+
         END_OF_ENVIRONMENT_ACTIONS;
 
         $data->files['vpl_environment.sh'] = $environmentcontent;
@@ -698,7 +699,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $bashcode .= vpl_bash_export('VPL_SUBFILE' . $num, $filename);
             $num++;
         }
-        $bashcode .= 'export VPL_SUBFILES="' . $filenames . "\"\n";
+        $bashcode .= vpl_bash_export('VPL_SUBFILES', $filenames);
         return $bashcode;
     }
 
