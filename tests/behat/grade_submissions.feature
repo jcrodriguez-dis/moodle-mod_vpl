@@ -20,6 +20,13 @@ Feature: In a VPL activity teacher grade submissions
       | teacher1 | C1 | editingteacher |
       | teacher2 | C1 | teacher |
       | student1 | C1 | student |
+    And the following "groups" exist:
+      | name | course | idnumber |
+      | Grading group | C1 | gradinggroup |
+    And the following "group members" exist:
+      | group | user |
+      | gradinggroup | teacher2 |
+      | gradinggroup | student1 |
     And I log in as "teacher1"
     And I add a "vpl" activity to course "Course 1" section "1" and I fill the form with:
       | id_name | VPL activity testing |
@@ -109,4 +116,37 @@ Feature: In a VPL activity teacher grade submissions
     And I should see "The grade has been removed"
     And I click on "li.nav-item a[title='Submission view']" in VPL
     And I should not see "Grade: 5"
+    And I log out
+
+  @javascript
+  Scenario: A teacher without a group cannot see students in the submissions list
+    Given the following "users" exist:
+      | username | firstname | lastname | email |
+      | teacher3 | Teacher3 | LN3 | teacher3@example.com |
+    And the following "course enrolments" exist:
+      | user | course | role |
+      | teacher3 | C1 | teacher |
+      | student2 | C1 | student |
+    And the following "group members" exist:
+      | group | user |
+      | gradinggroup | student2 |
+    And I log in as "teacher2"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I follow "Submissions list"
+    And I select "All" from the "Submission selection" singleselect
+    And I should see "Student1" in the "region-main" "region"
+    And I should see "Student2" in the "region-main" "region"
+    And I log out
+    And I log in as "teacher3"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    When I follow "Submissions list"
+    Then I should see "Nothing to display" in the "region-main" "region"
+    And I should not see "Student1" in the "region-main" "region"
+    And I should not see "Student2" in the "region-main" "region"
+    And I select "All" from the "Submission selection" singleselect
+    And I should see "Nothing to display" in the "region-main" "region"
+    And I should not see "Student1" in the "region-main" "region"
+    And I should not see "Student2" in the "region-main" "region"
     And I log out

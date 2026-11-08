@@ -419,6 +419,16 @@ class mod_vpl {
     }
 
     /**
+     * Check if the activity is set to separate groups.
+     *
+     * @return bool true if the activity is set to separate groups, false otherwise
+     */
+    public function is_separate_group() {
+        $groupmode = groups_get_activity_groupmode($this->get_course_module());
+        return $groupmode == SEPARATEGROUPS;
+    }
+
+    /**
      * Get fulldescription
      *
      * @return string fulldescription
@@ -783,6 +793,8 @@ class mod_vpl {
                 $error = get_string('notsaved', VPL) . "\n" . get_string('inconsistentgroup', VPL);
                 return false;
             }
+        } else {
+            mod_vpl_submission::check_group_access($vpl, $userid);
         }
         $submittedby = '';
         if ($USER->id != $userid) {
@@ -1340,6 +1352,24 @@ class mod_vpl {
     }
 
     /**
+     * Get array of students for this activity in current group.
+     * Following separate_groups setting, only students in the current group are returned.
+     * @param string $extrafields optional parm with extrafields e.g. 'u.nameq, u.name2'
+     *
+     * @return array of objects
+     */
+    public function get_students_in_current_group($extrafields = '') {
+        $currentgroup = groups_get_activity_group($this->get_course_module(), true);
+        if (empty($currentgroup)) {
+            if (!$this->has_access_all_groups()) {
+                // User has no access to any group, so return an empty list.
+                return [];
+            }
+            $currentgroup = 0;
+        }
+        return $this->get_students($currentgroup, $extrafields);
+    }
+    /**
      * Return if the current user is inconsistent with the real user.
      *
      * @param int $current Current user id
@@ -1347,7 +1377,7 @@ class mod_vpl {
      * @return bool
      */
     public function is_inconsistent_user($current, $real) {
-        if ($this->is_group_Activity()) {
+        if ($this->is_group_activity()) {
             return false;
         } else {
             return $current != $real;
@@ -2435,7 +2465,7 @@ class mod_vpl {
                 $allstudents = groups_get_all_groups($courseid, 0, $groupingid);
                 $allstudents = $this->filter_empty_groups($allstudents);
             } else {
-                $allstudents = $this->get_students();
+                $allstudents = $this->get_students_in_current_group();
             }
             $submissions = $this->all_last_user_submission('s.dategraded');
             $submissions = $this->filter_submissions_by_students($submissions, $allstudents);
@@ -2813,6 +2843,23 @@ class mod_vpl {
         }
         return ($this->has_capability(VPL_GRADE_CAPABILITY, $userid) ||
                 $this->has_capability(VPL_MANAGE_CAPABILITY, $userid));
+    }
+
+    /**
+     * Check if the user has access to all groups.
+     *
+     * @param int $userid (optional) Check for given user, current user if null.
+     * @return bool
+     */
+    public function has_access_all_groups($userid = null) {
+        global $USER;
+        if ($userid === null) {
+            $userid = $USER->id;
+        }
+        $has = !$this->is_separate_group();
+        $has = $has || $this->has_capability(VPL_MANAGE_CAPABILITY, $userid);
+        $has = $has || has_capability('moodle/site:accessallgroups', $this->get_context(), $userid);
+        return $has;
     }
 
     /**

@@ -102,7 +102,7 @@ if ($vpl->get_instance()->id != $subinstance->vpl) {
 
 // Display submission.
 
-$submission = new mod_vpl_submission($vpl, $subinstance);
+$submission = new mod_vpl_submission($vpl, $subinstance, true);
 
 if ($vpl->get_visiblegrade() || $vpl->has_capability(VPL_GRADE_CAPABILITY)) {
     if ($submission->is_graded()) {

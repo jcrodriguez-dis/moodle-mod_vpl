@@ -183,7 +183,7 @@ class mod_vpl_edit {
         $compilationexecution = false;
         $lastsub = $vpl->last_user_submission($userid);
         if ($lastsub) {
-            $submission = new mod_vpl_submission($vpl, $lastsub);
+            $submission = new mod_vpl_submission($vpl, $lastsub, true);
             $fgp = $submission->get_submitted_fgm();
             $files = $fgp->getallfiles();
             $compilationexecution = $submission->get_CE_for_editor();
@@ -229,7 +229,7 @@ class mod_vpl_edit {
         }
         $response->files = self::get_requested_files($vpl);
         if ($subreg) {
-            $submission = new mod_vpl_submission($vpl, $subreg);
+            $submission = new mod_vpl_submission($vpl, $subreg, true);
             $fgp = $submission->get_submitted_fgm();
             $response->hassubmittedfiles = $submission->has_submitted_files();
             $response->version = $subreg->id;
@@ -266,7 +266,7 @@ class mod_vpl_edit {
         if ($example || ! $lastsub) {
             $submission = new mod_vpl_example_CE($vpl);
         } else {
-            $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+            $submission = new mod_vpl_submission_CE($vpl, $lastsub, true);
         }
         if ($action === 'evaluate' && !$submission->has_submitted_files()) {
             throw new Exception(get_string('evaluatenofiles', VPL));
@@ -311,7 +311,7 @@ class mod_vpl_edit {
         if ($vpl->is_example()) {
             $submission = new mod_vpl_example_CE($vpl);
         } else {
-            $submission = new mod_vpl_submission_CE($vpl, $processinfo->submissionid);
+            $submission = new mod_vpl_submission_CE($vpl, $processinfo->submissionid, true);
         }
         return $submission->retrieveresult($processid);
     }
@@ -330,7 +330,7 @@ class mod_vpl_edit {
             if ($example || ! $lastsub) {
                 $submission = new mod_vpl_example_CE($vpl);
             } else {
-                $submission = new mod_vpl_submission_CE($vpl, $lastsub);
+                $submission = new mod_vpl_submission_CE($vpl, $lastsub, true);
             }
             $submission->cancelProcess($processid);
         } catch (\Throwable $e) {

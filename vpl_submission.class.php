@@ -69,12 +69,41 @@ class mod_vpl_submission {
     protected $submittedfgm;
 
     /**
+     * Check if the current user has access to
+     * the user submission in separate groups conditions.
+     *
+     * @param mod_vpl $vpl VPL instance
+     * @param int $userid User ID to check access for
+     *
+     * @throws Exception if access is not allowed
+     */
+    public static function check_group_access($vpl, $userid) {
+        global $USER;
+        if ($USER->id == $userid || $vpl->has_access_all_groups()) {
+            return;
+        }
+        $cm = $vpl->get_course_module();
+        $groupteacher = groups_get_activity_allowed_groups($cm, $USER->id);
+        $groupstudent = groups_get_activity_allowed_groups($cm, $userid);
+        if (
+            empty($groupteacher) ||
+            empty($groupstudent) ||
+            empty(array_intersect_key($groupteacher, $groupstudent))
+        ) {
+            throw new Exception('Access not allowed for this group.');
+        }
+    }
+
+    /**
      * Constructor
      *
      * @param mod_vpl $vpl
      * @param int|object $rid submission DB record instance object or record id
+     * @param bool $checkgroup whether to check if separate group allow access
+     * @throws Exception if the submission id is invalid or access is not allowed
      */
-    public function __construct(mod_vpl $vpl, $rid) {
+    public function __construct(mod_vpl $vpl, $rid, $checkgroup = false) {
+        global $USER;
         global $DB;
         $this->vpl = $vpl;
         if (is_object($rid)) {
@@ -88,6 +117,10 @@ class mod_vpl_submission {
             }
         }
         $this->submittedfgm = null;
+        // Check if the current user has access to the group access if required.
+        if ($checkgroup) {
+            self::check_group_access($this->vpl, $this->instance->userid);
+        }
     }
 
     /**
@@ -275,9 +308,7 @@ class mod_vpl_submission {
      */
     public static function load_gradebook_grades($vpl) {
         if ($vpl->get_grade() != 0) {
-            $cm = $vpl->get_course_module();
-            $currentgroup = groups_get_activity_group($cm, true);
-            $users = $vpl->get_students($currentgroup);
+            $users = $vpl->get_students_in_current_group();
             $usersids = array_keys($users);
             $courseid = $vpl->get_course()->id;
             $vplid = $vpl->get_instance()->id;

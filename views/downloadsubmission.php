@@ -83,7 +83,7 @@ try {
     if ($vpl->get_instance()->id != $subinstance->vpl) {
         throw new Exception('vpl submission vpl inconsistence');
     }
-    $submission = new mod_vpl_submission($vpl, $subinstance);
+    $submission = new mod_vpl_submission($vpl, $subinstance, true);
     $plugincfg = get_config('mod_vpl');
     $watermark = isset($plugincfg->use_watermarks) && $plugincfg->use_watermarks;
     $fgm = $submission->get_submitted_fgm();
@@ -93,6 +93,6 @@ try {
             'id' => $id,
     ]);
     $vpl->print_header(get_string('download', VPL));
-    echo $e->getMessage();
+    echo s($e->getMessage());
     $vpl->print_footer();
 }

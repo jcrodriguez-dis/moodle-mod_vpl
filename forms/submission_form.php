@@ -89,7 +89,7 @@ class mod_vpl_submission_form extends moodleform {
         $submission = $this->vpl->last_user_submission($this->userid);
         $subfiles = [];
         if ($submission !== false) {
-            $prevsubmission = new mod_vpl_submission($this->vpl, $submission);
+            $prevsubmission = new mod_vpl_submission($this->vpl, $submission, true);
             $subfiles = $prevsubmission->get_submitted_fgm()->getFileList();
         }
         $firstsub = count($subfiles) === 0;

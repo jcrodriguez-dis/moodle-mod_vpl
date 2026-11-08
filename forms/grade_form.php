@@ -301,7 +301,7 @@ class mod_vpl_grade_form extends moodleform {
         $attributes = [];
 
         if ($subinstance !== null) {
-            $submission = new mod_vpl_submission($this->vpl, $subinstance);
+            $submission = new mod_vpl_submission($this->vpl, $subinstance, true);
             $canimport = $submission->is_graded();
         } else {
             $canimport = false;

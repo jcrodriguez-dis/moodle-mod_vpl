@@ -53,6 +53,109 @@ final class submission_test extends base_fixture {
     }
 
     /**
+     * Teachers need a shared group or an override capability to read submissions.
+     *
+     * @dataProvider separate_groups_access_provider
+     * @covers \mod_vpl_submission::__construct
+     * @param array $teachergroups Group indexes for the teacher.
+     * @param array $studentgroups Group indexes for the student.
+     * @param bool $accessallgroups Whether the teacher can access all Moodle groups.
+     * @param bool $manage Whether the teacher can manage the VPL activity.
+     * @param bool $allowed Whether access should be granted.
+     * @param bool $userecord Whether to construct from a record instead of an ID.
+     */
+    public function test_separate_groups_submission_access(
+        array $teachergroups,
+        array $studentgroups,
+        bool $accessallgroups,
+        bool $manage,
+        bool $allowed,
+        bool $userecord
+    ): void {
+        global $DB;
+        $this->setAdminUser();
+        $instance = $this->getDataGenerator()->create_module('vpl', [
+            'course' => $this->course->id,
+            'groupmode' => SEPARATEGROUPS,
+        ]);
+        $vpl = new \mod_vpl($instance->cmid);
+        $teacher = $this->teachers[0];
+        $student = $this->students[0];
+        foreach ($this->groups as $group) {
+            groups_remove_member($group->id, $teacher->id);
+            groups_remove_member($group->id, $student->id);
+        }
+        foreach ($teachergroups as $index) {
+            $this->assertTrue(groups_add_member($this->groups[$index]->id, $teacher->id));
+        }
+        foreach ($studentgroups as $index) {
+            $this->assertTrue(groups_add_member($this->groups[$index]->id, $student->id));
+        }
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher'], MUST_EXIST);
+        $context = $vpl->get_context();
+        assign_capability(
+            'moodle/site:accessallgroups',
+            $accessallgroups ? CAP_ALLOW : CAP_PREVENT,
+            $roleid,
+            $context->id,
+            true
+        );
+        assign_capability(
+            VPL_MANAGE_CAPABILITY,
+            $manage ? CAP_ALLOW : CAP_PREVENT,
+            $roleid,
+            $context->id,
+            true
+        );
+
+        $this->setUser($student);
+        $files = ['main.c' => 'int main() {}'];
+        $error = '';
+        $submissionid = $vpl->add_submission($student->id, $files, '', $error);
+        $this->assertNotFalse($submissionid, $error);
+        $record = $DB->get_record('vpl_submissions', ['id' => $submissionid], '*', MUST_EXIST);
+
+        $this->setUser($teacher);
+        $this->assertTrue($vpl->is_separate_group());
+        $this->assertTrue($vpl->has_capability(VPL_GRADE_CAPABILITY));
+        $this->assertSame($accessallgroups, has_capability('moodle/site:accessallgroups', $context));
+        $this->assertSame($manage, $vpl->has_capability(VPL_MANAGE_CAPABILITY));
+        if (!$allowed) {
+            $this->expectException(\Exception::class);
+            $this->expectExceptionMessage('Access not allowed for this group.');
+        }
+        $submission = new mod_vpl_submission($vpl, $userecord ? $record : $submissionid, true);
+        $this->assertEquals($submissionid, $submission->get_instance()->id);
+        $this->assertSame($files, $submission->get_submitted_files());
+    }
+
+    /**
+     * Exercise group restrictions and each override with both constructor inputs.
+     *
+     * @return array
+     */
+    public static function separate_groups_access_provider(): array {
+        $scenarios = [
+            'different groups' => [[1], [0], false, false, false],
+            'teacher without a group' => [[], [0], false, false, false],
+            'student without a group' => [[0], [], false, false, false],
+            'neither user in a group' => [[], [], false, false, false],
+            'shared group' => [[0], [0], false, false, true],
+            'overlapping groups' => [[0, 1], [1, 2], false, false, true],
+            'access all groups capability' => [[1], [0], true, false, true],
+            'manage capability' => [[1], [0], false, true, true],
+            'access all groups without membership' => [[], [], true, false, true],
+            'manage without membership' => [[], [], false, true, true],
+        ];
+        $cases = [];
+        foreach ($scenarios as $name => $arguments) {
+            $cases[$name . ' by ID'] = array_merge($arguments, [false]);
+            $cases[$name . ' by record'] = array_merge($arguments, [true]);
+        }
+        return $cases;
+    }
+
+    /**
      * Method to test mod_vpl_submission::remove_grade_reduction in title
      * @covers \mod_vpl_submission::remove_grade_reduction
      */

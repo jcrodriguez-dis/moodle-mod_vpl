@@ -391,7 +391,7 @@ class vpl_diff {
             if ($subinstance !== false) {
                 $vpl = new mod_vpl(false, $subinstance->vpl);
                 $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-                $submission = new mod_vpl_submission($vpl, $subinstance);
+                $submission = new mod_vpl_submission($vpl, $subinstance, true);
                 $userid = $subinstance->userid;
                 $user = $DB->get_record('user', ['id' => $userid]);
                 if ($user) {

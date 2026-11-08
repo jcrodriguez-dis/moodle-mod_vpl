@@ -122,7 +122,7 @@ foreach ($submissionslist as $submission) {
         $link = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid, 'submissionid', $submission->id);
     }
     $date = '<a href="' . $link . '">' . userdate($submission->datesubmitted) . '</a>';
-    $sub = new mod_vpl_submission($vpl, $submission);
+    $sub = new mod_vpl_submission($vpl, $submission, true);
     $submissions[] = $sub;
     $actions = vpl_actions_menu($id, $userid, $submission->id);
     $table->data[] = [

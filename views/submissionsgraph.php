@@ -44,7 +44,7 @@ function vpl_submissions_graph($vpl, $userid) {
         // Create submissions object.
         $subs = [];
         foreach ($submissionslist as $submission) {
-            $subs[] = new mod_vpl_submission($vpl, $submission);
+            $subs[] = new mod_vpl_submission($vpl, $submission, true);
         }
         foreach ($subs as $sub) {
             $filesarray = $sub->get_submitted_fgm()->getfilelist();

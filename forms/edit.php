@@ -124,7 +124,7 @@ $options['readOnlyFiles'] = $vpl->get_readonly_files();
 $options['saved'] = $lastsub && ! $copy;
 $options['locale'] = current_language();
 if ($lastsub) {
-    $submission = new mod_vpl_submission($vpl, $lastsub);
+    $submission = new mod_vpl_submission($vpl, $lastsub, true);
     \mod_vpl\event\submission_edited::log($submission);
 }
 

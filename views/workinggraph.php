@@ -124,13 +124,7 @@ function vpl_user_working_periods_graph($vpl, $userid) {
  * @param  mod_vpl $vpl VPL activity object.
  */
 function vpl_working_periods_graph($vpl) {
-    global $DB;
-    $cm = $vpl->get_course_module();
-    $currentgroup = groups_get_activity_group($cm);
-    if (!$currentgroup) {
-        $currentgroup = '';
-    }
-    $list = $vpl->get_students($currentgroup);
+    $list = $vpl->get_students_in_current_group();
     // Get all information.
     $alldata = [];
     foreach ($list as $userinfo) {

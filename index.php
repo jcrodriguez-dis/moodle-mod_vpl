@@ -321,15 +321,6 @@ $urlparms = [
 $urlbase = new moodle_url('/mod/vpl/index.php', $urlparms);
 $vplactivities = get_vpl_activities($course);
 $sectionnamesbysectionnum = get_sections_names_by_sectionnum($course, $vplactivities);
-if (! $downloading) {
-    echo $OUTPUT->render(get_select_section_filter($urlbase, $sectionnamesbysectionnum, $sectionfilter));
-    $urlbase->params($urlparms);
-    echo $OUTPUT->render(get_select_activitymode_filter($urlbase, $activitymodefilter));
-    $urlbase->params($urlparms);
-    echo $OUTPUT->render(get_select_instance_filter($urlbase, $instancefilter));
-    $urlbase->params($urlparms);
-    echo $OUTPUT->render(get_select_detailedmore($urlbase, $detailedmore));
-}
 
 if ($sectionfilter != 'all') {
     // Get vpls in section or subsection.
@@ -338,88 +329,90 @@ if ($sectionfilter != 'all') {
 $timenow = time();
 $vpls = [];
 $cms = [];
+$startdate = false;
+$duedate = false;
+$isteacher = false;
 // Get and select vpls to show.
 foreach ($vplactivities as $cm) {
     $vpl = new mod_vpl($cm->id);
-    $instance = $vpl->get_instance();
-    if ($vpl->is_visible()) {
-        $add = false;
-        switch ($instancefilter) {
-            case 'none':
-                $add = true;
-                break;
-            case 'open':
-                $min = $instance->startdate;
-                $max = $instance->duedate == 0 ? PHP_INT_MAX : $instance->duedate;
-                if ($timenow >= $min && $timenow <= $max) {
-                    $add = true;
-                }
-                break;
-            case 'closed':
-                $min = $instance->startdate;
-                $max = $instance->duedate == 0 ? PHP_INT_MAX : $instance->duedate;
-                if ($timenow < $min || $timenow > $max) {
-                    $add = true;
-                }
-                break;
-            case 'timelimited':
-                if ($instance->duedate > 0) {
-                    $add = true;
-                }
-                break;
-            case 'timeunlimited':
-                if ($instance->duedate == 0) {
-                    $add = true;
-                }
-                break;
-            case 'automaticgrading':
-                if ($instance->grade != 0 && $instance->automaticgrading > 0) {
-                    $add = true;
-                }
-                break;
-            case 'manualgrading':
-                if ($vpl->get_grade() != 0 && $instance->automaticgrading == 0) {
-                    $add = true;
-                }
-                break;
-        }
-        if ($add && $activitymodefilter !== 'all') {
-            $add = $vpl->is_mode((int)$activitymodefilter);
-        }
-        if ($add) {
-            $vpls[] = $vpl;
-            $cms[$cm->id] = $cm;
-        }
-    }
-}
-// Is the user a grader?
-$grader = false;
-$student = false;
-$startdate = false;
-$duedate = false;
-$nograde = true;
-foreach ($vpls as $vpl) {
     if ($vpl->is_teacher()) {
-        $grader = true;
-    } else if ($vpl->has_capability(VPL_SUBMIT_CAPABILITY)) {
-        $student = true;
+        $isteacher = true;
+    } else {
+        continue;
     }
     $instance = $vpl->get_instance();
-    if ($vpl->get_grade() != 0) {
-        $nograde = false;
+    $add = false;
+    switch ($instancefilter) {
+        case 'none':
+            $add = true;
+            break;
+        case 'open':
+            $min = $instance->startdate;
+            $max = $instance->duedate == 0 ? PHP_INT_MAX : $instance->duedate;
+            if ($timenow >= $min && $timenow <= $max) {
+                $add = true;
+            }
+            break;
+        case 'closed':
+            $min = $instance->startdate;
+            $max = $instance->duedate == 0 ? PHP_INT_MAX : $instance->duedate;
+            if ($timenow < $min || $timenow > $max) {
+                $add = true;
+            }
+            break;
+        case 'timelimited':
+            if ($instance->duedate > 0) {
+                $add = true;
+            }
+            break;
+        case 'timeunlimited':
+            if ($instance->duedate == 0) {
+                $add = true;
+            }
+            break;
+        case 'automaticgrading':
+            if ($instance->grade != 0 && $instance->automaticgrading > 0) {
+                $add = true;
+            }
+            break;
+        case 'manualgrading':
+            if ($vpl->get_grade() != 0 && $instance->automaticgrading == 0) {
+                $add = true;
+            }
+            break;
     }
-    if ($instance->startdate > 0) {
-        $startdate = true;
+    if ($add && $activitymodefilter !== 'all') {
+        $add = $vpl->is_mode((int)$activitymodefilter);
     }
-    if ($instance->duedate > 0) {
-        $duedate = true;
+    if ($add) {
+        if ($instance->startdate > 0) {
+            $startdate = true;
+        }
+        if ($instance->duedate > 0) {
+            $duedate = true;
+        }
+        $vpls[] = $vpl;
+        $cms[$cm->id] = $cm;
     }
 }
-// If no instance with grade.
-$grader = $grader && ! $nograde;
-$student = $student && ! $nograde;
+if (!$isteacher) {
+    echo $OUTPUT->footer();
+    die();
+}
 
-// The usort of old PHP versions don't call static class functions.
+if (! $downloading) {
+    echo '<div class="d-flex flex-row flex-wrap justify-content-between">';
+    echo $OUTPUT->render(get_select_section_filter($urlbase, $sectionnamesbysectionnum, $sectionfilter));
+    $urlbase->params($urlparms);
+    echo $OUTPUT->render(get_select_activitymode_filter($urlbase, $activitymodefilter));
+    $urlbase->params($urlparms);
+    echo $OUTPUT->render(get_select_instance_filter($urlbase, $instancefilter));
+    $urlbase->params($urlparms);
+    echo $OUTPUT->render(get_select_detailedmore($urlbase, $detailedmore));
+    groups_print_course_menu($course, $urlbase);
+    echo '</div>';
+}
+
 if ($sort != '') {
     $corder = new vpl_list_util();
     $corder->set_order($sort, $sortdir != SORT_DESC);
@@ -437,18 +430,12 @@ if ($duedate) {
     $fields[] = 'duedate';
     $headers[] = $strduedate;
 }
-if ($grader) {
-    $fields[] = 'submissions';
-    $fields[] = 'graded';
-    $fields[] = 'actions';
-    $headers[] = get_string('submissions', VPL);
-    $headers[] = get_string('graded', VPL);
-    $headers[] = get_string('actions');
-}
-if ($student) {
-    $fields[] = 'grade';
-    $headers[] = get_string(vpl_get_gradenoun_str());
-}
+$fields[] = 'submissions';
+$fields[] = 'graded';
+$fields[] = 'actions';
+$headers[] = get_string('submissions', VPL);
+$headers[] = get_string('graded', VPL);
+$headers[] = get_string('actions');
 if ($detailedmore) {
     $fields[] = 'detailedmore';
     $headers[] = get_string('detailedmore');
@@ -477,113 +464,74 @@ foreach ($vpls as $vpl) {
     if ($duedate) {
         $row[] = $instance->duedate > 0 ? userdate($instance->duedate) : '';
     }
-    if ($grader) {
-        if ($vpl->is_teacher() && $vpl->get_grade() != 0) {
-            $cmid = $vpl->get_course_module()->id;
-            $status = $vpl->get_submissions_status();
-            $totalsubs += $status->subcount;
-            $totalgraded += $status->gradedcount;
+    if ($vpl->is_teacher() && $vpl->get_grade() != 0) {
+        $cmid = $vpl->get_course_module()->id;
+        $status = $vpl->get_submissions_status();
+        $totalsubs += $status->subcount;
+        $totalgraded += $status->gradedcount;
+        $row[] = $OUTPUT->action_link(
+            new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid]),
+            get_string('submissions_overview_short', 'mod_vpl', $status),
+            null,
+            ['class' => 'btn btn-secondary'],
+        );
+        $gradeable = $vpl->get_grade() != 0;
+        $needgrade = $gradeable && ($status->gradedcount < $status->subcount);
+        if ($instance->duedate != 0 && $instance->duedate > $timenow) {
+            $needgrade = false;
+        }
+        if ($gradeable && $status->subcount > 0) {
             $row[] = $OUTPUT->action_link(
-                new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid]),
-                get_string('submissions_overview_short', 'mod_vpl', $status),
+                new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid, 'selection' => 'graded']),
+                get_string('submissions_graded_overview_short', 'mod_vpl', $status),
                 null,
                 ['class' => 'btn btn-secondary'],
             );
-            $gradeable = $vpl->get_grade() != 0;
-            $needgrade = $gradeable && ($status->gradedcount < $status->subcount);
-            if ($instance->duedate != 0 && $instance->duedate > $timenow) {
-                $needgrade = false;
-            }
-            if ($gradeable && $status->subcount > 0) {
-                $row[] = $OUTPUT->action_link(
-                    new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid, 'selection' => 'graded']),
-                    get_string('submissions_graded_overview_short', 'mod_vpl', $status),
-                    null,
-                    ['class' => 'btn btn-secondary'],
-                );
-            } else {
-                $row[] = '';
-            }
-            if ($needgrade) {
-                $str = s(get_string('gradeverb'));
-                $row[] = $OUTPUT->action_link(
-                    new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid, 'selection' => 'notgraded']),
-                    $str,
-                    null,
-                    ['class' => 'btn btn-secondary'],
-                );
-            } else {
-                $row[] = '';
-            }
         } else {
             $row[] = '';
-            $row[] = '';
-            $row[] = '';
         }
-    }
-    if ($student) {
-        $isvplstudent = ! $vpl->is_teacher();
-        $isvplstudent = $isvplstudent && $vpl->has_capability(VPL_SUBMIT_CAPABILITY);
-        $isvplstudent = $isvplstudent && $vpl->get_grade() != 0 && ! $vpl->is_example();
-        if ($isvplstudent) {
-            $subinstance = $vpl->last_user_submission($USER->id);
-            if ($subinstance) { // Submitted.
-                $submission = new mod_vpl_submission($vpl, $subinstance);
-                if ($subinstance->dategraded > 0 && $vpl->get_visiblegrade()) {
-                    $text = $submission->get_grade_core();
-                } else {
-                    $result = $submission->getCE();
-                    $text = '';
-                    if ($result['executed'] !== 0) {
-                        $prograde = $submission->proposedGrade($result['execution']);
-                        if ($prograde !== '') {
-                            $text = get_string('proposedgrade', VPL, $submission->get_grade_core($prograde));
-                        }
-                    } else {
-                        $text = get_string('notgraded', VPL);
-                    }
-                }
-            } else { // No submitted.
-                $text = get_string('nosubmission', VPL);
-                if ($vpl->is_submit_able()) {
-                    $text = '<div class="vpl_nm">' . $text . '</div>';
-                }
-            }
-            $row[] = $text;
+        if ($needgrade) {
+            $str = s(get_string('gradeverb'));
+            $row[] = $OUTPUT->action_link(
+                new moodle_url('/mod/vpl/views/submissionslist.php', ['id' => $cmid, 'selection' => 'notgraded']),
+                $str,
+                null,
+                ['class' => 'btn btn-secondary'],
+            );
         } else {
-            $row[] = '-';
+            $row[] = '';
         }
+    } else {
+        $row[] = '';
+        $row[] = '';
+        $row[] = '';
     }
     if ($detailedmore) {
         $row[] = $vpl->str_submission_restriction();
     }
     $tabledata[] = $row;
 }
-// Add totals row if grader.
-if ($grader) {
-    $row = [];
-    $columnsbeforetotals = 2;
-    if ($startdate) {
-        $columnsbeforetotals++;
-    }
-    if ($duedate) {
-        $columnsbeforetotals++;
-    }
-    for ($i = 0; $i < $columnsbeforetotals; $i++) {
-        $row[] = '';
-    }
-    $row[] = get_string('total');
-    $row[] = $totalsubs;
-    $row[] = $totalgraded;
-    $row[] = '';
-    if ($student) {
-        $row[] = '';
-    }
-    if ($detailedmore) {
-        $row[] = '';
-    }
-    $tabledata[] = $row;
+// Add totals.
+$row = [];
+$columnsbeforetotals = 2;
+if ($startdate) {
+    $columnsbeforetotals++;
 }
+if ($duedate) {
+    $columnsbeforetotals++;
+}
+for ($i = 0; $i < $columnsbeforetotals; $i++) {
+    $row[] = '';
+}
+$row[] = get_string('total');
+$row[] = $totalsubs;
+$row[] = $totalgraded;
+$row[] = '';
+if ($detailedmore) {
+    $row[] = '';
+}
+$tabledata[] = $row;
+
 $table = new flexible_table('vpl-index-' . $id);
 $table->is_downloading($download, $course->shortname . '_vpl_list', $course->shortname);
 $table->define_baseurl(new moodle_url('/mod/vpl/index.php', $urlparms));
@@ -600,9 +548,7 @@ if ($downloading) {
     $table->finish_output();
     exit(0);
 }
-if ($grader) {
-    $totalsrow = array_pop($tabledata);
-}
+$totalsrow = array_pop($tabledata);
 $table->set_control_variables([TABLE_VAR_SORT => 'sort', TABLE_VAR_DIR => 'sortdir']);
 $table->sortable(true, $sort, $sortdir);
 $sortablefields = ['name', 'startdate', 'duedate'];

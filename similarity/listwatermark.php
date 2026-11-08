@@ -43,7 +43,7 @@ $course = $vpl->get_course();
 // Print header.
 $vpl->print_header(get_string('listwatermarks', VPL));
 $vpl->print_view_tabs(basename(__FILE__));
-$list = $vpl->get_students();
+$list = $vpl->get_students_in_current_group();
 $firstname = get_string('firstname');
 $lastname = get_string('lastname');
 if ($CFG->fullnamedisplay == 'lastname firstname') { // For better view (dlnsk).

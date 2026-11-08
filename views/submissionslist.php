@@ -332,15 +332,11 @@ function vpl_show_graders_table($id, $usernumber, $gradersdata) {
  * @return array of objects
  */
 function vpl_get_students($vpl) {
+    $cm = $vpl->get_course_module();
     if ($vpl->is_group_activity()) {
-        $cm = $vpl->get_course_module();
         return groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
     } else {
-        $currentgroup = groups_get_activity_group($vpl->get_course_module(), true);
-        if (! $currentgroup) {
-            $currentgroup = 0;
-        }
-        return $vpl->get_students($currentgroup);
+        return $vpl->get_students_in_current_group();
     }
 }
 
@@ -409,10 +405,6 @@ if (! $downloading) {
 
 // Find out current group mode.
 $groupmode = groups_get_activity_groupmode($cm);
-if (! $groupmode) {
-    $groupmode = groups_get_course_groupmode($vpl->get_course());
-}
-
 $allstudents = vpl_get_students($vpl);
 $filteredstudents = vpl_filter_by_initials($vpl, $allstudents, $tilast, $tifirst);
 
@@ -455,7 +447,7 @@ foreach ($filteredstudents as $uginfo) {
     } else {
         $nsubmissions++;
         $subinstance = $submissions[$uginfo->id];
-        $submission = new mod_vpl_submission_CE($vpl, $subinstance);
+        $submission = new mod_vpl_submission_CE($vpl, $subinstance, true);
         $subid = $subinstance->id;
         $subinstance->gradesortable = null;
         if ($subinstance->dategraded > 0) {

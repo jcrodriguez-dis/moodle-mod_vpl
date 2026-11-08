@@ -84,7 +84,7 @@ if ($vpl->is_inconsistent_user($subinstance->userid, $userid)) {
 if ($vpl->get_instance()->id != $subinstance->vpl) {
     vpl_redirect($link, 'vpl submission vpl inconsistence', 'error');
 }
-$submission = new mod_vpl_submission($vpl, $subinstance);
+$submission = new mod_vpl_submission($vpl, $subinstance, true);
 if ($inpopup) {
     $link = vpl_mod_href('forms/gradesubmission.php', 'id', $id, 'userid', $userid, 'inpopup', $inpopup);
 } else {

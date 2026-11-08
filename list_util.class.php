@@ -152,7 +152,7 @@ class vpl_list_util {
      */
     public static function count_graded($vpl) {
         $subs = $vpl->all_last_user_submission('s.dategraded, s.userid, s.groupid');
-        $students = $vpl->get_students();
+        $students = $vpl->get_students_in_current_group();
         $subs = $vpl->filter_submissions_by_students($subs, $students);
         return [
                 'submissions' => count($subs),

@@ -15,7 +15,7 @@
 // along with VPL for Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Classes to manage file from difrerent soruces
+ * Classes to manage file from difrerent sources
  *
  * @package mod_vpl
  * @copyright 2015 Juan Carlos Rodríguez-del-Pino
@@ -126,19 +126,10 @@ class preprocess {
      */
     public static function activity(&$simil, $vpl, $selectedfiles, $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
-        $cm = $vpl->get_course_module();
-        $groupmode = groups_get_activity_groupmode($cm);
-        if (! $groupmode) {
-            $groupmode = groups_get_course_groupmode($vpl->get_course());
-        }
-        $currentgroup = groups_get_activity_group($cm, true);
-        if (! $currentgroup) {
-            $currentgroup = '';
-        }
         if ($vpl->is_group_activity()) {
             $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
         } else {
-            $list = $vpl->get_students($currentgroup);
+            $list = $vpl->get_students_in_current_group();
         }
         if (count($list) == 0) {
             return;
