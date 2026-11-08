@@ -577,13 +577,14 @@ class vpl_jailserver_manager {
         foreach ($serverlist as $server) {
             if (self::is_checkable($server)) {
                 $response = self::get_response($server, $requestready, $error);
+                $jailversion = self::get_last_server_version();
                 if ($response === false) {
                     self::server_fail($server, $error);
                     $feedback .= parse_url($server, PHP_URL_HOST) . ' ' . $error . "\n";
                 } else if (! isset($response['status'])) {
                     self::server_fail($server, $error);
                     $feedback .= parse_url($server, PHP_URL_HOST) . " protocol error (No status)\n";
-                } else if (version_compare(self::get_last_server_version(), '4.0.3', '<')) {
+                } else if ($jailversion > '' && version_compare($jailversion, '4.0.3', '<')) {
                     self::server_fail($server, get_string('message::bad_jailserver', VPL));
                     $feedback .= parse_url($server, PHP_URL_HOST) . " not available.\n";
                 } else {
