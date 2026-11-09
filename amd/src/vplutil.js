@@ -24,6 +24,7 @@
 /* globals Blockly */
 /* globals ace */
 
+import Config from 'core/config';
 import $ from 'jquery';
 import log from 'core/log';
 import url from 'core/url';
@@ -46,24 +47,26 @@ VPLUtil.log = function(m, forced) {
     }
 };
 VPLUtil.setUserPreferences = function(pref) {
-    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey, {
+    let data = Object.assign({}, pref, {sesskey: Config.sesskey});
+    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify(pref),
+        body: JSON.stringify(data),
         credentials: 'same-origin'
     }).catch(function() {
         // Keep previous fire-and-forget behavior.
     });
 };
 VPLUtil.getUserPreferences = function(func) {
-    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php') + '?sesskey=' + M.cfg.sesskey, {
+    let data = {getPreferences: true, sesskey: Config.sesskey};
+    fetch(url.relativeUrl('/mod/vpl/editor/userpreferences.json.php'), {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify({getPreferences: true}),
+        body: JSON.stringify(data),
         credentials: 'same-origin'
     }).then(function(response) {
         return response.json();
@@ -729,12 +732,13 @@ VPLUtil.isMac = function() {
  *         Use done() to set handler to receive the WebSocket. Use fail to set error handler.
  */
 VPLUtil.directRun = function(URL, command, files) {
+    let data = {command: command, files: files, sesskey: Config.sesskey};
     var promise = fetch(URL + 'directrun', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify({"command": command, "files": files}),
+        body: JSON.stringify(data),
         credentials: 'same-origin'
     }).then(function(response) {
         if (!response.ok) {
@@ -771,12 +775,13 @@ VPLUtil.directRun = function(URL, command, files) {
  *         Use done() to set handler to receive the result. Use fail to set error handler.
  */
 VPLUtil.cancelDirectRun = function(URL, processid) {
+    let data = {processid: processid, sesskey: Config.sesskey};
     var promise = fetch(URL + 'cancel', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify({"processid": processid}),
+        body: JSON.stringify(data),
         credentials: 'same-origin'
     }).then(function(response) {
         if (!response.ok) {
@@ -801,46 +806,6 @@ VPLUtil.cancelDirectRun = function(URL, processid) {
     return promise;
 };
 
-/**
- * Function to experiment with Direct run.
- * Limits: one data send and 10 messages received and 10 minutes connected
- * @param {string} URL to server
- * @param {string} command Command to prepare direct run. Execution of command must generate vpl_execution
- * @param {object} data to send to server
- */
-VPLUtil.directRunTest = function(URL, command, data) {
-    var files = [{name: 'a.c', contents: 'int main(){return 0;}', encoding: 0},
-                    {name: 'b.c', contents: 'int f(){return 1;}', encoding: 0}];
-    VPLUtil.directRun(URL, command, files)
-        .then(function(result) {
-            var mcount = 0;
-            result.connection.onopen = function() {
-                log.debug("Ws open " + result.homepath + " processid " + result.processid);
-                if (data != undefined) {
-                    result.connection.send(data);
-                }
-                setTimeout(function() { //  Close test if open for more than 10 minutes.
-                    result.connection.close();
-                }, 60 * 10 * 1000);
-            };
-            result.connection.onmessage = function(event) {
-                log.debug("WS Message (" + ++mcount + "): " + event.data);
-                if (mcount >= 10) {
-                    result.connection.close();
-                }
-            };
-            result.connection.onerror = function(event) {
-                log.debug("WS error: " + event);
-            };
-            result.connection.onclose = function(event) {
-                log.debug("WS close: " + event.code + " " + event.reason);
-            };
-            return result;
-        })
-        .catch(function(message) {
-            log.debug("Direct run fail. URL: " + URL + " command: " + command + " message: " + message);
-        });
-};
 /**
  * Process the result text to generate HTML with links to files and folding
  * @param {string} text Text to process

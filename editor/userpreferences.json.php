@@ -33,9 +33,15 @@ $result->error = '';
 $result->preferences = (object)[];
 try {
     require_login();
-    require_sesskey();
     $rawdata = file_get_contents("php://input");
-    $preferences = userpreferences::update($rawdata);
+    $data = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    if (!is_object($data)) {
+        throw new \Exception('Invalid input data');
+    }
+    if (!confirm_sesskey(isset($data->sesskey) ? $data->sesskey : '')) {
+        throw new \moodle_exception('invalidsesskey');
+    }
+    $preferences = userpreferences::update($data);
     $result->preferences = $preferences;
     $result->success = true;
 } catch (\Throwable $e) {

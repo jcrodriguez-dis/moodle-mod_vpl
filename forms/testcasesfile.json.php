@@ -41,7 +41,6 @@ try {
     require_login($course, true, $cm);
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $vpl = new mod_vpl($id);
-    // TODO use or not sesskey "require_sesskey();".
     $vpl->require_capability(VPL_MANAGE_CAPABILITY);
     $PAGE->set_url(new moodle_url('/mod/vpl/forms/testcasesfile.json.php', [
             'id' => $id,
@@ -49,6 +48,7 @@ try {
     ]));
     echo $OUTPUT->header(); // Send headers.
     $actiondata = json_decode(file_get_contents('php://input'), null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    mod_vpl_edit::checksesskey($vpl, $actiondata);
     switch ($action) {
         case 'save':
             $postfiles = mod_vpl_edit::filesfromide($actiondata->files);

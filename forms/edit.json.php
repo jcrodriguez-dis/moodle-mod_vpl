@@ -44,7 +44,6 @@ try {
     $subid = optional_param('subid', false, PARAM_INT);
     $copy = optional_param('privatecopy', false, PARAM_INT);
     $vpl = new mod_vpl($id);
-    // TODO use or not sesskey."require_sesskey();".
     $allow = $vpl->has_capability(VPL_SUBMIT_CAPABILITY);
     $allow = $allow || $vpl->has_capability(VPL_GRADE_CAPABILITY);
     $allow = $allow || $vpl->has_capability(VPL_MANAGE_CAPABILITY);
@@ -63,6 +62,7 @@ try {
         throw new Exception("Ajax POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawdatasize)");
     }
     $actiondata = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    mod_vpl_edit::checksesskey($vpl, $actiondata);
     $modevplquestion = $vpl->is_vpl_question_mode();
     $cansubmit = $vpl->is_submit_able() || $modevplquestion;
     $canview = $vpl->is_visible() || $modevplquestion;

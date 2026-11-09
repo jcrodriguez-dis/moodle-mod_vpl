@@ -98,7 +98,22 @@ class mod_vpl_edit {
         }
         return $files;
     }
-
+    /**
+     * Checks the session key for validity
+     *
+     * @param mod_vpl $vpl VPL instance
+     * @param stdClass $data Data containing the session key
+     * @throws \moodle_exception if the session key is invalid
+     */
+    public static function checksesskey($vpl, $data) {
+        if ($vpl->is_vpl_question_mode()) {
+            return;
+        }
+        if (isset($data->sesskey) && confirm_sesskey($data->sesskey)) {
+            return;
+        }
+        throw new \moodle_exception('invalidsesskey');
+    }
     /**
      * Save a submission version
      *

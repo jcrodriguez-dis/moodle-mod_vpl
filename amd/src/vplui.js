@@ -24,6 +24,7 @@
 /* globals JUnzip */
 /* globals JSInflate */
 
+import Config from 'core/config';
 import $ from 'jquery';
 import url from 'core/url';
 /* eslint-disable no-unused-vars */
@@ -510,12 +511,13 @@ VPLUI.requestAction = function(action, title, data, URL, noDialog) {
             }
         });
     }
+    let fulldata = Object.assign({}, data, {sesskey: Config.sesskey});
     fetch(URL + action, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json; charset=utf-8'
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify(fulldata),
         credentials: 'same-origin',
         signal: controller.signal
     }).then(function(response) {

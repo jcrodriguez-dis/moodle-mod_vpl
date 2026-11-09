@@ -84,12 +84,11 @@ class userpreferences {
     /**
      * Update user preferences with new values.
      *
-     * @param string $rawdata raw JSON input data
+     * @param object $newpreferences new preferences object
      * @param int|null $userid user ID (null for current user)
      * @return object updated userpreferences
      */
-    public static function update($rawdata, $userid = null) {
-        $newpreferences = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
+    public static function update($newpreferences, $userid = null) {
         $save = false;
         if ($newpreferences !== null) {
             if (isset($newpreferences->reset)) {
