@@ -75,7 +75,7 @@ jobs:
       - name: PHP Lint
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phplint
-  
+
       - name: PHP Mess Detector
         if: ${{ !cancelled() }}
         run: moodle-plugin-ci phpmd
@@ -125,10 +125,14 @@ jobs:
       - name: Tests of VPL default "Basic I/O test" for students' programs
         if: ${{ !cancelled() }}
         run: ./plugin/tests/vpl_evaluate/test_vpl_evaluate.sh
-      
+
       - name: Tests tester of automatic evaluation of students' programs
         if: ${{ !cancelled() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
+
+      - name: Tests of default scripts
+        if: ${{ !cancelled() }}
+        run: ./plugin/tests/default_scripts/default_scripts_test.sh
 
       - name: Tests of evaluators subplugins
         if: ${{ !cancelled() }}
