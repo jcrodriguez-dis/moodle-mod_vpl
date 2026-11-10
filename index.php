@@ -39,6 +39,7 @@ use mod_vpl\util\activity_modes;
  * @return url_select
  */
 function get_select_instance_filter($urlbase, $instancefilter) {
+    $urlbase = clone $urlbase;
     $urls = [];
     $urlindex = [];
     $urlbase->param('selection', 'none');
@@ -75,6 +76,7 @@ function get_select_instance_filter($urlbase, $instancefilter) {
  * @return url_select
  */
 function get_select_activitymode_filter($urlbase, $activitymodefilter) {
+    $urlbase = clone $urlbase;
     $urls = [];
     $urlindex = [];
     $urlbase->param('activitymode', 'all');
@@ -110,6 +112,7 @@ function get_select_activitymode_filter($urlbase, $activitymodefilter) {
  * @return url_select
  */
 function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
+    $urlbase = clone $urlbase;
     $urls = [];
     $urlindex = [];
     $urlbase->param('section', 'all');
@@ -138,6 +141,7 @@ function get_select_section_filter($urlbase, $sectionnames, $sectionfilter) {
  * @return url_select
  */
 function get_select_detailedmore($urlbase, $value = '0') {
+    $urlbase = clone $urlbase;
     $urls = [];
     $urlbase->param('detailedmore', '0');
     $urlno = $urlbase->out(false);
@@ -403,11 +407,8 @@ if (!$isteacher) {
 if (! $downloading) {
     echo '<div class="d-flex flex-row flex-wrap justify-content-between">';
     echo $OUTPUT->render(get_select_section_filter($urlbase, $sectionnamesbysectionnum, $sectionfilter));
-    $urlbase->params($urlparms);
     echo $OUTPUT->render(get_select_activitymode_filter($urlbase, $activitymodefilter));
-    $urlbase->params($urlparms);
     echo $OUTPUT->render(get_select_instance_filter($urlbase, $instancefilter));
-    $urlbase->params($urlparms);
     echo $OUTPUT->render(get_select_detailedmore($urlbase, $detailedmore));
     groups_print_course_menu($course, $urlbase);
     echo '</div>';
