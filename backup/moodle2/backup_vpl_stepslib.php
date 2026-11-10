@@ -37,7 +37,7 @@ use mod_vpl\backup\backup_vpl_filegroup;
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  * @see backup_activity_structure_step
  */
-class backup_vpl_activity_structure_step extends backup_activity_structure_step {
+class backup_vpl_activity_structure_step extends \backup_activity_structure_step {
     /**
      * @var array VPL table fields list
      */

@@ -34,7 +34,7 @@ require_once(dirname(__FILE__) . '/../../locallib.php');
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  * @author Juan Carlos Rodríguez-del-Pino <jcrodriguez@dis.ulpgc.es>
  */
-class restore_vpl_activity_structure_step extends restore_activity_structure_step {
+class restore_vpl_activity_structure_step extends \restore_activity_structure_step {
     /**
      * @var array of names of VPL basedon activities indexed by id of linked activities
      */
