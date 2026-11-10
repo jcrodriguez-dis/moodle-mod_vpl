@@ -122,7 +122,7 @@ jobs:
         if: ${{ always() }}
         run: ./plugin/tests/vpl_evaluate/test_tester_vpl_evaluate.sh
 
-        - name: Tests of default scripts
+      - name: Tests of default scripts
         if: ${{ always() }}
         run: ./plugin/tests/default_scripts/default_scripts_test.sh
 
