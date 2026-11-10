@@ -327,7 +327,7 @@ final class privacy_provider_test extends base_fixture {
             'editorShowInvisibles' => true,
             'terminalFontSize' => 12,
         ];
-        userpreferences::update(json_encode($preferences));
+        userpreferences::update($preferences);
         $context = \context_system::instance();
         $this->provider->export_user_preferences($this->students[0]->id);
         $writer = writer::with_context($context);

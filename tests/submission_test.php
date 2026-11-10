@@ -237,7 +237,7 @@ final class submission_test extends base_fixture {
     public function test_get_script(): void {
         $data = new \stdClass();
         $script = mod_vpl_submission_CE::get_script('run', 'php', $data);
-        $this->assertStringContainsString('$PHP -f', $script);
+        $this->assertStringContainsString('-f %q "$@"', $script);
 
         $script = mod_vpl_submission_CE::get_script('run', 'unknown', $data);
         $this->assertNotEmpty($script);
