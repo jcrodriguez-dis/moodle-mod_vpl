@@ -4,6 +4,21 @@
 
 SCRIPTS_DIR=$(cd "$(dirname "${BASH_SOURCE[0]}")/../../jail/default_scripts" && pwd)
 
+CHECK_MARK="✅"
+X_MARK="❌"
+
+function writeHeading {
+    printf '\e[37;42m RUN \e[39;49m \e[34m%s\e[39m\n' "$1"
+}
+
+function writeInfo {
+    printf '\e[42m%s\e[0m%s' "$1" "${2:-}"
+}
+
+function writeError {
+    printf '\e[31m%s\e[0m%s\n' "$1" "${2:-}" >&2
+}
+
 function assert_equal {
     if [ "$1" != "$2" ]; then
         printf 'FAIL: expected <%s>, got <%s>\n' "$1" "$2" >&2
@@ -54,6 +69,7 @@ function run_case {
     local name=$1
     shift
     CASE_COUNT=$((CASE_COUNT + 1))
+    writeInfo "Test" ": $name "
     set +e
     (
         set -e
@@ -73,14 +89,18 @@ function run_case {
     local result=$?
     set -e
     case "$result" in
-        0) printf 'PASS: %s\n' "$name" ;;
+        0)
+            writeInfo "$CHECK_MARK"
+            printf '\n'
+            ;;
         77)
             SKIPPED_CASES=$((SKIPPED_CASES + 1))
-            printf 'SKIP: %s\n' "$name"
+            printf '\e[33mSKIP\e[0m\n'
             ;;
         *)
             FAILED_CASES=$((FAILED_CASES + 1))
-            printf 'FAIL: %s (exit %s)\n' "$name" "$result" >&2
+            writeError "$X_MARK"
+            writeError "Test $name failed: " "exit $result"
             ;;
     esac
 }
