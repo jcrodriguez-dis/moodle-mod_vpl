@@ -274,7 +274,7 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
         $starturl = $CFG->wwwroot . '/mod/vpl/forms/edit.php?id=' . $instance->cmid;
         $this->assertStringContainsString(
-            '<key>examSessionReconfigureConfigURL</key><string>' . $starturl . '</string>',
+            '<key>examSessionReconfigureConfigURL</key><string>' . $CFG->wwwroot . '/mod/vpl/*</string>',
             $xml
         );
         $this->assertStringContainsString('<key>startURL</key><string>' . $starturl . '</string>', $xml);

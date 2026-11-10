@@ -104,6 +104,7 @@ class config_payload {
      * @return array
      */
     public static function get_phase1_payload(\stdClass $settings, $secret): array {
+        global $CFG;
         $payload = self::get_base_payload($settings, $secret);
         $payload['downloadAndOpenSebConfig'] = true;
         // Discard any cookie kept from a previous run, so Moodle login is always required.
@@ -114,7 +115,7 @@ class config_payload {
         $payload['removeBrowserProfile'] = false;
         // Allow reconfiguration to phase 2.
         $payload['examSessionReconfigureAllow'] = true;
-        $payload['examSessionReconfigureConfigURL'] = self::get_start_url($settings);
+        $payload['examSessionReconfigureConfigURL'] = self::get_reconfigure_url();
         return $payload;
     }
 
@@ -153,7 +154,10 @@ class config_payload {
         $payload['examSessionClearCookiesOnStart'] = false;
         $payload['examSessionClearCookiesOnEnd'] = true;
         $payload['removeBrowserProfile'] = true;
-        $payload['hashedQuitPassword'] = self::get_quit_password_hash($settings);
+        $quitpasswordhash = self::get_quit_password_hash($settings);
+        if ($quitpasswordhash !== '') {
+            $payload['hashedQuitPassword'] = $quitpasswordhash;
+        }
         return $payload;
     }
 
@@ -168,7 +172,15 @@ class config_payload {
         $cmid = settings::get_cmid($settings->vplid);
         return $CFG->wwwroot . '/mod/vpl/forms/edit.php?id=' . $cmid;
     }
-
+    /**
+     * Return VPL URL that allow reconfigure phase 2.
+     *
+     * @return string
+     */
+    public static function get_reconfigure_url(): string {
+        global $CFG;
+        return $CFG->wwwroot . '/mod/vpl/*';
+    }
     /**
      * Return URL filter rules.
      *
