@@ -17,6 +17,6 @@ if [ "$1" == "version" ] ; then
 fi
 get_source_files s
 cat common_script.sh > vpl_execution
-echo "spim -file \"$SOURCE_FILE0\" | tail -n +6" >> vpl_execution
+printf 'spim -file %q | tail -n +6\n' "$SOURCE_FILE0" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode

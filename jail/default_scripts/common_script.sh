@@ -152,10 +152,12 @@ function get_program_version {
 	exit
 }
 
-# Populate SOURCE_FILES, SOURCE_FILES_LINE and SOURCE_FILE0 with files
+# Populate SOURCE_FILES_ARRAY and SOURCE_FILE0 with files.
+# Keep SOURCE_FILES and SOURCE_FILES_LINE for custom script compatibility.
 # of extensions passed. E.g. get_source_files cpp C
 function get_source_files {
     local ext
+    SOURCE_FILES_ARRAY=()
     # Declare an array to hold all files
     declare -a files=()
 
@@ -212,6 +214,7 @@ function get_source_files {
     # Append any remaining files to the ordered array.
     ordered+=("${files[@]}")
 
+    SOURCE_FILES_ARRAY=("${ordered[@]}")
     # SOURCE_FILES as a newline-separated list.
     SOURCE_FILES=$(printf "%s\n" "${ordered[@]}")
 
@@ -229,24 +232,28 @@ function get_source_files {
     return 0
 }
 
-# Take SOURCE_FILES and write at $1 file
+function write_response_file_entry {
+	local file_name=${1//\\/\\\\}
+	file_name=${file_name//\"/\\\"}
+	printf '"%s"\n' "$file_name"
+}
+
+# Write SOURCE_FILES_ARRAY to the file named by $1.
+# If $2 is non-empty, write raw file names; otherwise, use write_response_file_entry.
+# $1: output file
+# $2: optional flag to indicate raw writing
 function generate_file_of_files {
-	if [ -f "$1" ] ; then
-		rm "$1"
-	fi
+	rm -f -- "$1"
 	touch "$1"
 	local file_name
-	local SIFS=$IFS
-	IFS=$'\n'
-	for file_name in $SOURCE_FILES
+	for file_name in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		if [ "$2" == "" ] ; then
-			echo "\"$file_name\"" >> "$1"
+			write_response_file_entry "$file_name" >> "$1"
 		else
-			echo "$file_name" >> "$1"
+			printf '%s\n' "$file_name" >> "$1"
 		fi
 	done
-	IFS=$SIFS
 }
 
 # Set FIRST_SOURCE_FILE to the first VPL_SUBFILE# with extension in parameters $@
@@ -322,13 +329,10 @@ function compile_typescript {
 		return 0
 	fi
 	get_source_files ts NOERROR
-	SAVEIFS=$IFS
-	IFS=$'\n'
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		tsc "$FILENAME" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
 	done
-	IFS=$SAVEIFS
 }
 
 function compile_scss {
@@ -337,13 +341,10 @@ function compile_scss {
 		return 0
 	fi
 	get_source_files scss NOERROR
-	SAVEIFS=$IFS
-	IFS=$'\n'
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		sass "$FILENAME"
 	done
-	IFS=$SAVEIFS
 }
 
 function remove_vpl_executable_files {
@@ -356,9 +357,7 @@ function remove_vpl_executable_files {
 }
 #Decode BASE64 files
 get_source_files b64
-SAVEIFS=$IFS
-IFS=$'\n'
-for FILENAME in $SOURCE_FILES
+for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 do
 	if [ -f "$FILENAME" ] ; then
 		BINARY=$(echo "$FILENAME" | sed -r "s/\.b64$//")
@@ -368,6 +367,7 @@ do
 	fi
 done
 SOURCE_FILES=""
+SOURCE_FILES_ARRAY=()
 if [ -x pre_vpl_run.sh ] ; then
 	#Security Check: pre_vpl_run.sh was submitted by a student?
 	VPL_NS=true
@@ -389,4 +389,3 @@ if [ -x pre_vpl_run.sh ] ; then
 		rm -f pre_vpl_run.sh
 	fi
 fi
-IFS=$SAVEIFS

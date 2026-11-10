@@ -14,7 +14,7 @@ if [ "$1" == "version" ] ; then
 	get_program_version unknown
 fi
 get_source_files jar
-for JARFILE in $SOURCE_FILES
+for JARFILE in "${SOURCE_FILES_ARRAY[@]}"
 do
 	CLASSPATH=$CLASSPATH:$JARFILE
 done
@@ -23,9 +23,9 @@ export CLASSPATH
 get_first_source_file java
 MAINFILE=$FIRST_SOURCE_FILE
 
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
-     egrep "void[ \t]+main[ \t]*\(" $FILENAME &> /dev/null
+     egrep "void[ \t]+main[ \t]*\(" "$FILENAME" &> /dev/null
      if [ "$?" -eq "0" ]    ; then
          MAINFILE=$FILENAME
          break
@@ -34,9 +34,6 @@ done
 cat common_script.sh > vplexecution
 check_program x-terminal-emulator xterm
 
-cat >>vplexecution <<FIN
-jgrasp $MAINFILE
-wait_end jgrasp
-FIN
+printf 'jgrasp %q\nwait_end jgrasp\n' "$MAINFILE" >> vplexecution
 chmod +x vplexecution
 mv vplexecution vpl_wexecution

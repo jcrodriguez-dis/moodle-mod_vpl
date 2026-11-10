@@ -8,21 +8,23 @@
 # @vpl_script_description Get the version of each compiler/interpreter available in the execution server
 COMMON_SCRIPT_SAVED=.common_script.sav
 cp common_script.sh $COMMON_SCRIPT_SAVED
-cat common_script.sh > all_execute
-. common_script.sh
+cp common_script.sh all_execute
+source common_script.sh
 ERRORSREPORT=.vpl_error_report.txt
 #Remove student files
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
-	rm "$FILENAME" &>/dev/null
+	rm -f -- "$FILENAME"
 done
 
 touch $ERRORSREPORT
-echo "echo \"<|--\"" >> all_execute
-echo "echo \"-System information\"" >> all_execute
-echo "cat /proc/version" >> all_execute
-echo "grep MemTotal /proc/meminfo" >> all_execute
-echo "cat /proc/partitions" >> all_execute
+(
+	echo "echo \"<|--\""
+	echo "echo \"-System information\""
+	echo "cat /proc/version"
+	echo "grep MemTotal /proc/meminfo"
+	echo "cat /proc/partitions"
+) >> all_execute
 FILES="*_run.sh *_debug.sh"
 rm vpl_evaluate.cpp
 for RUNSCRIPT in $FILES

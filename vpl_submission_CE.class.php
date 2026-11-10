@@ -685,10 +685,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
     }
 
     /**
-     * Return environment variables for VPL_SUBFILES.
+     * Return submitted filenames as individual variables, a legacy list and a Bash array.
      *
      * @param array $filelist
-     * @return string bash code to generate VPL_SUBFILE vars.
+     * @return string Bash code defining VPL_SUBFILE#, VPL_SUBFILES and VPL_SUBFILES_ARRAY.
      */
     public static function get_bash_export_for_subfiles($filelist) {
         $bashcode = '';
@@ -700,6 +700,7 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
             $num++;
         }
         $bashcode .= vpl_bash_export('VPL_SUBFILES', $filenames);
+        $bashcode .= vpl_bash_export('VPL_SUBFILES_ARRAY', $filelist);
         return $bashcode;
     }
 

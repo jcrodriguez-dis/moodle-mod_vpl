@@ -135,7 +135,7 @@ function copy_configuration {
 			fi
 		done
 	)
-	rm "$1/vpl_test_evaluate.sh"
+	rm -f -- "$1/vpl_test_evaluate.sh"
 	[[ -s "$1/.vpl_localenvironment.sh" ]] && cat "$1/.vpl_localenvironment.sh" >> "$envfile"
 	[ ! -f "$envfile" ] && echo "#!/bin/bash" > "$envfile"
 	[ -n "$variation" ] && echo "export VPL_VARIATION=\"$variation\"" >> "$envfile"
@@ -190,7 +190,7 @@ function compile_solutions_tests {
 	for solution in $solutions ; do
 		if [ ! -d "$solution" ] ; then
 			add_error "$bug_symbol Found a file instead of a solution directory ($solution)."
-			rm "$solution"
+			rm -f -- "$solution"
 			continue
 		fi
 		if [[ $solution =~ $directory_format ]] ; then

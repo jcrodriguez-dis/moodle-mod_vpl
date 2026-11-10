@@ -9,10 +9,10 @@
 
 ROOT="$(pwd)"
 ALL_EXECUTE="$ROOT/all_execute"
-. common_script.sh
+source common_script.sh
 #Remove student files
-for FILENAME in $VPL_SUBFILES ; do
-	rm "$FILENAME" &>/dev/null
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}" ; do
+	rm -f -- "$FILENAME"
 done
 
 cat common_script.sh > "$ALL_EXECUTE"
@@ -30,11 +30,17 @@ do
 	mv $HELLOSCRIPT $LANGUAGE
 	mv $RUNSCRIPT $LANGUAGE
 	cd $LANGUAGE
-	. $HELLOSCRIPT &>.curerror
-	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
-	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
+	source $HELLOSCRIPT &>.curerror
+	(
+		echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\""
+		echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\""
+		printf 'VPL_SUBFILES_ARRAY=(%q)\n' "$VPL_SUBFILE0"
+		if [ -n "$VPL_SUBFILE1" ] ; then
+			printf 'VPL_SUBFILES_ARRAY+=(%q)\n' "$VPL_SUBFILE1"
+		fi
+		echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\""
+		echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\""
+	) >> common_script.sh
 	export VPL_RUN_MODE=0
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_execution ] ; then

@@ -17,16 +17,13 @@ if [ "$1" == "version" ] ; then
 fi
 
 get_source_files php NOERROR
-SIFS=$IFS
-IFS=$'\n'
-for file_name in $SOURCE_FILES
+for file_name in "${SOURCE_FILES_ARRAY[@]}"
 do
 	$PHP -l "$file_name" > /dev/null
 done
 # Use PHP Built-in web server if file index.php exists or if run mode is 4 (web execution)
 # or run mode is not 2 (text mode)
 if [[ ( -f "index.php" || "$VPL_RUN_MODE" == "4" ) && "$VPL_RUN_MODE" != "2" ]] ; then
-    IFS=$SIFS
     compile_typescript
     compile_scss
     PHPCONFIGFILE=$($PHP -i 2>/dev/null | grep "Loaded Configuration File" | sed 's/^[^\/]*//' )
@@ -85,6 +82,6 @@ END_OF_SCRIPT
 else
 	get_first_source_file php
     cat common_script.sh > vpl_execution
-    echo "$PHP -f "\"$FIRST_SOURCE_FILE\"" \$@" >>vpl_execution
+    printf '%q -f %q "$@"\n' "$PHP" "$FIRST_SOURCE_FILE" >> vpl_execution
     chmod +x vpl_execution
 fi

@@ -11,18 +11,20 @@
 
 function get_project {
 	get_source_files $1 NOERROR
-	if [ "$SOURCE_FILES" == "" ] ; then
+	if [ "${#SOURCE_FILES_ARRAY[@]}" -eq 0 ] ; then
 		local DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
 		get_source_files fs
 		# IMPORTANT: Use your own .fsproj
 		local FILES_CONF=
 		local file_name=
-		local SIFS=$IFS
-		IFS=$'\n'
-		for file_name in $SOURCE_FILES ; do
-			FILES_CONF=$(echo "        <Compile Include=\"$file_name\" />"; echo "$FILES_CONF";)
+		for file_name in "${SOURCE_FILES_ARRAY[@]}" ; do
+			file_name=${file_name//&/\&amp;}
+			file_name=${file_name//</\&lt;}
+			file_name=${file_name//>/\&gt;}
+			file_name=${file_name//\"/\&quot;}
+			file_name=${file_name//\'/\&apos;}
+			FILES_CONF=$(printf '        <Compile Include="%s" />\n%s\n' "$file_name" "$FILES_CONF")
 		done
-		IFS=$SIFS
 		local config_filename=default.$1
 		cat >> $config_filename << END_CONFIG
 <Project Sdk="Microsoft.NET.Sdk">
@@ -37,9 +39,7 @@ END_CONFIG
 	get_source_files $1
 	PROJECT_FILENAME=""
 	local file_name
-	local SIFS=$IFS
-	IFS=$'\n'
-	for file_name in $SOURCE_FILES
+	for file_name in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		if [ "$PROJECT_FILENAME" == "" ] ; then
 			PROJECT_FILENAME="$file_name"
@@ -48,7 +48,6 @@ END_CONFIG
 			break
 		fi
 	done
-	IFS=$SIFS
 	PROJECT_DIRECTORY=$(dirname "$PROJECT_FILENAME")
 	local filename_with_extension=$(basename "$PROJECT_FILENAME")
 	PROJECT_NAME="${filename_with_extension%.*}"
@@ -89,7 +88,7 @@ if [ "$?" == "0" ] ; then
 			echo "export DOTNET_RUNNING_IN_CONTAINER=1" 
 			echo "export DOTNET_EnableWriteXorExecute=0"
 			echo "export DOTNET_NOLOGO=1"
-			echo "./\"$EXE_FILENAME\""
+			printf '%q\n' "./$EXE_FILENAME"
 		} >  vpl_execution
 		chmod +x vpl_execution
 	else

@@ -578,7 +578,21 @@ final class submission_test extends base_fixture {
 
         $this->assertStringContainsString("export VPL_SUBFILE0='main.c'\n", $content);
         $this->assertStringContainsString("export VPL_SUBFILE1='helper.h'\n", $content);
-        $this->assertStringContainsString("export VPL_SUBFILES=\"main.c\nhelper.h\n\"\n", $content);
+        $this->assertStringContainsString("export VPL_SUBFILES='main.c\nhelper.h\n'\n", $content);
+        $this->assertStringContainsString("export VPL_SUBFILES_ARRAY=( 'main.c' 'helper.h' )\n", $content);
+
+        $content = mod_vpl_submission_CE::get_bash_export_for_subfiles([
+            'folder with spaces/main.c',
+            "student's helper.h",
+            'literal[1]*.c',
+        ]);
+        $this->assertStringContainsString(
+            "export VPL_SUBFILES_ARRAY=( 'folder with spaces/main.c' 'student'\\''s helper.h' 'literal[1]*.c' )\n",
+            $content
+        );
+
+        $content = mod_vpl_submission_CE::get_bash_export_for_subfiles([]);
+        $this->assertStringContainsString("export VPL_SUBFILES_ARRAY=( )\n", $content);
     }
 
     /**

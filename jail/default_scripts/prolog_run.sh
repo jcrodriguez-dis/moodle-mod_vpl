@@ -16,9 +16,9 @@ get_first_source_file pro pl
 swipl -q -s "$FIRST_SOURCE_FILE" -t halt 1> /dev/null < /dev/null
 cat common_script.sh > vpl_execution
 if [ "$1" == "batch" ] ; then
-	echo "swipl -q -s \"$FIRST_SOURCE_FILE\" -t vpl_hello" >>vpl_execution
+	printf 'swipl -q -s %q -t vpl_hello\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 else
-	echo "swipl -q -s \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+	printf 'swipl -q -s %q\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 fi
 
 chmod +x vpl_execution

@@ -10,7 +10,7 @@ function getClassName {
 	local CLASSNAME=$(echo "$1" |sed 's/\//\./g')
 	#remove file extension .javgroovya
 	CLASSNAME=$(basename "$CLASSNAME" .groovy)
-	echo $CLASSNAME
+	printf '%s\n' "$CLASSNAME"
 }
 function getClassFile {
 	#remove file extension .groovy
@@ -52,7 +52,7 @@ if [ -f $JUNIT4 ] ; then
 	CLASSPATH=$CLASSPATH:$JUNIT4
 fi
 get_source_files jar NOERROR
-for JARFILE in $SOURCE_FILES
+for JARFILE in "${SOURCE_FILES_ARRAY[@]}"
 do
 	CLASSPATH=$CLASSPATH:$JARFILE
 done
@@ -61,14 +61,14 @@ export CLASSPATH
 get_source_files groovy
 # compile all .groovy files
 
-groovyc $2 $SOURCE_FILES
+groovyc $2 "${SOURCE_FILES_ARRAY[@]}"
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
 # Search main procedure class
 MAINCLASS=
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
 	hasMain "$FILENAME"
 	if [ "$?" -eq "0" ]	; then
@@ -77,7 +77,7 @@ do
 	fi
 done
 if [ "$MAINCLASS" = "" ] ; then
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		hasMain "$FILENAME"
 		if [ "$?" -eq "0" ]	; then
@@ -88,8 +88,8 @@ if [ "$MAINCLASS" = "" ] ; then
 fi
 if [ ! "$MAINCLASS" = "" ] ; then
 	cat common_script.sh > vpl_execution
-	echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
-	echo "groovy $MAINCLASS \$@ $FILTER" >> vpl_execution
+	printf 'export CLASSPATH=%q\n' "$CLASSPATH" >> vpl_execution
+	printf 'groovy %q "$@" %s\n' "$MAINCLASS" "$FILTER" >> vpl_execution
 	chmod +x vpl_execution
 else
 	echo "main method not found" >> vpl_execution

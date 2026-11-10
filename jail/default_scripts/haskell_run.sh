@@ -22,7 +22,7 @@ fi
 get_first_source_file hs lhs
 if [ "$PROGRAM" == "hugs" ] ; then
 	cat common_script.sh > vpl_execution
-	echo "runhugs +98 \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+	printf 'runhugs +98 %q "$@"\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 	chmod +x vpl_execution
 else
 	$PROGRAMPATH -v0 -o vpl_execution "$FIRST_SOURCE_FILE"

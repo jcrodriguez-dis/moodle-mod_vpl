@@ -23,4 +23,5 @@ END_OF_FILE
 export VPL_SUBFILE0=Groovy_hello.groovy
 export VPL_SUBFILE1=groovy_message/Show.groovy
 export VPL_SUBFILES="Groovy_hello.groovy groovy_message/Show.groovy"
+VPL_SUBFILES_ARRAY=("$VPL_SUBFILE0" "$VPL_SUBFILE1")
 export INPUT_TEXT="Hello from the Groovy language!"

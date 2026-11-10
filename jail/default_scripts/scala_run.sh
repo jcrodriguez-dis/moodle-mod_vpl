@@ -27,13 +27,11 @@ fi
 get_first_source_file scala
 APP=${FIRST_SOURCE_FILE%.*}
 cat common_script.sh > vpl_execution
-echo "scala -nocompdaemon $APP \$@" >> vpl_execution
+printf 'scala -nocompdaemon %q "$@"\n' "$APP" >> vpl_execution
 
 chmod +x vpl_execution
-SIFS=$IFS
-IFS=$'\n'
 if [ ! -f vpl_evaluate.sh ] ; then
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		grep -E "scala\.swing\.| swing\.|javax.swing" "$FILENAME" &> /dev/null
 		if [ "$?" -eq "0" ]	; then
@@ -42,5 +40,4 @@ if [ ! -f vpl_evaluate.sh ] ; then
 		fi
 	done
 fi
-IFS=$SIFS
 apply_run_mode

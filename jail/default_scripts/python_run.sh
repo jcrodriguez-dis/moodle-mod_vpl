@@ -15,11 +15,10 @@ fi
 get_first_source_file py
 cat common_script.sh > vpl_execution
 echo "export TERM=ansi" >>vpl_execution
-echo "$PROGRAM \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+printf '%q %q "$@"\n' "$PROGRAM" "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 get_source_files py
-IFS=$'\n'
-for file_name in $SOURCE_FILES
+for file_name in "${SOURCE_FILES_ARRAY[@]}"
 do
 	grep -i "Tkinter" "$file_name" &> /dev/null
 	if [ "$?" -eq "0" ]	; then
@@ -27,5 +26,4 @@ do
 		break
 	fi
 done
-IFS=$SIFS
 apply_run_mode

@@ -9,7 +9,6 @@
 #load common script and check programs
 
 VPL_ERROR_FILE=.vpl_execution.error
-VPL_SOURCE_FILES=.vpl_source_files
 # Function to clean fortify source messages
 function clean_fortify_source {
 	grep _FORTIFY_SOURCE $VPL_ERROR_FILE &> /dev/null
@@ -26,22 +25,16 @@ if [ "$1" == "version" ] ; then
 	get_program_version --version
 fi 
 get_source_files cbl cob
-# Generate file with source files
-generate_file_of_files $VPL_SOURCE_FILES NOQUOTE
 # Compile
 
-VPL_SIFS=$IFS
-IFS=$'\n'
-for VPL_file_name in $SOURCE_FILES ; do
+for VPL_file_name in "${SOURCE_FILES_ARRAY[@]}" ; do
 	cobc -c $2 "$VPL_file_name" &> $VPL_ERROR_FILE
 	[ "$?" != "0" ] && VPL_COMPILATION_ERROR=1
 	clean_fortify_source
 done
-IFS=$VPL_SIFS
-cobc -x -o vpl_execution $2 $(cat $VPL_SOURCE_FILES) &> $VPL_ERROR_FILE
+cobc -x -o vpl_execution $2 "${SOURCE_FILES_ARRAY[@]}" &> $VPL_ERROR_FILE
 if [ "$?" != "0" -a "$VPL_COMPILATION_ERROR" == "" ] ; then
 	clean_fortify_source
 fi
 rm -f $VPL_ERROR_FILE
-rm -f $VPL_SOURCE_FILES
 apply_run_mode

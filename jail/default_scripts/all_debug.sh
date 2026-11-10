@@ -10,12 +10,12 @@
 COMMON_SCRIPT_SAVED=.common_script.sav
 cp common_script.sh $COMMON_SCRIPT_SAVED
 cat common_script.sh > all_execute
-. common_script.sh
+source common_script.sh
 
 #Remove student files
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
-	rm "$FILENAME" &>/dev/null
+	rm -f -- "$FILENAME"
 done
 
 NG=0
@@ -36,7 +36,7 @@ do
 	echo -n "$LANGUAGE:"
 	VPL_SUBFILE0=
 	VPL_SUBFILE1=
-	rm .curerror &>/dev/null
+	rm -f .curerror
 	export VPL_RUN_MODE=0
 	. $HELLOSCRIPT gui &>.curerror
 	if [ "$VPL_SUBFILE0" == "" ] ; then
@@ -44,11 +44,18 @@ do
 		continue
 	fi
 	cp $COMMON_SCRIPT_SAVED common_script.sh
-	echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
-	echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\"" >> common_script.sh
-	echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\"" >> common_script.sh
-	rm vpl_wexecution vpl_execution vpl_webexecution 2> /dev/null
+	(
+		echo "export VPL_SUBFILE0=\"$VPL_SUBFILE0\""
+		echo "export VPL_SUBFILE1=\"$VPL_SUBFILE1\""
+		printf 'VPL_SUBFILES_ARRAY=(%q)\n' "$VPL_SUBFILE0"
+		if [ -n "$VPL_SUBFILE1" ] ; then
+			printf 'VPL_SUBFILES_ARRAY+=(%q)\n' "$VPL_SUBFILE1"
+		fi
+		echo "export SOURCE_FILE0=\"$VPL_SUBFILE0\""
+		echo "export SOURCE_FILE1=\"$VPL_SUBFILE1\""
+	) >> common_script.sh
+
+	rm -f vpl_wexecution vpl_execution vpl_webexecution
 	eval ./$RUNSCRIPT batch &>>.curerror
 	if [ -f vpl_wexecution ] ; then
 		let "NG=NG+1"

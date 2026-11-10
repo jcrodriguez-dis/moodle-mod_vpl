@@ -14,6 +14,6 @@ if [ "$1" == "version" ] ; then
 fi 
 get_first_source_file jl
 cat common_script.sh > vpl_execution
-echo "julia $FIRST_SOURCE_FILE" >> vpl_execution
+printf 'julia %q\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode

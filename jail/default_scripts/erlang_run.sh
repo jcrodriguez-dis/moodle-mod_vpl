@@ -17,9 +17,9 @@ get_first_source_file erl
 erlc "$FIRST_SOURCE_FILE" < /dev/null
 cat common_script.sh > vpl_execution
 if [ "$1" == "batch" ] ; then
-	echo "escript \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+	printf 'escript %q\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 else
-	echo "escript \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+	printf 'escript %q\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 	echo "erl" >>vpl_execution
 fi
 

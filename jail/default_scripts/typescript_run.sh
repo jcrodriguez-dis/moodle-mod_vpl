@@ -15,17 +15,14 @@ fi
 check_program node nodejs
 export TERM=dumb
 get_source_files ts
-SAVEIFS=$IFS
-IFS=$'\n'
-for FILENAME in $SOURCE_FILES
+for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 do
 	tsc "$FILENAME" | sed 's/\x1b\[[0-9;]*[a-zA-Z]//g'
 done
-IFS=$SAVEIFS
 
 get_first_source_file ts
 FIRST_SOURCE_FILE="${FIRST_SOURCE_FILE%.*}.js"
 cat common_script.sh > vpl_execution
-echo "$PROGRAM \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
+printf '%q %q "$@"\n' "$PROGRAM" "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode

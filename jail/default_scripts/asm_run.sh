@@ -20,11 +20,9 @@ if [ "$?" == "0" ] ; then
 fi
 get_source_files asm
 #compile
-SIFS=$IFS
-IFS=$'\n'
-rm .vpl_object_files 2> /dev/null
+rm -f .vpl_object_files
 touch .vpl_object_files
-for FILENAME in $SOURCE_FILES
+for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 do
 	BITS=$PBITS
 	grep -i "^\s*bits 64" "$FILENAME" &> /dev/null
@@ -36,10 +34,8 @@ do
 		BITS=32
 	fi
 	nasm -f "elf$BITS" "$FILENAME"
-	echo "\"${FILENAME/%.asm}.o\"" >> .vpl_object_files
+	write_response_file_entry "${FILENAME%.asm}.o" >> .vpl_object_files
 done
-IFS=$'\n'
 ld -o vpl_execution @.vpl_object_files
 rm .vpl_object_files
-IFS=$SIFS
 apply_run_mode

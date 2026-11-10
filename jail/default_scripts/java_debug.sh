@@ -91,7 +91,7 @@ for HAMCREST in $HAMCREST_CANDIDATES; do
 	fi
 done
 get_source_files jar NOERROR
-for JARFILE in $SOURCE_FILES
+for JARFILE in "${SOURCE_FILES_ARRAY[@]}"
 do
 	[ "$VPL_DEBUG" != "" ] && echo "Adding JAR to CLASSPATH: $JARFILE"
 	CLASSPATH=$CLASSPATH:$JARFILE
@@ -101,14 +101,14 @@ export CLASSPATH
 get_source_files java
 # compile all .java files
 
-javac -Xlint:deprecation $2 $SOURCE_FILES
+javac -Xlint:deprecation $2 "${SOURCE_FILES_ARRAY[@]}"
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
 # Search main procedure class
 MAINCLASS=
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
 	if hasMain "$FILENAME"; then
 		MAINCLASS=$(getClassName "$FILENAME")
@@ -117,7 +117,7 @@ do
 	fi
 done
 if [ "$MAINCLASS" = "" ] ; then
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		if hasMain "$FILENAME"; then
 			MAINCLASS=$(getClassName "$FILENAME")
@@ -129,7 +129,7 @@ fi
 # If not main procedure then search for junit4 test classes
 if [ "$MAINCLASS" = "" ] ; then
 	TESTCLASS=
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		CLASSFILE=$(getClassFile "$FILENAME")
 		if [ ! -f "$CLASSFILE" ] ; then
@@ -159,15 +159,15 @@ if [ "$MAINCLASS" = "" ] ; then
 	MAINCLASS=$TESTCLASS
 fi
 cat vpl_environment.sh > vpl_execution
-echo "export CLASSPATH=$CLASSPATH:$HOME" >> vpl_execution
+printf 'export CLASSPATH=%q\n' "$CLASSPATH:$HOME" >> vpl_execution
 chmod +x vpl_execution
 # is jgrasp installed ?
 if [ "$(command -v jgrasp)" != "" ] ; then
-	echo "jgrasp $MAINCLASS.java" >> vpl_execution
+	printf 'jgrasp %q\n' "$MAINCLASS.java" >> vpl_execution
 	echo "wait_end jgrasp" >> vpl_execution
 	mv vpl_execution vpl_wexecution
 elif [ "$(command -v ddd)" != "" ] ; then
-	echo "ddd --jdb --debugger \"jdb\" $MAINCLASS" >> vpl_execution
+	printf 'ddd --jdb --debugger "jdb" %q\n' "$MAINCLASS" >> vpl_execution
 	mkdir .ddd &>/dev/null
 	mkdir .ddd/sessions &>/dev/null
 	mkdir .ddd/themes &>/dev/null
@@ -182,16 +182,16 @@ Ddd*saveHistoryOnExit: off
 END_OF_FILE
 	mv vpl_execution vpl_wexecution
 else
-	echo "jdb $MAINCLASS" >> vpl_execution
+	printf 'jdb %q\n' "$MAINCLASS" >> vpl_execution
 	REGEX_IS_JAVAX="javax/swing/(JFrame|JDialog|JOptionPane|JApplet)"
 	REGEX_IS_JAVAFX="javafx/application/(Application|Scene)"
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		CLASSFILE=$(getClassFile "$FILENAME")
 		if [ ! -f "$CLASSFILE" ] ; then
 			continue
 		fi
-		if grep -E "($REGEX_IS_JAVAX|$REGEX_IS_JAVAFX)" $CLASSFILE &> /dev/null; then
+		if grep -E "($REGEX_IS_JAVAX|$REGEX_IS_JAVAFX)" "$CLASSFILE" &> /dev/null; then
 			check_program x-terminal-emulator xterm
 			cat vpl_environment.sh > vpl_wexecution
 			chmod +x vpl_wexecution

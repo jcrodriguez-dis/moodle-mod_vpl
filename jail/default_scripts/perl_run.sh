@@ -13,17 +13,15 @@ if [ "$1" == "version" ] ; then
 	get_program_version -v 5
 fi
 get_source_files perl prl pl pm
-IFS=$'\n'
-for file_name in $SOURCE_FILES
+for file_name in "${SOURCE_FILES_ARRAY[@]}"
 do
 	perl -c "$file_name" 2>> .vpl_perl_errors
 done
-IFS=$SIFS
 # Remove OKs compilations
 grep -E -v "OK$" .vpl_perl_errors
 get_first_source_file perl prl
 cat common_script.sh > vpl_execution
-echo "perl -w \"$FIRST_SOURCE_FILE\" \$@" >>vpl_execution
+printf 'perl -w %q "$@"\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 rm -f .vpl_perl_errors
 apply_run_mode

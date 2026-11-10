@@ -86,7 +86,7 @@ for HAMCREST in $HAMCREST_CANDIDATES; do
 	fi
 done
 get_source_files jar NOERROR
-for JARFILE in $SOURCE_FILES
+for JARFILE in "${SOURCE_FILES_ARRAY[@]}"
 do
 	[ "$VPL_DEBUG" != "" ] && echo "Adding JAR to CLASSPATH: $JARFILE"
 	CLASSPATH=$CLASSPATH:$JARFILE
@@ -96,14 +96,14 @@ export CLASSPATH
 get_source_files java
 # compile all .java files
 
-javac -Xlint:deprecation $2 $SOURCE_FILES
+javac -Xlint:deprecation $2 "${SOURCE_FILES_ARRAY[@]}"
 if [ "$?" -ne "0" ] ; then
 	echo "Not compiled"
  	exit 0
 fi
 # Search main procedure class
 MAINCLASS=
-for FILENAME in $VPL_SUBFILES
+for FILENAME in "${VPL_SUBFILES_ARRAY[@]}"
 do
 	if hasMain "$FILENAME"; then
 		MAINCLASS=$(getClassName "$FILENAME")
@@ -112,7 +112,7 @@ do
 	fi
 done
 if [ "$MAINCLASS" = "" ] ; then
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		if hasMain "$FILENAME"; then
 			MAINCLASS=$(getClassName "$FILENAME")
@@ -124,7 +124,7 @@ fi
 # If not main procedure then search for junit4 test classes
 if [ "$MAINCLASS" = "" ] ; then
 	TESTCLASS=
-	for FILENAME in $SOURCE_FILES
+	for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 	do
 		CLASSFILE=$(getClassFile "$FILENAME")
 		if [ ! -f "$CLASSFILE" ] ; then
@@ -151,23 +151,23 @@ if [ "$MAINCLASS" = "" ] ; then
 fi
 
 cat vpl_environment.sh > vpl_execution
-echo "export CLASSPATH=$CLASSPATH" >> vpl_execution
+printf 'export CLASSPATH=%q\n' "$CLASSPATH" >> vpl_execution
 
 if [ ! "$MAINCLASS" = "" ] ; then
-	echo "java -enableassertions $MAINCLASS \$@" >> vpl_execution
+	printf 'java -enableassertions %q "$@"\n' "$MAINCLASS" >> vpl_execution
 else
-	echo "java org.junit.runner.JUnitCore $TESTCLASS \$@" >> vpl_execution
+	printf 'java org.junit.runner.JUnitCore %q "$@"\n' "$TESTCLASS" >> vpl_execution
 fi
 chmod +x vpl_execution
 REGEX_IS_JAVAX="javax/swing/(JFrame|JDialog|JOptionPane|JApplet)"
 REGEX_IS_JAVAFX="javafx/application/(Application|Scene)"
-for FILENAME in $SOURCE_FILES
+for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 do
 	CLASSFILE=$(getClassFile "$FILENAME")
 	if [ ! -f "$CLASSFILE" ] ; then
 		continue
 	fi
-	if grep -E "($REGEX_IS_JAVAX|$REGEX_IS_JAVAFX)" $CLASSFILE &> /dev/null; then
+	if grep -E "($REGEX_IS_JAVAX|$REGEX_IS_JAVAFX)" "$CLASSFILE" &> /dev/null; then
 		mv vpl_execution vpl_wexecution
 		break
 	fi

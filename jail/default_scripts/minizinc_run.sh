@@ -29,9 +29,9 @@ if [[ "$VPL_HELLO_MODE" == "yes" ]] ; then
 fi
 echo "#!/bin/bash" > vpl_execution
 if [ "$DATAFILE" == "" ] ; then
-	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\" $HELLO_FILTER" >> vpl_execution
+	printf '%q %s %q %s\n' "$PROGRAM" "$SOLVER" "$FIRST_SOURCE_FILE" "$HELLO_FILTER" >> vpl_execution
 else
-	echo "$PROGRAM $SOLVER \"$FIRST_SOURCE_FILE\" \"$DATAFILE\"" >> vpl_execution
+	printf '%q %s %q %q\n' "$PROGRAM" "$SOLVER" "$FIRST_SOURCE_FILE" "$DATAFILE" >> vpl_execution
 fi
 chmod +x vpl_execution
 apply_run_mode

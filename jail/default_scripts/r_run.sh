@@ -17,7 +17,7 @@ fi
 get_first_source_file r R
 
 cat common_script.sh > vpl_execution
-echo "Rscript --vanilla \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+printf 'Rscript --vanilla %q\n' "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 
 apply_run_mode
@@ -35,4 +35,3 @@ apply_run_mode
 #       system("nohup xdg-open filename.png &")
 #       or
 #       system("nohup xdg-open filename.png")
-

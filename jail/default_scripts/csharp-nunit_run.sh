@@ -12,7 +12,7 @@
 
 function get_project {
     get_source_files $1 NOERROR
-    if [ "$SOURCE_FILES" == "" ] ; then
+    if [ "${#SOURCE_FILES_ARRAY[@]}" -eq 0 ] ; then
         DOTNET_VERSION=$(dotnet --version | cut -d. -f1,2)
 
         # Check if NUnit is available and get the version
@@ -45,9 +45,7 @@ END_CONFIG
     get_source_files $1
     PROJECT_FILENAME=""
     local file_name
-    local SIFS=$IFS
-    IFS=$'\n'
-    for file_name in $SOURCE_FILES
+    for file_name in "${SOURCE_FILES_ARRAY[@]}"
     do
         if [ "$PROJECT_FILENAME" == "" ] ; then
             PROJECT_FILENAME="$file_name"
@@ -56,7 +54,6 @@ END_CONFIG
             break
         fi
     done
-    IFS=$SIFS
     PROJECT_DIRECTORY=$(dirname "$PROJECT_FILENAME")
     local filename_with_extension=$(basename "$PROJECT_FILENAME")
     PROJECT_NAME="${filename_with_extension%.*}"
@@ -114,10 +111,10 @@ if [ "$PROGRAM" == "dotnet" ] ; then
                 echo "export DOTNET_RUNNING_IN_CONTAINER=1" 
                 echo "export DOTNET_EnableWriteXorExecute=0"
                 echo "export DOTNET_NOLOGO=1"
-                echo "./\"$EXE_FILENAME\""
+                printf '%q\n' "./$EXE_FILENAME"
             } >  vpl_execution
             chmod +x vpl_execution
-            grep -E -q "System\.Windows\.Forms" $EXE_FILENAME*
+            grep -E -q "System\.Windows\.Forms" "$EXE_FILENAME"*
             if [ "$?" = "0" ] ; then
                 mv vpl_execution vpl_wexecution
             fi

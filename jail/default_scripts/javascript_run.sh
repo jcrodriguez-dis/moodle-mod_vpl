@@ -16,6 +16,6 @@ fi
 get_first_source_file js
 cat common_script.sh > vpl_execution
 [ "$(command -pv npm)" != "" ] && (echo "export NODE_PATH=$(npm root -g)" >> vpl_execution)
-echo "$PROGRAM \"$FIRST_SOURCE_FILE\" \$@" >> vpl_execution
+printf '%q %q "$@"\n' "$PROGRAM" "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode

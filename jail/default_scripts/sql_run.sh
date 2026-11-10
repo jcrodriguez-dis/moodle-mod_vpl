@@ -39,9 +39,7 @@ function vpl_sql_save_files {
 		fi
 		[ -f "$FILENAME" ] && mv "$FILENAME" "$FILENAME.vpl_save"
 		#Not moved => try remove
-		if [ -f "$FILENAME" ] ; then
-			rm "$FILENAME"
-		fi
+		rm -f -- "$FILENAME"
 	done
 }
 
@@ -72,7 +70,7 @@ function vpl_sql_add_files {
 			break
 		fi
 		if [ "${FILENAME##*.}" == "sql" ] ; then
-			echo "sqlite3 $DBFILE < \"$FILENAME\"" >> vpl_execution
+			printf 'sqlite3 %q < %q\n' "$DBFILE" "$FILENAME" >> vpl_execution
 		fi
 	done
 }
@@ -84,15 +82,12 @@ vpl_sql_save_files
 # add sh files to avoid zero files problem
 get_source_files sql sh
 
-SAVEIFS=$IFS
-IFS=$'\n'
-for FILENAME in $SOURCE_FILES
+for FILENAME in "${SOURCE_FILES_ARRAY[@]}"
 do
 	if [ "${FILENAME##*.}" == "sql" ] ; then
 		sqlite3 -batch $DBFILE < "$FILENAME"
 	fi
 done
-IFS=$SAVEIFS
 
 #restore submission files
 vpl_sql_restore_files

@@ -46,4 +46,5 @@ fi
 export VPL_SUBFILE0=Vpl_hello.java
 export VPL_SUBFILE1=message/Hello.java
 export VPL_SUBFILES="Vpl_hello.java message/Hello.java"
+VPL_SUBFILES_ARRAY=("$VPL_SUBFILE0" "$VPL_SUBFILE1")
 export INPUT_TEXT="Hello from the Java language!"

@@ -25,8 +25,8 @@ export TERM=dumb
 # Process request based on compiler detected
 if [ "$PROGRAM" == "ghdl" ] ; then
 	get_first_source_file vhdl vhd
-	for SOURCE_FILE in $SOURCE_FILES; do
-	    ghdl -c $SOURCE_FILE &> /dev/null
+	for SOURCE_FILE in "${SOURCE_FILES_ARRAY[@]}"; do
+	    ghdl -c "$SOURCE_FILE" &> /dev/null
 	    TOPENTITY="$(ghdl --find-top 2>/dev/null)"
     	if [ "$TOPENTITY" != "" ] ; then
 		SOURCE_FILE_TE=$SOURCE_FILE
@@ -40,8 +40,8 @@ if [ "$PROGRAM" == "ghdl" ] ; then
         echo "No top entity found using ghdl --find-top"
 		echo "Using first filename as top entity name: $TOPENTITY"
 	fi
-	for SOURCE_FILE in $SOURCE_FILES; do
-		ghdl -a $SOURCE_FILE
+	for SOURCE_FILE in "${SOURCE_FILES_ARRAY[@]}"; do
+		ghdl -a "$SOURCE_FILE"
 		if [ "$?" != "0" -a "$SOURCE_FILE" == "$SOURCE_FILE_TE" ] ; then
 			TOPENTITY=""
 		fi
@@ -64,16 +64,16 @@ if [ "$PROGRAM" == "ghdl" ] ; then
 		fi
 	fi
 else
-    gvhdl $SOURCE_FILES
+    gvhdl "${SOURCE_FILES_ARRAY[@]}"
     get_first_source_file vhdl vhd
     NAME=${FIRST_SOURCE_FILE%.*}
     if [ -f "$NAME" ] ; then
     	echo "#!/bin/bash" > vpl_execution
     	#interactive console
     	if [ "$1" != "batch" ] ; then
-    		echo "./$NAME -q" >> vpl_execution
+			printf '%q -q\n' "./$NAME" >> vpl_execution
     	else
-    		echo "./$NAME -q -cmd \"q\"" >> vpl_execution
+			printf '%q -q -cmd "q"\n' "./$NAME" >> vpl_execution
     	fi
     	chmod +x vpl_execution
     else

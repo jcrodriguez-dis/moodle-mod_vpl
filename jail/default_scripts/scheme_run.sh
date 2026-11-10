@@ -14,6 +14,6 @@ if [ "$1" == "version" ] ; then
 fi
 get_first_source_file scm s
 cat common_script.sh > vpl_execution
-echo "$PROGRAM -f \"$FIRST_SOURCE_FILE\"" >>vpl_execution
+printf '%q -f %q\n' "$PROGRAM" "$FIRST_SOURCE_FILE" >> vpl_execution
 chmod +x vpl_execution
 apply_run_mode
