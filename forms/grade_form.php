@@ -133,7 +133,7 @@ class mod_vpl_grade_form extends moodleform {
         if ($grade != 0) {
             if ($grade > 0) {
                 $buttonarray[] =& $mform->createElement('text', 'grade', '', 'size="6"');
-                $mform->setType('grade', PARAM_FLOAT);
+                $mform->setType('grade', PARAM_RAW_TRIMMED);
             } else {
                 $buttonarray[] =& $mform->createElement(
                     'select',
@@ -245,8 +245,7 @@ class mod_vpl_grade_form extends moodleform {
             'importlastgradedsub',
             get_string('importgrade', VPL),
             get_string('importfromlastgradedsub', VPL),
-            $prevsubgraded,
-            $gradinginstance
+            $prevsubgraded
         );
         self::add_import_from_submission_button(
             $mform,
@@ -255,13 +254,61 @@ class mod_vpl_grade_form extends moodleform {
             'importlastmgradedsub',
             '',
             get_string('importfromlastmgradedsub', VPL),
-            $prevsubmanuallygraded,
-            $gradinginstance
+            $prevsubmanuallygraded
         );
 
         $mform->addHelpButton('importlastgradedsub', 'importgrade', VPL);
 
         $PAGE->requires->js_call_amd('mod_vpl/gradeform', 'setup', [ $id ]);
+    }
+
+    /**
+     * Converts a typed number to a float accepting point and the decimal separator of the user's language.
+     *
+     * @param string $value Typed number.
+     * @return float|false The number or false if it is not a valid number.
+     */
+    protected static function parse_grade($value) {
+        $value = str_replace(' ', '', trim((string)$value));
+        $value = str_replace(get_string('decsep', 'langconfig'), '.', $value);
+        return is_numeric($value) ? (float)$value : false;
+    }
+
+    /**
+     * Returns the submitted data with the numeric grade normalized to a computer readable number.
+     *
+     * @return object|null
+     */
+    public function get_data() {
+        $data = parent::get_data();
+        if ($data !== null && $this->vpl->get_grade() > 0 && isset($data->grade)) {
+            $grade = self::parse_grade($data->grade);
+            if ($grade !== false) {
+                $data->grade = (string)$grade;
+            }
+        }
+        return $data;
+    }
+
+    /**
+     * Validates the numeric grade accepting point or the decimal separator of the user's language.
+     *
+     * @param array $data Submitted data.
+     * @param array $files Submitted files.
+     * @return array Errors indexed by element name.
+     */
+    public function validation($data, $files) {
+        $errors = parent::validation($data, $files);
+        $maxgrade = $this->vpl->get_grade();
+        if ($maxgrade > 0 && !isset($data['removegrade'])) {
+            $grade = isset($data['grade']) ? self::parse_grade($data['grade']) : false;
+            if ($grade === false) {
+                $errors['buttonar'] = get_string('err_numeric', 'form');
+            } else if ($grade < 0 || $grade > $maxgrade) {
+                $errors['buttonar'] = get_string('badgrade', 'grades');
+            }
+        }
+        return $errors;
     }
 
     /**
