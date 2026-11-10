@@ -1663,14 +1663,14 @@ class mod_vpl {
                 $warningmessage = '<b>' . get_string('activity_mode', VPL) . ': </b>';
                 $warningmessage .= get_string($strmode, VPL) . "<br>\n";
                 $warningmessage .= get_string($strmode . '_help', VPL);
-                $this->add_notice($warningmessage, 'warning');
+                $this->add_notice($warningmessage, 'warning', true);
                 $instance = $this->get_instance();
                 if ($this->is_example() && $instance->run == 0 && $instance->debug == 0) {
                     $warningmessage = '<b>' . get_string('notice') . ': </b><br>';
                     $strno = get_string('no');
                     $warningmessage .= $this->str_setting_with_icon('run', $strno, false, false);
                     $warningmessage .= ' ' . $this->str_setting_with_icon('debug', $strno, false, false);
-                    $this->add_notice($warningmessage, 'warning');
+                    $this->add_notice($warningmessage, 'warning', true);
                 }
             }
         }
