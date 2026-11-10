@@ -140,6 +140,9 @@ foreach ($ovpls as $ovpl) {
             $text = $OUTPUT->notification($multigroup, 'error') . $text;
         } else {
             $gradersid = array_keys($vpl->get_graders());
+            if (empty($gradersid)) {
+                $gradersid = [0];
+            }
             $ing = $DB->get_in_or_equal($gradersid);
             $select = '( not userid ' . $ing[0] . ' ) and vpl = ? and groupid = 0';
             $params = $ing[1];
