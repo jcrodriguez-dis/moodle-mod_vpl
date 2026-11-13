@@ -171,6 +171,12 @@ class preprocess {
             return;
         }
         $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+        try {
+            $submission = new \mod_vpl_submission($vpl, $subinstance, true);
+        } catch (\Exception $e) {
+            // If the submission cannot be loaded, e.g. due teacher has no access => skip processing.
+            return;
+        }
         // Get initial content files.
         $reqf = $vpl->get_required_fgm();
         $filelist = $reqf->getFileList();
@@ -183,7 +189,6 @@ class preprocess {
                 $toremove[$filename] = $sim;
             }
         }
-        $submission = new \mod_vpl_submission($vpl, $subinstance);
         $subf = $submission->get_submitted_fgm();
         $filelist = $subf->getFileList();
         foreach ($filelist as $filename) {
