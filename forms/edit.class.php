@@ -99,16 +99,13 @@ class mod_vpl_edit {
         return $files;
     }
     /**
-     * Checks the session key for validity
+     * Checks the session key that come in request data for validity
      *
      * @param mod_vpl $vpl VPL instance
-     * @param stdClass $data Data containing the session key
+     * @param stdClass $data Data request containing the session key
      * @throws \moodle_exception if the session key is invalid
      */
     public static function checksesskey($vpl, $data) {
-        if ($vpl->is_vpl_question_mode()) {
-            return;
-        }
         if (isset($data->sesskey) && confirm_sesskey($data->sesskey)) {
             return;
         }
@@ -356,13 +353,14 @@ class mod_vpl_edit {
 
     /**
      * Check and stop the direct runs that pass a limit for this user and vpl activity if any
-     * @param int $vplid
-     * @param int $userid
-     * @param int $maxrunning
+     * Stops the oldest direct run processes if the number of running tasks exceeds the limit.
+     * @param int $vplid VPL activity ID
+     * @param int $userid User ID of the user
+     * @param int $maxrunningtasks Maximum number of running direct run tasks allowed for this user and VPL activity
      */
-    public static function limit_directruns($vplid, $userid, $maxrunning) {
+    public static function limit_directruns($vplid, $userid, $maxrunningtasks) {
         $allprocesses = vpl_running_processes::get_directrun($userid);
-        if (count($allprocesses) >= $maxrunning) {
+        if (count($allprocesses) >= $maxrunningtasks) {
             // Sort the processes so that the oldest ones are first and the newest ones are last.
             // The processes that are not for this VPL activity are sorted first, so that they are stopped first.
             usort($allprocesses, function ($a, $b) use ($vplid) {
@@ -377,17 +375,17 @@ class mod_vpl_edit {
                 }
                 return $a->id <=> $b->id;
             });
-            $processestostop = array_slice($allprocesses, 0, count($allprocesses) - $maxrunning + 1);
+            $nprocessestostop = count($allprocesses) - $maxrunningtasks + 1;
+            $processestostop = array_slice($allprocesses, 0, $nprocessestostop);
             foreach ($processestostop as $process) {
-                try {
-                    $data = new \stdClass();
-                    $data->adminticket = $process->adminticket;
-                    $request = vpl_jailserver_manager::get_action_request('stop', $data);
-                    vpl_jailserver_manager::get_response($process->server, $request, $error);
-                } catch (\Throwable $e) {
-                    debugging("Process directrun in execution server not stopped or not found", DEBUG_DEVELOPER);
+                $data = new \stdClass();
+                $data->adminticket = $process->adminticket;
+                $request = vpl_jailserver_manager::get_action_request('stop', $data);
+                $error = '';
+                if (vpl_jailserver_manager::get_response($process->server, $request, $error) === false) {
+                    throw new moodle_exception('serverexecutionerror', VPL);
                 }
-                vpl_running_processes::delete($userid, $vplid, $process->adminticket);
+                vpl_running_processes::delete($userid, $process->vpl, $process->adminticket);
             }
         }
     }
@@ -395,6 +393,7 @@ class mod_vpl_edit {
     /**
      * Request the direct run code in an execution server
      *
+     * Direct run starts configured language servers within administrator resource maxima.
      * @param mod_vpl $vpl VPL instance
      * @param int $userid User id of the run request
      * @param stdClass $actiondata of the command to execute
@@ -402,23 +401,24 @@ class mod_vpl_edit {
      * @throws Exception
      */
     public static function directrun($vpl, $userid, $actiondata) {
+        if (!$vpl->is_submit_able() && !$vpl->is_vpl_question_mode()) {
+            throw new moodle_exception('notavailable');
+        }
+        mod_vpl_submission::check_group_access($vpl, $userid);
         $vplid = $vpl->get_instance()->id;
-        if ($vpl->is_teacher()) {
-            $maxrunning = 1000;
-        } else {
-            $maxrunning = 3;
+        if (
+            !isset($actiondata->command) ||
+            !is_string($actiondata->command) ||
+            !in_array($actiondata->command, vpl_jailserver_manager::get_ls_list($vpl), true)
+        ) {
+            throw new moodle_exception('invalidlanguage', VPL);
         }
-        self::limit_directruns($vplid, $userid, $maxrunning);
-        $command = $actiondata->command;
-        if ($command == '') {
-            throw new Exception(get_string('nojailavailable', VPL));
-        }
-        $language = null;
-        if ($command[0] == '$') {
-            $language = preg_replace('/[^a-z_]/', '', substr($command, 1));
-            $command = '/usr/local/bin/vpl/' . $language . '_ls';
-        }
-        $maxmemory = 2000 * 1000 * 1000;
+        $language = $actiondata->command;
+        $command = '/usr/local/bin/vpl/' . $language . '_ls';
+        $plugincfg = get_config('mod_vpl');
+        $maxmemory = (int) $plugincfg->maxexememory;
+        $maxrunningtasks = $vpl->is_teacher() ? 1000 : 3;
+        self::limit_directruns($vplid, $userid, $maxrunningtasks);
         $error = '';
         $server = vpl_jailserver_manager::get_server($vpl, $maxmemory, $error, $language);
         if ($server == '') {
@@ -465,10 +465,10 @@ DIRECTRUNCODE;
         $data->pluginversion = $pluginversion;
         $data->interactive = 1;
         $data->lang = vpl_get_lang();
-        $data->maxtime = 1000000;
-        $data->maxfilesize = $maxmemory;
+        $data->maxtime = (int) $plugincfg->maxexetime;
+        $data->maxfilesize = (int) $plugincfg->maxexefilesize;
         $data->maxmemory = $maxmemory;
-        $data->maxprocesses = 10000;
+        $data->maxprocesses = (int) $plugincfg->maxexeprocesses;
         $request = vpl_jailserver_manager::get_action_request('directrun', $data);
         $error = '';
         $jailresponse = vpl_jailserver_manager::get_response($server, $request, $error);
@@ -494,7 +494,6 @@ DIRECTRUNCODE;
         if (! isset($jailresponse['secureport'])) { // Try to fix old jail servers that don't return port.
             $jailresponse['secureport'] = $parsed['port'];
         }
-        $plugincfg = get_config('mod_vpl');
         $response = new stdClass();
         $response->server = $parsed['host'];
         $response->executionPath = $jailresponse['executionticket'] . '/execute';
@@ -507,7 +506,7 @@ DIRECTRUNCODE;
         $process->vpl = $vplid;
         $process->adminticket = $jailresponse['adminticket'];
         $process->server = $server;
-        $process->type = 4;
+        $process->type = mod_vpl_submission_CE::TDIRECTRUN;
         $process->submissionid = 0;
         $process->time_limit = time() + $data->maxtime;
         $response->processid = vpl_running_processes::set($process);

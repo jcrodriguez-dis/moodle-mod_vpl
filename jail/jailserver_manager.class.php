@@ -449,6 +449,10 @@ class vpl_jailserver_manager {
                         if ($language == '') {
                             continue;
                         }
+                        if (preg_match('/^[a-z\-]*$/', $language) !== 1) {
+                            // TODO generate a warning or log for invalid language format.
+                            continue;
+                        }
                         if (!isset($lsservers[$language])) {
                             $lsservers[$language] = [];
                         }
@@ -472,7 +476,7 @@ class vpl_jailserver_manager {
     }
 
     /**
-     * Return the text definition of servers form a vpl activity.
+     * Return the text definition of servers for a vpl activity.
      * This is a recursive process and use also global jail servers definition.
      *
      * @param \mod_vpl $vpl Object of the current VPL activity

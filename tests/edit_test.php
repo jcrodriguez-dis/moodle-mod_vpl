@@ -152,4 +152,41 @@ final class edit_test extends \advanced_testcase {
             'zero-byte submitted file' => [['main.c' => '']],
         ];
     }
+
+    /**
+     * Invalid direct-run commands are rejected before any server request.
+     *
+     * @dataProvider invalid_directrun_command_provider
+     * @param mixed $command Client-supplied command.
+     */
+    public function test_directrun_rejects_invalid_commands($command): void {
+        global $USER;
+        $this->resetAfterTest();
+        $this->setAdminUser();
+        $course = $this->getDataGenerator()->create_course();
+        $instance = $this->getDataGenerator()->create_module('vpl', ['course' => $course->id]);
+        set_config('jail_servers', 'ls python http://unused.invalid', 'mod_vpl');
+        $vpl = new \mod_vpl($instance->cmid);
+        $this->expectException(\moodle_exception::class);
+        $this->expectExceptionMessage(get_string('invalidlanguage', 'vpl'));
+        \mod_vpl_edit::directrun($vpl, $USER->id, (object) ['command' => $command, 'files' => []]);
+    }
+
+    /**
+     * Reject arbitrary commands, shell metacharacters and unconfigured languages.
+     *
+     * @return array
+     */
+    public static function invalid_directrun_command_provider(): array {
+        return [
+            'shell command' => ['/bin/sh'],
+            'shell suffix' => ['$python; echo injected'],
+            'embedded newline' => ["\$python\n"],
+            'path traversal' => ['$../../sh'],
+            'empty language' => ['$'],
+            'unconfigured language' => ['$unknown'],
+            'empty command' => [''],
+            'non-string command' => [[]],
+        ];
+    }
 }

@@ -110,7 +110,7 @@ try {
             );
             break;
         case 'resetfiles':
-            if (! $canview) {
+            if (! $cansubmit) {
                 throw new Exception(get_string('notavailable'));
             }
             $files = mod_vpl_edit::get_requested_files($vpl);
@@ -139,7 +139,7 @@ try {
         case 'run':
         case 'debug':
         case 'evaluate':
-            if (! $canview) {
+            if (! $canview || ($action === 'evaluate' && ! $cansubmit)) {
                 throw new Exception(get_string('notavailable'));
             }
             // Action available for teachers even if not enabled for students.
@@ -149,25 +149,25 @@ try {
             $result->response = mod_vpl_edit::execute($vpl, $userid, $action, $actiondata);
             break;
         case 'retrieve':
-            if (! $canview) {
+            if (! $cansubmit) {
                 throw new Exception(get_string('notavailable'));
             }
             $result->response = mod_vpl_edit::retrieve_result($vpl, $userid, $actiondata->processid);
             break;
         case 'cancel':
-            if (! $canview) {
+            if (! $cansubmit) {
                 throw new Exception(get_string('notavailable'));
             }
             $result->response->error = mod_vpl_edit::cancel($vpl, $userid, $actiondata->processid);
             break;
         case 'getjails':
-            if (! $canview) {
+            if (! $cansubmit) {
                 throw new Exception(get_string('notavailable'));
             }
             $result->response->servers = vpl_jailserver_manager::get_https_server_list($vpl->get_instance()->jailservers);
             break;
         case 'directrun':
-            if (! $canview) {
+            if (! $cansubmit) {
                 throw new Exception(get_string('notavailable'));
             }
             $actiondata->files = mod_vpl_edit::filesfromide($actiondata->files);
