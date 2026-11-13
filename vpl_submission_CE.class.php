@@ -68,6 +68,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      */
     const TTESTEVALUATE = 3;
     /**
+     * Identify the direct run execution type.
+     */
+    const TDIRECTRUN = 4;
+    /**
      * Directory name for evaluation tests.
      * This directory must be in the execution files.
      * It is used to store the evaluation tests of evaluation.
@@ -929,10 +933,12 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
      * @return boolean True if updated
      */
     public static function update($vpl, $userid, $processid, $files, $filestodelete = []) {
+        mod_vpl_submission::check_group_access($vpl, $userid);
         $data = new stdClass();
         $vplid = $vpl->get_instance()->id;
         $processinfo = vpl_running_processes::get_by_id($vplid, $userid, $processid);
-        if ($processinfo == false) { // No process => no update.
+        // If no process info or the process type is evaluation, no update is allowed.
+        if (empty($processinfo) || in_array($processinfo->type, [self::TEVALUATE, self::TTESTEVALUATE])) {
             return false;
         }
         $server = $processinfo->server;
