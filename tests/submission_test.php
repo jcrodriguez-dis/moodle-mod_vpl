@@ -63,6 +63,7 @@ final class submission_test extends base_fixture {
      * @param bool $manage Whether the teacher can manage the VPL activity.
      * @param bool $allowed Whether access should be granted.
      * @param bool $userecord Whether to construct from a record instead of an ID.
+     * @param bool $update Whether to check live-update authorization instead.
      */
     public function test_separate_groups_submission_access(
         array $teachergroups,
@@ -70,7 +71,8 @@ final class submission_test extends base_fixture {
         bool $accessallgroups,
         bool $manage,
         bool $allowed,
-        bool $userecord
+        bool $userecord,
+        bool $update = false
     ): void {
         global $DB;
         $this->setAdminUser();
@@ -124,6 +126,10 @@ final class submission_test extends base_fixture {
             $this->expectException(\Exception::class);
             $this->expectExceptionMessage('Access not allowed for this group.');
         }
+        if ($update) {
+            $this->assertFalse(mod_vpl_submission_CE::update($vpl, $student->id, 999999, $files));
+            return;
+        }
         $submission = new mod_vpl_submission($vpl, $userecord ? $record : $submissionid, true);
         $this->assertEquals($submissionid, $submission->get_instance()->id);
         $this->assertSame($files, $submission->get_submitted_files());
@@ -151,6 +157,7 @@ final class submission_test extends base_fixture {
         foreach ($scenarios as $name => $arguments) {
             $cases[$name . ' by ID'] = array_merge($arguments, [false]);
             $cases[$name . ' by record'] = array_merge($arguments, [true]);
+            $cases[$name . ' live update'] = array_merge($arguments, [false, true]);
         }
         return $cases;
     }
@@ -646,6 +653,34 @@ final class submission_test extends base_fixture {
         ));
         $submission->cancelprocess();
         $this->assertTrue(true);
+    }
+
+    /**
+     * Evaluation tickets must never accept live file updates.
+     *
+     * @covers \mod_vpl_submission_CE::update
+     */
+    public function test_evaluation_update_is_rejected(): void {
+        $student = $this->students[0];
+        $this->setUser($student);
+        foreach ([mod_vpl_submission_CE::TEVALUATE, mod_vpl_submission_CE::TTESTEVALUATE] as $type) {
+            $process = (object) [
+                'userid' => $student->id,
+                'vpl' => $this->vplonefile->get_instance()->id,
+                'type' => $type,
+                'submissionid' => 0,
+                'server' => 'http://unused.invalid',
+                'adminticket' => 'evaluation-test-' . $type,
+                'time_limit' => time() + 60,
+            ];
+            $processid = \vpl_running_processes::set($process);
+            $this->assertFalse(mod_vpl_submission_CE::update(
+                $this->vplonefile,
+                $student->id,
+                $processid,
+                ['main.c' => 'changed']
+            ));
+        }
     }
 
     /**

@@ -84,6 +84,8 @@ if ($fromform = $mform->get_data()) {
         $prevsubmission = new mod_vpl_submission($vpl, $prevsub);
         $prevsubfiles = $prevsubmission->get_submitted_fgm()->getAllFiles();
     }
+    $maxfilesize = $vpl->get_maxfilesize();
+    $ignoredfiles = 0;
     $firstsub = count($prevsubfiles) === 0;
     if ($fromform->submitmethod == 'archive') {
         if (!$firstsub && $fromform->archiveaction == 'replace') {
@@ -92,48 +94,16 @@ if ($fromform = $mform->get_data()) {
                 $files[$subfilename] = $subfilecontent;
             }
         }
-        // Open archive.
         $zipname = $mform->save_temp_file('archive');
-        $zip = new ZipArchive();
-        $zip->open($zipname);
-        $subreqfiles = [];
-        $subotherfiles = [];
-        // Read archive and split between required / additional files.
-        for ($i = 0; $i < $zip->numFiles; $i++) {
-            $filename = $zip->statIndex($i)['name'];
-            if (substr($filename, -1) == '/') { // Directory.
-                continue;
-            }
-            $filecontent = file_get_contents('zip://' . $zipname . '#' . $filename);
-            // Autodetect text file encode if not binary.
-            if (! vpl_is_binary($filename, $filecontent)) {
-                $encoding = mb_detect_encoding($filecontent, 'UNICODE, UTF-16, UTF-8, ISO-8859-1', true);
-                if ($encoding > '') { // If code detected.
-                    $filecontent = iconv($encoding, 'UTF-8', $filecontent);
-                }
-            } else {
-                if (in_array($filename . '.b64', $reqfiles)) {
-                    $filename = $filename . '.b64';
-                    $filecontent = base64_encode($filecontent);
-                }
-            }
-            if (in_array($filename, $reqfiles)) {
-                $subreqfiles[$filename] = $filecontent;
-            } else {
-                $subotherfiles[$filename] = $filecontent;
-            }
-        }
-        foreach ($reqfiles as $reqfile) {
-            if (isset($subreqfiles[$reqfile])) {
-                $files[$reqfile] = $subreqfiles[$reqfile];
-            }
-        }
-        foreach ($subotherfiles as $filename => $filecontent) {
-            $files[$filename] = $filecontent;
-        }
-        // Close archive.
-        $zip->close();
-        unlink($zipname);
+        $files = \mod_vpl\util\submission_archive::read(
+            $zipname,
+            $reqfiles,
+            (int) $instance->maxfiles,
+            $maxfilesize,
+            \mod_vpl\util\phpconfig::get_post_max_size(),
+            $files,
+            $ignoredfiles
+        );
     } else {
         for ($i = 0; $i < $instance->maxfiles; $i++) {
             $field = 'file' . $i;
@@ -187,7 +157,11 @@ if ($fromform = $mform->get_data()) {
         } else {
             $redirecturl = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);
         }
-        vpl_redirect($redirecturl, get_string('saved', VPL));
+        $message = get_string('saved', VPL);
+        if ($ignoredfiles > 0) {
+            $message .= ' ' . get_string('archivefilesignored', VPL, $ignoredfiles);
+        }
+        vpl_redirect($redirecturl, $message);
     } else {
         vpl_redirect(
             vpl_mod_href('forms/submission.php', 'id', $id, 'userid', $userid),
