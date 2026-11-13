@@ -149,16 +149,8 @@ try {
             $result->response = mod_vpl_edit::execute($vpl, $userid, $action, $actiondata);
             break;
         case 'retrieve':
-            if (! $cansubmit) {
-                throw new Exception(get_string('notavailable'));
-            }
-            $result->response = mod_vpl_edit::retrieve_result($vpl, $userid, $actiondata->processid);
-            break;
         case 'cancel':
-            if (! $cansubmit) {
-                throw new Exception(get_string('notavailable'));
-            }
-            $result->response->error = mod_vpl_edit::cancel($vpl, $userid, $actiondata->processid);
+            $result->response = mod_vpl_edit::process_action($vpl, $userid, $action, $actiondata);
             break;
         case 'getjails':
             if (! $cansubmit) {

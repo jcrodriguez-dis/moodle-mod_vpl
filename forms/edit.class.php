@@ -352,6 +352,37 @@ class mod_vpl_edit {
     }
 
     /**
+     * Retrieve or cancel an existing job without requiring a new submission.
+     *
+     * @param mod_vpl $vpl VPL activity.
+     * @param int $userid Process owner.
+     * @param string $action Retrieve or cancel.
+     * @param stdClass $actiondata Request containing the process ID.
+     * @return stdClass Response for the editor.
+     */
+    public static function process_action(mod_vpl $vpl, int $userid, string $action, stdClass $actiondata) {
+        if (!$vpl->is_visible() && !$vpl->is_vpl_question_mode()) {
+            throw new Exception(get_string('notavailable'));
+        }
+        if ($action === 'retrieve') {
+            return static::retrieve_result($vpl, $userid, $actiondata->processid);
+        }
+        if ($action === 'cancel') {
+            return (object) ['error' => static::cancel($vpl, $userid, $actiondata->processid)];
+        }
+        throw new InvalidArgumentException('Invalid process action: ' . $action);
+    }
+
+    /**
+     * Get the jail manager used for language-server requests.
+     *
+     * @return class-string<vpl_jailserver_manager> Jail manager class.
+     */
+    protected static function get_jailserver_manager(): string {
+        return vpl_jailserver_manager::class;
+    }
+
+    /**
      * Check and stop the direct runs that pass a limit for this user and vpl activity if any
      * Stops the oldest direct run processes if the number of running tasks exceeds the limit.
      * @param int $vplid VPL activity ID
@@ -406,21 +437,20 @@ class mod_vpl_edit {
         }
         mod_vpl_submission::check_group_access($vpl, $userid);
         $vplid = $vpl->get_instance()->id;
-        if (
-            !isset($actiondata->command) ||
-            !is_string($actiondata->command) ||
-            !in_array($actiondata->command, vpl_jailserver_manager::get_ls_list($vpl), true)
-        ) {
+        $language = is_string($actiondata->command ?? 1) ? $actiondata->command : '';
+        $language = strlen($language) > 0 && $language[0] === '$' ? substr($language, 1) : '';
+        $jailmanager = static::get_jailserver_manager();
+
+        if ( !in_array($language, $jailmanager::get_ls_list($vpl), true)) {
             throw new moodle_exception('invalidlanguage', VPL);
         }
-        $language = $actiondata->command;
         $command = '/usr/local/bin/vpl/' . $language . '_ls';
         $plugincfg = get_config('mod_vpl');
         $maxmemory = (int) $plugincfg->maxexememory;
         $maxrunningtasks = $vpl->is_teacher() ? 1000 : 3;
         self::limit_directruns($vplid, $userid, $maxrunningtasks);
         $error = '';
-        $server = vpl_jailserver_manager::get_server($vpl, $maxmemory, $error, $language);
+        $server = $jailmanager::get_server($vpl, $maxmemory, $error, $language);
         if ($server == '') {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             $men = get_string('nojailavailable', VPL);
@@ -469,9 +499,9 @@ DIRECTRUNCODE;
         $data->maxfilesize = (int) $plugincfg->maxexefilesize;
         $data->maxmemory = $maxmemory;
         $data->maxprocesses = (int) $plugincfg->maxexeprocesses;
-        $request = vpl_jailserver_manager::get_action_request('directrun', $data);
+        $request = $jailmanager::get_action_request('directrun', $data);
         $error = '';
-        $jailresponse = vpl_jailserver_manager::get_response($server, $request, $error);
+        $jailresponse = $jailmanager::get_response($server, $request, $error);
         if ($jailresponse === false) {
             $manager = $vpl->has_capability(VPL_MANAGE_CAPABILITY);
             if ($manager) {
