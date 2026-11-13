@@ -483,6 +483,9 @@ final class locallib_test extends \advanced_testcase {
         $this->assertFalse(vpl_is_valid_file_name('a/b'));
         $this->assertFalse(vpl_is_valid_file_name('a\b'));
         $this->assertFalse(vpl_is_valid_file_name('\.'));
+        $this->assertFalse(vpl_is_valid_file_name('\\'));
+        $this->assertFalse(vpl_is_valid_file_name('\\filename.txt'));
+        $this->assertFalse(vpl_is_valid_file_name('filename.txt\\'));
     }
 
     /**
@@ -523,6 +526,7 @@ final class locallib_test extends \advanced_testcase {
             'trailing separator with leading slash' => ['/src/', false],
             'empty middle component with leading slash' => ['/src//file.txt', false],
             'Windows drive relative path' => ['C:file.txt', false],
+            'backslash path separator' => ['src\\main.c', false],
             'Windows traversal' => ['src\\..\\file.txt', false],
             'Linux traversal' => ['src/../file.txt', false],
             'mixed separators' => ['src/..\\file.txt', false],

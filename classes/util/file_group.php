@@ -145,7 +145,7 @@ class file_group {
      * @return string
      */
     public static function encodefilename($path) {
-        return str_replace(['\\', '/'], '=', $path);
+        return str_replace('/', '=', $path);
     }
 
     /**

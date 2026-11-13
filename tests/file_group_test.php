@@ -221,6 +221,8 @@ final class file_group_test extends \advanced_testcase {
     public function test_encodefilename(): void {
         $this->assertEquals('a.b.c', \mod_vpl\util\file_group::encodefilename('a.b.c'));
         $this->assertEquals('a=b=c.d', \mod_vpl\util\file_group::encodefilename('a/b/c.d'));
+        $this->assertEquals('a\\b\\c.d', \mod_vpl\util\file_group::encodefilename('a\\b\\c.d'));
+        $this->assertEquals('a\\b=c.d', \mod_vpl\util\file_group::encodefilename('a\\b/c.d'));
     }
 
     /**
