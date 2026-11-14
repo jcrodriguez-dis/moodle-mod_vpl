@@ -441,7 +441,7 @@ class mod_vpl_edit {
         $language = strlen($language) > 0 && $language[0] === '$' ? substr($language, 1) : '';
         $jailmanager = static::get_jailserver_manager();
 
-        if ( !in_array($language, $jailmanager::get_ls_list($vpl), true)) {
+        if (!in_array($language, $jailmanager::get_ls_list($vpl), true)) {
             throw new moodle_exception('invalidlanguage', VPL);
         }
         $command = '/usr/local/bin/vpl/' . $language . '_ls';

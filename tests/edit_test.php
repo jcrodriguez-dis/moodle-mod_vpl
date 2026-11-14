@@ -213,8 +213,13 @@ final class edit_test extends \advanced_testcase {
         $server = 'https://jail.example/secret';
         set_config('jail_servers', 'ls python ' . $server, 'mod_vpl');
         set_config('use_xmlrpc', 0, 'mod_vpl');
-        foreach (['maxexetime' => 17, 'maxexefilesize' => 4096, 'maxexememory' => 1048576,
-                'maxexeprocesses' => 8] as $setting => $value) {
+        $settingsvalues = [
+            'maxexetime' => 17,
+            'maxexefilesize' => 4096,
+            'maxexememory' => 1048576,
+            'maxexeprocesses' => 8,
+        ];
+        foreach ($settingsvalues as $setting => $value) {
             set_config($setting, $value, 'mod_vpl');
         }
         $requests = [];

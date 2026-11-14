@@ -16,8 +16,6 @@
 
 namespace mod_vpl\tests;
 
-defined('MOODLE_INTERNAL') || die();
-
 /**
  * Editor operations with injectable transport and observable job dispatch.
  *
