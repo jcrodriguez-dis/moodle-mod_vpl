@@ -32,13 +32,13 @@ Feature: In a VPL activity, editing allows drop files
     And I click on "#vpl_ide_dialog_new + div button" in VPL
     Then I should see "new_file_name.c"
     # Drops a new file
-    When I drop the file "a.c" contening "int main() {\n   printf(\"hola\");\n}" on "#vpl_tabs" in VPL
+    When I drop the file "a.c" containing "int main() {\n   printf(\"hola\");\n}" on "#vpl_tabs" in VPL
     Then I should see "a.c"
     When I follow "a.c"
     Then I should see "int main() {"
     And I should see "printf(\"hola\");"
     # Drops a file replacing existing file content
-    When I drop the file "new_file_name.c" contening "int f() {\n   return 0;\n}" on "#vpl_tabs" in VPL
+    When I drop the file "new_file_name.c" containing "int f() {\n   return 0;\n}" on "#vpl_tabs" in VPL
     When I follow "new_file_name.c"
     Then I should see "int f() {"
     # Saves files
@@ -52,6 +52,24 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "a.c"
     And I should see "int main() {"
     And I should see "printf(\"hola\");"
+
+  @javascript
+  Scenario: A teacher drops a file with quotes and backslashes in its contents
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | initial.txt |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    When I drop the file "teacher's file.txt" containing "Teacher's path: C:\temp\file.txt" on "#vpl_tabs" in VPL
+    And I follow "teacher's file.txt"
+    Then I should see "Teacher's path: C:\temp\file.txt"
+    When I click on "#vpl_ide_save" in VPL
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    Then I should see "teacher's file.txt"
+    And I should see "Teacher's path: C:\temp\file.txt"
 
   @javascript
   Scenario: A teacher drops multiple files in "requested files"
@@ -177,7 +195,7 @@ Feature: In a VPL activity, editing allows drop files
     And I should see "print(7 * 43)"
     # Checks file updates
     When I navigate to "Requested files" in current page administration
-    And I drop the file "hello.py" contening "print(\"content_changed\")" on "#vpl_tabs" in VPL
+    And I drop the file "hello.py" containing "print(\"content_changed\")" on "#vpl_tabs" in VPL
     And I follow "hello.py"
     Then I should see "print(\"content_changed\")"
     And I should not see "print(\"Hello from Python language!\")"

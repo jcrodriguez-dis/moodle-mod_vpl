@@ -44,7 +44,7 @@ Feature: In an VPL activity, editing teacher change overrides
     And I log out
 
   @javascript
-  Scenario: A teacher set override
+  Scenario: A teacher creates, edits, cancels deletion and deletes an override
     Given I log in as "teacher1"
     And I am on "Course 1" course homepage
     When I click on "VPL activity name" "link" in the "region-main" "region"
@@ -78,14 +78,22 @@ Feature: In an VPL activity, editing teacher change overrides
     And I should see "Reduction by automatic evaluation:" in the "region-main" "region"
     And I should see "Free evaluations:" in the "region-main" "region"
     When I click on "Delete" "link" in the "region-main" "region"
-# Steps not compatible with Behat for Moodle < 4.5
-#    Then I should see "Yes" in the "body" "css_element"
-#    And I click on "[data-action='save']" "css_element" in the "[data-region='modal-container']" "css_element"
-#    Then I should not see "None" in the "region-main" "region"
-#    And I should not see "Student1 Student" in the "region-main" "region"
-#    And I should not see "Student2 Student" in the "region-main" "region"
-#    And I should not see "Available from:" in the "region-main" "region"
-#    And I should not see "Due date:" in the "region-main" "region"
-#    And I should not see "Password" in the "region-main" "region"
-#    And I should not see "Reduction by automatic evaluation:" in the "region-main" "region"
-#    And I should not see "Free evaluations:" in the "region-main" "region"
+    Then I should see "Are you sure you want to delete this override set?"
+    When I click on "Cancel" "link" in the "region-main" "region"
+    Then I should see "Student1 Student" in the "region-main" "region"
+    And I should see "Student2 Student" in the "region-main" "region"
+    When I click on "Delete" "link" in the "region-main" "region"
+    And I should see "Are you sure you want to delete this override set?"
+    And I click on "Delete" "link" in the "region-main" "region"
+    Then I should see "Add an override"
+    And I should not see "Student1 Student" in the "region-main" "region"
+    And I should not see "Student2 Student" in the "region-main" "region"
+    And I should not see "Available from:" in the "region-main" "region"
+    And I should not see "Due date:" in the "region-main" "region"
+    And I should not see "Reduction by automatic evaluation:" in the "region-main" "region"
+    And I should not see "Free evaluations:" in the "region-main" "region"
+    When I am on "Course 1" course homepage
+    And I click on "VPL activity name" "link" in the "region-main" "region"
+    And I navigate to "Overrides" in current page administration
+    Then "Edit" "link" should not exist in the "region-main" "region"
+    And "Delete" "link" should not exist in the "region-main" "region"

@@ -1,8 +1,8 @@
 @mod @mod_vpl @mod_vpl_execution_files
 Feature: In an VPL activity, editing teacher manage execution files
-  In order to manages activity requested files
+  In order to manage activity execution files
   As an editing teacher
-  I access to a VPL activity and create, rename and delete requested files
+  I create, rename and delete execution files and verify that changes persist
 
   Background:
     Given the default editor is set to "textarea"
@@ -70,6 +70,7 @@ Feature: In an VPL activity, editing teacher manage execution files
       | vpl_ide_input_renamefilename | changed file.c |
     And I click on "#vpl_ide_dialog_rename + div button" in VPL
     Then I should see "changed file.c"
+    And I should not see "new_file_name.c"
     Then I click on "#vpl_ide_save" in VPL
     # Reload files
     And I am on "Course 1" course homepage
@@ -80,6 +81,7 @@ Feature: In an VPL activity, editing teacher manage execution files
     And I should see "vpl_evaluate.sh"
     And I should see "vpl_evaluate.cases"
     And I should see "changed file.c"
+    And I should not see "new_file_name.c"
     And I should see "subdirectory"
     And I should see "other file_name.c"
     # Remove file
@@ -87,9 +89,11 @@ Feature: In an VPL activity, editing teacher manage execution files
     When I click on "#vpl_ide_more" in VPL
     And I click on "#vpl_ide_delete" in VPL
     Then I should see "delete 'subdirectory/other file_name.c' file?"
+    When I click on "Cancel" "button" in the "#vpl_ide_dialog_delete + div" "css_element"
+    Then I should see "other file_name.c"
+    When I click on "#vpl_ide_delete" in VPL
     When I click on "OK" "button" in the "#vpl_ide_dialog_delete + div" "css_element"
-    # Note: The following step is commented because delete is not working in behat
-    # And I should not see "other file_name.c"
+    Then I should not see "other file_name.c"
     Then I click on "#vpl_ide_save" in VPL
     # Reload files
     And I am on "Course 1" course homepage
@@ -100,5 +104,4 @@ Feature: In an VPL activity, editing teacher manage execution files
     And I should see "vpl_evaluate.sh"
     And I should see "vpl_evaluate.cases"
     And I should see "changed file.c"
-    # Note: The following step is commented because delete is not working in behat
-    # And I should not see "other file_name.c"
+    And I should not see "other file_name.c"

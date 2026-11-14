@@ -36,3 +36,47 @@ Feature: In a VPL activity feature Local execution servers
     And I press "Save changes"
     Then I should see "Saved"
     And I should see "https://nojail.com"
+
+  Scenario Outline: Invalid server settings preserve the previously saved configuration
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Local execution servers" in current page administration
+    And I set the field "jailservers" to "https://8.8.8.8/secret"
+    And I press "Save changes"
+    And I should see "Saved"
+    When I set the field "jailservers" to multiline:
+      """
+      https://1.1.1.1/another
+      <server>
+      """
+    And I press "Save changes"
+    Then I should see "Options have not been saved"
+    And I should see "Bad URL format for execution server:"
+    When I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Local execution servers" in current page administration
+    Then the field "jailservers" matches value "https://8.8.8.8/secret"
+
+    Examples:
+      | server                         |
+      | ftp://8.8.8.8/secret            |
+      | https://8.8.8.8/secret?token=1  |
+      | https://8.8.8.8/secret#status   |
+      | https://8.8.8.8/directory/file |
+      | https://8.8.8.8/secret%20file   |
+
+  Scenario: Cancelling server changes preserves the previously saved configuration
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Local execution servers" in current page administration
+    And I set the field "jailservers" to "https://8.8.8.8/secret"
+    And I press "Save changes"
+    When I set the field "jailservers" to "https://1.1.1.1/another"
+    And I press "Cancel"
+    Then I should see "Cancelled"
+    When I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Local execution servers" in current page administration
+    Then the field "jailservers" matches value "https://8.8.8.8/secret"

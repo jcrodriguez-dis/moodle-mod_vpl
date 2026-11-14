@@ -1,4 +1,4 @@
-@mod @mod_vpl
+@mod @mod_vpl @mod_vpl_requested_files
 Feature: In a VPL activity, an editing teacher sets "requested files" and a student used it
   In order to manage "requested files"
   As an editing teacher
@@ -66,3 +66,44 @@ Feature: In a VPL activity, an editing teacher sets "requested files" and a stud
     Then I should see "Submitted"
     And I should see "new_file_name.c"
     And I should see "subdirectory/other new file.c"
+
+  @javascript
+  Scenario: A teacher renames and deletes requested files before a student starts work
+    Given I log in as "teacher1"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I navigate to "Requested files" in current page administration
+    And I set the following fields to these values:
+      | vpl_ide_input_newfilename | original.c |
+    And I click on "#vpl_ide_dialog_new + div button" in VPL
+    And I drop the file "original.c" containing "int answer = 42;" on "#vpl_tabs" in VPL
+    And I drop the file "obsolete.c" containing "int obsolete = 0;" on "#vpl_tabs" in VPL
+    And I click on "#vpl_ide_save" in VPL
+    When I follow "original.c"
+    And I click on "#vpl_ide_more" in VPL
+    And I click on "#vpl_ide_rename" in VPL
+    And I set the following fields to these values:
+      | vpl_ide_input_renamefilename | solution.c |
+    And I click on "#vpl_ide_dialog_rename + div button" in VPL
+    Then I should see "solution.c"
+    And I should not see "original.c"
+    When I follow "obsolete.c"
+    And I click on "#vpl_ide_delete" in VPL
+    And I click on "OK" "button" in the "#vpl_ide_dialog_delete + div" "css_element"
+    Then I should not see "obsolete.c"
+    When I click on "#vpl_ide_save" in VPL
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    Then I should see "solution.c"
+    And I should see "int answer = 42;"
+    And I should not see "original.c"
+    And I should not see "obsolete.c"
+    When I log out
+    And I log in as "student1"
+    And I am on "Course 1" course homepage
+    And I click on "VPL activity testing" "link" in the "region-main" "region"
+    And I follow "Edit"
+    Then I should see "solution.c"
+    And I should see "int answer = 42;"
+    And I should not see "original.c"
+    And I should not see "obsolete.c"
