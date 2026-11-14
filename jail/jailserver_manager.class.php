@@ -51,6 +51,13 @@ class vpl_jailserver_manager {
     const TABLE = 'vpl_jailservers';
 
     /**
+     * Maximum allowed length for the URL path.
+     *
+     * @var int
+     */
+    const MAX_PATH_LENGTH = 80;
+
+    /**
      * Get activity jail servers, including inherited servers.
      *
      * @param mod_vpl $vpl Current VPL activity.
@@ -408,6 +415,52 @@ class vpl_jailserver_manager {
     }
 
     /**
+     * Checks if the given server URL is considered bad.
+     * Anly accpet server of the form [http|https]://hostname[:port][/URLPATH]
+     * If URLPATH is present only a single file is allowed, no directories, no query strings and no fragments are allowed.
+     * @param string $server URL of the server
+     * @return bool True if the server URL is bad, false otherwise
+     */
+    public static function is_bad_server_url(string $server) {
+        $parse = parse_url($server);
+        // Initial check for parse_url failure.
+        $bad = $parse === false;
+        // Check if scheme and host are present and host is not empty.
+        $bad = $bad || ! isset($parse['scheme']);
+        $bad = $bad || ! isset($parse['host']);
+        $bad = $bad || strlen($parse['host']) < 1;
+        // Check if query or fragment is present, which is not allowed.
+        $bad = $bad || isset($parse['query']);
+        $bad = $bad || isset($parse['fragment']);
+        if ($bad) {
+            return true;
+        }
+        // Check if the scheme is either http or https.
+        $bad = ! in_array($parse['scheme'], ['http', 'https']);
+        if ($bad) {
+            return true;
+        }
+        // Check if URLPATH is present and valid.
+        $path = isset($parse['path']) ? $parse['path'] : '';
+        if ($path !== '' && $path !== '/') {
+            if (substr($path, 0, 1) === '/') {
+                $path = substr($path, 1);
+            } else {
+                // Path does not start with a slash, relative paths are not allowed.
+                // Code should not reach here for relative paths.
+                return true;
+            }
+            $bad = urldecode($path) !== $path;
+            $bad = $bad || urlencode($path) !== $path;
+            $bad = $bad || strpos($path, '/') !== false;
+            $bad = $bad || strlen($path) > self::MAX_PATH_LENGTH;
+            if ($bad) {
+                return true;
+            }
+        }
+        return false;
+    }
+    /**
      * Taken text of server definition returns the info about servers
      *
      * @param string $serverslisttext List of server definition in text
@@ -437,10 +490,7 @@ class vpl_jailserver_manager {
                 $languages = null;
                 $server = $line;
             }
-            $parse = parse_url($server);
-            if ($parse === false || ! isset($parse['scheme']) || ! isset($parse['host'])) {
-                $badservers[$server] = true;
-            } else if ($parse['scheme'] != 'http' && $parse['scheme'] != 'https') {
+            if (self::is_bad_server_url($server)) {
                 $badservers[$server] = true;
             } else {
                 if ($languages != null) {

@@ -100,6 +100,44 @@ final class jailserver_manager_test extends \advanced_testcase {
     }
 
     /**
+     * Only HTTP(S) server URLs with an optional single-file path are accepted.
+     *
+     * @dataProvider bad_server_url_provider
+     * @param string $server Server URL.
+     * @param bool $expected Whether the URL is invalid.
+     */
+    public function test_is_bad_server_url(string $server, bool $expected): void {
+        $this->assertSame($expected, \vpl_jailserver_manager::is_bad_server_url($server), $server);
+    }
+
+    /**
+     * Valid server URL forms and invalid schemes, paths, queries and fragments.
+     *
+     * @return array
+     */
+    public static function bad_server_url_provider(): array {
+        $maxlengthpath = str_repeat('a', \vpl_jailserver_manager::MAX_PATH_LENGTH);
+        return [
+            'https host' => ['https://jail.example.com', false],
+            'http host and port' => ['http://jail.example.com:8080', false],
+            'https root path' => ['https://jail.example.com/', false],
+            'https single-file path' => ['https://jail.example.com/secret', false],
+            'https maximum-length path' => ['https://jail.example.com/' . $maxlengthpath, false],
+            'missing scheme' => ['//jail.example.com/secret', true],
+            'missing host' => ['https:///secret', true],
+            'unsupported scheme' => ['ftp://jail.example.com/secret', true],
+            'query string' => ['https://jail.example.com/secret?token=value', true],
+            'empty query string' => ['https://jail.example.com/secret?', true],
+            'fragment' => ['https://jail.example.com/secret#status', true],
+            'empty fragment' => ['https://jail.example.com/secret#', true],
+            'directory path' => ['https://jail.example.com/directory/secret', true],
+            'encoded path' => ['https://jail.example.com/secret%20file', true],
+            'path exceeds maximum length' => ['https://jail.example.com/' . $maxlengthpath . 'a', true],
+            'malformed URL' => ['not a URL', true],
+        ];
+    }
+
+    /**
      * Literal IPv4 and IPv6 addresses are classified without DNS resolution.
      *
      * @covers \vpl_jailserver_manager::is_private_host
