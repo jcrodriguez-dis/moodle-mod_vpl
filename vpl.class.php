@@ -852,7 +852,7 @@ class mod_vpl {
             $submission->set_submitted_file($files, $lastsub);
         } catch (file_exception $fe) {
             $DB->delete_records(VPL_SUBMISSIONS, ['id' => $submissionid]);
-            $error = $fe->getMessage();
+            $error = s($fe->getMessage());
             return false;
         }
         $submission->remove_grade();
