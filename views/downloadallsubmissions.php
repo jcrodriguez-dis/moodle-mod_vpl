@@ -138,7 +138,7 @@ $all = optional_param('all', 0, PARAM_INT);
  */
 const SIZE_TRIGGER = 64 * 1024 * 1024; // 64Mb.
 $cm = $vpl->get_course_module();
-$vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
+$vpl->require_capability(VPL_GRADE_CAPABILITY);
 \mod_vpl\event\vpl_all_submissions_downloaded::log($vpl);
 // Get students.
 $currentgroup = groups_get_activity_group($cm);
@@ -152,8 +152,8 @@ if ($vpl->is_group_activity()) {
     $idfiels = 'groupid';
     $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
 } else {
-    $list = $vpl->get_students($currentgroup, 'u.username');
     $idfiels = 'userid';
+    $list = $vpl->get_students_in_current_group('u.username');
 }
 
 if ($all) {
