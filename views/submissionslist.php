@@ -721,7 +721,7 @@ foreach ($alldata as $data) {
     $photo = $showphoto ? $vpl->user_picture($user) : '';
     $row = [$usernumberlink, $photo, $vpl->fullname($user)];
     if ($usevariations) {
-        $row[] = $data->variation;
+        $row[] = s($data->variation);
     }
     if ($showgrades) {
         $row = array_merge($row, [$grade, $gradecomments]);

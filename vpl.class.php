@@ -2312,13 +2312,16 @@ class mod_vpl {
                 $html .= '<b>' . get_string('variations_unused', VPL) . "</b><br>\n";
             }
             if ($this->instance->variationtitle) {
-                $html .= '<b>' . get_string('variationtitle', VPL) . ': ' . s($this->instance->variationtitle) . "</b><br>\n";
+                $htmltitle = format_string($this->instance->variationtitle);
+                $html .= '<b>' . get_string('variationtitle', VPL) . ': ' . $htmltitle . "</b><br>\n";
             }
             $number = 1;
             foreach ($variations as $variation) {
+                $formatparms = ['context' => $this->get_context()];
+                $htmldescription = format_text($variation->description, FORMAT_HTML, $formatparms);
                 $html .= '<b>' . get_string('variation_n', VPL, $number) . '</b>: ';
                 $html .= s($variation->identification) . "<br>\n";
-                $html .= $OUTPUT->box($variation->description);
+                $html .= $OUTPUT->box($htmldescription);
                 $number++;
             }
             $html .= $div->end();
@@ -2406,9 +2409,11 @@ class mod_vpl {
             $variation = $this->get_variation($userid);
             if ($variation !== false) { // Variations defined.
                 if ($this->instance->variationtitle > '') {
-                    $html .= '<b>' . format_text($this->instance->variationtitle, FORMAT_HTML) . "</b><br>\n";
+                    $html .= '<b>' . format_string($this->instance->variationtitle) . "</b><br>\n";
                 }
-                $html .= $OUTPUT->box($variation->description);
+                $formatparms = ['context' => $this->get_context()];
+                $htmldescription = format_text($variation->description, FORMAT_HTML, $formatparms);
+                $html .= $OUTPUT->box($htmldescription);
             }
         }
         return $html;

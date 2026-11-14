@@ -36,12 +36,13 @@ require_once($CFG->libdir . '/formslib.php');
  * Returns actions for a variation in HTML
  *
  * @param object $variation DB register.
- * @param object $cmid of the VPL activity.
+ * @param \mod_vpl $vpl object of the VPL activity.
  * @param int $number secuential number of the variation in the page
  * @return string HTML
  */
-function get_variation_actions_html($variation, $cmid, $number) {
+function get_variation_actions_html($variation, $vpl, $number) {
     global $OUTPUT;
+    $cmid = $vpl->get_course_module()->id;
     $variationclass = "vpl_variation_{$number}";
     $anchor = "vpl_variation_{$cmid}_{$number}";
     $separator = "<hr id='$anchor'>";
@@ -57,8 +58,10 @@ function get_variation_actions_html($variation, $cmid, $number) {
     $url = new moodle_url('/mod/vpl/forms/variations.php', $parms);
     $btext = get_string('delete');
     $deletebutton = html_writer::link($url, $btext, ['class' => 'btn btn-danger']);
+    $formatparms = ['context' => $vpl->get_context()];
+    $htmldescription = format_text($variation->description, FORMAT_HTML, $formatparms);
+    $variationcontent = $OUTPUT->box($htmldescription);
 
-    $variationcontent = $OUTPUT->box($variation->description);
     $html = "$separator\n";
     $variationheader = "<b>$variationidentification</b> $editbutton $deletebutton\n";
     $html .= html_writer::div($variationheader, $variationclass);
@@ -70,7 +73,7 @@ function get_variation_actions_html($variation, $cmid, $number) {
  * Returns HTML link to show a variation in the variation page
  *
  * @param object $variation DB register.
- * @param object $cmid of the VPL activity.
+ * @param int $cmid of the VPL activity.
  * @param int $number secuential number of the variation in the page
  * @return string HTML
  */
@@ -138,7 +141,7 @@ function print_basic_html($form, $vpl) {
     }
     $number = 1;
     foreach ($list as $variation) {
-        echo get_variation_actions_html($variation, $cmid, $number);
+        echo get_variation_actions_html($variation, $vpl, $number);
         $number++;
     }
 }
@@ -214,9 +217,12 @@ if ($canceled) {
     $fromform = $mform->get_data();
     if ($fromform) {
         if (isset($_POST['delete'])) { // Deletes variation and its assignned variations.
-            if ($DB->delete_records(VPL_VARIATIONS, ['id' => $fromform->varid, 'vpl' => $vplid])) {
+            $varid = $fromform->varid;
+            $params = ['id' => $varid, 'vpl' => $vplid];
+            if ($DB->record_exists(VPL_VARIATIONS, $params)) {
+                $DB->delete_records(VPL_VARIATIONS, $params);
                 \mod_vpl\event\variation_deleted::logvpl($vpl, $fromform->varid);
-                $DB->delete_records(VPL_ASSIGNED_VARIATIONS, ['variation' => $fromform->varid]);
+                $DB->delete_records(VPL_ASSIGNED_VARIATIONS, ['variation' => $varid, 'vpl' => $vplid]);
                 vpl_notice(get_string('deleted'));
                 $form = new option_form($href);
                 print_basic_html($form, $vpl);
