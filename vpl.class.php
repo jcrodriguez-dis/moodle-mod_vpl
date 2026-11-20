@@ -1096,7 +1096,7 @@ class mod_vpl {
         } else {
             $has = is_enrolled($this->get_context(), $userid, $capability, true);
         }
-        return $has || is_siteadmin();
+        return $has || is_siteadmin($userid);
     }
 
     /**
