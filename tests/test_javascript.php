@@ -25,14 +25,19 @@
 
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
+
+if (!DEFINED('BEHAT_SITE_RUNNING') || !BEHAT_SITE_RUNNING) {
+    die('Behat site not running.');
+}
+
+$course = $DB->get_record("course", [ 'id' => $COURSE->id ]);
+require_course_login($course);
+
 $PAGE->requires->js(new moodle_url('/mod/vpl/thirdpartylibs/marked/marked.umd.min.js'));
 $PAGE->requires->js_call_amd('mod_vpl/vplutil', 'init', [
     ['fileIconsElement' => 'test_results', 'scriptPath' => $CFG->wwwroot . '/mod/vpl/editor'],
 ]);
 $PAGE->requires->js_call_amd('mod_vpl/jstests-lazy', 'start');
-$course = $DB->get_record("course", [ 'id' => $COURSE->id ]);
-
-require_course_login($course);
 
 $title = 'VPL JavaScript Tests';
 $PAGE->set_url('/mod/vpl/tests/test_javascript.php');
