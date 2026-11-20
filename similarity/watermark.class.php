@@ -196,18 +196,14 @@ class vpl_watermark {
      * @param string $data file content
      * @param string $filename name of the file
      * @param int $userid of wm
-     * @return data with watermark added
+     * @return string data with watermark added
      */
     public static function addwm(&$data, $filename, $userid) {
         if (strlen($data) > 500) {
             $ext = pathinfo($filename, PATHINFO_EXTENSION);
-            if (
-                $ext == 'c' || $ext == 'h' || $ext = 'hxx' || $ext == 'cpp'
-                || $ext == 'cc' || $ext = 'C' || $ext == 'java' || $ext == 'js'
-            ) {
+            if (in_array($ext, ['c', 'h', 'hxx', 'cpp', 'cc', 'C', 'java', 'js'])) {
                 return self::addwm_c($data, $userid);
             }
-            // TODO add generic for other files type "self::addwm_generic($data,$userid);".
         }
         return $data;
     }
