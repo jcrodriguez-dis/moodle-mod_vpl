@@ -700,17 +700,22 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
             return;
         }
         let fileName = oldFileName || file.getFileName();
-        let session = null;
-        if (file.isOpen() && file.isCode()) {
-            session = file.getEditor().getSession();
-        }
+        // Collect all markers associated with this file.
+        let markersOfFile = [];
         for (let i = 0; i < allMarkers.length; i++) {
             if (allMarkers[i].fileName == fileName) {
-                if (session) {
-                    session.removeMarker(allMarkers[i].id);
-                }
-                allMarkers.splice(i, 1);
-                i--;
+                markersOfFile.push({pos: i, id: allMarkers[i].id});
+            }
+        }
+        // Remove the markers from the allMarkers array in reverse order to avoid index shifting issues.
+        for (let i = markersOfFile.length - 1; i >= 0; i--) {
+            allMarkers.splice(markersOfFile[i].pos, 1);
+        }
+        // Remove the markers from the editor session if the file is open and is code.
+        if (file.isOpen() && file.isCode()) {
+            let session = file.getEditor().getSession();
+            for (let i = 0; i < markersOfFile.length; i++) {
+                session.removeMarker(markersOfFile[i].id);
             }
         }
     };

@@ -991,7 +991,7 @@ export const VPLLS = function(APIURL, fileManager, LSAvailable, userLocale) {
                 for (let marker of markersFound) {
                     let icon = "<span class='ace_" + marker.type + " ace_icon' aria-label='"
                                + marker.type + "' role='img'> </span>";
-                    html += "<div>" + icon + "<span>" + marker.text + "</span></div>";
+                    html += "<div>" + icon + "<span>" + VPLUtil.sanitizeText(marker.text) + "</span></div>";
                 }
                 let tooltip = file.getTooltip();
                 let tooltipElement = tooltip.getElement();
