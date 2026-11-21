@@ -26,7 +26,7 @@
 require_once(dirname(__FILE__) . '/../../../config.php');
 require_once(dirname(__FILE__) . '/../vpl.class.php');
 
-require_login();
+require_course_login($COURSE);
 
 if (!defined('BEHAT_SITE_RUNNING') || !BEHAT_SITE_RUNNING) {
     die('Behat site not running.');
