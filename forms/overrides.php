@@ -125,6 +125,25 @@ function compute_available_users_and_groups($vpl, $overrides, $overrideid) {
     return [$availableusers, $availablegroups];
 }
 
+/**
+ * Filters a CSV string of IDs against an allowed set of IDs.
+ *
+ * @param string $csv Comma-separated list of IDs.
+ * @param array $allowed Array of allowed IDs.
+ * @return string|null Comma-separated list of allowed IDs or null if none.
+ */
+function filterids($csv, $allowed) {
+    $rawids = explode(',', (string)$csv);
+    $ids = [];
+    foreach ($rawids as $id) {
+        $id = intval($id);
+        if (isset($allowed[$id])) {
+            $ids[] = $id;
+        }
+    }
+    return $ids ? implode(',', $ids) : null;
+}
+
 global $PAGE, $OUTPUT, $DB;
 
 $id = required_param('id', PARAM_INT);
@@ -183,12 +202,8 @@ if (in_array($action, ['new', 'edit', 'delete', 'copy'])) {
                     $override->$field = null;
                 }
             }
-            if (empty($override->userids)) {
-                $override->userids = null;
-            }
-            if (empty($override->groupids)) {
-                $override->groupids = null;
-            }
+            $override->userids = filterids($override->userids, $availableusers ?? []);
+            $override->groupids = filterids($override->groupids, $availablegroups ?? []);
             $override->vpl = $vplid;
             $old = [
                     'userids' => [],
@@ -327,10 +342,11 @@ foreach ($overrides as $override) {
         $users = [];
         if (!empty($override->userids)) {
             $users = array_map('fullname', $DB->get_records_list('user', 'id', explode(',', $override->userids), 'id'));
+            $users = array_map('s', $users);
         }
         if (!empty($override->groupids)) {
             $users = array_merge($users, array_map(function ($group) {
-                return '<i class="fa fa-fw fa-group"></i>&nbsp;' . $group->name;
+                return '<i class="fa fa-fw fa-group"></i>&nbsp;' . s($group->name);
             }, $DB->get_records_list('groups', 'id', explode(',', $override->groupids), 'id')));
         }
         $users = implode(', ', $users);
@@ -359,7 +375,7 @@ foreach ($overrides as $override) {
         }
         foreach (['reductionbyevaluation', 'freeevaluations'] as $field) {
             if ($override->$field !== null) {
-                $overridedata .= get_string($field, VPL) . ': ' . $override->$field . '<br>';
+                $overridedata .= get_string($field, VPL) . ': ' . s($override->$field) . '<br>';
             }
         }
         if ($overridedata == '') {
