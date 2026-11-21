@@ -334,8 +334,9 @@ final class privacy_provider_test extends base_fixture {
         $data = $writer->get_user_preferences('mod_vpl');
         // The terminalFontSize default is (12), so it is stripped.
         $expected = 'editorTheme: dark, editorShowInvisibles: 1';
-        $this->assertObjectHasProperty('vpl_ide_preferences', $data);
-        $this->assertEquals($expected, $data->vpl_ide_preferences->value);
+        $tag = \mod_vpl\util\userpreferences::PREFERENCE_NAME;
+        $this->assertObjectHasProperty($tag, $data);
+        $this->assertEquals($expected, $data->{$tag}->value);
     }
     /**
      * Method to test provider::delete_data_for_all_users_in_context.
