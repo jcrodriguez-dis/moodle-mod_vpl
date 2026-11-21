@@ -62,10 +62,13 @@ class restore_vpl_activity_structure_step extends \restore_activity_structure_st
     public function get_baseon_by_name($data) {
         global $DB;
         $basedonname = $this->get_baseon_name($data);
-        if ($basedonname) {
-            $basedon = $DB->get_record('vpl', ['course' => $data->course, 'name' => $basedonname]);
-            if ($basedon != false) {
-                return $basedon->id;
+        if ($basedonname !== '') {
+            $basedon = $DB->get_records('vpl', ['course' => $data->course, 'name' => $basedonname]);
+            if ($basedon != false && count($basedon) == 1) {
+                $base = reset($basedon);
+                if ($data->id != $base->id) {
+                    return $base->id;
+                }
             }
         }
         return false;
@@ -118,6 +121,14 @@ class restore_vpl_activity_structure_step extends \restore_activity_structure_st
         }
         if (! isset($data->activity_mode)) {
             $data->activity_mode = \mod_vpl\util\activity_modes::NORMAL;
+        }
+        // If the user does not have the capability to set jails, clear the jailservers field.
+        $coursecontext = context_course::instance($this->get_courseid());
+        if (
+            !is_siteadmin($this->task->get_userid()) &&
+            !has_capability('mod/vpl:setjails', $coursecontext, $this->task->get_userid())
+        ) {
+            $data->jailservers = '';
         }
         // Insert the choice record.
         $newitemid = $DB->insert_record('vpl', $data);

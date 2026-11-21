@@ -116,10 +116,8 @@ class restore_vpl_activity_task extends restore_activity_task {
     public function after_restore() {
         global $DB;
         $id = $this->get_activityid();
-        $data = $DB->get_record('vpl', [
-                'id' => $id,
-        ]);
-        if ($data != false && $data->basedon) {
+        $data = $DB->get_record('vpl', ['id' => $id]);
+        if ($data != false && !empty($data->basedon) && $data->basedon > 0) {
             $data->basedon = $this->structurestep->get_mappingid('vpl', $data->basedon);
             if ($data->basedon == false) {
                 $data->basedon = $this->structurestep->get_baseon_by_name($data);
