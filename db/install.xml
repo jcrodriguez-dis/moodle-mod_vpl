@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<XMLDB PATH="mod/vpl/db" VERSION="20210616" COMMENT="XMLDB file for Moodle mod/vpl"
+<XMLDB PATH="mod/vpl/db" VERSION="20261121" COMMENT="XMLDB file for Moodle mod/vpl"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="../../../lib/xmldb/xmldb.xsd"
 >
@@ -28,6 +28,7 @@
         <FIELD NAME="evaluate" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Let the student get feedback from the teacher tests"/>
         <FIELD NAME="evaluateonsubmission" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Evaluate the assigment when it is submitted or saved in editor"/>
         <FIELD NAME="automaticgrading" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Use automatic evaluation results as final grade and comments"/>
+        <FIELD NAME="senduserinfo" TYPE="int" LENGTH="1" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Send the user's name and email to execution servers when allowed by the site policy"/>
         <FIELD NAME="maxexetime" TYPE="int" LENGTH="6" NOTNULL="false" SEQUENCE="false" COMMENT="Maximum time in seconds to run, debug or evaluate the program"/>
         <FIELD NAME="restrictededitor" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Submission by means of restricted Code Editor that disable external paste."/>
         <FIELD NAME="activity_mode" TYPE="int" LENGTH="2" NOTNULL="true" DEFAULT="0" SEQUENCE="false" COMMENT="Activity mode: normal, example, nostudents, basedon, studentsreadonly, vplquestion."/>

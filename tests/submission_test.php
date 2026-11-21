@@ -530,8 +530,6 @@ final class submission_test extends base_fixture {
         $variables = mod_vpl_submission_CE::get_environment_variables($this->vplonefile, $data);
 
         $this->assertEquals('5', $variables['VPL_RUN_MODE']);
-        $this->assertEquals($this->students[0]->id, $variables['MOODLE_USER_ID']);
-        $this->assertEquals($this->students[0]->email, $variables['MOODLE_USER_EMAIL']);
         $this->assertArrayHasKey('VPL_COMPILATIONFAILED', $variables);
         $this->assertSame('', $variables['VPL_REMOVED_SUBFILES']);
         $this->assertSame(
@@ -542,6 +540,61 @@ final class submission_test extends base_fixture {
         $data->removedsubmittedlist = ['vpl_run.sh', 'common_script.sh'];
         $variables = mod_vpl_submission_CE::get_environment_variables($this->vplonefile, $data);
         $this->assertSame("vpl_run.sh\ncommon_script.sh\n", $variables['VPL_REMOVED_SUBFILES']);
+    }
+
+    /**
+     * Verify the user ID is always exported and the name and email follow the site policy.
+     *
+     * @param ?string $policy Site policy, or null for an unset policy.
+     * @param int $optin Activity opt-in.
+     * @param bool $expected Whether name and email should be exported.
+     * @dataProvider jail_userinfo_policy_provider
+     * @covers \mod_vpl_submission_CE::get_environment_variables
+     * @covers \mod_vpl_submission_CE::prepare_execution_info
+     */
+    public function test_jail_userinfo_policy(?string $policy, int $optin, bool $expected): void {
+        if ($policy === null) {
+            unset_config('jail_userinfo_policy', 'mod_vpl');
+        } else {
+            set_config('jail_userinfo_policy', $policy, 'mod_vpl');
+        }
+        $this->vplonefile->get_instance()->senduserinfo = $optin;
+        $this->assertTrue($this->vplonefile->update());
+        $user = $this->students[0];
+        $submissionrecord = $this->vplonefile->last_user_submission($user->id);
+        $submission = new mod_vpl_submission_CE($this->vplonefile, $submissionrecord);
+        $data = $submission->prepare_execution(mod_vpl_submission_CE::TRUN);
+        $params = json_decode(\vpl_jailserver_manager::jsonrpc_encode('request', $data), true)['params'];
+        $this->assertEquals($user->id, $params['userid']);
+        $environment = $params['files']['vpl_environment.sh'];
+        $this->assertStringContainsString(vpl_bash_export('MOODLE_USER_ID', $data->userid), $environment);
+        $userinfo = [
+            'MOODLE_USER_NAME' => $this->vplonefile->fullname($user, false),
+            'MOODLE_USER_EMAIL' => $user->email,
+        ];
+        foreach ($userinfo as $name => $value) {
+            if ($expected) {
+                $this->assertStringContainsString(vpl_bash_export($name, $value), $environment);
+            } else {
+                $this->assertStringNotContainsString($name . '=', $environment);
+            }
+        }
+    }
+
+    /**
+     * Provide the site policy and activity opt-in combinations.
+     *
+     * @return array
+     */
+    public static function jail_userinfo_policy_provider(): array {
+        return [
+            'unset is private' => [null, 1, false],
+            'unknown is private' => ['unknown', 1, false],
+            'never overrides opt-in' => [VPL_JAIL_USERINFO_NEVER, 1, false],
+            'teacher without opt-in' => [VPL_JAIL_USERINFO_TEACHER, 0, false],
+            'teacher opted in' => [VPL_JAIL_USERINFO_TEACHER, 1, true],
+            'always overrides opt-out' => [VPL_JAIL_USERINFO_ALWAYS, 0, true],
+        ];
     }
 
     /**

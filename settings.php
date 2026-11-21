@@ -148,15 +148,31 @@ $settings->add(
     )
 );
 $settings->add(new admin_setting_heading('heading2', '', get_string('jail_servers_config', COMPVPL)));
-$default = "# This server is only for test use.\n";
-$default .= "# Install your own Jail server and remove the following line as soon as possible.\n";
-$default .= 'https://demojail.dis.ulpgc.es';
+$defaultjailserver = <<<'EOD'
+# This server is only for test use. Uncomment the following line to use it.
+# https://demojail.dis.ulpgc.es
+# Install your own Jail server and remove the previous line as soon as possible.
+
+EOD;
 $settings->add(
     new admin_setting_configtextarea(
         $prefix . 'jail_servers',
         get_string('jail_servers', COMPVPL),
         get_string('jail_servers_description', COMPVPL),
-        $default
+        $defaultjailserver
+    )
+);
+$settings->add(
+    new admin_setting_configselect(
+        $prefix . 'jail_userinfo_policy',
+        get_string('senduserinfo', COMPVPL),
+        get_string('senduserinfo_policy_description', COMPVPL),
+        VPL_JAIL_USERINFO_NEVER,
+        [
+            VPL_JAIL_USERINFO_NEVER => get_string('senduserinfo_never', COMPVPL),
+            VPL_JAIL_USERINFO_TEACHER => get_string('senduserinfo_teacher', COMPVPL),
+            VPL_JAIL_USERINFO_ALWAYS => get_string('senduserinfo_always', COMPVPL),
+        ]
     )
 );
 $settings->add(

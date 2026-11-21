@@ -540,7 +540,7 @@ class vpl_jailserver_manager {
             $vpl = new \mod_vpl(null, $vpl->get_instance()->basedon);
             $serverstext .= "\n" . $vpl->get_instance()->jailservers;
         }
-        $serverstext .= "\n" . get_config('mod_vpl')->jail_servers;
+        $serverstext .= "\n" . get_config('mod_vpl', 'jail_servers');
         return $serverstext;
     }
 

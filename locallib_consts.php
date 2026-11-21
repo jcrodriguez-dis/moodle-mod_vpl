@@ -174,3 +174,12 @@ const VPL_EVENT_TYPE_DUE = 'duedate';
  * @var int VPL_LOCK_TIMEOUT Time in seconds to wait for a lock.
  */
 const VPL_LOCK_TIMEOUT = 10;
+
+/** @var string Do not send the user's name and email to execution servers. */
+const VPL_JAIL_USERINFO_NEVER = 'never';
+
+/** @var string Let the teacher opt in per activity. */
+const VPL_JAIL_USERINFO_TEACHER = 'teacher';
+
+/** @var string Send the user's name and email for all activities. */
+const VPL_JAIL_USERINFO_ALWAYS = 'always';

@@ -518,10 +518,14 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $variables['MOODLE_COURSE_ID'] = $vpl->get_course()->id;
         $variables['MOODLE_ACTIVITY_ID'] = $vpl->get_course_module()->id;
         $variables['VPL_EXECUTION_TYPE'] = $data->type;
+        $vplinstance = $vpl->get_instance();
+        $policy = get_config(COMPVPL, 'jail_userinfo_policy');
+        $senduserinfo = $policy === VPL_JAIL_USERINFO_ALWAYS
+            || ($policy === VPL_JAIL_USERINFO_TEACHER && (int) ($vplinstance->senduserinfo ?? 0) === 1);
         if (isset($data->userid)) {
             $userid = $data->userid;
             $variables['MOODLE_USER_ID'] = $userid;
-            if ($user = $DB->get_record('user', ['id' => $userid])) {
+            if ($senduserinfo && ($user = $DB->get_record('user', ['id' => $userid]))) {
                 $variables['MOODLE_USER_NAME'] = $vpl->fullname($user, false);
                 $variables['MOODLE_USER_EMAIL'] = $user->email;
             }
@@ -556,7 +560,6 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $variables['VPL_COMPILATIONFAILED'] = get_string('VPL_COMPILATIONFAILED', VPL);
         // Add identifications of variations if exist.
         $variables['VPL_VARIATION'] = '-';
-        $vplinstance = $vpl->get_instance();
         $usevariations = $vplinstance->usevariations;
         if ($usevariations) {
             $variations = $DB->get_records(VPL_VARIATIONS, ['vpl' => $vplinstance->id]);

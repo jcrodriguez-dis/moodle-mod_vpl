@@ -382,6 +382,12 @@ class mod_vpl_executionoptions_form extends \moodleform {
         $mform->setDefault('evaluation_mode', $instance->evaluation_mode);
         $mform->addHelpButton('evaluation_mode', 'evaluation_mode', COMPVPL);
 
+        if (get_config(COMPVPL, 'jail_userinfo_policy') === VPL_JAIL_USERINFO_TEACHER) {
+            $mform->addElement('selectyesno', 'senduserinfo', get_string('senduserinfo', COMPVPL));
+            $mform->setDefault('senduserinfo', $instance->senduserinfo);
+            $mform->addHelpButton('senduserinfo', 'senduserinfo', COMPVPL);
+        }
+
         $mform->addElement('selectyesno', 'run', get_string('run', COMPVPL));
         $mform->setDefault('run', $instance->run);
         $mform->addHelpButton('run', 'run', COMPVPL);
@@ -432,6 +438,9 @@ if ($fromform = $mform->get_data()) {
         $instance->evaluation_mode = $fromform->evaluation_mode;
         $instance->evaluateonsubmission = $fromform->evaluate && $fromform->evaluateonsubmission;
         $instance->automaticgrading = $fromform->evaluate && $fromform->automaticgrading;
+        if (get_config(COMPVPL, 'jail_userinfo_policy') === VPL_JAIL_USERINFO_TEACHER && isset($fromform->senduserinfo)) {
+            $instance->senduserinfo = (int) $fromform->senduserinfo;
+        }
 
         if ($vpl->update()) {
             // Save evaluator settings.

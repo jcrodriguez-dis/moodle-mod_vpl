@@ -732,5 +732,15 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2026052302();
         upgrade_mod_savepoint(true, $vpl500, 'vpl');
     }
+    if ($oldversion < 2026112100) {
+        global $DB;
+        $dbman = $DB->get_manager();
+        $table = new xmldb_table('vpl');
+        $field = new xmldb_field('senduserinfo', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'automaticgrading');
+        if (!$dbman->field_exists($table, $field)) {
+            $dbman->add_field($table, $field);
+        }
+        upgrade_mod_savepoint(true, 2026112100, 'vpl');
+    }
     return true;
 }

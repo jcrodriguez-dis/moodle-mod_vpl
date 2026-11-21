@@ -63,6 +63,7 @@ class backup_vpl_activity_structure_step extends \backup_activity_structure_step
         'evaluate',
         'evaluateonsubmission',
         'automaticgrading',
+        'senduserinfo',
         'maxexetime',
         'restrictededitor',
         'activity_mode',

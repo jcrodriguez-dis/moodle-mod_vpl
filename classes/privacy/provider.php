@@ -133,6 +133,14 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
         $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
         $collection->add_database_table('vpl_seb', $sebfields, 'privacy:metadata:vpl_seb');
 
+        $collection->add_external_location_link('vpl_jailserver', [
+            'userid' => 'privacy:metadata:vpl_jailserver:userid',
+            'fullname' => 'privacy:metadata:vpl_jailserver:fullname',
+            'email' => 'privacy:metadata:vpl_jailserver:email',
+            'group' => 'privacy:metadata:vpl_jailserver:group',
+            'files' => 'privacy:metadata:vpl_jailserver:files',
+        ], 'privacy:metadata:vpl_jailserver');
+
         // IDE user preferences.
         $collection->add_user_preference(\mod_vpl\util\userpreferences::PREFERENCE_NAME, 'privacy:metadata:vpl_ide_preferences');
 
