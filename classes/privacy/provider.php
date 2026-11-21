@@ -126,26 +126,15 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
             'timecreated' => 'privacy:metadata:vpl_seb:timecreated',
             'timemodified' => 'privacy:metadata:vpl_seb:timemodified',
         ];
-        $sebsessionfields = [
-            'vplid' => 'privacy:metadata:vpl_seb_session:vplid',
-            'userid' => 'privacy:metadata:vpl_seb_session:userid',
-            'token1public' => 'privacy:metadata:vpl_seb_session:token1public',
-            'token1private' => 'privacy:metadata:vpl_seb_session:token1private',
-            'configkey1' => 'privacy:metadata:vpl_seb_session:configkey1',
-            'sesskey' => 'privacy:metadata:vpl_seb_session:sesskey',
-            'token2private' => 'privacy:metadata:vpl_seb_session:token2private',
-            'configkey2' => 'privacy:metadata:vpl_seb_session:configkey2',
-        ];
         $collection->add_database_table('vpl', $vplfields, 'privacy:metadata:vpl');
         $collection->add_database_table('vpl_submissions', $submisionsfields, 'privacy:metadata:vpl_submissions');
         $collection->add_database_table('vpl_assigned_variations', $variationsfields, 'privacy:metadata:vpl_assigned_variations');
         $collection->add_database_table('vpl_assigned_overrides', $overridesfields, 'privacy:metadata:vpl_assigned_overrides');
         $collection->add_database_table('vpl_running_processes', $runningfields, 'privacy:metadata:vpl_running_processes');
         $collection->add_database_table('vpl_seb', $sebfields, 'privacy:metadata:vpl_seb');
-        $collection->add_database_table('vpl_seb_session', $sebsessionfields, 'privacy:metadata:vpl_seb_session');
 
         // IDE user preferences.
-        $collection->add_user_preference('vpl_ide_preferences', 'privacy:metadata:vpl_ide_preferences');
+        $collection->add_user_preference(\mod_vpl\util\userpreferences::PREFERENCE_NAME, 'privacy:metadata:vpl_ide_preferences');
 
         return $collection;
     }
@@ -307,8 +296,8 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
     public static function export_user_preferences(int $userid) {
         $context = \context_system::instance();
         $prefs = self::get_user_preferences($userid);
-        $tag = 'vpl_ide_preferences';
-        $str = get_string('privacy:metadata:' . $tag, 'mod_vpl');
+        $tag = \mod_vpl\util\userpreferences::PREFERENCE_NAME;
+        $str = get_string('privacy:metadata:vpl_ide_preferences', 'mod_vpl');
         writer::with_context($context)->export_user_preference('mod_vpl', $tag, $prefs, $str);
     }
 
