@@ -36,6 +36,8 @@ export const codeExtension = function() {
     var hoverTooltip = null;
     var signatureTooltip = null;
     var getOldContent = this.getContent;
+    let compileAnnotations = [];
+    let lspAnnotations = [];
     this.isCode = function() {
         return true;
     };
@@ -165,13 +167,34 @@ export const codeExtension = function() {
         }
         return session.getAnnotations();
     };
-    this.setAnnotations = function(a) {
+    this.getCompilationAnnotations = function() {
+        return this.isOpen() ? [...compileAnnotations] : [];
+    };
+    this.setCompilationAnnotations = function(annotations) {
         if (!this.isOpen()) {
+            compileAnnotations = [];
             return false;
         }
-        return session.setAnnotations(a);
+        compileAnnotations = [...annotations];
+        return session.setAnnotations(compileAnnotations.concat(lspAnnotations));
+    };
+    this.clearCompilationAnnotations = function() {
+        return this.setCompilationAnnotations([]);
+    };
+    this.setLSPAnnotations = function(annotations) {
+        if (!this.isOpen()) {
+            lspAnnotations = [];
+            return false;
+        }
+        lspAnnotations = [...annotations];
+        return session.setAnnotations(compileAnnotations.concat(lspAnnotations));
+    };
+    this.clearLSPAnnotations = function() {
+        return this.setLSPAnnotations([]);
     };
     this.clearAnnotations = function() {
+        compileAnnotations = [];
+        lspAnnotations = [];
         if (!this.isOpen()) {
             return false;
         }
@@ -345,6 +368,7 @@ export const codeExtension = function() {
     };
     this.close = function() {
         this.setOpen(false);
+        this.clearAnnotations();
         if (editor === null) {
             return;
         }

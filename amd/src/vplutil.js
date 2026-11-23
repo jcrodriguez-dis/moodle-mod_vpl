@@ -810,7 +810,7 @@ VPLUtil.cancelDirectRun = function(URL, processid) {
  * Process the result text to generate HTML with links to files and folding
  * @param {string} text Text to process
  * @param {string} filenames Array of filenames to generate links
- * @param {object} sh Array of ace editors corresponding to filenames
+ * @param {object} sh Array of editors with compilation annotation accessors, corresponding to filenames
  * @param {boolean} noFormat If true do not format the text
  * @param {boolean} addLinks If true add links to files
  * @param {boolean} folding If true add folding to titles
@@ -879,7 +879,7 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat = false, addLinks
             var reg = regFiles[i];
             var match;
             while ((match = reg.exec(line)) !== null) {
-                var anot = sh[i].getAnnotations();
+                var anot = sh[i].getCompilationAnnotations();
                 // Annotation format {row:,column:,raw:,type:error,warning,info;text} .
                 lastAnnotationFile = i;
                 used = true;
@@ -906,13 +906,13 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat = false, addLinks
                 var saniLine = VPLUtil.sanitizeText(match[3]);
                 var data = 'data-file="' + saniFilename + '" data-line="' + saniLine + '"';
                 line = line.replace(reg, '$1<a ' + href + ' class="vpl_fl" ' + data + '>' + saniFilename + '$2$3$4$5$6</a>');
-                sh[i].setAnnotations(anot);
+                sh[i].setCompilationAnnotations(anot);
             }
         }
         if (!used && lastAnnotation) {
             if (rawline !== '') {
                 lastAnnotation.text += "\n" + rawline;
-                sh[lastAnnotationFile].setAnnotations(sh[lastAnnotationFile].getAnnotations());
+                sh[lastAnnotationFile].setCompilationAnnotations(sh[lastAnnotationFile].getCompilationAnnotations());
             } else {
                 lastAnnotation = false;
             }
@@ -1226,7 +1226,7 @@ VPLUtil.loadModule = function(module, variable) {
             sh.setHighlightActiveLine(false);
             sh.setAutoScrollEditorIntoView(true);
             sh.setOption('maxLines', file.nl);
-            sh.getAnnotations = function() {
+            sh.getCompilationAnnotations = function() {
                 return this.getSession().getAnnotations();
             };
             sh.cleanAnnotations = function(annotations) {
@@ -1246,7 +1246,7 @@ VPLUtil.loadModule = function(module, variable) {
                 }
                 return res;
             };
-            sh.setAnnotations = function(a) {
+            sh.setCompilationAnnotations = function(a) {
                 return this.getSession().setAnnotations(this.cleanAnnotations(a));
             };
             sh.getTagId = function() {

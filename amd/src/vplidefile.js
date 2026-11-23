@@ -217,13 +217,17 @@ export const VPLFile = function(id, name, value, fileManager) {
     this.getAnnotations = function() {
         return [];
     };
-    this.setAnnotations = VPLUtil.doNothing;
+    this.getCompilationAnnotations = this.getAnnotations;
+    this.setCompilationAnnotations = VPLUtil.doNothing;
+    this.clearCompilationAnnotations = VPLUtil.doNothing;
     this.setFontSize = VPLUtil.doNothing;
     this.setTheme = VPLUtil.doNothing;
     this.setKeyBinding = VPLUtil.doNothing;
     this.setShowInvisibles = VPLUtil.doNothing;
     this.setLiveAutocompletion = VPLUtil.doNothing;
     this.clearAnnotations = VPLUtil.doNothing;
+    this.clearLSPAnnotations = VPLUtil.doNothing;
+    this.setLSPAnnotations = VPLUtil.doNothing;
     this.langSelection = VPLUtil.doNothing;
     // Adds support for current extensions
     this.extendToCodeEditor = codeExtension;

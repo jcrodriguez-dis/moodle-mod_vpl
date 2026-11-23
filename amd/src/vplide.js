@@ -1276,11 +1276,11 @@ var VPLIDE = function(rootId, options) {
         res.comments = res.evaluation;
         var files = fileManager.getFiles();
         var fileNames = [];
-        if (res.compilation || res.comments) {
+        if (res.compilation !== undefined || res.comments !== undefined) {
             for (let i = 0; i < files.length; i++) {
                 fileNames[i] = files[i].getFileName();
                 if (clearAnnotations) {
-                    files[i].clearAnnotations();
+                    files[i].clearCompilationAnnotations();
                 }
             }
         }
@@ -1315,7 +1315,7 @@ var VPLIDE = function(rootId, options) {
             reinitAccordion(gradeShow ? 1 : 0);
             if (go) {
                 for (let i = 0; i < files.length; i++) {
-                    let annotations = files[i].getAnnotations();
+                    let annotations = files[i].getCompilationAnnotations();
                     for (let j = 0; j < annotations.length; j++) {
                         if (annotations[j].type == 'error') {
                             fileManager.gotoFile(i, annotations[j].row + 1);

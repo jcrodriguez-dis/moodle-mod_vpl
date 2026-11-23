@@ -28,6 +28,7 @@ import {VPLLSClient} from 'mod_vpl/vpllsclient';
 import {VPLIDEButtons} from 'mod_vpl/vplidebutton';
 import {VPLVNCClient} from 'mod_vpl/vplvnc';
 import {binaryExtension} from 'mod_vpl/vplidebinaryfile';
+import {VPLFile} from 'mod_vpl/vplidefile';
 
 var tests = [];
 var result = [];
@@ -807,6 +808,50 @@ tests.push({
         assert(title.includes('2.00 h'), 'Long running time in hours');
         assert(title.includes('0 B'), 'Empty transfers in bytes');
         assert(title.includes(VPLUtil.str('ls:averageresponsetime') + ': -'), 'No misleading zero average before responses');
+    }
+});
+
+tests.push({
+    'name': "Compilation and LSP annotations are independent",
+    'test': async function() {
+        if (!window.ace || !window.ace.require('ace/autocomplete')) {
+            await new Promise(resolve => VPLUtil.loadScript([
+                '/../thirdpartylibs/ace/ace.js',
+                '/../thirdpartylibs/ace/ext-language_tools.js'
+            ], resolve));
+        }
+        const id = 10000;
+        const fixture = $('<div></div>').attr('id', 'vpl_file' + id).appendTo(document.body);
+        const lsManager = {openFile: VPLUtil.doNothing, getStatus: () => ''};
+        const fileManager = {
+            isReadOnly: VPLUtil.returnFalse,
+            getFontSize: () => 12,
+            getTheme: () => 'textmate',
+            getLSManager: () => lsManager,
+            adjustTabsTitles: VPLUtil.doNothing,
+        };
+        const file = new VPLFile(id, 'main.c', 'int main(void) {}\n', fileManager);
+        file.extendToCodeEditor();
+        file.adjustSize = VPLUtil.doNothing;
+        try {
+            file.open();
+            const lsp = {row: 0, column: 0, type: 'warning', text: 'LSP diagnostic'};
+            const result = 'main.c:1:1: error: compile diagnostic\nmore detail';
+            file.setLSPAnnotations([lsp]);
+            const html = VPLUtil.processResult(result, ['main.c'], [file], true);
+            assert(html.includes('class="vpl_fl"'), 'Compilation output still links to the source');
+            assertEquals(2, file.getAnnotations().length, 'One compiler annotation and one LSP annotation');
+            assertEquals(result, file.getCompilationAnnotations()[0].text, 'Compiler detail stays in its annotation');
+            file.setLSPAnnotations([]);
+            assertEquals(1, file.getAnnotations().length, 'An empty LSP update keeps the compiler error');
+            file.setLSPAnnotations([lsp]);
+            file.clearCompilationAnnotations();
+            assertEquals(1, file.getAnnotations().length, 'Clearing compiler errors keeps the LSP diagnostic');
+            assertEquals(lsp.text, file.getAnnotations()[0].text, 'The remaining annotation comes from the LSP');
+        } finally {
+            file.close();
+            fixture.remove();
+        }
     }
 });
 

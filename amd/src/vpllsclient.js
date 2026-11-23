@@ -725,6 +725,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
         for (let file of files) {
             if (file.getLSLang() == language) {
                 self.removeMarkersOfFile(file);
+                file.clearLSPAnnotations();
             }
         }
         allMarkers = [];
@@ -737,7 +738,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
     function clearStaleDiagnostics(file) {
         if (allMarkers.some((marker) => marker.fileName == file.getFileName())) {
             self.removeMarkersOfFile(file);
-            file.clearAnnotations();
+            file.clearLSPAnnotations();
         }
     }
     /**
@@ -798,7 +799,7 @@ export const VPLLSClient = function(APIURL, fileManager, language, locale) {
                     text: diagnostic.message
                 });
             }
-            editorSession.setAnnotations(annotation);
+            file.setLSPAnnotations(annotation);
         }
     }
     /**
