@@ -87,6 +87,7 @@ final class webservice_test extends base_fixture {
     protected function setUp(): void {
         global $CFG, $DB;
         parent::setUp();
+        set_config('jail_servers', 'https://demojail.dis.ulpgc.es', 'mod_vpl');
         $this->setupinstances();
         $CFG->enablewebservices = true;
         $DB->insert_record('external_services', [
