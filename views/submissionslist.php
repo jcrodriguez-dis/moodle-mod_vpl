@@ -380,6 +380,7 @@ $params = [
 $evaluateusers = [];
 $hasevaluablesubmissions = false;
 if ($evaluate > 0) {
+    require_sesskey();
     require_once($CFG->dirroot . '/mod/vpl/editor/editor_utility.php');
     vpl_editor_util::generate_requires_evaluation();
 }
@@ -770,7 +771,7 @@ if (! $downloading) {
     $urlsel->set_label(get_string('submissionselection', VPL));
     echo $OUTPUT->render($urlsel);
     $urlbase = $CFG->wwwroot . "/mod/vpl/views/submissionslist.php?id=$id&sort=$sort"
-            . "&sortdir=$sortdir&selection=$subselection&evaluate=";
+            . "&sortdir=$sortdir&selection=$subselection&sesskey=" . sesskey() . "&evaluate=";
     $urls = [
             0 => null,
             2 => $urlbase . '2',

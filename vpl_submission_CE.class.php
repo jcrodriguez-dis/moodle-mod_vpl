@@ -915,12 +915,10 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $process->submissionid = $instance->id;
         $response->processid = vpl_running_processes::set($process);
         if ($type < self::TEVALUATE) {
-            if ($type == self::TRUN) {
-                $instance->run_count++;
-            } else {
-                $instance->debug_count++;
-            }
-            $DB->update_record(VPL_SUBMISSIONS, $instance);
+            $counter = $type == self::TRUN ? 'run_count' : 'debug_count';
+            $instance->$counter++;
+            $params = ['id' => $instance->id];
+            $DB->set_field(VPL_SUBMISSIONS, $counter, $instance->$counter, $params);
         }
         return $response;
     }
@@ -980,19 +978,20 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         if ($response === false) {
             throw new Exception(get_string('serverexecutionerror', VPL) . ' getresult give no response');
         }
-        if ($response['interactive'] == 0 && $processinfo->type == self::TEVALUATE) {
-            $this->saveCE($response);
-            if ($response['executed'] > 0) {
-                // If automatic grading.
-                if ($this->vpl->get_instance()->automaticgrading) {
-                    $data = new stdClass();
-                    $data->grade = $this->proposedGrade($response['execution']);
-                    $data->comments = $this->proposedComment($response['execution']);
-                    $this->set_grade($data, true);
-                } else if ($this->get_instance()->dategraded > 0 && $this->get_instance()->grader == 0) {
-                    $this->remove_grade();
+        if ($response['interactive'] == 0 && $processinfo->type == self::TEVALUATE && $this->instance->id > 0) {
+            $this->with_lock(function () use ($response) {
+                $this->saveCE($response);
+                if ($response['executed'] > 0) {
+                    if ($this->vpl->get_instance()->automaticgrading && !$this->is_manually_graded()) {
+                        $data = new stdClass();
+                        $data->grade = $this->proposedGrade($response['execution']);
+                        $data->comments = $this->proposedComment($response['execution']);
+                        $this->set_grade_locked($data, true);
+                    } else if (!$this->vpl->get_instance()->automaticgrading && $this->is_automatically_graded()) {
+                        $this->remove_grade_locked();
+                    }
                 }
-            }
+            });
         }
         return $this->get_CE_for_editor($response);
     }

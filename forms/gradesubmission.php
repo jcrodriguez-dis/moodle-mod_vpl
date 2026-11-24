@@ -143,10 +143,6 @@ if (
         } else {
             $logclass = \mod_vpl\event\submission_graded::class;
         }
-        $gradinginstance = $submission->get_grading_instance();
-        if ($gradinginstance) {
-            $gradinginstance->submit_and_get_grade($fromform->advancedgrading, $submissionid);
-        }
         if ($submission->set_grade($fromform)) {
             $logclass::log($submission);
         } else {

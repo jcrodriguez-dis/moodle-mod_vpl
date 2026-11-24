@@ -36,7 +36,7 @@ require_login($course, true, $cm);
 $vpl = new mod_vpl($id);
 
 $userid = optional_param('userid', false, PARAM_INT);
-$parms = [ 'id' => $id ];
+$parms = ['id' => $id];
 if ($userid) {
     $parms['userid'] = $userid;
 }
@@ -50,6 +50,13 @@ if ((! $userid || $userid == $USER->id) && $vpl->get_instance()->evaluate) { // 
 }
 if ($USER->id == $userid) {
     $vpl->restrictions_check();
+}
+if (!confirm_sesskey(optional_param('sesskey', 'no sesskey', PARAM_RAW))) {
+    $vpl->print_header(get_string('evaluation', VPL));
+    $url = new moodle_url($PAGE->url, ['sesskey' => sesskey()]);
+    echo $OUTPUT->single_button($url, get_string('evaluate', VPL), 'post');
+    $vpl->print_footer();
+    die();
 }
 vpl_editor_util::generate_requires_evaluation();
 // Display page.

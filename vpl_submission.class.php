@@ -301,6 +301,24 @@ class mod_vpl_submission {
     }
 
     /**
+     * Return if submission has been manually graded
+     *
+     * @return bool
+     */
+    public function is_manually_graded() {
+        return $this->instance->dategraded > 0 && $this->instance->grader > 0;
+    }
+
+    /**
+     * Return if submission has automatically graded
+     *
+     * @return bool
+     */
+    public function is_automatically_graded() {
+        return $this->instance->dategraded > 0 && $this->instance->grader == 0;
+    }
+
+    /**
      * Cache of gradebook grades of VPL instances.
      * @var array
      */
@@ -363,6 +381,15 @@ class mod_vpl_submission {
      * @return true if removed and false if not
      */
     public function remove_grade() {
+        return $this->with_lock(fn() => $this->remove_grade_locked());
+    }
+
+    /**
+     * Remove the grade while the submission lock is held.
+     *
+     * @return bool Whether the grade was removed.
+     */
+    protected function remove_grade_locked() {
         global $CFG;
         global $DB;
         ignore_user_abort(true);
@@ -399,7 +426,12 @@ class mod_vpl_submission {
         $this->instance->dategraded = 0;
         $this->instance->grade = null;
         $fn = $this->get_gradecommentsfilename();
-        if (! $DB->update_record(VPL_SUBMISSIONS, $this->instance)) {
+        if (! $DB->update_record(VPL_SUBMISSIONS, [
+            'id' => $this->instance->id,
+            'grader' => 0,
+            'dategraded' => 0,
+            'grade' => null,
+        ])) {
             throw new moodle_exception('error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS);
         } else {
             if (file_exists($fn)) {
@@ -493,9 +525,23 @@ class mod_vpl_submission {
      * @return bool true if set and false if not
      */
     public function set_grade($info, $automatic = false) {
+        return $this->with_lock(fn() => $this->set_grade_locked($info, $automatic));
+    }
+
+    /**
+     * Update the grade while the submission lock is held.
+     *
+     * @param object $info Grade and feedback.
+     * @param bool $automatic Whether this grade comes from automatic evaluation.
+     * @return bool Whether the grade was saved.
+     */
+    protected function set_grade_locked($info, $automatic) {
         global $USER;
         global $CFG;
         global $DB;
+        if ($automatic && $this->is_manually_graded()) {
+            return false;
+        }
         ignore_user_abort(true);
         $scaleid = $this->vpl->get_grade();
         if ($scaleid == 0 && empty($CFG->enableoutcomes)) { // No scale no outcomes.
@@ -544,11 +590,7 @@ class mod_vpl_submission {
                 $gradeinfo['feedback'] = $this->result_to_html($comments, false);
                 $gradeinfo['feedbackformat'] = FORMAT_HTML;
             }
-            if ($this->instance->grader > 0) { // Don't add grader if automatic.
-                $gradeinfo['usermodified'] = $this->instance->grader;
-            } else { // This avoid to use an unexisting userid (0) in the gradebook.
-                $gradeinfo['usermodified'] = $USER->id;
-            }
+            $gradeinfo['usermodified'] = $automatic ? $USER->id : $this->instance->grader;
             $gradeinfo['datesubmitted'] = $this->instance->datesubmitted;
             $gradeinfo['dategraded'] = $this->instance->dategraded;
             foreach ($usersid as $userid) {
@@ -593,7 +635,12 @@ class mod_vpl_submission {
                 }
             }
         }
-        if (! $DB->update_record('vpl_submissions', $this->instance)) {
+        if (! $DB->update_record(VPL_SUBMISSIONS, [
+            'id' => $this->instance->id,
+            'grader' => $this->instance->grader,
+            'dategraded' => $this->instance->dategraded,
+            'grade' => $this->instance->grade,
+        ])) {
             throw new moodle_exception('error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS);
         }
         return true;
@@ -970,9 +1017,10 @@ class mod_vpl_submission {
             (($this->vpl->get_instance()->evaluate && ! $this->is_graded()) ||
              $this->vpl->has_capability(VPL_GRADE_CAPABILITY))
         ) {
-            $url = vpl_mod_href('forms/evaluation.php', 'id', $id, 'userid', $userid);
+            $params = ['id' => $id, 'userid' => $userid, 'sesskey' => sesskey()];
+            $url = new moodle_url('/mod/vpl/forms/evaluation.php', $params);
             echo ' (' . vpl_get_awesome_icon('evaluate');
-            echo '<a href="' . $url . '">' . get_string('evaluate', VPL);
+            echo '<a href="' . $url->out() . '">' . get_string('evaluate', VPL);
             echo '</a>)';
         }
         echo '<br>';
@@ -1411,7 +1459,9 @@ class mod_vpl_submission {
         }
         if ($newevaluation) {
             $this->instance->nevaluations++;
-            $DB->update_record(VPL_SUBMISSIONS, $this->instance);
+            $nevaluations = $this->instance->nevaluations;
+            $params = ['id' => $this->instance->id];
+            $DB->set_field(VPL_SUBMISSIONS, 'nevaluations', $nevaluations, $params);
         }
     }
 
@@ -1553,5 +1603,30 @@ class mod_vpl_submission {
             $ret .= $filename . ' ' . strlen($data) . 'b ' . count(explode($nl, $data)) . 'l';
         }
         return $ret;
+    }
+
+    /**
+     * Run an operation with an exclusive lock and a fresh submission record.
+     *
+     * @param callable $operation Operation to run while the lock is held.
+     * @return mixed Result of the operation.
+     */
+    protected function with_lock(callable $operation) {
+        global $DB;
+        $lockfactory = \core\lock\lock_config::get_lock_factory('mod_vpl');
+        $submissionid = $this->instance->id;
+        $lock = $lockfactory->get_lock("submission_grade_{$submissionid}", VPL_LOCK_TIMEOUT);
+        if (!$lock) {
+            throw new moodle_exception('locktimeout');
+        }
+        try {
+            $this->instance = $DB->get_record(VPL_SUBMISSIONS, [
+                'id' => $submissionid,
+                'vpl' => $this->vpl->get_instance()->id,
+            ], '*', MUST_EXIST);
+            return $operation();
+        } finally {
+            $lock->release();
+        }
     }
 }

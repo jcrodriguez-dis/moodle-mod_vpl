@@ -243,6 +243,36 @@ final class submission_test extends base_fixture {
     }
 
     /**
+     * Evaluation results and automatic grading cannot replace a newer manual grade.
+     *
+     * @covers \mod_vpl_submission::savece
+     * @covers \mod_vpl_submission::set_grade
+     */
+    public function test_stale_evaluation_preserves_manual_grade(): void {
+        global $DB;
+        $student = $this->students[0];
+        $teacher = $this->editingteachers[0];
+        $record = $this->vplonefile->last_user_submission($student->id);
+        $expectedevaluations = $record->nevaluations + 1;
+        $evaluation = new mod_vpl_submission_CE($this->vplonefile, $record);
+
+        $this->setUser($teacher);
+        $manual = new mod_vpl_submission($this->vplonefile, $record->id);
+        $this->assertTrue($manual->set_grade((object) ['grade' => 5, 'comments' => 'Manual feedback']));
+
+        $this->setUser($student);
+        $evaluation->savece(['compilation' => '', 'execution' => 'Evaluation result', 'executed' => 1]);
+        $this->assertFalse($evaluation->set_grade((object) ['grade' => 1, 'comments' => 'Automatic feedback'], true));
+
+        $saved = $DB->get_record(VPL_SUBMISSIONS, ['id' => $record->id], '*', MUST_EXIST);
+        $this->assertEquals($expectedevaluations, $saved->nevaluations);
+        $this->assertEquals($teacher->id, $saved->grader);
+        $this->assertEquals($manual->get_instance()->dategraded, $saved->dategraded);
+        $this->assertEquals(5, $saved->grade);
+        $this->assertSame('Manual feedback', $evaluation->get_grade_comments());
+    }
+
+    /**
      * Method to test mod_vpl_submission::remove_grade_reduction in title
      * @covers \mod_vpl_submission::remove_grade_reduction
      */

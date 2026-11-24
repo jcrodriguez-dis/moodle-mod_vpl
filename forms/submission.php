@@ -152,19 +152,23 @@ if ($fromform = $mform->get_data()) {
 
         // If evaluate on submission.
         $submission = new mod_vpl_submission($vpl, $subid);
+        $params = ['id' => $id, 'userid' => $userid];
         if ($instance->evaluate && $instance->evaluateonsubmission && $submission->has_submitted_files()) {
-            $redirecturl = vpl_mod_href('forms/evaluation.php', 'id', $id, 'userid', $userid);
+            $params['sesskey'] = sesskey();
+            $redirecturl = new moodle_url('/mod/vpl/forms/evaluation.php', $params);
         } else {
-            $redirecturl = vpl_mod_href('forms/submissionview.php', 'id', $id, 'userid', $userid);
+            $redirecturl = new moodle_url('/mod/vpl/forms/submissionview.php', $params);
         }
         $message = get_string('saved', VPL);
         if ($ignoredfiles > 0) {
             $message .= ' ' . get_string('archivefilesignored', VPL, $ignoredfiles);
         }
-        vpl_redirect($redirecturl, $message);
+        vpl_redirect($redirecturl->out(), $message);
     } else {
+        $params = ['id' => $id, 'userid' => $userid];
+        $redirecturl = new moodle_url('/mod/vpl/forms/submission.php', $params);
         vpl_redirect(
-            vpl_mod_href('forms/submission.php', 'id', $id, 'userid', $userid),
+            $redirecturl->out(),
             get_string('notsaved', VPL) . '<br>' . $errormessage,
             'error'
         );
