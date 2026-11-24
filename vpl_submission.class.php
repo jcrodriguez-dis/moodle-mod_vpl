@@ -426,12 +426,13 @@ class mod_vpl_submission {
         $this->instance->dategraded = 0;
         $this->instance->grade = null;
         $fn = $this->get_gradecommentsfilename();
-        if (! $DB->update_record(VPL_SUBMISSIONS, [
+        $params = [
             'id' => $this->instance->id,
             'grader' => 0,
             'dategraded' => 0,
             'grade' => null,
-        ])) {
+        ];
+        if (! $DB->update_record(VPL_SUBMISSIONS, $params)) {
             throw new moodle_exception('error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS);
         } else {
             if (file_exists($fn)) {
@@ -635,12 +636,13 @@ class mod_vpl_submission {
                 }
             }
         }
-        if (! $DB->update_record(VPL_SUBMISSIONS, [
+        $params = [
             'id' => $this->instance->id,
             'grader' => $this->instance->grader,
             'dategraded' => $this->instance->dategraded,
             'grade' => $this->instance->grade,
-        ])) {
+        ];
+        if (! $DB->update_record(VPL_SUBMISSIONS, $params)) {
             throw new moodle_exception('error:recordnotupdated', 'mod_vpl', '', VPL_SUBMISSIONS);
         }
         return true;
