@@ -609,7 +609,7 @@ class mod_vpl {
      * @return bool
      */
     public function is_seb_browser() {
-        return strpos($_SERVER['HTTP_USER_AGENT'], 'SEB') !== false;
+        return strpos(\core_useragent::get_user_agent_string() ?? '', 'SEB') !== false;
     }
 
     /**

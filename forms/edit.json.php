@@ -58,8 +58,9 @@ try {
     \mod_vpl\util\phpconfig::increase_memory_limit();
     $rawdata = file_get_contents("php://input");
     $rawdatasize = strlen($rawdata);
-    if ($_SERVER['CONTENT_LENGTH'] != $rawdatasize) {
-        throw new Exception("Ajax POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawdatasize)");
+    $contentlength = $_SERVER['CONTENT_LENGTH'] ?? null;
+    if ($contentlength !== null && $contentlength != $rawdatasize) {
+        throw new Exception("Ajax POST error: CONTENT_LENGTH expected " . $contentlength . " found $rawdatasize)");
     }
     $actiondata = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     mod_vpl_edit::checksesskey($vpl, $actiondata);

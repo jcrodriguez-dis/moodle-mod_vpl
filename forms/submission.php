@@ -65,16 +65,6 @@ if ($mform->is_cancelled()) {
 }
 if ($fromform = $mform->get_data()) {
     \mod_vpl\util\phpconfig::increase_memory_limit();
-    $rawpostsize = strlen(file_get_contents("php://input"));
-    if ($_SERVER['CONTENT_LENGTH'] != $rawpostsize) {
-        $error = "NOT SAVED (Http POST error: CONTENT_LENGTH expected " . $_SERVER['CONTENT_LENGTH'] . " found $rawpostsize)";
-        vpl_redirect(
-            vpl_mod_href('forms/submission.php', 'id', $id, 'userid', $userid),
-            $error,
-            'error'
-        );
-        die();
-    }
     $rfn = $vpl->get_required_fgm();
     $reqfiles = $rfn->getFileList();
     $files = [];

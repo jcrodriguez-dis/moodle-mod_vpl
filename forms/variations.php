@@ -216,7 +216,7 @@ if ($canceled) {
     $mform = new form($href, 'delete', $varid);
     $fromform = $mform->get_data();
     if ($fromform) {
-        if (isset($_POST['delete'])) { // Deletes variation and its assignned variations.
+        if (isset($fromform->delete)) { // Deletes variation and its assignned variations.
             $varid = $fromform->varid;
             $params = ['id' => $varid, 'vpl' => $vplid];
             if ($DB->record_exists(VPL_VARIATIONS, $params)) {
