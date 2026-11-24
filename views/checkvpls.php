@@ -88,6 +88,9 @@ foreach ($ovpls as $ovpl) {
         // Check groups concistence.
         $groupingid = $vpl->get_course_module()->groupingid;
         $groups = groups_get_all_groups($vpl->get_course()->id, 0, $groupingid);
+        if (empty($groups)) {
+            $groups = [];
+        }
         $students = $vpl->get_students();
         foreach ($students as $student) {
             $student->groups = [];

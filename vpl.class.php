@@ -1003,6 +1003,9 @@ class mod_vpl {
         if ($groupid == '') {
             $cm = $this->get_course_module();
             $groups = groups_get_all_groups($this->get_course()->id, 0, $cm->groupingid);
+            if (empty($groups)) {
+                $groups = [];
+            }
             foreach ($groups as $cgroup) {
                 $this->update_group_v32($cgroup->id);
             }
@@ -1352,7 +1355,7 @@ class mod_vpl {
     }
 
     /**
-     * Get array of students for this activity in current group.
+     * Get array of students for this activity in current group or all participants if no group is set.
      * Following separate_groups setting, only students in the current group are returned.
      * @param string $extrafields optional parm with extrafields e.g. 'u.nameq, u.name2'
      *
@@ -1368,6 +1371,26 @@ class mod_vpl {
             $currentgroup = 0;
         }
         return $this->get_students($currentgroup, $extrafields);
+    }
+    /**
+     * Get array of groups for this activity.
+     * Following separate_groups setting, only groups user belongs to are returned.
+     * @return array of objects
+     */
+    public function get_groups_in_current_grouping() {
+        $all = groups_get_all_groups($this->get_course()->id, 0, $this->get_course_module()->groupingid);
+        if (empty($all)) {
+            return [];
+        }
+        if ($this->has_access_all_groups()) {
+            return $all;
+        }
+        $allowed = groups_get_activity_allowed_groups($this->get_course_module());
+        if (empty($allowed)) {
+            return [];
+        }
+        $list = array_intersect_key($all, $allowed);
+        return $list;
     }
     /**
      * Return if the current user is inconsistent with the real user.
@@ -1435,15 +1458,19 @@ class mod_vpl {
      * @return Array of user objects
      */
     public function get_group_members($groupid) {
-        if (! isset(self::$usergroupscache[$groupid])) {
+        $vplid = $this->get_instance()->id;
+        $id = "{$vplid}_{$groupid}";
+        if (! isset(self::$usergroupscache[$id])) {
             $gm = groups_get_members($groupid);
-            if ($gm) {
-                self::$usergroupscache[$groupid] = $gm;
-            } else {
-                self::$usergroupscache[$groupid] = [];
+            if (empty($gm)) {
+                $gm = [];
             }
+            $gm = array_filter($gm, function ($user) {
+                return !$this->is_teacher($user->id);
+            });
+            self::$usergroupscache[$id] = $gm;
         }
-        return self::$usergroupscache[$groupid];
+        return self::$usergroupscache[$id];
     }
 
     /**
@@ -2466,9 +2493,7 @@ class mod_vpl {
         $result->gradedcount = $ngraded;
         if ($nstudents === null) {
             if ($this->is_group_activity()) {
-                $groupingid = $this->get_course_module()->groupingid;
-                $courseid = $this->get_course()->id;
-                $allstudents = groups_get_all_groups($courseid, 0, $groupingid);
+                $allstudents = $this->get_groups_in_current_grouping();
                 $allstudents = $this->filter_empty_groups($allstudents);
             } else {
                 $allstudents = $this->get_students_in_current_group();
@@ -2545,10 +2570,25 @@ class mod_vpl {
      */
     public function filter_submissions_by_students($submissions, $students) {
         $filtersubmissions = [];
-        $field = $this->is_group_activity() ? 'groupid' : 'userid';
-        foreach ($submissions as $sub) {
-            if (isset($students[$sub->$field])) {
-                $filtersubmissions[$sub->$field] = $sub;
+        if ($this->is_group_activity()) {
+            $groups = $students;
+            foreach ($submissions as $sub) {
+                if (isset($groups[$sub->groupid])) {
+                    // Skip if we already have a more recent submission for this group.
+                    if (
+                        isset($filtersubmissions[$sub->groupid]) &&
+                        $filtersubmissions[$sub->groupid]->datesubmitted > $sub->datesubmitted
+                    ) {
+                        continue;
+                    }
+                    $filtersubmissions[$sub->groupid] = $sub;
+                }
+            }
+        } else {
+            foreach ($submissions as $sub) {
+                if (isset($students[$sub->userid])) {
+                    $filtersubmissions[$sub->userid] = $sub;
+                }
             }
         }
         return $filtersubmissions;

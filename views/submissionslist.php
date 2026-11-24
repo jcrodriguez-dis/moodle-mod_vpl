@@ -332,9 +332,8 @@ function vpl_show_graders_table($id, $usernumber, $gradersdata) {
  * @return array of objects
  */
 function vpl_get_students($vpl) {
-    $cm = $vpl->get_course_module();
     if ($vpl->is_group_activity()) {
-        return groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+        return $vpl->get_groups_in_current_grouping();
     } else {
         return $vpl->get_students_in_current_group();
     }
@@ -445,9 +444,14 @@ foreach ($filteredstudents as $uginfo) {
             continue;
         }
     } else {
-        $nsubmissions++;
         $subinstance = $submissions[$uginfo->id];
-        $submission = new mod_vpl_submission_CE($vpl, $subinstance, true);
+        try {
+            $submission = new mod_vpl_submission_CE($vpl, $subinstance, true);
+        } catch (Exception $e) {
+            // Failed to create submission object, skip this submission.
+            continue;
+        }
+        $nsubmissions++;
         $subid = $subinstance->id;
         $subinstance->gradesortable = null;
         if ($subinstance->dategraded > 0) {

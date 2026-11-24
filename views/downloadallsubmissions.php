@@ -150,7 +150,7 @@ if (! $currentgroup) {
 }
 if ($vpl->is_group_activity()) {
     $idfiels = 'groupid';
-    $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+    $list = $vpl->get_groups_in_current_grouping();
 } else {
     $idfiels = 'userid';
     $list = $vpl->get_students_in_current_group('u.username');

@@ -99,7 +99,8 @@ class mod_vpl_submission {
      *
      * @param mod_vpl $vpl
      * @param int|object $rid submission DB record instance object or record id
-     * @param bool $checkgroup whether to check if separate group allow access
+     * @param bool $checkgroup whether to check access using the recorded group for group work,
+     *     or the submitter's current groups for individual work
      * @throws Exception if the submission id is invalid or access is not allowed
      */
     public function __construct(mod_vpl $vpl, $rid, $checkgroup = false) {
@@ -109,17 +110,21 @@ class mod_vpl_submission {
         if (is_object($rid)) {
             $this->instance = $rid;
         } else {
-            $this->instance = $DB->get_record('vpl_submissions', [
-                    'id' => $rid,
-            ]);
-            if (! $this->instance) {
-                throw new Exception('vpl_submission id error');
-            }
+            $this->instance = $DB->get_record('vpl_submissions', ['id' => $rid]);
+        }
+        if (! $this->instance || $this->instance->vpl != $vpl->get_instance()->id) {
+            throw new Exception('vpl_submission id error');
         }
         $this->submittedfgm = null;
-        // Check if the current user has access to the group access if required.
         if ($checkgroup) {
-            self::check_group_access($this->vpl, $this->instance->userid);
+            if ($vpl->is_group_activity()) {
+                $groupid = $this->instance->groupid ?? -1;
+                if (!isset($vpl->get_groups_in_current_grouping()[$groupid])) {
+                    throw new Exception('Access not allowed for this group.');
+                }
+            } else {
+                self::check_group_access($vpl, $this->instance->userid);
+            }
         }
     }
 

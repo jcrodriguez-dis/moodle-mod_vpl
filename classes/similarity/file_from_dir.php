@@ -55,42 +55,6 @@ class file_from_dir extends file_from_base {
     protected $vplid;
 
     /**
-     * Processes a GAP user file to extract user information.
-     * This method reads the contents of a file named 'datospersonales.gap'
-     * and extracts the user's NIF, name, and surname.
-     * It then stores the user's full name in the static $usersname array.
-     * This is for compatibility with GAP 2.x application.
-     * @param string $filepath The path to the file to process.
-     */
-    public static function process_gap_userfile($filepath) {
-        if (strtolower(basename($filepath)) == 'datospersonales.gap') {
-            $nif = '';
-            $nombre = '';
-            $apellidos = '';
-            $lines = explode("\n", file_get_contents($filepath));
-            if (count($lines) > 3) {
-                if (strpos($lines[1], 'NIF=') !== false) {
-                    $nif = substr($lines[1], 4);
-                }
-                if (strpos($lines[2], 'Nombre=') !== false) {
-                    $nombre = substr($lines[2], 7);
-                }
-                if (strpos($lines[3], 'Apellidos=') !== false) {
-                    $apellidos = substr($lines[3], 10);
-                }
-            }
-            if ($nif > '' && $nombre > '' && $apellidos > '') {
-                global $CFG;
-                if ($CFG->fullnamedisplay == 'lastname firstname') {
-                    self::$usersname[$nif] = mb_convert_encoding($apellidos . ', ' . $nombre, 'utf-8');
-                } else {
-                    self::$usersname[$nif] = mb_convert_encoding($nombre . ' ' . $apellidos, 'utf-8');
-                }
-            }
-        }
-    }
-
-    /**
      * Returns the user ID from the filename.
      * This is for compatibility with GAP 2.x application.
      * @param string $filename The name of the file.

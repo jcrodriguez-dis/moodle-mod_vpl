@@ -152,11 +152,16 @@ class vpl_list_util {
      */
     public static function count_graded($vpl) {
         $subs = $vpl->all_last_user_submission('s.dategraded, s.userid, s.groupid');
-        $students = $vpl->get_students_in_current_group();
-        $subs = $vpl->filter_submissions_by_students($subs, $students);
+        if ($vpl->is_group_activity()) {
+            $groups = $vpl->get_groups_in_current_grouping();
+            $subs = $vpl->filter_submissions_by_students($subs, $groups);
+        } else {
+            $students = $vpl->get_students_in_current_group();
+            $subs = $vpl->filter_submissions_by_students($subs, $students);
+        }
         return [
-                'submissions' => count($subs),
-                'graded' => $vpl->number_of_graded_submissions($subs),
+            'submissions' => count($subs),
+            'graded' => $vpl->number_of_graded_submissions($subs),
         ];
     }
 }

@@ -25,6 +25,7 @@
 
 namespace mod_vpl;
 
+use mod_vpl\similarity\preprocess;
 use mod_vpl_submission;
 use mod_vpl_submission_CE;
 
@@ -160,6 +161,85 @@ final class submission_test extends base_fixture {
             $cases[$name . ' live update'] = array_merge($arguments, [false, true]);
         }
         return $cases;
+    }
+
+    /**
+     * Bulk group selection and similarity processing respect the grader's group access.
+     *
+     * @covers \mod_vpl::get_groups_in_current_grouping
+     * @covers \mod_vpl\similarity\preprocess::activity
+     * @covers \mod_vpl_submission::__construct
+     */
+    public function test_group_work_bulk_operations_respect_separate_groups(): void {
+        global $DB;
+        $this->setAdminUser();
+        $instance = $this->getDataGenerator()->create_module('vpl', [
+            'course' => $this->course->id,
+            'groupmode' => SEPARATEGROUPS,
+            'groupingid' => $this->groupings[0]->id,
+            'worktype' => 1,
+        ]);
+        $vpl = new \mod_vpl($instance->cmid);
+        $teacher = $this->teachers[0];
+        $roleid = $DB->get_field('role', 'id', ['shortname' => 'teacher'], MUST_EXIST);
+        $contextid = $vpl->get_context()->id;
+        assign_capability('moodle/site:accessallgroups', CAP_PREVENT, $roleid, $contextid, true);
+        assign_capability(VPL_MANAGE_CAPABILITY, CAP_PREVENT, $roleid, $contextid, true);
+        $this->assertTrue(groups_add_member($this->groups[0]->id, $teacher->id));
+        $this->assertTrue($vpl->is_group_activity());
+        $this->assertTrue($vpl->is_separate_group());
+
+        $submissionids = [];
+        foreach ([$this->students[0], $this->students[1]] as $student) {
+            $this->setUser($student);
+            $files = ['main.c' => "int main(void) {\n int x = 1;\n int y = x + 2;\n return y;\n}\n"];
+            $error = '';
+            $submissionid = $vpl->add_submission($student->id, $files, '', $error);
+            $this->assertNotFalse($submissionid, $error);
+            $submissionids[] = $submissionid;
+        }
+        $progress = $this->createMock(\mod_vpl\util\progress_bar::class);
+
+        $this->setUser($teacher);
+        $this->assertFalse($vpl->has_access_all_groups());
+        $this->assertEquals([$this->groups[0]->id], array_keys($vpl->get_groups_in_current_grouping()));
+        $similar = [];
+        preprocess::activity($similar, $vpl, [], true, false, $progress);
+        $this->assertCount(1, $similar);
+        $this->assertEquals($this->students[0]->id, $similar[0]->get_userid());
+
+        $this->assertTrue(groups_remove_member($this->groups[0]->id, $teacher->id));
+        $this->assertSame([], $vpl->get_groups_in_current_grouping());
+        $similar = [];
+        preprocess::activity($similar, $vpl, [], true, false, $progress);
+        $this->assertSame([], $similar);
+
+        $this->setAdminUser();
+        $this->assertEqualsCanonicalizing(
+            [$this->groups[0]->id, $this->groups[1]->id],
+            array_keys($vpl->get_groups_in_current_grouping())
+        );
+        preprocess::activity($similar, $vpl, [], true, false, $progress);
+        $this->assertEqualsCanonicalizing(
+            [$this->students[0]->id, $this->students[1]->id],
+            array_map(static fn($file) => $file->get_userid(), $similar)
+        );
+
+        $otherteacher = $this->teachers[1];
+        $student = $this->students[0];
+        $this->assertTrue(groups_add_member($this->groups[0]->id, $teacher->id));
+        $this->assertTrue(groups_add_member($this->groups[1]->id, $otherteacher->id));
+        $this->assertTrue(groups_remove_member($this->groups[0]->id, $student->id));
+        $this->assertTrue(groups_add_member($this->groups[1]->id, $student->id));
+
+        $this->setUser($teacher);
+        $submission = new mod_vpl_submission($vpl, $submissionids[0], true);
+        $this->assertEquals($this->groups[0]->id, $submission->get_instance()->groupid);
+
+        $this->setUser($otherteacher);
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Access not allowed for this group.');
+        new mod_vpl_submission($vpl, $submission->get_instance(), true);
     }
 
     /**

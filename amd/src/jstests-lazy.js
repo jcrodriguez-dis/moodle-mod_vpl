@@ -831,6 +831,7 @@ tests.push({
             adjustTabsTitles: VPLUtil.doNothing,
         };
         const file = new VPLFile(id, 'main.c', 'int main(void) {}\n', fileManager);
+        fileManager.currentFile = () => file;
         file.extendToCodeEditor();
         file.adjustSize = VPLUtil.doNothing;
         try {

@@ -127,8 +127,7 @@ class preprocess {
     public static function activity(&$simil, $vpl, $selectedfiles, $allfiles, $joinedfiles, $spb) {
         $vpl->require_capability(VPL_SIMILARITY_CAPABILITY);
         if ($vpl->is_group_activity()) {
-            $cm = $vpl->get_course_module();
-            $list = groups_get_all_groups($vpl->get_course()->id, 0, $cm->groupingid);
+            $list = $vpl->get_groups_in_current_grouping();
         } else {
             $list = $vpl->get_students_in_current_group();
         }
@@ -267,8 +266,6 @@ class preprocess {
                 }
                 $data = $zip->getFromIndex($i);
                 if ($data) {
-                    // TODO remove if no GAP file.
-                    file_from_zip::process_gap_userfile($filename);
                     if (! isset($selectedfiles[basename($filename)]) && ! $allfiles) {
                         continue;
                     }
