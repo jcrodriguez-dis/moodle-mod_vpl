@@ -283,28 +283,28 @@ class vpl_jailserver_manager {
         }
         if ($rawresponse === false || $ch->get_errno() !== 0 || !empty($ch->error)) {
             $detailederror = str_replace($server, '[JAIL_SERVER]', $ch->error);
-            $error = 'Request failed: ' . $detailederror;
+            $error = get_string('jailerrorrequest', VPL, $detailederror);
         } else {
             $info = $ch->get_info();
             $httpcode = $info['http_code'];
             if ($httpcode != 200) {
-                $error = "HTTP Status Code: {$httpcode}";
+                $error = get_string('jailerrorhttpstatus', VPL, $httpcode);
                 if ($httpcode == 404) {
-                    $error .= " - Bad URLPATH?";
+                    $error = get_string('jailerrorhttpnotfound', VPL, $httpcode);
                 } else if ($httpcode >= 400 && $httpcode < 500) {
-                    $error .= " - Client Error";
+                    $error = get_string('jailerrorhttpclient', VPL, $httpcode);
                 } else if ($httpcode >= 500) {
-                    $error .= " - Internal Jail Server Error";
+                    $error = get_string('jailerrorhttpserver', VPL, $httpcode);
                 }
             } else if ($rawresponse === '') {
-                $error = 'Empty response from jail server';
+                $error = get_string('jailerroremptyresponse', VPL);
             } else if ($rawresponse[0] == '{') {
                 $response = json_decode($rawresponse, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
                 if (json_last_error() != JSON_ERROR_NONE) {
-                    $error = 'JSONRPC response is fault: ' . json_last_error_msg();
+                    $error = get_string('jailerrorjsonrpcfault', VPL, json_last_error_msg());
                 } else {
                     if ($response->id != self::get_jsonrpcid()) {
-                        $error = 'JSONRPC response mismatch ID';
+                        $error = get_string('jailerrorjsonrpcid', VPL);
                     } else {
                         return (array) ($response->result);
                     }
@@ -312,19 +312,19 @@ class vpl_jailserver_manager {
             } else {
                 $xmlrpcdecode = 'xmlrpc_decode';
                 if (! function_exists($xmlrpcdecode)) {
-                    $error = 'Requires execution server version >= 3 or PHP with XML-RPC support';
+                    $error = get_string('jailerrorxmlrpcunsupported', VPL);
                 } else {
                     $response = $xmlrpcdecode($rawresponse, "UTF-8");
                     if (is_array($response)) {
                         $xmlrpcisfault = 'xmlrpc_is_fault';
                         if ($xmlrpcisfault($response)) {
-                            $error = 'XML-RPC is fault: ' . $response["faultString"];
+                            $error = get_string('jailerrorxmlrpcfault', VPL, $response['faultString']);
                         } else {
                             return $response;
                         }
                     } else {
                         $rawresponse = mb_substr($rawresponse, 0, 40);
-                        $error = 'HTTP error ' . $rawresponse;
+                        $error = get_string('jailerrorhttpresponse', VPL, $rawresponse);
                     }
                 }
             }

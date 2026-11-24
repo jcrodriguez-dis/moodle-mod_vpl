@@ -37,15 +37,14 @@ require_once(__DIR__ . '/../vpl.class.php');
  * Send a 400 Bad Request response and terminate the script.
  * @param string $message The error message to display.
  */
-function vpl_bad_request($message = 'Bad Request') {
+function vpl_bad_request($message) {
     global $CFG;
     header('HTTP/1.0 400 Bad Request');
+    $error = get_string('invalidrequest', 'error');
     if ($CFG->debug >= DEBUG_DEVELOPER) {
-        // Developer debugging is enabled.
-        echo "<html><body><p>Bad request: $message</p></body></html>";
-    } else {
-        echo "<html><body><p>Bad request</p></body></html>";
+        $error .= ': ' . $message;
     }
+    echo '<html><body><p>' . s($error) . '</p></body></html>';
     die();
 }
 

@@ -78,10 +78,10 @@ try {
     $submissionid = $subinstance->id;
 
     if ($vpl->is_inconsistent_user($subinstance->userid, $userid)) {
-        throw new Exception('vpl submission user inconsistence');
+        throw new moodle_exception('error:submissionusermismatch', VPL);
     }
     if ($vpl->get_instance()->id != $subinstance->vpl) {
-        throw new Exception('vpl submission vpl inconsistence');
+        throw new moodle_exception('error:submissionactivitymismatch', VPL);
     }
     $submission = new mod_vpl_submission($vpl, $subinstance, true);
     $plugincfg = get_config('mod_vpl');

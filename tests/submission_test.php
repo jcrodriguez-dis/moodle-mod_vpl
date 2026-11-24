@@ -124,7 +124,7 @@ final class submission_test extends base_fixture {
         $this->assertSame($accessallgroups, has_capability('moodle/site:accessallgroups', $context));
         $this->assertSame($manage, $vpl->has_capability(VPL_MANAGE_CAPABILITY));
         if (!$allowed) {
-            $this->expectException(\Exception::class);
+            $this->expectException(\moodle_exception::class);
             $this->expectExceptionMessage('Access not allowed for this group.');
         }
         if ($update) {
@@ -237,7 +237,7 @@ final class submission_test extends base_fixture {
         $this->assertEquals($this->groups[0]->id, $submission->get_instance()->groupid);
 
         $this->setUser($otherteacher);
-        $this->expectException(\Exception::class);
+        $this->expectException(\moodle_exception::class);
         $this->expectExceptionMessage('Access not allowed for this group.');
         new mod_vpl_submission($vpl, $submission->get_instance(), true);
     }

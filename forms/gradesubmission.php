@@ -79,10 +79,10 @@ if (! $subinstance) {
 $submissionid = $subinstance->id;
 
 if ($vpl->is_inconsistent_user($subinstance->userid, $userid)) {
-    vpl_redirect($link, 'vpl submission user inconsistence', 'error');
+    vpl_redirect($link, get_string('error:submissionusermismatch', VPL), 'error');
 }
 if ($vpl->get_instance()->id != $subinstance->vpl) {
-    vpl_redirect($link, 'vpl submission vpl inconsistence', 'error');
+    vpl_redirect($link, get_string('error:submissionactivitymismatch', VPL), 'error');
 }
 $submission = new mod_vpl_submission($vpl, $subinstance, true);
 if ($inpopup) {

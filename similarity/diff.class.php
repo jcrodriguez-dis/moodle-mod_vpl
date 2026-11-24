@@ -231,7 +231,7 @@ class vpl_diff {
             } else if ($p == 1) {
                 $pj--;
             } else {
-                throw new Exception('Calculating diff');
+                throw new moodle_exception('error:diffcalculation', 'mod_vpl');
             }
             $limit--;
         }

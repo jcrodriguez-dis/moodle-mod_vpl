@@ -972,11 +972,11 @@ class mod_vpl_submission_CE extends mod_vpl_submission {
         $vplid = $this->vpl->get_instance()->id;
         $processinfo = vpl_running_processes::get_by_id($vplid, $this->instance->userid, $processid);
         if ($processinfo == false) { // No process found.
-            throw new Exception(get_string('serverexecutionerror', VPL) . ' No process found');
+            throw new moodle_exception('error:processnotfound', VPL);
         }
         $response = $this->jailreaction('getresult', $processinfo);
         if ($response === false) {
-            throw new Exception(get_string('serverexecutionerror', VPL) . ' getresult give no response');
+            throw new moodle_exception('error:executionresultmissing', VPL);
         }
         if ($response['interactive'] == 0 && $processinfo->type == self::TEVALUATE && $this->instance->id > 0) {
             $this->with_lock(function () use ($response) {

@@ -48,7 +48,7 @@ class mod_vpl_edit {
         $files = [];
         foreach ($postfiles as $file) {
             if (!vpl_is_valid_path_name($file->name)) {
-                throw new Exception("Invalid file name: " . $file->name);
+                throw new \moodle_exception('incorrect_file_name', VPL);
             }
             if ($file->encoding == 1) {
                 $files[$file->name] = base64_decode($file->contents);
@@ -305,7 +305,7 @@ class mod_vpl_edit {
             // Get the process id of the last running process for this user and VPL activity.
             $processinfo = vpl_running_processes::get_run($userid, $vpl->get_instance()->id);
             if ($processinfo == false) { // No process found.
-                throw new Exception(get_string('serverexecutionerror', VPL) . ' Process not found');
+                throw new moodle_exception('error:processnotfound', VPL);
             } else {
                 $processid = $processinfo->id;
             }
@@ -314,11 +314,11 @@ class mod_vpl_edit {
             $vplid = $vpl->get_instance()->id;
             $processinfo = vpl_running_processes::get_by_id($vplid, $userid, $processid);
             if ($processinfo == false) { // No process found.
-                throw new Exception(get_string('serverexecutionerror', VPL) . ' Process not found');
+                throw new moodle_exception('error:processnotfound', VPL);
             }
         }
         if ($processinfo->submissionid == 0) {
-            throw new Exception(get_string('serverexecutionerror', VPL) . ' Process without submission');
+            throw new moodle_exception('error:processwithoutsubmission', VPL);
         }
         if ($vpl->is_example()) {
             $submission = new mod_vpl_example_CE($vpl);

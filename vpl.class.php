@@ -843,7 +843,7 @@ class mod_vpl {
         }
         $submissionid = $DB->insert_record('vpl_submissions', $submissiondata, true);
         if (! $submissionid) {
-            $error = get_string('notsaved', VPL) . "\ninserting vpl_submissions record";
+            $error = get_string('notsaved', VPL) . "\n" . get_string('error:recordnotinserted', VPL, VPL_SUBMISSIONS);
             return false;
         }
         // Save files.

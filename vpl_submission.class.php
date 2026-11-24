@@ -90,7 +90,7 @@ class mod_vpl_submission {
             empty($groupstudent) ||
             empty(array_intersect_key($groupteacher, $groupstudent))
         ) {
-            throw new Exception('Access not allowed for this group.');
+            throw new moodle_exception('error:groupaccess', VPL);
         }
     }
 
@@ -113,14 +113,14 @@ class mod_vpl_submission {
             $this->instance = $DB->get_record('vpl_submissions', ['id' => $rid]);
         }
         if (! $this->instance || $this->instance->vpl != $vpl->get_instance()->id) {
-            throw new Exception('vpl_submission id error');
+            throw new moodle_exception('nosubmission', VPL);
         }
         $this->submittedfgm = null;
         if ($checkgroup) {
             if ($vpl->is_group_activity()) {
                 $groupid = $this->instance->groupid ?? -1;
                 if (!isset($vpl->get_groups_in_current_grouping()[$groupid])) {
-                    throw new Exception('Access not allowed for this group.');
+                    throw new moodle_exception('error:groupaccess', VPL);
                 }
             } else {
                 self::check_group_access($vpl, $this->instance->userid);
@@ -845,8 +845,7 @@ class mod_vpl_submission {
                 try {
                     $grade = format_float($this->reduce_grade($grade), 2, true, true);
                 } catch (\Throwable $e) {
-                    $strggrade = s($grade);
-                    $grade = "Numeric grade format error: '$strggrade'";
+                    $grade = get_string('error:invalidnumericgrade', VPL, s($grade));
                 }
                 $ret = $grade . ' / ' . $scaleid;
             } else if ($scaleid < 0) {

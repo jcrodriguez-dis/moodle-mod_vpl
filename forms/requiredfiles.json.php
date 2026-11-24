@@ -94,7 +94,7 @@ try {
             );
             break;
         default:
-            throw new Exception('ajax action error: ' . $action);
+            throw new moodle_exception('invalidaction', 'error');
     }
 } catch (\Throwable $e) {
     $result->success = false;

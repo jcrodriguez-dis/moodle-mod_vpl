@@ -75,15 +75,18 @@ function vpl_add_files_to_zip($zip, $sourcedir, $zipdirname, $fgm, &$ziperrors) 
         $filepathorigen = $sourcedir . $source;
         $filepathtarget = $zipdirname . $filename;
         if (! file_exists($filepathorigen)) {
-            $ziperrors .= 'Warning: file "' . $filepathorigen . "\" does not exists\n";
+            $ziperrors .= get_string('error:zipentrymissing', VPL, $filepathorigen) . "\n";
             $zip->addFromString($filepathtarget, '');
             continue;
         }
         $data = file_get_contents($filepathorigen);
         $total += strlen($data);
         if (! $zip->addFromString($filepathtarget, $data)) {
-            $ziperrors .= 'File "' . $filepathorigen . '" in "' . $filepathtarget . '" ';
-            $ziperrors .= 'generate ' . $zip->getStatusString() . "\n";
+            $ziperrors .= get_string('error:zipentrywrite', VPL, [
+                'source' => $filepathorigen,
+                'entry' => $filepathtarget,
+                'reason' => $zip->getStatusString(),
+            ]) . "\n";
         }
     }
     return $total;
@@ -233,7 +236,12 @@ if ($zip->open($zipfilename, ZipArchive::OVERWRITE) === true) {
     }
     $date = date(DATE_W3C);
     $nusers = count($alldata);
-    $zip->addFromString('Report.txt', "Date: $date\nNumber of users: $nusers\nNumber of submissions: $nsubmissions");
+    $report = [
+        get_string('date') . ': ' . $date,
+        get_string('downloadreportusers', VPL, $nusers),
+        get_string('downloadreportsubmissions', VPL, $nsubmissions),
+    ];
+    $zip->addFromString('Report.txt', implode("\n", $report));
     if ($ziperrors > '') {
         $zip->addFromString('Errors.txt', $ziperrors);
     }

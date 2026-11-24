@@ -60,7 +60,10 @@ try {
     $rawdatasize = strlen($rawdata);
     $contentlength = $_SERVER['CONTENT_LENGTH'] ?? null;
     if ($contentlength !== null && $contentlength != $rawdatasize) {
-        throw new Exception("Ajax POST error: CONTENT_LENGTH expected " . $contentlength . " found $rawdatasize)");
+        throw new moodle_exception('error:requestlengthmismatch', VPL, '', [
+            'expected' => $contentlength,
+            'actual' => $rawdatasize,
+        ]);
     }
     $actiondata = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     mod_vpl_edit::checksesskey($vpl, $actiondata);
@@ -167,7 +170,7 @@ try {
             $result->response = mod_vpl_edit::directrun($vpl, $userid, $actiondata);
             break;
         default:
-            throw new Exception('ajax action error: ' . $action);
+            throw new moodle_exception('invalidaction', 'error');
     }
     if ($result->response === null) {
         $result->success = false;

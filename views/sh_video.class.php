@@ -85,7 +85,7 @@ class vpl_sh_video extends vpl_sh_base {
         echo '<source src="data:video/' . $this->get_mime($name) . ';base64,';
         echo base64_encode($data);
         echo '" type="video/' . $this->get_mime($name) . '" />';
-        echo 'Your browser does not support the video element.';
+        echo s(get_string('browsernovideo', VPL));
         echo '</video>';
         echo '</div>';
         $strbinaryfile = get_string('binaryfile', VPL);

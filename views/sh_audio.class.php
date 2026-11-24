@@ -87,7 +87,7 @@ class vpl_sh_audio extends vpl_sh_base {
         echo '<source src="data:audio/' . $this->get_mime($name) . ';base64,';
         echo base64_encode($data);
         echo '" type="audio/' . $this->get_mime($name) . '" />';
-        echo 'Your browser does not support the audio element.';
+        echo s(get_string('browsernoaudio', VPL));
         echo '</audio>';
         echo '</div>';
         $strbinaryfile = get_string('binaryfile', VPL);

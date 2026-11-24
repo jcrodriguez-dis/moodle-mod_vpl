@@ -36,7 +36,7 @@ try {
     $rawdata = file_get_contents("php://input");
     $data = json_decode($rawdata, null, 512, JSON_INVALID_UTF8_SUBSTITUTE);
     if (!is_object($data)) {
-        throw new \Exception('Invalid input data');
+        throw new \moodle_exception('invaliddata', 'error');
     }
     if (!confirm_sesskey(isset($data->sesskey) ? $data->sesskey : '')) {
         throw new \moodle_exception('invalidsesskey');

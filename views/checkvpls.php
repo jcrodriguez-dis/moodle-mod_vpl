@@ -151,7 +151,7 @@ foreach ($ovpls as $ovpl) {
             $params = $ing[1];
             $params[] = $instance->id;
             if ($DB->count_records_select(VPL_SUBMISSIONS, $select, $params) > 0) {
-                $text .= $OUTPUT->notification('Fixing submissions with no group or pre V3.3 data', 'success');
+                $text .= $OUTPUT->notification(get_string('fixinggroupsubmissions', VPL), 'success');
                 $vpl->update_group_v32();
             }
         }

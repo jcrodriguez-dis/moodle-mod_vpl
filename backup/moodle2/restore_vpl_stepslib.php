@@ -292,10 +292,10 @@ class restore_vpl_activity_structure_step extends \restore_activity_structure_st
             ], 'id,userid,vpl');
         }
         if ($sub === false) {
-            throw new Exception('Submission record not found ' . $subid);
+            throw new moodle_exception('error:submissionnotfound', 'mod_vpl', '', $subid);
         }
         if ($vplid != $sub->vpl) {
-            throw new Exception('Submission record vplid inconsistence');
+            throw new moodle_exception('error:submissionactivitymismatch', 'mod_vpl');
         }
         $path = "{$vplid}/usersdata/{$sub->userid}/{$subid}/";
         $this->process_groupfile($data, $path);
