@@ -2598,10 +2598,10 @@ var VPLIDE = function(rootId, options) {
                     lastConsole.close();
                 }
                 lastConsole = terminal;
-                terminal.connect(coninfo.executionURL, blurCurrentFile, function() {
+                terminal.connect(coninfo.executionURL, function() {
                     ws.close();
                     focusCurrentFile();
-                });
+                }, blurCurrentFile);
                 if (type == 'webterminal') {
                     // Load favicon to get the cookie iwh
                     var URLfavicon = (coninfo.secure ? "https" : "http") + "://" + coninfo.server + ":" + coninfo.portToUse;

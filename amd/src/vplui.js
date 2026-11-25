@@ -489,6 +489,8 @@ VPLUI.showErrorMessage = function(message, options) {
 };
 /**
  * Request an action to de server: save, run, debug, evaluate, update, getresult, etc.
+ * Compatibility: qtype_vplquestion consumes this deferred request API and JSON response.
+ *
  * @param {string} action Name of action to request.
  * @param {string} title The title that shows the progress dialog
  * @param {object} data Data to send to the server
@@ -598,6 +600,7 @@ VPLUI.acceptCertificates = function(servers, getLastAction) {
     }
 };
 VPLUI.monitorRunning = VPLUtil.returnFalse;
+// Compatibility: qtype_vplquestion consumes the result and close/retrieve callbacks.
 VPLUI.webSocketMonitor = function(coninfo, title, running, externalActions) {
     VPLUtil.setProtocol(coninfo);
     VPLUtil.setProcessId(coninfo.processid);

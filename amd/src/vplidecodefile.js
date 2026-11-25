@@ -348,7 +348,7 @@ export const codeExtension = function() {
             self.updateStatus();
         });
         session.on('changeAnnotation', function() {
-            if (fileManager.currentFile() === self) {
+            if (typeof fileManager.currentFile === 'function' && fileManager.currentFile() === self) {
                 self.updateStatus();
             }
         });

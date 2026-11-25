@@ -569,6 +569,8 @@ VPLUtil.dataFromURLData = function(data) {
 
     /**
      * Returns the Ace9 language type for a file
+     * Compatibility: qtype_vplquestion calls this helper to select Ace modes.
+     *
      * @param {string} filenamepath
      * @returns {string} language type
      */

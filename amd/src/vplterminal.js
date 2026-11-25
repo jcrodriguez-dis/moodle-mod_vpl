@@ -132,8 +132,10 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
             return;
         }).catch(VPLUtil.doNothing);
     };
-    this.connect = function(server, onShow, onClose) {
-        onCloseAction = onClose;
+    // Compatibility: qtype_vplquestion calls VPLTerminal.connect(server, onClose).
+    this.connect = function(server, onClose, onShow) {
+        onCloseAction = typeof onClose === 'function' ? onClose : VPLUtil.doNothing;
+        onShow = typeof onShow === 'function' ? onShow : VPLUtil.doNothing;
         if ("WebSocket" in window) {
             initReady.then(function() {
                 terminal.reset();
@@ -318,6 +320,16 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
      * Limits the size of the dialogo to the IDE
      */
     function controlDialogSize() {
+        // If there is no IDE container, just fit the terminal to the dialog.
+        // Needed for VPL Question
+        if (tIde.length === 0) {
+            fitTerminalToDialog();
+            if (fitAddon) {
+                fitAddon.fit();
+            }
+            self.focus();
+            return;
+        }
         // Resize if dialog is large than screen.
         var bw = tIde.width();
         var bh = tIde.height();
@@ -432,6 +444,19 @@ export const VPLTerminal = function(dialogId, terminalId, str) {
     tdialog.parent().css('z-index', 2000);
     this.show = function() {
         tdialog.dialog('open');
+        // If there is no IDE container, just fit the terminal to the dialog.
+        // Needed for VPL Question
+        if (tIde.length === 0) {
+            var wrapper = tdialog.parent();
+            wrapper.css({
+                position: 'relative',
+                top: 0,
+                left: 0,
+                width: '100%'
+            });
+            tdialog.width(wrapper.width());
+            fitTerminalToDialog();
+        }
         if (terminal) {
             self.focus();
             fitAddon.fit();
