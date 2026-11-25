@@ -27,6 +27,7 @@
 import $ from 'jquery';
 import {VPLUtil} from 'mod_vpl/vplutil';
 import {VPLUI} from 'mod_vpl/vplui';
+import url from 'core/url';
 
 export const blocklyExtension = function() {
     var self = this;
@@ -490,7 +491,7 @@ export const blocklyExtension = function() {
         var toolboxname = ext + 'Toolbox';
         if (self[toolboxname] === false) {
             $.ajax({
-                url: '../editor/blocklytoolboxes/' + toolboxname + '.xml',
+                url: '../thirdpartylibs/blocklytoolboxes/' + toolboxname + '.xml',
                 dataType: 'text',
                 success: function(data) {
                     self[toolboxname] = self.blocklyIn18(data);
@@ -525,18 +526,18 @@ export const blocklyExtension = function() {
     this.open = function() {
         this.showFileName();
         if (self.blocklyNotLoaded) {
-            VPLUtil.loadScript(
+            VPLUtil.loadLibScript(
                 [
-                    '/blockly/blockly_compressed.js',
-                    '/blockly/msg/js/en.js',
-                    '/blockly/blocks_compressed.js',
-                    '/blockly/python_compressed.js',
-                    '/blockly/javascript_compressed.js',
-                    '/blockly/php_compressed.js',
-                    '/blockly/lua_compressed.js',
-                    '/blockly/dart_compressed.js',
-                    '/acorn/acorn.js',
-                    '/acorn/interpreter.js',
+                    'blockly/blockly_compressed.js',
+                    'blockly/msg/js/en.js',
+                    'blockly/blocks_compressed.js',
+                    'blockly/python_compressed.js',
+                    'blockly/javascript_compressed.js',
+                    'blockly/php_compressed.js',
+                    'blockly/lua_compressed.js',
+                    'blockly/dart_compressed.js',
+                    'acorn/acorn.js',
+                    'acorn/interpreter.js',
                 ],
                 function() {
                     VPLUtil.log('Blocklyloaded', true);
@@ -562,7 +563,7 @@ export const blocklyExtension = function() {
         $(tid).html('<div id="' + this.bdiv + '" style="height: 480px; width: 600px;"></div>');
         var options = {
             toolbox: '<xml><category name="" colour="330"><block type="math_number"></block></category></xml>',
-            media: '../editor/blockly/media/',
+            media: url.relativeUrl('/mod/vpl/thirdpartylibs/blockly/media/'),
             horizontalLayout: horizontalMenu,
             zoom: {
                 controls: true,

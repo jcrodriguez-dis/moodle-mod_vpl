@@ -815,9 +815,9 @@ tests.push({
     'name': "Compilation and LSP annotations are independent",
     'test': async function() {
         if (!window.ace || !window.ace.require('ace/autocomplete')) {
-            await new Promise(resolve => VPLUtil.loadScript([
-                '/../thirdpartylibs/ace/ace.js',
-                '/../thirdpartylibs/ace/ext-language_tools.js'
+            await new Promise(resolve => VPLUtil.loadLibScript([
+                'ace/ace.js',
+                'ace/ext-language_tools.js'
             ], resolve));
         }
         const id = 10000;
@@ -860,9 +860,9 @@ tests.push({
     'name': "LSP completion ordering",
     'test': async function() {
         if (!window.ace || !window.ace.require('ace/autocomplete')) {
-            await new Promise(resolve => VPLUtil.loadScript([
-                '/../thirdpartylibs/ace/ace.js',
-                '/../thirdpartylibs/ace/ext-language_tools.js'
+            await new Promise(resolve => VPLUtil.loadLibScript([
+                'ace/ace.js',
+                'ace/ext-language_tools.js'
             ], resolve));
         }
         const aceModule = window.ace.require('ace/autocomplete');

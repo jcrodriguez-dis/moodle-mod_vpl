@@ -1043,7 +1043,11 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat = false, addLinks
             scriptsLoaded[scriptURL] = 1;
             var script = document.createElement('script');
             script.type = 'text/javascript';
-            script.src = VPLUtil.options.scriptPath + scriptURL;
+            if (scriptURL.startsWith('https://') || scriptURL.startsWith('http://')) {
+                script.src = scriptURL;
+            } else {
+                script.src = VPLUtil.options.scriptPath + scriptURL;
+            }
             script.onload = function() {
                 scriptsLoaded[scriptURL] = 2;
                 VPLUtil.loadScript(scripts, end);
@@ -1072,6 +1076,13 @@ VPLUtil.processResult = function(text, filenames, sh, noFormat = false, addLinks
         }
         return scriptsLoaded[scriptURL] == 2;
     };
+    VPLUtil.loadLibScript = function(scripts, end) {
+        for (var i = 0; i < scripts.length; i++) {
+            scripts[i] = url.relativeUrl('/mod/vpl/thirdpartylibs/' + scripts[i]);
+        }
+        VPLUtil.loadScript(scripts, end);
+    };
+
 })();
 
 VPLUtil.loadModule = function(module, variable) {
@@ -1150,9 +1161,9 @@ VPLUtil.loadModule = function(module, variable) {
     }
 
     FileGroupHighlighter.prototype.highlightBlockly = function(preid) {
-        VPLUtil.loadScript(['/blockly/blockly_compressed.js',
-            '/blockly/msg/js/en.js',
-            '/blockly/blocks_compressed.js']
+        VPLUtil.loadLibScript(['blockly/blockly_compressed.js',
+            'blockly/msg/js/en.js',
+            'blockly/blocks_compressed.js']
         , function() {
             var tag = $('#' + preid);
             var c = tag.html();
@@ -1165,7 +1176,7 @@ VPLUtil.loadModule = function(module, variable) {
             var options = {
                 toolbox: '',
                 readOnly: true,
-                media: '../editor/blockly/media/',
+                media: url.relativeUrl('/mod/vpl/thirdpartylibs/blockly/media/'),
             };
             var work = Blockly.inject(preid, options);
             Blockly.Xml.domToWorkspace(xml, work);
@@ -1194,7 +1205,7 @@ VPLUtil.loadModule = function(module, variable) {
             }
         }
         if (needAce && typeof ace === 'undefined') {
-            VPLUtil.loadScript(['/../../thirdpartylibs/ace/ace.js'],
+            VPLUtil.loadLibScript(['ace/ace.js'],
                 function() {
                     self.highlight();
                 });

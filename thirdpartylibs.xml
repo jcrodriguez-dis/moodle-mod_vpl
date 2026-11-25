@@ -3,13 +3,16 @@
     <library>
         <location>thirdpartylibs/noVNC</location>
         <name>noVNC: VNC client web application</name>
+        <version>1.6.0</version>
         <license>MPL</license>
         <licenseversion>2.0</licenseversion>
     </library>
     <library>
         <location>thirdpartylibs/xterm</location>
         <name>Xterm.js - An xterm emulator web application</name>
+        <version>5.5.0</version>
         <license>MIT</license>
+        <licenseversion></licenseversion>
     </library>
     <library>
         <location>thirdpartylibs/ace</location>
@@ -21,47 +24,43 @@
     <library>
         <location>thirdpartylibs/filterxss</location>
         <name>js-xss (JavaScript XSS filter)</name>
+        <version>1.0.15</version>
         <license>MIT</license>
+        <licenseversion></licenseversion>
     </library>
     <library>
         <location>thirdpartylibs/marked</location>
         <name>marked (JavaScript Markdown parser)</name>
         <version>18.0.3</version>
         <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>thirdpartylibs/zip</location>
+        <name>inflate.js, unzip.js</name>
+        <version></version>
+        <license>MIT</license>
+        <licenseversion></licenseversion>
+    </library>
+    <library>
+        <location>thirdpartylibs/blockly</location>
+        <name>Blockly</name>
+        <version>3.20200625.2</version>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
+    </library>
+    <library>
+        <location>thirdpartylibs/acorn</location>
+        <name>JS-Interpreter</name>
+        <version></version>
+        <license>Apache</license>
+        <licenseversion>2.0</licenseversion>
     </library>
     <library>
         <location>editor/ace9</location>
-        <name>ACE (Ajax.org Cloud9 Editor)</name>
+        <name>ACE (Ajax.org Cloud9 Editor) keep compatibility with VPL Question</name>
         <version>1.4.12</version>
         <license>BSD</license>
         <licenseversion>3</licenseversion>
-    </library>
-    <library>
-        <location>editor/noVNC</location>
-        <name>noVNC: HTML5 VNC Client</name>
-        <license>MPL</license>
-        <licenseversion>2.0</licenseversion>
-    </library>
-    <library>
-        <location>editor/xterm</location>
-        <name>term.js - an xterm emulator</name>
-        <license>MIT</license>
-    </library>
-    <library>
-        <location>editor/zip</location>
-        <name>inflate.js, unzip.js</name>
-        <license>MIT</license>
-    </library>
-    <library>
-        <location>editor/blockly</location>
-        <name>Blockly</name>
-        <license>Apache</license>
-        <licenseversion>2.0</licenseversion>
-    </library>
-    <library>
-        <location>editor/acorn</location>
-        <name>JS-Interpreter</name>
-        <license>Apache</license>
-        <licenseversion>2.0</licenseversion>
     </library>
 </libraries>

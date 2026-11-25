@@ -46,7 +46,7 @@ VPLUI.readZipFile = function(data, save, progressBar, end) {
         end = VPLUtil.doNothing;
     }
     if (typeof JUnzip == 'undefined') {
-        VPLUtil.loadScript(['/zip/inflate.js', '/zip/unzip.js']
+        VPLUtil.loadLibScript(['zip/inflate.js', 'zip/unzip.js']
         , function() {
             VPLUI.readZipFile(data, save, progressBar, end);
         });
