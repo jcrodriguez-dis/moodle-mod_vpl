@@ -333,6 +333,7 @@ class mod_vpl {
     }
 
     /**
+     * Compatibility: qtype_vplquestion reads required files from this manager.
      *
      * @return object file group manager for required files
      */
@@ -368,6 +369,7 @@ class mod_vpl {
     }
 
     /**
+     * Compatibility: qtype_vplquestion reads the execution file keep list from this manager.
      *
      * @return object file group manager for execution files
      */

@@ -17,6 +17,8 @@
 /**
  * Processes AJAX to edit execution files
  *
+ * Compatibility: qtype_vplquestion loads the execution files through this endpoint.
+ *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later

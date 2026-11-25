@@ -17,6 +17,9 @@
 /**
  * Processes AJAX requests from IDE
  *
+ * Compatibility: qtype_vplquestion uses the VPLUI request/response contract for
+ * resetfiles, run, debug, evaluate, retrieve, cancel and getjails.
+ *
  * @package mod_vpl
  * @copyright 2012 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
@@ -36,8 +39,8 @@ $result->error = '';
 try {
     require_once(dirname(__FILE__) . '/edit.class.php');
     $id = required_param('id', PARAM_INT); // Course module id.
-    [$course, $cm] = get_course_and_cm_from_cmid($id, 'vpl');
-    require_login($course, true, $cm);
+    [$course] = get_course_and_cm_from_cmid($id, 'vpl');
+    require_login($course);
 
     $action = required_param('action', PARAM_ALPHANUMEXT);
     $userid = optional_param('userid', false, PARAM_INT);

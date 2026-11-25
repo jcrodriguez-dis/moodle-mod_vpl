@@ -1546,6 +1546,8 @@ class mod_vpl_submission {
     /**
      * Get compilation, execution and proposed grade for editor
      *
+     * Compatibility: qtype_vplquestion consumes these result fields.
+     *
      * Return stdClass with compilation, execution, evaluation, grade and nevaluations as attributes.
      *
      * @param array $response Response from server

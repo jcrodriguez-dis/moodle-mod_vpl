@@ -17,6 +17,9 @@
 /**
  * Class to manage edition/execution operations
  *
+ * Compatibility: qtype_vplquestion directly calls save(), execute() and
+ * retrieve_result(). Keep these signatures and result fields stable.
+ *
  * @package mod_vpl
  * @copyright 2014 Juan Carlos Rodríguez-del-Pino
  * @license http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
