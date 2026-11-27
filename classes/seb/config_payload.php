@@ -91,9 +91,51 @@ class config_payload {
         $payload = self::DEFAULT_PAYLOAD;
         $payload['insideSebEnableLogOff'] = !empty($settings->enablesebsession)
             && !empty($settings->preventsebsimultaneoussessions);
+        $servicepolicy = (int)($settings->sebservicepolicy ?? settings::SERVICE_REQUIRE);
+        self::apply_service_policy($payload, $servicepolicy);
+        $kioskmode = (int)($settings->kioskmode ?? settings::KIOSK_NOT_SET);
+        self::apply_kiosk_mode($payload, $kioskmode);
         $payload['startURL'] = self::get_start_url($settings);
         $payload['hashedAdminPassword'] = self::get_password_hash($secret);
         return $payload;
+    }
+
+    /**
+     * Apply the SEB service policy represented by a form option.
+     *
+     * @param array $payload Configuration payload.
+     * @param int $option Form option.
+     * @return void
+     */
+    private static function apply_service_policy(array &$payload, int $option): void {
+        $policies = [
+            settings::SERVICE_IGNORE => 0,
+            settings::SERVICE_ALLOW => 0,
+            settings::SERVICE_WARN => 1,
+            settings::SERVICE_REQUIRE => 2,
+        ];
+        $payload['sebServiceIgnore'] = $option === settings::SERVICE_IGNORE;
+        $payload['sebServicePolicy'] = $policies[$option] ?? $policies[settings::SERVICE_REQUIRE];
+    }
+
+    /**
+     * Add the SEB kiosk-mode keys for a form option.
+     *
+     * @param array $payload Configuration payload.
+     * @param int $option Form option.
+     * @return void
+     */
+    private static function apply_kiosk_mode(array &$payload, int $option): void {
+        if ($option === settings::KIOSK_CREATE_DESKTOP) {
+            $payload['createNewDesktop'] = true;
+            $payload['killExplorerShell'] = false;
+        } else if ($option === settings::KIOSK_DISABLE_EXPLORER) {
+            $payload['createNewDesktop'] = false;
+            $payload['killExplorerShell'] = true;
+        } else if ($option === settings::KIOSK_NONE) {
+            $payload['createNewDesktop'] = false;
+            $payload['killExplorerShell'] = false;
+        }
     }
 
     /**

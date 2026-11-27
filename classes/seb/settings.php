@@ -34,6 +34,24 @@ class settings {
     /** Table name for SEB settings. */
     public const TABLE = 'vpl_seb';
 
+    /** SEB service ignore option. */
+    public const SERVICE_IGNORE = 0;
+    /** SEB service allow option. */
+    public const SERVICE_ALLOW = 1;
+    /** SEB service warn option. */
+    public const SERVICE_WARN = 2;
+    /** SEB service require option. */
+    public const SERVICE_REQUIRE = 3;
+
+    /** Kiosk mode not set option. */
+    public const KIOSK_NOT_SET = 0;
+    /** Kiosk mode create desktop option. */
+    public const KIOSK_CREATE_DESKTOP = 1;
+    /** Kiosk mode disable explorer option. */
+    public const KIOSK_DISABLE_EXPLORER = 2;
+    /** Kiosk mode none option. */
+    public const KIOSK_NONE = 3;
+
     /** Array of form fields definition */
     public const FORM_FIELDS = [
         'enablesebsession' => [
@@ -61,6 +79,30 @@ class settings {
             'type' => 'selectyesno',
             'default' => 1,
             'param' => PARAM_BOOL,
+        ],
+        'sebservicepolicy' => [
+            'label' => 'sebservicepolicy',
+            'type' => 'select',
+            'default' => self::SERVICE_REQUIRE,
+            'param' => PARAM_INT,
+            'options' => [
+                self::SERVICE_IGNORE => 'sebserviceignore',
+                self::SERVICE_ALLOW => 'sebserviceallow',
+                self::SERVICE_WARN => 'sebservicewarn',
+                self::SERVICE_REQUIRE => 'sebservicerequire',
+            ],
+        ],
+        'kioskmode' => [
+            'label' => 'kioskmode',
+            'type' => 'select',
+            'default' => self::KIOSK_NOT_SET,
+            'param' => PARAM_INT,
+            'options' => [
+                self::KIOSK_NOT_SET => 'kioskmode_notset',
+                self::KIOSK_CREATE_DESKTOP => 'kioskmode_createdesktop',
+                self::KIOSK_DISABLE_EXPLORER => 'kioskmode_disableexplorer',
+                self::KIOSK_NONE => 'kioskmode_none',
+            ],
         ],
         'linkquitseb' => [
             'label' => 'linkquitseb',
@@ -202,6 +244,8 @@ class settings {
      * Fields that belong to the generated config payload.
      */
     public const CONFIG_FIELDS = [
+        'sebservicepolicy',
+        'kioskmode',
         'linkquitseb',
         'userconfirmquit',
         'allowuserquitseb',
@@ -434,6 +478,13 @@ class settings {
         }
         if (isset(self::BOOLEAN_FIELDS[$field])) {
             return (int)!empty($value);
+        }
+        if (isset(self::FORM_FIELDS[$field]['options'])) {
+            $value = (int)$value;
+            if (!isset(self::FORM_FIELDS[$field]['options'][$value])) {
+                return self::FORM_FIELDS[$field]['default'];
+            }
+            return $value;
         }
         return trim((string)$value);
     }

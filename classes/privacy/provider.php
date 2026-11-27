@@ -101,6 +101,8 @@ class provider implements core_userlist_provider, metadata_provider, user_prefer
             'enablesebsession' => 'privacy:metadata:vpl_seb:enablesebsession',
             'preventsebsimultaneoussessions' => 'privacy:metadata:vpl_seb:preventsebsimultaneoussessions',
             'sebteacherpassword' => 'privacy:metadata:vpl_seb:sebteacherpassword',
+            'sebservicepolicy' => 'privacy:metadata:vpl_seb:sebservicepolicy',
+            'kioskmode' => 'privacy:metadata:vpl_seb:kioskmode',
             'linkquitseb' => 'privacy:metadata:vpl_seb:linkquitseb',
             'userconfirmquit' => 'privacy:metadata:vpl_seb:userconfirmquit',
             'allowuserquitseb' => 'privacy:metadata:vpl_seb:allowuserquitseb',

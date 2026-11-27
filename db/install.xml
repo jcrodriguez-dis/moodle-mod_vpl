@@ -64,6 +64,8 @@
         <FIELD NAME="enablesebsession" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether per-session SEB configs are enabled."/>
         <FIELD NAME="preventsebsimultaneoussessions" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether SEB access is tied to one Moodle session."/>
         <FIELD NAME="sebteacherpassword" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Teacher password used to invalidate another SEB session."/>
+        <FIELD NAME="sebservicepolicy" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="3" SEQUENCE="false" COMMENT="SEB Windows Service policy."/>
+        <FIELD NAME="kioskmode" TYPE="int" LENGTH="1" NOTNULL="false" DEFAULT="0" SEQUENCE="false" COMMENT="SEB Windows kiosk mode."/>
         <FIELD NAME="linkquitseb" TYPE="text" NOTNULL="false" SEQUENCE="false" COMMENT="Quit link used by Safe Exam Browser."/>
         <FIELD NAME="userconfirmquit" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool whether confirm quit popup should appear."/>
         <FIELD NAME="allowuserquitseb" TYPE="int" LENGTH="1" NOTNULL="false" SEQUENCE="false" COMMENT="Bool to show quit button."/>

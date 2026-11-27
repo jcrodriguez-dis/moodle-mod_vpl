@@ -661,6 +661,32 @@ function xmldb_vpl_upgrade_2026052302() {
 }
 
 /**
+ * Add the SEB service and kiosk mode options.
+ *
+ * @return void
+ */
+function xmldb_vpl_upgrade_2026112710() {
+    global $DB;
+    $dbman = $DB->get_manager();
+    // Add the senduserinfo field to the VPL table.
+    $table = new xmldb_table('vpl');
+    $field = new xmldb_field('senduserinfo', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'automaticgrading');
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+    // Add the SEB service and kiosk mode fields to the VPL SEB table.
+    $table = new xmldb_table('vpl_seb');
+    $field = new xmldb_field('sebservicepolicy', XMLDB_TYPE_INTEGER, '1', null, null, null, '3', 'sebteacherpassword');
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+    $field = new xmldb_field('kioskmode', XMLDB_TYPE_INTEGER, '1', null, null, null, '0', 'sebservicepolicy');
+    if (!$dbman->field_exists($table, $field)) {
+        $dbman->add_field($table, $field);
+    }
+}
+
+/**
  * Upgrades VPL DB and data to the new version
  *
  * @param int $oldversion Current version
@@ -732,15 +758,10 @@ function xmldb_vpl_upgrade($oldversion = 0) {
         xmldb_vpl_upgrade_2026052302();
         upgrade_mod_savepoint(true, $vpl500, 'vpl');
     }
-    if ($oldversion < 2026112100) {
-        global $DB;
-        $dbman = $DB->get_manager();
-        $table = new xmldb_table('vpl');
-        $field = new xmldb_field('senduserinfo', XMLDB_TYPE_INTEGER, '1', null, XMLDB_NOTNULL, null, '0', 'automaticgrading');
-        if (!$dbman->field_exists($table, $field)) {
-            $dbman->add_field($table, $field);
-        }
-        upgrade_mod_savepoint(true, 2026112100, 'vpl');
+    $vpl503 = 2026112710;
+    if ($oldversion < $vpl503) {
+        xmldb_vpl_upgrade_2026112710();
+        upgrade_mod_savepoint(true, $vpl503, 'vpl');
     }
     return true;
 }

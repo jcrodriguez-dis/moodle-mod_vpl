@@ -79,7 +79,11 @@ class ui {
         foreach (settings::get_form_fields() as $field => $definition) {
             $label = get_string($definition['label'], VPL);
             if ($definition['type'] === 'select') {
-                $mform->addElement('select', $field, $label, $definition['options']);
+                $options = [];
+                foreach ($definition['options'] as $value => $option) {
+                    $options[$value] = get_string($option, VPL);
+                }
+                $mform->addElement('select', $field, $label, $options);
             } else if ($definition['type'] === 'textarea') {
                 $mform->addElement('textarea', $field, $label, [
                                     'cols' => 66,

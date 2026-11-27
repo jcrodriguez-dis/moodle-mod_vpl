@@ -269,7 +269,7 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertStringStartsWith('<?xml version="1.0" encoding="UTF-8"?>', $xml);
         $this->assertStringContainsString('<key>downloadAndOpenSebConfig</key><true/>', $xml);
         $this->assertStringContainsString('<key>examSessionReconfigureAllow</key><true/>', $xml);
-        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>2</integer>', $xml);
         $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
         $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
         $starturl = $CFG->wwwroot . '/mod/vpl/forms/edit.php?id=' . $instance->cmid;
@@ -300,7 +300,7 @@ final class seb_session_manager_test extends base_fixture {
 
         $this->assertStringContainsString('<key>showTaskBar</key><false/>', $xml);
         $this->assertStringContainsString('<key>allowQuit</key><true/>', $xml);
-        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>2</integer>', $xml);
         $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
         $this->assertStringContainsString('<key>insideSebEnableSwitchUser</key><false/>', $xml);
         $expected = '<key>hashedQuitPassword</key><string>' . hash('sha256', 'secret') . '</string>';
@@ -312,6 +312,84 @@ final class seb_session_manager_test extends base_fixture {
         $this->assertStringContainsString($expected, $xml);
         // Phase 2 must not let the browser load another configuration.
         $this->assertStringContainsString('<key>examSessionReconfigureAllow</key><false/>', $xml);
+    }
+
+    /**
+     * The service selection is translated to SEB service configuration keys.
+     *
+     * @dataProvider service_policy_provider
+     * @param int $option VPL form option.
+     * @param bool $ignore Expected SEB service ignore value.
+     * @param int $policy Expected SEB service policy value.
+     */
+    public function test_config_xml_reflects_seb_service_policy(int $option, bool $ignore, int $policy): void {
+        $instance = $this->create_seb_vpl(['sebservicepolicy' => $option]);
+        $settings = settings::get_values_from_vplid($instance->id);
+        $session = session_manager::create_session($settings, (int)$this->students[0]->id);
+
+        $xml = session_manager::get_phase1_config_xml($settings, $session);
+
+        $ignorexml = $ignore ? '<true/>' : '<false/>';
+        $this->assertStringContainsString('<key>sebServiceIgnore</key>' . $ignorexml, $xml);
+        $this->assertStringContainsString('<key>sebServicePolicy</key><integer>' . $policy . '</integer>', $xml);
+    }
+
+    /**
+     * SEB service option values.
+     *
+     * @return array
+     */
+    public static function service_policy_provider(): array {
+        return [
+            'ignore service' => [settings::SERVICE_IGNORE, true, 0],
+            'allow without service' => [settings::SERVICE_ALLOW, false, 0],
+            'warn without service' => [settings::SERVICE_WARN, false, 1],
+            'require service' => [settings::SERVICE_REQUIRE, false, 2],
+        ];
+    }
+
+    /**
+     * The kiosk selection is translated to the two SEB kiosk configuration keys.
+     *
+     * @dataProvider kiosk_mode_provider
+     * @param int $option VPL form option.
+     * @param bool|null $createnewdesktop Expected create-new-desktop value, or null when not set.
+     * @param bool|null $killexplorer Expected disable-Explorer value, or null when not set.
+     */
+    public function test_config_xml_reflects_kiosk_mode(
+        int $option,
+        ?bool $createnewdesktop,
+        ?bool $killexplorer
+    ): void {
+        $instance = $this->create_seb_vpl(['kioskmode' => $option]);
+        $settings = settings::get_values_from_vplid($instance->id);
+        $session = session_manager::create_session($settings, (int)$this->students[0]->id);
+
+        $xml = session_manager::get_phase1_config_xml($settings, $session);
+
+        if ($createnewdesktop === null) {
+            $this->assertStringNotContainsString('<key>createNewDesktop</key>', $xml);
+            $this->assertStringNotContainsString('<key>killExplorerShell</key>', $xml);
+            return;
+        }
+        $createdesktopxml = $createnewdesktop ? '<true/>' : '<false/>';
+        $killexplorerxml = $killexplorer ? '<true/>' : '<false/>';
+        $this->assertStringContainsString('<key>createNewDesktop</key>' . $createdesktopxml, $xml);
+        $this->assertStringContainsString('<key>killExplorerShell</key>' . $killexplorerxml, $xml);
+    }
+
+    /**
+     * Kiosk mode option values.
+     *
+     * @return array
+     */
+    public static function kiosk_mode_provider(): array {
+        return [
+            'not set' => [settings::KIOSK_NOT_SET, null, null],
+            'create new desktop' => [settings::KIOSK_CREATE_DESKTOP, true, false],
+            'disable explorer' => [settings::KIOSK_DISABLE_EXPLORER, false, true],
+            'none' => [settings::KIOSK_NONE, false, false],
+        ];
     }
 
     /**
@@ -353,7 +431,7 @@ final class seb_session_manager_test extends base_fixture {
             }
             $expected = $allowsignout ? '<true/>' : '<false/>';
             $this->assertStringContainsString('<key>insideSebEnableLogOff</key>' . $expected, $xml);
-            $this->assertStringContainsString('<key>sebServicePolicy</key><integer>0</integer>', $xml);
+            $this->assertStringContainsString('<key>sebServicePolicy</key><integer>2</integer>', $xml);
             $this->assertStringContainsString('<key>sebServiceIgnore</key><false/>', $xml);
         }
     }

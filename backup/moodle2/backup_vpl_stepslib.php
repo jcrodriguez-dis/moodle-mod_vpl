@@ -151,6 +151,8 @@ class backup_vpl_activity_structure_step extends \backup_activity_structure_step
         'enablesebsession',
         'preventsebsimultaneoussessions',
         'sebteacherpassword',
+        'sebservicepolicy',
+        'kioskmode',
         'showsebdownloadlink',
         'linkquitseb',
         'userconfirmquit',

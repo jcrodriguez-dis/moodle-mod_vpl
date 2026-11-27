@@ -261,6 +261,27 @@ final class seb_settings_test extends base_fixture {
         // A null value falls back to the field default.
         $this->assertSame(1, settings::normalize_value('showsebtaskbar', null));
         $this->assertSame('', settings::normalize_value('quitpassword', null));
+        $this->assertSame(settings::SERVICE_REQUIRE, settings::normalize_value('sebservicepolicy', '3'));
+        $this->assertSame(settings::KIOSK_DISABLE_EXPLORER, settings::normalize_value('kioskmode', '2'));
+        $this->assertSame(settings::SERVICE_REQUIRE, settings::normalize_value('sebservicepolicy', '99'));
+        $this->assertSame(settings::KIOSK_NOT_SET, settings::normalize_value('kioskmode', '99'));
+    }
+
+    /**
+     * Service and kiosk selections are persisted as integer options.
+     */
+    public function test_windows_security_options_are_stored(): void {
+        global $DB;
+
+        $instance = $this->create_seb_vpl([
+            'sebservicepolicy' => settings::SERVICE_REQUIRE,
+            'kioskmode' => settings::KIOSK_DISABLE_EXPLORER,
+        ]);
+
+        $record = $DB->get_record('vpl_seb', ['vplid' => $instance->id]);
+        $this->assertNotFalse($record);
+        $this->assertSame(settings::SERVICE_REQUIRE, (int)$record->sebservicepolicy);
+        $this->assertSame(settings::KIOSK_DISABLE_EXPLORER, (int)$record->kioskmode);
     }
 
     /**
